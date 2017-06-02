@@ -1,0 +1,18 @@
+@import "../app/colors.less";
+
+.ContentEditorActions {
+  background-color: @secondaryViewBkgColor;
+  max-width: 30rem;
+  min-width: 20rem;
+  // border-right: 1px solid #000;
+  flex: 2;
+  height: 100vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  z-index: 7;
+
+  @media (max-width: 1300px) {
+    max-width: 15rem;
+    min-width: 10rem;
+  }
+}
