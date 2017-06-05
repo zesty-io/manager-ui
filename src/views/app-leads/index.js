@@ -3,19 +3,19 @@ import {connect} from 'react-redux'
 import {Switch, Redirect, Route} from 'react-router-dom'
 import styles from './styles.less'
 
-class Settings extends Component {
+class Leads extends Component {
   componentWillMount() {
-    console.log('Settings:componentWillMount')
+    console.log('Leads:componentWillMount')
   }
   render() {
     return (
-      <section className={styles.Settings}>
-        Settings App
+      <section className={styles.Leads}>
+        Leads App
       </section>
     )
   }
 }
 
-const SettingsApp = connect(state => state)(Settings)
+const LeadsApp = connect(state => state)(Leads)
 
-export default SettingsApp
+export default LeadsApp

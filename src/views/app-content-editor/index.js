@@ -23,6 +23,6 @@ class ContentEditor extends Component {
   }
 }
 
-const ContentEditorView = connect(state => state)(ContentEditor)
+const ContentEditorApp = connect(state => state)(ContentEditor)
 
-export default ContentEditorView
+export default ContentEditorApp

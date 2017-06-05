@@ -3,19 +3,19 @@ import {connect} from 'react-redux'
 import {Switch, Redirect, Route} from 'react-router-dom'
 import styles from './styles.less'
 
-class Settings extends Component {
+class CodeEditor extends Component {
   componentWillMount() {
-    console.log('Settings:componentWillMount')
+    console.log('CodeEditor:componentWillMount')
   }
   render() {
     return (
-      <section className={styles.Settings}>
-        Settings App
+      <section className={styles.CodeEditor}>
+        Code Editor
       </section>
     )
   }
 }
 
-const SettingsApp = connect(state => state)(Settings)
+const CodeEditorApp = connect(state => state)(CodeEditor)
 
-export default SettingsApp
+export default CodeEditorApp

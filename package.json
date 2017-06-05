@@ -9,7 +9,7 @@
     "build": "node bin/build",
     "build:dev": "export NODE_ENV=\"development\" && ./node_modules/.bin/webpack --watch & npm run serve",
     "build:prod": "export NODE_ENV=\"production\" && ./node_modules/.bin/webpack --progress -p",
-    "serve": "./node_modules/.bin/serve build --port 9000",
+    "serve": "./node_modules/.bin/serve build --port 9000 --single",
     "test": "./node_modules/.bin/ava tests"
   },
   "author": "Stuart Runyan<stuart@zesty.io>",
@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "ava": "0.18.2",
-    "babel": "6.23.0",
+    "babel-cli": "6.24.1",
     "babel-loader": "6.4.1",
     "babel-preset-es2015": "6.24.1",
     "babel-preset-react": "6.24.1",
@@ -38,6 +38,5 @@
     "serve": "5.2.1",
     "style-loader": "0.16.1",
     "webpack": "2.6.1"
-  },
-  "false": {}
+  }
 }

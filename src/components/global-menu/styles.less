@@ -1,79 +1,38 @@
 @import "../../views/app/colors.less";
 
 .GlobalMenu {
-  background-color: @globalMenuBkgColor;
-  color: @zesty-field-blue;
-  max-width: 10rem;
-  min-width: 5rem;
-  // border-right: 1px solid #000;
-  flex-grow: 1;
-  // flex-shrink: 2;
-
   display: flex;
+  flex: 1;
   flex-direction: column;
-  align-items: center;
-  z-index: 10;
-  overflow-x: hidden;
+  height: 100vh;
+  overflow-y: scroll;
+  width: 100%;
+  margin-right: -7px;
 
-  .UserAccount {
-    margin: 0;
-    font-size: 3rem;
-    position: sticky;
-    top: 0;
+  border-top: 1px solid darken(@globalMenuBkgColor, 5%);
+  border-bottom: 1px solid darken(@globalMenuBkgColor, 5%);
 
-    width: 100%;
-    text-align: center;
-    border-bottom: 1px solid lighten(@globalMenuBkgColor, 5%);
-    padding: 1rem 0;
+  a {
+    color: @zesty-field-blue;
+    font-size: 1.2em;
+    padding: 1rem 0.5rem;
+    text-decoration: none;
+    letter-spacing: 1px;
 
+    i {
+      margin-right: 5px;
+      width: 24px;
+      text-align: center;
+    }
   }
-  .GlobalMenuActions {
-    background-color: @globalMenuBkgColor;
-    margin: 0;
-    padding: 2rem;
-    width: 100%;
-    text-align: center;
-    font-size: 2rem;
-    border-top: 1px solid lighten(@globalMenuBkgColor, 5%);
-  }
+}
 
-  menu {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    height: 100vh;
-    overflow-y: scroll;
-    width: 100%;
-    margin-right: -7px;
-
-    border-top: 1px solid darken(@globalMenuBkgColor, 5%);
-    border-bottom: 1px solid darken(@globalMenuBkgColor, 5%);
-
+@media (max-width: 1300px) {
+  .GlobalMenu {
     a {
-      color: @zesty-field-blue;
-      font-size: 1.2em;
-      padding: 1rem 0.5rem;
-      text-decoration: none;
-      i {
-        margin-right: 5px;
-        width: 25px;
-        text-align: center;
-      }
-    }
-  }
-
-  @media (max-width: 1300px) {
-    max-width: 4rem;
-    min-width: 3rem;
-    .UserAccount {
-      font-size: 2rem;
-    }
-    menu {
-      a {
-        text-align: center;
-        .title {
-          display: none;
-        }
+      text-align: center;
+      .title {
+        display: none;
       }
     }
   }

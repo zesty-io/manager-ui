@@ -3,19 +3,19 @@ import {connect} from 'react-redux'
 import {Switch, Redirect, Route} from 'react-router-dom'
 import styles from './styles.less'
 
-class Settings extends Component {
+class Media extends Component {
   componentWillMount() {
-    console.log('Settings:componentWillMount')
+    console.log('Media:componentWillMount')
   }
   render() {
     return (
-      <section className={styles.Settings}>
-        Settings App
+      <section className={styles.Media}>
+        Media App
       </section>
     )
   }
 }
 
-const SettingsApp = connect(state => state)(Settings)
+const MediaApp = connect(state => state)(Media)
 
-export default SettingsApp
+export default MediaApp
