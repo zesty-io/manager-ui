@@ -4,7 +4,6 @@ import {Switch, Redirect, Route} from 'react-router-dom'
 import styles from './styles.less'
 
 import GlobalSidebar from '../../components/global-sidebar'
-
 import ContentEditorApp from '../app-content-editor'
 import MediaApp from '../app-media'
 import CodeEditorApp from '../app-code-editor'
@@ -15,9 +14,12 @@ import SocialApp from '../app-social'
 import FormsApp from '../app-forms'
 import AuditTrailApp from '../app-audit-trail'
 
+import {fetchSiteSettings} from '../../actions/site/settings'
+
 class App extends Component {
   componentWillMount() {
     console.log('App:componentWillMount')
+    this.props.dispatch(fetchSiteSettings())
   }
   render() {
     return (

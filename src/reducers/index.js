@@ -3,6 +3,7 @@ import createLogger from 'redux-logger'
 import {createStore, combineReducers, applyMiddleware} from 'redux'
 
 import {user} from './user'
+import {site} from './site'
 import {sets} from './sets'
 import {items} from './items'
 import {subMenu} from './sub-menu'
@@ -12,7 +13,7 @@ const loggerMiddleware = createLogger({
     diff: true
 })
 
-const rootReducer = combineReducers({user, sets, items, subMenu})
+const rootReducer = combineReducers({user, site, sets, items, subMenu})
 
 export const store = createStore(
   rootReducer,
