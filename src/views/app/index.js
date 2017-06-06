@@ -12,6 +12,8 @@ import SeoApp from '../app-seo'
 import LeadsApp from '../app-leads'
 import AnalyticsApp from '../app-analytics'
 import SocialApp from '../app-social'
+import FormsApp from '../app-forms'
+import AuditTrailApp from '../app-audit-trail'
 
 class App extends Component {
   componentWillMount() {
@@ -30,6 +32,8 @@ class App extends Component {
             <Route path="/leads" component={LeadsApp} />
             <Route path="/analytics" component={AnalyticsApp} />
             <Route path="/social" component={SocialApp} />
+            <Route path="/forms" component={FormsApp} />
+            <Route path="/audit-trail" component={AuditTrailApp} />
             <Redirect from='/' to='/content'/>
             {/* TODO: handle no match */}
           </Switch>

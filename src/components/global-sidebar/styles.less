@@ -27,24 +27,23 @@
   }
   .subMenu {
     position: absolute;
-    z-index: 1;
-    // margin-left: -40rem;
+    top: 0;
+    right: 0;
 
-    .hide {
+    .appMenu {
+      background: red;
+      max-width: 15rem;
       position: absolute;
       top: 0;
-      transition: margin-left 2s ease;
-      // margin-left: -40rem;
-      margin-left: 0;
+      width: 15rem;
+    }
+    .hide {
+      margin-left: -15rem;
+      transition: margin-left 1s ease;
     }
     .show {
-      margin-left: 45rem;
-      transition: margin-left 2s ease;
-      width: 15rem;
-      max-width: 15rem;
-
-      background: red;
+      margin-left: 0;
+      transition: margin-left 1s ease;
     }
   }
-
 }

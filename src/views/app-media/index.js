@@ -12,7 +12,7 @@ class Media extends Component {
     return (
       <section className={styles.Media}>
         <MediaMenu />
-        <main>
+        <main className={styles.MediaView}>
           Media App
         </main>
       </section>

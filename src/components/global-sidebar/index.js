@@ -23,9 +23,9 @@ export default class GlobalSidebar extends Component {
           <GlobalActions />
         </div>
         <div className={cx(styles.subMenu, this.props.subMenu)}>
-          <CodeEditorMenu className={this.props.subMenu === 'code' ? styles.show : styles.hide} />
-          <ContentEditorMenu className={this.props.subMenu === 'content' ? styles.show : styles.hide} />
-          <MediaMenu className={this.props.subMenu === 'media' ? styles.show : styles.hide} />
+          <CodeEditorMenu className={cx(styles.appMenu, (this.props.subMenu === 'code' ? styles.show : styles.hide))} />
+          <ContentEditorMenu className={cx(styles.appMenu, (this.props.subMenu === 'content' ? styles.show : styles.hide))} />
+          <MediaMenu className={cx(styles.appMenu, (this.props.subMenu === 'media' ? styles.show : styles.hide))} />
         </div>
       </aside>
     )

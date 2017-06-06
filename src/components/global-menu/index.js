@@ -10,13 +10,17 @@ export default class GlobalMenu extends Component {
 
     this.hideMenu = this.hideMenu.bind(this)
     this.showMenu = this.showMenu.bind(this)
+
+    this.state = {
+      reveal: undefined
+    }
   }
   componentWillMount() {
     console.log('GlobalMenu:componentWillMount')
   }
   render() {
     return (
-      <menu className={styles.GlobalMenu}>
+      <menu className={styles.GlobalMenu} onMouseLeave={this.hideMenu}>
         <Link to="/content" title="Content Editor" onMouseEnter={this.showMenu} onMouseLeave={this.hideMenu}>
           <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
           <span className={styles.title}>Content</span>
@@ -61,36 +65,46 @@ export default class GlobalMenu extends Component {
     )
   }
   hideMenu() {
+    if (this.state.reveal) {
+      clearTimeout(this.state.reveal)
+    }
     this.props.dispatch(showSubMenu(''))
   }
   showMenu(evt) {
-    console.log('showMenu', this)
+    if (this.state.reveal) {
+      clearTimeout(this.state.reveal)
+    }
 
     if (evt.target.href) {
-      const currentHref = window.location.pathname
-      const hoveredHref = evt.target.href.split('/')[3]
+        const currentHref = window.location.pathname
+        const hoveredHref = evt.target.href.split('/')[3]
 
-      if (currentHref.indexOf(hoveredHref) === -1) {
-        switch(hoveredHref) {
-          case 'content':
-            this.props.dispatch(showSubMenu('content'))
-            break;
-          case 'media':
-            this.props.dispatch(showSubMenu('media'))
-            break;
-          case 'code':
-            this.props.dispatch(showSubMenu('code'))
-            break;
-          // case 'analytics':
-          //   this.props.dispatch(showSubMenu('analytics'))
-          // case 'seo':
-          //   this.props.dispatch(showSubMenu('seo'))
-          // case 'social':
-          //   this.props.dispatch(showSubMenu('social'))
-          // case 'leads':
-          //   this.props.dispatch(showSubMenu('leads'))
+        if (currentHref.indexOf(hoveredHref) === -1) {
+
+          const reveal = setTimeout(() => {
+            switch(hoveredHref) {
+              case 'content':
+                this.props.dispatch(showSubMenu('content'))
+                break;
+              case 'media':
+                this.props.dispatch(showSubMenu('media'))
+                break;
+              case 'code':
+                this.props.dispatch(showSubMenu('code'))
+                break;
+              // case 'analytics':
+              //   this.props.dispatch(showSubMenu('analytics'))
+              // case 'seo':
+              //   this.props.dispatch(showSubMenu('seo'))
+              // case 'social':
+              //   this.props.dispatch(showSubMenu('social'))
+              // case 'leads':
+              //   this.props.dispatch(showSubMenu('leads'))
+            }
+          }, 1000)
+
+          this.setState({reveal})
         }
       }
-    }
   }
 }
