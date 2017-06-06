@@ -3,13 +3,15 @@ import {connect} from 'react-redux'
 import {Switch, Redirect, Route} from 'react-router-dom'
 import styles from './styles.less'
 
-import GlobalAccount from '../../components/global-account'
-import GlobalMenu from '../../components/global-menu'
-import GlobalActions from '../../components/global-actions'
+import GlobalSidebar from '../../components/global-sidebar'
 
 import ContentEditorApp from '../app-content-editor'
 import MediaApp from '../app-media'
 import CodeEditorApp from '../app-code-editor'
+import SeoApp from '../app-seo'
+import LeadsApp from '../app-leads'
+import AnalyticsApp from '../app-analytics'
+import SocialApp from '../app-social'
 
 class App extends Component {
   componentWillMount() {
@@ -18,18 +20,17 @@ class App extends Component {
   render() {
     return (
       <section className={styles.app}>
-        <aside className={styles.GlobalSidebar}>
-          <GlobalAccount />
-          <GlobalMenu />
-          <GlobalActions />
-        </aside>
+        <GlobalSidebar {...this.props} />
         <main className={styles.AppLoader}>
           <Switch>
             <Route path="/content" component={ContentEditorApp} />
             <Route path="/media" component={MediaApp} />
             <Route path="/code" component={CodeEditorApp} />
-            <Route path="/" component={ContentEditorApp} />
-            {/*<Redirect from='/' to='/content'/>*/}
+            <Route path="/seo" component={SeoApp} />
+            <Route path="/leads" component={LeadsApp} />
+            <Route path="/analytics" component={AnalyticsApp} />
+            <Route path="/social" component={SocialApp} />
+            <Redirect from='/' to='/content'/>
             {/* TODO: handle no match */}
           </Switch>
         </main>

@@ -4,6 +4,7 @@ import {Switch, Redirect, Route} from 'react-router-dom'
 import styles from './styles.less'
 
 import ContentEditorMenu from './content-editor-menu'
+import ContentEditorView from './content-editor-view'
 import ContentEditorActions from './content-editor-actions'
 
 class ContentEditor extends Component {
@@ -14,9 +15,7 @@ class ContentEditor extends Component {
     return (
       <section className={styles.ContentEditor}>
         <ContentEditorMenu />
-        <main className={styles.content}>
-          Content App
-        </main>
+        <ContentEditorView />
         <ContentEditorActions />
       </section>
     )

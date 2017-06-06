@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
-import {Switch, Redirect, Route} from 'react-router-dom'
 import styles from './styles.less'
+
+import MediaMenu from './media-menu'
 
 class Media extends Component {
   componentWillMount() {
@@ -10,7 +11,10 @@ class Media extends Component {
   render() {
     return (
       <section className={styles.Media}>
-        Media App
+        <MediaMenu />
+        <main>
+          Media App
+        </main>
       </section>
     )
   }

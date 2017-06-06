@@ -35,27 +35,9 @@
   overflow: hidden;
   width: 100%;
 
-  .GlobalSidebar {
-    background-color: @globalMenuBkgColor;
-    color: @zesty-field-blue;
-    max-width: 10rem;
-    min-width: 5rem;
-    // border-right: 1px solid #000;
-    flex-grow: 1;
-    // flex-shrink: 2;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 10;
-    overflow-x: hidden;
-    @media (max-width: 1300px) {
-      max-width: 4rem;
-      min-width: 3rem;
-    }
-  }
   .AppLoader {
-    flex: 1;
+    flex: 2;
+    z-index: 1;
   }
 }
 

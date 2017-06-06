@@ -1,20 +1,20 @@
 import React, { Component } from 'react'
 import cx from 'classnames'
-import styles from './content-editor-menu.less'
+import styles from './code-editor-menu.less'
 
-export default class ContentEditorMenu extends Component {
+export default class CodeEditorMenu extends Component {
   componentWillMount() {
-    console.log('ContentEditorMenu:componentWillMount')
+    console.log('CodeEditorMenu:componentWillMount')
   }
   render() {
     return (
-      <section className={cx(styles.ContentEditorMenu, this.props.className)}>
+      <section className={cx(styles.CodeEditorMenu, this.props.className)}>
         <header>
           <button>filter</button>
           <input type="text" />
         </header>
         <main className={styles.content}>
-          Content Editor Menu
+          Code Editor Menu
         </main>
       </section>
     )

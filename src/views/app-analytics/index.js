@@ -10,6 +10,7 @@ class AnalyticsApp extends Component {
   render() {
     return (
       <section className={styles.AnalyticsApp}>
+        Analytics App
       </section>
     )
   }

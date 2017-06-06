@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
-import {Switch, Redirect, Route} from 'react-router-dom'
 import styles from './styles.less'
 
 class Seo extends Component {

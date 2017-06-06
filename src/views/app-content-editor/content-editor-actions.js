@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
-import {connect} from 'react-redux'
-import {Switch, Redirect, Route} from 'react-router-dom'
 import styles from './content-editor-actions.less'
 
-class ContentEditorActions extends Component {
+export default class ContentEditorActions extends Component {
   componentWillMount() {
     console.log('ContentEditorActions:componentWillMount')
   }
@@ -11,11 +9,9 @@ class ContentEditorActions extends Component {
     return (
       <section className={styles.ContentEditorActions}>
         <main className={styles.content}>
-
+          <button>Publish</button>
         </main>
       </section>
     )
   }
 }
-
-export default connect(state => state)(ContentEditorActions)
