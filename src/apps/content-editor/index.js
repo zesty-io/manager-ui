@@ -8,13 +8,17 @@ import ContentEditorView from './content-editor-view'
 import ContentEditorActions from './content-editor-actions'
 
 class ContentEditor extends Component {
+  constructor(props) {
+    super(props)
+    console.log('ContentEditor:constructor', this)
+  }
   componentWillMount() {
-    console.log('ContentEditor:componentWillMount')
+    console.log('ContentEditor:componentWillMount', this)
   }
   render() {
     return (
       <section className={styles.ContentEditor}>
-        <ContentEditorMenu />
+        <ContentEditorMenu sets={this.props.sets} />
         <ContentEditorView />
         <ContentEditorActions />
       </section>
@@ -22,6 +26,4 @@ class ContentEditor extends Component {
   }
 }
 
-const ContentEditorApp = connect(state => state)(ContentEditor)
-
-export default ContentEditorApp
+export default connect(state => state)(ContentEditor)

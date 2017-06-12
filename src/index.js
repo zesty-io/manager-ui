@@ -4,7 +4,6 @@ import {Provider} from 'react-redux'
 import {BrowserRouter, Redirect, Route} from 'react-router-dom'
 
 import {store} from './apps/_shell/store'
-
 import AppShell from './apps/_shell'
 
 class PrivateRoute extends React.Component {

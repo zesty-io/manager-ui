@@ -1,6 +1,7 @@
 import thunkMiddleware from 'redux-thunk'
 import createLogger from 'redux-logger'
 import {createStore, combineReducers, applyMiddleware} from 'redux'
+import {createInjectStore} from 'redux-injector';
 
 import {user} from './user'
 import {site} from './site'
@@ -11,10 +12,10 @@ const loggerMiddleware = createLogger({
     diff: true
 })
 
-const rootReducer = combineReducers({user, site, globalSubMenu})
-
-export const store = createStore(
-  rootReducer,
+// We use redux-injector to allow dynamic addition
+// of reducers after other apps are loaded
+export const store = createInjectStore(
+  {user, site, globalSubMenu},
   applyMiddleware(
     thunkMiddleware, // lets us dispatch() functions
     loggerMiddleware // neat middleware that logs actions
