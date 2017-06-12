@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom'
 import {Provider} from 'react-redux'
 import {BrowserRouter, Redirect, Route} from 'react-router-dom'
 
-import {store} from './reducers'
+import {store} from './apps/_shell/store'
 
-import App from './views/app'
+import AppShell from './apps/_shell'
 
 class PrivateRoute extends React.Component {
   render() {
@@ -23,7 +23,7 @@ ReactDOM.render((
     <BrowserRouter>
       <div>
         <PrivateRoute>
-          <Route path="/" component={App} />
+          <Route path="/" component={AppShell} />
         </PrivateRoute>
       </div>
     </BrowserRouter>
