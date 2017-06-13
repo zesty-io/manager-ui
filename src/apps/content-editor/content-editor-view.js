@@ -9,10 +9,16 @@ export default class ContentEditorView extends Component {
     return (
       <section className={styles.ContentEditorView}>
         <header className={styles.ContentActions}>
-          <Link>Back</Link>
+          <Link>
+            <i className="fa fa-arrow-left" aria-hidden="true"></i>Back
+          </Link>
           <ButtonGroup>
-            <Button>Save</Button>
-            <Button>Settings</Button>
+            <Button>
+              <i className="fa fa-floppy-o" aria-hidden="true"></i>Save
+            </Button>
+            <Button>
+              <i className="fa fa-cog" aria-hidden="true"></i>Settings
+            </Button>
           </ButtonGroup>
         </header>
         <main className={styles.content}>
