@@ -28,6 +28,14 @@
   </main>
   <script src="bundle.vendors.js"></script>
   <script src="bundle.core.js"></script>
+
+  <!--
+  TODO: the app shell should determine which apps are needed
+  and load their bundles via a service workeer
+  -->
+  <link href="bundle.audit-app.css" type="text/css" rel="stylesheet" />
+  <script src="bundle.audit-app.js"></script>
+
   <script src="bundle.manager-app.js"></script>
 </body>
 </html>

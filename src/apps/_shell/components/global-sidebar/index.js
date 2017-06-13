@@ -19,7 +19,7 @@ export default class GlobalSidebar extends Component {
       <aside className={styles.GlobalSidebar}>
         <div className={styles.topMenu}>
           <GlobalAccount />
-          <GlobalMenu dispatch={this.props.dispatch} />
+          <GlobalMenu dispatch={this.props.dispatch} products={this.props.site.settings.products} />
           <GlobalActions />
         </div>
         <div className={cx(styles.subMenu, this.props.globalSubMenu)}>

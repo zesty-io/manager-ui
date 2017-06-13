@@ -12,13 +12,13 @@ import LeadsApp from '../leads'
 import AnalyticsApp from '../analytics'
 import SocialApp from '../social'
 import FormsApp from '../forms'
-import AuditTrailApp from '../audit-trail'
+// import AuditTrailApp from '../audit-trail'
 
 import {fetchSiteSettings} from './store/site'
 
 class App extends Component {
   componentWillMount() {
-    console.log('App:componentWillMount')
+    console.log('App:componentWillMount', this)
     this.props.dispatch(fetchSiteSettings())
   }
   render() {
@@ -27,6 +27,7 @@ class App extends Component {
         <GlobalSidebar {...this.props} />
         <main className={styles.AppLoader}>
           <Switch>
+
             <Route path="/content" component={ContentEditorApp} />
             <Route path="/media" component={MediaApp} />
             <Route path="/code" component={CodeEditorApp} />
@@ -36,6 +37,11 @@ class App extends Component {
             <Route path="/social" component={SocialApp} />
             <Route path="/forms" component={FormsApp} />
             <Route path="/audit-trail" component={AuditTrailApp} />
+
+            {/*this.props.site.settings.products.map(product => {
+              return <Route path={`/${product}`} component={ContentEditorApp} />
+            })*/}
+
             <Redirect from='/' to='/content'/>
             {/* TODO: handle no match */}
           </Switch>

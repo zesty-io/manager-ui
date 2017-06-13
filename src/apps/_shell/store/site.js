@@ -30,7 +30,9 @@ export function fetchSiteSettings() {
   }
 }
 
-export function settings(state = {}, action) {
+export function settings(state = {
+  products: ['content', 'media']
+}, action) {
   switch(action.type) {
     case FETCH_SETTINGS_SUCCESS:
       return action.settings

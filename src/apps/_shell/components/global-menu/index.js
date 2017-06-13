@@ -17,11 +17,24 @@ export default class GlobalMenu extends Component {
     }
   }
   componentWillMount() {
-    console.log('GlobalMenu:componentWillMount')
+    console.log('GlobalMenu:componentWillMount', this)
   }
   render() {
     return (
       <menu className={styles.GlobalMenu} onMouseLeave={this.hideMenu}>
+        {/*this.props.products.map(product => {
+          return <Link
+                  className={styles.control}
+                  to={`/${product}`}
+                  title="Content Editor"
+                  onMouseEnter={this.showMenu}
+                  onMouseLeave={this.hideMenu}
+                  onClick={this.showMenu}>
+                  <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+                  <span className={styles.title}>{product}</span>
+                </Link>
+        })*/}
+
         <Link
           className={styles.control}
           to="/content"
@@ -86,6 +99,7 @@ export default class GlobalMenu extends Component {
           <i className="fa fa-cog" aria-hidden="true"></i>
           <span className={styles.title}>Settings</span>
         </Link>
+
       </menu>
     )
   }
