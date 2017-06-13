@@ -32,6 +32,8 @@ fs.readdirSync(src)
         // ensure path has package.json
         if (!fs.existsSync(path.join(appPath, 'package.json'))) return
 
+        console.log('BUILDING: '+appPath)
+
         // install folder
         cp.spawn('npm', ['run', 'build'], {
             env: process.env,

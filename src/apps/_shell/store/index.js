@@ -1,6 +1,6 @@
 import thunkMiddleware from 'redux-thunk'
 import createLogger from 'redux-logger'
-import {createStore, combineReducers, applyMiddleware} from 'redux'
+import {applyMiddleware} from 'redux'
 import {createInjectStore} from 'redux-injector';
 
 import {user} from './user'

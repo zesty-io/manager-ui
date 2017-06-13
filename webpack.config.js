@@ -13,7 +13,11 @@ module.exports = {
   entry: './src/index.js',
   devtool: 'cheap-module-source-map',
   externals: {
-    'react': 'React'
+    'react': 'React',
+    'react-dom': 'ReactDOM',
+    'react-redux': 'ReactRedux',
+    'redux': 'Redux',
+    'redux-thunk': 'ReduxThunk'
   },
   output: {
     filename: 'build/bundle.manager-app.js'

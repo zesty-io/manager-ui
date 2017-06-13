@@ -1,8 +1,8 @@
 {
-  "name": "app-audit-trail",
+  "name": "audit-trail",
   "version": "1.0.0",
-  "description": "Application for Zesty.io user logs",
-  "main": "webpack.config.js",
+  "description": "Manage user logs",
+  "main": "./index.js",
   "scripts": {
     "test": "./node_modules/.bin/jest",
     "start": "export NODE_ENV=\"development\" && ./node_modules/.bin/webpack --watch",
@@ -15,7 +15,6 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
-    "code-point-at": "1.1.0",
     "css-loader": "0.28.0",
     "react": "15.5.4",
     "react-dom": "15.5.4",
@@ -23,11 +22,9 @@
     "react-router": "4.1.1",
     "react-router-dom": "4.1.1",
     "redux": "3.6.0",
-    "redux-thunk": "2.2.0",
-    "set-blocking": "2.0.0"
+    "redux-thunk": "2.2.0"
   },
   "devDependencies": {
-    "ava": "0.19.1",
     "babel-core": "6.24.1",
     "babel-jest": "19.0.0",
     "babel-loader": "6.4.1",
@@ -36,7 +33,6 @@
     "babel-preset-stage-2": "6.24.1",
     "dotenv": "4.0.0",
     "extract-text-webpack-plugin": "2.1.0",
-    "identity-obj-proxy": "3.0.0",
     "jest": "20.0.4",
     "jest-cli": "20.0.4",
     "less": "2.7.2",
