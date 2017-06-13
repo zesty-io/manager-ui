@@ -10,6 +10,7 @@ export default class GlobalMenu extends Component {
 
     this.hideMenu = this.hideMenu.bind(this)
     this.showMenu = this.showMenu.bind(this)
+    // this.cancelMenu = this.cancelMenu.bind(this)
 
     this.state = {
       reveal: undefined
@@ -21,15 +22,30 @@ export default class GlobalMenu extends Component {
   render() {
     return (
       <menu className={styles.GlobalMenu} onMouseLeave={this.hideMenu}>
-        <Link className={styles.control} to="/content" title="Content Editor" onMouseEnter={this.showMenu} onMouseLeave={this.hideMenu}>
+        <Link
+          className={styles.control}
+          to="/content"
+          title="Content Editor"
+          onMouseEnter={this.showMenu}
+          onMouseLeave={this.hideMenu}
+          onClick={this.showMenu}>
           <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
           <span className={styles.title}>Content</span>
         </Link>
-        <Link className={styles.control} to="/media" title="Media Manager" onMouseEnter={this.showMenu} onMouseLeave={this.hideMenu}>
+        <Link
+          className={styles.control}
+          to="/media"
+          title="Media Manager"
+          onMouseEnter={this.showMenu}
+          onMouseLeave={this.hideMenu}>
           <i className="fa fa-picture-o" aria-hidden="true"></i>
           <span className={styles.title}>Media</span>
         </Link>
-        <Link className={styles.control} to="/forms" onMouseEnter={this.showMenu} onMouseLeave={this.hideMenu}>
+        <Link
+          className={styles.control}
+          to="/forms"
+          onMouseEnter={this.showMenu}
+          onMouseLeave={this.hideMenu}>
           <i className="fa fa-envelope-o" aria-hidden="true"></i>
           <span className={styles.title}>Forms</span>
         </Link>
@@ -43,7 +59,7 @@ export default class GlobalMenu extends Component {
         </Link>
 
 
-        <Link className={styles.build} to="/schema" title="Code Editor" onMouseEnter={this.showMenu} onMouseLeave={this.hideMenu}>
+        <Link className={styles.build} to="/schema" title="Schema Editor" onMouseEnter={this.showMenu} onMouseLeave={this.hideMenu}>
           <i className="fa fa-puzzle-piece" aria-hidden="true"></i>
           <span className={styles.title}>Schema</span>
         </Link>
@@ -73,6 +89,11 @@ export default class GlobalMenu extends Component {
       </menu>
     )
   }
+  // cancelMenu() {
+  //   if (this.state.reveal) {
+  //     clearTimeout(this.state.reveal)
+  //   }
+  // }
   hideMenu() {
     if (this.state.reveal) {
       clearTimeout(this.state.reveal)

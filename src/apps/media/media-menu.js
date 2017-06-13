@@ -9,9 +9,8 @@ export default class MediaMenu extends Component {
   render() {
     return (
       <section className={cx(styles.MediaMenu, this.props.className)}>
-        <header>
-          <button>filter</button>
-          <input type="text" />
+        <header className={styles.head}>
+          <Search placeholder="Search your content" />
         </header>
         <main className={styles.content}>
           Media Menu

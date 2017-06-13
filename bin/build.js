@@ -2,7 +2,7 @@
 const cp = require('child_process')
 const fs = require('fs')
 const path = require('path')
-const src = path.resolve(__dirname, '../')
+const root = path.resolve(__dirname, '../')
 
 const copyFiles = (from, to) => {
   if (!fs.existsSync(to)) {
@@ -21,10 +21,29 @@ const copyFiles = (from, to) => {
   })
 }
 
-copyFiles(src + '/public', src + '/build')
+// @see https://strongloop.com/strongblog/modular-node-js-express/
+// get library path
+
+const src = root + '/src'
+fs.readdirSync(src)
+  .forEach((app) => {
+        var appPath = path.join(src, app)
+
+        // ensure path has package.json
+        if (!fs.existsSync(path.join(appPath, 'package.json'))) return
+
+        // install folder
+        cp.spawn('npm', ['run', 'build'], {
+            env: process.env,
+            cwd: appPath,
+            stdio: 'inherit'
+        })
+    })
+
+copyFiles(root + '/public', root + '/build')
 
 cp.spawn('npm', ['run', 'build:prod'], {
   env: process.env,
-  cwd: src,
+  cwd: root,
   stdio: 'inherit'
 })

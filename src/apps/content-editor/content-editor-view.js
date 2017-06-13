@@ -8,10 +8,12 @@ export default class ContentEditorView extends Component {
   render() {
     return (
       <section className={styles.ContentEditorView}>
-        <header>
-          <button>Back</button>
-          <button>Save</button>
-          <button>Settings</button>
+        <header className={styles.ContentActions}>
+          <Link>Back</Link>
+          <ButtonGroup>
+            <Button>Save</Button>
+            <Button>Settings</Button>
+          </ButtonGroup>
         </header>
         <main className={styles.content}>
         Content App

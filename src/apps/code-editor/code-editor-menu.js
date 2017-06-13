@@ -9,9 +9,8 @@ export default class CodeEditorMenu extends Component {
   render() {
     return (
       <section className={cx(styles.CodeEditorMenu, this.props.className)}>
-        <header>
-          <button>filter</button>
-          <input type="text" />
+        <header className={styles.head}>
+          <Search placeholder="Search your content" />
         </header>
         <main className={styles.content}>
           Code Editor Menu

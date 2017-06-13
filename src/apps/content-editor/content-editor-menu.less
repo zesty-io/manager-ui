@@ -1,6 +1,7 @@
 @import "../../styles/colors.less";
 .ContentEditorMenu {
   background-color: @secondaryMenuBkgColor;
+  box-shadow: 0px 0px 6px @secondaryMenuBkgColor;
   max-width: 20rem;
   // min-width: 15rem;
   flex: 1;
@@ -10,7 +11,14 @@
   // z-index: 9;
 
   @media (max-width: 1300px) {
-    max-width: 10rem;
+    // max-width: 10rem;
     min-width: 8rem;
+  }
+
+  .head {
+    padding: 0.5rem;
+  }
+  .content {
+    padding: 0.5rem;
   }
 }

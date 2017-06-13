@@ -3,18 +3,18 @@
 const webpack = require('webpack')
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const extractLess = new ExtractTextPlugin({
-    filename: "../dist/bundle.core.css",
+    filename: "../../build/bundle.core.css",
     disable: process.env.NODE_ENV === "development"
 })
 
 module.exports = {
-    entry: './index.js',
+  entry: './index.js',
   devtool: 'cheap-module-source-map',
   externals: {
     'react': 'React'
   },
   output: {
-    filename: '../dist/bundle.core.js'
+    filename: '../../build/bundle.core.js'
   },
   plugins: [extractLess],
   module: {
