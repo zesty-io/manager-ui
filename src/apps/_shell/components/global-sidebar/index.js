@@ -18,14 +18,22 @@ export default class GlobalSidebar extends Component {
     return (
       <aside className={styles.GlobalSidebar}>
         <div className={styles.topMenu}>
-          <GlobalAccount />
+          <GlobalAccount dispatch={this.props.dispatch} />
           <GlobalMenu dispatch={this.props.dispatch} products={this.props.site.settings.products} />
           <GlobalActions />
         </div>
-        <div className={cx(styles.subMenu, this.props.globalSubMenu)}>
-          <CodeEditorMenu className={cx(styles.appMenu, (this.props.globalSubMenu === 'code' ? styles.show : styles.hide))} />
-          <ContentEditorMenu className={cx(styles.appMenu, (this.props.globalSubMenu === 'content' ? styles.show : styles.hide))} />
-          <MediaMenu className={cx(styles.appMenu, (this.props.globalSubMenu === 'media' ? styles.show : styles.hide))} />
+        <div className={cx(styles.subMenu, this.props.globalSubMenu.location)}>
+          <CodeEditorMenu className={cx(styles.appMenu, (this.props.globalSubMenu.location === 'code' ? styles.show : styles.hide))} />
+          <ContentEditorMenu className={cx(styles.appMenu, (this.props.globalSubMenu.location === 'content' ? styles.show : styles.hide))} />
+          <MediaMenu className={cx(styles.appMenu, (this.props.globalSubMenu.location === 'media' ? styles.show : styles.hide))} />
+        </div>
+        <div className={cx(styles.accountMenu, (this.props.accountsMenuVisible ? styles.show : styles.hide))}>
+          <h1>Stuart Runyan</h1>
+          <ul className={styles.linkList}>
+            <li className={styles.link}>Accounts Dashboard</li>
+            <li className={styles.link}>User Settings</li>
+            <li className={styles.link}>Logout</li>
+          </ul>
         </div>
       </aside>
     )

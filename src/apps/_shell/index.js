@@ -15,6 +15,7 @@ import FormsApp from '../forms'
 // import AuditTrailApp from '../audit-trail'
 
 import {fetchSiteSettings} from './store/site'
+import {subMenuLoad} from './store/global-sub-menu'
 
 class App extends Component {
   componentWillMount() {
@@ -25,7 +26,7 @@ class App extends Component {
     return (
       <section className={styles.app}>
         <GlobalSidebar {...this.props} />
-        <main className={styles.AppLoader}>
+        <main className={styles.AppLoader} onMouseEnter={this.hideGlobalSubMenu.bind(this)}>
           <Switch>
 
             <Route path="/content" component={ContentEditorApp} />
@@ -48,6 +49,9 @@ class App extends Component {
         </main>
       </section>
     )
+  }
+  hideGlobalSubMenu() {
+    this.props.dispatch(subMenuLoad(''))
   }
 }
 

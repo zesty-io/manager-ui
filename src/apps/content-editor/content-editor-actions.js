@@ -9,7 +9,7 @@ export default class ContentEditorActions extends Component {
     return (
       <section className={styles.ContentEditorActions}>
         <main className={styles.content}>
-          <button>Publish</button>
+          <Button>Publish</Button>
         </main>
       </section>
     )

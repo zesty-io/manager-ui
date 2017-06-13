@@ -20,5 +20,37 @@
   }
   .content {
     padding: 0.5rem;
+
+    .binList {
+      color: @zesty-white;
+      .bin {
+        background-color: @zesty-dark-blue;
+        padding: 0.5rem 0.5rem 0.5rem 0;
+        .title {
+          display: flex;
+          flex-direction: row;
+          padding: 0 0 0 0.5rem;
+        }
+        .groupList {
+          background-color: lighten(@zesty-dark-blue, 3%);
+          padding-right: 1rem;
+          .group {
+            cursor: pointer;
+            list-style: none;
+            padding: 0.5rem;
+          }
+
+          .groupList {
+            background-color: lighten(@zesty-dark-blue, 6%);
+            padding-right: 1rem;
+            .group {
+              cursor: pointer;
+              list-style: none;
+              padding: 0.5rem;
+            }
+          }
+        }
+      }
+    }
   }
 }

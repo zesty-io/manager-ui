@@ -8,9 +8,13 @@ export default class GlobalActions extends Component {
   render() {
     return (
       <div className={styles.GlobalActions}>
-        <button title="Live Preview">
-          <i className="fa fa-clone" aria-hidden="true"></i>
-        </button>
+        <Link className={styles.preview}>
+          <i className="fa fa-eye" aria-hidden="true"></i>
+        </Link>
+
+        {/*<button title="Live Preview">
+                  <i className="fa fa-clone" aria-hidden="true"></i>
+                </button>*/}
       </div>
     )
   }

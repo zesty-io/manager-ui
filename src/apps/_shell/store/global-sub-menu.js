@@ -1,17 +1,43 @@
-export const SHOW_SUB_MENU = 'SHOW_SUB_MENU'
+export const SUB_MENU_LOAD = 'SUB_MENU_LOAD'
+export const SUB_MENU_TIMEOUT = 'SUB_MENU_TIMEOUT'
 
-export function showSubMenu(location) {
+export function subMenuLoad(location) {
   return {
-    type: SHOW_SUB_MENU,
+    type: SUB_MENU_LOAD,
     location
   }
 }
 
-export function globalSubMenu(state = '', action) {
-  if (action.type === 'SHOW_SUB_MENU') {
-    console.log('SHOW_SUB_MENU', action)
-    return action.location
-  } else {
-    return state
+export function subMenuTimer(timeout) {
+  return {
+    type: SUB_MENU_TIMEOUT,
+    timeout
+  }
+}
+
+export function globalSubMenu(state = {
+  location: '',
+  timeout: false
+}, action) {
+  switch(action.type) {
+    case 'SUB_MENU_LOAD':
+      if (state.timeout) {
+        clearTimeout(state.timeout)
+      }
+      return {
+        location: action.location
+      }
+      break;
+    case 'SUB_MENU_TIMEOUT':
+      if (state.timeout) {
+        clearTimeout(state.timeout)
+      }
+      return {
+        location: state.location,
+        timeout: action.timeout
+      }
+      break;
+    default:
+      return state
   }
 }

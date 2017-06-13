@@ -20,11 +20,39 @@ export default class ContentEditorMenu extends Component {
           <Search placeholder="Search your content" />
         </header>
         <main className={styles.content}>
-          Content Editor Menu
           {/*Object.keys(this.props.sets).map(zuid => {
             let set = this.props.sets[zuid]
             return (<h1 key={zuid}>{set.name}</h1>)
           })*/}
+
+          <ul className={styles.binList}>
+            <li className={styles.bin}>
+              <h1 className={styles.title}>
+                Pages
+                <Button><i className="fa fa-plus" aria-hidden="true"></i></Button>
+              </h1>
+              <ul className={styles.groupList}>
+                <li className={styles.group}>Homepage</li>
+                <li className={styles.group}>Articles
+                  <ul className={styles.groupList}>
+                    <li className={styles.group}>Authors</li>
+                    <li className={styles.group}>Categories</li>
+                    <li className={styles.group}>Tags</li>
+                  </ul>
+                </li>
+                <li className={styles.group}>About Us</li>
+              </ul>
+            </li>
+            <li className={styles.bin}>
+              <h1 className={styles.title}>
+                DataSets
+                <Button><i className="fa fa-plus" aria-hidden="true"></i></Button>
+              </h1>
+              <ul className={styles.groupList}>
+                <li className={styles.group}>Products</li>
+              </ul>
+            </li>
+          </ul>
         </main>
       </section>
     )
