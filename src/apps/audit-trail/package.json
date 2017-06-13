@@ -1,0 +1,61 @@
+{
+  "name": "app-audit-trail",
+  "version": "1.0.0",
+  "description": "Application for Zesty.io user logs",
+  "main": "webpack.config.js",
+  "scripts": {
+    "test": "./node_modules/.bin/jest",
+    "start": "export NODE_ENV=\"development\" && ./node_modules/.bin/webpack --watch",
+    "prestart": "npm install && npm test",
+    "poststart": "npm prune",
+    "build": "export NODE_ENV=\"production\" && ./node_modules/.bin/webpack --progress -p",
+    "prebuild": "npm install",
+    "postbuild": "npm prune"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "code-point-at": "1.1.0",
+    "css-loader": "0.28.0",
+    "react": "15.5.4",
+    "react-dom": "15.5.4",
+    "react-redux": "5.0.4",
+    "react-router": "4.1.1",
+    "react-router-dom": "4.1.1",
+    "redux": "3.6.0",
+    "redux-thunk": "2.2.0",
+    "set-blocking": "2.0.0"
+  },
+  "devDependencies": {
+    "ava": "0.19.1",
+    "babel-core": "6.24.1",
+    "babel-jest": "19.0.0",
+    "babel-loader": "6.4.1",
+    "babel-preset-es2015": "6.24.1",
+    "babel-preset-react": "6.24.1",
+    "babel-preset-stage-2": "6.24.1",
+    "dotenv": "4.0.0",
+    "extract-text-webpack-plugin": "2.1.0",
+    "identity-obj-proxy": "3.0.0",
+    "jest": "20.0.4",
+    "jest-cli": "20.0.4",
+    "less": "2.7.2",
+    "less-loader": "4.0.3",
+    "react-test-renderer": "15.5.4",
+    "redux-logger": "3.0.1",
+    "style-loader": "0.16.1",
+    "webpack": "2.4.1"
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "react"
+    ]
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
+      "\\.(css|less)$": "identity-obj-proxy"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+@import '../../../../ui/less/utility/colors.less';
+
+.auditControls {
+  align-items: center;
+  box-shadow: 0 1px 3px #2d384e;
+  display: flex;
+  flex-direction: row;
+  padding: 1rem 2rem 2rem;
+  margin: 0;
+
+  div.title {
+    flex: 2;
+    padding: 0;
+
+    h2 {
+      color: @zesty-white;
+      font-family: @font-light;
+      font-size: 2.8rem;
+      font-weight: 300;
+    }
+    p {
+      color: @zesty-light-gray;
+      margin-top: 4px;
+    }
+  }
+  .btnGroup {
+    .child {
+      flex: inherit;
+    }
+  }
+}

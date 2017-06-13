@@ -1,0 +1,75 @@
+@import '../../../../ui/less/utility/colors.less';
+
+.auditLog {
+  background: @zesty-white;
+  border:1px @zesty-gray;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: row;
+  margin: 1rem 0;
+  overflow: hidden;
+
+  .action {
+    align-items: center;
+    color: @zesty-tab-blue;
+    display: flex;
+    padding: 0;
+
+    .type {
+      align-self: stretch;
+      width: 5px;
+    }
+    .type1 {
+      background: @zesty-green;
+    }
+    .type2 {
+      background: @yellow-highlight;
+    }
+    .type3 {
+      background: @zesty-red;
+    }
+    .type4 {
+      background: @zesty-blue;
+    }
+
+    .avatar {
+      align-self: flex-start;
+      background-color: @zesty-grey;
+      max-height: 90px;
+      margin-right: 1rem;
+    }
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    color: @zesty-gray;
+
+    .title {
+      font-size: 1.8em;
+      font-family: @font-light;
+      letter-spacing: 0.5px;
+      line-height: 1.3em;
+      margin: 0 0 5px 0;
+      padding: 0;
+    }
+
+    .meta {
+      color: #959db4;
+      flex: 1;
+      .emailLink {
+        color: @zesty-light-gray;
+        text-decoration: none;
+        &:hover{
+          color: @zesty-gray;
+        }
+      }
+    }
+
+    .link {
+      color: #333;
+      text-decoration: none;
+    }
+  }
+}

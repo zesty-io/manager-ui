@@ -1,0 +1,55 @@
+@import '../../../../ui/less/utility/colors.less';
+
+@font-normal: 'Gibson';
+@font-light: 'Gibson Light';
+@font-semi: 'Gibson SemiBold';
+
+.auditApp {
+  background: @zesty-tab-color;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+
+  .hidden {
+    display: none;
+  }
+
+  .loading {
+    align-items: center;
+    background-color: #C7D4EA;
+    display: flex;
+    flex-direction: column;
+    font-size: 3rem;
+    height: 93vh;
+    justify-content: center;
+    position: absolute;
+    width: 100%;
+
+    h1 {
+      top: -5vh;
+    }
+  }
+
+  .logList {
+    flex: 1;
+    margin: 0;
+    padding: 0 2rem 5rem;
+    overflow: auto;
+    background: @zesty-field-blue;
+  }
+
+  .noLogs {
+    color: @zesty-tab-blue;
+    font-size: 4rem;
+    letter-spacing: 1px;
+    margin: 2rem 0 0 0;
+  }
+
+  .paginationWrap {
+    position: absolute;
+    bottom: 0;
+    right: 1rem;
+  }
+}
