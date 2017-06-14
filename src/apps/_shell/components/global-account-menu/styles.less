@@ -1,0 +1,40 @@
+@import "../../../../styles/colors.less";
+.accountMenu {
+  position: absolute;
+  width: 14rem;
+  color: @zesty-white;
+  background: @zesty-dark-blue;
+  box-shadow: 1px 1px 4px @zesty-dark-blue;
+  top: 0;
+  right: -16rem;
+  padding: 1rem;
+
+  &.show {}
+  &.hide {
+    top: 0;
+    right: 0;
+  }
+
+  .icon {
+    margin-right: 0.5rem;
+  }
+
+  .user {}
+  .siteSelector {
+    border-top: 1px solid lighten(@zesty-dark-blue, 5%);
+    border-bottom: 1px solid lighten(@zesty-dark-blue, 5%);
+    margin: 1rem 0;
+    padding: 0.5rem 0;
+  }
+  .accountActions {
+    .linkList {
+      margin: 0;
+      padding: 0;
+      .link {
+        list-style: none;
+        margin:0;
+        padding: 0.5rem 0;
+      }
+    }
+  }
+}

@@ -3,6 +3,7 @@
   background-color: @globalMenuBkgColor;
   margin: 0;
   padding: 1rem;
+  position: relative;
   width: 100%;
   text-align: center;
   font-size: 1.5rem;
@@ -10,5 +11,18 @@
 
   .preview {
     text-shadow: 1px 1px 1px #000;
+  }
+  .notificationCount {
+    background-color: @zesty-red;
+    border-radius: 50%;
+    display: inline-block;
+    width: 14px;
+    position: absolute;
+    top: 12px;
+    right: 30px;
+    font-size: 0.6em;
+    font-family: 'Gibson', Arial;
+    padding: 0.1rem;
+    font-weight: bold;
   }
 }

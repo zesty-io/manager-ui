@@ -3,6 +3,7 @@ import styles from './styles.less'
 import cx from 'classnames'
 
 import GlobalAccount from '../global-account'
+import GlobalAccountMenu from '../global-account-menu'
 import GlobalMenu from '../global-menu'
 import GlobalActions from '../global-actions'
 
@@ -27,14 +28,7 @@ export default class GlobalSidebar extends Component {
           <ContentEditorMenu className={cx(styles.appMenu, (this.props.globalSubMenu.location === 'content' ? styles.show : styles.hide))} />
           <MediaMenu className={cx(styles.appMenu, (this.props.globalSubMenu.location === 'media' ? styles.show : styles.hide))} />
         </div>
-        <div className={cx(styles.accountMenu, (this.props.accountsMenuVisible ? styles.show : styles.hide))}>
-          <h1>Stuart Runyan</h1>
-          <ul className={styles.linkList}>
-            <li className={styles.link}>Accounts Dashboard</li>
-            <li className={styles.link}>User Settings</li>
-            <li className={styles.link}>Logout</li>
-          </ul>
-        </div>
+        <GlobalAccountMenu dispatch={this.props.dispatch} accountsMenuVisible={this.props.accountsMenuVisible} />
       </aside>
     )
   }
