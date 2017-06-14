@@ -17,6 +17,53 @@
         height: 100%;
         width: 100%;
       }
+
+      #appBoot {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+        width: 100vw;
+        height: 100vh;
+      }
+
+      #center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #center h1 {
+        font-size: 2em;
+        text-shadow: 1px 1px 1px #fff;
+      }
+
+      .loader {
+        display: flex;
+        height: 2rem;
+      }
+      .loader .bar {
+        animation: fade 1s infinite ease-in-out;
+        background-color: #5B667D;
+        margin: 0.5rem;
+        opacity: 1;
+        width: 1rem;
+      }
+      .loader .bar:nth-child(1) { animation-delay: -0.16s }
+      .loader .bar:nth-child(2) { animation-delay: 1s }
+      .loader .bar:nth-child(3) { animation-delay: -0.32s }
+      .loader .bar:nth-child(4) { animation-delay: 2s }
+      .loader .bar:nth-child(5) { animation-delay: -0.16s }
+
+      @keyframes fade {
+        0%,
+        80%,
+        100% {
+          opacity: 1;
+        }
+        40% {
+          opacity: 0.3;
+        }
+      }
+
     </style>
     <link href="bundle.core.css" type="text/css" rel="stylesheet" />
     <link href="bundle.manager-app.css" type="text/css" rel="stylesheet" />
@@ -24,7 +71,18 @@
 </head>
 <body>
   <main id="root">
-      <h1>Loading</h1>
+    <div id="appBoot">
+      <div id="center">
+        <h1>Starting Your Website Manager</h1>
+        <div class="loader">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+      </div>
+    </div>
   </main>
   <script src="bundle.vendors.js"></script>
   <script src="bundle.core.js"></script>
