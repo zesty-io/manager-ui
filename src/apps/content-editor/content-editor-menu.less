@@ -1,7 +1,7 @@
 @import "../../styles/colors.less";
 .ContentEditorMenu {
   background-color: @secondaryMenuBkgColor;
-  box-shadow: 0px 0px 6px @secondaryMenuBkgColor;
+  // box-shadow: 0px 0px 6px @secondaryMenuBkgColor;
   max-width: 20rem;
   // min-width: 15rem;
   flex: 1;
@@ -27,9 +27,17 @@
         background-color: @zesty-dark-blue;
         padding: 0.5rem 0.5rem 0.5rem 0;
         .title {
+          align-items: baseline;
           display: flex;
           flex-direction: row;
+          font-family: "Gibson Light", Arial, sans-serif;
           padding: 0 0 0 0.5rem;
+          .text {
+            flex: 1;
+          }
+          .icon {
+
+          }
         }
         .groupList {
           background-color: lighten(@zesty-dark-blue, 3%);

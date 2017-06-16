@@ -12,6 +12,8 @@ import LeadsApp from '../leads'
 import AnalyticsApp from '../analytics'
 import SocialApp from '../social'
 import FormsApp from '../forms'
+import SchemaApp from '../schema'
+import SettingsApp from '../settings'
 // import AuditTrailApp from '../audit-trail'
 
 import {fetchSiteSettings} from './store/site'
@@ -29,15 +31,17 @@ class App extends Component {
         <main className={styles.AppLoader} onMouseEnter={this.hideGlobalSubMenu.bind(this)}>
           <Switch>
 
-            <Route path="/content" component={ContentEditorApp} />
-            <Route path="/media" component={MediaApp} />
-            <Route path="/code" component={CodeEditorApp} />
-            <Route path="/seo" component={SeoApp} />
-            <Route path="/leads" component={LeadsApp} />
             <Route path="/analytics" component={AnalyticsApp} />
-            <Route path="/social" component={SocialApp} />
-            <Route path="/forms" component={FormsApp} />
             <Route path="/audit-trail" component={AuditTrailApp} />
+            <Route path="/content" component={ContentEditorApp} />
+            <Route path="/code" component={CodeEditorApp} />
+            <Route path="/forms" component={FormsApp} />
+            <Route path="/leads" component={LeadsApp} />
+            <Route path="/media" component={MediaApp} />
+            <Route path="/schema" component={SchemaApp} />
+            <Route path="/seo" component={SeoApp} />
+            <Route path="/settings" component={SettingsApp} />
+            <Route path="/social" component={SocialApp} />
 
             {/*this.props.site.settings.products.map(product => {
               return <Route path={`/${product}`} component={ContentEditorApp} />

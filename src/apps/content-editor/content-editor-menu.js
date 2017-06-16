@@ -28,8 +28,8 @@ export default class ContentEditorMenu extends Component {
           <ul className={styles.binList}>
             <li className={styles.bin}>
               <h1 className={styles.title}>
-                Pages
-                <Button><i className="fa fa-plus" aria-hidden="true"></i></Button>
+                <span className={styles.text}>Pages</span>
+                <Button><i className="fa fa-plus" aria-hidden="true"></i>New</Button>
               </h1>
               <ul className={styles.groupList}>
                 <li className={styles.group}>Homepage</li>
@@ -45,8 +45,8 @@ export default class ContentEditorMenu extends Component {
             </li>
             <li className={styles.bin}>
               <h1 className={styles.title}>
-                DataSets
-                <Button><i className="fa fa-plus" aria-hidden="true"></i></Button>
+                <span className={styles.text}>DataSets</span>
+                <Button><i className="fa fa-plus" aria-hidden="true"></i>New</Button>
               </h1>
               <ul className={styles.groupList}>
                 <li className={styles.group}>Products</li>

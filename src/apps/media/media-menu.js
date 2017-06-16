@@ -14,7 +14,7 @@ export default class MediaMenu extends Component {
         </header>
         <main className={styles.content}>
           <ButtonGroup>
-            <Button>
+            <Button className={styles.upload}>
               <i className="fa fa-plus" aria-hidden="true"></i>Upload File
             </Button>
           </ButtonGroup>
