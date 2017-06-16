@@ -17,7 +17,7 @@ export default class GlobalAccount extends Component {
         className={styles.GlobalAccount}
         onMouseEnter={this.showAccountsMenu}
         onMouseLeave={this.hideAccountsMenu}>
-        <i className="fa fa-user-circle-o" aria-hidden="true"></i>
+        <i className="fa fa-globe" aria-hidden="true"></i>
       </div>
     )
   }

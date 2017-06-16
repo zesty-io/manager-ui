@@ -28,6 +28,21 @@ export default class GlobalAccount extends Component {
         <main className={styles.siteSelector}>
           <Select selection={{value: 'xxxxx1', html: 'alphauniverse.com'}}>
             <Option value="xxxxx1" text="alphauniverse.com" />
+            <Option value="xxxxx2" text="alphauniverse.com" />
+            <Option value="xxxxx3" text="alphauniverse.com" />
+            <Option value="xxxxx4" text="alphauniverse.com" />
+            <Option value="xxxxx5" text="alphauniverse.com" />
+            <Option value="xxxxx6" text="alphauniverse.com" />
+            <Option value="xxxxx7" text="alphauniverse.com" />
+            <Option value="xxxxx8" text="alphauniverse.com" />
+            <Option value="xxxxx9" text="alphauniverse.com" />
+            <Option value="xxxxx10" text="alphauniverse.com" />
+            <Option value="xxxxx11" text="alphauniverse.com" />
+            <Option value="xxxxx12" text="alphauniverse.com" />
+            <Option value="xxxxx13" text="alphauniverse.com" />
+            <Option value="xxxxx14" text="alphauniverse.com" />
+            <Option value="xxxxx15" text="alphauniverse.com" />
+            <Option value="xxxxx16" text="alphauniverse.com" />
           </Select>
         </main>
 
@@ -39,7 +54,7 @@ export default class GlobalAccount extends Component {
             <li className={styles.link}>
               <i className={cx(styles.icon, "fa fa-life-ring")} aria-hidden="true"></i>Support
             </li>
-            <li className={styles.link}>
+            <li className={cx(styles.link, styles.logout)}>
               <i className={cx(styles.icon, "fa fa-sign-out")} aria-hidden="true"></i>Logout
             </li>
           </ul>

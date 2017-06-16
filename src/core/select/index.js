@@ -46,8 +46,8 @@ export default class Select extends React.Component {
       <div {...opts} ref={div => this.selector = div}>
         <input type="hidden" name={this.props.name} value={this.state.selection.value} />
         <span className={styles.selection}>
-          <i className={cx("icon icon-chevron-right", styles.chevron, styles['icon-chevron-right'])}></i>
-          <i className={cx("icon icon-chevron-down", styles.chevron, styles['icon-chevron-down'])}></i>
+          <i className={cx("fa fa-chevron-right", styles.chevron, styles['icon-chevron-right'])}></i>
+          <i className={cx("fa fa-chevron-down", styles.chevron, styles['icon-chevron-down'])}></i>
 
           {this.state.selection.html
             ? <span className={styles.content} dangerouslySetInnerHTML={{

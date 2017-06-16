@@ -65,7 +65,7 @@ export default class GlobalMenu extends Component {
           <span className={styles.title}>Leads</span>
         </Link>
         <Link className={styles.control} to="/social" onClick={this.hideMenu} onMouseEnter={this.showMenu}>
-          <i className="fa fa-share-square-o" aria-hidden="true"></i>
+          <i className="fa fa-share-alt" aria-hidden="true"></i>
           <span className={styles.title}>Social</span>
         </Link>
 

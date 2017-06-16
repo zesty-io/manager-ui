@@ -2,27 +2,44 @@
 .GlobalActions {
   background-color: @globalMenuBkgColor;
   margin: 0;
-  padding: 1rem;
+  padding: 1rem 0;
   position: relative;
   width: 100%;
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 1.1em;
   border-top: 1px solid lighten(@globalMenuBkgColor, 5%);
 
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  .action {
+    cursor: pointer;
+    margin: 0.5rem;
+
+    &:hover,
+    &:focus,
+    &:active {
+      color: @zesty-blue;
+    }
+  }
   .preview {
     text-shadow: 1px 1px 1px #000;
   }
-  .notificationCount {
-    background-color: @zesty-red;
-    border-radius: 50%;
-    display: inline-block;
-    width: 14px;
-    position: absolute;
-    top: 12px;
-    right: 30px;
-    font-size: 0.6em;
-    font-family: 'Gibson', Arial;
-    padding: 0.1rem;
-    font-weight: bold;
+  .chat {
+    position: relative;
+    .notificationCount {
+      background-color: @zesty-red;
+      border-radius: 50%;
+      display: inline-block;
+      width: 14px;
+      position: absolute;
+      top: -3px;
+      right: -5px;
+      font-size: 0.6em;
+      font-family: 'Gibson', Arial;
+      padding: 0.1rem;
+      font-weight: bold;
+    }
   }
 }
