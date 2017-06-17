@@ -17,7 +17,7 @@ import SettingsApp from '../settings'
 // import AuditTrailApp from '../audit-trail'
 
 import {fetchSiteSettings} from './store/site'
-import {subMenuLoad} from './store/global-sub-menu'
+import {subMenuLoad} from './store/ui/global-sub-menu'
 
 class App extends Component {
   componentWillMount() {

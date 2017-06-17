@@ -17,41 +17,38 @@ export function logs(state = {}, action) {
 }
 
 // Actions
-// export function getLogs(siteId) {
-//   return (dispatch, getState) => {
-//     dispatch({
-//       type: FETCHING_LOGS
-//     })
+export function getLogs(siteId) {
+  return (dispatch, getState) => {
+    dispatch({
+      type: FETCHING_LOGS
+    })
 
-//     const state = getState()
+    const state = getState()
+    const siteZuid = state.settings.siteZuid
 
-//     console.log('getLogs', state)
+    request(`${state.settings.SITES_SERVICE}/${siteZuid}/audit-trail-logs`)
+    .then(json => {
 
-//     const siteZuid = state.settings.siteZuid
+      // Normalize logs by zuid
+      let data = {}
+      json.data.forEach(log => {
+        data[log.zuid] = log
+      })
 
-//     request(`${state.settings.SITES_SERVICE}/${siteZuid}/audit-trail-logs`)
-//     .then(json => {
+      // Logs are immutable so we freeze them
+      data = deepFreeze(data)
 
-//       // Normalize logs by zuid
-//       let data = {}
-//       json.data.forEach(log => {
-//         data[log.zuid] = log
-//       })
+      dispatch({
+        type: FETCH_LOGS_SUCCESS,
+        data: data
+      })
 
-//       // Logs are immutable so we freeze them
-//       data = deepFreeze(data)
-
-//       dispatch({
-//         type: FETCH_LOGS_SUCCESS,
-//         data: data
-//       })
-
-//     })
-//     .catch(err => {
-//       dispatch({
-//         type: FETCH_LOGS_ERROR,
-//         err
-//       })
-//     })
-//   }
-// }
+    })
+    .catch(err => {
+      dispatch({
+        type: FETCH_LOGS_ERROR,
+        err
+      })
+    })
+  }
+}

@@ -1,17 +1,16 @@
 import React, { Component } from 'react'
-import {injectReducer} from 'redux-injector'
+import PropTypes from 'prop-types'
 import cx from 'classnames'
 import styles from './content-editor-menu.less'
+import {injectReducer} from '../_shell/store'
 
 import {sets} from './store/sets'
 import {items} from './store/items'
 
 export default class ContentEditorMenu extends Component {
   componentWillMount() {
-    injectReducer('sets', sets)
-    injectReducer('items', items)
-
-    console.log('ContentEditorMenu:componentWillMount', this)
+    injectReducer(this.context.store, 'sets', sets)
+    injectReducer(this.context.store, 'items', items)
   }
   render() {
     return (
@@ -57,4 +56,10 @@ export default class ContentEditorMenu extends Component {
       </section>
     )
   }
+}
+
+// Necessary for exposing the store
+// on the component context
+ContentEditorMenu.contextTypes = {
+  store: PropTypes.object.isRequired
 }

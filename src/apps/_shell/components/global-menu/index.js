@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import {Link} from 'react-router-dom'
 import styles from './styles.less'
 
-import {subMenuLoad, subMenuTimer} from '../../store/global-sub-menu'
+import {subMenuLoad, subMenuTimer} from '../../store/ui/global-sub-menu'
 
 export default class GlobalMenu extends Component {
   constructor(props) {

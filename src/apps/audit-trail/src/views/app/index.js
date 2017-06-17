@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import styles from './styles.less'
-import {injectReducer} from 'redux-injector'
+
+import {injectReducer} from '../../../../_shell/store'
 
 import AuditControls from '../../components/controls'
 import Log from '../../components/log'
@@ -14,42 +16,46 @@ import {inViewLogs} from '../../store/inViewLogs'
 import {settings} from '../../store/settings'
 
 class AuditApp extends Component {
+  constructor(props) {
+    super(props)
+
+    console.log('constructor', this.context)
+  }
   componentWillMount() {
     console.log('AuditApp:componentWillMount', this)
-    // console.log('LOGS', logs)
 
-    // injectReducer('logs', logs)
-    // injectReducer('loadingLogs', loadingLogs)
-    // injectReducer('inViewLogs', inViewLogs)
-    // injectReducer('settings', settings)
+    injectReducer(this.context.store, 'logs', logs)
+    injectReducer(this.context.store, 'loadingLogs', loadingLogs)
+    injectReducer(this.context.store, 'inViewLogs', inViewLogs)
+    injectReducer(this.context.store, 'settings', settings)
 
     // TODO these settings need to be
     // provided by the app-shell
-    // this.props.dispatch({
-    //   type: 'APP_SETTINGS',
-    //   settings: {
-    //     siteZuid: 'xxxxx1',
-    //     SITES_SERVICE: 'http://svc.zesty.localdev:3018/sites-service'
-    //   }
-    // })
+    this.props.dispatch({
+      type: 'APP_SETTINGS',
+      settings: {
+        siteZuid: 'xxxxx1',
+        SITES_SERVICE: 'http://svc.zesty.localdev:3018/sites-service'
+      }
+    })
 
     // this.props.dispatch(getLogs())
   }
-  // renderLogs() {
-  //   let logs = Object.keys(this.props.inViewLogs)
+  renderLogs() {
+    console.log('renderLogs', this)
+    let logs = Object.keys(this.props.inViewLogs)
 
-  //   if (logs.length) {
-  //     return logs.map(zuid => {
-  //       let log = this.props.inViewLogs[zuid]
-  //       return <Log log={log} key={zuid} />
-  //     })
-
-  //   } else {
-  //     return (<h1 className={styles.noLogs}>No Logs Found</h1>)
-
-  //   }
-  // }
+    if (logs.length) {
+      return logs.map(zuid => {
+        let log = this.props.inViewLogs[zuid]
+        return <Log log={log} key={zuid} />
+      })
+    } else {
+      return (<h1 className={styles.noLogs}>No Logs Found</h1>)
+    }
+  }
   render() {
+    console.log('AuditApp:render', this.props)
     return (
       <main className={styles.auditApp}>
         <div className={this.props.loadingLogs ? styles.loading : styles.hidden}>
@@ -61,11 +67,17 @@ class AuditApp extends Component {
           {/*this.renderLogs()*/}
         </section>
         <footer className={styles.paginationWrap}>
-          {/*<Pagination />*/}
+          <Pagination />
         </footer>
       </main>
     )
   }
+}
+
+// Necessary for exposing the store
+// on the component context
+AuditApp.contextTypes = {
+  store: PropTypes.object.isRequired
 }
 
 export default connect(state => state)(AuditApp)

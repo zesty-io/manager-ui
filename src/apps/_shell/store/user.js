@@ -8,28 +8,44 @@ export function getUser(id) {
     dispatch({
       type: FETCHING_USER
     })
-    fetch(`http://localhost:9001/user/${id}`)
-      .then(res => res.json())
-      .then(user => {
-        console.log('user', user)
-        dispatch({
-          type: FETCH_USER_SUCCESS,
-          id,
-          user
-        })
+
+    setTimeout(() => {
+      dispatch({
+        type: FETCH_USER_SUCCESS,
+        user: {
+          id: 'xxxxxx1',
+          name: 'Stuart Runyan',
+          email: 'stuart@zesty.io',
+          role: 'admin',
+          products: ['code', 'seo', 'leads', 'analytics', 'forms', 'audit-trail', 'social']
+        }
       })
-      .catch(err => {
-        console.error(err)
-        dispatch({
-          type: FETCH_USER_ERROR,
-          id,
-          err
-        })
-      })
+    }, 3000)
+
+    // fetch(`http://localhost:9001/user/${id}`)
+    //   .then(res => res.json())
+    //   .then(user => {
+    //     console.log('user', user)
+    //     dispatch({
+    //       type: FETCH_USER_SUCCESS,
+    //       id,
+    //       user
+    //     })
+    //   })
+    //   .catch(err => {
+    //     console.error(err)
+    //     dispatch({
+    //       type: FETCH_USER_ERROR,
+    //       id,
+    //       err
+    //     })
+    //   })
   }
 }
 
-export function user(state = {}, action) {
+export function user(state = {
+  products: ['content', 'media']
+}, action) {
   switch(action.type) {
     case FETCHING_USER:
       // TODO show loading state?
