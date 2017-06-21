@@ -7,9 +7,9 @@ import GlobalAccountMenu from '../global-account-menu'
 import GlobalMenu from '../global-menu'
 import GlobalActions from '../global-actions'
 
-import CodeEditorMenu from '../../../code-editor/code-editor-menu'
-import ContentEditorMenu from '../../../content-editor/content-editor-menu'
-import MediaMenu from '../../../media/media-menu'
+import CodeEditorMenu from '../../../apps/code-editor/code-editor-menu'
+import ContentEditorMenu from '../../../apps/content-editor/content-editor-menu'
+import MediaMenu from '../../../apps/media/media-menu'
 
 export default class GlobalSidebar extends Component {
   componentWillMount() {

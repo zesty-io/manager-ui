@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import cx from 'classnames'
 import styles from './content-editor-menu.less'
-import {injectReducer} from '../_shell/store'
+import {injectReducer} from '../../shell/store'
 
 import {sets} from './store/sets'
 import {items} from './store/items'

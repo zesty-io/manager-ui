@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom'
 import {Provider} from 'react-redux'
 import {BrowserRouter, Redirect, Route} from 'react-router-dom'
 
-import {store} from './apps/_shell/store'
-import AppShell from './apps/_shell'
+import {store} from './shell/store'
+import AppShell from './shell'
 
 class PrivateRoute extends React.Component {
   render() {
