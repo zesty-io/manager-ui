@@ -1,6 +1,6 @@
 import {applyMiddleware, combineReducers, createStore} from 'redux'
 import thunkMiddleware from 'redux-thunk'
-import createLogger from 'redux-logger'
+import {createLogger} from 'redux-logger'
 
 import {user} from './user'
 import {site} from './site'
