@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import cx from 'classnames'
-import styles from './code-editor-menu.less'
+import styles from './CodeEditorMenu.less'
 
 export default class CodeEditorMenu extends Component {
   componentWillMount() {

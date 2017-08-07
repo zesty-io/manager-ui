@@ -1,2 +1,2 @@
-import ContentEditorApp from './content-editor'
+import ContentEditorApp from './ContentEditor'
 export default ContentEditorApp

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import styles from './content-editor-view.less'
+import styles from './ContentEditorView.less'
 
 export default class ContentEditorView extends Component {
   componentWillMount() {

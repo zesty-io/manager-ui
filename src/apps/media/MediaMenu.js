@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import cx from 'classnames'
-import styles from './media-menu.less'
+import styles from './MediaMenu.less'
 
 export default class MediaMenu extends Component {
   componentWillMount() {

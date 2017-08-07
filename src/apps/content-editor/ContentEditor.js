@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import {Switch, Redirect, Route} from 'react-router-dom'
-import styles from './content-editor.less'
+import styles from './ContentEditor.less'
 
-import ContentEditorMenu from './content-editor-menu'
-import ContentEditorView from './content-editor-view'
-import ContentEditorActions from './content-editor-actions'
+import ContentEditorMenu from './ContentEditorMenu'
+import ContentEditorView from './ContentEditorView'
+import ContentEditorActions from './ContentEditorActions'
 
 class ContentEditor extends Component {
   constructor(props) {
