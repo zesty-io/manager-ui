@@ -35,6 +35,13 @@
   overflow: hidden;
   width: 100%;
 
+  display: grid;
+  grid-template-columns: 160px 1fr;
+
+  @media (max-width: 1400px) {
+    grid-template-columns: 60px 1fr;
+  }
+
   .AppLoader {
     flex: 2;
     z-index: 1;

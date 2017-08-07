@@ -1,18 +1,13 @@
 @import "../../styles/colors.less";
 .GlobalSidebar {
   border-right: 1px solid #2d3644;
-  max-width: 10rem;
-  min-width: 5rem;
-  flex: 1;
-  // flex-grow: 1;
-  // flex-shrink: 2;
+  flex-basis: 160px;
   position: relative;
   display: flex;
   z-index: 2;
 
   @media (max-width: 1300px) {
-    max-width: 4rem;
-    min-width: 3rem;
+    flex-basis: 60px;
   }
 
   .topMenu {
