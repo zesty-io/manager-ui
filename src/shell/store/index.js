@@ -12,7 +12,7 @@ const loggerMiddleware = createLogger({
 })
 
 function createReducer(asyncReducers) {
-  return combineReducers({
+  let initialReducers = {
     entities: () => {
       return {
         sets: {},
@@ -23,7 +23,11 @@ function createReducer(asyncReducers) {
     },
     user,
     site,
-    ui,
+    ui
+  }
+
+  return combineReducers({
+    ...initialReducers,
     ...asyncReducers
   })
 }
