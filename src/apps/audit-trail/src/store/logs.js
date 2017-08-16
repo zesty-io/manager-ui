@@ -1,4 +1,5 @@
 import deepFreeze from '../utility/deepFreeze'
+import request from '../../../../utility/request'
 
 export const FETCHING_LOGS = 'FETCHING_LOGS'
 export const FETCH_LOGS_SUCCESS = 'FETCH_LOGS_SUCCESS'

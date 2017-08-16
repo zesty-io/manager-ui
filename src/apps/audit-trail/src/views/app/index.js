@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import styles from './styles.less'
 
-import {injectReducer} from '../../../../_shell/store'
+import {injectReducer} from '../../../../../shell/store'
 
 import AuditControls from '../../components/controls'
 import Log from '../../components/log'
@@ -18,8 +18,7 @@ import {settings} from '../../store/settings'
 class AuditApp extends Component {
   constructor(props) {
     super(props)
-
-    console.log('constructor', this.context)
+    console.log('AuditApp:constructor', this)
   }
   componentWillMount() {
     console.log('AuditApp:componentWillMount', this)
@@ -39,7 +38,7 @@ class AuditApp extends Component {
       }
     })
 
-    // this.props.dispatch(getLogs())
+    this.props.dispatch(getLogs())
   }
   renderLogs() {
     console.log('renderLogs', this)
