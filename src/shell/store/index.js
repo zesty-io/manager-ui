@@ -42,8 +42,7 @@ function configureStore(initialState = {}) {
     )
   )
 
-  // Allow for injecting reducers
-  // after app bundles load
+  // Keep a reference of injected reducers
   // @see https://stackoverflow.com/a/33044701
   store.asyncReducers = {}
   return store
