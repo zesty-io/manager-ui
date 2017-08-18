@@ -88,16 +88,37 @@
   <script src="bundle.core.js"></script>
 
   <!--
-  TODO: the app shell should determine which apps are needed
-  and load their bundles via a service workeer
+  These are base applications every user has access to.
   -->
   <link href="bundle.content-editor-app.css" type="text/css" rel="stylesheet" />
   <script src="bundle.content-editor-app.js"></script>
-  <link href="bundle.audit-app.css" type="text/css" rel="stylesheet" />
-  <script src="bundle.audit-app.js"></script>
   <link href="bundle.media-app.css" type="text/css" rel="stylesheet" />
   <script src="bundle.media-app.js"></script>
 
+  <!--
+  TODO: the app shell should determine which apps are needed
+  and load their bundles via a service workeer
+  -->
+  <link href="bundle.analytics-app.css" type="text/css" rel="stylesheet" />
+  <script src="bundle.analytics-app.js" async></script>
+  <link href="bundle.audit-app.css" type="text/css" rel="stylesheet" />
+  <script src="bundle.audit-app.js" async></script>
+  <link href="bundle.code-editor-app.css" type="text/css" rel="stylesheet" />
+  <script src="bundle.code-editor-app.js" async></script>
+  <link href="bundle.forms-app.css" type="text/css" rel="stylesheet" />
+  <script src="bundle.forms-app.js" async></script>
+  <link href="bundle.leads-app.css" type="text/css" rel="stylesheet" />
+  <script src="bundle.leads-app.js" async></script>
+  <link href="bundle.schema-app.css" type="text/css" rel="stylesheet" />
+  <script src="bundle.schema-app.js" async></script>
+  <link href="bundle.seo-app.css" type="text/css" rel="stylesheet" />
+  <script src="bundle.seo-app.js" async></script>
+  <link href="bundle.settings-app.css" type="text/css" rel="stylesheet" />
+  <script src="bundle.settings-app.js" async></script>
+  <link href="bundle.social-app.css" type="text/css" rel="stylesheet" />
+  <script src="bundle.social-app.js" async></script>
+
+  <!-- Load the app shell -->
   <script src="bundle.shell.js"></script>
 </body>
 </html>

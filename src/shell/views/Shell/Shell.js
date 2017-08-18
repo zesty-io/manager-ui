@@ -31,11 +31,11 @@ class Shell extends Component {
         <main className={styles.AppLoader} onMouseEnter={this.hideGlobalSubMenu.bind(this)}>
           <Switch>
 
-            <Route path="/audit-trail" component={AuditTrailApp} />
             <Route path="/content" component={ContentEditorApp} />
             <Route path="/media" component={MediaApp} />
 
             {/*
+            <Route path="/audit-trail" component={AuditTrailApp} />
             <Route path="/analytics" component={AnalyticsApp} />
             <Route path="/code" component={CodeEditorApp} />
             <Route path="/forms" component={FormsApp} />
