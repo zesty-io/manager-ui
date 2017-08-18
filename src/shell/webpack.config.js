@@ -5,12 +5,12 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const env = new webpack.EnvironmentPlugin(['NODE_ENV'])
 const extractLess = new ExtractTextPlugin({
-    filename: "build/bundle.manager-app.css",
+    filename: "../../build/bundle.shell.css",
     disable: process.env.NODE_ENV === "development"
 })
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './index.js',
   devtool: 'cheap-module-source-map',
   externals: {
     'react': 'React',
@@ -22,7 +22,7 @@ module.exports = {
     'redux-thunk': 'ReduxThunk'
   },
   output: {
-    filename: 'build/bundle.manager-app.js'
+    filename: '../../build/bundle.shell.js'
   },
   resolve: {
     modules: ['node_modules', 'src'],

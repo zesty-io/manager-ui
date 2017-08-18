@@ -3,7 +3,7 @@
 const webpack = require('webpack')
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const extractLess = new ExtractTextPlugin({
-    filename: "../../../build/bundle.audit-app.css",
+    filename: "../../../build/bundle.content-editor-app.css",
     disable: process.env.NODE_ENV === "development"
 })
 
@@ -21,7 +21,7 @@ module.exports = {
     'redux-thunk': 'ReduxThunk'
   },
   output: {
-    filename: '../../../build/bundle.audit-app.js'
+    filename: '../../../build/bundle.content-editor-app.js'
   },
   resolve: {
     modules: ['node_modules', 'src'],

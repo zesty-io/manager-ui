@@ -8,16 +8,16 @@ module.exports = {
   output: {
     filename: '../../build/bundle.vendors.js'
   },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /(node_modules)/,
-        loader: 'babel-loader',
-        query: {
-          presets: ['react', 'es2015', 'stage-2']
-        }
-      }
-    ]
-  }
+  // module: {
+  //   rules: [
+  //     {
+  //       test: /\.js$/,
+  //       exclude: /(node_modules)/,
+  //       loader: 'babel-loader',
+  //       query: {
+  //         presets: ['react', 'es2015', 'stage-2']
+  //       }
+  //     }
+  //   ]
+  // }
 }

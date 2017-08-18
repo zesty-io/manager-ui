@@ -1,2 +1,2 @@
 import MediaApp from './Media'
-export default MediaApp
+window.MediaApp = MediaApp
