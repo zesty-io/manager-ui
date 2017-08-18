@@ -1,2 +1,2 @@
 import Seo from './Seo'
-export default Seo
+window.SeoApp = Seo

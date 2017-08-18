@@ -1,2 +1,2 @@
 import CodeEditorApp from './CodeEditor'
-export default CodeEditorApp
+window.CodeEditorApp = CodeEditorApp

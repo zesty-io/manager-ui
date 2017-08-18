@@ -1,2 +1,2 @@
 import Forms from './Forms'
-export default Forms
+window.FormsApp = Forms

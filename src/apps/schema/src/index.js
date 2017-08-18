@@ -1,2 +1,2 @@
 import Schema from './Schema'
-export default Schema
+window.SchemaApp = Schema

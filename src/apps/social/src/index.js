@@ -1,2 +1,2 @@
 import Social from './Social'
-export default Social
+window.SocialApp = Social

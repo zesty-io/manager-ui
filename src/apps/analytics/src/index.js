@@ -1,2 +1,2 @@
 import Analytics from './Analytics'
-export default Analytics
+window.AnalyticsApp = Analytics
