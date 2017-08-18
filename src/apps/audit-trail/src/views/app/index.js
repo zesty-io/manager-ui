@@ -3,17 +3,17 @@ import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import styles from './styles.less'
 
-import {injectReducer} from '../../../../../shell/store'
+import {injectReducer} from 'shell/store'
 
-import AuditControls from '../../components/controls'
-import Log from '../../components/log'
-import Pagination from '../../components/pagination'
+import AuditControls from 'components/controls'
+import Log from 'components/log'
+import Pagination from 'components/pagination'
 
-import {getLogs} from '../../store/logs'
-import {logs} from '../../store/logs'
-import {loadingLogs} from '../../store/loadingLogs'
-import {inViewLogs} from '../../store/inViewLogs'
-import {settings} from '../../store/settings'
+import {getLogs} from 'store/logs'
+import {logs} from 'store/logs'
+import {loadingLogs} from 'store/loadingLogs'
+import {inViewLogs} from 'store/inViewLogs'
+import {settings} from 'store/settings'
 
 class AuditApp extends Component {
   constructor(props) {

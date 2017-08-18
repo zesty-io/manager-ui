@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import styles from './styles.less'
-import MD5 from '../../utility/md5'
-import timeSince from '../../utility/timeSince'
+import MD5 from 'utility/md5'
+import timeSince from 'utility/timeSince'
 
 class Log extends Component {
   getGravatar(email, size) {

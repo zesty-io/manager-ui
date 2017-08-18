@@ -2,14 +2,14 @@ import React, { Component } from 'react'
 import styles from './GlobalSidebar.less'
 import cx from 'classnames'
 
-import GlobalAccount from '../global-account'
-import GlobalAccountMenu from '../global-account-menu'
-import GlobalMenu from '../global-menu'
-import GlobalActions from '../global-actions'
+import GlobalAccount from 'shell/components/global-account'
+import GlobalAccountMenu from 'shell/components/global-account-menu'
+import GlobalMenu from 'shell/components/global-menu'
+import GlobalActions from 'shell/components/global-actions'
 
-import CodeEditorMenu from '../../../apps/code-editor/CodeEditorMenu'
-import ContentEditorMenu from '../../../apps/content-editor/ContentEditorMenu'
-import MediaMenu from '../../../apps/media/MediaMenu'
+import CodeEditorMenu from 'apps/code-editor/CodeEditorMenu'
+import ContentEditorMenu from 'apps/content-editor/ContentEditorMenu'
+import MediaMenu from 'apps/media/MediaMenu'
 
 export default class GlobalSidebar extends Component {
   componentWillMount() {

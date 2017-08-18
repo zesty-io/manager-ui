@@ -22,6 +22,10 @@ module.exports = {
   output: {
     filename: 'build/bundle.manager-app.js'
   },
+  resolve: {
+    modules: ['node_modules', 'src'],
+    extensions: ['.js', '.jsx'],
+  },
   plugins: [env, extractLess],
   module: {
     rules: [

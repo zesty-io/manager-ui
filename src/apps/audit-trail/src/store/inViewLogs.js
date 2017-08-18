@@ -1,4 +1,4 @@
-import searchProps from '../utility/searchProps'
+import searchProps from 'utility/searchProps'
 import {FETCH_LOGS_SUCCESS} from './logs'
 
 export const SEARCH_LOGS = 'SEARCH_LOGS'
