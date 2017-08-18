@@ -19,12 +19,18 @@ fs.readdirSync(src)
         // ensure path has package.json
         if (!fs.existsSync(path.join(appPath, 'package.json'))) return
 
-        console.log('BUILDING: '+appPath)
+        console.log('START: '+appPath)
 
         // install folder
-        cp.spawn('npm', ['run', 'build'], {
+        cp.spawn('npm', ['run', 'start'], {
             env: process.env,
             cwd: appPath,
             stdio: 'inherit'
         })
     })
+
+// cp.spawn('npm', ['run', 'start'], {
+//   env: process.env,
+//   cwd: root,
+//   stdio: 'inherit'
+// })
