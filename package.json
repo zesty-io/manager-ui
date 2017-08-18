@@ -9,35 +9,27 @@
     "build": "node bin/build",
     "build:dev": "export NODE_ENV=\"development\" && ./node_modules/.bin/webpack --watch & npm run serve",
     "build:prod": "export NODE_ENV=\"production\" && ./node_modules/.bin/webpack --progress -p",
-    "serve": "./node_modules/.bin/serve build --port 9000 --single",
-    "test": "./node_modules/.bin/ava tests"
+    "serve": "./node_modules/.bin/serve build --port 9000 --single"
   },
   "author": "Stuart Runyan<stuart@zesty.io>",
   "license": "UNLICENSED",
   "dependencies": {
     "classnames": "2.2.5",
-    "prop-types": "15.5.10",
-    "react": "15.6.1",
-    "react-dom": "15.6.1",
-    "react-redux": "5.0.5",
-    "react-router": "4.1.1",
-    "react-router-dom": "4.1.1",
-    "redux": "3.7.1",
-    "redux-thunk": "2.2.0"
+    "prop-types": "15.5.10"
   },
   "devDependencies": {
-    "babel-cli": "6.24.1",
+    "babel-cli": "6.26.0",
     "babel-loader": "7.1.1",
     "babel-preset-es2015": "6.24.1",
     "babel-preset-react": "6.24.1",
     "babel-preset-stage-2": "6.24.1",
-    "css-loader": "0.28.4",
-    "extract-text-webpack-plugin": "2.1.2",
+    "css-loader": "0.28.5",
+    "extract-text-webpack-plugin": "3.0.0",
     "less": "2.7.2",
-    "less-loader": "4.0.4",
+    "less-loader": "4.0.5",
     "redux-logger": "3.0.6",
-    "serve": "6.0.0",
+    "serve": "6.0.6",
     "style-loader": "0.18.2",
-    "webpack": "2.6.1"
+    "webpack": "3.5.5"
   }
 }

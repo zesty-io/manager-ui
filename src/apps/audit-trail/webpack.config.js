@@ -14,6 +14,8 @@ module.exports = {
     'react': 'React',
     'react-dom': 'ReactDOM',
     'react-redux': 'ReactRedux',
+    'react-router': 'ReactRouter',
+    'react-router-dom': 'ReactRouterDOM',
     'redux': 'Redux',
     'redux-thunk': 'ReduxThunk'
   },
