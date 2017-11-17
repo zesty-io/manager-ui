@@ -1,7 +1,7 @@
 import {combineReducers} from 'redux'
 
 export const site = combineReducers({
-  site_zuid: 'xxxxxxxx',
+  site_zuid: '8-45a294a-96t789', //grow.acorns.com
   settings
 })
 

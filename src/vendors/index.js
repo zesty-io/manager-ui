@@ -1,3 +1,4 @@
+import moment from 'moment'
 import cx from 'classnames'
 import React from 'react'
 import ReactDOM from 'react-dom'
@@ -15,3 +16,4 @@ window.ReactRouter = ReactRouter
 window.ReactRouterDOM = ReactRouterDOM
 window.Redux = Redux
 window.ReduxThunk = ReduxThunk
+window.moment = moment

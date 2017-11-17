@@ -33,7 +33,7 @@ class AuditApp extends Component {
     this.props.dispatch({
       type: 'APP_SETTINGS',
       settings: {
-        siteZuid: 'xxxxx1',
+        siteZuid: '8-45a294a-96t789',
         SITES_SERVICE: 'http://svc.zesty.localdev:3018/sites-service'
       }
     })
@@ -42,7 +42,7 @@ class AuditApp extends Component {
   }
   renderLogs() {
     console.log('renderLogs', this)
-    let logs = Object.keys(this.props.inViewLogs)
+    let logs = Object.keys(this.props.inViewLogs || {})
 
     if (logs.length) {
       return logs.map(zuid => {
@@ -61,9 +61,9 @@ class AuditApp extends Component {
           <Loader />
           <h1>LOADING AUDIT TRAIL</h1>
         </div>
-        {/*<AuditControls logCount={Object.keys(this.props.inViewLogs).length} />*/}
+        {<AuditControls logCount={Object.keys(this.props.inViewLogs || {}).length} />}
         <section className={styles.logList}>
-          {/*this.renderLogs()*/}
+          {this.renderLogs()}
         </section>
         <footer className={styles.paginationWrap}>
           <Pagination />
