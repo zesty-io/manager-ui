@@ -23,6 +23,12 @@ export default class ContentEditorView extends Component {
         </header>
         <main className={styles.content}>
         Content App
+
+        <form>
+           <textarea col="10" row="10">TEST</textarea>
+
+        </form>
+
         </main>
       </section>
     )
