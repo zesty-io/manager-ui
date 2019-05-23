@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node bin/build",
     "start": "node bin/start & npm run serve",
-    "serve": "npx cross-env NODE_ENV=development serve build --port 9000 --single"
+    "serve": "npx cross-env NODE_ENV=development serve build -l 9000 --single"
   },
   "author": "",
   "license": "UNLICENSED",
@@ -47,7 +47,7 @@
     "pretty-quick": "^1.11.0",
     "react-test-renderer": "16.8.6",
     "redux-logger": "3.0.6",
-    "serve": "6.3.1",
+    "serve": "11.0.0",
     "style-loader": "0.23.1",
     "webpack": "4.32.2",
     "webpack-cli": "^3.3.2",
