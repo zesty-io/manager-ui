@@ -1,32 +1,38 @@
-import React, { Component } from 'react'
-import cx from 'classnames'
-import styles from './styles.less'
+import React, { Component } from "react";
+import cx from "classnames";
+import styles from "./styles.less";
 
-import {toggleAccountsMenu} from 'shell/store/ui/global-accounts-menu'
-import {subMenuLoad} from 'shell/store/ui/global-sub-menu'
+import { toggleAccountsMenu } from "shell/store/ui/global-accounts-menu";
+import { subMenuLoad } from "shell/store/ui/global-sub-menu";
 
 export default class GlobalAccount extends Component {
   constructor(props) {
-    super(props)
-    this.showAccountsMenu = this.showAccountsMenu.bind(this)
-    this.hideAccountsMenu = this.hideAccountsMenu.bind(this)
+    super(props);
+    this.showAccountsMenu = this.showAccountsMenu.bind(this);
+    this.hideAccountsMenu = this.hideAccountsMenu.bind(this);
   }
   render() {
     return (
       <section
-        className={cx(styles.accountMenu, (this.props.accountsMenuVisible ? styles.show : styles.hide))}
+        className={cx(
+          styles.accountMenu,
+          this.props.accountsMenuVisible ? styles.show : styles.hide
+        )}
         onMouseEnter={this.showAccountsMenu}
-        onMouseLeave={this.hideAccountsMenu}>
-
+        onMouseLeave={this.hideAccountsMenu}
+      >
         <header className={styles.user}>
           <h1>
-            <i className={cx(styles.icon, "fa fa-user-circle-o")} aria-hidden="true"></i>
+            <i
+              className={cx(styles.icon, "fa fa-user-circle-o")}
+              aria-hidden="true"
+            />
             Stuart Runyan
           </h1>
         </header>
 
         <main className={styles.siteSelector}>
-          <Select selection={{value: 'xxxxx1', html: 'alphauniverse.com'}}>
+          <Select selection={{ value: "xxxxx1", html: "alphauniverse.com" }}>
             <Option value="xxxxx1" text="alphauniverse.com" />
             <Option value="xxxxx2" text="alphauniverse.com" />
             <Option value="xxxxx3" text="alphauniverse.com" />
@@ -49,26 +55,36 @@ export default class GlobalAccount extends Component {
         <menu className={styles.accountActions}>
           <ul className={styles.linkList}>
             <li className={styles.link}>
-              <i className={cx(styles.icon, "fa fa-tachometer")} aria-hidden="true"></i>Dashboard
+              <i
+                className={cx(styles.icon, "fa fa-tachometer")}
+                aria-hidden="true"
+              />
+              Dashboard
             </li>
             <li className={styles.link}>
-              <i className={cx(styles.icon, "fa fa-life-ring")} aria-hidden="true"></i>Support
+              <i
+                className={cx(styles.icon, "fa fa-life-ring")}
+                aria-hidden="true"
+              />
+              Support
             </li>
             <li className={cx(styles.link, styles.logout)}>
-              <i className={cx(styles.icon, "fa fa-sign-out")} aria-hidden="true"></i>Logout
+              <i
+                className={cx(styles.icon, "fa fa-sign-out")}
+                aria-hidden="true"
+              />
+              Logout
             </li>
           </ul>
         </menu>
       </section>
-    )
+    );
   }
   showAccountsMenu() {
-    this.props.dispatch(subMenuLoad(''))
-    this.props.dispatch(toggleAccountsMenu(true))
+    this.props.dispatch(subMenuLoad(""));
+    this.props.dispatch(toggleAccountsMenu(true));
   }
   hideAccountsMenu() {
-    this.props.dispatch(toggleAccountsMenu(false))
+    this.props.dispatch(toggleAccountsMenu(false));
   }
 }
-
-

@@ -1,16 +1,16 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import cx from 'classnames'
-import styles from './ContentEditorMenu.less'
-import {injectReducer} from 'shell/store'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import cx from "classnames";
+import styles from "./ContentEditorMenu.less";
+import { injectReducer } from "shell/store";
 
-import {sets} from './store/sets'
-import {items} from './store/items'
+import { sets } from "./store/sets";
+import { items } from "./store/items";
 
 export default class ContentEditorMenu extends Component {
   componentWillMount() {
-    injectReducer(this.context.store, 'sets', sets)
-    injectReducer(this.context.store, 'items', items)
+    // injectReducer(this.context.store, 'sets', sets)
+    // injectReducer(this.context.store, 'items', items)
   }
   render() {
     return (
@@ -28,11 +28,15 @@ export default class ContentEditorMenu extends Component {
             <li className={styles.bin}>
               <h1 className={styles.title}>
                 <span className={styles.text}>Pages</span>
-                <Button><i className="fa fa-plus" aria-hidden="true"></i>New</Button>
+                <Button>
+                  <i className="fa fa-plus" aria-hidden="true" />
+                  New
+                </Button>
               </h1>
               <ul className={styles.groupList}>
                 <li className={styles.group}>Homepage</li>
-                <li className={styles.group}>Articles
+                <li className={styles.group}>
+                  Articles
                   <ul className={styles.groupList}>
                     <li className={styles.group}>Authors</li>
                     <li className={styles.group}>Categories</li>
@@ -45,7 +49,10 @@ export default class ContentEditorMenu extends Component {
             <li className={styles.bin}>
               <h1 className={styles.title}>
                 <span className={styles.text}>DataSets</span>
-                <Button><i className="fa fa-plus" aria-hidden="true"></i>New</Button>
+                <Button>
+                  <i className="fa fa-plus" aria-hidden="true" />
+                  New
+                </Button>
               </h1>
               <ul className={styles.groupList}>
                 <li className={styles.group}>Products</li>
@@ -54,7 +61,7 @@ export default class ContentEditorMenu extends Component {
           </ul>
         </main>
       </section>
-    )
+    );
   }
 }
 
@@ -62,4 +69,4 @@ export default class ContentEditorMenu extends Component {
 // on the component context
 ContentEditorMenu.contextTypes = {
   store: PropTypes.object.isRequired
-}
+};

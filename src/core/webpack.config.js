@@ -1,49 +1,82 @@
-'use strict'
+"use strict";
 
-const webpack = require('webpack')
+const webpack = require("webpack");
+const path = require("path");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const extractLess = new ExtractTextPlugin({
-    filename: "../../build/bundle.core.css",
-    disable: process.env.NODE_ENV === "development"
-})
+  filename: "../../../build/bundle.core.css"
+  // disable: process.env.NODE_ENV === 'development'
+});
+const WebpackBar = require("webpackbar");
 
 module.exports = {
-  entry: './index.js',
-  devtool: 'cheap-module-source-map',
-  externals: {
-    'react': 'React'
-  },
+  entry: "./index.js",
+  devtool: "cheap-module-source-map",
+  mode: process.env.NODE_ENV || "development",
   output: {
-    filename: '../../build/bundle.core.js'
+    filename: "../../../build/bundle.core.js"
   },
-  plugins: [extractLess],
+  resolve: {
+    symlinks: false // Used for development with npm link
+  },
+  externals: {
+    react: "React",
+    "react-dom": "ReactDOM",
+    "react-router": "ReactRouter",
+    "react-router-dom": "ReactRouterDOM",
+    "react-redux": "ReactRedux",
+    redux: "Redux",
+    "redux-thunk": "ReduxThunk",
+    moment: "moment",
+    "moment-timezone": "moment"
+  },
+  plugins: [
+    extractLess,
+    new webpack.optimize.ModuleConcatenationPlugin()
+    // new WebpackBar({
+    //   name: "core"
+    // })
+  ],
   module: {
     rules: [
       {
         test: /\.less$/,
         use: extractLess.extract({
-          use: [{
-            loader: 'css-loader',
-            options: {
-              modules: true,
-              localIdentName: '[local]--[hash:base64:5]'
+          use: [
+            {
+              loader: "css-loader",
+              options: {
+                modules: true,
+                localIdentName: "[local]--[hash:base64:5]"
+              }
+            },
+            {
+              loader: "less-loader"
             }
-          }, {
-            loader: 'less-loader'
-          }],
-          fallback: 'style-loader'
+          ]
+        })
+      },
+      {
+        test: /\.css$/,
+        use: extractLess.extract({
+          use: [
+            {
+              loader: "css-loader"
+            }
+          ]
         })
       },
       {
         test: /\.js$/,
         exclude: /(node_modules)/,
-        use: {
-            loader: 'babel-loader',
-            options: {
-                presets: ['react', 'es2015', 'stage-2']
-            }
+        loader: "babel-loader",
+        query: {
+          presets: ["@babel/preset-env", "@babel/preset-react"],
+          plugins: [
+            ["@babel/plugin-proposal-class-properties", { loose: false }]
+          ]
         }
       }
     ]
   }
-}
+};
