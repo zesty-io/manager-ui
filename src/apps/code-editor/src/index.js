@@ -1,2 +1,2 @@
-import CodeEditorApp from './CodeEditor'
-window.CodeEditorApp = CodeEditorApp
+import CodeEditorApp from "./CodeEditor";
+window.CodeEditorApp = CodeEditorApp;

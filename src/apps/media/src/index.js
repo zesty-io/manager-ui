@@ -1,2 +1,2 @@
-import MediaApp from './Media'
-window.MediaApp = MediaApp
+import MediaApp from "./Media";
+window.MediaApp = MediaApp;

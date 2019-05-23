@@ -1,9 +1,9 @@
-import React, { Component } from 'react'
-import styles from './ContentEditorActions.less'
+import React, { Component } from "react";
+import styles from "./ContentEditorActions.less";
 
 export default class ContentEditorActions extends Component {
   componentWillMount() {
-    console.log('ContentEditorActions:componentWillMount')
+    console.log("ContentEditorActions:componentWillMount");
   }
   render() {
     return (
@@ -12,6 +12,6 @@ export default class ContentEditorActions extends Component {
           <Button>Publish</Button>
         </main>
       </section>
-    )
+    );
   }
 }

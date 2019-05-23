@@ -1,21 +1,17 @@
-import React, { Component } from 'react'
-import {connect} from 'react-redux'
-import {Switch, Redirect, Route} from 'react-router-dom'
-import styles from './Settings.less'
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { Switch, Redirect, Route } from "react-router-dom";
+import styles from "./Settings.less";
 
 class Settings extends Component {
   componentWillMount() {
-    console.log('Settings:componentWillMount')
+    console.log("Settings:componentWillMount");
   }
   render() {
-    return (
-      <section className={styles.Settings}>
-        Settings App
-      </section>
-    )
+    return <section className={styles.Settings}>Settings App</section>;
   }
 }
 
-const SettingsApp = connect(state => state)(Settings)
+const SettingsApp = connect(state => state)(Settings);
 
-export default SettingsApp
+export default SettingsApp;

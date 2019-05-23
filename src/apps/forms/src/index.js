@@ -1,2 +1,2 @@
-import Forms from './Forms'
-window.FormsApp = Forms
+import Forms from "./Forms";
+window.FormsApp = Forms;

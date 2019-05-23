@@ -1,2 +1,2 @@
-import Seo from './Seo'
-window.SeoApp = Seo
+import Seo from "./Seo";
+window.SeoApp = Seo;

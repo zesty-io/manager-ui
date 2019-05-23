@@ -1,2 +1,2 @@
-import ContentEditorApp from './ContentEditor'
-window.ContentEditorApp = ContentEditorApp
+import ContentEditorApp from "./ContentEditor";
+window.ContentEditorApp = ContentEditorApp;

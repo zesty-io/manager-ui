@@ -1,17 +1,17 @@
-import React from 'react'
-import renderer from 'react-test-renderer'
-import App from './index.js'
+import React from "react";
+import renderer from "react-test-renderer";
+import App from "./index.js";
 
-import {createStore, combineReducers, applyMiddleware, compose} from 'redux'
+import { createStore, combineReducers, applyMiddleware, compose } from "redux";
 
 const reducer = function() {
-  return {}
-}
-const reducers = combineReducers({reducer})
-const store = createStore(reducers)
+  return {};
+};
+const reducers = combineReducers({ reducer });
+const store = createStore(reducers);
 
-test('App mounts', () => {
-  const component = renderer.create(<App store={store}/>);
+test("App mounts", () => {
+  const component = renderer.create(<App store={store} />);
   let tree = component.toJSON();
 
   expect(tree).toMatchSnapshot();

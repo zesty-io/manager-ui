@@ -1,17 +1,17 @@
 export function sets(state = {}, action) {
-  switch(action.type) {
+  switch (action.type) {
     default:
       // return state
       return {
-        'xxxx1': {
-          name: 'Page Set'
+        xxxx1: {
+          name: "Page Set"
         },
-        'xxxx2': {
-          name: 'Template Set'
+        xxxx2: {
+          name: "Template Set"
         },
-        'xxxx3': {
-          name: 'Data Set'
+        xxxx3: {
+          name: "Data Set"
         }
-      }
+      };
   }
 }

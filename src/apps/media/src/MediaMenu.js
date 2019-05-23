@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
-import cx from 'classnames'
-import styles from './MediaMenu.less'
+import React, { Component } from "react";
+import cx from "classnames";
+import styles from "./MediaMenu.less";
 
 export default class MediaMenu extends Component {
   componentWillMount() {
-    console.log('MediaMenu:componentWillMount')
+    console.log("MediaMenu:componentWillMount");
   }
   render() {
     return (
@@ -15,7 +15,8 @@ export default class MediaMenu extends Component {
         <main className={styles.content}>
           <ButtonGroup>
             <Button className={styles.upload}>
-              <i className="fa fa-plus" aria-hidden="true"></i>Upload File
+              <i className="fa fa-plus" aria-hidden="true" />
+              Upload File
             </Button>
           </ButtonGroup>
           <ul className={styles.binList}>
@@ -23,7 +24,8 @@ export default class MediaMenu extends Component {
               <h1 className={styles.title}>Site Media</h1>
               <ul className={styles.groupList}>
                 <li className={styles.group}>Hero Banners</li>
-                <li className={styles.group}>Product Shots
+                <li className={styles.group}>
+                  Product Shots
                   <ul className={styles.groupList}>
                     <li className={styles.group}>Cameras</li>
                     <li className={styles.group}>T.V. Sets</li>
@@ -62,6 +64,6 @@ export default class MediaMenu extends Component {
           </ul>
         </main>
       </section>
-    )
+    );
   }
 }

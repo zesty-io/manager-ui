@@ -1,2 +1,2 @@
-import Analytics from './Analytics'
-window.AnalyticsApp = Analytics
+import Analytics from "./Analytics";
+window.AnalyticsApp = Analytics;

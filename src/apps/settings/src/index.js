@@ -1,2 +1,2 @@
-import Settings from './Settings'
-window.SettingsApp = Settings
+import Settings from "./Settings";
+window.SettingsApp = Settings;

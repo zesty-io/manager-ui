@@ -1,6 +1,6 @@
 export function items(state = {}, action) {
-  switch(action.type) {
+  switch (action.type) {
     default:
-      return state
+      return state;
   }
 }

@@ -1,2 +1,2 @@
-import Schema from './Schema'
-window.SchemaApp = Schema
+import Schema from "./Schema";
+window.SchemaApp = Schema;

@@ -1,2 +1,2 @@
-import Leads from './Leads'
-window.LeadsApp = Leads
+import Leads from "./Leads";
+window.LeadsApp = Leads;
