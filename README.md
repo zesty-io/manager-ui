@@ -16,3 +16,5 @@ In order to avoid the confusion of sub-bundles specificying different versions t
 This means all sub dependency declarations are resolved, per npm default behaviour of traversing up the project until it finds a `node_modules`, at the root `node_modules` directory.
 
 
+**Notes**
+- TinyMCE loads assets from our host. These will need to be available from this shell.
