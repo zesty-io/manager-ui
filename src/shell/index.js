@@ -18,11 +18,9 @@ PrivateRoute.defaultProps = {
 ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
-      <div>
-        <PrivateRoute>
-          <Route path="/" component={Shell} />
-        </PrivateRoute>
-      </div>
+      <PrivateRoute>
+        <Route path="/" component={Shell} />
+      </PrivateRoute>
     </BrowserRouter>
   </Provider>,
   document.getElementById("root")

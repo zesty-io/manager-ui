@@ -4,7 +4,7 @@ const webpack = require("webpack");
 const path = require("path");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const extractLess = new ExtractTextPlugin({
-  filename: "../../../../../build/bundle.analytics-app.css"
+  filename: "../../../../build/bundle.analytics-app.css"
   // disable: process.env.NODE_ENV === 'development'
 });
 const WebpackBar = require("webpackbar");
@@ -15,7 +15,7 @@ module.exports = {
   devtool: "cheap-module-source-map",
   mode: process.env.NODE_ENV || "development",
   output: {
-    filename: "../../../../../build/bundle.analytics-app.js"
+    filename: "../../../../build/bundle.analytics-app.js"
   },
   resolve: {
     symlinks: false, // Used for development with npm link
