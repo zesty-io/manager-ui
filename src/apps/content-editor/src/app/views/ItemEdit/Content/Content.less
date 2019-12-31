@@ -1,0 +1,25 @@
+.Content {
+  display: flex;
+  height: calc(100vh - 64px - 9px - 60px);
+  overflow: scroll;
+  flex-direction: column;
+
+  .MainEditor {
+    display: flex;
+    flex-direction: row;
+    .Editor {
+      width: 60vw;
+      padding: 0;
+
+      &.NewItem {
+        width: 85vw;
+      }
+    }
+    .Actions {
+      flex-basis: 25vw;
+      position: relative;
+      padding-right: 16px;
+      background: #f2f7fc;
+    }
+  }
+}

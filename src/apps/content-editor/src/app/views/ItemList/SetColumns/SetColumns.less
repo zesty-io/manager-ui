@@ -1,0 +1,69 @@
+@import "~@zesty-io/core/colors.less";
+.TableHeader {
+  display: flex;
+  z-index: 1;
+  height: 55px;
+
+  .wrap {
+    background: #4c5568;
+    color: @zesty-white;
+    display: flex;
+    flex: 1;
+    height: 100%;
+    align-items: center;
+    // min-height: 60px;
+  }
+
+  .Cell {
+    background: #4c5568;
+    // Rows have a 1px left border on their cells
+    // so each header needs this as well to get matching widths
+    border-left: 1px solid #4c5568;
+    cursor: pointer;
+    line-height: 16px;
+    padding: 8px 12px;
+    width: 100px;
+  }
+  .PublishedHeader {
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .textareaHeader,
+  .textHeader,
+  .wysiwyg_basicHeader,
+  .wysiwyg_advancedHeader,
+  .markdownHeader,
+  .article_writerHeader,
+  .uuidHeader {
+    width: 400px;
+  }
+  .one_to_oneHeader,
+  .one_to_manyHeader,
+  .internal_linkHeader,
+  .linkHeader {
+    width: 300px;
+  }
+  .dateHeader,
+  .datetimeHeader {
+    width: 220px;
+  }
+  .dropdownHeader {
+    width: 200px;
+  }
+  .filesHeader {
+    width: 200px;
+  }
+  .sortHeader {
+    width: 150px;
+  }
+  .toggleHeader,
+  .yes_noHeader {
+    width: 140px;
+  }
+  .imagesHeader {
+    width: 130px;
+  }
+}

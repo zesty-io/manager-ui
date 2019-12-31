@@ -1,4 +1,4 @@
-export default function MD5(s) {
+export function MD5(s) {
   function L(k, d) {
     return (k << d) | (k >>> (32 - d));
   }

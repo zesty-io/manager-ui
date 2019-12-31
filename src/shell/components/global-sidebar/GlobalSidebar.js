@@ -8,8 +8,8 @@ import GlobalMenu from "shell/components/global-menu";
 import GlobalActions from "shell/components/global-actions";
 
 // import CodeEditorMenu from 'apps/code-editor/CodeEditorMenu'
-import ContentEditorMenu from "apps/content-editor/src/ContentEditorMenu";
-import MediaMenu from "apps/media/src/MediaMenu";
+// import ContentEditorMenu from "apps/content-editor/src/ContentEditorMenu";
+// import MediaMenu from "apps/media/src/MediaMenu";
 
 export default class GlobalSidebar extends Component {
   componentWillMount() {
@@ -32,22 +32,22 @@ export default class GlobalSidebar extends Component {
           {/*
           <CodeEditorMenu className={cx(styles.appMenu, (this.props.ui.globalSubMenu.location === 'code' ? styles.show : styles.hide))} />
           */}
-          <ContentEditorMenu
+          {/* <ContentEditorMenu
             className={cx(
               styles.appMenu,
               this.props.ui.globalSubMenu.location === "content"
                 ? styles.show
                 : styles.hide
             )}
-          />
-          <MediaMenu
+          /> */}
+          {/* <MediaMenu
             className={cx(
               styles.appMenu,
               this.props.ui.globalSubMenu.location === "media"
                 ? styles.show
                 : styles.hide
             )}
-          />
+          /> */}
         </div>
         <GlobalAccountMenu
           dispatch={this.props.dispatch}

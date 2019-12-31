@@ -1,0 +1,50 @@
+@import "~@zesty-io/core/colors.less";
+
+.ItemNavigation {
+  display: flex;
+  flex-direction: row;
+  height: 28px;
+
+  li {
+    display: flex;
+    align-content: center;
+    .Item {
+      margin: 0;
+      padding: 0 24px;
+      font-size: 18px;
+      font-weight: 400;
+      text-shadow: none;
+      letter-spacing: 1px;
+      color: @zesty-light-gray;
+      transition: all 0.1s linear;
+      &.Selected {
+        color: @zesty-white;
+        border-bottom: 2px solid @zesty-white;
+      }
+      &:hover {
+        color: @zesty-white;
+      }
+    }
+    &.Missing {
+      &::after {
+        content: " ";
+        height: 14px;
+        width: 14px;
+        border-radius: 14px;
+        position: relative;
+        top: 0;
+        right: 20px;
+        background-color: @zesty-orange;
+      }
+      &::before {
+        content: "!";
+        position: relative;
+        color: white;
+        top: -5px;
+        right: -87px;
+        z-index: 1;
+        text-rendering: geometricPrecision;
+      }
+    }
+  }
+}

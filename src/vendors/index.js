@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment from "moment-timezone";
 import cx from "classnames";
 import React from "react";
 import ReactDOM from "react-dom";

@@ -6,7 +6,7 @@ import { BrowserRouter, Redirect, Route } from "react-router-dom";
 import { store } from "shell/store";
 import Shell from "./views/Shell";
 
-window.ZESTY_STORE = store;
+window.ZESTY_REDUX_STORE = store;
 
 class PrivateRoute extends React.Component {
   render() {

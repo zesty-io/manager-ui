@@ -32,10 +32,10 @@ export default connect(state => state)(
     componentWillMount() {
       console.log("AuditApp:componentWillMount", this);
 
-      injectReducer(window.ZESTY_STORE, "logs", logs);
-      injectReducer(window.ZESTY_STORE, "loadingLogs", loadingLogs);
-      injectReducer(window.ZESTY_STORE, "inViewLogs", inViewLogs);
-      injectReducer(window.ZESTY_STORE, "settings", settings);
+      injectReducer(window.ZESTY_REDUX_STORE, "logs", logs);
+      injectReducer(window.ZESTY_REDUX_STORE, "loadingLogs", loadingLogs);
+      injectReducer(window.ZESTY_REDUX_STORE, "inViewLogs", inViewLogs);
+      injectReducer(window.ZESTY_REDUX_STORE, "settings", settings);
 
       // TODO these settings need to be
       // provided by the app-shell

@@ -1,0 +1,29 @@
+@import "~@zesty-io/core/colors.less";
+
+.Header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 8px 38px 0 32px;
+  background-color: #4b5468; // @zesty-tab-blue;// #5b667d;
+
+  .ItemNav {
+    display: flex;
+    flex-direction: column;
+    .Path {
+      margin: 0 0 8px 0;
+      & > a:first-child {
+        margin-left: 0px;
+      }
+    }
+    .PreviewUrl {
+      color: @zesty-grey;
+    }
+  }
+
+  .I18N {
+    min-width: 250px;
+    z-index: 30;
+  }
+}

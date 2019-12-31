@@ -1,4 +1,4 @@
-export default function searchProps(obj, term) {
+export function searchProps(obj, term) {
   if (typeof obj === "object") {
     return Object.keys(obj).some(key => {
       const value = obj[key];

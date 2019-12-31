@@ -1,0 +1,37 @@
+@import "~@zesty-io/core/colors.less";
+
+.Actions {
+  display: flex;
+  flex-wrap: nowrap;
+
+  & > * {
+    margin: 0 0 0 8px !important;
+  }
+  & div:first-child {
+    margin-left: 0 !important;
+  }
+
+  .Publish {
+    button {
+      margin: 0;
+      i {
+        line-height: 24px;
+      }
+    }
+    button:first-child {
+      border-radius: 3px 0 0 3px;
+      border-right: 1px solid #fff;
+    }
+    button:last-child {
+      border-radius: 0 3px 3px 0;
+    }
+    .clock {
+      i {
+        font-size: 120%;
+      }
+    }
+    .Scheduled {
+      background-color: @zesty-orange;
+    }
+  }
+}

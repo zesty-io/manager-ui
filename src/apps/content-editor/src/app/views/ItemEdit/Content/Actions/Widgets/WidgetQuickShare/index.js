@@ -1,0 +1,1 @@
+export { WidgetQuickShare } from "./WidgetQuickShare";

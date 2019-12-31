@@ -1,0 +1,26 @@
+@import "~@zesty-io/core/colors.less";
+
+.PublishStatusCell {
+  align-items: center;
+  border-bottom: 1px solid rgba(26, 32, 44, 0.12);
+  display: flex;
+  justify-content: center;
+  flex-basis: 40px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  margin: 0;
+
+  &:hover {
+    background-color: #f7f7f7;
+  }
+
+  i.Published {
+    color: @zesty-green;
+  }
+  i.Scheduled {
+    color: @zesty-orange;
+  }
+  i.Unpublished {
+    color: @zesty-grey;
+  }
+}

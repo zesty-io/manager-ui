@@ -1,0 +1,66 @@
+@import "~@zesty-io/core/colors.less";
+
+@boxsize: 30px;
+@borderColor: rgba(26, 32, 44, 0.12);
+@box-width: 460px;
+.Flyout {
+  position: absolute;
+  top: 74px;
+  margin-left: -18px;
+  z-index: 50;
+  width: @box-width;
+
+  &::before {
+    background-color: white;
+    width: @boxsize;
+    height: @boxsize;
+    position: absolute;
+    top: 1px;
+    left: 197px; // was 23 if on left side
+    z-index: 51;
+    transform: rotate(45deg);
+    content: " ";
+    border-left: @borderColor 1px solid;
+    border-top: @borderColor 1px solid;
+    border-radius: 4px 0 0 0;
+  }
+
+  .Card {
+    box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.3);
+
+    .Warn {
+      color: @zesty-orange;
+    }
+
+    strong {
+      font-weight: bold;
+    }
+    em {
+      font-style: italic;
+    }
+  }
+
+  @media screen and (max-width: 1280px) {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    width: auto;
+    margin-left: auto;
+
+    &::before {
+      display: none;
+    }
+
+    .Card {
+      box-shadow: 0px 0px 400px 400px rgba(0, 0, 0, 0.5);
+      padding: 0px;
+      margin: 0px;
+      position: absolute;
+      left: 50%;
+      margin-left: @box-width / -2;
+      margin-top: 100px;
+    }
+  }
+}

@@ -1,0 +1,59 @@
+import react from "react";
+import moment from "moment-timezone";
+
+import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import { Divider } from "@zesty-io/core/Divider";
+import { Button } from "@zesty-io/core/Button";
+import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
+import { Url } from "@zesty-io/core/Url";
+
+import styles from "./LockedItem.less";
+export const LockedItem = ({
+  timestamp,
+  userFirstName,
+  userLastName,
+  userEmail,
+  itemName,
+  handleUnlock,
+  goBack
+}) => {
+  return (
+    <div className={styles.Wrapper}>
+      <Card className={styles.Card}>
+        <CardHeader className={styles.Header}>
+          <i className={`fa fa-lock ${styles.backgroundIcon}`} />
+          <h1>Item Locked</h1>
+        </CardHeader>
+        <CardContent className={styles.Center}>
+          <p>
+            The item '{itemName}' is being edited by {userFirstName}{" "}
+            {userLastName} since{" "}
+            {moment.unix(timestamp).format("MMMM Do YYYY, [at] h:mm a")}
+          </p>
+          <Divider />
+          <p>
+            You can contact {userFirstName} via
+            <Url href={`mailto:${userEmail}`}>{userEmail}</Url>
+          </p>
+          <Divider />
+          <p>
+            To ignore this warning and possibly overwrite {userFirstName}'s
+            changes you may unlock this content
+          </p>
+        </CardContent>
+        <CardFooter className={styles.Footer}>
+          <span className={styles.alignRight}>
+            <ButtonGroup>
+              <Button kind="cancel" onClick={goBack}>
+                Go Back
+              </Button>
+              <Button kind="save" onClick={handleUnlock}>
+                <i className="fa fa-unlock" /> Unlock
+              </Button>
+            </ButtonGroup>
+          </span>
+        </CardFooter>
+      </Card>
+    </div>
+  );
+};

@@ -1,0 +1,253 @@
+import React, { Component, Fragment } from "react";
+import moment from "moment-timezone";
+
+import {
+  publishItem,
+  unschedule
+} from "../../../../../../../store/contentModelItems";
+import { notify } from "shell/store/notifications";
+
+import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core";
+import { FieldTypeDate } from "@zesty-io/core";
+import { Button } from "@zesty-io/core";
+import { ButtonGroup } from "@zesty-io/core";
+import { FieldTypeDropDown } from "@zesty-io/core";
+
+const DISPLAY_FORMAT = "MMMM Do YYYY, [at] h:mm a";
+const UTC_FORMAT = "YYYY-MM-DD HH:mm:ss";
+
+/**
+Important Notes!!!
+
+FieldTypeDate uses react-flatpickr (i.e. Flatpickr) which emits selected dates
+as date objects in ISO (i.e. UTC) format. 1 We convert emited date objects
+into the local time without timezone information.
+
+Moments are stateful with regards to timezone, utc, etc... so we always create
+a new moment from a date string in order to avoid confusion.
+**/
+import styles from "./ScheduleFlyout.less";
+export default class ScheduleFlyout extends Component {
+  componentDidMount() {
+    const userTimezone = moment.tz.guess();
+    this.setState({
+      scheduling: false,
+      userTimezone: userTimezone,
+      selectedTimezone: userTimezone,
+      selectedTime: moment().format(UTC_FORMAT),
+      timezones: moment.tz.names().map((el, i) => {
+        return {
+          value: el,
+          html: el
+        };
+      })
+    });
+  }
+
+  handleCancelPublish = () => {
+    this.setState({
+      scheduling: true
+    });
+
+    this.props
+      .dispatch(
+        unschedule(
+          this.props.item.meta.contentModelZUID,
+          this.props.item.meta.ZUID,
+          this.props.item.scheduling.ZUID
+        )
+      )
+      .then(res => {
+        this.setState({
+          scheduling: false
+        });
+
+        if (res.error) {
+          notify({
+            message: `There was an error unscheduling version ${this.props.item.scheduling.version}: ${res.error}`,
+            kind: "error"
+          });
+        } else {
+          notify({
+            message: `Unscheduled version ${this.props.item.scheduling.version}`,
+            kind: "save"
+          });
+        }
+      })
+      .catch(() => {
+        this.setState({
+          scheduling: false
+        });
+
+        notify({
+          message: `Error unscheduling version ${this.props.item.scheduling.version}`,
+          kind: "error"
+        });
+      });
+  };
+
+  handleSchedulePublish = () => {
+    this.setState({
+      scheduling: true
+    });
+
+    // Display timestamp to user in the selected timezone
+    const tzTime = moment
+      .tz(this.state.selectedTime, this.state.selectedTimezone)
+      .format(DISPLAY_FORMAT);
+
+    // Send to API as UTC string
+    // Order tz > utc > format is important
+    const utcTime = moment
+      .tz(this.state.selectedTime, this.state.selectedTimezone)
+      .utc()
+      .format(UTC_FORMAT);
+
+    this.props
+      .dispatch(
+        publishItem(
+          this.props.item.meta.contentModelZUID,
+          this.props.item.meta.ZUID,
+          {
+            publish_at: utcTime,
+            version_num: this.props.item.meta.version
+          }
+        )
+      )
+      .then(() => {
+        this.setState({
+          scheduling: false
+        });
+        notify({
+          message: `Scheduled version ${this.props.item.meta.version} to publish on ${tzTime} in the ${this.state.selectedTimezone} timezone`,
+          kind: "save"
+        });
+      })
+      .catch(() => {
+        this.setState({
+          scheduling: false
+        });
+        notify({
+          message: `Error scheduling version ${this.props.item.meta.version}`,
+          kind: "error"
+        });
+      });
+  };
+
+  handleChangePublish = (name, value) => {
+    // Convert emited date object into the local time without timezone information
+    // moment creates local time objects by default
+    const selectedTime = moment(value).format(UTC_FORMAT);
+    return this.setState({
+      selectedTime
+    });
+  };
+
+  handleChangeTimezone = (name, value) => {
+    return this.setState({
+      selectedTimezone: value
+    });
+  };
+
+  render() {
+    return (
+      this.props.isOpen &&
+      (this.props.item.scheduling && this.props.item.scheduling.isScheduled ? (
+        <section className={styles.Flyout}>
+          <Card className={styles.Card}>
+            <CardHeader>
+              <i className="fa fa-calendar" aria-hidden="true" />
+              &nbsp;Scheduled Publishing
+            </CardHeader>
+            <CardContent>
+              <p className={styles.Warn}>
+                <i className="fa fa-exclamation-triangle" aria-hidden="true" />{" "}
+                <strong>
+                  New versions can not be published while there is a version
+                  scheduled.
+                </strong>
+              </p>
+              <p>
+                Version {this.props.item.scheduling.version} is scheduled to
+                publish on{" "}
+                <em>
+                  {/*
+                  publishAt from API is in UTC.
+
+                  Order of moment > utc > local > format is important
+                  Since the API returns a UTC timestamp we need it in UTC
+                  before setting it to the users timezone and formatting.
+
+                  We can not display it in the selected timezone when it was created because
+                  that information is not persisted to the API so we always display it after
+                  the fact in the users current timezone
+                */}
+                  {moment
+                    .utc(this.props.item.scheduling.publishAt)
+                    .tz(this.state.userTimezone)
+                    .format(DISPLAY_FORMAT)}
+                </em>{" "}
+                in the <em>{this.state.userTimezone}</em> timezone.
+              </p>
+            </CardContent>
+            <CardFooter>
+              <ButtonGroup>
+                <Button
+                  // kind="warn"
+                  disabled={this.state.scheduling}
+                  onClick={this.handleCancelPublish}
+                >
+                  <i className="fa fa-ban" aria-hidden="true" />
+                  Cancel Publishing Version {this.props.item.scheduling.version}
+                </Button>
+                <Button kind="cancel" onClick={this.props.toggleOpen}>
+                  <i className="fa fa-times" aria-hidden="true" />
+                  Close
+                </Button>
+              </ButtonGroup>
+            </CardFooter>
+          </Card>
+        </section>
+      ) : (
+        <section className={styles.Flyout}>
+          <Card className={styles.Card}>
+            <CardHeader>Schedule Publishing</CardHeader>
+            <CardContent>
+              <FieldTypeDropDown
+                label="Timezone where this will be published"
+                name="selectedTimezone"
+                onChange={this.handleChangeTimezone}
+                value={this.state.selectedTimezone}
+                options={this.state.timezones}
+              />
+              <FieldTypeDate
+                type="date"
+                name="publish"
+                label="Publish date and time"
+                future={true}
+                value={this.state.selectedTime}
+                datatype={"datetime"}
+                onChange={this.handleChangePublish}
+              />
+            </CardContent>
+            <CardFooter>
+              <ButtonGroup>
+                <Button
+                  kind="save"
+                  id="SchedulePublishButton"
+                  onClick={this.handleSchedulePublish}
+                  disabled={this.state.scheduling}
+                >
+                  Schedule Publishing Version {this.props.item.meta.version}
+                </Button>
+                <Button kind="cancel" onClick={this.props.toggleOpen}>
+                  Close
+                </Button>
+              </ButtonGroup>
+            </CardFooter>
+          </Card>
+        </section>
+      ))
+    );
+  }
+}

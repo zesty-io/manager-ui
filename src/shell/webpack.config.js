@@ -21,6 +21,7 @@ module.exports = {
     symlinks: false, // Used for development with npm link
     alias: {
       shell: path.resolve(__dirname, "../shell"),
+      utility: path.resolve(__dirname, "../utility/"),
       apps: path.resolve(__dirname, "../apps")
     }
   },

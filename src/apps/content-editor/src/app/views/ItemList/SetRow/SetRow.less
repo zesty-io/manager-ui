@@ -1,0 +1,39 @@
+@import "~@zesty-io/core/colors.less";
+
+.SetRow {
+  display: flex;
+  min-height: 40px;
+  cursor: pointer;
+
+  .Cells {
+    color: inherit;
+    border-bottom: 1px solid rgba(26, 32, 44, 0.12);
+    display: flex;
+    flex: 1;
+    text-decoration: none;
+
+    &:hover {
+      box-shadow: 0px 2px 2px 0px rgba(26, 32, 44, 0.12),
+        0 -2px 2px 0 rgba(26, 32, 44, 0.12);
+      // background-color: #f2f7fc;
+      background-color: #f7f7f7;
+    }
+  }
+
+  &.Dirty {
+    .Cells {
+      background-color: #fffde2;
+    }
+  }
+}
+
+.Cell {
+  border-left: 1px solid rgba(26, 32, 44, 0.12);
+  padding: 8px 12px;
+}
+.DefaultCell {
+  width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
