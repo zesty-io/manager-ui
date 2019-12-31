@@ -12,6 +12,7 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
+    "@zesty-io/core": "^0.16.7",
     "classnames": "2.2.6",
     "css-loader": "3.4.0",
     "moment": "2.24.0",

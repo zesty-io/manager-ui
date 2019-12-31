@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 import cx from "classnames";
+
+import { Select, Option } from "@zesty-io/core/Select";
+
 import styles from "./styles.less";
 
 import { toggleAccountsMenu } from "shell/store/ui/global-accounts-menu";
@@ -32,7 +35,10 @@ export default class GlobalAccount extends Component {
         </header>
 
         <main className={styles.siteSelector}>
-          <Select selection={{ value: "xxxxx1", html: "alphauniverse.com" }}>
+          <Select
+            name="instance"
+            selection={{ value: "xxxxx1", html: "alphauniverse.com" }}
+          >
             <Option value="xxxxx1" text="alphauniverse.com" />
             <Option value="xxxxx2" text="alphauniverse.com" />
             <Option value="xxxxx3" text="alphauniverse.com" />

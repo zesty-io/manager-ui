@@ -1,10 +1,12 @@
-import React, { Component } from 'react'
-import cx from 'classnames'
-import styles from './CodeEditorMenu.less'
+import React, { Component } from "react";
+import cx from "classnames";
 
+import { Search } from "@zesty-io/core/Search";
+
+import styles from "./CodeEditorMenu.less";
 export default class CodeEditorMenu extends Component {
   componentWillMount() {
-    console.log('CodeEditorMenu:componentWillMount')
+    console.log("CodeEditorMenu:componentWillMount");
   }
   render() {
     return (
@@ -33,6 +35,6 @@ export default class CodeEditorMenu extends Component {
           </ul>
         </main>
       </section>
-    )
+    );
   }
 }

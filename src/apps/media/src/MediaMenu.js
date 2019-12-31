@@ -1,5 +1,10 @@
 import React, { Component } from "react";
 import cx from "classnames";
+
+import { Search } from "@zesty-io/core/Search";
+import { Button } from "@zesty-io/core/Button";
+import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
+
 import styles from "./MediaMenu.less";
 
 export default class MediaMenu extends Component {

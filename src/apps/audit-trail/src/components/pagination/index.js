@@ -1,5 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+
+import { Button } from "@zesty-io/core/Button";
+import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
+
 import styles from "./styles.less";
 
 class Pagination extends Component {

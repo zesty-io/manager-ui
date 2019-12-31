@@ -1,9 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import styles from "./styles.less";
+
+import { Search } from "@zesty-io/core/Search";
+import { Button } from "@zesty-io/core/Button";
+import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 
 import { searchInViewLogs, filterInViewLogs } from "../../store/inViewLogs";
 
+import styles from "./styles.less";
 class AuditControls extends Component {
   handleFilter(evt) {
     this.props.dispatch(filterInViewLogs(evt.target.dataset.data));

@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+
+import { Button } from "@zesty-io/core/Button";
+
 import styles from "./ContentEditorActions.less";
 
 export default class ContentEditorActions extends Component {

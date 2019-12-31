@@ -1,12 +1,16 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
-import styles from "./ContentEditorMenu.less";
+
+import { Search } from "@zesty-io/core/Search";
+import { Button } from "@zesty-io/core/Button";
+
 import { injectReducer } from "shell/store";
 
 import { sets } from "./store/sets";
 import { items } from "./store/items";
 
+import styles from "./ContentEditorMenu.less";
 export default class ContentEditorMenu extends Component {
   componentWillMount() {
     // injectReducer(this.context.store, 'sets', sets)
