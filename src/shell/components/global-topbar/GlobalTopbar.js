@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { withRouter } from "react-router";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
+
+import { AppLink } from "@zesty-io/core/AppLink";
+import { Button } from "@zesty-io/core/Button";
+import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faQuestion,
   faBell,
-  faComment
+  faComment,
+  faAngleRight,
+  faShareAlt,
+  faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 
 import GlobalSearch from "shell/components/global-search";
@@ -27,44 +34,70 @@ export default withRouter(function GlobalTopbar(props) {
     // TODO store routes to local storage and reload on app start
   }, [props.location]);
 
+  const removeRoute = path => {
+    const removedRoute = routes.filter(route => route.pathname !== path);
+
+    // jump to the first route in our list after
+    props.history.push(removedRoute[0].pathname);
+
+    setRoutes(removedRoute);
+  };
+
   return (
     <section className={styles.GlobalTopbar}>
-      <div>
+      <div className={styles.GlobalSearch}>
         <h1 className={styles.InstanceName}>Instance Name</h1>
         <GlobalSearch dispatch={props.dispatch} />
       </div>
       <nav className={styles.QuickLinks}>
-        <ol>
+        <ol className={styles.Links}>
           {routes.map((route, i) => (
-            <li className={cx(i === 0 ? styles.active : null)}>
-              <Link
+            <li
+              key={i}
+              className={cx(styles.Route, i === 0 ? styles.active : null)}
+            >
+              <AppLink
                 to={`${route.pathname}${route.search}`}
-              >{`${route.pathname.slice(1)}`}</Link>
+              >{`${route.pathname.slice(1)}`}</AppLink>
+              <span
+                className={styles.Close}
+                onClick={() => removeRoute(route.pathname)}
+              >
+                <FontAwesomeIcon icon={faTimesCircle} />
+              </span>
             </li>
           ))}
         </ol>
-        <ol className={styles.breadcrumbs}>
+        <ol className={styles.BreadCrumbs}>
           <li>
-            <a href="">Crumb 1</a>
+            <FontAwesomeIcon icon={faShareAlt} />
           </li>
           <li>
-            <a href="">Crumb 2</a>
+            {/* <FontAwesomeIcon icon={faAngleRight} /> */}
+            <AppLink to={`/`}>Crumb 1</AppLink>
           </li>
           <li>
-            <a href="">Crumb 3</a>
+            <FontAwesomeIcon icon={faAngleRight} />{" "}
+            <AppLink to={`/`}>Crumb 1</AppLink>
+          </li>
+          <li>
+            <FontAwesomeIcon icon={faAngleRight} />{" "}
+            <AppLink to={`/`}>Crumb 1</AppLink>
           </li>
         </ol>
       </nav>
       <div className={styles.actions}>
-        <button title="Help">
-          <FontAwesomeIcon icon={faQuestion} />
-        </button>
-        <button title="Notice">
-          <FontAwesomeIcon icon={faBell} />
-        </button>
-        <button title="chat">
-          <FontAwesomeIcon icon={faComment} />
-        </button>
+        <ButtonGroup>
+          <Button title="Help">
+            <FontAwesomeIcon icon={faQuestion} />
+          </Button>
+          <Button title="Notice">
+            <FontAwesomeIcon icon={faBell} />
+          </Button>
+          <Button title="chat">
+            <FontAwesomeIcon icon={faComment} />
+          </Button>
+        </ButtonGroup>
       </div>
     </section>
   );

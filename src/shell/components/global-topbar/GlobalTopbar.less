@@ -4,32 +4,85 @@
   background-color: @globalMenuBkgColor;
   display: flex;
   min-height: 47px;
-  padding: 6px 16px 6px 8px;
 
-  .InstanceName {
-    font-size: 16px;
+  .GlobalSearch {
+    width: calc(320px - 24px);
+    padding: 6px;
+    .InstanceName {
+      font-size: 16px;
+    }
   }
 
   .QuickLinks {
-    flex: 1;
     overflow-x: scroll;
+    overflow-y: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
     ol {
       display: flex;
       li {
         list-style: none;
         a {
-          padding: 8px 16px;
+          text-shadow: none;
+          word-break: keep-all;
         }
 
-        .active {
+        &.active {
+          background-color: lighten(@globalMenuBkgColor, 5%);
+          a {
+            font-weight: bold;
+            color: #fff;
+          }
         }
       }
     }
-    .breadcrumbs {
+    .Links {
+      flex: 1;
+      li {
+        align-items: center;
+        display: flex;
+        border-left: 1px solid #212636;
+        border-right: 1px solid #0d1016;
+        padding: 0 8px;
+        a {
+          padding: 6px 12px 6px 8px;
+        }
+        .Close {
+          visibility: hidden;
+        }
+      }
+      li:first-child {
+        border-left: none;
+        border-right: none;
+        .Close {
+          visibility: visible;
+        }
+      }
+      li:hover,
+      li:active,
+      li:focus {
+        .Close {
+          visibility: visible;
+        }
+      }
+    }
+    .BreadCrumbs {
+      background-color: lighten(@globalMenuBkgColor, 5%);
       display: flex;
+      font-size: 12px;
+      padding: 4px 16px;
+      align-items: center;
+      a {
+        color: #fff;
+        // padding: 0;
+        padding: 8px 16px;
+      }
     }
   }
   .actions {
+    padding: 0 16px;
     display: flex;
     // max-width: 150px;
   }
