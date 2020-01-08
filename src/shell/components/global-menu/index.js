@@ -1,5 +1,19 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faEdit,
+  faImage,
+  faAddressCard,
+  faPuzzlePiece,
+  faCodeBranch,
+  faChartPie,
+  faChartLine,
+  faCheckSquare,
+  faCog
+} from "@fortawesome/free-solid-svg-icons";
+
 import styles from "./styles.less";
 
 import { subMenuLoad, subMenuTimer } from "shell/store/ui/global-sub-menu";
@@ -41,7 +55,7 @@ export default class GlobalMenu extends Component {
           onClick={this.hideMenu}
           onMouseEnter={this.showMenu}
         >
-          <i className="fa fa-pencil-square-o" aria-hidden="true" />
+          <FontAwesomeIcon icon={faEdit} />
           <span className={styles.title}>Content</span>
         </Link>
         <Link
@@ -51,7 +65,7 @@ export default class GlobalMenu extends Component {
           onClick={this.hideMenu}
           onMouseEnter={this.showMenu}
         >
-          <i className="fa fa-picture-o" aria-hidden="true" />
+          <FontAwesomeIcon icon={faImage} />
           <span className={styles.title}>Media</span>
         </Link>
         {/* <Link
@@ -69,7 +83,7 @@ export default class GlobalMenu extends Component {
           onClick={this.hideMenu}
           onMouseEnter={this.showMenu}
         >
-          <i className="fa fa-address-card-o" aria-hidden="true" />
+          <FontAwesomeIcon icon={faAddressCard} />
           <span className={styles.title}>Leads</span>
         </Link>
 
@@ -80,7 +94,7 @@ export default class GlobalMenu extends Component {
           onClick={this.hideMenu}
           onMouseEnter={this.showMenu}
         >
-          <i className="fa fa-puzzle-piece" aria-hidden="true" />
+          <FontAwesomeIcon icon={faPuzzlePiece} />
           <span className={styles.title}>Schema</span>
         </Link>
         <Link
@@ -90,7 +104,7 @@ export default class GlobalMenu extends Component {
           onClick={this.hideMenu}
           onMouseEnter={this.showMenu}
         >
-          <i className="fa fa-code-fork" aria-hidden="true" />
+          <FontAwesomeIcon icon={faCodeBranch} />
           <span className={styles.title}>Code</span>
         </Link>
 
@@ -101,7 +115,7 @@ export default class GlobalMenu extends Component {
           onClick={this.hideMenu}
           onMouseEnter={this.showMenu}
         >
-          <i className="fa fa-pie-chart" aria-hidden="true" />
+          <FontAwesomeIcon icon={faChartPie} />
           <span className={styles.title}>Analytics</span>
         </Link>
         <Link
@@ -110,7 +124,7 @@ export default class GlobalMenu extends Component {
           onClick={this.hideMenu}
           onMouseEnter={this.showMenu}
         >
-          <i className="fa fa-line-chart" aria-hidden="true" />
+          <FontAwesomeIcon icon={faChartLine} />
           <span className={styles.title}>SEO</span>
         </Link>
         <Link
@@ -119,7 +133,7 @@ export default class GlobalMenu extends Component {
           onClick={this.hideMenu}
           onMouseEnter={this.showMenu}
         >
-          <i className="fa fa-check-square-o" aria-hidden="true" />
+          <FontAwesomeIcon icon={faCheckSquare} />
           <span className={styles.title}>AuditTrail</span>
         </Link>
 
@@ -129,7 +143,7 @@ export default class GlobalMenu extends Component {
           onClick={this.hideMenu}
           onMouseEnter={this.showMenu}
         >
-          <i className="fa fa-cog" aria-hidden="true" />
+          <FontAwesomeIcon icon={faCog} />
           <span className={styles.title}>Settings</span>
         </Link>
       </menu>
