@@ -1,4 +1,7 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
+import { withRouter } from "react-router";
+import { Link } from "react-router-dom";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faQuestion,
@@ -9,31 +12,33 @@ import {
 import cx from "classnames";
 
 import styles from "./GlobalTopbar.less";
-export default function GlobalTopbar(props) {
+export default withRouter(function GlobalTopbar(props) {
+  const [routes, setRoutes] = useState([]);
+
+  useEffect(() => {
+    // Filter out the route that was just loaded if it was already
+    // in our route stack. This way it gets moved to the front and not duplicated
+    const removedRoute = routes.filter(
+      route => route.pathname !== props.location.pathname
+    );
+
+    setRoutes([props.location, ...removedRoute]);
+
+    // TODO store routes to local storage and reload on app start
+  }, [props.location]);
+
   return (
     <section className={styles.GlobalTopbar}>
       <h1 className={styles.InstanceName}>Instance Name</h1>
       <nav className={styles.quicklinks}>
         <ol>
-          <li>
-            <a href="">Page 1</a>
-            <small></small>
-          </li>
-          <li>
-            <a href="">Page 1</a>
-          </li>
-          <li>
-            <a href="">Page 1</a>
-          </li>
-          <li>
-            <a href="">Page 1</a>
-          </li>
-          <li>
-            <a href="">Page 1</a>
-          </li>
-          <li>
-            <a href="">Page 1</a>
-          </li>
+          {routes.map(route => (
+            <li>
+              <Link
+                to={`${route.pathname}${route.search}`}
+              >{`${route.pathname.slice(1)}`}</Link>
+            </li>
+          ))}
         </ol>
       </nav>
       <div className={styles.actions}>
@@ -49,4 +54,4 @@ export default function GlobalTopbar(props) {
       </div>
     </section>
   );
-}
+});
