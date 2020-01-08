@@ -1,5 +1,9 @@
 import React, { Component } from "react";
 import cx from "classnames";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMap, faEye } from "@fortawesome/free-solid-svg-icons";
+
 import styles from "./styles.less";
 
 export default class GlobalActions extends Component {
@@ -10,18 +14,21 @@ export default class GlobalActions extends Component {
     return (
       <div className={styles.GlobalActions}>
         <span className={styles.action}>
-          <i
+          {/* <i
             className={cx(styles.preview, "fa fa-map")}
             aria-hidden="true"
             title="Visual Sitemap"
-          />
+          /> */}
+
+          <FontAwesomeIcon icon={faMap} title="Visual Sitemap" />
         </span>
         <span className={styles.action}>
-          <i
+          {/* <i
             className={cx(styles.preview, "fa fa-eye")}
             aria-hidden="true"
             title="Live Preview"
-          />
+          /> */}
+          <FontAwesomeIcon icon={faEye} title="Live Preview" />
         </span>
         {/* <span className={styles.action}>
           <i
