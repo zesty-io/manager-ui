@@ -1,0 +1,31 @@
+@import "../../styles/colors.less";
+
+.GlobalTopbar {
+  background-color: @globalMenuBkgColor;
+  display: flex;
+  min-height: 49px;
+  padding: 16px;
+
+  .quicklinks {
+    flex: 1;
+    ol {
+      display: flex;
+      li {
+        list-style: none;
+        a {
+          padding: 8px 16px;
+        }
+      }
+    }
+  }
+  .actions {
+    display: flex;
+    // max-width: 150px;
+  }
+}
+
+@media (max-width: 1400px) {
+  .GlobalTopbar {
+    min-height: 34px;
+  }
+}
