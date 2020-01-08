@@ -19,9 +19,9 @@ export default class ContentEditorMenu extends Component {
   render() {
     return (
       <section className={cx(styles.ContentEditorMenu, this.props.className)}>
-        <header className={styles.head}>
+        {/* <header className={styles.head}>
           <Search placeholder="Search your content" />
-        </header>
+        </header> */}
         <main className={styles.content}>
           {/*Object.keys(this.props.sets).map(zuid => {
             let set = this.props.sets[zuid]

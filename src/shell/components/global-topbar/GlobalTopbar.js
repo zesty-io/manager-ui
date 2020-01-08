@@ -9,7 +9,7 @@ import {
   faComment
 } from "@fortawesome/free-solid-svg-icons";
 
-import cx from "classnames";
+import GlobalSearch from "shell/components/global-search";
 
 import styles from "./GlobalTopbar.less";
 export default withRouter(function GlobalTopbar(props) {
@@ -29,16 +29,30 @@ export default withRouter(function GlobalTopbar(props) {
 
   return (
     <section className={styles.GlobalTopbar}>
-      <h1 className={styles.InstanceName}>Instance Name</h1>
-      <nav className={styles.quicklinks}>
+      <div>
+        <h1 className={styles.InstanceName}>Instance Name</h1>
+        <GlobalSearch dispatch={props.dispatch} />
+      </div>
+      <nav className={styles.QuickLinks}>
         <ol>
-          {routes.map(route => (
-            <li>
+          {routes.map((route, i) => (
+            <li className={cx(i === 0 ? styles.active : null)}>
               <Link
                 to={`${route.pathname}${route.search}`}
               >{`${route.pathname.slice(1)}`}</Link>
             </li>
           ))}
+        </ol>
+        <ol className={styles.breadcrumbs}>
+          <li>
+            <a href="">Crumb 1</a>
+          </li>
+          <li>
+            <a href="">Crumb 2</a>
+          </li>
+          <li>
+            <a href="">Crumb 3</a>
+          </li>
         </ol>
       </nav>
       <div className={styles.actions}>

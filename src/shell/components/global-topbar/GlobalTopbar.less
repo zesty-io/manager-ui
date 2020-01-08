@@ -3,10 +3,14 @@
 .GlobalTopbar {
   background-color: @globalMenuBkgColor;
   display: flex;
-  min-height: 49px;
-  padding: 16px;
+  min-height: 47px;
+  padding: 6px 16px 6px 8px;
 
-  .quicklinks {
+  .InstanceName {
+    font-size: 16px;
+  }
+
+  .QuickLinks {
     flex: 1;
     overflow-x: scroll;
     ol {
@@ -16,7 +20,13 @@
         a {
           padding: 8px 16px;
         }
+
+        .active {
+        }
       }
+    }
+    .breadcrumbs {
+      display: flex;
     }
   }
   .actions {
@@ -27,6 +37,6 @@
 
 @media (max-width: 1400px) {
   .GlobalTopbar {
-    min-height: 34px;
+    min-height: 33px;
   }
 }
