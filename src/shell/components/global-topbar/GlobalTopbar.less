@@ -2,14 +2,17 @@
 
 .GlobalTopbar {
   background-color: @globalMenuBkgColor;
+  box-shadow: 0px 0px 3px @globalMenuBkgColor;
+
   display: flex;
   min-height: 47px;
 
   .GlobalSearch {
-    width: calc(320px - 24px);
-    padding: 6px 8px;
+    width: calc(350px - 32px);
+    padding: 6px 16px;
     .InstanceName {
       font-size: 16px;
+      font-size: 14px;
     }
     input {
       width: 100%;
@@ -36,7 +39,6 @@
         &.active {
           background-color: lighten(@globalMenuBkgColor, 5%);
           a {
-            font-weight: bold;
             color: #fff;
           }
         }

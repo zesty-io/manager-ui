@@ -19,9 +19,7 @@ export default connect(state => state)(function Shell(props) {
         className={styles.AppLoader}
         // onMouseEnter={this.hideGlobalSubMenu.bind(this)}
       >
-        <div className={styles.GlobalTopbar}>
-          <GlobalTopbar />
-        </div>
+        <GlobalTopbar />
         <div className={styles.SubApp}>
           <Switch>
             <Route path="/content" component={ContentEditorApp} />
