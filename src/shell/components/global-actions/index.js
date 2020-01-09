@@ -1,18 +1,52 @@
-import React, { Component } from "react";
-
+import React from "react";
+import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMap, faEye } from "@fortawesome/free-solid-svg-icons";
+import {
+  faMap,
+  faBell,
+  faComment,
+  faQuestion,
+  faEye
+} from "@fortawesome/free-solid-svg-icons";
+import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 
 import styles from "./styles.less";
 export default React.memo(function GlobalActions() {
+  // TODO load version number from package.json on build
+  const version = "0.0.0";
+
   return (
     <div className={styles.GlobalActions}>
-      <span className={styles.action}>
+      <ButtonGroup>
+        <span className={styles.action} title="Live preview">
+          <FontAwesomeIcon icon={faEye} />
+        </span>
+        <span className={styles.action} title="Instance notifications">
+          <FontAwesomeIcon icon={faBell} />
+        </span>
+        <span className={styles.action} title="Instance Chat">
+          <FontAwesomeIcon icon={faComment} />
+        </span>
+        <span className={styles.action} title="Help">
+          <FontAwesomeIcon icon={faQuestion} />
+        </span>
+      </ButtonGroup>
+
+      <span className={cx(styles.AppVersion)}>
+        <img
+          src="https://brand.zesty.io/zesty-io-logo.svg"
+          alt={`Zesty.io version ${version}`}
+          width="24px"
+          height="24px"
+        />
+        <span className={styles.VersionNumber}>{version}</span>
+      </span>
+      {/* <span className={styles.action}>
         <FontAwesomeIcon icon={faMap} title="Visual Sitemap" />
       </span>
       <span className={styles.action}>
         <FontAwesomeIcon icon={faEye} title="Live Preview" />
-      </span>
+      </span> */}
       {/* <span className={styles.action}>
         <i
           className={cx(styles.chat, "fa fa-comments-o")}

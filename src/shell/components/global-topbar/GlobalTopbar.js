@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { withRouter } from "react-router";
-// import { Link } from "react-router-dom";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Button } from "@zesty-io/core/Button";
@@ -10,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faQuestion,
   faBell,
+  faEye,
   faComment,
   faAngleRight,
   faShareAlt,
@@ -29,7 +29,8 @@ export default withRouter(function GlobalTopbar(props) {
       route => route.pathname !== props.location.pathname
     );
 
-    setRoutes([props.location, ...removedRoute]);
+    // Maximum of 25 route records
+    setRoutes([props.location, ...removedRoute].slice(0, 25));
 
     // TODO store routes to local storage and reload on app start
   }, [props.location]);
@@ -45,10 +46,7 @@ export default withRouter(function GlobalTopbar(props) {
 
   return (
     <section className={styles.GlobalTopbar}>
-      <div className={styles.GlobalSearch}>
-        <h1 className={styles.InstanceName}>Instance Name</h1>
-        <GlobalSearch dispatch={props.dispatch} />
-      </div>
+      <GlobalSearch className={styles.GlobalSearch} />
       <nav className={styles.QuickLinks}>
         <ol className={styles.Links}>
           {routes.map((route, i) => (
@@ -73,7 +71,6 @@ export default withRouter(function GlobalTopbar(props) {
             <FontAwesomeIcon icon={faShareAlt} />
           </li>
           <li>
-            {/* <FontAwesomeIcon icon={faAngleRight} /> */}
             <AppLink to={`/`}>Crumb 1</AppLink>
           </li>
           <li>
@@ -86,19 +83,22 @@ export default withRouter(function GlobalTopbar(props) {
           </li>
         </ol>
       </nav>
-      <div className={styles.actions}>
+      {/* <div className={styles.actions}>
         <ButtonGroup>
-          <Button title="Help">
-            <FontAwesomeIcon icon={faQuestion} />
-          </Button>
-          <Button title="Notice">
+          <span className={styles.action} title="Live preview">
+            <FontAwesomeIcon icon={faEye} />
+          </span>
+          <span className={styles.action} title="Instance notifications">
             <FontAwesomeIcon icon={faBell} />
-          </Button>
-          <Button title="chat">
+          </span>
+          <span className={styles.action} title="Instance Chat">
             <FontAwesomeIcon icon={faComment} />
-          </Button>
+          </span>
+          <span className={styles.action} title="Help">
+            <FontAwesomeIcon icon={faQuestion} />
+          </span>
         </ButtonGroup>
-      </div>
+      </div> */}
     </section>
   );
 });

@@ -6,11 +6,11 @@ import {
   faEdit,
   faImage,
   faAddressCard,
-  faPuzzlePiece,
+  faDatabase,
   faCodeBranch,
   faChartPie,
   faChartLine,
-  faCheckSquare,
+  faHistory,
   faCog
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -38,13 +38,9 @@ export default React.memo(function GlobalMenu(props) {
         <FontAwesomeIcon icon={faImage} />
         <span className={styles.title}>Media</span>
       </Link>
-      <Link className={styles.control} to="/leads">
-        <FontAwesomeIcon icon={faAddressCard} />
-        <span className={styles.title}>Leads</span>
-      </Link>
 
       <Link className={styles.build} to="/schema" title="Schema Editor">
-        <FontAwesomeIcon icon={faPuzzlePiece} />
+        <FontAwesomeIcon icon={faDatabase} />
         <span className={styles.title}>Schema</span>
       </Link>
       <Link className={styles.build} to="/code" title="Code Editor">
@@ -52,16 +48,21 @@ export default React.memo(function GlobalMenu(props) {
         <span className={styles.title}>Code</span>
       </Link>
 
+      <Link className={styles.control} to="/leads">
+        <FontAwesomeIcon icon={faAddressCard} />
+        <span className={styles.title}>Leads</span>
+      </Link>
       <Link className={styles.optimize} to="/analytics" title="Analytics">
         <FontAwesomeIcon icon={faChartPie} />
         <span className={styles.title}>Analytics</span>
       </Link>
+
       <Link className={styles.optimize} to="/seo">
         <FontAwesomeIcon icon={faChartLine} />
         <span className={styles.title}>SEO</span>
       </Link>
       <Link className={styles.optimize} to="/audit-trail">
-        <FontAwesomeIcon icon={faCheckSquare} />
+        <FontAwesomeIcon icon={faHistory} />
         <span className={styles.title}>AuditTrail</span>
       </Link>
 
