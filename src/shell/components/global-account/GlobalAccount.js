@@ -1,31 +1,25 @@
-import React, { Component } from 'react'
-import cx from 'classnames'
-import css from './GlobalAccount.less'
+import React from "react";
 
-import {toggleAccountsMenu} from 'shell/store/ui/global-accounts-menu'
-import {subMenuLoad} from 'shell/store/ui/global-sub-menu'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 
-export default class GlobalAccount extends Component {
-  constructor(props) {
-    super(props)
-    this.showAccountsMenu = this.showAccountsMenu.bind(this)
-    this.hideAccountsMenu = this.hideAccountsMenu.bind(this)
-  }
-  render() {
-    return (
-      <div
-        className={css.GlobalAccount}
-        onMouseEnter={this.showAccountsMenu}
-        onMouseLeave={this.hideAccountsMenu}>
-        <i className="fa fa-globe" aria-hidden="true"></i>
-      </div>
-    )
-  }
-  showAccountsMenu() {
-    this.props.dispatch(subMenuLoad(''))
-    this.props.dispatch(toggleAccountsMenu(true))
-  }
-  hideAccountsMenu() {
-    this.props.dispatch(toggleAccountsMenu(false))
-  }
-}
+import { toggleAccountsMenu } from "shell/store/ui/global-accounts-menu";
+import { subMenuLoad } from "shell/store/ui/global-sub-menu";
+
+import css from "./GlobalAccount.less";
+export default React.memo(function GlobalAccount(props) {
+  return (
+    <div
+      className={css.GlobalAccount}
+      onMouseEnter={() => {
+        props.dispatch(subMenuLoad(""));
+        props.dispatch(toggleAccountsMenu(true));
+      }}
+      onMouseLeave={() => {
+        props.dispatch(toggleAccountsMenu(false));
+      }}
+    >
+      <FontAwesomeIcon icon={faGlobe} />
+    </div>
+  );
+});
