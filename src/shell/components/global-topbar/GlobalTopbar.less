@@ -10,13 +10,6 @@
   .GlobalSearch {
     width: calc(350px - 32px);
     padding: 6px 16px;
-    .InstanceName {
-      font-size: 16px;
-      font-size: 14px;
-    }
-    input {
-      width: 100%;
-    }
   }
 
   .QuickLinks {
@@ -105,8 +98,16 @@
   }
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 1600px) {
   .GlobalTopbar {
     min-height: 33px;
+
+    .Links {
+      li {
+        a {
+          padding: 6px 12px 6px 8px;
+        }
+      }
+    }
   }
 }
