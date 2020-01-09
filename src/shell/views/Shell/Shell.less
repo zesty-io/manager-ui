@@ -25,11 +25,6 @@
   display: grid;
   grid-template-columns: 200px 1fr;
 
-  @media (max-width: 1600px) {
-    grid-template-columns: 60px 1fr;
-    font-size: 14px;
-  }
-
   scrollbar-color: @zesty-grey @zesty-light-grey;
   scrollbar-width: thin;
 
@@ -48,4 +43,11 @@
 
 .content {
   padding: 2rem;
+}
+
+@media (max-width: 2000px) {
+  .app {
+    grid-template-columns: 60px 1fr;
+    font-size: 12px;
+  }
 }
