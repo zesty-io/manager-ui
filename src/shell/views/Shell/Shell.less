@@ -2,34 +2,34 @@
 
 // Default App Scrollbar styles
 &::-webkit-scrollbar {
-    background-color: @zesty-field-blue;
-    width: 4px;
+  background-color: @zesty-field-blue;
+  width: 4px;
 }
 &::-webkit-scrollbar-button {
-    background-color: @zesty-field-blue;
+  background-color: @zesty-field-blue;
 }
 &::-webkit-scrollbar-track {
-    background-color: @zesty-field-blue;
+  background-color: @zesty-field-blue;
 }
 &::-webkit-scrollbar-track-piece {
-    background-color: @zesty-field-blue;
+  background-color: @zesty-field-blue;
 }
 &::-webkit-scrollbar-thumb {
-    // background-color: @zesty-tab-color;
-    background-color: rgb(153, 168, 195);
+  // background-color: @zesty-tab-color;
+  background-color: rgb(153, 168, 195);
 }
 &::-webkit-scrollbar-corner {
-    background-color: @zesty-field-blue;
+  background-color: @zesty-field-blue;
 }
 &::-webkit-resizer {
-    background-color: @zesty-field-blue;
+  background-color: @zesty-field-blue;
 }
 
 .app {
   background-color: @mainViewBkgColor;
   color: @zesty-grey;
   display: flex;
-  font-family: 'GibsonRegular', Arial, sans-serif;
+  font-family: "GibsonRegular", Arial, sans-serif;
   font-size: 1em;
   height: 100%;
   overflow: hidden;
@@ -45,6 +45,13 @@
   .AppLoader {
     flex: 2;
     z-index: 1;
+
+    .GlobalTopbar {
+      // height: 81px;
+    }
+    .SubApp {
+      height: calc(100vh - 81px);
+    }
   }
 }
 

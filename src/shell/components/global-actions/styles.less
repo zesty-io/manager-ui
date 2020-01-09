@@ -2,20 +2,35 @@
 .GlobalActions {
   background-color: @globalMenuBkgColor;
   margin: 0;
-  padding: 1rem 0;
-  position: relative;
+  padding: 16px 0;
+  // position: relative;
   width: 100%;
-  text-align: center;
-  font-size: 1.1em;
+  // text-align: center;
+  // font-size: 1.1em;
   border-top: 1px solid lighten(@globalMenuBkgColor, 5%);
 
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
+  // display: flex;
+  // justify-content: center;
+  // flex-wrap: wrap;
+
+  .AppVersion {
+    display: flex;
+    align-items: center;
+    margin: 8px;
+
+    img {
+      margin-right: 8px;
+    }
+  }
 
   .action {
     cursor: pointer;
-    margin: 0.5rem;
+    margin: 8px;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
 
     &:hover,
     &:focus,
@@ -23,23 +38,34 @@
       color: @zesty-blue;
     }
   }
-  .preview {
-    text-shadow: 1px 1px 1px #000;
-  }
-  .chat {
-    position: relative;
-    .notificationCount {
-      background-color: @zesty-red;
-      border-radius: 50%;
-      display: inline-block;
-      width: 14px;
-      position: absolute;
-      top: -3px;
-      right: -5px;
-      font-size: 0.6em;
-      font-family: 'Gibson', Arial;
-      padding: 0.1rem;
-      font-weight: bold;
+  // .preview {
+  //   text-shadow: 1px 1px 1px #000;
+  // }
+  // .chat {
+  //   position: relative;
+  //   .notificationCount {
+  //     background-color: @zesty-red;
+  //     border-radius: 50%;
+  //     display: inline-block;
+  //     width: 14px;
+  //     position: absolute;
+  //     top: -3px;
+  //     right: -5px;
+  //     font-size: 0.6em;
+  //     font-family: 'Gibson', Arial;
+  //     padding: 0.1rem;
+  //     font-weight: bold;
+  //   }
+  // }
+}
+
+@media (max-width: 1400px) {
+  .AppVersion {
+    img {
+      margin-right: 0;
+    }
+    .VersionNumber {
+      display: none;
     }
   }
 }

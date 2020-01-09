@@ -1,0 +1,110 @@
+@import "../../styles/colors.less";
+
+.GlobalTopbar {
+  background-color: @globalMenuBkgColor;
+  display: flex;
+  min-height: 47px;
+
+  .GlobalSearch {
+    width: calc(320px - 24px);
+    padding: 6px 8px;
+    .InstanceName {
+      font-size: 16px;
+    }
+    input {
+      width: 100%;
+    }
+  }
+
+  .QuickLinks {
+    // overflow-x: scroll;
+    // overflow-y: hidden;
+    overflow: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    ol {
+      display: flex;
+      li {
+        list-style: none;
+        a {
+          text-shadow: none;
+          word-break: keep-all;
+        }
+
+        &.active {
+          background-color: lighten(@globalMenuBkgColor, 5%);
+          a {
+            font-weight: bold;
+            color: #fff;
+          }
+        }
+      }
+    }
+    .Links {
+      flex: 1;
+      li {
+        align-items: center;
+        display: flex;
+        border-left: 1px solid #212636;
+        border-right: 1px solid #0d1016;
+        padding: 0 8px;
+        a {
+          padding: 6px 12px 6px 8px;
+        }
+        .Close {
+          cursor: pointer;
+          visibility: hidden;
+        }
+      }
+      li:first-child {
+        border-left: none;
+        border-right: none;
+        .Close {
+          visibility: visible;
+        }
+      }
+      li:hover,
+      li:active,
+      li:focus {
+        .Close {
+          visibility: visible;
+        }
+      }
+    }
+    .BreadCrumbs {
+      background-color: lighten(@globalMenuBkgColor, 5%);
+      display: flex;
+      font-size: 12px;
+      padding: 4px 16px;
+      align-items: center;
+      a {
+        color: #fff;
+        padding: 8px 16px;
+      }
+    }
+  }
+  .actions {
+    padding: 0 16px;
+    display: flex;
+    box-shadow: 0px 0px 10px #171b26;
+
+    .action {
+      cursor: pointer;
+      padding: 0 8px;
+      margin: 0;
+      &:hover,
+      &:focus,
+      &:active {
+        color: @zesty-blue;
+      }
+    }
+  }
+}
+
+@media (max-width: 1400px) {
+  .GlobalTopbar {
+    min-height: 33px;
+  }
+}

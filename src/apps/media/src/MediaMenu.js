@@ -14,9 +14,9 @@ export default class MediaMenu extends Component {
   render() {
     return (
       <section className={cx(styles.MediaMenu, this.props.className)}>
-        <header className={styles.head}>
+        {/* <header className={styles.head}>
           <Search placeholder="Search your media" />
-        </header>
+        </header> */}
         <main className={styles.content}>
           <ButtonGroup>
             <Button className={styles.upload}>
