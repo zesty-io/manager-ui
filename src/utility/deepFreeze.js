@@ -1,4 +1,4 @@
-export default function deepFreeze(obj) {
+export function deepFreeze(obj) {
   // Retrieve the property names defined on obj
   var propNames = Object.getOwnPropertyNames(obj);
 

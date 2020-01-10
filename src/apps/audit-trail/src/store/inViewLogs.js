@@ -1,17 +1,12 @@
-import searchProps from "utility/searchProps";
-import { FETCH_LOGS_SUCCESS } from "./logs";
-
-export const SEARCH_LOGS = "SEARCH_LOGS";
-export const FILTER_LOGS = "FILTER_LOGS";
+import { searchProps } from "utility/searchProps";
 
 // Reducer
 export function inViewLogs(state = {}, action) {
   switch (action.type) {
-    case FETCH_LOGS_SUCCESS:
+    case "FETCH_LOGS_SUCCESS":
       return action.data;
-      break;
 
-    case FILTER_LOGS:
+    case "FILTER_LOGS":
       console.log("filtering logs", action);
       // TODO filter based on time
       if (action.filter) {
@@ -22,9 +17,8 @@ export function inViewLogs(state = {}, action) {
       } else {
         return state;
       }
-      break;
 
-    case SEARCH_LOGS:
+    case "SEARCH_LOGS":
       if (!action.term) {
         return action.logs;
       } else {
@@ -41,11 +35,9 @@ export function inViewLogs(state = {}, action) {
 
         return matches;
       }
-      break;
 
     default:
       return state;
-      break;
   }
 }
 
@@ -54,7 +46,7 @@ export function searchInViewLogs(term) {
   return (dispatch, getState) => {
     const state = getState();
     dispatch({
-      type: SEARCH_LOGS,
+      type: "SEARCH_LOGS",
       logs: state.logs,
       term
     });
@@ -65,7 +57,7 @@ export function filterInViewLogs(filter) {
   return (dispatch, getState) => {
     const state = getState();
     dispatch({
-      type: FILTER_LOGS,
+      type: "FILTER_LOGS",
       logs: state.logs,
       filter
     });
