@@ -1,4 +1,3 @@
-export const APP_SETTINGS = "APP_SETTINGS";
 export function settings(
   state = {
     siteZuid: "",
@@ -6,7 +5,7 @@ export function settings(
   },
   action
 ) {
-  if (action.type === APP_SETTINGS) {
+  if (action.type === "APP_SETTINGS") {
     return action.settings;
   } else {
     return state;

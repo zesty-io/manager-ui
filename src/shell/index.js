@@ -1,21 +1,21 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import { BrowserRouter, Redirect, Route } from "react-router-dom";
+import { BrowserRouter, Route } from "react-router-dom";
 
 import { store } from "shell/store";
+
+import PrivateRoute from "./components/private-route";
 import Shell from "./views/Shell";
 
 window.ZESTY_REDUX_STORE = store;
 
-class PrivateRoute extends React.Component {
-  render() {
-    return this.props.loggedIn ? this.props.children : <Redirect to="/login" />;
-  }
-}
-PrivateRoute.defaultProps = {
-  loggedIn: true
-};
+// Some legacy code refers to this global which is an observable
+// NOTE: this needs to get refactored out
+window.zesty = riot.observable(store.getState());
+
+// interploated by webpack at build time
+window.CONFIG = __CONFIG__;
 
 ReactDOM.render(
   <Provider store={store}>

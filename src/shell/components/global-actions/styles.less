@@ -6,7 +6,6 @@
   // position: relative;
   width: 100%;
   // text-align: center;
-  // font-size: 1.1em;
   border-top: 1px solid lighten(@globalMenuBkgColor, 5%);
 
   // display: flex;
@@ -59,13 +58,21 @@
   // }
 }
 
-@media (max-width: 1400px) {
-  .AppVersion {
-    img {
-      margin-right: 0;
+@media (max-width: 2000px) {
+  .GlobalActions {
+    .action {
+      svg {
+        width: 18px;
+        height: 18px;
+      }
     }
-    .VersionNumber {
-      display: none;
+    .AppVersion {
+      img {
+        margin-right: 0;
+      }
+      .VersionNumber {
+        display: none;
+      }
     }
   }
 }

@@ -2,6 +2,7 @@ import { applyMiddleware, combineReducers, createStore } from "redux";
 import thunkMiddleware from "redux-thunk";
 import { createLogger } from "redux-logger";
 
+import { auth } from "./auth";
 import { user } from "./user";
 import { site } from "./site";
 import ui from "./ui";
@@ -21,6 +22,7 @@ function createReducer(asyncReducers) {
         files: {}
       };
     },
+    auth,
     user,
     site,
     ui

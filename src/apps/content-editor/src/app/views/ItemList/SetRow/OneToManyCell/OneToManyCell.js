@@ -63,7 +63,7 @@ export class OneToManyCell extends PureComponent {
                     <Tag
                       key={i}
                       value={item.meta.ZUID}
-                      link={`${CONFIG.service.manager}/#!/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
+                      link={`//${CONFIG.MANAGER_URL}/#!/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
                       onRemove={this.onRemove}
                     >
                       {item.data[relatedField.name]}

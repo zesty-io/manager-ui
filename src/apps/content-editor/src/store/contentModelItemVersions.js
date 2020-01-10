@@ -22,7 +22,7 @@ export function contentModelItemVersions(state = {}, action) {
 export function fetchVersions(modelZUID, itemZUID) {
   return dispatch => {
     return request(
-      `${CONFIG.service.instance_api}/content/models/${modelZUID}/items/${itemZUID}/versions`
+      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/versions`
     )
       .then(res => {
         dispatch({

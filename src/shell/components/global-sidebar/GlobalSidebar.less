@@ -1,12 +1,14 @@
 @import "../../styles/colors.less";
 .GlobalSidebar {
-  border-right: 1px solid #2d3644;
+  // border-right: 1px solid #2d3644;
   flex-basis: 160px;
   position: relative;
   display: flex;
   z-index: 2;
 
-  @media (max-width: 1300px) {
+  box-shadow: 0px 0px 3px @globalMenuBkgColor;
+
+  @media (max-width: 2000px) {
     flex-basis: 60px;
   }
 

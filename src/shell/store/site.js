@@ -1,13 +1,27 @@
 import { combineReducers } from "redux";
 
 export const site = combineReducers({
-  site_zuid: "8-45a294a-96t789", //grow.acorns.com
+  site_zuid: "",
   settings
 });
 
 export const FETCHING_SETTINGS = "FETCHING_SETTINGS";
 export const FETCH_SETTINGS_ERROR = "FETCH_SETTINGS_ERROR";
 export const FETCH_SETTINGS_SUCCESS = "FETCH_SETTINGS_SUCCESS";
+
+export function settings(
+  state = {
+    products: ["content", "media"]
+  },
+  action
+) {
+  switch (action.type) {
+    case FETCH_SETTINGS_SUCCESS:
+      return action.settings;
+    default:
+      return state;
+  }
+}
 
 export function fetchSiteSettings() {
   return dispatch => {
@@ -35,18 +49,4 @@ export function fetchSiteSettings() {
       });
     }, 3000);
   };
-}
-
-export function settings(
-  state = {
-    products: ["content", "media"]
-  },
-  action
-) {
-  switch (action.type) {
-    case FETCH_SETTINGS_SUCCESS:
-      return action.settings;
-    default:
-      return state;
-  }
 }

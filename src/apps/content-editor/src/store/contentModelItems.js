@@ -222,7 +222,7 @@ export function fetchItem(modelZUID, itemZUID) {
   return dispatch => {
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.service.instance_api}/content/models/${modelZUID}/items/${itemZUID}`,
+      uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}`,
       handler: res => {
         if (!res || !res.data) {
           throw new Error("Bad response from API. Missing resource data.");
@@ -243,7 +243,7 @@ export function searchItems(itemZUID) {
   return dispatch => {
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.service.instance_api}/search/items?q=${itemZUID}`,
+      uri: `${CONFIG.API_INSTANCE}/search/items?q=${itemZUID}`,
       handler: res => {
         if (!res || !Array.isArray(res.data)) {
           throw new Error("Bad response from API. Missing resource data.");
@@ -277,7 +277,7 @@ export function fetchItems(modelZUID) {
 
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.service.instance_api}/content/models/${modelZUID}/items`,
+      uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items`,
       handler: res => {
         if (res.status === 400) {
           console.error("fetchItems():response", res);
@@ -359,7 +359,7 @@ export function saveItem(itemZUID, action = "") {
     }
 
     return request(
-      `${CONFIG.service.instance_api}/content/models/${item.meta.contentModelZUID}/items/${itemZUID}${action}`,
+      `${CONFIG.API_INSTANCE}/content/models/${item.meta.contentModelZUID}/items/${itemZUID}${action}`,
       {
         method: "PUT",
         json: true,
@@ -428,18 +428,15 @@ export function createItem(modelZUID, itemZUID) {
       item.web.metaDescription = item.web.metaDescription.slice(0, 160);
     }
 
-    return request(
-      `${CONFIG.service.instance_api}/content/models/${modelZUID}/items`,
-      {
-        method: "POST",
-        json: true,
-        body: {
-          data: item.data,
-          web: item.web,
-          meta: item.meta
-        }
+    return request(`${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items`, {
+      method: "POST",
+      json: true,
+      body: {
+        data: item.data,
+        web: item.web,
+        meta: item.meta
       }
-    ).then(res => {
+    }).then(res => {
       if (!res.error) {
         dispatch({
           type: "REMOVE_ITEM",
@@ -455,7 +452,7 @@ export function createItem(modelZUID, itemZUID) {
 export function deleteItem(modelZUID, itemZUID) {
   return dispatch => {
     return request(
-      `${CONFIG.service.instance_api}/content/models/${modelZUID}/items/${itemZUID}`,
+      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}`,
       {
         method: "DELETE"
       }
@@ -540,7 +537,7 @@ export function fetchItemPublishing(modelZUID, itemZUID) {
   return (dispatch, getState) => {
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.service.instance_api}/content/models/${modelZUID}/items/${itemZUID}/publishings`,
+      uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`,
       handler: res => {
         if (!res || !res.data || !Array.isArray(res.data)) {
           throw new Error("Bad response from API. Missing resource data.");
@@ -559,7 +556,7 @@ export function fetchItemPublishings() {
   return dispatch => {
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.service.instance_api}/content/items/publishings?limit=100000`,
+      uri: `${CONFIG.API_INSTANCE}/content/items/publishings?limit=100000`,
       handler: res => {
         if (!res || !res.data || !Array.isArray(res.data)) {
           throw new Error("Bad response from API. Missing resource data.");
@@ -577,7 +574,7 @@ export function fetchItemPublishings() {
 export function checkLock(itemZUID) {
   return () => {
     return request(
-      `${CONFIG.service.redis_gateway}/door/knock?path=${itemZUID}`,
+      `${CONFIG.SERVICE_REDIS_GATEWAY}/door/knock?path=${itemZUID}`,
       {
         credentials: "omit"
       }
@@ -588,7 +585,7 @@ export function checkLock(itemZUID) {
 export function unlock(itemZUID) {
   return () => {
     return request(
-      `${CONFIG.service.redis_gateway}/door/unlock?path=${itemZUID}`,
+      `${CONFIG.SERVICE_REDIS_GATEWAY}/door/unlock?path=${itemZUID}`,
       {
         credentials: "omit"
       }
@@ -600,7 +597,7 @@ export function lock(itemZUID) {
   return (dispatch, getState) => {
     const user = getState().user;
     if (user) {
-      return request(`${CONFIG.service.redis_gateway}/door/lock`, {
+      return request(`${CONFIG.SERVICE_REDIS_GATEWAY}/door/lock`, {
         method: "POST",
         credentials: "omit",
         json: true,

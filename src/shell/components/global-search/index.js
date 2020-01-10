@@ -7,7 +7,7 @@ export default React.memo(function GlobalSearch(props) {
   return (
     <div className={cx(styles.GlobalSearch, props.className)}>
       <h1 className={styles.InstanceName}>zesty.pw prod testing instance</h1>
-      <Search placeholder="Globally search your entire instance" />
+      <Search placeholder="Global Search (CMD + Shift + K) " />
     </div>
   );
 });

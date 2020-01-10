@@ -15,8 +15,8 @@
       body {
         background-color: rgb(199, 212, 234);
         color: #5b667d;
-        font-family: "GibsonRegular", Arial, sans-serif;
-        font-size: 1em;
+        font-family: "Montserrat", "Gibson Light", Arial, sans-serif;
+        font-size: 16px;
         height: 100%;
         width: 100%;
       }
@@ -35,6 +35,7 @@
         align-items: center;
       }
       #center h1 {
+        font-family: "Montserrat", "Gibson Light", Arial, sans-serif;
         font-size: 2em;
         text-shadow: 1px 1px 1px #d6e5ff;
       }
@@ -77,6 +78,10 @@
         }
       }
     </style>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Montserrat:200,400,500,500i"
+    />
     <link href="bundle.shell.css" type="text/css" rel="stylesheet" />
   </head>
   <body>
@@ -95,6 +100,10 @@
       </div>
     </main>
     <script src="bundle.vendors.js"></script>
+
+    <script>
+      var CONFIG = {};
+    </script>
 
     <!--
   These are base applications every user has access to.
@@ -118,8 +127,6 @@
     <script src="bundle.audit-app.js"></script>
     <link href="bundle.code-editor-app.css" type="text/css" rel="stylesheet" />
     <script src="bundle.code-editor-app.js"></script>
-    <link href="bundle.forms-app.css" type="text/css" rel="stylesheet" />
-    <script src="bundle.forms-app.js"></script>
     <link href="bundle.leads-app.css" type="text/css" rel="stylesheet" />
     <script src="bundle.leads-app.js"></script>
     <link href="bundle.schema-app.css" type="text/css" rel="stylesheet" />

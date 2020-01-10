@@ -18,7 +18,7 @@ export function fetchModels() {
   return (dispatch, getState) => {
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.service.instance_api}/content/models`,
+      uri: `${CONFIG.API_INSTANCE}/content/models`,
       handler: res => {
         return dispatch({
           type: "FETCH_MODELS_SUCCESS",

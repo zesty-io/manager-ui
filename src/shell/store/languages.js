@@ -12,13 +12,13 @@ export function languages(state = [], action) {
 
 export function fetchLangauges(type) {
   return dispatch => {
-    return request(
-      `${CONFIG.service.instance_api}/env/langs?type=${type}`
-    ).then(res => {
-      dispatch({
-        type: "FETCH_LANGUAGES_SUCCESS",
-        data: res.data
-      });
-    });
+    return request(`${CONFIG.API_INSTANCE}/env/langs?type=${type}`).then(
+      res => {
+        dispatch({
+          type: "FETCH_LANGUAGES_SUCCESS",
+          data: res.data
+        });
+      }
+    );
   };
 }

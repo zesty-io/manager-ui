@@ -1,3 +1,5 @@
+import * as riot from "riot";
+
 import moment from "moment-timezone";
 import cx from "classnames";
 import React from "react";
@@ -17,3 +19,6 @@ window.ReactRouterDOM = ReactRouterDOM;
 window.Redux = Redux;
 window.ReduxThunk = ReduxThunk;
 window.moment = moment;
+
+// TODO refactor out
+window.riot = riot;

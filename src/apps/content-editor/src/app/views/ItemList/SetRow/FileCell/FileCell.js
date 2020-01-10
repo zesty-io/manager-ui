@@ -16,7 +16,7 @@ export class FileCell extends Component {
     this.setState({
       loading: true
     });
-    request(`${CONFIG.service.media_manager}/file/${this.props.data}`)
+    request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${this.props.data}`)
       .then(res => {
         this.setState({ loading: false });
         if (res.status === 400) {

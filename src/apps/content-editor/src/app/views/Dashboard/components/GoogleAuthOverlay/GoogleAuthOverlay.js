@@ -27,7 +27,7 @@ export class GoogleAuthOverlay extends React.Component {
 
   createAnalyticsPopup = evt => {
     var address = encodeURI(
-      CONFIG.service.google_analytics_auth +
+      CONFIG.SERVICE_GOOGLE_ANALYTICS_AUTH +
         "?user_id=" +
         this.props.user.id +
         "&account_id=" +

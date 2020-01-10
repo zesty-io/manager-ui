@@ -1,13 +1,15 @@
+import Cookies from "js-cookie";
+
 export function request(url, opts = {}) {
   if (!url) {
     throw new Error("A URL is required to make a request");
   }
 
   opts.headers = opts.headers || {};
-  authCookie = readCookie(AUTH_SERVICE_COOKIE_NAME);
-  if (authCookie) {
-    opts.headers["X-Auth"] = authCookie;
-  }
+
+  // Attach session token
+  const token = Cookies.get(CONFIG.COOKIE_NAME);
+  opts.headers["X-Auth"] = token;
 
   if (!opts.method && opts.body) {
     opts.method = "POST";
@@ -38,8 +40,7 @@ export function request(url, opts = {}) {
     }
   }
 
-  // Default to authenticated requests
-  opts.credentials = opts.credentials || "include";
+  opts.credentials = opts.credentials || "omit";
   opts.method = opts.method || "GET";
 
   return fetch(url, opts)
@@ -53,10 +54,10 @@ export function request(url, opts = {}) {
             return Object.assign({}, json, { status: res.status });
           });
         } catch (err) {
-          growl(
-            `We ran into an issue processing an API response. 200`,
-            "red-growl"
-          );
+          // growl(
+          //   `We ran into an issue processing an API response. 200`,
+          //   "red-growl"
+          // );
         }
       }
 
@@ -68,36 +69,35 @@ export function request(url, opts = {}) {
             return Object.assign({}, json, { status: res.status });
           });
         } catch (err) {
-          growl(
-            `We ran into an issue processing an API response. 400`,
-            "red-growl"
-          );
+          // growl(
+          //   `We ran into an issue processing an API response. 400`,
+          //   "red-growl"
+          // );
         }
       }
       if (res.status === 401) {
-        growl(`Unauthorized: Sign back in to continue`, "red-growl");
-
-        riot.mount(document.querySelector("#modalMount"), "login-modal", {
-          email: USER.email,
-          callback: () => {
-            console.log("relogin complete");
-          }
-        });
+        // growl(`Unauthorized: Sign back in to continue`, "red-growl");
+        // riot.mount(document.querySelector("#modalMount"), "login-modal", {
+        //   email: USER.email,
+        //   callback: () => {
+        //     console.log("relogin complete");
+        //   }
+        // });
       }
       if (res.status === 404) {
-        growl(`We could not find a requested resource. 404`, "red-growl");
+        // growl(`We could not find a requested resource. 404`, "red-growl");
       }
       if (res.status === 410) {
-        growl(`Your two factor authentication has expired. 410`, "red-growl");
+        // growl(`Your two factor authentication has expired. 410`, "red-growl");
       }
       if (res.status === 422) {
         try {
           return res.json();
         } catch (err) {
-          growl(
-            `We ran into an issue processing an API response. 422`,
-            "red-growl"
-          );
+          // growl(
+          //   `We ran into an issue processing an API response. 422`,
+          //   "red-growl"
+          // );
         }
       }
 
@@ -123,16 +123,16 @@ export function request(url, opts = {}) {
             err.res.status
           }`
         );
-        growl(`Request failed, our API had an issue. 500`, "red-growl");
+        // growl(`Request failed, our API had an issue. 500`, "red-growl");
         throw err;
       } else if (url.endsWith("/roles")) {
         console.error(err);
-        growl(`Failed to fetch user role.`, "red-growl");
+        // growl(`Failed to fetch user role.`, "red-growl");
         throw err;
       } else {
         // Network Failed
         console.error(err);
-        growl(`A network request failed.`, "red-growl");
+        // growl(`A network request failed.`, "red-growl");
         throw err;
       }
     });

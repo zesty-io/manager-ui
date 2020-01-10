@@ -13,7 +13,7 @@ export function fetchFields(modelZUID) {
   return dispatch => {
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.service.instance_api}/content/models/${modelZUID}/fields`,
+      uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/fields`,
       handler: res => {
         return dispatch({
           type: "FETCH_FIELDS_SUCCESS",

@@ -109,7 +109,7 @@ export const LinkCreate = connect((state, props) => {
     };
 
     handleSearch = debounce(term => {
-      return request(`${CONFIG.service.instance_api}/search/items?q=${term}`)
+      return request(`${CONFIG.API_INSTANCE}/search/items?q=${term}`)
         .then(res => {
           if (res.status === 400) {
             return notify({

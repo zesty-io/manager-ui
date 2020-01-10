@@ -44,7 +44,7 @@ export class TopPerforming extends React.PureComponent {
 
   getTopTenContent() {
     return request(
-      `${CONFIG.service.google_analytics_read}/?zuid=${this.props.instanceZUID}`,
+      `${CONFIG.SERVICE_GOOGLE_ANALYTICS_READ}/?zuid=${this.props.instanceZUID}`,
       {
         method: "POST",
         credentials: "omit",

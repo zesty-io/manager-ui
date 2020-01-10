@@ -34,7 +34,7 @@ export function contentLogs(state = {}, action) {
 export function fetchAuditTrailDrafting(instanceZUID, itemZUID, limit = 5) {
   return dispatch => {
     return request(
-      `${CONFIG.service.instance_api}/env/audits?affectedZUID=${itemZUID}&order=created&dir=desc&action=2&limit=${limit}`
+      `${CONFIG.API_INSTANCE}/env/audits?affectedZUID=${itemZUID}&order=created&dir=desc&action=2&limit=${limit}`
     ).then(data => {
       if (data) {
         dispatch({
@@ -54,7 +54,7 @@ export function fetchAuditTrailDrafting(instanceZUID, itemZUID, limit = 5) {
 export function fetchAuditTrailPublish(instanceZUID, itemZUID, limit = 3) {
   return dispatch => {
     return request(
-      `${CONFIG.service.instance_api}/env/audits?affectedZUID=${itemZUID}&order=created&dir=desc&action=4&limit=${limit}`
+      `${CONFIG.API_INSTANCE}/env/audits?affectedZUID=${itemZUID}&order=created&dir=desc&action=4&limit=${limit}`
     ).then(data => {
       if (data) {
         dispatch({ type: "FETCH_AUDIT_TRAIL_PUB", itemZUID, data: data.data });

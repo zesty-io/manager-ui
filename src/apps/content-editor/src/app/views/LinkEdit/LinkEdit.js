@@ -195,7 +195,7 @@ class LinkEdit extends Component {
   };
 
   handleSearch = debounce(term => {
-    return request(`${CONFIG.service.instance_api}/search/items?q=${term}`)
+    return request(`${CONFIG.API_INSTANCE}/search/items?q=${term}`)
       .then(res => {
         // TODO: filter out duplicates
         if (res.status === 400) {
@@ -225,7 +225,7 @@ class LinkEdit extends Component {
   }, 500);
 
   resolveLink = term => {
-    return request(`${CONFIG.service.instance_api}/search/items?q=${term}`)
+    return request(`${CONFIG.API_INSTANCE}/search/items?q=${term}`)
       .then(res => {
         // TODO: filter out duplicates
         if (res.status === 400) {

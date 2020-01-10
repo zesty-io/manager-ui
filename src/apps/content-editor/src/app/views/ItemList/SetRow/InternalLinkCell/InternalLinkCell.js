@@ -31,7 +31,7 @@ export class InternalLinkCell extends PureComponent {
       return (
         <span className={cx(this.props.className, styles.InternalLinkCell)}>
           <Url
-            href={`${CONFIG.service.manager}/#!/content/${relatedItem.meta.contentModelZUID}/${relatedItem.meta.ZUID}`}
+            href={`//${CONFIG.MANAGER_URL}/#!/content/${relatedItem.meta.contentModelZUID}/${relatedItem.meta.ZUID}`}
           >
             <i className="fa fa-link" aria-hidden="true" />
             &nbsp;

@@ -18,7 +18,7 @@ export const user = (initialState = {}) => {
 export function fetchRecentItems(userZUID, start) {
   return dispatch => {
     return request(
-      `${CONFIG.service.instance_api}/search/items?q=${userZUID}&order=created&dir=DESC&start_date=${start}`
+      `${CONFIG.API_INSTANCE}/search/items?q=${userZUID}&order=created&dir=DESC&start_date=${start}`
     ).then(res => {
       if (res.status === 400) {
         notify({

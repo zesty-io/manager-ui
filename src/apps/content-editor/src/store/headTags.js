@@ -94,7 +94,7 @@ export const fetchHeadTags = () => {
   return dispatch => {
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.service.instance_api}/web/headtags`,
+      uri: `${CONFIG.API_INSTANCE}/web/headtags`,
       handler: res => {
         dispatch({
           type: "FETCH_HEADTAGS_SUCCESS",
@@ -122,7 +122,7 @@ export const fetchHeadTags = () => {
 */
 export const createHeadTag = tag => {
   return dispatch => {
-    return request(`${CONFIG.service.instance_api}/web/headtags`, {
+    return request(`${CONFIG.API_INSTANCE}/web/headtags`, {
       method: "POST",
       json: true,
       body: tag
@@ -140,7 +140,7 @@ export const createHeadTag = tag => {
 
 export const deleteHeadTag = id => {
   return dispatch => {
-    return request(`${CONFIG.service.instance_api}/web/headtags/${id}`, {
+    return request(`${CONFIG.API_INSTANCE}/web/headtags/${id}`, {
       method: "DELETE"
     }).then(res => {
       if (!res.data.error) {
@@ -155,7 +155,7 @@ export const deleteHeadTag = id => {
 
 export const saveHeadTag = tag => {
   return dispatch => {
-    return request(`${CONFIG.service.instance_api}/web/headtags/${tag.ZUID}`, {
+    return request(`${CONFIG.API_INSTANCE}/web/headtags/${tag.ZUID}`, {
       method: "PUT",
       json: true,
       body: tag

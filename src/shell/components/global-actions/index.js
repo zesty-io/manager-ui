@@ -35,11 +35,11 @@ export default React.memo(function GlobalActions() {
       <span className={cx(styles.AppVersion)}>
         <img
           src="https://brand.zesty.io/zesty-io-logo.svg"
-          alt={`Zesty.io version ${version}`}
+          alt={`Zesty.io version ${CONFIG.VERSION}`}
           width="24px"
           height="24px"
         />
-        <span className={styles.VersionNumber}>{version}</span>
+        <span className={styles.VersionNumber}>{CONFIG.VERSION}</span>
       </span>
       {/* <span className={styles.action}>
         <FontAwesomeIcon icon={faMap} title="Visual Sitemap" />

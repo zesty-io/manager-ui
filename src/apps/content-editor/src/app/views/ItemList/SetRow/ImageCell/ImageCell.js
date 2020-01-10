@@ -15,7 +15,7 @@ export class ImageCell extends PureComponent {
         return (
           <span className={cx(this.props.className, styles.ImageCell)}>
             <img
-              src={`${CONFIG.service.media_resolver}/resolve/${this.props.value}/getimage/?h=75&type=fit`}
+              src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${this.props.value}/getimage/?h=75&type=fit`}
             />
           </span>
         );

@@ -1,6 +1,21 @@
 @import "../../styles/colors.less";
 .GlobalSearch {
+  border-left: 1px solid lighten(@globalMenuBkgColor, 5%);
+  border-right: 1px solid darken(@globalMenuBkgColor, 5%);
+
   .InstanceName {
     font-weight: 500;
   }
+
+  input {
+    width: 100%;
+  }
 }
+
+// @media (max-width: 2000px) {
+//   .GlobalSearch {
+//     .InstanceName {
+//       font-size: 12px;
+//     }
+//   }
+// }

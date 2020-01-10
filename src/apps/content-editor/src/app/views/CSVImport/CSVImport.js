@@ -234,7 +234,7 @@ class CSVImport extends Component {
       Promise.all(
         this.state.mappedMetaItems.map((item, i) => {
           return request(
-            `${CONFIG.service.instance_api}/content/models/${this.props.modelZUID}/items`,
+            `${CONFIG.API_INSTANCE}/content/models/${this.props.modelZUID}/items`,
             {
               method: "POST",
               json: true,

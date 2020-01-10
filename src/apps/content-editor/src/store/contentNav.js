@@ -45,7 +45,7 @@ export function contentNav(
 
 export function fetchNav() {
   return dispatch => {
-    return request(`${CONFIG.service.accounts_api}/roles`)
+    return request(`${CONFIG.API_ACCOUNTS}/roles`)
       .then(data => data.data)
       .catch(err => {
         dispatch({ type: "USER_ROLE_ERROR" });
@@ -63,7 +63,7 @@ export function fetchNav() {
             return role.entityZUID === zesty.site.zuid;
           }).ZUID;
           return request(
-            `${CONFIG.service.accounts_api}/roles/${currentRoleZUID}`
+            `${CONFIG.API_ACCOUNTS}/roles/${currentRoleZUID}`
           ).then(data => {
             if (data.data && data.data.granularRoles) {
               return data.data.granularRoles.reduce(
@@ -77,7 +77,7 @@ export function fetchNav() {
         return null;
       })
       .then(granularRoles => {
-        return request(`${CONFIG.service.instance_api}/env/nav`)
+        return request(`${CONFIG.API_INSTANCE}/env/nav`)
           .then(data => {
             if (data.status === 400) {
               notify({
