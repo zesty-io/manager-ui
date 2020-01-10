@@ -1,0 +1,20 @@
+@import "~@zesty-io/core/colors.less";
+
+.wrap {
+  border-bottom: 1px solid #000;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-height: 60px;
+  .column {
+    display: flex;
+    min-width: 250px;
+    padding: 4px 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.failure {
+  background-color: @zesty-red;
+}

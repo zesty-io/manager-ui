@@ -1,0 +1,128 @@
+@import "~@zesty-io/core/colors.less";
+
+.Meta {
+  display: flex;
+  flex-direction: row;
+  margin: 0 32px;
+
+  .Settings {
+    flex: 2;
+    margin-right: 32px;
+
+    &.DataSettings {
+      margin-right: 0;
+    }
+
+    article {
+      margin: 16px 0;
+    }
+  }
+
+  .GoogleListing {
+    flex: 1;
+    margin: 16px 0;
+
+    .SearchResult {
+      border-radius: 2px;
+      background: white;
+      border: 1px @zesty-light-gray solid;
+      padding: 16px;
+
+      .GoogleTitle {
+        font-family: Roboto, "Gibson", arial, sans-serif;
+        color: #1a0dab; // sampled from google
+        word-wrap: break-word;
+        font-size: 18px;
+        line-height: 21.6px;
+        font-weight: 400;
+      }
+      .GoogleLink {
+        color: #006621; // sampled from google
+        display: block;
+        font-family: Roboto, arial, sans-serif;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        height: auto;
+        line-height: 16.8px;
+        padding: 2px 0 3px 0;
+
+        a {
+          text-decoration: none;
+          color: #006621; // sampled from google
+        }
+
+        span.Icon {
+          margin-left: 5px;
+        }
+      }
+      .GoogleDesc {
+        word-wrap: break-word;
+        color: rgb(84, 84, 84);
+        font-family: Roboto, arial, sans-serif;
+        font-size: 13px;
+        font-weight: 400;
+        height: auto;
+        line-height: 18.2px;
+      }
+    }
+  }
+}
+
+// .ItemSettings {
+//   // margin: 0;
+//   // background-color: @zesty-white;
+//   // box-shadow: inset 0px 0px 4px darken(@zesty-light-blue, 10%);
+//   margin: 16px 32px;
+//
+//   .metaConfig {
+//     display: flex;
+//     flex-wrap: wrap;
+//
+//     .row {
+//       display: flex;
+//       flex-direction: row;
+//       flex-wrap: wrap;
+//       width: 100%;
+//       margin: 0 0 8px 0;
+//
+//       // .fullpath {
+//       //   display: flex;
+//       //   flex-direction: row;
+//       //   padding: 8px 0;
+//       //   font-weight: 600;
+//       //   color: @zesty-grey;
+//       //   align-items: center;
+//       // }
+//     }
+//
+//     .column {
+//       display: flex;
+//       flex-direction: column;
+//       flex: 1;
+//       padding: 0 2rem 0 0;
+//       &:first-child {
+//         padding-left: 0;
+//       }
+//       &:last-child {
+//         padding-right: 0;
+//       }
+//     }
+//
+//     fieldset {
+//       flex: 1;
+//       .desc {
+//         // color: #697a91;
+//         display: block;
+//         font-size: 1rem;
+//         margin: 0 0 1rem 0;
+//         line-height: 1.4rem;
+//       }
+//       input,
+//       textarea,
+//       select {
+//         display: flex;
+//       }
+//     }
+//   }
+// }

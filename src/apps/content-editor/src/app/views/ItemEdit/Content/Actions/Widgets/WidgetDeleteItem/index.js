@@ -1,0 +1,1 @@
+export { WidgetDeleteItem } from "./WidgetDeleteItem";

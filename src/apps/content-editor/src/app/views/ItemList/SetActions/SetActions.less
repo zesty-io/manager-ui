@@ -1,0 +1,89 @@
+@import "~@zesty-io/core/colors.less";
+
+.Actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  background: #4c5568;
+  min-height: 43px;
+  padding: 0 12px 0 4px;
+
+  .I18N {
+    min-width: 250px;
+    z-index: 30;
+    margin: 0 8px 0 0;
+  }
+
+  .Clippings {
+    color: @zesty-white;
+
+    font-size: 22px;
+    vertical-align: middle;
+    line-height: 2;
+    margin: 0 0 0 8px;
+    text-transform: capitalize;
+  }
+
+  .Left {
+    // flex: 1;
+    display: flex;
+    align-items: center;
+    .Select {
+      width: 175px;
+    }
+
+    .Spinner {
+      animation: spin 2s linear infinite;
+    }
+
+    .Loading {
+      color: #fff;
+      padding: 0 16px;
+      align-self: center;
+      span {
+        padding-left: 8px;
+      }
+    }
+    .ResetSort {
+      color: #fff;
+      padding: 0 16px;
+      align-self: center;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      span {
+        padding-left: 8px;
+      }
+    }
+  }
+
+  .Right {
+    color: #fff;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    justify-content: flex-end;
+  }
+
+  .Action {
+    margin: 0 8px 0 0;
+  }
+
+  .ModelItemCount {
+    display: flex;
+    flex-direction: column;
+    .InstantApi {
+      margin: 0;
+      text-shadow: 1px 1px 0px #434b5d;
+    }
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

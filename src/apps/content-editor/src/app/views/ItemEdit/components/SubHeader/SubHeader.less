@@ -1,0 +1,33 @@
+@import "~@zesty-io/core/colors.less";
+
+.SubHeader {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 12px 32px;
+  z-index: 10;
+  position: sticky;
+  top: 0;
+  background-color: #f2f7fc;
+  border-bottom: 1px solid #e8e8e8;
+
+  .Path {
+    display: flex;
+    flex-direction: column;
+    a {
+      margin: 0;
+      line-height: 20px;
+    }
+
+    .PreviewUrl {
+      color: @zesty-grey;
+    }
+  }
+
+  .Actions {
+    margin-right: 0;
+    display: flex;
+  }
+}

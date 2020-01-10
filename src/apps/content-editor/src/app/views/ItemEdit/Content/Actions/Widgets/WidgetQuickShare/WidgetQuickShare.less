@@ -1,0 +1,43 @@
+@import "~@zesty-io/core/colors.less";
+
+.ShareLinks {
+  display: flex;
+  span {
+    color: @zesty-blue;
+    cursor: pointer;
+    background: none;
+    display: flex;
+    align-items: center;
+    border: none;
+    font-size: 1em;
+    font-weight: 900;
+    line-height: 1.6em;
+    margin: 0 0.5rem;
+    padding: 0;
+    text-decoration: none;
+    text-shadow: 1px 1px 0 @white;
+    transition-duration: 0.3s;
+    transition-property: color, background-color;
+
+    &:hover,
+    &:focus {
+      color: darken(@zesty-blue, 20%);
+    }
+    &:active {
+      color: darken(@zesty-blue, 20%);
+      outline: none;
+    }
+    i {
+      width: 15px;
+    }
+  }
+  a {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    p {
+      display: inline;
+      margin: 0 0 0 5px;
+    }
+  }
+}

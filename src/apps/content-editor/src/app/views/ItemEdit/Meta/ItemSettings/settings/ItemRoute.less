@@ -1,0 +1,39 @@
+@import "~@zesty-io/core/keyframes.less";
+
+.ItemRoute {
+  label {
+    display: flex;
+  }
+  .Path {
+    display: flex;
+    .Parent {
+      border-radius: 3px;
+      background-color: #4c5567;
+      align-items: center;
+      display: flex;
+      padding: 0 8px;
+      color: #fff;
+    }
+    .Part {
+      flex: 1;
+    }
+    .Checking {
+      margin: 0;
+      background-color: #404759;
+      border: 1px solid #404759;
+      i {
+        animation: spin 2s linear infinite;
+      }
+    }
+    .Valid {
+      margin: 0;
+      background-color: #63a41e;
+      border: 1px solid #63a41e;
+    }
+    .Invalid {
+      margin: 0;
+      background-color: #9a2803;
+      border: 1px solid #9a2803;
+    }
+  }
+}

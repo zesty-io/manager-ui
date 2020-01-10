@@ -1,0 +1,20 @@
+@import "~@zesty-io/core/colors.less";
+
+.InternalLinkCell {
+  width: 300px;
+  display: flex;
+  align-items: center;
+  word-break: break-all;
+  a {
+    margin: 0;
+  }
+}
+
+.InternalLinkCell.Empty {
+  justify-content: start;
+  align-items: start;
+
+  i {
+    color: @zesty-light-grey;
+  }
+}

@@ -27,7 +27,6 @@ export default connect(state => state)(function Shell(props) {
             <Route path="/audit-trail" component={AuditTrailApp} />
             <Route path="/analytics" component={AnalyticsApp} />
             <Route path="/code" component={CodeEditorApp} />
-            <Route path="/forms" component={FormsApp} />
             <Route path="/leads" component={LeadsApp} />
             <Route path="/schema" component={SchemaApp} />
             <Route path="/seo" component={SeoApp} />

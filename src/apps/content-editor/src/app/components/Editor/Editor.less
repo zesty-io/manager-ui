@@ -1,0 +1,38 @@
+@import "~@zesty-io/core/colors.less";
+
+.Editor {
+  background: transparent;
+  border: 0;
+  margin: 4px 0 0 0;
+
+  .ContentArea {
+    display: flex;
+    flex-direction: column;
+    margin: 16px 32px;
+    padding: 0;
+
+    .Field {
+      padding: 12px 0;
+    }
+    .Field:first-child {
+      padding: 0 0 8px;
+    }
+  }
+
+  .NoFields {
+    margin: 100px 0;
+    text-align: center;
+    .Display {
+      font-size: 32px;
+      line-height: 42px;
+      font-weight: 300;
+      letter-spacing: 0.32px;
+    }
+    .SubHead {
+      font-size: 28px;
+      line-height: 42px;
+      font-weight: 300;
+      letter-spacing: 0.32px;
+    }
+  }
+}

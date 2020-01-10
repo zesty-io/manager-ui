@@ -1,0 +1,44 @@
+@import "~@zesty-io/core/colors.less";
+
+.CSVImport {
+  overflow-y: scroll;
+  overflow-x: auto;
+  width: 85vw;
+  flex-direction: column;
+  .Top {
+    display: flex;
+    justify-content: space-between;
+    .File {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      label {
+        padding: 8px 0;
+      }
+      input {
+        font-size: 16px;
+        font-family: "Montserrat", "Gibson Light", Arial;
+        color: rgb(26, 32, 44);
+      }
+      .warning {
+        color: @zesty-red;
+        padding-top: 8px;
+        font-weight: 550;
+      }
+    }
+    .save {
+      align-self: center;
+      padding: 16px;
+    }
+  }
+  .Settings {
+    display: grid;
+    width: 800px;
+    margin: 16px 8px;
+    padding: 8px;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 16px;
+    background-color: darken(@zesty-light-blue, 3%);
+    box-shadow: inset 0px 0px 4px darken(@zesty-light-blue, 10%);
+  }
+}

@@ -8,7 +8,11 @@ import { store } from "shell/store";
 import PrivateRoute from "./components/private-route";
 import Shell from "./views/Shell";
 
-window.ZESTY_STORE = store;
+window.ZESTY_REDUX_STORE = store;
+
+// Some legacy code refers to this global which is an observable
+// NOTE: this needs to get refactored out
+window.zesty = riot.observable(store.getState());
 
 // interploated by webpack at build time
 window.CONFIG = __CONFIG__;

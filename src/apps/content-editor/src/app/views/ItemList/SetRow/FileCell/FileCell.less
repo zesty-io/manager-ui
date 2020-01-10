@@ -1,0 +1,20 @@
+@import "~@zesty-io/core/colors.less";
+
+.FileCell {
+  display: flex;
+  align-items: center;
+  width: 200px;
+  i {
+    padding-left: 0.5rem;
+  }
+}
+
+.FileCell.Empty {
+  align-items: start;
+  a {
+    margin: 0;
+  }
+  i {
+    color: @zesty-light-grey;
+  }
+}

@@ -21,6 +21,12 @@ if (process.env.NODE_ENV === "PRODUCTION") {
     SERVICE_AUTH: "https://svc.zesty.io/auth",
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "",
+    SERVICE_MEDIA_RESLOVER: "",
+    SERVICE_MEDIA_STORAGE: "",
+    SERVICE_REDIS_GATEWAY: "",
+    SERVICE_GOOGLE_ANALYTICS_AUTH: "",
+    SERVICE_GOOGLE_ANALYTICS_READ: "",
+
     MANAGER_URL: ".manage.zesty.io",
     MANAGER_URL_PROTOCOL: "https://",
     PREVIEW_URL: "-dev.preview.zestyio.com",
@@ -37,6 +43,12 @@ if (process.env.NODE_ENV === "PRODUCTION") {
     SERVICE_AUTH: "https://stage-svc.zesty.io/auth",
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "",
+    SERVICE_MEDIA_RESLOVER: "",
+    SERVICE_MEDIA_STORAGE: "",
+    SERVICE_REDIS_GATEWAY: "",
+    SERVICE_GOOGLE_ANALYTICS_AUTH: "",
+    SERVICE_GOOGLE_ANALYTICS_READ: "",
+
     MANAGER_URL: ".stage-manage.zesty.io",
     MANAGER_URL_PROTOCOL: "https://",
     PREVIEW_URL: "-dev.stage-preview.zestyio.com",
@@ -52,7 +64,17 @@ if (process.env.NODE_ENV === "PRODUCTION") {
     API_INSTANCE: ".api.zesty.localdev:3023/v1/",
     SERVICE_AUTH: "http://svc.zesty.localdev:3011/auth",
     SERVICE_EMAIL: "",
-    SERVICE_MEDIA_MANAGER: "",
+    SERVICE_MEDIA_MANAGER:
+      "http://svc.zesty.localdev:3005/media-manager-service",
+    SERVICE_MEDIA_RESLOVER:
+      "http://svc.zesty.localdev:3007/media-resolver-service",
+    SERVICE_MEDIA_STORAGE:
+      "http://svc.zesty.localdev:3008/media-storage-service",
+    SERVICE_REDIS_GATEWAY: "http://redis-gateway.zesty.localdev:3025",
+    SERVICE_GOOGLE_ANALYTICS_AUTH:
+      "https://us-central1-zesty-dev.cloudfunctions.net/authenticateGoogleAnalytics",
+    SERVICE_GOOGLE_ANALYTICS_READ:
+      "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
     MANAGER_URL: ".manage.zesty.localdev:3020",
     MANAGER_URL_PROTOCOL: "http://",
     PREVIEW_URL: "-dev.preview.zestyio.localdev:3020",
@@ -79,6 +101,7 @@ module.exports = {
     }
   },
   externals: {
+    riot: "riot",
     react: "React",
     "react-dom": "ReactDOM",
     "react-router": "ReactRouter",

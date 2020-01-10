@@ -1,0 +1,51 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.Wrapper {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.5);
+  .Card {
+    background-color: @zesty-white;
+    border: 1px solid @zesty-orange;
+    max-width: 550px;
+    margin-left: -15%;
+    .Header {
+      position: relative;
+      overflow: hidden;
+      .backgroundIcon {
+        position: absolute;
+        right: -2%;
+        top: -10%;
+        font-size: 13rem;
+        color: lighten(@zesty-orange, 15%);
+      }
+      background-color: @zesty-orange;
+      color: white;
+      font-weight: 400;
+      padding: 30px 20px;
+      h1 {
+        font-size: 32px;
+        line-height: 48px;
+        font-weight: 300;
+        letter-spacing: 0.32;
+        color: @zesty-white;
+      }
+    }
+    .Center {
+    }
+    .Footer {
+      background-color: @zesty-white;
+    }
+    .alignRight {
+      display: flex;
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+}

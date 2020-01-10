@@ -1,0 +1,53 @@
+@import "~@zesty-io/core/colors.less";
+.ItemList {
+  min-width: 100%;
+  background-color: #fff;
+  // background: transparent;
+  // @supports (display: grid) {
+  //   grid-column: span 2;
+  // }
+
+  .TableWrap {
+    width: 85vw;
+    // Parents height minus total height of actions container
+    height: calc(100vh - 64px - 9px - 43px);
+
+    // div::-webkit-scrollbar {
+    //   width: 15px;
+    //   height: 15px;
+    // }
+    // div::-webkit-scrollbar-thumb {
+    //   width: 15px;
+    //   height: 15px;
+    // }
+  }
+  .Display {
+    font-size: 32px;
+    text-align: center;
+    margin: auto 0;
+    line-height: 42px;
+    font-weight: 300;
+    height: 80vh;
+    letter-spacing: 0.32px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+  }
+  .FiltersDisplay {
+    h1 {
+      font-size: 24px;
+      line-height: 42px;
+      margin-bottom: 16px;
+    }
+    text-align: center;
+    margin: auto 0;
+    font-weight: 300;
+    height: 80vh;
+    letter-spacing: 0.32px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+  }
+}

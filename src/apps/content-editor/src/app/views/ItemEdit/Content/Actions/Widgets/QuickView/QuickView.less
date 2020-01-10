@@ -1,0 +1,52 @@
+@import "~@zesty-io/core/colors.less";
+
+.QuickView {
+  .publishMeta {
+    .editedBy {
+      font-weight: 900;
+    }
+  }
+  .StatusHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .Published {
+      color: @zesty-green;
+      font-weight: bold;
+    }
+    .Unpublished {
+      color: @zesty-light-grey;
+      font-weight: bold;
+    }
+    .Scheduled {
+      color: @zesty-orange;
+      font-weight: bold;
+    }
+  }
+
+  .ZUID {
+    font-weight: 400;
+    background-color: lighten(@zesty-light-grey, 15%);
+    padding: 3px;
+    border-radius: 3px;
+  }
+
+  .Content {
+    strong {
+      font-weight: bold;
+    }
+    ul li {
+      list-style-position: inside;
+      list-style-type: circle;
+    }
+    .linkGroup {
+      padding: 1rem 0;
+      display: flex;
+      flex-direction: column;
+      a {
+        padding: 0.2rem 0;
+        word-break: break-all;
+      }
+    }
+  }
+}
