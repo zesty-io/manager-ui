@@ -1,5 +1,7 @@
 "use strict";
 
+var pjson = require("./package.json");
+
 const webpack = require("webpack");
 const path = require("path");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
@@ -12,6 +14,7 @@ const WebpackBar = require("webpackbar");
 let CONFIG = {};
 if (process.env.NODE_ENV === "PRODUCTION") {
   CONFIG = {
+    VERSION: pjson.version,
     ENV: "production",
     API_ACCOUNTS: "https://accounts.api.zesty.io/v1",
     API_INSTANCE: ".api.zesty.io/v1/",
@@ -27,6 +30,7 @@ if (process.env.NODE_ENV === "PRODUCTION") {
   };
 } else if (process.env.NODE_ENV === "STAGE") {
   CONFIG = {
+    VERSION: pjson.version,
     ENV: "stage",
     API_ACCOUNTS: "https://accounts.stage-api.zesty.io/v1",
     API_INSTANCE: ".stage-api.zesty.io/v1/",
@@ -42,6 +46,7 @@ if (process.env.NODE_ENV === "PRODUCTION") {
   };
 } else {
   CONFIG = {
+    VERSION: pjson.version,
     ENV: "development",
     API_ACCOUNTS: "http://accounts.api.zesty.localdev:3022/v1",
     API_INSTANCE: ".api.zesty.localdev:3023/v1/",

@@ -4,7 +4,7 @@ import { request } from "utility/request";
 // Reducer
 export function logs(state = {}, action) {
   switch (action.type) {
-    case FETCH_LOGS_SUCCESS:
+    case "FETCH_LOGS_SUCCESS":
       return action.data;
     default:
       return state;
@@ -21,7 +21,7 @@ export function getLogs(siteId) {
     const state = getState();
     const siteZuid = state.settings.siteZuid;
 
-    request(`${state.settings.SITES_SERVICE}/${siteZuid}/audit-trail-logs`)
+    request(`//${siteZuid}${CONFIG.API_INSTANCE}/env/audits`)
       .then(json => {
         // Normalize logs by zuid
         let data = {};
