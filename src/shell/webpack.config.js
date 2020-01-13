@@ -93,7 +93,8 @@ if (process.env.NODE_ENV === "PRODUCTION") {
     URL_ACCOUNTS: "http://accounts.zesty.localdev:3100",
 
     COOKIE_NAME: "DEV_APP_SID",
-    COOKIE_DOMAIN: ".zesty.localdev"
+    COOKIE_DOMAIN: ".zesty.localdev",
+    service: {}
   };
 }
 
