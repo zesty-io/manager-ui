@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+
 import { Select, Option } from "@zesty-io/core/Select";
 import { Input } from "@zesty-io/core/Input";
+import { Infotip } from "@zesty-io/core/Infotip";
 
 const CANONICAL_OPTS = [
   {

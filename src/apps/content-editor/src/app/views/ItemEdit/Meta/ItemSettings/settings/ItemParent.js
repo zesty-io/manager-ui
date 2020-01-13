@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import debounce from "lodash.debounce";
 
 import { Select, Option } from "@zesty-io/core/Select";
+import { Infotip } from "@zesty-io/core/Infotip";
 
 import { searchItems } from "../../../../../../store/contentModelItems";
 

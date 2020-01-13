@@ -3,7 +3,10 @@ const ZUID = window.location.host.split(".")[0];
 export function instance(
   state = {
     hash: "",
-    zuid: ZUID
+    zuid: ZUID,
+    settings: {
+      seo: {}
+    }
   },
   action
 ) {
