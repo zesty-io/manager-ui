@@ -1,0 +1,22 @@
+Version 2.2.3 (2019-08-08)
+  Fixed urls failing to get converted on Firefox when pressing enter #EME-42
+Version 2.2.2 (2019-06-24)
+  Fixed service errors not showing a visible error message when using the media plugin dialog #TINY-3792
+Version 2.2.1 (2019-06-06)
+  Fixed multiple links in the same paragraph being converted when only the last link in the paragraph should have been #EME-33
+Version 2.2.0 (2019-05-24)
+  Added a new setting `mediaembed_inline_styles` that inlines CSS for the embeded summary cards #EME-32
+Version 2.1.0 (2019-05-17)
+  Changed service errors to log in the console, instead of display as notifications. #TINY-3645
+Version 2.0.0 (2019-02-04)
+  Support for TinyMCE 5
+Version 1.1.0 (2018-02-01)
+  Decreased plugin size by improving build steps.
+Version 1.0.3 (2017-12-08)
+  Fixed so more strict CSP rules can be used for this plugin. #TINY-1397
+Version 1.0.2 (2017-06-13)
+  Fixed so that the error messages are more human readable. #TINY-1077
+Version 1.0.1 (2017-05-23)
+  Fixed bug where the AsYouType functionality did not work with forced_root_block set to false. #TINY-1030
+Version 1.0.0 (2017-01-11)
+  Initial release.

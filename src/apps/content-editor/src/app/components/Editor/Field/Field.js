@@ -174,6 +174,15 @@ export default connect(state => {
             onSave={onSave}
             type={datatype}
             maxLength="16000"
+            skin="oxide"
+            skinURL="/vendors/tinymce/skins/ui/oxide"
+            contentCSS="/vendors/tinymce/content.css"
+            externalPlugins={{
+              advcode: "/vendors/tinymce/plugins/advcode/plugin.js",
+              powerpaste: "/vendors/tinymce/plugins/powerpaste/plugin.js",
+              formatpainter: "/vendors/tinymce/plugins/formatpainter/plugin.js",
+              pageembed: "/vendors/tinymce/plugins/pageembed/plugin.js"
+            }}
           />
         </div>
       );
@@ -276,7 +285,7 @@ export default connect(state => {
         return Object.keys(props.allItems)
           .filter(
             itemZUID =>
-              !itemZUID.contains("new") && // exclude new items
+              !itemZUID.includes("new") && // exclude new items
               props.allItems[itemZUID].meta.ZUID && // ensure the item has a zuid
               props.allItems[itemZUID].web.pathPart // exclude items non-routeable items
           )

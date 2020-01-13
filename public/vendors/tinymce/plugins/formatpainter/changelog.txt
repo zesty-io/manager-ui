@@ -1,0 +1,8 @@
+Version 1.1.0 (2019-03-28)
+  Changed so that formats registered by the format painter are namespaced with a prefix #FOPA-25
+  Added checklist and liststyletype format registration #FOPA-7
+  Fixed an issue that made the format painter too lenient when matching/reading formats #FOPA-23
+  Fixed an issue where applying formats with keyboard shortcut would toggle off the format painter #FOPA-22
+  Fixed an issue where formats with selectors would be handled incorrectly #FOPA-22
+Version 1.0.0 (2019-01-07)
+  Initial release.

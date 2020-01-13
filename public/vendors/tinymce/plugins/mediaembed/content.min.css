@@ -1,0 +1,58 @@
+.ephox-summary-card {
+  border: 1px solid #aaa;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+    0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  padding: 10px;
+  overflow: hidden;
+  margin-bottom: 1em;
+}
+.ephox-summary-card a {
+  text-decoration: none;
+  color: inherit;
+}
+.ephox-summary-card a:visited {
+  color: inherit;
+}
+.ephox-summary-card-title {
+  font-size: 1.2em;
+  display: block;
+}
+.ephox-summary-card-author {
+  color: #999;
+  display: block;
+  margin-top: 0.5em;
+}
+.ephox-summary-card-website {
+  color: #999;
+  display: block;
+  margin-top: 0.5em;
+}
+.ephox-summary-card-thumbnail {
+  max-width: 180px;
+  max-height: 180px;
+  margin-left: 2em;
+  float: right;
+}
+.ephox-summary-card-description {
+  margin-top: 0.5em;
+  display: block;
+}
+div[data-ephox-embed-iri][data-mce-selected="2"] .mce-shim {
+  display: none;
+}
+div[data-ephox-embed-iri] .mce-shim {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7);
+}
+div[data-ephox-embed-iri] {
+  position: relative;
+}
+div[data-ephox-embed-iri] iframe,
+div[data-ephox-embed-iri] video,
+div[data-ephox-embed-iri] audio {
+  display: block;
+}

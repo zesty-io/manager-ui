@@ -93,8 +93,7 @@ if (process.env.NODE_ENV === "PRODUCTION") {
     URL_ACCOUNTS: "http://accounts.zesty.localdev:3100",
 
     COOKIE_NAME: "DEV_APP_SID",
-    COOKIE_DOMAIN: ".zesty.localdev",
-    service: {}
+    COOKIE_DOMAIN: ".zesty.localdev"
   };
 }
 
@@ -128,7 +127,6 @@ module.exports = {
   },
   plugins: [
     extractLess,
-
     // Inject app config into bundle
     new webpack.DefinePlugin({
       __CONFIG__: JSON.stringify(CONFIG)
