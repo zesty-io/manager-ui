@@ -1,14 +1,7 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import { HashRouter, Route } from "react-router-dom";
+import { BrowserRouter, Route } from "react-router-dom";
 import { get } from "idb-keyval";
-
-// Error reporting
-import * as Sentry from "@sentry/browser";
-Sentry.init({
-  dsn: "https://af24d09ea04a4170ac8f914cc2eb54ad@sentry.io/1352320"
-});
 
 import { injectReducer } from "shell/store";
 
@@ -31,11 +24,11 @@ window.ContentEditorApp = class ContentEditorApp extends React.Component {
   componentWillMount() {
     try {
       Promise.all([
-        get(`${zesty.site.zuid}:user:selected_lang`),
-        get(`${zesty.site.zuid}:contentNav`),
-        get(`${zesty.site.zuid}:contentModels`),
-        get(`${zesty.site.zuid}:contentModelFields`),
-        get(`${zesty.site.zuid}:contentModelItems`)
+        get(`${zesty.instance.zuid}:user:selected_lang`),
+        get(`${zesty.instance.zuid}:contentNav`),
+        get(`${zesty.instance.zuid}:contentModels`),
+        get(`${zesty.instance.zuid}:contentModelFields`),
+        get(`${zesty.instance.zuid}:contentModelItems`)
       ]).then(results => {
         const [lang, nav, models, fields, items] = results;
 
@@ -69,7 +62,7 @@ window.ContentEditorApp = class ContentEditorApp extends React.Component {
 
         // if (Array.isArray(itemZUIDs)) {
         //   const items = itemZUIDs.map(itemZUID =>
-        //     get(`${zesty.site.zuid}:contentModelItems:${itemZUID}`)
+        //     get(`${zesty.instance.zuid}:contentModelItems:${itemZUID}`)
         //   );
         //
         //   Promise.all(items).then(itemsArr => {
@@ -119,8 +112,7 @@ window.ContentEditorApp = class ContentEditorApp extends React.Component {
   render() {
     return (
       <Provider store={ZESTY_REDUX_STORE}>
-        <HashRouter
-          hashType="hashbang"
+        <BrowserRouter
           getUserConfirmation={(message, callback) => {
             if (message === "confirm") {
               openNavigationModal();
@@ -131,7 +123,7 @@ window.ContentEditorApp = class ContentEditorApp extends React.Component {
           }}
         >
           <Route component={ContentEditor} />
-        </HashRouter>
+        </BrowserRouter>
       </Provider>
     );
   }

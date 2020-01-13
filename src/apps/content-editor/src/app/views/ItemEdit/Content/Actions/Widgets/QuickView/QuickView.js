@@ -93,13 +93,13 @@ export const QuickView = React.memo(function QuickView(props) {
             </Button>
             <ButtonGroup>
               {props.is_developer && (
-                <Url href={`#!/schema/${props.modelZUID}`}>
+                <Url href={`/schema/${props.modelZUID}`}>
                   <i className="icon fas fa-database" aria-hidden="true" />
                   &nbsp;Edit Schema
                 </Url>
               )}
               {props.is_developer && (
-                <Url href="#!/editor/">
+                <Url href="/editor/">
                   <i className="icon fas fa-code" aria-hidden="true" />
                   &nbsp;Edit Code
                 </Url>

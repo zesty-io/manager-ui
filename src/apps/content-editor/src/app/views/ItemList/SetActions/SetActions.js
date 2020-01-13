@@ -52,7 +52,7 @@ export class SetActions extends Component {
               id="AddItemButton"
               className={cx(styles.Action, styles.Create)}
               onClick={() =>
-                (window.location.hash = `#!/content/${this.props.modelZUID}/new`)
+                (window.location.hash = `/content/${this.props.modelZUID}/new`)
               }
             >
               <i className="fa fa-plus" aria-hidden="true" />
@@ -101,7 +101,7 @@ export class SetActions extends Component {
               id="AddCSVButton"
               className={cx(styles.Action, styles.Create)}
               onClick={() =>
-                (window.location.hash = `#!/content/${this.props.modelZUID}/import`)
+                (window.location.hash = `/content/${this.props.modelZUID}/import`)
               }
             >
               <i className="fa fa-upload" aria-hidden="true" />
@@ -112,7 +112,7 @@ export class SetActions extends Component {
               <Button
                 className={cx(styles.Action)}
                 onClick={() =>
-                  (window.location.hash = `#!/schema/${this.props.modelZUID}`)
+                  (window.location.hash = `/schema/${this.props.modelZUID}`)
                 }
               >
                 <i className="icon fas fa-database" aria-hidden="true" />

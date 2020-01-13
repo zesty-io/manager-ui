@@ -10,11 +10,11 @@ export class Header extends PureComponent {
     return (
       <header className={styles.Header}>
         <span>
-          <Url href="#!/content/home">
+          <Url href="/content/home">
             <i className="fas fa-tachometer-alt" aria-hidden="true" />
           </Url>
           <i className="fa fa-angle-right" />
-          <Url href={`#!/content/${this.props.model.ZUID}`}>
+          <Url href={`/content/${this.props.model.ZUID}`}>
             {this.props.model.label}
           </Url>
           <i className="fa fa-angle-right" />

@@ -79,7 +79,7 @@ describe("Actions in content editor", () => {
   });
 
   it("Displays a new item in the list", () => {
-    cy.get('[href="#!/content/6-aa7788-9dhmdf"]')
+    cy.get('[href="/content/6-aa7788-9dhmdf"]')
       .first()
       .click({ force: true });
     cy.contains(timestamp).should("exist");

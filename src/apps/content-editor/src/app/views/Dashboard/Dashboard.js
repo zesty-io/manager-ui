@@ -169,7 +169,7 @@ export default connect(function(state, props) {
                       <h2 className={styles.columns}>
                         <div className={styles.column}>
                           Recent{" "}
-                          <Url href={`#!/content/${contentModelZUID}`}>
+                          <Url href={`/content/${contentModelZUID}`}>
                             {model && model.label}
                           </Url>{" "}
                           Edits
@@ -182,7 +182,7 @@ export default connect(function(state, props) {
                           return (
                             <li key={i}>
                               <Url
-                                href={`#!/content/${contentModelZUID}/${item.meta.ZUID}`}
+                                href={`/content/${contentModelZUID}/${item.meta.ZUID}`}
                               >
                                 {item.web.metaTitle}
                               </Url>
@@ -195,7 +195,7 @@ export default connect(function(state, props) {
                       <Button
                         kind="save"
                         onClick={() =>
-                          (window.location.hash = `#!/content/${contentModelZUID}/new`)
+                          (window.location.hash = `/content/${contentModelZUID}/new`)
                         }
                       >
                         <i className="fa fa-plus" aria-hidden="true" />

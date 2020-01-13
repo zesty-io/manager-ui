@@ -237,7 +237,7 @@ export default connect(state => {
           <h1 style={{ color: "#e53c05" }}>
             <i className="fa fa-exclamation-triangle" />
             &nbsp;
-            <Url href={`/#!/schema/${contentModelZUID}/field/${ZUID}`}>
+            <Url href={`//schema/${contentModelZUID}/field/${ZUID}`}>
               The <em>{label}</em> field is missing option settings. Edit the
               field to add yes/no values.
             </Url>
@@ -287,7 +287,7 @@ export default connect(state => {
             if (item.web.metaTitle) {
               html += `<strong style="display:block;font-weight:bold;">${item.web.metaTitle}</strong>`;
             } else {
-              html += `<small style="display:block;font-weight:bold;"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;<a href="#!/content/${item.meta.contentModelZUID}/${itemZUID}">${itemZUID}</a> is missing a meta title</small>`;
+              html += `<small style="display:block;font-weight:bold;"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;<a href="/content/${item.meta.contentModelZUID}/${itemZUID}">${itemZUID}</a> is missing a meta title</small>`;
             }
 
             if (item.web.path || item.web.pathPart) {
@@ -527,7 +527,7 @@ export default connect(state => {
 
     default:
       return (
-        <Url href={`/#!/schema/${contentModelZUID}/field/${ZUID}`}>
+        <Url href={`//schema/${contentModelZUID}/field/${ZUID}`}>
           Failed loading {label} field. Click here to view field schema.
         </Url>
       );

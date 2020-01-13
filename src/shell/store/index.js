@@ -2,14 +2,19 @@ import { applyMiddleware, combineReducers, createStore } from "redux";
 import thunkMiddleware from "redux-thunk";
 import { createLogger } from "redux-logger";
 
+import { fetchResource, resolveFieldOptions } from "./middleware/api";
+import { localStorage } from "./middleware/local-storage";
+
 import { auth } from "./auth";
 import { user } from "./user";
-import { site } from "./site";
+import { languages } from "./languages";
+
+import { instance } from "./instance";
 import ui from "./ui";
 
-const loggerMiddleware = createLogger({
+const actionLogger = createLogger({
   collapsed: true,
-  diff: true
+  diff: false
 });
 
 function createReducer(asyncReducers) {
@@ -24,7 +29,8 @@ function createReducer(asyncReducers) {
     },
     auth,
     user,
-    site,
+    languages,
+    instance,
     ui
   };
 
@@ -39,8 +45,11 @@ function configureStore(initialState = {}) {
     createReducer(),
     initialState,
     applyMiddleware(
+      // localStorage,
+      fetchResource,
+      // resolveFieldOptions,
       thunkMiddleware, // lets us dispatch() functions
-      loggerMiddleware // neat middleware that logs actions
+      actionLogger
     )
   );
 

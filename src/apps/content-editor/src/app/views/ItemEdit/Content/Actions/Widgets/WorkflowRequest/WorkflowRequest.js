@@ -23,19 +23,19 @@ export class WorkflowRequest extends PureComponent {
 
   componentDidMount() {
     //fetch team members and fields
-    request(`${CONFIG.API_ACCOUNTS}/instances/${zesty.site.zuid}/users`).then(
-      data => {
-        this.setState({ loaded: true });
-        if (data.status === 400) {
-          notify({
-            message: `Failure fetching users: ${data.error}`,
-            kind: "error"
-          });
-        } else {
-          this.setState({ users: data.data });
-        }
+    request(
+      `${CONFIG.API_ACCOUNTS}/instances/${zesty.instance.zuid}/users`
+    ).then(data => {
+      this.setState({ loaded: true });
+      if (data.status === 400) {
+        notify({
+          message: `Failure fetching users: ${data.error}`,
+          kind: "error"
+        });
+      } else {
+        this.setState({ users: data.data });
       }
-    );
+    });
   }
 
   handleSelectField = evt => {

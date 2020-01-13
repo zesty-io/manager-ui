@@ -40,7 +40,7 @@ export function request(url, opts = {}) {
     }
   }
 
-  opts.credentials = opts.credentials || "omit";
+  opts.credentials = opts.credentials || "include";
   opts.method = opts.method || "GET";
 
   return fetch(url, opts)

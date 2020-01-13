@@ -16,13 +16,13 @@ export class ContentNav extends React.Component {
     hiddenClosed: true
   };
 
-  componentWillUnmount() {
-    window.removeEventListener("hashchange", this.handleHashChange);
-  }
+  // componentWillUnmount() {
+  //   window.removeEventListener("hashchange", this.handleHashChange);
+  // }
 
-  componentDidMount() {
-    window.addEventListener("hashchange", this.handleHashChange);
-  }
+  // componentDidMount() {
+  //   window.addEventListener("hashchange", this.handleHashChange);
+  // }
 
   handleOpen = path => {
     this.props.dispatch(collapseNavItem(path));
@@ -34,17 +34,17 @@ export class ContentNav extends React.Component {
 
   handleCreateSelect = (name, ZUID) => {
     if (ZUID && ZUID != "0") {
-      window.location.hash = `#!/content/${ZUID}/new`;
+      window.location = `/content/${ZUID}/new`;
     }
   };
 
-  handleHashChange = () => {
-    if (window.location.hash !== this.state.selected) {
-      this.setState({
-        selected: window.location.hash
-      });
-    }
-  };
+  // handleHashChange = () => {
+  //   if (window.location.hash !== this.state.selected) {
+  //     this.setState({
+  //       selected: window.location
+  //     });
+  //   }
+  // };
 
   render() {
     return (

@@ -8,6 +8,8 @@ import { store } from "shell/store";
 import PrivateRoute from "./components/private-route";
 import Shell from "./views/Shell";
 
+// Exposed as a global so dynamically loaded apps
+// can inject their reducers into the store
 window.ZESTY_REDUX_STORE = store;
 
 // Some legacy code refers to this global which is an observable
@@ -16,6 +18,10 @@ window.zesty = riot.observable(store.getState());
 
 // interploated by webpack at build time
 window.CONFIG = __CONFIG__;
+
+// Update API config to include the current instance zuid
+const state = store.getState();
+window.CONFIG.API_INSTANCE = `//${state.instance.zuid}${window.CONFIG.API_INSTANCE}`;
 
 ReactDOM.render(
   <Provider store={store}>

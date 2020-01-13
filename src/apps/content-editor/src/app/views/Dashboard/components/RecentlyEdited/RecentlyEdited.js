@@ -24,7 +24,7 @@ export class RecentlyEdited extends React.Component {
                 {this.props.items.map((item, i) => (
                   <li key={i}>
                     <Url
-                      href={`#!/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
+                      href={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
                     >
                       {item.web.metaTitle ||
                         `Item without a Meta Title: ${item.meta.ZUID}`}

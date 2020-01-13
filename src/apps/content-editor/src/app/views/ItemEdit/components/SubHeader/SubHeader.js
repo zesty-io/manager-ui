@@ -15,7 +15,7 @@ export class SubHeader extends Component {
             ) : (
               <Url
                 target="_blank"
-                href={`${CONFIG.apps.accounts}/instances/${this.props.modelZUID}/launch`}
+                href={`${CONFIG.URL_ACCOUNTS}/instances/${this.props.modelZUID}/launch`}
               >
                 <i className="fa fa-rocket" aria-hidden="true" />
                 &nbsp;Launch Instance

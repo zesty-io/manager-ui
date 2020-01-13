@@ -40,7 +40,7 @@ export const ToggleCell = React.memo(function ToggleCell(props) {
       return (
         <span className={cx(props.className, styles.ToggleCell)}>
           <Url
-            href={`/#!/schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`}
+            href={`//schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`}
           >
             <i className="fas fa-exclamation-triangle" />
             &nbsp;Missing toggle options.

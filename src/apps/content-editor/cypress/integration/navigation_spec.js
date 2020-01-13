@@ -6,7 +6,7 @@ describe("Navigation through content editor", () => {
   });
 
   it("Renders home", () => {
-    cy.visit("/#!/content/home");
+    cy.visit("//content/home");
     cy.get(".content-nav", { timeout: 5000 }).should("exist");
     cy.contains("Pageview/Traffic").should("exist");
   });
@@ -54,7 +54,7 @@ describe("Navigation through content editor", () => {
     cy.contains("Newell 343").click();
   });
   it("Navigates back to the dashboard using breadcrumb", () => {
-    cy.get('[href="#!/content/home"] > .fa').click();
+    cy.get('[href="/content/home"] > .fa').click();
     cy.get(".content-nav").should("exist");
     cy.contains("Pageview/Traffic").should("exist");
   });

@@ -15,7 +15,7 @@ export const DropdownCell = React.memo(function DropdownCell(props) {
     return (
       <span className={cx(props.className, styles.DropdownCell)}>
         <Url
-          href={`/#!/schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`}
+          href={`//schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`}
         >
           <i className="fas fa-exclamation-triangle" />
           &nbsp;Missing dropdown options.

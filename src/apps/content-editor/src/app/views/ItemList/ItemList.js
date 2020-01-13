@@ -116,7 +116,7 @@ export default connect((state, props) => {
         // First item is always the column row
         if (this.state.items.length === 2) {
           // redirect to the single entry in content clippings
-          window.location.hash = `#!/content/${this.props.modelZUID}/${this.state.items[1].meta.ZUID}`;
+          window.location.hash = `/content/${this.props.modelZUID}/${this.state.items[1].meta.ZUID}`;
         }
       }
 

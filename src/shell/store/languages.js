@@ -4,7 +4,6 @@ export function languages(state = [], action) {
   switch (action.type) {
     case "FETCH_LANGUAGES_SUCCESS":
       return action.data;
-      break;
     default:
       return state;
   }

@@ -68,8 +68,8 @@ export default connect(state => {
     .map((item, i) => {
       const url =
         item.type === "item"
-          ? `#!/content/${item.contentModelZUID}/${item.ZUID}`
-          : `#!/content/${item.contentModelZUID}`;
+          ? `/content/${item.contentModelZUID}/${item.ZUID}`
+          : `/content/${item.contentModelZUID}`;
 
       return (
         <Fragment key={item.ZUID}>

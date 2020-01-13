@@ -6,11 +6,11 @@ import styles from "./Shell.less";
 import GlobalSidebar from "shell/components/global-sidebar";
 import GlobalTopbar from "shell/components/global-topbar";
 
-import { fetchSiteSettings } from "shell/store/site";
+import { fetchProducts } from "shell/store/user";
 // import { subMenuLoad } from "shell/store/ui/global-sub-menu";
 
 export default connect(state => state)(function Shell(props) {
-  useEffect(() => props.dispatch(fetchSiteSettings()), []);
+  useEffect(() => props.dispatch(fetchProducts()), []);
 
   return (
     <section className={styles.app}>
@@ -32,7 +32,7 @@ export default connect(state => state)(function Shell(props) {
             <Route path="/seo" component={SeoApp} />
             <Route path="/settings" component={SettingsApp} />
 
-            {/*this.props.site.settings.products.map(product => {
+            {/*this.props.user.products.map(product => {
               return <Route path={`/${product}`} component={ContentEditorApp} />
             })*/}
 

@@ -67,9 +67,9 @@ export const WidgetDeleteItem = React.memo(function WidgetDeleteItem(props) {
                     props.modelType === "pageset" ||
                     props.modelType === "dataset"
                   ) {
-                    window.location.hash = `#!/content/${props.modelZUID}`;
+                    window.location.hash = `/content/${props.modelZUID}`;
                   } else {
-                    window.location.hash = "#!/content/home";
+                    window.location.hash = "/content/home";
                   }
                 }
 

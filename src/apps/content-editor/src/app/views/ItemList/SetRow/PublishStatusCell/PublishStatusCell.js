@@ -34,7 +34,7 @@ export const PublishStatusCell = React.memo(function PublishStatusCell(props) {
     return (
       <Url
         className={cx(styles.PublishStatusCell)}
-        href={`${zesty.site.preview_domain}${props.item.web.path}`}
+        href={`${zesty.instance.preview_domain}${props.item.web.path}`}
         target="_blank"
       >
         {props.item &&
