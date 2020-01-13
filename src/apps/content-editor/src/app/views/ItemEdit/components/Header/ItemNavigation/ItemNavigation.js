@@ -20,7 +20,7 @@ export const ItemNavigation = ({
             styles.Item,
             slug === "content" ? styles.Selected : null
           )}
-          href={`//content/${modelZUID}/${itemZUID}/content`}
+          href={`/content/${modelZUID}/${itemZUID}/content`}
         >
           Content
         </Url>
@@ -35,7 +35,7 @@ export const ItemNavigation = ({
       >
         <Url
           className={cx(styles.Item, slug === "meta" ? styles.Selected : null)}
-          href={`//content/${modelZUID}/${itemZUID}/meta`}
+          href={`/content/${modelZUID}/${itemZUID}/meta`}
         >
           Meta
         </Url>
@@ -44,7 +44,7 @@ export const ItemNavigation = ({
         <Url
           data-cy="head"
           className={cx(styles.Item, slug === "head" ? styles.Selected : null)}
-          href={`//content/${modelZUID}/${itemZUID}/head`}
+          href={`/content/${modelZUID}/${itemZUID}/head`}
         >
           Head
         </Url>

@@ -11,7 +11,7 @@ export class OneToOneCell extends PureComponent {
       return (
         <span className={cx(this.props.className, styles.OneToOneCell)}>
           <Url
-            href={`//schema/${this.props.field.contentModelZUID}/field/${this.props.field.ZUID}`}
+            href={`/schema/${this.props.field.contentModelZUID}/field/${this.props.field.ZUID}`}
           >
             <i className="fas fa-exclamation-triangle" />
             &nbsp;Missing field configuration

@@ -28,7 +28,7 @@ export class OneToManyCell extends PureComponent {
           )}
         >
           <Url
-            href={`//schema/${this.props.field.contentModelZUID}/field/${this.props.field.ZUID}`}
+            href={`/schema/${this.props.field.contentModelZUID}/field/${this.props.field.ZUID}`}
           >
             <i className="fas fa-exclamation-triangle" />
             &nbsp;Missing field configuration
@@ -63,7 +63,7 @@ export class OneToManyCell extends PureComponent {
                     <Tag
                       key={i}
                       value={item.meta.ZUID}
-                      link={`//${CONFIG.MANAGER_URL}//content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
+                      link={`//${CONFIG.URL_MANAGER}/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
                       onRemove={this.onRemove}
                     >
                       {item.data[relatedField.name]}
