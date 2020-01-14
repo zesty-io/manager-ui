@@ -22,7 +22,7 @@ export default connect(state => state)(function Shell(props) {
         <GlobalTopbar />
         <div className={styles.SubApp}>
           <Switch>
-            <Route path="/content" component={ContentEditorApp} />
+            {/* <Route path="/content" component={ContentEditorApp} /> */}
             <Route path="/media" component={MediaApp} />
             <Route path="/audit-trail" component={AuditTrailApp} />
             <Route path="/analytics" component={AnalyticsApp} />
@@ -36,7 +36,7 @@ export default connect(state => state)(function Shell(props) {
               return <Route path={`/${product}`} component={ContentEditorApp} />
             })*/}
 
-            <Redirect from="/" to="/content" />
+            <Redirect from="/" to="/schema" />
 
             {/* TODO: handle no match */}
           </Switch>

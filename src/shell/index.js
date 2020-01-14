@@ -27,7 +27,8 @@ ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
       <PrivateRoute>
-        <Route path="/" component={Shell} />
+        {/* <Route path="/" component={Shell} /> */}
+        <Shell />
       </PrivateRoute>
     </BrowserRouter>
   </Provider>,

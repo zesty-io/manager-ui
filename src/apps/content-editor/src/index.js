@@ -112,19 +112,23 @@ window.ContentEditorApp = class ContentEditorApp extends React.Component {
   render() {
     return (
       <Provider store={ZESTY_REDUX_STORE}>
-        <BrowserRouter
-          getUserConfirmation={(message, callback) => {
-            if (message === "confirm") {
-              openNavigationModal();
-              callback(false);
-            } else {
-              callback(true);
-            }
-          }}
-        >
-          <Route component={ContentEditor} />
-        </BrowserRouter>
+        <Route component={ContentEditor} />
       </Provider>
+
+      // <Provider store={ZESTY_REDUX_STORE}>
+      //   <BrowserRouter
+      //     getUserConfirmation={(message, callback) => {
+      //       if (message === "confirm") {
+      //         openNavigationModal();
+      //         callback(false);
+      //       } else {
+      //         callback(true);
+      //       }
+      //     }}
+      //   >
+      //     <Route component={ContentEditor} />
+      //   </BrowserRouter>
+      // </Provider>
     );
   }
 };

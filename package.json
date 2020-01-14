@@ -6,7 +6,7 @@
     "precommit": "pretty-quick --staged",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node bin/build",
-    "start": "NODE_ENV=development node bin/build & npm run serve",
+    "start": "NODE_ENV=development node bin/start & npm run serve",
     "serve": "npx cross-env serve build/ -l 9000 --single"
   },
   "author": "",
