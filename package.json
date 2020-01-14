@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "precommit": "pretty-quick --staged",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node bin/build",
     "start": "NODE_ENV=development node bin/start & npm run serve",
@@ -76,5 +75,10 @@
     "webpack": "4.41.5",
     "webpack-cli": "3.3.10",
     "webpackbar": "4.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
   }
 }
