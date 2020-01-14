@@ -8,7 +8,10 @@
     "start": "NODE_ENV=development node bin/start & npm run serve",
     "serve": "npx cross-env serve build/ -l 9000 --single"
   },
-  "author": "",
+  "author": "Zesty.io<developers@zesty.io>",
+  "contributors": [
+    "Stuart Runyan<stuart@zesty.io>"
+  ],
   "license": "UNLICENSED",
   "dependencies": {
     "@aeaton/react-prosemirror": "0.21.1",

@@ -1,6 +1,7 @@
 import React, { PureComponent } from "react";
 import cx from "classnames";
 
+import { Loader } from "@zesty-io/core/Loader";
 import { Tag } from "@zesty-io/core/Tag";
 import { Url } from "@zesty-io/core/Url";
 
