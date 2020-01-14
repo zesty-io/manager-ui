@@ -4,6 +4,7 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSave,
+  faPlus,
   faSpinner,
   faTimesCircle,
   faUpload,
