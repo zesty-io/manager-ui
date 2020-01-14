@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import cx from "classnames";
 import { Prompt } from "react-router-dom";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 
 import styles from "./NavigationModal.less";
@@ -76,7 +78,7 @@ export class Modal extends Component {
     return (
       <section className={styles.Modal}>
         <Button className={styles.Close} onClick={this.close}>
-          <i className="fa fa-times-circle" aria-hidden="true" />
+          <FontAwesomeIcon icon={faTimesCircle} />
         </Button>
         {this.props.children}
       </section>

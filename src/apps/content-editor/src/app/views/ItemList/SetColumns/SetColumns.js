@@ -1,6 +1,8 @@
 import React, { PureComponent } from "react";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronUp, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { Loader } from "@zesty-io/core/Loader";
 
 import styles from "./SetColumns.less";
@@ -39,9 +41,9 @@ export class SetColumns extends PureComponent {
                     {field.label}&nbsp;
                     {this.props.sortedBy === field.name ? (
                       this.props.reverseSort ? (
-                        <i className="fa fa-chevron-down" />
+                        <FontAwesomeIcon icon={faChevronDown} />
                       ) : (
-                        <i className="fa fa-chevron-up" />
+                        <FontAwesomeIcon icon={faChevronUp} />
                       )
                     ) : (
                       ""

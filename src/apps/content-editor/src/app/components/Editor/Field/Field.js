@@ -9,6 +9,9 @@ import {
   searchItems
 } from "../../../../store/contentModelItems";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+
 // it would be nice to have a central import for all of these
 // instead of individually importing
 import { Url } from "@zesty-io/core/Url";
@@ -244,7 +247,7 @@ export default connect(state => {
       } else {
         return (
           <h1 style={{ color: "#e53c05" }}>
-            <i className="fa fa-exclamation-triangle" />
+            <FontAwesomeIcon icon={faExclamationTriangle} />
             &nbsp;
             <Url href={`/schema/${contentModelZUID}/field/${ZUID}`}>
               The <em>{label}</em> field is missing option settings. Edit the

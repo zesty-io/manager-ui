@@ -1,9 +1,12 @@
 import * as Sentry from "@sentry/browser";
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import styles from "./AppError.less";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBug, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 
+import styles from "./AppError.less";
 export default connect((state, props) => {
   return { ...props, user: state.user };
 })(
@@ -34,7 +37,7 @@ export default connect((state, props) => {
         return (
           <section className={styles.AppCrash}>
             <h1 className={styles.Display}>
-              <i className="fas fa-bug" aria-hidden="true" />
+              <FontAwesomeIcon icon={faBug} />
               &nbsp;We apologize but something went wrong
             </h1>
             <h3 className={styles.SubHead}>
@@ -53,8 +56,7 @@ export default connect((state, props) => {
             </h3>
             <p>
               <Button kind="save" onClick={() => Sentry.showReportDialog()}>
-                <i className="fas fa-envelope" aria-hidden="true" />
-                &nbsp;Click Here to Report
+                <FontAwesomeIcon icon={faEnvelope} /> &nbsp;Click Here to Report
               </Button>
             </p>
           </section>

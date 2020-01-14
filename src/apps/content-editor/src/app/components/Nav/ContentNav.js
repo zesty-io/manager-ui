@@ -1,5 +1,7 @@
 import React from "react";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { ReorderNav } from "../ReorderNav";
 import { Nav } from "@zesty-io/core/Nav";
 import { Button } from "@zesty-io/core/Button";
@@ -57,7 +59,7 @@ export class ContentNav extends React.Component {
                 riot.mount(document.querySelector("#modalMount"), "z-spotlight")
               }
             >
-              <i className="fa fa-search" />
+              <FontAwesomeIcon icon={faSearch} />
               Search
             </Button>
             <Button

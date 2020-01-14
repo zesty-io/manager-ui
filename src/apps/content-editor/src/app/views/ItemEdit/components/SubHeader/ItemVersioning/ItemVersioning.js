@@ -1,13 +1,19 @@
 import React from "react";
 
-import { publishItem } from "../../../../../../store/contentModelItems";
-import { notify } from "shell/store/notifications";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faSave,
+  faSpinner,
+  faCalendar
+} from "@fortawesome/free-solid-svg-icons";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
 
 import { ScheduleFlyout } from "./ScheduleFlyout";
 import { VersionSelector } from "./VersionSelector";
+
+import { publishItem } from "../../../../../../store/contentModelItems";
+import { notify } from "shell/store/notifications";
 
 import styles from "./ItemVersioning.less";
 export class ItemVersioning extends React.PureComponent {
@@ -115,7 +121,7 @@ export class ItemVersioning extends React.PureComponent {
               disabled={schedulingDisabled || false}
               onClick={this.handleOpenSchedule}
             >
-              <i className="fa fa-calendar" aria-hidden="true" />
+              <FontAwesomeIcon icon={faCalendar} />
             </Button>
             <ScheduleFlyout
               isOpen={this.state.ScheduleFlyout}
@@ -133,9 +139,9 @@ export class ItemVersioning extends React.PureComponent {
           id="SaveItemButton"
         >
           {this.props.saving ? (
-            <i className={`fa fa-spinner fa-spin`} aria-hidden="true" />
+            <FontAwesomeIcon icon={faSpinner} />
           ) : (
-            <i className="fas fa-save" aria-hidden="true" />
+            <FontAwesomeIcon icon={faSave} />
           )}
           Save New Version&nbsp;
           <small>({this.props.OS === "win" ? "CTRL" : "CMD"} + S)</small>

@@ -1,5 +1,7 @@
 import React from "react";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
@@ -25,7 +27,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
     <Card id="WidgetQuickShare" className="pageDetailWidget">
       <CardHeader>
         <span>
-          <i className="fas fa-share-alt" aria-hidden="true" />
+          <FontAwesomeIcon icon={faShareAlt} />
           &nbsp;Quick Share Options
         </span>
       </CardHeader>

@@ -1,17 +1,25 @@
 import React, { Component, Fragment } from "react";
 import moment from "moment-timezone";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  publishItem,
-  unschedule
-} from "../../../../../../../store/contentModelItems";
-import { notify } from "shell/store/notifications";
+  faBan,
+  faTimes,
+  faCalendar,
+  faExclamationTriangle
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core";
 import { FieldTypeDate } from "@zesty-io/core";
 import { Button } from "@zesty-io/core";
 import { ButtonGroup } from "@zesty-io/core";
 import { FieldTypeDropDown } from "@zesty-io/core";
+
+import {
+  publishItem,
+  unschedule
+} from "../../../../../../../store/contentModelItems";
+import { notify } from "shell/store/notifications";
 
 const DISPLAY_FORMAT = "MMMM Do YYYY, [at] h:mm a";
 const UTC_FORMAT = "YYYY-MM-DD HH:mm:ss";
@@ -156,12 +164,12 @@ export default class ScheduleFlyout extends Component {
         <section className={styles.Flyout}>
           <Card className={styles.Card}>
             <CardHeader>
-              <i className="fa fa-calendar" aria-hidden="true" />
+              <FontAwesomeIcon icon={faCalendar} />
               &nbsp;Scheduled Publishing
             </CardHeader>
             <CardContent>
               <p className={styles.Warn}>
-                <i className="fa fa-exclamation-triangle" aria-hidden="true" />{" "}
+                <FontAwesomeIcon icon={faExclamationTriangle} />
                 <strong>
                   New versions can not be published while there is a version
                   scheduled.
@@ -197,12 +205,13 @@ export default class ScheduleFlyout extends Component {
                   disabled={this.state.scheduling}
                   onClick={this.handleCancelPublish}
                 >
-                  <i className="fa fa-ban" aria-hidden="true" />
-                  Cancel Publishing Version {this.props.item.scheduling.version}
+                  <FontAwesomeIcon icon={faBan} />
+                  &nbsp;Cancel Publishing Version&nbsp;
+                  {this.props.item.scheduling.version}
                 </Button>
                 <Button kind="cancel" onClick={this.props.toggleOpen}>
-                  <i className="fa fa-times" aria-hidden="true" />
-                  Close
+                  <FontAwesomeIcon icon={faTimes} />
+                  &nbsp;Close
                 </Button>
               </ButtonGroup>
             </CardFooter>

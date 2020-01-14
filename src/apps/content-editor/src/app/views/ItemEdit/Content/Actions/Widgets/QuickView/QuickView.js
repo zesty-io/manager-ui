@@ -1,6 +1,14 @@
 import React, { useState, Fragment } from "react";
 import moment from "moment-timezone";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCodeBranch,
+  faBolt,
+  faEnvelope,
+  faDatabase,
+  faCode
+} from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
@@ -25,8 +33,8 @@ export const QuickView = React.memo(function QuickView(props) {
         <CardHeader>
           <section className={styles.StatusHeader}>
             <article>
-              <i className="fas fa-code-branch" aria-hidden="true" /> Item
-              Status
+              <FontAwesomeIcon icon={faCodeBranch} />
+              &nbsp;Item Status
             </article>
             <article
               className={
@@ -70,7 +78,7 @@ export const QuickView = React.memo(function QuickView(props) {
                       : props.preview_domain
                   }/-/instant/${props.itemZUID}.json`}
                 >
-                  <i className="fas fa-bolt" aria-hidden="true" />
+                  <FontAwesomeIcon icon={faBolt} />
                   &nbsp;{`/-/instant/${props.itemZUID}.json`}
                 </Url>
               </li>
@@ -88,19 +96,19 @@ export const QuickView = React.memo(function QuickView(props) {
         <CardFooter>
           <ButtonGroup>
             <Button id="WorkflowRequestButton" onClick={handleWorkflow}>
-              <i className="fas fa-envelope" />
+              <FontAwesomeIcon icon={faEnvelope} />
               Workflow Request
             </Button>
             <ButtonGroup>
               {props.is_developer && (
                 <Url href={`/schema/${props.modelZUID}`}>
-                  <i className="icon fas fa-database" aria-hidden="true" />
+                  <FontAwesomeIcon icon={faDatabase} />
                   &nbsp;Edit Schema
                 </Url>
               )}
               {props.is_developer && (
                 <Url href="/editor/">
-                  <i className="icon fas fa-code" aria-hidden="true" />
+                  <FontAwesomeIcon icon={faCode} />
                   &nbsp;Edit Code
                 </Url>
               )}

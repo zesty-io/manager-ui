@@ -1,6 +1,8 @@
-import react from "react";
+import React from "react";
 import moment from "moment-timezone";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUnlock } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Divider } from "@zesty-io/core/Divider";
 import { Button } from "@zesty-io/core/Button";
@@ -48,7 +50,7 @@ export const LockedItem = ({
                 Go Back
               </Button>
               <Button kind="save" onClick={handleUnlock}>
-                <i className="fa fa-unlock" /> Unlock
+                <FontAwesomeIcon icon={faUnlock} /> Unlock
               </Button>
             </ButtonGroup>
           </span>

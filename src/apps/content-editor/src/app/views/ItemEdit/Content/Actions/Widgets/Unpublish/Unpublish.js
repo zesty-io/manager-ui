@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 
-import { notify } from "shell/store/notifications";
-import { unpublishItem } from "../../../../../../../store/contentModelItems";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner, faUnlink } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
+
+import { notify } from "shell/store/notifications";
+import { unpublishItem } from "../../../../../../../store/contentModelItems";
 
 import styles from "./Unpublish.less";
 export const Unpublish = React.memo(function Unpublish(props) {
@@ -72,7 +74,7 @@ export const Unpublish = React.memo(function Unpublish(props) {
       className={styles.Unpublish}
       header={
         <React.Fragment>
-          <i className="fas fa-unlink" aria-hidden="true" />
+          <FontAwesomeIcon icon={faUnlink} />
           &nbsp;Unpublish
         </React.Fragment>
       }
@@ -83,9 +85,9 @@ export const Unpublish = React.memo(function Unpublish(props) {
           disabled={loading || !isPublished}
         >
           {loading ? (
-            <i className="fa fa-spin fa-spinner" aria-hidden="true" />
+            <FontAwesomeIcon icon={faSpinner} />
           ) : (
-            <i className="fas fa-unlink" aria-hidden="true" />
+            <FontAwesomeIcon icon={faUnlink} />
           )}
           Unpublish
         </Button>

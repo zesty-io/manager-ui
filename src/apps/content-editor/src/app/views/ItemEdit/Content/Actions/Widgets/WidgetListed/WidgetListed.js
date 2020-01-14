@@ -1,5 +1,8 @@
 import React from "react";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCode } from "@fortawesome/free-solid-svg-icons";
+
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
@@ -11,7 +14,7 @@ export const WidgetListed = React.memo(function WidgetListed(props) {
     <Card className={styles.WidgetListed}>
       <CardHeader>
         <span>
-          <i className="fas fa-code" aria-hidden="true" />
+          <FontAwesomeIcon icon={faCode} />
           &nbsp;Parsley Behaviors
         </span>
       </CardHeader>

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { Infotip } from "@zesty-io/core/Infotip";
 
@@ -52,7 +54,8 @@ export const MetaDescription = React.memo(function MetaDescription({
       {/* Display errors */}
       {error && (
         <p className={styles.error}>
-          <i className="fas fa-exclamation-triangle"></i>&nbsp;{error}
+          <FontAwesomeIcon icon={faExclamationTriangle} />
+          &nbsp;{error}
         </p>
       )}
 

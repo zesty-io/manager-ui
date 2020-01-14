@@ -3,6 +3,8 @@ import React, { PureComponent, Fragment } from "react";
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
@@ -147,7 +149,7 @@ export class WorkflowRequest extends PureComponent {
             >
               {this.state.sending ? (
                 <Fragment>
-                  <i className="fa fa-spin fa-spinner" aria-hidden="true" />
+                  <FontAwesomeIcon icon={faSpinner} />
                   &nbsp;Sending
                 </Fragment>
               ) : (
