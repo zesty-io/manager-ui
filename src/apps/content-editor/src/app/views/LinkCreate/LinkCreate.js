@@ -99,7 +99,7 @@ export const LinkCreate = connect((state, props) => {
             // this is a successful save
             // message and redirect to new item here
             notify({ message: "Successfully created link", kind: "save" });
-            window.location.hash = `#!/content/link/${res.current_znode_id}`;
+            window.location.hash = `/content/link/${res.current_znode_id}`;
           }
         })
         .catch(err => {

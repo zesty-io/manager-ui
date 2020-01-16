@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSync, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 
 import { notify } from "shell/store/notifications";
@@ -10,7 +13,7 @@ export const WidgetPurgeItem = React.memo(function WidgetPurgeItem(props) {
   return (
     <Card id="WidgetDeleteItem" className="pageDetailWidget">
       <CardHeader>
-        <i className="fas fa-sync" aria-hidden="true" />
+        <FontAwesomeIcon icon={faSync} />
         &nbsp;CDN
       </CardHeader>
       <CardContent className="setting-field">
@@ -23,7 +26,7 @@ export const WidgetPurgeItem = React.memo(function WidgetPurgeItem(props) {
       <CardFooter>
         {loading ? (
           <Button disabled={loading}>
-            <i className="fa fa-spinner" aria-hidden="true" />
+            <FontAwesomeIcon icon={faSpinner} />
             Refreshing Cached Item&hellip;
           </Button>
         ) : (
@@ -56,7 +59,7 @@ export const WidgetPurgeItem = React.memo(function WidgetPurgeItem(props) {
                 });
             }}
           >
-            <i className="fas fa-sync" aria-hidden="true" />
+            <FontAwesomeIcon icon={faSync} />
             Refresh Cached Item
           </Button>
         )}

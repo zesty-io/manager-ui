@@ -2,10 +2,11 @@ import React from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 
-import { fetchAuditTrailPublish } from "../../../../../../../store/contentLogs";
-
-// import { Widget, WidgetHeader, WidgetContent } from "../Widget";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserCheck } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+
+import { fetchAuditTrailPublish } from "../../../../../../../store/contentLogs";
 
 export default connect(state => {
   return {
@@ -56,7 +57,7 @@ export default connect(state => {
         <Card id="WidgetPublishHistory" className="pageDetailWidget">
           <CardHeader>
             <span className="audit-title">
-              <i className="fas fa-user-check" aria-hidden="true" />
+              <FontAwesomeIcon icon={faUserCheck} />
               &nbsp;Publish History
             </span>
             <small>Audit Trail&trade;</small>

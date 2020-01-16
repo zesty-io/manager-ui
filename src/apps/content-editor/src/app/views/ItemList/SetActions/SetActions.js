@@ -1,6 +1,15 @@
 import React, { Component } from "react";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faSave,
+  faPlus,
+  faSpinner,
+  faTimesCircle,
+  faUpload,
+  faDatabase
+} from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 import { Search } from "@zesty-io/core/Search";
 import { Select, Option } from "@zesty-io/core/Select";
@@ -52,10 +61,10 @@ export class SetActions extends Component {
               id="AddItemButton"
               className={cx(styles.Action, styles.Create)}
               onClick={() =>
-                (window.location.hash = `#!/content/${this.props.modelZUID}/new`)
+                (window.location.hash = `/content/${this.props.modelZUID}/new`)
               }
             >
-              <i className="fa fa-plus" aria-hidden="true" />
+              <FontAwesomeIcon icon={faPlus} />
               {this.props.model
                 ? `${this.props.model.label} Item`
                 : "New Model Item"}
@@ -74,14 +83,14 @@ export class SetActions extends Component {
                     aria-hidden="true"
                   />
                 ) : (
-                  <i className="fas fa-save" aria-hidden="true" />
+                  <FontAwesomeIcon icon={faSave} />
                 )}
                 Save All Changes
               </Button>
             )}
             {this.props.loading && (
               <span className={styles.Loading}>
-                <i className={cx("fa fa-spinner", styles.Spinner)} />
+                <FontAwesomeIcon icon={faSpinner} />
                 <span>Loading items</span>
               </span>
             )}
@@ -90,7 +99,7 @@ export class SetActions extends Component {
                 className={styles.ResetSort}
                 onClick={() => this.props.resetSort()}
               >
-                <i className={cx("fa fa-close")} />
+                <FontAwesomeIcon icon={faTimesCircle} />
                 <p>&nbsp;Clear Sort</p>
               </span>
             )}
@@ -101,10 +110,10 @@ export class SetActions extends Component {
               id="AddCSVButton"
               className={cx(styles.Action, styles.Create)}
               onClick={() =>
-                (window.location.hash = `#!/content/${this.props.modelZUID}/import`)
+                (window.location.hash = `/content/${this.props.modelZUID}/import`)
               }
             >
-              <i className="fa fa-upload" aria-hidden="true" />
+              <FontAwesomeIcon icon={faUpload} />
               Import CSV
             </Button>
 
@@ -112,10 +121,10 @@ export class SetActions extends Component {
               <Button
                 className={cx(styles.Action)}
                 onClick={() =>
-                  (window.location.hash = `#!/schema/${this.props.modelZUID}`)
+                  (window.location.hash = `/schema/${this.props.modelZUID}`)
                 }
               >
-                <i className="icon fas fa-database" aria-hidden="true" />
+                <FontAwesomeIcon icon={faDatabase} />
                 Edit Schema
               </Button>
             )}

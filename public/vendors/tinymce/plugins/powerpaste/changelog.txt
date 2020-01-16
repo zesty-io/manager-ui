@@ -1,0 +1,118 @@
+Version 5.1.0 (2019-09-02)
+  [IMPROVEMENT] Improved parsing of table styles to better match what TinyMCE expects #POW-126 #POW-153
+  [BUG] Fixed bug where images were pasted as base64 instead of blobs #POW-148
+Version 5.0.2 (2019-08-19)
+  [BUG] Fixed bug where pasting local image files did not respect powerpaste_allow_local_images #POW-144
+  [BUG] Fixed bug where pasting external URL images caused CORS errors #POW-144
+  [FEATURE] Added powerpaste_keep_unsupported_src which allows unsupported images to keep their original src in a data attribute #POW-115
+Version 5.0.1 (2019-07-01)
+  [BUG] Fixed powerpaste ignoring the editor automatic_uploads setting #POW-125
+  [BUG] Fixed images incorrectly being pasted when paste_as_text was enabled #POW-24
+  [BUG] Cleaned up left over unused Flash files that were getting bundled #POW-109
+  [BUG] Fixed bug where pre elements were not allowed to contain images #POW-116
+  [FEATURE] Added basic support for pasting Word equations #POW-105
+  [IMPROVEMENT] Added console logged error codes #POW-138
+  [BUG] Fixed bug where the wrong error banner was displayed when images failed to import #POW-138
+  [BUG] Fixed leading, trailing and sequential spaces being lost when pasting plain text #TINY-3726
+Version 5.0.0 (2019-05-08)
+  [IMPROVEMENT] Removed legacy Flash code #POW-109
+  [IMPROVEMENT] Added detection of Outlook content so it is parsed correctly #POW-107
+  [BUG] Fixed bug where non-file images with valid URLs were losing their src attribute #POW-107
+  [FEATURE] Added support for pasting images that were cropped in MS Word #POW-98
+  [BUG] Fixed bug where inline style elements were not removed when removing formatting #POW-36
+Version 4.0.3 (2019-04-10)
+  [BUG] Fixed bug where pasting word content could have unexpected underlines #POW-106
+Version 4.0.2 (2019-02-20)
+  [FEATURE] Added mceTogglePlainTextPaste command and paste_as_text setting, and removed notification banner when paste as text is toggled #POW-102
+Version 3.3.3 (2018-11-14)
+  [BUG] Non breaking spaces where inserted if you pasted after a space at the end of a line. #TINY-2259
+  [BUG] Pasting only image data would result in an extra undo level. #TINY-1881
+  [BUG] Removing the editor before it has fully initialized would throw an error. #TINY-2681
+Version 3.3.2 (2018-06-26)
+  [BUG] Fixed bug where images would be uploaded twice on IE 11. #TINY-1721
+  [BUG] Fixed bug where an error would be thrown when using powerpaste with TinyMCE 4.1.x. #TINY-1721
+  [BUG] Fixed bug where IE 11 would produce an exception when pasting specific contents. #TBIO-5227
+  [BUG] Pasting from word into an empty editor could sometimes put the caret at an incorrect position. #TBIO-5242
+  [BUG] Copying from IE 11 could sometimes put extra html data into the clipboard. #TBIO-5247
+  [BUG] Switched most of the internals to use the HTML5 clipboard api instead of using pastebins. #TBIO-1572
+Version 3.3.1 (2018-05-02)
+  [BUG] Fixed bug where some borders would create divs that broke list functionality. #TINY-1632
+  [BUG] Fixed bug where the editor would scroll to top of document on paste in IE11. #TINY-1644
+  [BUG] Fixed bug where msEquation blocks would not produce "incorrect image type" results. #TBIO-5104
+  [IMPROVEMENT] Improved list continuation logic. #TBIO-5221
+  [BUG] Fixed bug where broken lists with list-style:none would have incorrect margins and/or indents. #TBIO-5222
+Version 3.3.0 (2018-04-12)
+  [BUG] Fixed bug where powerpaste_block_drop would block all drag/drop on a page if the editor was an inline editor. #TINY-1532
+  [BUG] Fixed bug where the latest Safari version didn't handle pasting images from Word correctly. #TBIO-5207
+  [BUG] Fixed bug where fragments/comments where added to contents on paste. #TBIO-5210
+  [BUG] Fixed bug with inconsistent indents on multilevel lists. #TINY-1625
+  [BUG] Fixed bug where some lists wasn't properly retained when pasting from specific documents. #TINY-1491
+Version 3.2.1 (2018-02-19)
+  [BUG] Fixed bug where an error would be thrown when parsing '=' characters in styles pasted from word. #TINY-1493
+Version 3.2.0 (2018-02-01)
+  [BUG] When the word importer script failed to load it would paste unfiltered html instead of throwing an error. #TBIO-5118
+  [FEATURE] Decreased the size of the plugin by switching build tools. #TINY-1463
+Version 3.1.0 (2017-12-11)
+  [BUG] Fixed bug where links with slashes in the query part would be cut off when pasting as plain text. #TINY-1396
+  [BUG] Fixed bug with pasting spreadsheets from Numbers would be inserted an image instead of a table. #TINY-1214
+  [BUG] Paste is now more reliable and less likely to result in unwanted cursor movement #TBIO-1572
+  [BUG] Pasting HTML is now preferred over pasting an image when both are on the clipboard #TINY-1214
+  [BUG] Retaining styles while pasting HTML from external sources is now more consistent across browsers #TBIO-1572
+  [BUG] Pasting images from macOS Preview and iOS Photos into Safari is now supported, by converting the TIFF data to PNG #TBIO-5013
+Version 3.0.0 (2017-10-09)
+  [FEATURE] Added a brand new word import process that supports more types of images, is more reliable and easier to maintain.
+  [FEATURE] Implemented mceInsertClipboardContent command similar to the one provided by the community paste plugin. #TINY-992
+  [BUG] Fixed bug where paste bin proxy elements wasn't properly removed when adding editor undo levels. #TINY-1140
+  [BUG] Fixed bug where single blank line was removed between lists from MS Word. #TINY-1124
+  [BUG] Fixed bug where bullet lists would become letter lists. #TINY-1123
+  [BUG] Fixed bug with posting formatted lists not retaining font family. #TINY-1120
+  [BUG] Fixed bug where local images where not transferred from some Word 2010 documents. #TINY-906
+  [BUG] Fixed bug where some word lists would be pasted as paragraphs instead of lists. #TBIO-4810
+  [BUG] Fixed bug where lists with margins wasn't properly retained in some cases. #TBIO-4995
+Version 2.2.8 (2017-07-26)
+  [FEATURE] Improved the aria accessibility support for various dialogs. #TINY-1115
+  [BUG] Fixed bug where bound paste events wasn't properly removed when an editor was removed. #TINY-1091
+  [BUG] Fixed bug where chrome would report an error when trying to cut contents using editor UI. #TINY-1179
+Version 2.2.7 (2017-06-13)
+  [BUG] Fixed bug where the filename did not contain a file extension when being imported into the blobCache. #TINY-1105
+Version 2.2.6 (2017-05-31)
+  [BUG] Fixed bug where the default settings weren't applied for drag/drop operations. #TINY-1075
+Version 2.2.5 (2017-05-23)
+  [BUG] Fixed bug where selection context parent formatting wasn't retained on cut/copy operations. #TINY-1062
+Version 2.2.4 (2017-05-10)
+  [BUG] Fixed bug where an editor.css file was loaded even though it wasn't used. #TINY-1017
+Version 2.2.3 (2017-04-26)
+  [BUG] Fixed bug with pasting images would upload the image multiple times. #TINY-989
+  [BUG] Fixed bug where inline styles wasn't maintained for list elements. #EL-5946
+Version 2.2.2 (2017-03-30)
+  [BUG] Fixed bug where it wasn't possible to paste word content in the latest Edge 15. #TBIO-4887
+  [BUG] Fixed so anchors are retained when copy/pasting contents from word. #TINY-831
+  [BUG] Fixed bug where some contents would be incorrect when pasting images on webkit. #TINY-968
+Version 2.2.1 (2017-03-07)
+  [BUG] Changed tinymce version detection from 4.0.0 to 4.0.28. #TINY-914
+Version 2.2.0 (2017-03-01)
+  [FEATURE] Cut/copy now excludes internal html artifacts when pasting into external applications. #TINY-893.
+  [FEATURE] Internal/external paste is now passed in as a internal flag to PrePasteProcess and PostPasteProcess events. #TINY-916
+  [BUG] Fixed bug where cut/copy of contentEditable=false elements wasn't working properly. #TINY-716
+  [BUG] Paste of text like foo:bar was automatically converted to links. It's now more specific in that pattern matching. #TBIO-4867, #TINY-887
+  [BUG] Pasting from word with links was removing the closing anchor. #EL-5941
+Version 2.1.10 (2017-01-11)
+  [BUG] Fixed drag/drop support of html from out side of the editor. #TINY-821
+Version 2.1.9 (2016-12-13)
+  [BUG] Font color wasn't properly retained when pasting on IE 11. #TINY-741
+  [BUG] Paste pasteallow_local_images set to false would show notification even if there where no images. #TINY-705
+  [BUG] Removed the visual paste bin from IE and Firefox by moving it offscreen. #TBIO-4562
+  [FEATURE] Updated the dialog when pasting using flash to be more clear what the user needs to do. #TINY-700
+Version 2.1.8 (2016-10-27)
+  [FEATURE] Added version detection logic that check if this plugin is used with a compatible tinymce version. #TINY-639
+  [BUG] Fixed bug where drag/drop of image files didn't work correctly in Google chrome. #TINY-698
+  [BUG] Fixed bug where pasteallow_local_images set to false didn't work properly on IE 11. #TINY-622
+Version 2.1.7 (2016-09-22)
+  [BUG] Paste for with allow_images disabled would remove editor contents in FF. #TINY-602
+  [BUG] Some inline styles where stripped when pasting word content that contains conflicting document level styles. #TBIO-4206
+  [BUG] Non-organised lists with '-' characters where being imported as organised lists from word. #EL-5902
+  [BUG] Bullet nesting was not preserved when copying and pasting from Word on some browsers. #EL-5898
+  [BUG] Some Word anchors where not properly removed from lists. #EL-5911
+  [BUG] Significantly reduced flash movie size used for image import on some browsers. #TINY-609
+  [BUG] Fixed XSS issue with flash movie used for image import on some browsers. #TINY-592
+  [BUG] Fixed issue where anchors where removed when pasting from a non Word source. #TINY-606

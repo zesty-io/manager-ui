@@ -1,10 +1,11 @@
 import React, { Fragment } from "react";
 import { connect } from "react-redux";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTachometerAlt } from "@fortawesome/free-solid-svg-icons";
 import { Url } from "@zesty-io/core";
 
 import styles from "./Breadcrumbs.less";
-
 const crawlParents = (nav, ZUID, crumbs) => {
   const parent = nav[ZUID];
 
@@ -58,7 +59,7 @@ export default connect(state => {
   crumbs.push({
     ZUID: "home",
     contentModelZUID: "home",
-    label: <i className="fas fa-tachometer-alt" aria-hidden="true" />,
+    label: <FontAwesomeIcon icon={faTachometerAlt} />,
     type: "home"
   });
 
@@ -68,8 +69,8 @@ export default connect(state => {
     .map((item, i) => {
       const url =
         item.type === "item"
-          ? `#!/content/${item.contentModelZUID}/${item.ZUID}`
-          : `#!/content/${item.contentModelZUID}`;
+          ? `/content/${item.contentModelZUID}/${item.ZUID}`
+          : `/content/${item.contentModelZUID}`;
 
       return (
         <Fragment key={item.ZUID}>

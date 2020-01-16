@@ -1,5 +1,12 @@
 import React, { PureComponent, Fragment } from "react";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faTachometerAlt,
+  faAngleRight,
+  faSpinner,
+  faSave
+} from "@fortawesome/free-solid-svg-icons";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
 import { Url } from "@zesty-io/core/Url";
@@ -10,14 +17,14 @@ export class Header extends PureComponent {
     return (
       <header className={styles.Header}>
         <span>
-          <Url href="#!/content/home">
-            <i className="fas fa-tachometer-alt" aria-hidden="true" />
+          <Url href="/content/home">
+            <FontAwesomeIcon icon={faTachometerAlt} />
           </Url>
-          <i className="fa fa-angle-right" />
-          <Url href={`#!/content/${this.props.model.ZUID}`}>
+          <FontAwesomeIcon icon={faAngleRight} />
+          <Url href={`/content/${this.props.model.ZUID}`}>
             {this.props.model.label}
           </Url>
-          <i className="fa fa-angle-right" />
+          <FontAwesomeIcon icon={faAngleRight} />
           &nbsp;New Item
         </span>
 
@@ -29,9 +36,9 @@ export class Header extends PureComponent {
             onClick={this.props.onSave}
           >
             {this.props.saving ? (
-              <i className="fa fa-spinner" aria-hidden="true" />
+              <FontAwesomeIcon icon={faSpinner} />
             ) : (
-              <i className="fas fa-save" aria-hidden="true" />
+              <FontAwesomeIcon icon={faSave} />
             )}
             Create New Item&nbsp;
             <small>({this.props.OS === "win" ? "CTRL" : "CMD"} + S)</small>

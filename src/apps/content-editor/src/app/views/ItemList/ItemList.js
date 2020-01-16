@@ -1,8 +1,10 @@
 import React, { Component, PureComponent } from "react";
-
 import { connect } from "react-redux";
 import cx from "classnames";
 import { VariableSizeList as List } from "react-window";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { Button } from "@zesty-io/core/Button";
 
@@ -116,7 +118,7 @@ export default connect((state, props) => {
         // First item is always the column row
         if (this.state.items.length === 2) {
           // redirect to the single entry in content clippings
-          window.location.hash = `#!/content/${this.props.modelZUID}/${this.state.items[1].meta.ZUID}`;
+          window.location.hash = `/content/${this.props.modelZUID}/${this.state.items[1].meta.ZUID}`;
         }
       }
 
@@ -651,7 +653,7 @@ export default connect((state, props) => {
                     this.props.model
                       .label} items are displayed, filters are in place. `}</h1>
                   <Button kind="secondary" onClick={this.clearFilters}>
-                    <i className="fa fa-times" />
+                    <FontAwesomeIcon icon={faTimes} />
                     Clear Filters
                   </Button>
                 </div>

@@ -97,7 +97,7 @@ export class GoogleAuthOverlay extends React.Component {
               <Button
                 kind="secondary"
                 onClick={() => {
-                  window.location = `${CONFIG.apps.accounts}/instances/${this.props.instance.ZUID}/launch`;
+                  window.location = `${CONFIG.URL_ACCOUNTS}/instances/${this.props.instance.ZUID}/launch`;
                 }}
               >
                 <i className="fa fa-globe" aria-hidden="true" />

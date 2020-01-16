@@ -1,5 +1,7 @@
 import React, { useState, Fragment } from "react";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
@@ -18,7 +20,7 @@ export const WidgetDeleteItem = React.memo(function WidgetDeleteItem(props) {
         className="pageDetailWidget"
         header={
           <span>
-            <i className="fas fa-trash-alt" aria-hidden="true" />
+            <FontAwesomeIcon icon={faTrashAlt} />
             &nbsp;Delete Content
           </span>
         }
@@ -30,9 +32,9 @@ export const WidgetDeleteItem = React.memo(function WidgetDeleteItem(props) {
             disabled={deleting}
           >
             {deleting ? (
-              <i className="fa fa-spin fa-spinner" aria-hidden="true" />
+              <FontAwesomeIcon icon={faSpinner} />
             ) : (
-              <i className="fas fa-trash-alt" aria-hidden="true" />
+              <FontAwesomeIcon icon={faTrashAlt} />
             )}
             Delete
           </Button>
@@ -67,9 +69,9 @@ export const WidgetDeleteItem = React.memo(function WidgetDeleteItem(props) {
                     props.modelType === "pageset" ||
                     props.modelType === "dataset"
                   ) {
-                    window.location.hash = `#!/content/${props.modelZUID}`;
+                    window.location.hash = `/content/${props.modelZUID}`;
                   } else {
-                    window.location.hash = "#!/content/home";
+                    window.location.hash = "/content/home";
                   }
                 }
 

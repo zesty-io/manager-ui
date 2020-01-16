@@ -33,7 +33,12 @@ export default connect(state => {
   }, []);
 
   return (
-    <WithLoader condition={!loading} message="Logging into instance">
+    <WithLoader
+      condition={!loading}
+      message="Logging into instance"
+      width="100vw"
+      height="100vh"
+    >
       {auth ? (
         props.children
       ) : (

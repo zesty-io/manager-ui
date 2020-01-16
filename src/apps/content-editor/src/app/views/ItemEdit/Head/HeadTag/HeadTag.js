@@ -10,6 +10,8 @@ import {
   updateTagType
 } from "../../../../../store/headTags";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faSpinner, faSave } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 import { Card, CardContent, CardFooter, CardHeader } from "@zesty-io/core/Card";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
@@ -94,7 +96,7 @@ export class HeadTag extends React.Component {
             kind="primary"
             onClick={() => dispatch(addTagAttribute(tag.ZUID))}
           >
-            <i className="fa fa-plus" /> Add attribute
+            <FontAwesomeIcon icon={faPlus} /> Add attribute
           </Button>
 
           <Button className={styles.Delete} onClick={this.onDelete} kind="warn">
@@ -152,9 +154,9 @@ export class HeadTag extends React.Component {
             onClick={this.onSave}
           >
             {this.state.saving ? (
-              <i className="fa fa-spinner fa-spin" aria-hidden="true" />
+              <FontAwesomeIcon icon={faSpinner} />
             ) : (
-              <i className="fas fa-save" aria-hidden="true" />
+              <FontAwesomeIcon icon={faSave} />
             )}
             Save head tag
           </Button>

@@ -3,6 +3,8 @@ import cx from "classnames";
 
 import { request } from "utility/request";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFile } from "@fortawesome/free-solid-svg-icons";
 import { Loader } from "@zesty-io/core/Loader";
 
 import styles from "./FileCell.less";
@@ -83,7 +85,7 @@ export class FileCell extends Component {
         <span
           className={cx(this.props.className, styles.FileCell, styles.Empty)}
         >
-          <i className="fa fa-file-o" aria-hidden="true" />
+          <FontAwesomeIcon icon={faFile} />
         </span>
       );
     } else {

@@ -1,7 +1,7 @@
 describe("Content Specs", () => {
   before(() => {
     cy.login();
-    cy.visit("/#!/content/6-556370-8sh47g/7-b939a4-457q19", { timeout: 10000 });
+    cy.visit("//content/6-556370-8sh47g/7-b939a4-457q19", { timeout: 10000 });
   });
 
   const TIMESTAMP = Date.now();
@@ -272,10 +272,10 @@ describe("Content Specs", () => {
       cy.get("#SaveItemButton").click({ force: true });
       cy.contains("Saved a new ", { timeout: 3000 }).should("exist");
       // testing tag deletion
-      cy.get('[href="#!/content/6-0c960c-d1n0kx/7-a0e7ae90ce-n3qr0k"]').should(
+      cy.get('[href="/content/6-0c960c-d1n0kx/7-a0e7ae90ce-n3qr0k"]').should(
         "exist"
       );
-      cy.get('[href="#!/content/6-0c960c-d1n0kx/7-a0e7ae90ce-n3qr0k"]')
+      cy.get('[href="/content/6-0c960c-d1n0kx/7-a0e7ae90ce-n3qr0k"]')
         .siblings("i")
         .last()
         .click({ timeout: 3000 });

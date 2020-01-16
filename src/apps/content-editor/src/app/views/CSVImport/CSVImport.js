@@ -263,7 +263,7 @@ class CSVImport extends Component {
         this.setState({ inFlight: false });
         if (!this.state.failure.length) {
           //redirect to the model list view
-          window.location.hash = `#!/content/${this.props.modelZUID}`;
+          window.location.hash = `/content/${this.props.modelZUID}`;
         }
       });
     });

@@ -1,6 +1,9 @@
 import React, { PureComponent } from "react";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faImage } from "@fortawesome/free-solid-svg-icons";
+
 import styles from "./ImageCell.less";
 export class ImageCell extends PureComponent {
   render() {
@@ -25,7 +28,7 @@ export class ImageCell extends PureComponent {
         <span
           className={cx(this.props.className, styles.ImageCell, styles.Empty)}
         >
-          <i className="fa fa-picture-o" aria-hidden="true" />
+          <FontAwesomeIcon icon={faImage} />
         </span>
       );
     }

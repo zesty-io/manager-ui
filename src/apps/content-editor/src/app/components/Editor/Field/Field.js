@@ -9,6 +9,9 @@ import {
   searchItems
 } from "../../../../store/contentModelItems";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+
 // it would be nice to have a central import for all of these
 // instead of individually importing
 import { Url } from "@zesty-io/core/Url";
@@ -174,6 +177,15 @@ export default connect(state => {
             onSave={onSave}
             type={datatype}
             maxLength="16000"
+            skin="oxide"
+            skinURL="/vendors/tinymce/skins/ui/oxide"
+            contentCSS="/vendors/tinymce/content.css"
+            externalPlugins={{
+              advcode: "/vendors/tinymce/plugins/advcode/plugin.js",
+              powerpaste: "/vendors/tinymce/plugins/powerpaste/plugin.js",
+              formatpainter: "/vendors/tinymce/plugins/formatpainter/plugin.js",
+              pageembed: "/vendors/tinymce/plugins/pageembed/plugin.js"
+            }}
           />
         </div>
       );
@@ -235,9 +247,9 @@ export default connect(state => {
       } else {
         return (
           <h1 style={{ color: "#e53c05" }}>
-            <i className="fa fa-exclamation-triangle" />
+            <FontAwesomeIcon icon={faExclamationTriangle} />
             &nbsp;
-            <Url href={`/#!/schema/${contentModelZUID}/field/${ZUID}`}>
+            <Url href={`/schema/${contentModelZUID}/field/${ZUID}`}>
               The <em>{label}</em> field is missing option settings. Edit the
               field to add yes/no values.
             </Url>
@@ -276,7 +288,7 @@ export default connect(state => {
         return Object.keys(props.allItems)
           .filter(
             itemZUID =>
-              !itemZUID.contains("new") && // exclude new items
+              !itemZUID.includes("new") && // exclude new items
               props.allItems[itemZUID].meta.ZUID && // ensure the item has a zuid
               props.allItems[itemZUID].web.pathPart // exclude items non-routeable items
           )
@@ -287,7 +299,7 @@ export default connect(state => {
             if (item.web.metaTitle) {
               html += `<strong style="display:block;font-weight:bold;">${item.web.metaTitle}</strong>`;
             } else {
-              html += `<small style="display:block;font-weight:bold;"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;<a href="#!/content/${item.meta.contentModelZUID}/${itemZUID}">${itemZUID}</a> is missing a meta title</small>`;
+              html += `<small style="display:block;font-weight:bold;"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;<a href="/content/${item.meta.contentModelZUID}/${itemZUID}">${itemZUID}</a> is missing a meta title</small>`;
             }
 
             if (item.web.path || item.web.pathPart) {
@@ -527,7 +539,7 @@ export default connect(state => {
 
     default:
       return (
-        <Url href={`/#!/schema/${contentModelZUID}/field/${ZUID}`}>
+        <Url href={`/schema/${contentModelZUID}/field/${ZUID}`}>
           Failed loading {label} field. Click here to view field schema.
         </Url>
       );

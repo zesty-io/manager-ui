@@ -5,8 +5,7 @@ import { request } from "utility/request";
 export function auth(
   state = {
     checking: false,
-    valid: false,
-    token: Cookies.get(CONFIG.COOKIE_NAME)
+    valid: false
   },
   action
 ) {
@@ -15,20 +14,14 @@ export function auth(
     case "FETCH_AUTH_ERROR":
     case "FETCH_VERIFY_SUCCESS":
     case "FETCH_VERIFY_ERROR":
-      return {
-        checking: false,
-        valid: action.auth
-      };
+      return { ...state, checking: false, valid: action.auth };
 
     case "LOGOUT":
       Cookies.remove(CONFIG.COOKIE_NAME, {
         path: "/",
         domain: CONFIG.COOKIE_DOMAIN
       });
-      return {
-        checking: false,
-        valid: false
-      };
+      return { ...state, checking: false, valid: false };
 
     default:
       return state;
@@ -36,14 +29,8 @@ export function auth(
 }
 
 export function verify() {
-  return (dispatch, getState) => {
-    const state = getState();
-
-    return request(`${CONFIG.SERVICE_AUTH}/verify`, {
-      headers: {
-        authentication: state.token
-      }
-    })
+  return dispatch => {
+    return request(`${CONFIG.SERVICE_AUTH}/verify`)
       .then(json => {
         dispatch({
           type: "FETCH_VERIFY_SUCCESS",

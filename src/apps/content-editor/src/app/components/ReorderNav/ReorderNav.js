@@ -1,14 +1,17 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import { notify } from "shell/store/notifications";
-import { fetchNav } from "../../../store/contentNav";
-import DraggableItem from "./DragComponents/DraggableItem";
-import DragList from "./DragComponents/DragList";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core";
 
-import styles from "./ReorderNav.less";
+import DraggableItem from "./DragComponents/DraggableItem";
+import DragList from "./DragComponents/DragList";
 
+import { notify } from "shell/store/notifications";
+import { fetchNav } from "../../../store/contentNav";
+
+import styles from "./ReorderNav.less";
 class ReorderNav extends Component {
   state = {
     current: "root",
@@ -106,7 +109,7 @@ class ReorderNav extends Component {
               onClick={this.props.handleClose}
               id="CloseReorderModal"
             >
-              <i className="fa fa-times" />
+              <FontAwesomeIcon icon={faTimes} />
             </Button>
             {this.state.dirty ? (
               <Button

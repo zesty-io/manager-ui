@@ -1,6 +1,8 @@
 import React from "react";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExternalLinkSquareAlt } from "@fortawesome/free-solid-svg-icons";
 import { Url } from "@zesty-io/core/Url";
 
 import styles from "./LinkCell.less";
@@ -36,7 +38,7 @@ export const LinkCell = function LinkCell(props) {
   } else {
     return (
       <span className={cx(props.className, styles.LinkCell, styles.Empty)}>
-        <i className="fas fa-external-link-square-alt" aria-hidden="true" />
+        <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
       </span>
     );
   }

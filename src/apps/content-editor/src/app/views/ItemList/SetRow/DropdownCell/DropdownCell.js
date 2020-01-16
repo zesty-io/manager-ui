@@ -1,6 +1,8 @@
 import React from "react";
-import cx from "classnames";
 
+import cx from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { Url } from "@zesty-io/core/Url";
 
 import styles from "./DropdownCell.less";
@@ -15,9 +17,9 @@ export const DropdownCell = React.memo(function DropdownCell(props) {
     return (
       <span className={cx(props.className, styles.DropdownCell)}>
         <Url
-          href={`/#!/schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`}
+          href={`/schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`}
         >
-          <i className="fas fa-exclamation-triangle" />
+          <FontAwesomeIcon icon={faExclamationTriangle} />
           &nbsp;Missing dropdown options.
         </Url>
       </span>

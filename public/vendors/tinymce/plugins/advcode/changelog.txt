@@ -1,0 +1,8 @@
+Version 1.2.0 (2018-02-01)
+  Decreased plugin size by improving build steps.
+Version 1.1.1 (2017-12-28)
+  [BUG] Fixed issue where the ui would be accessed directly instead of though a factory.
+Version 1.1.0 (2017-03-01)
+  [FEATURE] Added HTML autocomplete addon. Open a new tag by writing '<' and a dropdown menu will appear showing a list of suggestions of HTML tags that narrows down as you continue writing. #TINY-556
+Version 1.0.2 (2016-10-25)
+  [FEATURE] Added version detection logic that check if this plugin is used with a compatible tinymce version. #TINY-639

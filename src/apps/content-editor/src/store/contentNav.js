@@ -56,14 +56,14 @@ export function fetchNav() {
         if (
           roles.length &&
           roles.find(role => {
-            return role.entityZUID === zesty.site.zuid;
+            return role.entityZUID === zesty.instance.zuid;
           })
         ) {
           const currentRoleZUID = roles.find(role => {
-            return role.entityZUID === zesty.site.zuid;
+            return role.entityZUID === zesty.instance.zuid;
           }).ZUID;
           return request(
-            `${CONFIG.API_ACCOUNTS}/roles/${currentRoleZUID}`
+            `//${CONFIG.API_ACCOUNTS}/roles/${currentRoleZUID}`
           ).then(data => {
             if (data.data && data.data.granularRoles) {
               return data.data.granularRoles.reduce(
@@ -114,14 +114,14 @@ export function fetchNav() {
 
                 // Set path
                 if (node.type === "item") {
-                  node.path = `#!/content/${node.contentModelZUID}/${node.ZUID}`;
+                  node.path = `/content/${node.contentModelZUID}/${node.ZUID}`;
                 } else if (
                   node.type === "external" ||
                   node.type === "internal"
                 ) {
-                  node.path = `#!/content/link/${node.ZUID}`;
+                  node.path = `/content/link/${node.ZUID}`;
                 } else {
-                  node.path = `#!/content/${node.ZUID}`;
+                  node.path = `/content/${node.ZUID}`;
                 }
 
                 // Set Icon

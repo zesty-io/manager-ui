@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+
 import { Select, Option } from "@zesty-io/core/Select";
 import { Input } from "@zesty-io/core/Input";
+import { Infotip } from "@zesty-io/core/Infotip";
 
 const CANONICAL_OPTS = [
   {
@@ -50,7 +52,7 @@ export const CanonicalTag = React.memo(function CanonicalTag(props) {
         <Infotip title="Canonical tags help search engines understand authoritative links and can help prevent duplicate content issues. Zesty.io auto creates tags on demand based on your settings." />
         &nbsp;Canonical Tag
       </label>
-      {zesty.settings.seo["canonical-tags-enabled"] === "1" ? (
+      {zesty.instance.settings.seo["canonical-tags-enabled"] === "1" ? (
         <small className={`desc notEnabled`}>
           Canonical tags are not enabled. For more information, read
           <a

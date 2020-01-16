@@ -13,10 +13,7 @@ export default function GlobalSidebar(props) {
       <div className={styles.topMenu}>
         <GlobalAccount dispatch={props.dispatch} />
 
-        <GlobalMenu
-          dispatch={props.dispatch}
-          products={props.site.settings.products}
-        />
+        <GlobalMenu dispatch={props.dispatch} products={props.user.products} />
         <GlobalActions />
       </div>
       <GlobalAccountMenu

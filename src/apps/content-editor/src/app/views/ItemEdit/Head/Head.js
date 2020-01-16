@@ -1,20 +1,20 @@
-import React, { Component } from "react";
+import React from "react";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  fetchItems,
-  fetchGlobalItem
-} from "../../../../store/contentModelItems";
-import { createHeadTag } from "../../../../store/headTags";
-import { notify } from "shell/store/notifications";
-
+  faPlus,
+  faExclamationTriangle
+} from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
 import { SubHeader } from "../components/SubHeader";
 
 import { HeadTag } from "./HeadTag";
 import { Preview } from "./Preview";
+
+import { fetchGlobalItem } from "../../../../store/contentModelItems";
+import { createHeadTag } from "../../../../store/headTags";
+import { notify } from "shell/store/notifications";
 
 import styles from "./Head.less";
 export default class Head extends React.Component {
@@ -53,12 +53,12 @@ export default class Head extends React.Component {
             <main className={styles.Tags}>
               <h1 className={styles.Warn}>
                 <Button kind="secondary" onClick={this.onCreate}>
-                  <i className="fa fa-plus" />
+                  <FontAwesomeIcon icon={faPlus} />
                   New head tag
                 </Button>
-                <i className="fa fa-exclamation-triangle" aria-hidden="true" />
-                &nbsp; Head tags are not versioned or published. Changes to head
-                tags take effect immediately on your live instance.
+                <FontAwesomeIcon icon={faExclamationTriangle} /> &nbsp; Head
+                tags are not versioned or published. Changes to head tags take
+                effect immediately on your live instance.
               </h1>
               {this.props.tags.length ? (
                 this.props.tags.map((tag, index) => {

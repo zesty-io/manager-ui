@@ -4,7 +4,9 @@ export function user(
     name: "",
     email: "",
     role: "",
-    products: ["content", "media"]
+    products: ["content", "media"],
+    permissions: [],
+    selected_lang: ""
   },
   action
 ) {
@@ -12,14 +14,27 @@ export function user(
     case "FETCH_VERIFY_SUCCESS":
       return { ...state, id: action.ZUID };
 
-    case "FETCHING_USER":
+    // case "FETCHING_USER":
     // TODO show loading state?
 
     case "FETCH_USER_SUCCESS":
-      return { ...action.user };
+      return { ...state, ...action.data };
 
-    case "FETCH_USER_ERROR":
+    // case "FETCH_USER_ERROR":
     // TODO handle failure
+
+    case "FETCH_PRODUCTS_SUCCESS":
+      return { ...state, products: action.data };
+
+    case "USER_ROLES":
+      return { ...state, ...action.payload };
+
+    case "USER_ROLE_ERROR":
+      return { ...state, permissionsError: true };
+
+    case "LOADED_LOCAL_USER_LANG":
+    case "USER_SELECTED_LANG":
+      return { ...state, selected_lang: action.payload.lang };
 
     default:
       return state;
@@ -36,20 +51,11 @@ export function getUser(id) {
     setTimeout(() => {
       dispatch({
         type: "FETCH_USER_SUCCESS",
-        user: {
+        data: {
           id: "xxxxxx1",
           name: "Stuart Runyan",
           email: "stuart@zesty.io",
-          role: "admin",
-          products: [
-            "code",
-            "seo",
-            "leads",
-            "analytics",
-            "forms",
-            "audit-trail",
-            "social"
-          ]
+          role: "admin"
         }
       });
     }, 3000);
@@ -102,5 +108,26 @@ export function fetchRecentItems(userZUID, start) {
 
       return res;
     });
+  };
+}
+
+export function fetchProducts() {
+  return dispatch => {
+    // TODO Fetch product access from API
+
+    setTimeout(() => {
+      dispatch({
+        type: "FETCH_PRODUCTS_SUCCESS",
+        data: [
+          "code",
+          "seo",
+          "leads",
+          "analytics",
+          "forms",
+          "audit-trail",
+          "social"
+        ]
+      });
+    }, 3000);
   };
 }

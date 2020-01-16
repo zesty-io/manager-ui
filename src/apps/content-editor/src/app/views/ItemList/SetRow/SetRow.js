@@ -29,9 +29,9 @@ export class SetRow extends Component {
       // this.props.onChange(this.props.itemZUID, name, value);
     } else {
       if (this.props.itemZUID.slice(0, 3) === "new") {
-        window.location = `#!/content/${this.props.modelZUID}/new`;
+        window.location = `/content/${this.props.modelZUID}/new`;
       } else {
-        window.location = `#!/content/${this.props.modelZUID}/${this.props.itemZUID}`;
+        window.location = `/content/${this.props.modelZUID}/${this.props.itemZUID}`;
       }
     }
   };

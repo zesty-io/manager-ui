@@ -20,7 +20,7 @@ export class PendingEditsModal extends PureComponent {
     const hash = window.location.hash;
 
     // Change router history so we can reload previous hash
-    window.location.hash = "#!/content/home";
+    window.location.hash = "/content/home";
     window.location.hash = hash;
     this.setState({ selected: false }, () => {
       window.closeNavigationModal();

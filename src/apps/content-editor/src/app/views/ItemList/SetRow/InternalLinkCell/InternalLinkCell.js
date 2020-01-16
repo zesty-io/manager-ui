@@ -1,6 +1,8 @@
 import React, { PureComponent } from "react";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { Loader } from "@zesty-io/core/Loader";
 import { Url } from "@zesty-io/core/Url";
 
@@ -31,9 +33,9 @@ export class InternalLinkCell extends PureComponent {
       return (
         <span className={cx(this.props.className, styles.InternalLinkCell)}>
           <Url
-            href={`//${CONFIG.MANAGER_URL}/#!/content/${relatedItem.meta.contentModelZUID}/${relatedItem.meta.ZUID}`}
+            href={`//${CONFIG.URL_MANAGER}/content/${relatedItem.meta.contentModelZUID}/${relatedItem.meta.ZUID}`}
           >
-            <i className="fa fa-link" aria-hidden="true" />
+            <FontAwesomeIcon icon={faLink} />
             &nbsp;
             <span>
               {relatedItem.web.metaTitle ? (

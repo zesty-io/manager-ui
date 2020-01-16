@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserCheck } from "@fortawesome/free-solid-svg-icons";
+
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { fetchAuditTrailDrafting } from "../../../../../../../store/contentLogs";
 
@@ -30,7 +33,7 @@ export default connect((state, props) => {
     <Card id="WidgetDraftHistory" className="pageDetailWidget">
       <CardHeader>
         <span className="audit-title">
-          <i className="fas fa-user-check" aria-hidden="true" />
+          <FontAwesomeIcon icon={faUserCheck} />
           &nbsp;Drafting History
         </span>
         <small>Audit Trail&trade;</small>

@@ -1,5 +1,7 @@
 import React from "react";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHome, faUnlink } from "@fortawesome/free-solid-svg-icons";
 import { Url } from "@zesty-io/core/Url";
 
 import styles from "./ItemUrl.less";
@@ -24,14 +26,14 @@ export class ItemUrl extends React.Component {
           className={isPublished ? styles.Published : styles.Unpublished}
         >
           {this.props.item.web.pathPart === "zesty_home" ? (
-            <i className="fa fa-home" aria-hidden="true" />
+            <FontAwesomeIcon icon={faHome} />
           ) : isPublished ? (
             <i
               className="icon fas fa-external-link-square-alt"
               aria-hidden="true"
             />
           ) : (
-            <i className="icon fas fa-unlink" aria-hidden="true" />
+            <FontAwesomeIcon icon={faUnlink} />
           )}
           &nbsp;
           {urlString}

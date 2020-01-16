@@ -1,7 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import cx from "classnames";
 
-import { Url } from "@zesty-io/core/Url";
+// import { Url } from "@zesty-io/core/Url";
 
 import styles from "./ItemNavigation.less";
 export const ItemNavigation = ({
@@ -15,15 +16,15 @@ export const ItemNavigation = ({
   return (
     <ul className={styles.ItemNavigation}>
       <li data-cy="content">
-        <Url
+        <Link
           className={cx(
             styles.Item,
             slug === "content" ? styles.Selected : null
           )}
-          href={`/#!/content/${modelZUID}/${itemZUID}/content`}
+          to={`/content/${modelZUID}/${itemZUID}/content`}
         >
           Content
-        </Url>
+        </Link>
       </li>
       <li
         data-cy="meta"
@@ -33,21 +34,21 @@ export const ItemNavigation = ({
             : null
         )}
       >
-        <Url
+        <Link
           className={cx(styles.Item, slug === "meta" ? styles.Selected : null)}
-          href={`/#!/content/${modelZUID}/${itemZUID}/meta`}
+          to={`/content/${modelZUID}/${itemZUID}/meta`}
         >
           Meta
-        </Url>
+        </Link>
       </li>
       <li>
-        <Url
+        <Link
           data-cy="head"
           className={cx(styles.Item, slug === "head" ? styles.Selected : null)}
-          href={`/#!/content/${modelZUID}/${itemZUID}/head`}
+          to={`/content/${modelZUID}/${itemZUID}/head`}
         >
           Head
-        </Url>
+        </Link>
       </li>
     </ul>
   );

@@ -1,5 +1,11 @@
 import React, { Component } from "react";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faRocket,
+  faEye,
+  faCodeBranch
+} from "@fortawesome/free-solid-svg-icons";
 import { Url } from "@zesty-io/core/Url";
 import { ItemUrl } from "./ItemUrl";
 
@@ -15,9 +21,9 @@ export class SubHeader extends Component {
             ) : (
               <Url
                 target="_blank"
-                href={`${CONFIG.apps.accounts}/instances/${this.props.modelZUID}/launch`}
+                href={`${CONFIG.URL_ACCOUNTS}/instances/${this.props.modelZUID}/launch`}
               >
-                <i className="fa fa-rocket" aria-hidden="true" />
+                <FontAwesomeIcon icon={faRocket} />
                 &nbsp;Launch Instance
               </Url>
             ))}
@@ -30,7 +36,7 @@ export class SubHeader extends Component {
                 title={`${this.props.instance.preview_domain}${this.props.item.web.path}`}
                 href={`${this.props.instance.preview_domain}${this.props.item.web.path}`}
               >
-                <i className="fa fa-eye" aria-hidden="true" /> Current Version
+                <FontAwesomeIcon icon={faEye} /> Current Version
               </Url>
             )}
             <span>&nbsp;&nbsp;&nbsp;</span>
@@ -41,7 +47,7 @@ export class SubHeader extends Component {
                 title={`${this.props.instance.preview_domain}${this.props.item.web.path}`}
                 href={`${this.props.instance.preview_domain}${this.props.item.web.path}?__version=${this.props.item.meta.version}`}
               >
-                <i className="fa fa-code-fork" aria-hidden="true" /> Version{" "}
+                <FontAwesomeIcon icon={faCodeBranch} /> Version{" "}
                 {this.props.item.meta.version}
               </Url>
             )}

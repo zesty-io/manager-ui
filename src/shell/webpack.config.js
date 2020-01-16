@@ -16,8 +16,10 @@ if (process.env.NODE_ENV === "PRODUCTION") {
   CONFIG = {
     VERSION: pjson.version,
     ENV: "production",
-    API_ACCOUNTS: "https://accounts.api.zesty.io/v1",
-    API_INSTANCE: ".api.zesty.io/v1/",
+
+    API_ACCOUNTS: "//accounts.api.zesty.io/v1",
+    API_INSTANCE: ".api.zesty.io/v1",
+
     SERVICE_AUTH: "https://svc.zesty.io/auth",
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "",
@@ -27,10 +29,12 @@ if (process.env.NODE_ENV === "PRODUCTION") {
     SERVICE_GOOGLE_ANALYTICS_AUTH: "",
     SERVICE_GOOGLE_ANALYTICS_READ: "",
 
-    MANAGER_URL: ".manage.zesty.io",
-    MANAGER_URL_PROTOCOL: "https://",
-    PREVIEW_URL: "-dev.preview.zestyio.com",
-    PREVIEW_URL_PROTOCOL: "https://",
+    URL_MANAGER: ".manage.zesty.io",
+    URL_MANAGER_PROTOCOL: "https://",
+    URL_PREVIEW: "-dev.preview.zestyio.com",
+    URL_PREVIEW_PROTOCOL: "https://",
+    URL_ACCOUNTS: "",
+
     COOKIE_NAME: "APP_SID",
     COOKIE_DOMAIN: ".zesty.io"
   };
@@ -38,8 +42,10 @@ if (process.env.NODE_ENV === "PRODUCTION") {
   CONFIG = {
     VERSION: pjson.version,
     ENV: "stage",
-    API_ACCOUNTS: "https://accounts.stage-api.zesty.io/v1",
-    API_INSTANCE: ".stage-api.zesty.io/v1/",
+
+    API_ACCOUNTS: "//accounts.stage-api.zesty.io/v1",
+    API_INSTANCE: ".stage-api.zesty.io/v1",
+
     SERVICE_AUTH: "https://stage-svc.zesty.io/auth",
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "",
@@ -49,10 +55,12 @@ if (process.env.NODE_ENV === "PRODUCTION") {
     SERVICE_GOOGLE_ANALYTICS_AUTH: "",
     SERVICE_GOOGLE_ANALYTICS_READ: "",
 
-    MANAGER_URL: ".stage-manage.zesty.io",
-    MANAGER_URL_PROTOCOL: "https://",
-    PREVIEW_URL: "-dev.stage-preview.zestyio.com",
-    PREVIEW_URL_PROTOCOL: "https://",
+    URL_MANAGER: ".stage-manage.zesty.io",
+    URL_MANAGER_PROTOCOL: "https://",
+    URL_PREVIEW: "-dev.stage-preview.zestyio.com",
+    URL_PREVIEW_PROTOCOL: "https://",
+    URL_ACCOUNTS: "",
+
     COOKIE_NAME: "STAGE_APP_SID",
     COOKIE_DOMAIN: ".zesty.io"
   };
@@ -60,8 +68,10 @@ if (process.env.NODE_ENV === "PRODUCTION") {
   CONFIG = {
     VERSION: pjson.version,
     ENV: "development",
-    API_ACCOUNTS: "http://accounts.api.zesty.localdev:3022/v1",
-    API_INSTANCE: ".api.zesty.localdev:3023/v1/",
+
+    API_ACCOUNTS: "//accounts.api.zesty.localdev:3022/v1",
+    API_INSTANCE: ".api.zesty.localdev:3023/v1",
+
     SERVICE_AUTH: "http://svc.zesty.localdev:3011/auth",
     SERVICE_EMAIL: "",
     SERVICE_MEDIA_MANAGER:
@@ -75,10 +85,13 @@ if (process.env.NODE_ENV === "PRODUCTION") {
       "https://us-central1-zesty-dev.cloudfunctions.net/authenticateGoogleAnalytics",
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
-    MANAGER_URL: ".manage.zesty.localdev:3020",
-    MANAGER_URL_PROTOCOL: "http://",
-    PREVIEW_URL: "-dev.preview.zestyio.localdev:3020",
-    PREVIEW_URL_PROTOCOL: "http://",
+
+    URL_MANAGER: ".manage.zesty.localdev:3020",
+    URL_MANAGER_PROTOCOL: "http://",
+    URL_PREVIEW: "-dev.preview.zestyio.localdev:3020",
+    URL_PREVIEW_PROTOCOL: "http://",
+    URL_ACCOUNTS: "http://accounts.zesty.localdev:3100",
+
     COOKIE_NAME: "DEV_APP_SID",
     COOKIE_DOMAIN: ".zesty.localdev"
   };
@@ -114,7 +127,6 @@ module.exports = {
   },
   plugins: [
     extractLess,
-
     // Inject app config into bundle
     new webpack.DefinePlugin({
       __CONFIG__: JSON.stringify(CONFIG)

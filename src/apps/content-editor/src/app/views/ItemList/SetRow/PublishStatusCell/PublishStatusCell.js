@@ -1,6 +1,8 @@
 import React from "react";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClock, faEye } from "@fortawesome/free-solid-svg-icons";
 import { Url } from "@zesty-io/core/Url";
 
 import styles from "./PublishStatusCell.less";
@@ -34,28 +36,19 @@ export const PublishStatusCell = React.memo(function PublishStatusCell(props) {
     return (
       <Url
         className={cx(styles.PublishStatusCell)}
-        href={`${zesty.site.preview_domain}${props.item.web.path}`}
+        href={`${zesty.instance.preview_domain}${props.item.web.path}`}
         target="_blank"
       >
         {props.item &&
         props.item.scheduling &&
         props.item.scheduling.isScheduled ? (
-          <i
-            className={cx("fas fa-clock", styles.Scheduled)}
-            aria-hidden="true"
-          />
+          <FontAwesomeIcon icon={faClock} className={styles.Scheduled} />
         ) : props.item &&
           props.item.publishing &&
           props.item.publishing.isPublished ? (
-          <i
-            className={cx("fas fa-eye", styles.Published)}
-            aria-hidden="true"
-          />
+          <FontAwesomeIcon icon={faEye} className={styles.Published} />
         ) : (
-          <i
-            className={cx("fas fa-eye", styles.Unpublished)}
-            aria-hidden="true"
-          />
+          <FontAwesomeIcon icon={faEye} className={styles.Unpublished} />
         )}
       </Url>
     );

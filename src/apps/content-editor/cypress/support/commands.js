@@ -14,6 +14,6 @@ Cypress.Commands.add("login", (eml, pass) => {
 });
 
 Cypress.Commands.add("goHome", () => {
-  cy.visit("/#!/content/home");
+  cy.visit("//content/home");
   cy.get("#MainNavigation", { timeout: 10000 }).should("exist");
 });

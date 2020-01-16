@@ -5,7 +5,7 @@
   box-shadow: 0px 0px 3px @globalMenuBkgColor;
 
   display: flex;
-  min-height: 47px;
+  height: 92px;
 
   .GlobalSearch {
     width: calc(350px - 32px);
@@ -13,13 +13,13 @@
   }
 
   .QuickLinks {
-    // overflow-x: scroll;
-    // overflow-y: hidden;
-    overflow: hidden;
-    flex: 1;
     display: flex;
+    flex: 1;
     flex-direction: column;
-
+    overflow-y: hidden;
+    overflow-x: scroll;
+    width: 0vw;
+    
     ol {
       display: flex;
       li {
@@ -100,7 +100,7 @@
 
 @media (max-width: 2000px) {
   .GlobalTopbar {
-    min-height: 33px;
+    height: 86px;
 
     .Links {
       li {

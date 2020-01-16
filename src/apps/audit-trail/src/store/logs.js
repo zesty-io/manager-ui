@@ -13,15 +13,12 @@ export function logs(state = {}, action) {
 
 // Actions
 export function getLogs(siteId) {
-  return (dispatch, getState) => {
+  return dispatch => {
     dispatch({
       type: "FETCHING_LOGS"
     });
 
-    const state = getState();
-    const siteZuid = state.settings.siteZuid;
-
-    request(`//${siteZuid}${CONFIG.API_INSTANCE}/env/audits`)
+    request(`${CONFIG.API_INSTANCE}/env/audits`)
       .then(json => {
         // Normalize logs by zuid
         let data = {};

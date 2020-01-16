@@ -1,6 +1,9 @@
 import React, { PureComponent } from "react";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { Loader } from "@zesty-io/core/Loader";
 import { Tag } from "@zesty-io/core/Tag";
 import { Url } from "@zesty-io/core/Url";
 
@@ -28,9 +31,9 @@ export class OneToManyCell extends PureComponent {
           )}
         >
           <Url
-            href={`/#!/schema/${this.props.field.contentModelZUID}/field/${this.props.field.ZUID}`}
+            href={`/schema/${this.props.field.contentModelZUID}/field/${this.props.field.ZUID}`}
           >
-            <i className="fas fa-exclamation-triangle" />
+            <FontAwesomeIcon icon={faExclamationTriangle} />
             &nbsp;Missing field configuration
           </Url>
         </span>
@@ -63,7 +66,7 @@ export class OneToManyCell extends PureComponent {
                     <Tag
                       key={i}
                       value={item.meta.ZUID}
-                      link={`//${CONFIG.MANAGER_URL}/#!/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
+                      link={`//${CONFIG.URL_MANAGER}/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
                       onRemove={this.onRemove}
                     >
                       {item.data[relatedField.name]}
