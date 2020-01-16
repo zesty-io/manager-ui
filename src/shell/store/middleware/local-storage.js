@@ -4,15 +4,26 @@ export const localStorage = store => next => action => {
   const result = next(action);
 
   try {
-    if (
-      action.type === "FETCH_ITEM_SUCCESS" ||
-      action.type === "FETCH_ITEMS_SUCCESS" ||
-      action.type === "SEARCH_ITEMS_SUCCESS"
-    ) {
-      set(
-        `${zesty.site.zuid}:contentModelItems`,
-        store.getState().contentModelItems
-      );
+    const state = store.getState();
+
+    switch (action.type) {
+      case "SET_LOCAL":
+        set(
+          `${state.instance.zuid}:${action.payload.key}`,
+          action.payload.data
+        );
+
+      case "GET_LOCAL":
+        // TODO how does this get returned to caller?
+        get(`${state.instance.zuid}:${action.payload.key}`);
+
+      case "FETCH_ITEM_SUCCESS":
+      case "FETCH_ITEMS_SUCCESS":
+      case "SEARCH_ITEMS_SUCCESS":
+        set(
+          `${state.instance.zuid}:contentModelItems`,
+          state.contentModelItems
+        );
       // // Write Item data to IndexedDB
       // const items = store.getState().contentModelItems;
       // Object.keys(items).forEach(itemZUID => {
@@ -34,21 +45,18 @@ export const localStorage = store => next => action => {
       //     set(`${zesty.site.zuid}:contentModelItems`, Array.from(keys));
       //   }
       // );
-    }
 
-    if (action.type === "FETCH_FIELDS_SUCCESS") {
-      set(
-        `${zesty.site.zuid}:contentModelFields`,
-        store.getState().contentModelFields
-      );
-    }
+      case "FETCH_FIELDS_SUCCESS":
+        set(
+          `${state.instance.zuid}:contentModelFields`,
+          state.contentModelFields
+        );
 
-    if (action.type === "FETCH_MODELS_SUCCESS") {
-      set(`${zesty.site.zuid}:contentModels`, store.getState().contentModels);
-    }
+      case "FETCH_MODELS_SUCCESS":
+        set(`${state.instance.zuid}:contentModels`, state.contentModels);
 
-    if (action.type === "FETCH_CONTENT_NAV_SUCCESS") {
-      set(`${zesty.site.zuid}:contentNav`, store.getState().contentNav.raw);
+      case "FETCH_CONTENT_NAV_SUCCESS":
+        set(`${state.instance.zuid}:contentNav`, state.contentNav.raw);
     }
   } catch (err) {
     console.error("IndexedDB:set:error", err);

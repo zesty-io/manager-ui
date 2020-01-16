@@ -45,7 +45,7 @@ function configureStore(initialState = {}) {
     createReducer(),
     initialState,
     applyMiddleware(
-      // localStorage,
+      localStorage,
       fetchResource,
       // resolveFieldOptions,
       thunkMiddleware, // lets us dispatch() functions
