@@ -1,0 +1,76 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+@border-color: #dee6ff;
+
+.SchemaCreate {
+  .CardContent {
+    display: flex;
+    flex-wrap: wrap;
+
+    .Step {
+      flex: 1;
+      margin: 24px 32px 24px 0;
+      min-width: 300px;
+
+      .StepTitle {
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      .StepDesc {
+        margin-bottom: 32px;
+        font-size: 14px;
+        line-height: 20px;
+      }
+
+      label {
+        margin-bottom: 32px;
+      }
+
+      h3 {
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      em {
+        // font-style: italic;
+        font-weight: 100;
+      }
+
+      p {
+        font-size: 14px;
+        line-height: 20px;
+      }
+
+      .questionnaire {
+        margin-bottom: 32px;
+        label {
+          margin-bottom: 0;
+        }
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .error {
+        color: #e53c05;
+        font-size: 12px;
+        line-height: 16px;
+      }
+
+      .Types {
+        margin-top: -24px;
+
+        p {
+          margin-bottom: 8px;
+        }
+      }
+    }
+
+    .Step:last-child {
+      margin-right: 0px;
+    }
+  }
+}

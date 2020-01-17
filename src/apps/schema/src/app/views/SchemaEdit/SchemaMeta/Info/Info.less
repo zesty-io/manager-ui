@@ -1,0 +1,45 @@
+@import "~@zesty-io/core/colors.less";
+
+.ModelInfo {
+  background-color: #f2f7fc !important;
+  .StaticInfo {
+    list-style-type: circle;
+    list-style-position: inside;
+    li {
+      line-height: 24px;
+    }
+    strong {
+      font-weight: bold;
+    }
+    .SubList {
+      list-style-type: circle;
+      list-style-position: inside;
+      li {
+        margin-left: 16px;
+      }
+    }
+    .yes {
+      color: @zesty-green;
+    }
+    .no {
+      color: @zesty-red;
+    }
+  }
+
+  .InstantApi {
+    a {
+      margin: 0;
+    }
+  }
+
+  .LinkList {
+    display: flex;
+
+    li {
+      padding-right: 16px;
+      a {
+        margin: 0;
+      }
+    }
+  }
+}

@@ -39,10 +39,10 @@ module.exports = {
   },
   plugins: [
     extractLess,
-    new webpack.optimize.ModuleConcatenationPlugin()
-    // new WebpackBar({
-    //   name: "content-editor"
-    // })
+    new webpack.optimize.ModuleConcatenationPlugin(),
+    new WebpackBar({
+      name: "content-editor"
+    })
   ],
   module: {
     rules: [
