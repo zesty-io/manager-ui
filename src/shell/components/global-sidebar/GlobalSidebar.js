@@ -1,6 +1,5 @@
-import React, { Component } from "react";
+import React from "react";
 import styles from "./GlobalSidebar.less";
-import cx from "classnames";
 
 import GlobalAccount from "shell/components/global-account";
 import GlobalAccountMenu from "shell/components/global-account-menu";
@@ -11,15 +10,11 @@ export default function GlobalSidebar(props) {
   return (
     <aside className={styles.GlobalSidebar}>
       <div className={styles.topMenu}>
-        <GlobalAccount dispatch={props.dispatch} />
-
-        <GlobalMenu dispatch={props.dispatch} products={props.user.products} />
+        <GlobalAccount />
+        <GlobalMenu />
         <GlobalActions />
       </div>
-      <GlobalAccountMenu
-        dispatch={props.dispatch}
-        accountsMenuVisible={props.accountsMenuVisible}
-      />
+      <GlobalAccountMenu accountsMenuVisible={false} />
     </aside>
   );
 }
