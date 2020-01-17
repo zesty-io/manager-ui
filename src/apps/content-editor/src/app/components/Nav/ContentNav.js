@@ -11,20 +11,20 @@ import { Select, Option } from "@zesty-io/core/Select";
 import { collapseNavItem, hideNavItem } from "../../../store/contentNav";
 
 import styles from "./ContentNav.less";
-export class ContentNav extends React.Component {
+export class ContentNav extends React.PureComponent {
   state = {
     selected: window.location.hash || "",
     openReorder: false,
     hiddenClosed: true
   };
 
-  // componentWillUnmount() {
-  //   window.removeEventListener("hashchange", this.handleHashChange);
-  // }
+  componentWillUnmount() {
+    window.removeEventListener("hashchange", this.handleHashChange);
+  }
 
-  // componentDidMount() {
-  //   window.addEventListener("hashchange", this.handleHashChange);
-  // }
+  componentDidMount() {
+    window.addEventListener("hashchange", this.handleHashChange);
+  }
 
   handleOpen = path => {
     this.props.dispatch(collapseNavItem(path));
@@ -40,13 +40,13 @@ export class ContentNav extends React.Component {
     }
   };
 
-  // handleHashChange = () => {
-  //   if (window.location.hash !== this.state.selected) {
-  //     this.setState({
-  //       selected: window.location
-  //     });
-  //   }
-  // };
+  handleHashChange = () => {
+    if (window.location.hash !== this.state.selected) {
+      this.setState({
+        selected: window.location
+      });
+    }
+  };
 
   render() {
     return (

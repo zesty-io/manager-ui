@@ -23,7 +23,7 @@ import { CSVImport } from "./views/CSVImport";
 import "@zesty-io/core/vendor.css";
 
 import styles from "./ContentEditor.less";
-export default connect((state, props) => {
+export default connect(state => {
   return {
     contentModels: state.contentModels,
     contentNav: state.contentNav
@@ -53,7 +53,6 @@ export default connect((state, props) => {
                 <ContentNav
                   dispatch={this.props.dispatch}
                   models={this.props.contentModels}
-                  match={this.props.match}
                   nav={this.props.contentNav}
                 />
               </div>
