@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Nav } from "@zesty-io/core/Nav";
 import { Search } from "@zesty-io/core/Search";
 import { Button } from "@zesty-io/core/Button";
@@ -34,7 +36,7 @@ export default function SchemaNav(props) {
     <nav className={cx("SchemaNav", styles.SchemaNav)}>
       <div className={styles.Actions}>
         <Button onClick={() => history.push("/schema/new")} type="save">
-          <i className="fa fa-plus" aria-hidden="true" />
+          <FontAwesomeIcon icon={faPlus} />
           &nbsp;Create New Model
         </Button>
 

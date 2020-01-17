@@ -2,7 +2,11 @@ import React, { PureComponent } from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronUp, faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronUp,
+  faChevronDown,
+  faQuestionCircle
+} from "@fortawesome/free-solid-svg-icons";
 import { Loader } from "@zesty-io/core/Loader";
 
 import styles from "./SetColumns.less";
@@ -16,10 +20,9 @@ export class SetColumns extends PureComponent {
             id="ListColumns"
             className={cx(styles.Cell, styles.PublishedHeader)}
           >
-            <i
-              className="fa fa-question-circle"
+            <FontAwesomeIcon
+              icon={faQuestionCircle}
               aria-label="Item publish status"
-              aria-hidden="true"
               title="The color of the icon indicates the items publish status. Green = published. Orange = scheduled. Grey = unpublished."
             />
           </span>

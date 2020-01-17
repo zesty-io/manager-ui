@@ -6,11 +6,11 @@ import cx from "classnames";
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { Button } from "@zesty-io/core/Button";
-import { ToggleButton } from "@zesty-io/core/ToggleButton";
-import { Url } from "@zesty-io/core/Url";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
@@ -189,10 +189,6 @@ export default connect(state => {
                   type === "templateset" ? styles.selected : styles.hidden
                 )}
               >
-                {/* <h2>
-                  <i className="far fa-file" aria-hidden="true" />
-                  &nbsp; Single Page Schema
-                </h2> */}
                 <h3>Pages are individually routed</h3>
                 <p>
                   <em>e.g. Homepages, Landing Pages, Unique Page Designs</em>
@@ -217,10 +213,6 @@ export default connect(state => {
                   type === "pageset" ? styles.selected : styles.hidden
                 )}
               >
-                {/* <h2>
-                  <i className="fa fa-list-alt" aria-hidden="true" />
-                  &nbsp; Multi Page Model
-                </h2> */}
                 <h3>Pages are routed as a group</h3>
                 <p>
                   <em>e.g. Blog Posts, Team Members, or Services.</em>
@@ -245,10 +237,6 @@ export default connect(state => {
                   type === "dataset" ? styles.selected : styles.hidden
                 )}
               >
-                {/* <h2>
-                  <i className="fa fa-database" aria-hidden="true" />
-                  &nbsp; Headless Data Model
-                </h2> */}
                 <h3>No routing</h3>
                 <p>
                   <em>e.g. Tags, Categories, API data</em>
@@ -434,7 +422,7 @@ export default connect(state => {
                 });
             }}
           >
-            <i className="fa fa-plus" aria-hidden="true" />
+            <FontAwesomeIcon icon={faPlus} />
             Create New Model
           </Button>
         </CardFooter>

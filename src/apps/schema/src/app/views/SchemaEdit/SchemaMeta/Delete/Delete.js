@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 import { Button } from "@zesty-io/core/Button";
@@ -27,7 +29,8 @@ export default function Delete(props) {
 function Header() {
   return (
     <React.Fragment>
-      <i className="fas fa-trash"></i>&nbsp;Delete Model
+      <FontAwesomeIcon icon={faTrash} />
+      &nbsp;Delete Model
     </React.Fragment>
   );
 }
@@ -37,7 +40,7 @@ function Footer(props) {
   return (
     <React.Fragment>
       <Button kind="warn" onClick={() => setIsOpen(true)}>
-        <i className="far fa-trash-alt" />
+        <FontAwesomeIcon icon={faTrash} />
         Delete Model
       </Button>
 

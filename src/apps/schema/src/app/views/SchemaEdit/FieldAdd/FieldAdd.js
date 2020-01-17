@@ -1,7 +1,14 @@
-import React, { useState, useReducer } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faSpinner,
+  faPlus,
+  faExternalLinkSquareAlt,
+  faHandPointUp
+} from "@fortawesome/free-solid-svg-icons";
 import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { Button } from "@zesty-io/core/Button";
@@ -100,7 +107,7 @@ export function FieldAdd(props) {
           <React.Fragment>
             {props.firstField && (
               <h1>
-                <i className="far fa-hand-point-up" />
+                <FontAwesomeIcon icon={faHandPointUp} />
                 &nbsp; Get started by selecting this models first field type
               </h1>
             )}
@@ -113,7 +120,7 @@ export function FieldAdd(props) {
                 href="https://zesty.org/services/web-engine/interface/schema/fields"
                 target="_blank"
               >
-                <i className="fas fa-external-link-square-alt" />
+                <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
                 &nbsp;Learn more about fields and their types.
               </Url>
             </p>
@@ -155,9 +162,9 @@ export function FieldAdd(props) {
       <CardFooter>
         <Button kind="save" disabled={!field.dirty || loading} onClick={create}>
           {loading ? (
-            <i className="fas fa-spinner" />
+            <FontAwesomeIcon icon={faSpinner} />
           ) : (
-            <i className="fa fa-plus" aria-hidden="true" />
+            <FontAwesomeIcon icon={faPlus} />
           )}
           Add Field
         </Button>

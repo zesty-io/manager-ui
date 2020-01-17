@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faSpinner,
+  faSave,
+  faClone,
+  faCog
+} from "@fortawesome/free-solid-svg-icons";
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
-import { Url } from "@zesty-io/core/Url";
-import { ToggleButton } from "@zesty-io/core/ToggleButton";
 
 import { Parent } from "./Parent";
 import { notify } from "shell/store/notifications";
@@ -100,7 +104,8 @@ export default function Settings(props) {
 function Header(props) {
   return (
     <React.Fragment>
-      <i className="fas fa-cog"></i>&nbsp;Model Settings
+      <FontAwesomeIcon icon={faCog} />
+      &nbsp;Model Settings
     </React.Fragment>
   );
 }
@@ -169,17 +174,17 @@ function Footer(props) {
         }}
       >
         {loading ? (
-          <i className="fas fa-spinner" />
+          <FontAwesomeIcon icon={faSpinner} />
         ) : (
-          <i className="fas fa-save" aria-hidden="true" />
+          <FontAwesomeIcon icon={faSave} />
         )}
         Save Model
       </Button>
       <Button onClick={duplicate} disabled={loading}>
         {loading ? (
-          <i className="fas fa-spinner" />
+          <FontAwesomeIcon icon={faSpinner} />
         ) : (
-          <i className="fas fa-clone" />
+          <FontAwesomeIcon icon={faClone} />
         )}
         Duplicate Model
       </Button>

@@ -1,4 +1,8 @@
 import React, { Component } from "react";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBug } from "@fortawesome/free-solid-svg-icons";
+
 import styles from "./AppError.less";
 export default class AppError extends Component {
   constructor(props) {
@@ -26,15 +30,13 @@ export default class AppError extends Component {
       return (
         <section className={styles.AppCrash}>
           <h1 className={styles.Display}>
-            <i className="fa fa-bug" aria-hidden="true" />
+            <FontAwesomeIcon icon={faBug} />
             &nbsp;We apologize but something went wrong
           </h1>
           <h3 className={styles.SubHead}>
             Try reloading the application (CMD + R).&nbsp;
             <a
-              href={`mailto:support@zesty.io?subject=Accounts App Crash&body=REPLACE WITH EXTRA INFORMATION ---- ${
-                this.state.err
-              }`}
+              href={`mailto:support@zesty.io?subject=Accounts App Crash&body=REPLACE WITH EXTRA INFORMATION ---- ${this.state.err}`}
               target="_blank"
             >
               Report to support@zesty.io

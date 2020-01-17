@@ -1,6 +1,22 @@
 import React from "react";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faParagraph,
+  faImages,
+  faCalendar,
+  faList,
+  faArrowsAltH,
+  faSitemap,
+  faExternalLinkAlt,
+  faLink,
+  faToggleOn,
+  faPalette,
+  faSortNumericUp,
+  faMoneyBillAlt,
+  faIdCard
+} from "@fortawesome/free-solid-svg-icons";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
@@ -129,7 +145,7 @@ export const FIELD_TYPES = [
     value: "text",
     icon: (
       <React.Fragment>
-        <i className="fas fa-paragraph" aria-hidden="true" />
+        <FontAwesomeIcon icon={faParagraph} />
       </React.Fragment>
     ),
     description: (
@@ -148,7 +164,7 @@ export const FIELD_TYPES = [
     value: "textarea",
     icon: (
       <React.Fragment>
-        <i className="fas fa-paragraph" aria-hidden="true" />
+        <FontAwesomeIcon icon={faParagraph} />
       </React.Fragment>
     ),
     description:
@@ -160,7 +176,7 @@ export const FIELD_TYPES = [
     value: "wysiwyg_basic",
     icon: (
       <React.Fragment>
-        <i className="fas fa-paragraph" aria-hidden="true" />
+        <FontAwesomeIcon icon={faParagraph} />
       </React.Fragment>
     ),
     description: (
@@ -180,7 +196,7 @@ export const FIELD_TYPES = [
     value: "markdown",
     icon: (
       <React.Fragment>
-        <i className="fas fa-paragraph" aria-hidden="true" />
+        <FontAwesomeIcon icon={faParagraph} />
       </React.Fragment>
     ),
     description: (
@@ -203,7 +219,7 @@ export const FIELD_TYPES = [
     value: "article_writer",
     icon: (
       <React.Fragment>
-        <i className="fas fa-paragraph" aria-hidden="true" />
+        <FontAwesomeIcon icon={faParagraph} />
       </React.Fragment>
     ),
     description: (
@@ -224,7 +240,7 @@ export const FIELD_TYPES = [
     value: "images",
     icon: (
       <React.Fragment>
-        <i className="fas fa-images" aria-hidden="true" />
+        <FontAwesomeIcon icon={faImages} />
       </React.Fragment>
     ),
     description: (
@@ -244,7 +260,7 @@ export const FIELD_TYPES = [
     value: "date",
     icon: (
       <React.Fragment>
-        <i className="fas fa-calendar" aria-hidden="true" />
+        <FontAwesomeIcon icon={faCalendar} />
       </React.Fragment>
     ),
     description: (
@@ -262,7 +278,7 @@ export const FIELD_TYPES = [
     value: "dropdown",
     icon: (
       <React.Fragment>
-        <i className="fas fa-list" aria-hidden="true" />
+        <FontAwesomeIcon icon={faList} />
       </React.Fragment>
     ),
     description: (
@@ -280,7 +296,7 @@ export const FIELD_TYPES = [
     value: "one_to_one",
     icon: (
       <React.Fragment>
-        <i className="fas fa-arrows-alt-h" />
+        <FontAwesomeIcon icon={faArrowsAltH} />
       </React.Fragment>
     ),
     description:
@@ -292,7 +308,7 @@ export const FIELD_TYPES = [
     value: "one_to_many",
     icon: (
       <React.Fragment>
-        <i className="fas fa-sitemap" />
+        <FontAwesomeIcon icon={faSitemap} />
       </React.Fragment>
     ),
     description:
@@ -304,7 +320,7 @@ export const FIELD_TYPES = [
     value: "link",
     icon: (
       <React.Fragment>
-        <i className="fas fa-external-link-alt" aria-hidden="true" />
+        <FontAwesomeIcon icon={faExternalLinkAlt} />
       </React.Fragment>
     ),
     description: (
@@ -323,7 +339,7 @@ export const FIELD_TYPES = [
     value: "internal_link",
     icon: (
       <React.Fragment>
-        <i className="fas fa-link" aria-hidden="true" />
+        <FontAwesomeIcon icon={faLink} />
       </React.Fragment>
     ),
     description: (
@@ -342,7 +358,7 @@ export const FIELD_TYPES = [
     value: "yes_no",
     icon: (
       <React.Fragment>
-        <i className="fas fa-toggle-on" aria-hidden="true" />
+        <FontAwesomeIcon icon={faToggleOn} />
       </React.Fragment>
     ),
     description: "",
@@ -364,7 +380,7 @@ export const FIELD_TYPES = [
     value: "color",
     icon: (
       <React.Fragment>
-        <i className="fas fa-palette" aria-hidden="true" />
+        <FontAwesomeIcon icon={faPalette} />
       </React.Fragment>
     ),
     description: "",
@@ -375,7 +391,7 @@ export const FIELD_TYPES = [
     value: "sort",
     icon: (
       <React.Fragment>
-        <i className="fas fa-sort-numeric-up" />
+        <FontAwesomeIcon icon={faSortNumericUp} />
       </React.Fragment>
     ),
     description: "",
@@ -386,7 +402,7 @@ export const FIELD_TYPES = [
     value: "currency",
     icon: (
       <React.Fragment>
-        <i className="fas fa-money-bill-alt" aria-hidden="true" />
+        <FontAwesomeIcon icon={faMoneyBillAlt} />
       </React.Fragment>
     ),
     description: "",
@@ -398,7 +414,7 @@ export const FIELD_TYPES = [
     value: "uuid",
     icon: (
       <React.Fragment>
-        <i className="fas fa-id-card" />
+        <FontAwesomeIcon icon={faIdCard} />
       </React.Fragment>
     ),
     description: "",

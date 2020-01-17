@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { Button } from "@zesty-io/core/Button";
 
@@ -74,7 +76,7 @@ export function DropdownOptions(props) {
               setOptions(newOptions);
             }}
           >
-            <i className="fas fa-trash" />
+            <FontAwesomeIcon icon={faTrash} />
           </Button>
         </div>
       ))}
@@ -85,7 +87,7 @@ export function DropdownOptions(props) {
           setOptions([...options, { key: "", value: "" }]);
         }}
       >
-        <i className="fas fa-plus" />
+        <FontAwesomeIcon icon={faPlus} />
         Add Option
       </Button>
     </div>

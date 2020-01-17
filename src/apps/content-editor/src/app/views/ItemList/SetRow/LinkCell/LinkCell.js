@@ -13,10 +13,7 @@ export const LinkCell = function LinkCell(props) {
         {props.value.length > 145 ? (
           <Url href={props.value} target="_blank">
             <span>
-              <i
-                className="fas fa-external-link-square-alt"
-                aria-hidden="true"
-              />
+              <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
               &nbsp;
               {props.value && props.value.substr(0, 145)} &hellip;
             </span>
@@ -24,10 +21,7 @@ export const LinkCell = function LinkCell(props) {
         ) : (
           <Url href={props.value} target="_blank">
             <span>
-              <i
-                className="fas fa-external-link-square-alt"
-                aria-hidden="true"
-              />
+              <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
               &nbsp;
               {props.value}
             </span>

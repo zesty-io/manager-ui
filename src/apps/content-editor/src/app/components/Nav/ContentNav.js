@@ -1,7 +1,7 @@
 import React from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faArrowsAlt } from "@fortawesome/free-solid-svg-icons";
 import { ReorderNav } from "../ReorderNav";
 import { Nav } from "@zesty-io/core/Nav";
 import { Button } from "@zesty-io/core/Button";
@@ -66,9 +66,8 @@ export class ContentNav extends React.PureComponent {
               id="ReorderNavButton"
               onClick={() => this.setState({ openReorder: true })}
             >
-              <i
-                className="fas fa-arrows-alt"
-                aria-hidden="true"
+              <FontAwesomeIcon
+                icon={faArrowsAlt}
                 title="Re-order content navigation"
               />
               Reorder

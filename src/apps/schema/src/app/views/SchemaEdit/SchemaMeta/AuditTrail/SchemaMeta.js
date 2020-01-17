@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSave, faClone } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
 import { Url } from "@zesty-io/core/Url";
-import { ToggleButton } from "@zesty-io/core/ToggleButton";
 
 import { Parent } from "./settings/Parent";
 
@@ -66,7 +66,7 @@ export default function SchemaMeta(props) {
         <CardContent>
           <label>
             <p>
-              <i className="fas fa-cog" />
+              <FontAwesomeIcon icon={faCog} />
               &nbsp;
               {zesty.instance.settings.basic_content_api_enabled == 1 ? (
                 <Url
@@ -185,14 +185,14 @@ export default function SchemaMeta(props) {
                   });
               }}
             >
-              <i className="fas fa-save" aria-hidden="true" />
+              <FontAwesomeIcon icon={faSave} />
               Save Model
             </Button>
             <Button onClick={duplicate} disabled={loading}>
               {loading ? (
-                <i className="fas fa-spinner" />
+                <FontAwesomeIcon icon={faSpinner} />
               ) : (
-                <i className="fas fa-clone" />
+                <FontAwesomeIcon icon={faClone} />
               )}
               Duplicate Model
             </Button>
@@ -215,7 +215,7 @@ export default function SchemaMeta(props) {
             onClick={() => setIsOpen(true)}
             disabled={loading}
           >
-            <i className="far fa-trash-alt" />
+            <FontAwesomeIcon icon={faTrash} />
             Delete Model
           </Button>
 

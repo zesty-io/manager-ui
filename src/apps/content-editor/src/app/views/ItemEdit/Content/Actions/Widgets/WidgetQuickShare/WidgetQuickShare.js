@@ -6,7 +6,6 @@ import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
 import styles from "./WidgetQuickShare.less";
-
 export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
   const url = props.live_domain
     ? props.live_domain + props.path

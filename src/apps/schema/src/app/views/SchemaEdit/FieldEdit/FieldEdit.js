@@ -2,6 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faExpandArrowsAlt,
+  faSpinner,
+  faSave,
+  faPlayCircle,
+  faPauseCircle
+} from "@fortawesome/free-solid-svg-icons";
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
@@ -74,7 +82,7 @@ function Header(props) {
         }}
         onDragStart={props.onDragStart}
       >
-        <i className="fas fa-expand-arrows-alt" />
+        <FontAwesomeIcon icon={faExpandArrowsAlt} />
       </Button>
     </div>
   );
@@ -125,9 +133,9 @@ function Footer(props) {
     <ButtonGroup className={styles.FieldActions}>
       <Button kind="save" disabled={!props.field.dirty} onClick={onSave}>
         {loading ? (
-          <i className="fas fa-spinner" aria-hidden="true" />
+          <FontAwesomeIcon icon={faSpinner} />
         ) : (
-          <i className="fas fa-save" aria-hidden="true" />
+          <FontAwesomeIcon icon={faSave} />
         )}
         Save Changes
       </Button>
@@ -143,9 +151,9 @@ function Footer(props) {
           }}
         >
           {loading ? (
-            <i className="fas fa-spinner" aria-hidden="true" />
+            <FontAwesomeIcon icon={faSpinner} />
           ) : (
-            <i className="fas fa-play-circle"></i>
+            <FontAwesomeIcon icon={faPlayCircle} />
           )}
           Reactivate
         </Button>
@@ -162,9 +170,9 @@ function Footer(props) {
           }}
         >
           {loading ? (
-            <i className="fas fa-spinner" aria-hidden="true" />
+            <FontAwesomeIcon icon={faSpinner} />
           ) : (
-            <i className="fas fa-pause-circle"></i>
+            <FontAwesomeIcon icon={faPauseCircle} />
           )}
           Deactivate
         </Button>

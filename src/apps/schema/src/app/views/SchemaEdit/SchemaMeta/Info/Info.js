@@ -1,7 +1,17 @@
 import React from "react";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faInfoCircle,
+  faTimesCircle,
+  faCheckCircle,
+  faBolt,
+  faCog,
+  faPlus,
+  faCode,
+  faEdit
+} from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { Url } from "@zesty-io/core/Url";
 
 import styles from "./Info.less";
@@ -9,7 +19,8 @@ export default function Info(props) {
   return (
     <Card className={styles.ModelInfo}>
       <CardHeader>
-        <i className="fas fa-info-circle"></i>&nbsp;Model Info
+        <FontAwesomeIcon icon={faInfoCircle} />
+        &nbsp;Model Info
       </CardHeader>
       <CardContent>
         <ul className={styles.StaticInfo}>
@@ -27,11 +38,11 @@ export default function Info(props) {
                 <strong>
                   {props.model.type === "dataset" ? (
                     <span className={styles.no}>
-                      <i className="fas fa-times-circle" title="false"></i>
+                      <FontAwesomeIcon icon={faTimesCircle} title="false" />
                     </span>
                   ) : (
                     <span className={styles.yes}>
-                      <i className="fas fa-check-circle"></i>
+                      <FontAwesomeIcon icon={faCheckCircle} />
                     </span>
                   )}
                 </strong>
@@ -42,11 +53,11 @@ export default function Info(props) {
                 <strong>
                   {props.model.type === "templateset" ? (
                     <span className={styles.no}>
-                      <i className="fas fa-times-circle"></i>
+                      <FontAwesomeIcon icon={faTimesCircle} />
                     </span>
                   ) : (
                     <span className={styles.yes}>
-                      <i className="fas fa-check-circle"></i>
+                      <FontAwesomeIcon icon={faCheckCircle} />
                     </span>
                   )}
                 </strong>
@@ -68,12 +79,12 @@ export default function Info(props) {
                 target="_blank"
                 href={`${CONFIG.URL_PREVIEW}/-/instant/${props.model.ZUID}.json`}
               >
-                <i className="fas fa-bolt" />
+                <FontAwesomeIcon icon={faBolt} />
                 &nbsp;{`/-/instant/${props.model.ZUID}.json`}
               </Url>
             ) : (
               <Url href="/config/settings/developer/">
-                <i className="fas fa-cog" />
+                <FontAwesomeIcon icon={faCog} />
                 &nbsp;Activate Instant JSON API
               </Url>
             )}
@@ -85,19 +96,22 @@ export default function Info(props) {
           {props.model.type !== "templateset" && (
             <li>
               <Url href={`/content/${props.model.ZUID}/new`}>
-                <i className="fas fa-plus"></i>&nbsp;Add Item
+                <FontAwesomeIcon icon={faPlus} />
+                &nbsp;Add Item
               </Url>
             </li>
           )}
 
           <li>
             <Url href={`/content/${props.model.ZUID}`}>
-              <i className="fas fa-edit"></i>&nbsp;Edit Item(s)
+              <FontAwesomeIcon icon={faEdit} />
+              &nbsp;Edit Item(s)
             </Url>
           </li>
           <li>
             <Url href={`/editor`}>
-              <i className="fas fa-code"></i>&nbsp;Edit Code
+              <FontAwesomeIcon icon={faCode} />
+              &nbsp;Edit Code
             </Url>
           </li>
         </ul>
