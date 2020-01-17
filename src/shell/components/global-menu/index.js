@@ -16,7 +16,7 @@ import {
 
 import styles from "./styles.less";
 
-export default React.memo(function GlobalMenu(props) {
+export default React.memo(function GlobalMenu() {
   return (
     <menu className={styles.GlobalMenu}>
       {/*props.products.map(product => {

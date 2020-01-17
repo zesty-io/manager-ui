@@ -1,7 +1,6 @@
-import React, { Component, PureComponent } from "react";
+import React from "react";
+import { useHistory } from "react-router-dom";
 import cx from "classnames";
-
-import { Url } from "@zesty-io/core/Url";
 
 import { DateCell } from "./DateCell";
 import { ImageCell } from "./ImageCell";
@@ -19,232 +18,216 @@ import { InternalLinkCell } from "./InternalLinkCell";
 import { PublishStatusCell } from "./PublishStatusCell";
 
 import styles from "./SetRow.less";
-export class SetRow extends Component {
-  state = {
-    loaded: false
-  };
+export default React.memo(function SetRow(props) {
+  let history = useHistory();
 
-  selectRow = (name, value) => {
+  const item = props.allItems[props.itemZUID];
+
+  const selectRow = (name, value) => {
     if (name && typeof value != "undefined") {
-      // this.props.onChange(this.props.itemZUID, name, value);
+      // props.onChange(props.itemZUID, name, value);
     } else {
-      if (this.props.itemZUID.slice(0, 3) === "new") {
-        window.location = `/content/${this.props.modelZUID}/new`;
+      if (props.itemZUID.slice(0, 3) === "new") {
+        history.push(`/content/${props.modelZUID}/new`);
       } else {
-        window.location = `/content/${this.props.modelZUID}/${this.props.itemZUID}`;
+        history.push(`/content/${props.modelZUID}/${props.itemZUID}`);
       }
     }
   };
 
-  componentDidMount() {
-    // TODO: Replace individual row lookup with instance level publishing records
-    // const item = this.props.allItems[this.props.itemZUID];
-    // if (item && !item.publishing) {
-    //   this.props.loadItemPublishData(this.props.modelZUID, this.props.itemZUID);
-    // }
-  }
+  return (
+    <article
+      className={cx(styles.SetRow, props.isDirty && styles.Dirty)}
+      style={{ ...props.style }}
+    >
+      <PublishStatusCell type={props.model.type} item={item} />
+      <div className={styles.Cells} onClick={selectRow}>
+        {props.fields.map(field => {
+          switch (field.datatype) {
+            case "one_to_one":
+              return (
+                <OneToOneCell
+                  key={field.name + props.itemZUID}
+                  className={styles.Cell}
+                  field={field}
+                  loadItem={props.loadItem}
+                  value={props.data[field.name]}
+                  allItems={props.allItems}
+                  allFields={props.allFields}
+                />
+              );
 
-  render() {
-    const item = this.props.allItems[this.props.itemZUID];
+            case "one_to_many":
+              return (
+                <OneToManyCell
+                  key={field.name + props.itemZUID}
+                  className={styles.Cell}
+                  onRemove={(name, value) => {
+                    return props.onChange(props.itemZUID, name, value);
+                  }}
+                  value={props.data[field.name] || ""}
+                  name={field.name}
+                  field={field}
+                  settings={field.settings}
+                  allItems={props.allItems}
+                  allFields={props.allFields}
+                />
+              );
 
-    return (
-      <article
-        className={cx(styles.SetRow, this.props.isDirty && styles.Dirty)}
-        style={{ ...this.props.style }}
-      >
-        <PublishStatusCell type={this.props.model.type} item={item} />
-        <div
-          className={styles.Cells}
-          onClick={() => {
-            this.selectRow();
-          }}
-        >
-          {this.props.fields.map(field => {
-            switch (field.datatype) {
-              case "one_to_one":
-                return (
-                  <OneToOneCell
-                    key={field.name + this.props.itemZUID}
-                    className={styles.Cell}
-                    field={field}
-                    loadItem={this.props.loadItem}
-                    value={this.props.data[field.name]}
-                    allItems={this.props.allItems}
-                    allFields={this.props.allFields}
-                  />
-                );
-                break;
+            case "dropdown":
+              return (
+                <DropdownCell
+                  key={field.name + props.itemZUID}
+                  className={styles.Cell}
+                  field={field}
+                  value={props.data[field.name]}
+                />
+              );
 
-              case "one_to_many":
-                return (
-                  <OneToManyCell
-                    key={field.name + this.props.itemZUID}
-                    className={styles.Cell}
-                    onRemove={(name, value) => {
-                      return this.props.onChange(
-                        this.props.itemZUID,
-                        name,
-                        value
-                      );
-                    }}
-                    value={this.props.data[field.name] || ""}
-                    name={field.name}
-                    field={field}
-                    settings={field.settings}
-                    allItems={this.props.allItems}
-                    allFields={this.props.allFields}
-                  />
-                );
-                break;
+            case "internal_link":
+              return (
+                <InternalLinkCell
+                  key={field.name + props.itemZUID}
+                  className={styles.Cell}
+                  field={field}
+                  relatedItemZUID={props.data[field.name]}
+                  allItems={props.allItems}
+                  searchItem={props.searchItem}
+                />
+              );
 
-              case "dropdown":
-                return (
-                  <DropdownCell
-                    key={field.name + this.props.itemZUID}
-                    className={styles.Cell}
-                    field={field}
-                    value={this.props.data[field.name]}
-                  />
-                );
-                break;
+            case "wysiwyg_advanced":
+            case "wysiwyg_basic":
+            case "article_writer":
+            case "markdown":
+              return (
+                <div className={styles.Cell} key={field.name + props.itemZUID}>
+                  <WYSIWYGcell value={props.data[field.name]} />
+                </div>
+              );
 
-              case "internal_link":
-                return (
-                  <InternalLinkCell
-                    key={field.name + this.props.itemZUID}
-                    className={styles.Cell}
-                    field={field}
-                    relatedItemZUID={this.props.data[field.name]}
-                    allItems={this.props.allItems}
-                    searchItem={this.props.searchItem}
-                  />
-                );
+            case "text":
+            case "textarea":
+            case "uuid":
+              return (
+                <div className={styles.Cell} key={field.name + props.itemZUID}>
+                  <TextCell value={props.data[field.name]} />
+                </div>
+              );
 
-              case "wysiwyg_advanced":
-              case "wysiwyg_basic":
-              case "article_writer":
-              case "markdown":
-                return (
-                  <div
-                    className={styles.Cell}
-                    key={field.name + this.props.itemZUID}
-                  >
-                    <WYSIWYGcell value={this.props.data[field.name]} />
-                  </div>
-                );
-                break;
+            case "files":
+              return (
+                <FileCell
+                  key={field.name + props.itemZUID}
+                  className={styles.Cell}
+                  data={props.data[field.name]}
+                />
+              );
 
-              case "text":
-              case "textarea":
-              case "uuid":
-                return (
-                  <div
-                    className={styles.Cell}
-                    key={field.name + this.props.itemZUID}
-                  >
-                    <TextCell value={this.props.data[field.name]} />
-                  </div>
-                );
-                break;
+            case "images":
+              return (
+                <ImageCell
+                  key={field.name + props.itemZUID}
+                  className={styles.Cell}
+                  value={props.data[field.name]}
+                />
+              );
 
-              case "files":
-                return (
-                  <FileCell
-                    key={field.name + this.props.itemZUID}
-                    className={styles.Cell}
-                    data={this.props.data[field.name]}
-                  />
-                );
-                break;
+            case "yes_no":
+              return (
+                <ToggleCell
+                  key={field.name + props.itemZUID}
+                  className={styles.Cell}
+                  name={field.name}
+                  field={field}
+                  value={props.data[field.name]}
+                  onChange={(name, value) =>
+                    props.onChange(props.itemZUID, name, value)
+                  }
+                />
+              );
 
-              case "images":
-                return (
-                  <ImageCell
-                    key={field.name + this.props.itemZUID}
-                    className={styles.Cell}
-                    value={this.props.data[field.name]}
-                  />
-                );
-                break;
+            case "color":
+              return (
+                <ColorCell
+                  key={field.name + props.itemZUID}
+                  className={styles.Cell}
+                  value={props.data[field.name]}
+                />
+              );
 
-              case "yes_no":
-                return (
-                  <ToggleCell
-                    key={field.name + this.props.itemZUID}
-                    className={styles.Cell}
-                    name={field.name}
-                    field={field}
-                    value={this.props.data[field.name]}
-                    onChange={(name, value) =>
-                      this.props.onChange(this.props.itemZUID, name, value)
-                    }
-                  />
-                );
-                break;
+            case "sort":
+              return (
+                <SortCell
+                  key={field.name + props.itemZUID}
+                  className={styles.Cell}
+                  name={field.name}
+                  value={props.data[field.name]}
+                  onChange={(name, value) => {
+                    return props.onChange(props.itemZUID, name, value);
+                  }}
+                />
+              );
 
-              case "color":
-                return (
-                  <ColorCell
-                    key={field.name + this.props.itemZUID}
-                    className={styles.Cell}
-                    value={this.props.data[field.name]}
-                  />
-                );
-                break;
+            case "link":
+              return (
+                <LinkCell
+                  key={field.name + props.itemZUID}
+                  className={styles.Cell}
+                  value={props.data[field.name]}
+                />
+              );
 
-              case "sort":
-                return (
-                  <SortCell
-                    key={field.name + this.props.itemZUID}
-                    className={styles.Cell}
-                    name={field.name}
-                    value={this.props.data[field.name]}
-                    onChange={(name, value) => {
-                      return this.props.onChange(
-                        this.props.itemZUID,
-                        name,
-                        value
-                      );
-                    }}
-                  />
-                );
-                break;
+            case "date":
+            case "datetime":
+              return (
+                <DateCell
+                  key={field.name + props.itemZUID}
+                  className={styles.Cell}
+                  value={props.data[field.name]}
+                />
+              );
+              break;
 
-              case "link":
-                return (
-                  <LinkCell
-                    key={field.name + this.props.itemZUID}
-                    className={styles.Cell}
-                    value={this.props.data[field.name]}
-                  />
-                );
-                break;
+            default:
+              return (
+                <span
+                  key={field.name + props.itemZUID}
+                  className={cx(styles.Cell, styles.DefaultCell)}
+                >
+                  {props.data[field.name]}
+                </span>
+              );
+          }
+        })}
+      </div>
+    </article>
+  );
+});
 
-              case "date":
-              case "datetime":
-                return (
-                  <DateCell
-                    key={field.name + this.props.itemZUID}
-                    className={styles.Cell}
-                    value={this.props.data[field.name]}
-                  />
-                );
-                break;
+// export class SetRow extends Component {
 
-              default:
-                return (
-                  <span
-                    key={field.name + this.props.itemZUID}
-                    className={cx(styles.Cell, styles.DefaultCell)}
-                  >
-                    {this.props.data[field.name]}
-                  </span>
-                );
-                break;
-            }
-          })}
-        </div>
-      </article>
-    );
-  }
-}
+//   selectRow = (name, value) => {
+//     if (name && typeof value != "undefined") {
+//       // props.onChange(props.itemZUID, name, value);
+//     } else {
+//       if (props.itemZUID.slice(0, 3) === "new") {
+//         window.location = `/content/${props.modelZUID}/new`;
+//       } else {
+//         window.location = `/content/${props.modelZUID}/${props.itemZUID}`;
+//       }
+//     }
+//   };
+
+//   componentDidMount() {
+//     // TODO: Replace individual row lookup with instance level publishing records
+//     // const item = props.allItems[props.itemZUID];
+//     // if (item && !item.publishing) {
+//     //   props.loadItemPublishData(props.modelZUID, props.itemZUID);
+//     // }
+//   }
+
+//   render() {
+
+//   }
+// }

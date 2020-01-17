@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { connect } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Switch, Redirect, Route } from "react-router-dom";
 import styles from "./Shell.less";
 
@@ -9,12 +9,13 @@ import GlobalTopbar from "shell/components/global-topbar";
 import { fetchProducts } from "shell/store/user";
 // import { subMenuLoad } from "shell/store/ui/global-sub-menu";
 
-export default connect(state => state)(function Shell(props) {
-  useEffect(() => props.dispatch(fetchProducts()), []);
+export default function Shell() {
+  const dispatch = useDispatch();
+  useEffect(() => dispatch(fetchProducts()), []);
 
   return (
     <section className={styles.app}>
-      <GlobalSidebar {...props} />
+      <GlobalSidebar />
       <main
         className={styles.AppLoader}
         // onMouseEnter={this.hideGlobalSubMenu.bind(this)}
@@ -44,4 +45,4 @@ export default connect(state => state)(function Shell(props) {
       </main>
     </section>
   );
-});
+}

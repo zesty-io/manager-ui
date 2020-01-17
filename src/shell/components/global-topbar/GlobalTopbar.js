@@ -53,7 +53,7 @@ export default React.memo(
       //   case "":
       // }
 
-      const newRoutes = [history.location, ...removedRoute].slice(0, 25);
+      const newRoutes = [history.location, ...removedRoute].slice(0, 15);
 
       // store routes to local storage and reload on app start
       set(`${props.instanceZUID}:session:routes`, newRoutes);

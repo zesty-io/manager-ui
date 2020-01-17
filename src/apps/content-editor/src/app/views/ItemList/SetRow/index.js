@@ -1,1 +1,2 @@
-export { SetRow } from "./SetRow";
+import SetRow from "./SetRow";
+export { SetRow };
