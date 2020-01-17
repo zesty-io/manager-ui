@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
@@ -19,6 +20,7 @@ import {
 
 import styles from "./Settings.less";
 export default function Settings(props) {
+  let history = useHistory();
   const update = (name, val) => {
     props.dispatch(updateModel(props.model.ZUID, name, val));
   };
@@ -112,7 +114,7 @@ function Footer(props) {
       .dispatch(duplicateModel(props.model.ZUID))
       .then(res => {
         if (res.status === 200) {
-          window.location = `/schema/${res.data.ZUID}/`;
+          history.pushState(`/schema/${res.data.ZUID}/`);
         } else {
           notify({
             kind: "warn",

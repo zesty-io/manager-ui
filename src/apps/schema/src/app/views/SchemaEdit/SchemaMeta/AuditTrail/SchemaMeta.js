@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
@@ -24,6 +25,7 @@ import {
 
 import styles from "./SchemaMeta.less";
 export default function SchemaMeta(props) {
+  let history = useHistory();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -37,7 +39,7 @@ export default function SchemaMeta(props) {
       .dispatch(duplicateModel(props.model.ZUID))
       .then(res => {
         if (res.status === 200) {
-          window.location = `/schema/${res.data.ZUID}/`;
+          history.push(`/schema/${res.data.ZUID}/`);
         } else {
           notify({
             kind: "warn",

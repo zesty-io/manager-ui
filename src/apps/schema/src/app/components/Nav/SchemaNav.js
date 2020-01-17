@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import cx from "classnames";
 
 import { Nav } from "@zesty-io/core/Nav";
@@ -7,6 +8,8 @@ import { Button } from "@zesty-io/core/Button";
 
 import styles from "./SchemaNav.less";
 export default function SchemaNav(props) {
+  let history = useHistory();
+
   const [nav, setNav] = useState(props.nav);
   const [selected, setSelected] = useState(window.location.hash);
 
@@ -30,7 +33,7 @@ export default function SchemaNav(props) {
   return (
     <nav className={cx("SchemaNav", styles.SchemaNav)}>
       <div className={styles.Actions}>
-        <Button onClick={() => (window.location = "/schema/new")} type="save">
+        <Button onClick={() => history.push("/schema/new")} type="save">
           <i className="fa fa-plus" aria-hidden="true" />
           &nbsp;Create New Model
         </Button>

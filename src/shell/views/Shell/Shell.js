@@ -14,7 +14,7 @@ export default function Shell() {
   useEffect(() => dispatch(fetchProducts()), []);
 
   return (
-    <section className={styles.app}>
+    <section className={styles.Shell}>
       <GlobalSidebar />
       <main
         className={styles.AppLoader}

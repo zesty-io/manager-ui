@@ -1,4 +1,5 @@
 import React, { useState, useReducer } from "react";
+import { useHistory } from "react-router-dom";
 import cx from "classnames";
 
 import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
@@ -13,6 +14,8 @@ import { createField } from "../../../../store/schemaFields";
 
 import styles from "./FieldAdd.less";
 export function FieldAdd(props) {
+  let history = useHistory();
+
   const initialState = {
     contentModelZUID: props.modelZUID,
     datatype: "0",
@@ -60,7 +63,7 @@ export function FieldAdd(props) {
             message: `Created new field: ${field.label}`
           });
           setField(initialState);
-          window.location = `/schema/${props.modelZUID}/field/${res.data.ZUID}`;
+          history.push(`/schema/${props.modelZUID}/field/${res.data.ZUID}`);
         } else {
           notify({
             kind: "warn",

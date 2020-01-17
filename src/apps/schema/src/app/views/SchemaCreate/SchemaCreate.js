@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useReducer } from "react";
 import { connect } from "react-redux";
+import { useHistory } from "react-router-dom";
 import cx from "classnames";
 
 import { request } from "utility/request";
@@ -48,6 +49,8 @@ export default connect(state => {
     })
   };
 })(function SchemaCreate(props) {
+  let history = useHistory();
+
   const [name, setName] = useState("");
   const [label, setLabel] = useState("");
   const [description, setDescription] = useState("");
@@ -408,7 +411,7 @@ export default connect(state => {
                         );
                       }
 
-                      window.location = `/schema/${res.data.ZUID}`;
+                      history.push(`/schema/${res.data.ZUID}`);
                     } else {
                       notify({
                         kind: "error",

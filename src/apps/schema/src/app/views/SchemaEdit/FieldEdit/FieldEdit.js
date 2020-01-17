@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import cx from "classnames";
 
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
@@ -40,11 +41,15 @@ export function FieldEdit(props) {
 }
 
 function Header(props) {
+  let history = useHistory();
+
   return (
     <div
       className={styles.Header}
       onClick={() => {
-        window.location = `/schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`;
+        history.push(
+          `/schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`
+        );
       }}
     >
       <span className={styles.Caret}>

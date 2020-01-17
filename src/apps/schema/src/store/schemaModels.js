@@ -1,3 +1,5 @@
+import { useHistory } from "react-router-dom";
+
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 
@@ -209,8 +211,10 @@ export function deleteModel(modelZUID) {
     }).then(res => {
       // Re-fetch models
       dispatch(fetchModels()).then(() => {
+        let history = useHistory();
+
         // redirect
-        window.location = "/schema/";
+        history.push("/schema/");
       });
 
       return res;
