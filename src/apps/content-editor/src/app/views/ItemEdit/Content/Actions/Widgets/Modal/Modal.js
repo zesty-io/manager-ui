@@ -1,10 +1,14 @@
 import React from "react";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWindowClose } from "@fortawesome/free-solid-svg-icons";
+
 import styles from "./Modal.less";
 export const Modal = ({ handleClose, children }) => {
   return (
     <div className={styles.ModalContainer}>
       <div className={styles.Modal}>
-        <i className="fa fa-window-close" onClick={handleClose} />
+        <FontAwesomeIcon icon={faWindowClose} onClick={handleClose} />
         {children}
       </div>
     </div>

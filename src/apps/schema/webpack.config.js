@@ -10,8 +10,8 @@ const extractLess = new ExtractTextPlugin({
 const WebpackBar = require("webpackbar");
 
 module.exports = {
-  entry: "./index.js",
-  context: path.resolve(__dirname, "src"),
+  entry: "./src/index.js",
+  // context: path.resolve(__dirname, "src"),
   devtool: "cheap-module-source-map",
   mode: process.env.NODE_ENV || "development",
   output: {
@@ -39,10 +39,10 @@ module.exports = {
   },
   plugins: [
     extractLess,
-    new webpack.optimize.ModuleConcatenationPlugin()
-    // new WebpackBar({
-    //   name: "schema-builder"
-    // })
+    new webpack.optimize.ModuleConcatenationPlugin(),
+    new WebpackBar({
+      name: "schema-builder"
+    })
   ],
   module: {
     rules: [
@@ -81,7 +81,10 @@ module.exports = {
         query: {
           presets: ["@babel/preset-env", "@babel/preset-react"],
           plugins: [
+            // "@babel/plugin-syntax-dynamic-import",
+            // "@babel/plugin-syntax-import-meta",
             ["@babel/plugin-proposal-class-properties", { loose: false }]
+            // "@babel/plugin-proposal-json-strings"
           ]
         }
       }

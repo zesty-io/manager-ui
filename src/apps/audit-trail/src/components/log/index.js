@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
+
 import { MD5 } from "utility/md5";
 
 import styles from "./styles.less";
@@ -22,20 +25,13 @@ class Log extends Component {
     return (
       <a className={styles.emailLink} href={`mailto:${email}`}>
         {name}&nbsp;
-        <span className="fa fa-envelope-o" />
+        <FontAwesomeIcon icon={faEnvelope} />
       </a>
     );
   }
 
   render() {
-    let {
-      meta,
-      action_by_user,
-      happened_at,
-      affected_zuid,
-      manager_link,
-      action_type
-    } = this.props.log;
+    let { meta, action_by_user, happened_at, action_type } = this.props.log;
 
     return (
       <article className={styles.auditLog}>

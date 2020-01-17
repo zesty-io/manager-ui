@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
 export default class DraggableItem extends Component {
   render() {
@@ -10,8 +10,8 @@ export default class DraggableItem extends Component {
       <li {...this.props}>
         <FontAwesomeIcon icon={faBars} /> {label}{" "}
         {children.length ? (
-          <i
-            className="fa fa-caret-right"
+          <FontAwesomeIcon
+            icon={faCaretRight}
             onClick={() => handleNestChange(ZUID)}
             style={{ cursor: "pointer" }}
           />

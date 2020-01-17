@@ -1,8 +1,10 @@
-import React, { Component } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
 import { Url } from "@zesty-io/core/Url";
@@ -198,7 +200,7 @@ export default connect(function(state, props) {
                           (window.location.hash = `/content/${contentModelZUID}/new`)
                         }
                       >
-                        <i className="fa fa-plus" aria-hidden="true" />
+                        <FontAwesomeIcon icon={faPlus} />
                         New {model && model.label}
                       </Button>
                     </CardFooter>
