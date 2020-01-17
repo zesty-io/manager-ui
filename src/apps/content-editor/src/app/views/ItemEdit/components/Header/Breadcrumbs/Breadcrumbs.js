@@ -2,7 +2,10 @@ import React, { Fragment } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTachometerAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTachometerAlt,
+  faAngleRight
+} from "@fortawesome/free-solid-svg-icons";
 import { Url } from "@zesty-io/core";
 
 import styles from "./Breadcrumbs.less";
@@ -75,7 +78,7 @@ export default connect(state => {
       return (
         <Fragment key={item.ZUID}>
           {i !== 0 && (
-            <i style={{ color: "white" }} className="fa fa-angle-right" />
+            <FontAwesomeIcon icon={faAngleRight} style={{ color: "white" }} />
           )}
           <Url className={styles.Breadcrumb} href={url}>
             {item.label}

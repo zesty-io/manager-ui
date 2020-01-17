@@ -1,19 +1,22 @@
 {
-  "name": "schema",
+  "name": "schema-builder",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "../../../node_modules/.bin/jest",
-    "start": "export NODE_ENV=\"development\" && ../../../node_modules/.bin/webpack --watch",
-    "build": "export NODE_ENV=\"production\" && ../../../node_modules/.bin/webpack --progress -p"
+    "test": "cypress run",
+    "start": "npx cross-env NODE_ENV=development webpack --watch",
+    "prebuild": "npm --silent install",
+    "build": "npx cross-env NODE_ENV=production webpack --display=minimal -p"
   },
-  "author": "",
-  "license": "UNLICENSED",
-  "jest": {
-    "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
-      "\\.(css|less)$": "identity-obj-proxy"
-    }
-  }
+  "author": "Zesty.io Developers <developers@zesty.io>",
+  "contirubtors": [
+    "Stuart Runyan <stuart@zesty.io>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zesty-io/sites.git",
+    "directory": "site-manager-app/manager/app-schema"
+  },
+  "license": "All Rights Reserved"
 }

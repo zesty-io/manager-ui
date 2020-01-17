@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import debounce from "lodash.debounce";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Input } from "@zesty-io/core/Input";
 import { InputIcon } from "@zesty-io/core/InputIcon";
 import { Infotip } from "@zesty-io/core/Infotip";
@@ -74,7 +76,7 @@ export const ItemRoute = React.memo(function ItemRoute(props) {
       <div className={styles.Path}>
         {props.path_part === "zesty_home" ? (
           <h1>
-            <i className="fa fa-home" aria-hidden="true" />
+            <FontAwesomeIcon icon={faHome} />
             &nbsp;Homepage
           </h1>
         ) : (
@@ -89,19 +91,19 @@ export const ItemRoute = React.memo(function ItemRoute(props) {
 
             {loading && (
               <InputIcon className={styles.Checking}>
-                <i className="fa fa-spinner" aria-hidden="true" />
+                <FontAwesomeIcon icon={faSpinner} />
               </InputIcon>
             )}
 
             {!loading && unique && (
               <InputIcon className={styles.Valid}>
-                <i className="fa fa-check" aria-hidden="true" />
+                <FontAwesomeIcon icon={faCheck} />
               </InputIcon>
             )}
 
             {!loading && !unique && (
               <InputIcon className={styles.Invalid}>
-                <i className="fa fa-times" aria-hidden="true" />
+                <FontAwesomeIcon icon={faTimes} />
               </InputIcon>
             )}
           </React.Fragment>

@@ -76,7 +76,7 @@ export const resolveFieldOptions = store => next => action => {
             //     // store.dispatch(fetchItems(relatedModel));
             //   };
             //   w.postMessage(
-            //     `${CONFIG.service.instance_api}/content/models/${relatedModel}/items`
+            //     `${CONFIG.API_INSTANCE}/content/models/${relatedModel}/items`
             //   );
             // }
           }

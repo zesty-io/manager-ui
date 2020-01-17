@@ -1,6 +1,8 @@
 import React from "react";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClock } from "@fortawesome/free-solid-svg-icons";
+import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -11,7 +13,7 @@ export class RecentlyEdited extends React.Component {
       <Card className={styles.Card}>
         <CardHeader>
           <h2>
-            <span className="fa fa-clock" /> Recent Instance Edits
+            <FontAwesomeIcon icon={faClock} /> Recent Instance Edits
           </h2>
         </CardHeader>
         <CardContent>

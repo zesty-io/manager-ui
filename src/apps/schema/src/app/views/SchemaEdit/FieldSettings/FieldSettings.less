@@ -1,0 +1,47 @@
+@import "~@zesty-io/core/colors.less";
+
+.DefaultSettings {
+  .Warn {
+    display: flex;
+    align-items: baseline;
+    background-color: @zesty-highlight;
+    padding: 8px;
+    .Icon {
+      margin: 0 8px 0 0;
+    }
+    p {
+      flex: 1;
+    }
+  }
+  // .Description {
+  // }
+
+  .Setting {
+    margin: 8px 0;
+
+    label {
+      margin: 4px 0;
+    }
+  }
+
+  .FieldSetting {
+    display: block;
+    p {
+      font-size: 16px;
+    }
+  }
+
+  .Columns {
+    display: flex;
+    flex-direction: row;
+    .Column {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 0%;
+      margin: 0 32px 0 0;
+    }
+    .Column:last-child {
+      margin-right: 0;
+    }
+  }
+}
