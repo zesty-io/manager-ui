@@ -8,6 +8,7 @@ import { Button } from "@zesty-io/core";
 import DraggableItem from "./DragComponents/DraggableItem";
 import DragList from "./DragComponents/DragList";
 
+import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 import { fetchNav } from "../../../store/contentNav";
 

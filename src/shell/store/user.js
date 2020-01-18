@@ -1,3 +1,5 @@
+import { request } from "utility/request";
+
 export function user(
   state = {
     id: "",

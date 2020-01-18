@@ -23,7 +23,7 @@ if (process.env.NODE_ENV === "PRODUCTION") {
     SERVICE_AUTH: "https://svc.zesty.io/auth",
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "",
-    SERVICE_MEDIA_RESLOVER: "",
+    SERVICE_MEDIA_RESOLVER: "",
     SERVICE_MEDIA_STORAGE: "",
     SERVICE_REDIS_GATEWAY: "",
     SERVICE_GOOGLE_ANALYTICS_AUTH: "",
@@ -49,7 +49,7 @@ if (process.env.NODE_ENV === "PRODUCTION") {
     SERVICE_AUTH: "https://stage-svc.zesty.io/auth",
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "",
-    SERVICE_MEDIA_RESLOVER: "",
+    SERVICE_MEDIA_RESOLVER: "",
     SERVICE_MEDIA_STORAGE: "",
     SERVICE_REDIS_GATEWAY: "",
     SERVICE_GOOGLE_ANALYTICS_AUTH: "",
@@ -76,7 +76,7 @@ if (process.env.NODE_ENV === "PRODUCTION") {
     SERVICE_EMAIL: "",
     SERVICE_MEDIA_MANAGER:
       "http://svc.zesty.localdev:3005/media-manager-service",
-    SERVICE_MEDIA_RESLOVER:
+    SERVICE_MEDIA_RESOLVER:
       "http://svc.zesty.localdev:3007/media-resolver-service",
     SERVICE_MEDIA_STORAGE:
       "http://svc.zesty.localdev:3008/media-storage-service",
