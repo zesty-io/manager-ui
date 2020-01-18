@@ -1,0 +1,24 @@
+runtime: custom
+env: flex
+service: manager-ui
+automatic_scaling:
+  min_num_instances: 2
+  max_num_instances: 5
+  cool_down_period_sec: 180
+  cpu_utilization:
+    target_utilization: 0.8
+
+liveness_check:
+  path: "/_health/liveness"
+  check_interval_sec: 30
+  timeout_sec: 4
+  failure_threshold: 2
+  success_threshold: 2
+
+readiness_check:
+  path: "/_health/readiness"
+  check_interval_sec: 5
+  timeout_sec: 4
+  failure_threshold: 2
+  success_threshold: 2
+  app_start_timeout_sec: 300
