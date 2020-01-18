@@ -59,7 +59,7 @@ export default connect(state => {
               <div className={styles.Content}>
                 <div className={styles.ContentWrap}>
                   <Switch>
-                    <Route path="/content/home" component={Dashboard} />
+                    <Route exact path="/content" component={Dashboard} />
 
                     <Route
                       exact

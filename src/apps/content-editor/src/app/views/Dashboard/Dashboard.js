@@ -55,19 +55,21 @@ export default connect(function(state, props) {
         .subtract(120, "days")
         .format("YYYY-MM-DD");
 
-      this.props.dispatch(fetchRecentItems(USER.user_zuid, start)).then(res => {
-        if (res && res.data) {
-          this.setState({
-            recentlyEditedItems: this.getLastEditedItems(res.data),
-            favoriteModels: this.getFavoriteModels(res.data),
-            loading: false
-          });
-        } else {
-          this.setState({
-            loading: false
-          });
-        }
-      });
+      this.props
+        .dispatch(fetchRecentItems(this.props.user.id, start))
+        .then(res => {
+          if (res && res.data) {
+            this.setState({
+              recentlyEditedItems: this.getLastEditedItems(res.data),
+              favoriteModels: this.getFavoriteModels(res.data),
+              loading: false
+            });
+          } else {
+            this.setState({
+              loading: false
+            });
+          }
+        });
       // }
     }
     setGALegacyStatus = status => {
