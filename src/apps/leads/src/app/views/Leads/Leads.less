@@ -1,0 +1,23 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.Leads {
+  height: calc(100vh - 64px - 10px);
+  // width: 100vw;
+  overflow: hidden;
+  padding: 16px;
+
+  header {
+    display: flex;
+    align-items: end;
+
+    .LeadFilter {
+      flex: 1;
+      padding-right: 32px;
+
+      input {
+        width: 100%;
+      }
+    }
+  }
+}

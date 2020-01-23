@@ -1,6 +1,7 @@
 import * as moment from "moment";
 import React from "react";
 import { connect } from "react-redux";
+
 import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
@@ -9,7 +10,7 @@ import {
   setFilterEndDate,
   setFilterDateRange,
   setFilterStartDate
-} from "../../store/filter";
+} from "store/filter";
 
 import styles from "./TableDateFilter.less";
 export default connect(state => {

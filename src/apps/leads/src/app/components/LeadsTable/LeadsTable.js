@@ -1,11 +1,12 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Button } from "@zesty-io/core/Button";
-import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { createBrowserHistory } from "history";
 
-import { deleteLead } from "../../store/leads";
-import * as FilterService from "../LeadFilter.service";
+import { Button } from "@zesty-io/core/Button";
+import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
+
+import { deleteLead } from "store/leads";
+import * as FilterService from "../../views/Leads/LeadFilter.service";
 
 function filterLeadsData(leads, filter) {
   let filteredLeads = FilterService.filterByFormGroup(leads, filter);

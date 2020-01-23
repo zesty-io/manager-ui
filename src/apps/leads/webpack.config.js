@@ -22,7 +22,7 @@ module.exports = {
     alias: {
       shell: path.resolve(__dirname, "../../shell/"),
       utility: path.resolve(__dirname, "../../utility/"),
-      components: path.resolve(__dirname, "src/components/"),
+      components: path.resolve(__dirname, "src/app/components/"),
       store: path.resolve(__dirname, "src/store/")
     }
   },

@@ -1,8 +1,9 @@
 import React from "react";
 import { connect } from "react-redux";
+
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
-import { setFilterFormGroup } from "../../store/filter";
+import { setFilterFormGroup } from "store/filter";
 import { FORM_GROUP_PRESETS } from "./FormGroupSelector.model";
 
 export default connect(state => {
