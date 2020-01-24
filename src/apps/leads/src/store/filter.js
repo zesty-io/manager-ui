@@ -1,4 +1,4 @@
-import { DATE_PRESETS } from "../app/components/TableDateFilter/TableDateFilter.model";
+import { DATE_PRESETS } from "components/LeadExporter/TableDateFilter/TableDateFilter.model";
 
 /**
  * Manages state related to filtering the leads data being displayed

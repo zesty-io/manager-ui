@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { Button } from "@zesty-io/core/Button";
 
 import { DATE_PRESETS } from "../TableDateFilter/TableDateFilter.model";
-import * as FilterService from "../../views/Leads/LeadFilter.service";
+import * as FilterService from "../../../views/Leads/LeadFilter.service";
 
 export default connect(state => {
   return {
