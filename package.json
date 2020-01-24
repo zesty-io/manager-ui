@@ -29,6 +29,7 @@
     "flatpickr": "4.6.3",
     "idb-keyval": "3.2.0",
     "js-cookie": "2.2.1",
+    "json-to-csv-export": "^1.0.2",
     "lodash.clonedeep": "4.5.0",
     "lodash.debounce": "4.0.8",
     "moment-timezone": "0.5.27",
@@ -44,9 +45,9 @@
     "react-window": "1.8.5",
     "redux": "4.0.5",
     "redux-thunk": "2.3.0",
+    "riot": "3.12.0",
     "showdown": "1.9.1",
-    "uuid": "3.3.3",
-    "riot": "3.12.0"
+    "uuid": "3.3.3"
   },
   "devDependencies": {
     "@babel/cli": "7.8.3",
