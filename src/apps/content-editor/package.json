@@ -5,9 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "cypress run",
-    "start": "npx cross-env NODE_ENV=development webpack --watch",
-    "prebuild": "npm --silent install",
-    "build": "npx cross-env NODE_ENV=production webpack --display=minimal -p"
+    "start": "webpack --watch",
+    "build": "webpack --display=minimal -p"
   },
   "author": "",
   "license": "UNLICENSED",
