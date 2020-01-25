@@ -6,12 +6,16 @@ import styles from "./Shell.less";
 import GlobalSidebar from "shell/components/global-sidebar";
 import GlobalTopbar from "shell/components/global-topbar";
 
+import { fetchInstance } from "shell/store/instance";
 import { fetchProducts } from "shell/store/user";
 // import { subMenuLoad } from "shell/store/ui/global-sub-menu";
 
 export default function Shell() {
   const dispatch = useDispatch();
-  useEffect(() => dispatch(fetchProducts()), []);
+  useEffect(() => {
+    dispatch(fetchInstance());
+    dispatch(fetchProducts());
+  }, []);
 
   return (
     <section className={styles.Shell}>
