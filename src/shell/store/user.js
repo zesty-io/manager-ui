@@ -44,7 +44,6 @@ export function user(
 }
 
 export function getUser(id) {
-  console.log("action:getUser", id);
   return dispatch => {
     dispatch({
       type: "FETCHING_USER"

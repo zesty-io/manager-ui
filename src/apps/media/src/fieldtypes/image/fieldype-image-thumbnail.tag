@@ -41,7 +41,7 @@
                     case 'png':
                     case 'gif':
                     case 'svg':
-                        return `${CONFIG.service.media_resolver}/resolve/${this.image.id}/getimage/?w=${width}&h=${height}&type=fit`
+                        return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${this.image.id}/getimage/?w=${width}&h=${height}&type=fit`
                         break;
                     default:
                         return DnD.getFileIcon(this.image.url, '48px')

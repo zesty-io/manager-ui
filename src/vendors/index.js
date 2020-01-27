@@ -10,6 +10,7 @@ import * as ReduxThunk from "redux-thunk";
 
 // TODO refactor out
 import * as riot from "riot";
+import Clipboard from "clipboard";
 import DnD from "./common/dnd";
 
 window.cx = cx;
@@ -25,3 +26,4 @@ window.moment = moment;
 // TODO refactor out
 window.riot = riot;
 window.DnD = DnD;
+window.Clipboard = Clipboard;
