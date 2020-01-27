@@ -7,7 +7,6 @@ const extractLess = new ExtractTextPlugin({
   filename: "../../../../build/bundle.analytics-app.css"
   // disable: process.env.NODE_ENV === 'development'
 });
-const WebpackBar = require("webpackbar");
 
 module.exports = {
   entry: "./src/index.js",
@@ -37,13 +36,7 @@ module.exports = {
     moment: "moment",
     "moment-timezone": "moment"
   },
-  plugins: [
-    extractLess,
-    new webpack.optimize.ModuleConcatenationPlugin()
-    // new WebpackBar({
-    //   name: "analytics"
-    // })
-  ],
+  plugins: [extractLess, new webpack.optimize.ModuleConcatenationPlugin()],
   module: {
     rules: [
       {

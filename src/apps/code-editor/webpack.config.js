@@ -7,7 +7,6 @@ const extractLess = new ExtractTextPlugin({
   filename: "../../../../build/bundle.code-editor-app.css"
   // disable: process.env.NODE_ENV === 'development'
 });
-const WebpackBar = require("webpackbar");
 
 module.exports = {
   entry: "./src/index.js",

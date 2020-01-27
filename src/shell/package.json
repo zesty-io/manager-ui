@@ -4,8 +4,9 @@
   "description": "Zesty.io site management application shell",
   "main": "index.js",
   "scripts": {
-    "start": "webpack --watch",
-    "build": "webpack --display=minimal -p"
+    "start": "../../node_modules/.bin/webpack --display=errors-only --progress --watch",
+    "prebuild": "npm --silent install",
+    "build": "../../node_modules/.bin/webpack --display=none --progress -p"
   },
   "author": "Stuart Runyan<stuart@zesty.io>",
   "license": "UNLICENSED"

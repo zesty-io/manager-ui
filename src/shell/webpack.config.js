@@ -11,7 +11,7 @@ const extractLess = new ExtractTextPlugin({
 });
 
 let CONFIG = {};
-if (process.env.NODE_ENV === "PRODUCTION") {
+if (process.env.NODE_ENV === "production") {
   CONFIG = {
     VERSION: pjson.version,
     ENV: "production",
@@ -37,7 +37,7 @@ if (process.env.NODE_ENV === "PRODUCTION") {
     COOKIE_NAME: "APP_SID",
     COOKIE_DOMAIN: ".zesty.io"
   };
-} else if (process.env.NODE_ENV === "STAGE") {
+} else if (process.env.NODE_ENV === "stage") {
   CONFIG = {
     VERSION: pjson.version,
     ENV: "stage",
@@ -134,9 +134,6 @@ module.exports = {
       __CONFIG__: JSON.stringify(CONFIG)
     }),
     new webpack.optimize.ModuleConcatenationPlugin()
-    // new WebpackBar({
-    //   name: "shell"
-    // })
   ],
   module: {
     rules: [
