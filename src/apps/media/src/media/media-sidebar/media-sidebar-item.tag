@@ -41,6 +41,8 @@
         </li>
     </ul>
     <script type="es6">
+        this.children = []
+
         this.load = (evt) => {
             evt.stopPropagation()
 
@@ -67,11 +69,7 @@
         }
 
         this.getChildren = () => {
-            return opts.groups.filter((group) => {
-                if (group.group_id === this.dir.id) {
-                    return group
-                }
-            })
+            return opts.groups.filter(group => group.group_id === this.dir.id)
         }
 
         this.handleDrop = (evt, parentIds) => {

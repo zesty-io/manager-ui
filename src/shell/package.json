@@ -4,8 +4,9 @@
   "description": "Zesty.io site management application shell",
   "main": "index.js",
   "scripts": {
-    "start": "export NODE_ENV=\"development\" && ../../node_modules/.bin/webpack --watch",
-    "build": "export NODE_ENV=\"production\" && ../../node_modules/.bin/webpack --progress -p"
+    "start": "../../node_modules/.bin/webpack --display=errors-only --progress --watch",
+    "prebuild": "npm --silent install",
+    "build": "../../node_modules/.bin/webpack --display=errors-only --progress -p"
   },
   "author": "Stuart Runyan<stuart@zesty.io>",
   "license": "UNLICENSED"

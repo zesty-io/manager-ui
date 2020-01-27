@@ -29,8 +29,6 @@ export function fetchInstance() {
 
     request(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`)
       .then(res => {
-        console.log(res);
-
         dispatch({
           type: "FETCHING_INSTANCE_SUCCESS",
           payload: {

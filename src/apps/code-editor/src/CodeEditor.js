@@ -6,9 +6,6 @@ import styles from "./CodeEditor.less";
 import CodeEditorMenu from "./CodeEditorMenu";
 
 class CodeEditor extends Component {
-  componentWillMount() {
-    console.log("CodeEditor:componentWillMount");
-  }
   render() {
     return (
       <section className={styles.CodeEditor}>

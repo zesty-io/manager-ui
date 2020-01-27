@@ -11,7 +11,7 @@ export default connect(state => {
     auth: state.auth
   };
 })(function PrivateRoute(props) {
-  console.log("PrivateRoute", props);
+  // console.log("PrivateRoute", props);
 
   const [loading, setLoading] = useState(true);
   const [auth, setAuth] = useState(true); // TODO switch to false
@@ -35,7 +35,7 @@ export default connect(state => {
   return (
     <WithLoader
       condition={!loading}
-      message="Logging into instance"
+      message="Checking your users access"
       width="100vw"
       height="100vh"
     >

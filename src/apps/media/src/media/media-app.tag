@@ -55,6 +55,8 @@
         })
 
         this.on('mount', () => {
+            console.log('media-app:mount')
+
             zesty.on('media:file:save', this.saveFile)
             zesty.on('media:file:upload', this.uploadFile)
             zesty.on('media:file:delete', this.deleteFile)
@@ -164,6 +166,8 @@
         }
 
         this.fetchAllSiteBins = () => {
+            console.log("media-app:fetchAllSiteBins", zesty.instance.ID)
+
             if (zesty.instance.ID) {
                 return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/site/${zesty.instance.ID}/bins`)
                 .then(json => {

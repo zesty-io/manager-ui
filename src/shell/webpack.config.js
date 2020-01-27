@@ -9,10 +9,9 @@ const extractLess = new ExtractTextPlugin({
   filename: "../../../build/bundle.shell.css"
   // disable: process.env.NODE_ENV === 'development'
 });
-const WebpackBar = require("webpackbar");
 
 let CONFIG = {};
-if (process.env.NODE_ENV === "PRODUCTION") {
+if (process.env.NODE_ENV === "production") {
   CONFIG = {
     VERSION: pjson.version,
     ENV: "production",
@@ -29,7 +28,7 @@ if (process.env.NODE_ENV === "PRODUCTION") {
     SERVICE_GOOGLE_ANALYTICS_AUTH: "",
     SERVICE_GOOGLE_ANALYTICS_READ: "",
 
-    URL_MANAGER: ".manage.zesty.io",
+    URL_MANAGER: ".manager.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
     URL_PREVIEW: "-dev.preview.zestyio.com",
     URL_PREVIEW_PROTOCOL: "https://",
@@ -38,7 +37,7 @@ if (process.env.NODE_ENV === "PRODUCTION") {
     COOKIE_NAME: "APP_SID",
     COOKIE_DOMAIN: ".zesty.io"
   };
-} else if (process.env.NODE_ENV === "STAGE") {
+} else if (process.env.NODE_ENV === "stage") {
   CONFIG = {
     VERSION: pjson.version,
     ENV: "stage",
@@ -48,14 +47,17 @@ if (process.env.NODE_ENV === "PRODUCTION") {
 
     SERVICE_AUTH: "https://stage-svc.zesty.io/auth",
     SERVICE_EMAIL: "https://email.zesty.io/send",
-    SERVICE_MEDIA_MANAGER: "",
-    SERVICE_MEDIA_RESOLVER: "",
-    SERVICE_MEDIA_STORAGE: "",
-    SERVICE_REDIS_GATEWAY: "",
-    SERVICE_GOOGLE_ANALYTICS_AUTH: "",
-    SERVICE_GOOGLE_ANALYTICS_READ: "",
+    SERVICE_MEDIA_MANAGER: "https://stage-svc.zesty.io/media-manager-service",
+    SERVICE_MEDIA_RESOLVER: "https://stage-svc.zesty.io/media-resolver-service",
+    SERVICE_MEDIA_STORAGE: "https://stage-svc.zesty.io/media-storage-service",
+    SERVICE_MEDIA_MODIFY: "https://stage-svc.zesty.io/media-modify-service",
+    SERVICE_REDIS_GATEWAY: "https://cache-svc.stage-zesty.io",
+    SERVICE_GOOGLE_ANALYTICS_AUTH:
+      "https://us-central1-zesty-stage.cloudfunctions.net/authenticateGoogleAnalytics",
+    SERVICE_GOOGLE_ANALYTICS_READ:
+      "https://us-central1-zesty-stage.cloudfunctions.net/googleAnalyticsGetPageViews",
 
-    URL_MANAGER: ".stage-manage.zesty.io",
+    URL_MANAGER: ".stage-manager.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
     URL_PREVIEW: "-dev.stage-preview.zestyio.com",
     URL_PREVIEW_PROTOCOL: "https://",
@@ -86,7 +88,7 @@ if (process.env.NODE_ENV === "PRODUCTION") {
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
 
-    URL_MANAGER: ".manage.zesty.localdev:3020",
+    URL_MANAGER: ".manager.zesty.localdev:3020",
     URL_MANAGER_PROTOCOL: "http://",
     URL_PREVIEW: "-dev.preview.zestyio.localdev:3020",
     URL_PREVIEW_PROTOCOL: "http://",
@@ -132,9 +134,6 @@ module.exports = {
       __CONFIG__: JSON.stringify(CONFIG)
     }),
     new webpack.optimize.ModuleConcatenationPlugin()
-    // new WebpackBar({
-    //   name: "shell"
-    // })
   ],
   module: {
     rules: [

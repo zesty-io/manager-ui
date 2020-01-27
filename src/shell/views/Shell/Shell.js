@@ -1,22 +1,13 @@
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import React from "react";
 import { Switch, Redirect, Route } from "react-router-dom";
-import styles from "./Shell.less";
 
 import GlobalSidebar from "shell/components/global-sidebar";
 import GlobalTopbar from "shell/components/global-topbar";
 
-import { fetchInstance } from "shell/store/instance";
-import { fetchProducts } from "shell/store/user";
 // import { subMenuLoad } from "shell/store/ui/global-sub-menu";
 
+import styles from "./Shell.less";
 export default function Shell() {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(fetchInstance());
-    dispatch(fetchProducts());
-  }, []);
-
   return (
     <section className={styles.Shell}>
       <GlobalSidebar />

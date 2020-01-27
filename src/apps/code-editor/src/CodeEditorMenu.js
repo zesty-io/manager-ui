@@ -5,9 +5,6 @@ import { Search } from "@zesty-io/core/Search";
 
 import styles from "./CodeEditorMenu.less";
 export default class CodeEditorMenu extends Component {
-  componentWillMount() {
-    console.log("CodeEditorMenu:componentWillMount");
-  }
   render() {
     return (
       <section className={cx(styles.CodeEditorMenu, this.props.className)}>

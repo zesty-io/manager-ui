@@ -3,9 +3,12 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { BrowserRouter, Route } from "react-router-dom";
 
+import { request } from "utility/request";
+import { notify } from "shell/store/notifications";
 import { store } from "shell/store";
 
 import PrivateRoute from "./components/private-route";
+import LoadInstance from "./components/load-instance";
 import Shell from "./views/Shell";
 
 // Exposed as a global so dynamically loaded apps
@@ -13,8 +16,16 @@ import Shell from "./views/Shell";
 window.ZESTY_REDUX_STORE = store;
 
 // Some legacy code refers to this global which is an observable
-// NOTE: this needs to get refactored out
+// FIXME: this needs to get refactored out
 window.zesty = riot.observable(store.getState());
+store.subscribe(() => {
+  window.zesty = riot.observable(store.getState());
+});
+
+// Media riot app depends on these references
+// FIXME: this needs to get refactored out
+window.request = request;
+window.growl = notify;
 
 // interploated by webpack at build time
 window.CONFIG = __CONFIG__;
@@ -28,7 +39,9 @@ ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
       <PrivateRoute>
-        <Route path="/" component={Shell} />
+        <LoadInstance>
+          <Route path="/" component={Shell} />
+        </LoadInstance>
       </PrivateRoute>
     </BrowserRouter>
   </Provider>,
