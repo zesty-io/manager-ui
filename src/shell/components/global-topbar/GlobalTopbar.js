@@ -37,29 +37,32 @@ export default React.memo(
 
     // Track route changes to display quick links
     useEffect(() => {
-      // Filter out the route that was just loaded if it was already
-      // in our route stack. This way it gets moved to the front and not duplicated
-      const removedRoute = routes.filter(
-        route => route.pathname !== history.location.pathname
-      );
+      const parts = history.location.pathname.split("/").filter(part => part);
+      if (parts.length >= 2) {
+        // Filter out the route that was just loaded if it was already
+        // in our route stack. This way it gets moved to the front and not duplicated
+        const removedRoute = routes.filter(
+          route => route.pathname !== history.location.pathname
+        );
 
-      // TODO resolve ZUID from store to determine display information?
-      // switch (prefix) {
-      //   // model
-      //   case "6":
-      //   // content item
-      //   case "7":
-      //   // code file
-      //   case "":
-      // }
+        // TODO resolve ZUID from store to determine display information?
+        // switch (prefix) {
+        //   // model
+        //   case "6":
+        //   // content item
+        //   case "7":
+        //   // code file
+        //   case "":
+        // }
 
-      const newRoutes = [history.location, ...removedRoute].slice(0, 15);
+        const newRoutes = [history.location, ...removedRoute].slice(0, 15);
 
-      // store routes to local storage and reload on app start
-      set(`${props.instanceZUID}:session:routes`, newRoutes);
+        // store routes to local storage and reload on app start
+        set(`${props.instanceZUID}:session:routes`, newRoutes);
 
-      // Maximum of 25 route records
-      setRoutes(newRoutes);
+        // Maximum of 25 route records
+        setRoutes(newRoutes);
+      }
     }, [history.location]);
 
     const removeRoute = path => {
