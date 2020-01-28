@@ -1,0 +1,34 @@
+@import "~@zesty-io/core/colors.less";
+.RedirectsTableRow {
+  align-items: center;
+  background-color: @zesty-white;
+  border-bottom: 1px @zesty-field-blue solid;
+  display: flex;
+
+  &:nth-of-type(odd) {
+    // background-color: lighten(@zesty-field-blue, 3%);
+    background-color: #dae2f1;
+  }
+
+  &:hover,
+  &:focus,
+  &:active,
+  &:nth-of-type(odd):hover,
+  &:nth-of-type(odd):focus,
+  &:nth-of-type(odd):active {
+    background-color: lighten(@zesty-field-blue, 2%);
+  }
+
+  .RedirectsTableRowCell {
+    padding: 0.6rem 1rem;
+    .internalLink {
+      font-size: 1em;
+    }
+    .removeBtn {
+      line-height: initial;
+    }
+  }
+  .code {
+    padding: 0.6rem 3rem;
+  }
+}
