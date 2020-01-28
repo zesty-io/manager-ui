@@ -88,7 +88,7 @@ export default class RedirectTable extends React.Component {
           />
         );
       });
-    } else if (!this.props.redirectsLoading) {
+    } else {
       return <div className={styles.noResults}>No Results Found</div>;
     }
   }

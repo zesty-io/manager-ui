@@ -10,7 +10,7 @@ export function imports(state = {}, action) {
   switch (action.type) {
     case IMPORT_REDIRECTS:
       return action.redirects;
-      break;
+
     case REDIRECT_CREATE_SUCCESS:
       return Object.keys(state).reduce((acc, key) => {
         if (key === action.redirect.path) {
@@ -24,7 +24,7 @@ export function imports(state = {}, action) {
         }
         return acc;
       }, {});
-      break;
+
     case IMPORT_CODE:
       return Object.keys(state).reduce((acc, key) => {
         acc[key] = { ...state[key] };
@@ -33,7 +33,7 @@ export function imports(state = {}, action) {
         }
         return acc;
       }, {});
-      break;
+
     case IMPORT_TARGET:
       return Object.keys(state).reduce((acc, key) => {
         acc[key] = { ...state[key] };
@@ -43,7 +43,7 @@ export function imports(state = {}, action) {
         }
         return acc;
       }, {});
-      break;
+
     case IMPORT_QUERY:
       return Object.keys(state).reduce((acc, key) => {
         acc[key] = { ...state[key] };
@@ -52,7 +52,7 @@ export function imports(state = {}, action) {
         }
         return acc;
       }, {});
-      break;
+
     default:
       return state;
   }
