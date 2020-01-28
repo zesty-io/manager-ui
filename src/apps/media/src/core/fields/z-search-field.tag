@@ -47,7 +47,7 @@
         border-radius: 0px 3px 3px 0px;
         flex: 1;
         padding: 0 0 0 1em;
-        font-size: 1.3rem;
+        <!--  font-size: 1.3rem;  -->
         color: rgb(91, 102, 125);
         border-bottom: 3px solid #6F819A;
         background: #EAECF1;
@@ -65,7 +65,7 @@
       display: block;
     }
     :scope .loader {
-      font-size: 10px;
+      <!--  font-size: 10px;  -->
       position: relative;
       text-indent: -9999em;
       border-top: 4px solid rgba(255, 255, 255, 0.2);

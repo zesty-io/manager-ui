@@ -51,7 +51,7 @@
             border-radius: 0px 3px 3px 0px;
             flex: 1;
             padding: 0 0 0 1em;
-            font-size: 1.3rem;
+            <!--  font-size: 1.3rem;  -->
             color: rgb(91, 102, 125);
             border-bottom: 3px solid #6F819A;
             background: #EAECF1;

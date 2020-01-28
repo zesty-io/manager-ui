@@ -156,7 +156,7 @@
         }
         #loginModal .message {
             width: 28rem;
-            font-size: 1.4rem;
+            <!--  font-size: 1.4rem;  -->
             line-height: 1.8rem;
             margin: 0 0 2rem;
             color: #97a5bf;
@@ -169,7 +169,7 @@
             margin-bottom: 1rem;
             display: flex;
             letter-spacing: 1px;
-            font-size: 1rem;
+            <!--  font-size: 1rem;  -->
             font-weight: bold;
             text-transform: uppercase;
             flex-direction: column;

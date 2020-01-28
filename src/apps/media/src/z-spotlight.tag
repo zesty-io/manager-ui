@@ -172,7 +172,7 @@
         border-radius: 0;
     }
     #z-spotlight z-search-field input {
-        font-size: 2.3rem;
+        <!--  font-size: 2.3rem;  -->
         border-bottom: 0;
         border-radius: 0;
     }
