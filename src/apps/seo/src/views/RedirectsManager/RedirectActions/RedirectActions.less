@@ -1,0 +1,26 @@
+@import "~@zesty-io/core/colors.less";
+.RedirectActions {
+  align-items: flex-start;
+  display: flex;
+  padding: 0 1rem 0rem 1rem;
+  position: sticky;
+  min-height: 3.4rem;
+  top: 0;
+  background: @zesty-field-blue;
+  z-index: 2;
+
+  .title {
+    flex: 1;
+    padding: 0;
+    color: @zesty-tab-blue;
+    font-family: "Gibson";
+  }
+  .actions {
+    flex-basis: 40rem;
+    display: flex;
+    position: relative;
+    .addRedirects {
+      flex: 1;
+    }
+  }
+}

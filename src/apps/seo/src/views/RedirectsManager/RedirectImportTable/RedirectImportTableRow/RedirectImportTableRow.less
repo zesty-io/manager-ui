@@ -1,0 +1,22 @@
+@import "~@zesty-io/core/colors.less";
+.RedirectImportTableRow {
+  align-items: center;
+  background-color: @zesty-white;
+  border-bottom: 1px @zesty-field-blue solid;
+  display: flex;
+
+  &:nth-of-type(odd) {
+    background-color: #dae2f1;
+  }
+
+  .RowCell {
+    display: flex;
+    padding: 1rem;
+
+    .selector {
+      display: inline-grid;
+      margin-right: 1rem;
+      width: 100%;
+    }
+  }
+}
