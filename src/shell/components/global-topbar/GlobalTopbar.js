@@ -29,8 +29,11 @@ export default React.memo(
         if (Array.isArray(storedRoutes) && storedRoutes.length) {
           setRoutes(storedRoutes);
 
-          // Load users last session route
-          history.push(storedRoutes[0].pathname);
+          // On initial render if user is entering at the app root
+          // Load their last session resource route
+          if (history.location.pathname === "/") {
+            history.push(storedRoutes[0].pathname);
+          }
         }
       });
     }, []);
@@ -70,11 +73,12 @@ export default React.memo(
 
       // store routes to local storage and reload on app start
       set(`${props.instanceZUID}:session:routes`, newRoutes);
+      setRoutes(newRoutes);
 
       // jump to the first route in our list after
-      history.push(newRoutes[0].pathname);
-
-      setRoutes(newRoutes);
+      if (newRoutes.length) {
+        history.push(newRoutes[0].pathname);
+      }
     };
 
     return (
