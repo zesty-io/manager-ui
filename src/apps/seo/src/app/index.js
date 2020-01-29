@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Switch, Route, Link } from "react-router-dom";
 import { connect } from "react-redux";
 
-import RedirectsManager from "../views/RedirectsManager";
+import { RedirectsManager } from "../views/RedirectsManager";
 import { Robots } from "../views/Robots";
 
 import styles from "./app.less";

@@ -3,6 +3,8 @@ import { Switch, Redirect, Route } from "react-router-dom";
 
 import GlobalSidebar from "shell/components/global-sidebar";
 import GlobalTopbar from "shell/components/global-topbar";
+import Welcome from "shell/components/welcome";
+import Missing from "shell/components/missing";
 
 // import { subMenuLoad } from "shell/store/ui/global-sub-menu";
 
@@ -32,9 +34,9 @@ export default function Shell() {
               return <Route path={`/${product}`} component={ContentEditorApp} />
             })*/}
 
-            <Redirect from="/" to="/content" />
-
-            {/* TODO: handle no match */}
+            {/* <Redirect from="/" to="/content" /> */}
+            <Route exact path="/" component={Welcome} />
+            <Route path="*" component={Missing} />
           </Switch>
         </div>
       </main>

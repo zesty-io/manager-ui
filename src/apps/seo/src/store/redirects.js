@@ -32,44 +32,23 @@ export function redirects(state = {}, action) {
   }
 }
 
-export function redirectsTotal(state = 0, action) {
-  switch (action.type) {
-    case "REDIRECTS_FETCH_SUCCESS":
-      return action.redirectsTotal;
-    default:
-      return state;
-  }
-}
-
-export function redirectsLoading(state = true, action) {
-  switch (action.type) {
-    case "REDIRECTS_FETCH_ERROR":
-    case "REDIRECTS_FETCH_SUCCESS":
-    case IMPORT_REDIRECTS:
-      return false;
-    case "REDIRECTS_FETCH":
-    case IMPORT_LOADING:
-      return true;
-    default:
-      return state;
-  }
-}
-
 export function fetchRedirects() {
   return dispatch => {
     dispatch({
       type: "REDIRECTS_FETCH"
     });
-    request(`${CONFIG.API_INSTANCE}/web/redirects`)
+
+    return request(`${CONFIG.API_INSTANCE}/web/redirects`)
       .then(json => {
         dispatch({
           type: "REDIRECTS_FETCH_SUCCESS",
           redirects: json.data.reduce((acc, redirect) => {
             acc[redirect.path] = redirect;
             return acc;
-          }, {}),
-          redirectsTotal: json._meta.totalResults
+          }, {})
         });
+
+        return json;
       })
       .catch(err => {
         console.error("fetchRedirects: ", err);
@@ -77,6 +56,8 @@ export function fetchRedirects() {
           type: "REDIRECTS_FETCH_ERROR",
           err
         });
+
+        return err;
       });
   };
 }
