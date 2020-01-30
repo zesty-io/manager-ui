@@ -1,0 +1,46 @@
+import React, { useEffect, useState } from "react";
+
+import { WithLoader } from "@zesty-io/core/WithLoader";
+
+import RedirectActions from "./RedirectActions";
+import RedirectsTable from "./RedirectsTable";
+import RedirectImportTable from "./RedirectImportTable";
+
+import { fetchRedirects } from "../../store/redirects";
+
+import styles from "./RedirectsManager.less";
+export default function RedirectManager(props) {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    props
+      .dispatch(fetchRedirects())
+      .then(() => {
+        setLoading(false);
+      })
+      .catch(err => {
+        notify({
+          kind: "warn",
+          message: "Failed to load redirects data"
+        });
+        setLoading(false);
+      });
+  }, []);
+
+  return (
+    <div className={styles.RedirectsManager}>
+      <RedirectActions
+        dispatch={props.dispatch}
+        redirectsTotal={props.redirects.length}
+      />
+
+      <WithLoader condition={!loading} message="Loading Redirects">
+        {Object.keys(props.imports).length ? (
+          <RedirectImportTable {...props} />
+        ) : (
+          <RedirectsTable {...props} />
+        )}
+      </WithLoader>
+    </div>
+  );
+}

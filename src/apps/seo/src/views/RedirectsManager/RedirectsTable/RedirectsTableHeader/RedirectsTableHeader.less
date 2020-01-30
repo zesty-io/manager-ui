@@ -1,0 +1,36 @@
+@import "~@zesty-io/core/colors.less";
+.RedirectsTableHeader {
+  display: flex;
+  position: sticky;
+  top: 3rem;
+  background: @zesty-field-blue;
+  border-bottom: 1px solid #b8c8e2;
+  z-index: 1;
+  align-items: baseline;
+  padding-bottom: 0.5rem;
+
+  .RedirectsTableHeaderCell {
+    cursor: pointer;
+    font-weight: 900;
+    padding: 0 1rem;
+
+    .icon {
+      padding-left: 3px;
+    }
+
+    .column {
+      border-bottom: 3px solid @zesty-field-blue;
+      padding-bottom: 0.1rem;
+    }
+    &:hover,
+    &:active,
+    &:focus {
+      .column {
+        border-bottom: 3px solid @zesty-teal;
+      }
+    }
+  }
+  .code {
+    padding: 0 4rem;
+  }
+}

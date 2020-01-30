@@ -7,7 +7,6 @@ const extractLess = new ExtractTextPlugin({
   filename: "../../../../build/bundle.leads-app.css"
   // disable: process.env.NODE_ENV === 'development'
 });
-const WebpackBar = require("webpackbar");
 
 module.exports = {
   entry: "./index.js",
@@ -22,7 +21,7 @@ module.exports = {
     alias: {
       shell: path.resolve(__dirname, "../../shell/"),
       utility: path.resolve(__dirname, "../../utility/"),
-      components: path.resolve(__dirname, "src/components/"),
+      components: path.resolve(__dirname, "src/app/components/"),
       store: path.resolve(__dirname, "src/store/")
     }
   },
@@ -37,13 +36,7 @@ module.exports = {
     moment: "moment",
     "moment-timezone": "moment"
   },
-  plugins: [
-    extractLess,
-    new webpack.optimize.ModuleConcatenationPlugin()
-    // new WebpackBar({
-    //   name: "leads"
-    // })
-  ],
+  plugins: [extractLess, new webpack.optimize.ModuleConcatenationPlugin()],
   module: {
     rules: [
       {

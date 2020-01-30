@@ -1,18 +1,15 @@
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { Switch, Redirect, Route } from "react-router-dom";
-import styles from "./Shell.less";
+import React from "react";
+import { Switch, Route } from "react-router-dom";
 
 import GlobalSidebar from "shell/components/global-sidebar";
 import GlobalTopbar from "shell/components/global-topbar";
+import Welcome from "shell/components/welcome";
+import Missing from "shell/components/missing";
 
-import { fetchProducts } from "shell/store/user";
 // import { subMenuLoad } from "shell/store/ui/global-sub-menu";
 
+import styles from "./Shell.less";
 export default function Shell() {
-  const dispatch = useDispatch();
-  useEffect(() => dispatch(fetchProducts()), []);
-
   return (
     <section className={styles.Shell}>
       <GlobalSidebar />
@@ -37,9 +34,8 @@ export default function Shell() {
               return <Route path={`/${product}`} component={ContentEditorApp} />
             })*/}
 
-            <Redirect from="/" to="/content" />
-
-            {/* TODO: handle no match */}
+            <Route exact path="/" component={Welcome} />
+            <Route path="*" component={Missing} />
           </Switch>
         </div>
       </main>

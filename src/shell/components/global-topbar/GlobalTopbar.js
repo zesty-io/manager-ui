@@ -29,37 +29,43 @@ export default React.memo(
         if (Array.isArray(storedRoutes) && storedRoutes.length) {
           setRoutes(storedRoutes);
 
-          // Load users last session route
-          history.push(storedRoutes[0].pathname);
+          // On initial render if user is entering at the app root
+          // Load their last session resource route
+          if (history.location.pathname === "/") {
+            history.push(storedRoutes[0].pathname);
+          }
         }
       });
     }, []);
 
     // Track route changes to display quick links
     useEffect(() => {
-      // Filter out the route that was just loaded if it was already
-      // in our route stack. This way it gets moved to the front and not duplicated
-      const removedRoute = routes.filter(
-        route => route.pathname !== history.location.pathname
-      );
+      const parts = history.location.pathname.split("/").filter(part => part);
+      if (parts.length >= 2) {
+        // Filter out the route that was just loaded if it was already
+        // in our route stack. This way it gets moved to the front and not duplicated
+        const removedRoute = routes.filter(
+          route => route.pathname !== history.location.pathname
+        );
 
-      // TODO resolve ZUID from store to determine display information?
-      // switch (prefix) {
-      //   // model
-      //   case "6":
-      //   // content item
-      //   case "7":
-      //   // code file
-      //   case "":
-      // }
+        // TODO resolve ZUID from store to determine display information?
+        // switch (prefix) {
+        //   // model
+        //   case "6":
+        //   // content item
+        //   case "7":
+        //   // code file
+        //   case "":
+        // }
 
-      const newRoutes = [history.location, ...removedRoute].slice(0, 15);
+        const newRoutes = [history.location, ...removedRoute].slice(0, 15);
 
-      // store routes to local storage and reload on app start
-      set(`${props.instanceZUID}:session:routes`, newRoutes);
+        // store routes to local storage and reload on app start
+        set(`${props.instanceZUID}:session:routes`, newRoutes);
 
-      // Maximum of 25 route records
-      setRoutes(newRoutes);
+        // Maximum of 25 route records
+        setRoutes(newRoutes);
+      }
     }, [history.location]);
 
     const removeRoute = path => {
@@ -67,11 +73,12 @@ export default React.memo(
 
       // store routes to local storage and reload on app start
       set(`${props.instanceZUID}:session:routes`, newRoutes);
+      setRoutes(newRoutes);
 
       // jump to the first route in our list after
-      history.push(newRoutes[0].pathname);
-
-      setRoutes(newRoutes);
+      if (newRoutes.length) {
+        history.push(newRoutes[0].pathname);
+      }
     };
 
     return (

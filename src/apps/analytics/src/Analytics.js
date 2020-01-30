@@ -5,9 +5,6 @@ import styles from "./Analytics.less";
 
 export default connect(state => state)(
   class AnalyticsApp extends Component {
-    componentWillMount() {
-      console.log("AnalyticsApp:componentWillMount");
-    }
     render() {
       return <section className={styles.AnalyticsApp}>Analytics App</section>;
     }

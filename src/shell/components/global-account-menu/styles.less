@@ -1,4 +1,4 @@
-@import "../../styles/colors.less";
+@import "~@zesty-io/core/colors.less";
 .accountMenu {
   position: absolute;
   width: 14rem;
@@ -9,7 +9,8 @@
   right: -16rem;
   padding: 1rem;
 
-  &.show {}
+  &.show {
+  }
   &.hide {
     top: 0;
     right: 0;
@@ -35,7 +36,7 @@
       .link {
         cursor: pointer;
         list-style: none;
-        margin:0;
+        margin: 0;
         padding: 0.5rem 0;
 
         &:hover,
