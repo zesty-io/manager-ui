@@ -73,9 +73,9 @@
         :scope .control-bar .z-search-field {
             margin-right: 1rem;
         }
-        :scope z-button button {
+        <!--  :scope z-button button {
             line-height: 2.5rem;
-        }
+        }  -->
         #assetUpload,
         #createGroup {
             margin: 0 0.5rem;

@@ -164,7 +164,7 @@
     }
     .tree .leaf .item {
         align-items: center;
-        font-size: 1.2rem;
+        <!--  font-size: 1.2rem;  -->
         font-weight: 500;
         display: flex;
         padding: 0;
@@ -199,7 +199,7 @@
     }
 
     .tree .leaf .item.bin .name {
-        font-size: 1.4em;
+        <!--  font-size: 1.4em;  -->
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

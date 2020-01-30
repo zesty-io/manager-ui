@@ -8,7 +8,7 @@
     </script>
     <style scoped>
     :scope .active-uploads {
-        font-size: 1.2rem;
+        <!--  font-size: 1.2rem;  -->
         font-weight: 600;
         display: flex;
         line-height: 1.6rem;

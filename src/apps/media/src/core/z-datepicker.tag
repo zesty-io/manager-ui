@@ -171,7 +171,7 @@
     }
 
     input {
-      font-size: 1em;
+      <!--  font-size: 1em;  -->
       padding: 10px;
       border: 1px solid #D3D3D3;
       cursor: pointer;
@@ -228,7 +228,7 @@
     }
 
     .selector {
-      font-size: 2em;
+      <!--  font-size: 2em;  -->
       font-weight: 100;
       padding: 0;
       -webkit-flex: 0 0 15%;
@@ -264,7 +264,7 @@
       padding: 10px;
       border-radius: 100%;
       box-sizing: border-box;
-      font-size: 0.8em;
+      <!--  font-size: 0.8em;  -->
       font-weight: normal;
       border: 2px solid transparent;
       color: #cacaca;

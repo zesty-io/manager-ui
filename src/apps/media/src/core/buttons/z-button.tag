@@ -11,7 +11,7 @@
             border: none;
             border-radius: 3px 3px 0px 3px;
             cursor: pointer;
-            font-size: 1.3rem;
+            <!--  font-size: 1.3rem;  -->
             background: #5B667D;
             color: #EFEFEF;
             text-shadow: 1px 1px 1px #525C69;

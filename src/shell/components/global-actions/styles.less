@@ -1,16 +1,17 @@
-@import "../../styles/colors.less";
-.GlobalActions {
+@import "~@zesty-io/core/colors.less";
+.GlobalSubMenu {
   background-color: @globalMenuBkgColor;
   margin: 0;
   padding: 16px 0;
-  // position: relative;
   width: 100%;
-  // text-align: center;
   border-top: 1px solid lighten(@globalMenuBkgColor, 5%);
 
-  // display: flex;
-  // justify-content: center;
-  // flex-wrap: wrap;
+  .GlobalActions {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+  }
 
   .AppVersion {
     display: flex;
@@ -37,29 +38,10 @@
       color: @zesty-blue;
     }
   }
-  // .preview {
-  //   text-shadow: 1px 1px 1px #000;
-  // }
-  // .chat {
-  //   position: relative;
-  //   .notificationCount {
-  //     background-color: @zesty-red;
-  //     border-radius: 50%;
-  //     display: inline-block;
-  //     width: 14px;
-  //     position: absolute;
-  //     top: -3px;
-  //     right: -5px;
-  //     font-size: 0.6em;
-  //     font-family: 'Gibson', Arial;
-  //     padding: 0.1rem;
-  //     font-weight: bold;
-  //   }
-  // }
 }
 
 @media (max-width: 2000px) {
-  .GlobalActions {
+  .GlobalSubMenu {
     .action {
       svg {
         width: 18px;
@@ -67,11 +49,10 @@
       }
     }
     .AppVersion {
+      flex-direction: column;
       img {
-        margin-right: 0;
-      }
-      .VersionNumber {
-        display: none;
+        margin-right: 0px;
+        margin-bottom: 4px;
       }
     }
   }

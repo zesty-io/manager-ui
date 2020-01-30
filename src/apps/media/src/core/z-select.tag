@@ -151,7 +151,7 @@
         color: #5B667D;
         line-height: inherit;
         border-right: 1px solid #9dabc5;
-        font-size: 16px;
+        <!--  font-size: 16px;  -->
         flex-basis: 32px;
         justify-content: center;
         align-items: center;
@@ -193,7 +193,7 @@
     }
     .selector .selection .content strong {
         font-weight: 900;
-        font-size: 1.2rem;
+        <!--  font-size: 1.2rem;  -->
         margin-right: 1.2rem;
     }
     .selector .selections {

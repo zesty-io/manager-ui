@@ -104,7 +104,7 @@
         this.post = () => {
             const xhr = new XMLHttpRequest()
             const body = new FormData()
-            const api = `${CONFIG.service.media_storage}/upload/${opts.file.storage_driver}/${opts.file.storage_name}`
+            const api = `${CONFIG.SERVICE_MEDIA_STORAGE}/upload/${opts.file.storage_driver}/${opts.file.storage_name}`
 
             body.append('file', opts.file.file)
             body.append('bin_id', opts.file.bin_id)

@@ -29,7 +29,7 @@
             height: auto;
         }
         #group-delete-modal .group-delete-modal {
-            font-size: 2rem;
+            <!--  font-size: 2rem;  -->
             padding: 1rem;
         }
         #group-delete-modal .group-delete-modal h1 {
@@ -37,7 +37,7 @@
             word-wrap: break-word;
         }
         #group-delete-modal .group-delete-modal h2 {
-            font-size: 1.2rem;
+            <!--  font-size: 1.2rem;  -->
             margin-bottom: 2rem;
         }
         #group-delete-modal .set {

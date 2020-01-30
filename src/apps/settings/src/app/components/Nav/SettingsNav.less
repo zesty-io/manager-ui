@@ -1,0 +1,56 @@
+.SchemaNav {
+  background-color: #404759;
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: 20vw;
+  word-break: break-all;
+
+  .Actions {
+    background-color: #4b5468;
+    display: flex;
+    flex-direction: column;
+    padding: 8px 8px 8px 8px;
+
+    .Search {
+      input {
+        flex: 1;
+      }
+    }
+
+    .CreateLink {
+      margin: 0;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .ModelList {
+    height: calc(100vh - 64px - 9px - 98px);
+    margin: 0;
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    article li a {
+      text-transform: capitalize;
+    }
+
+    section {
+      header {
+        display: flex;
+        align-items: center;
+
+        padding: 8px 16px;
+        color: #c3cddf;
+        background-color: #5b667d;
+        text-transform: uppercase;
+
+        h1 {
+          flex: 1;
+        }
+        button {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+}
