@@ -237,7 +237,6 @@
         display: none;
         background-color: rgba(27, 32, 44, 0.95);
         color: #EFEFEF;
-        <!--  font-size: 4rem;  -->
         width: 100%;
         height: 100%;
         position: absolute;
