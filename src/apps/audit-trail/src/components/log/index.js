@@ -31,14 +31,14 @@ class Log extends Component {
   }
 
   render() {
-    let { meta, action_by_user, happened_at, action_type } = this.props.log;
+    let { meta, email, firstName, happenedAt, action } = this.props.log;
 
     return (
       <article className={styles.auditLog}>
         <header className={styles.action}>
-          <span className={styles.type + " " + styles["type" + action_type]} />
+          <span className={styles.type + " " + styles["type" + action]} />
           <img
-            src={this.getGravatar(action_by_user.email, 80)}
+            src={this.getGravatar(email, 80)}
             className={styles.avatar}
             height="80"
             width="80"
@@ -47,9 +47,8 @@ class Log extends Component {
         <main className={styles.content}>
           <h1 className={styles.title}>{meta.message}</h1>
           <p className={styles.meta}>
-            {this.timeFromNow(happened_at)} ago by{" "}
-            {this.getUserLink(action_by_user.first_name, action_by_user.email)}{" "}
-            at {this.getMoment(happened_at)}
+            {this.timeFromNow(happenedAt)} ago by{" "}
+            {this.getUserLink(firstName, email)} at {this.getMoment(happenedAt)}
           </p>
         </main>
       </article>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Redirect, Route } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 
 import GlobalSidebar from "shell/components/global-sidebar";
 import GlobalTopbar from "shell/components/global-topbar";
@@ -34,7 +34,6 @@ export default function Shell() {
               return <Route path={`/${product}`} component={ContentEditorApp} />
             })*/}
 
-            {/* <Redirect from="/" to="/content" /> */}
             <Route exact path="/" component={Welcome} />
             <Route path="*" component={Missing} />
           </Switch>
