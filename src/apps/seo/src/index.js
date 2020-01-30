@@ -3,10 +3,10 @@ import { Provider } from "react-redux";
 import { Route } from "react-router-dom";
 
 import { injectReducer } from "shell/store";
-import { redirects } from "./store/redirects";
-import { redirectsFilter } from "./store/redirectsFilter";
-import { imports } from "./store/imports";
-import { paths } from "./store/paths";
+import { redirects } from "store/redirects";
+import { redirectsFilter } from "store/redirectsFilter";
+import { imports } from "store/imports";
+import { paths } from "store/paths";
 
 import HealthApp from "./app";
 

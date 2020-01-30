@@ -23,7 +23,7 @@ export function getLogs(siteId) {
         // Normalize logs by zuid
         let data = {};
         json.data.forEach(log => {
-          data[log.zuid] = log;
+          data[log.ZUID] = log;
         });
 
         // Logs are immutable so we freeze them
