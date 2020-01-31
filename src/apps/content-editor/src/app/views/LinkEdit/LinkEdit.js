@@ -351,6 +351,6 @@ class LinkEdit extends Component {
 export default connect((state, props) => {
   return {
     linkZUID: props.match.params.linkZUID,
-    items: state.contentModelItems
+    items: state.content
   };
 })(LinkEdit);

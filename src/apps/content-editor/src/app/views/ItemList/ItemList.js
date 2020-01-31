@@ -21,15 +21,15 @@ import {
   searchItems,
   saveItem,
   fetchItemPublishing
-} from "../../../store/contentModelItems";
-import { fetchFields } from "../../../store/contentModelFields";
+} from "shell/store/content";
+import { fetchFields } from "shell/store/fields";
 import { notify } from "shell/store/notifications";
 import { findFields, findItems } from "./findUtils";
 
 import styles from "./ItemList.less";
 export default connect((state, props) => {
   const { modelZUID } = props.match.params;
-  const model = state.contentModels[modelZUID];
+  const model = state.models[modelZUID];
 
   const selectedLang = state.languages
     ? state.languages.find(lang => lang.code === state.user.selected_lang) || {}
@@ -44,14 +44,14 @@ export default connect((state, props) => {
     sortedBy: "",
     reverseSort: false,
     instance: state.instance,
-    allItems: state.contentModelItems,
-    allFields: state.contentModelFields,
-    dirtyItems: Object.keys(state.contentModelItems).filter(
+    allItems: state.content,
+    allFields: state.fields,
+    dirtyItems: Object.keys(state.content).filter(
       item =>
-        state.contentModelItems[item].meta &&
-        state.contentModelItems[item].meta.contentModelZUID === modelZUID &&
-        state.contentModelItems[item].dirty &&
-        state.contentModelItems[item].meta.ZUID.slice(0, 3) !== "new" // Don't include new items
+        state.content[item].meta &&
+        state.content[item].meta.contentModelZUID === modelZUID &&
+        state.content[item].dirty &&
+        state.content[item].meta.ZUID.slice(0, 3) !== "new" // Don't include new items
     )
   };
 })(

@@ -7,10 +7,18 @@ import { localStorage } from "./middleware/local-storage";
 
 import { auth } from "./auth";
 import { user } from "./user";
-import { languages } from "./languages";
-
 import { instance } from "./instance";
-import ui from "./ui";
+import { languages } from "./languages";
+import { models } from "./models";
+import { fields } from "./fields";
+import { content } from "./content";
+import { contentVersions } from "./contentVersions";
+import { bins } from "./bins";
+import { groups } from "./groups";
+import { media } from "./media";
+import { logs } from "./logs";
+
+// import ui from "./ui";
 
 const actionLogger = createLogger({
   collapsed: true,
@@ -29,9 +37,16 @@ function createReducer(asyncReducers) {
     },
     auth,
     user,
-    languages,
     instance,
-    ui
+    languages,
+    models,
+    fields,
+    content,
+    contentVersions,
+    bins,
+    groups,
+    media,
+    logs
   };
 
   return combineReducers({

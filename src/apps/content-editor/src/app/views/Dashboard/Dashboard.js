@@ -27,12 +27,12 @@ export default connect(function(state, props) {
     instanceZUID: state.instance.ZUID,
     instance: state.instance,
     instanceName: state.instance.name,
-    contentModels: Object.keys(state.contentModels).reduce((acc, modelZUID) => {
+    contentModels: Object.keys(state.models).reduce((acc, modelZUID) => {
       if (
-        state.contentModels[modelZUID] &&
-        state.contentModels[modelZUID].label !== "Dashboard Widgets"
+        state.models[modelZUID] &&
+        state.models[modelZUID].label !== "Dashboard Widgets"
       ) {
-        acc[modelZUID] = state.contentModels[modelZUID];
+        acc[modelZUID] = state.models[modelZUID];
       }
       return acc;
     }, {})

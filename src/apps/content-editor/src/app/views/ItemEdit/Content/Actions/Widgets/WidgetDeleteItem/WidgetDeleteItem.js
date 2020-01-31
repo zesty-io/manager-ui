@@ -7,7 +7,7 @@ import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
 import { notify } from "shell/store/notifications";
-import { deleteItem } from "../../../../../../../store/contentModelItems";
+import { deleteItem } from "shell/store/content";
 
 export const WidgetDeleteItem = React.memo(function WidgetDeleteItem(props) {
   const [confirmOpen, setConfirmOpen] = useState(false);

@@ -1,7 +1,8 @@
+import { formatName } from "utility/formatName";
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 
-export function schemaFields(state = {}, action) {
+export function fields(state = {}, action) {
   switch (action.type) {
     case "FETCH_FIELDS_SUCCESS":
     case "LOADED_LOCAL_FIELDS":
@@ -54,12 +55,6 @@ export function schemaFields(state = {}, action) {
       return state;
   }
 }
-
-export const formatName = str =>
-  str
-    .replace(/[^a-zA-Z0-9\_\\s]+/gi, "_")
-    .toLowerCase()
-    .trim();
 
 export function updateField(fieldZUID, key, value) {
   if (key === "name") {

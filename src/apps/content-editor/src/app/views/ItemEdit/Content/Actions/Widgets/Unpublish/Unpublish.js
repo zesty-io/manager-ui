@@ -6,7 +6,7 @@ import { Button } from "@zesty-io/core/Button";
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
 
 import { notify } from "shell/store/notifications";
-import { unpublishItem } from "../../../../../../../store/contentModelItems";
+import { unpublishItem } from "shell/store/content";
 
 import styles from "./Unpublish.less";
 export const Unpublish = React.memo(function Unpublish(props) {

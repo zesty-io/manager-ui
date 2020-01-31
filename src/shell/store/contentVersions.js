@@ -1,6 +1,6 @@
 import { request } from "utility/request";
 
-export function contentModelItemVersions(state = {}, action) {
+export function contentVersions(state = {}, action) {
   const existingVersions = state[action.itemZUID] || [];
 
   switch (action.type) {
