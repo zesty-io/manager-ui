@@ -33,7 +33,6 @@ window.CONFIG = __CONFIG__;
 // Update urls in config to include the current instance zuid
 const state = store.getState();
 window.CONFIG.API_INSTANCE = `//${state.instance.zuid}${window.CONFIG.API_INSTANCE}`;
-window.CONFIG.URL_PREVIEW = `//${state.instance.zuid}${window.CONFIG.URL_PREVIEW}`;
 
 ReactDOM.render(
   <Provider store={store}>
