@@ -18,7 +18,7 @@ export function getLogs(siteId) {
       type: "FETCHING_LOGS"
     });
 
-    request(`${CONFIG.API_INSTANCE}/env/audits`)
+    return request(`${CONFIG.API_INSTANCE}/env/audits`)
       .then(json => {
         // Normalize logs by zuid
         let data = {};

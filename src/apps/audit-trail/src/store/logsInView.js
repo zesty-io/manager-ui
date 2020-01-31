@@ -1,7 +1,7 @@
 import { searchProps } from "utility/searchProps";
 
 // Reducer
-export function inViewLogs(state = {}, action) {
+export function logsInView(state = {}, action) {
   switch (action.type) {
     case "FETCH_LOGS_SUCCESS":
       return action.data;
