@@ -1,57 +1,50 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
+import React from "react";
+import { useDispatch } from "react-redux";
 
 import { Search } from "@zesty-io/core/Search";
 import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 
-import { searchInViewLogs, filterInViewLogs } from "../../store/inViewLogs";
+import { searchInViewLogs, filterInViewLogs } from "store/logsInView";
 
 import styles from "./styles.less";
-class AuditControls extends Component {
-  handleFilter(evt) {
-    this.props.dispatch(filterInViewLogs(evt.target.dataset.data));
-  }
-  handleSearch(evt) {
-    this.props.dispatch(searchInViewLogs(evt.target.value.trim()));
-  }
-  render() {
-    return (
-      <header className={styles.auditControls}>
-        <div className={styles.title}>
-          <h2>Audit Trail&trade;</h2>
-          <p>
-            Keep track of your content. Logged {this.props.logCount} actions and
-            counting.
-          </p>
-        </div>
-        <Search
-          placeholder="Search Logs"
-          keyUp={this.handleSearch.bind(this)}
-        />
-        <ButtonGroup className={styles.btnGroup}>
-          <Button
-            className={styles.child}
-            text="Today"
-            onClick={this.handleFilter.bind(this)}
-            data="1"
-          />
-          <Button
-            className={styles.child}
-            text="Last Week"
-            onClick={this.handleFilter.bind(this)}
-            data="7"
-          />
-          <Button
-            className={styles.child}
-            text="Last Month"
-            onClick={this.handleFilter.bind(this)}
-            data="30"
-          />
-        </ButtonGroup>
-      </header>
-    );
-  }
-}
-
-export default connect(state => state)(AuditControls);
+export default React.memo(function AuditControls() {
+  const dispatch = useDispatch();
+  return (
+    <header className={styles.auditControls}>
+      <Search
+        className={styles.SearchLogs}
+        placeholder="Search AuditTrail Logs"
+        onChange={(name, value) => {
+          dispatch(searchInViewLogs(value.trim()));
+        }}
+      />
+      <ButtonGroup className={styles.btnGroup}>
+        <Button
+          className={styles.child}
+          onClick={() => {
+            dispatch(filterInViewLogs("1"));
+          }}
+        >
+          Today
+        </Button>
+        <Button
+          className={styles.child}
+          onClick={() => {
+            dispatch(filterInViewLogs("7"));
+          }}
+        >
+          Last Week
+        </Button>
+        <Button
+          className={styles.child}
+          onClick={() => {
+            dispatch(filterInViewLogs("30"));
+          }}
+        >
+          Last Month
+        </Button>
+      </ButtonGroup>
+    </header>
+  );
+});
