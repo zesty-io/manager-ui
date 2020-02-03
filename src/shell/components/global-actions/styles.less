@@ -8,7 +8,6 @@
 
   .GlobalActions {
     display: flex;
-    flex-direction: column;
     flex-wrap: wrap;
     align-content: center;
   }
@@ -45,12 +44,16 @@
 
 @media (max-width: 2000px) {
   .GlobalSubMenu {
-    .action {
-      svg {
-        width: 18px;
-        height: 18px;
+    .GlobalActions {
+      flex-direction: column;
+      .action {
+        svg {
+          width: 18px;
+          height: 18px;
+        }
       }
     }
+
     .AppVersion {
       flex-direction: column;
       img {
