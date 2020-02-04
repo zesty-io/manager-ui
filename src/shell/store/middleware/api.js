@@ -1,7 +1,7 @@
 import { request } from "utility/request";
 
-// import { fetchItems } from "../../../app-content-editor/src/store/contentModelItems";
-// import { fetchFields } from "../../../app-content-editor/src/store/contentModelFields";
+import { fetchItems } from "shell/store/content";
+import { fetchFields } from "shell/store/fields";
 
 const inflight = [];
 export const fetchResource = store => next => action => {

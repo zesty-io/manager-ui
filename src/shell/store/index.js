@@ -59,7 +59,7 @@ function configureStore(initialState = {}) {
     applyMiddleware(
       localStorage,
       fetchResource,
-      // resolveFieldOptions,
+      resolveFieldOptions,
       thunkMiddleware, // lets us dispatch() functions
       actionLogger
     )
