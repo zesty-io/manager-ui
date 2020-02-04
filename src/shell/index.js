@@ -60,20 +60,31 @@ store
       }
     });
 
-    // We don't mount app until after dynamically
-    // inserting sub app bundles
-    ReactDOM.render(
-      <Provider store={store}>
-        <BrowserRouter>
-          <PrivateRoute>
-            <LoadInstance>
-              <Route path="/" component={Shell} />
-            </LoadInstance>
-          </PrivateRoute>
-        </BrowserRouter>
-      </Provider>,
-      document.getElementById("root")
-    );
+    // Check every second to see if an injected
+    // app have been parsed and are ready
+    const appLoaded = setInterval(() => {
+      console.log("loading apps");
+
+      // We check the content editor as this is the
+      // primary sub app and the largest and longest to parse
+      if (window.ContentEditorApp) {
+        clearInterval(appLoaded);
+
+        // Mount app after inserting sub app bundles
+        ReactDOM.render(
+          <Provider store={store}>
+            <BrowserRouter>
+              <PrivateRoute>
+                <LoadInstance>
+                  <Route path="/" component={Shell} />
+                </LoadInstance>
+              </PrivateRoute>
+            </BrowserRouter>
+          </Provider>,
+          document.getElementById("root")
+        );
+      }
+    }, 1000);
   })
   .catch(err => {
     console.log(err);
