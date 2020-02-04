@@ -14,12 +14,12 @@ import {
 import GlobalSearch from "shell/components/global-search";
 
 import styles from "./GlobalTopbar.less";
-export default React.memo(
-  connect(state => {
-    return {
-      instanceZUID: state.instance.zuid
-    };
-  })(function GlobalTopbar(props) {
+export default connect(state => {
+  return {
+    instanceZUID: state.instance.zuid
+  };
+})(
+  React.memo(function GlobalTopbar(props) {
     let history = useHistory();
     const [routes, setRoutes] = useState([]);
 

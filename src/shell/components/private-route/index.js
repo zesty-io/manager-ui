@@ -1,40 +1,45 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect } from "react";
+import { connect } from "react-redux";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
+
+import Login from "shell/components/login";
 
 import { notify } from "shell/store/notifications";
 import { verify } from "shell/store/auth";
 
-export default React.memo(function PrivateRoute(props) {
-  const dispatch = useDispatch();
-  const [auth, setAuth] = useState(false);
-
-  useEffect(() => {
-    dispatch(verify())
-      .then(res => {
-        if (res.code === 200) {
-          setAuth(true);
-        } else {
-          window.location = `${CONFIG.URL_ACCOUNTS}/login?redirect=${window.location}`;
-        }
-      })
-      .catch(err => {
-        notify({
-          kind: "warn",
-          message: "Failed to authenticate your account"
+export default connect(state => {
+  return {
+    auth: state.auth
+  };
+})(
+  React.memo(function PrivateRoute(props) {
+    useEffect(() => {
+      const checkSession = () => {
+        props.dispatch(verify()).catch(err => {
+          notify({
+            kind: "warn",
+            message: "Failed to authenticate your account"
+          });
         });
-      });
-  }, []);
+      };
 
-  return (
-    <WithLoader
-      condition={auth}
-      message="Checking your account permissions"
-      width="100vw"
-      height="100vh"
-    >
-      {props.children}
-    </WithLoader>
-  );
-});
+      // Poll auth service every minute to ensure session is still valid
+      setInterval(checkSession, 60000);
+
+      // Initial app load check
+      checkSession();
+    }, []);
+
+    return (
+      <WithLoader
+        condition={!props.auth.checking}
+        message="Checking your account permissions"
+        width="100vw"
+        height="100vh"
+      >
+        {props.auth.valid ? props.children : <Login />}
+      </WithLoader>
+    );
+  })
+);

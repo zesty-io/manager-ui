@@ -62,7 +62,7 @@ export function request(url, opts = {}) {
       }
 
       // Request Denied
-      if (res.status === 400) {
+      if (res.status === 400 || res.status === 401) {
         try {
           // It's up to the request initiator to handle bad requests
           return res.json().then(function(json) {
@@ -75,15 +75,7 @@ export function request(url, opts = {}) {
           // );
         }
       }
-      if (res.status === 401) {
-        // growl(`Unauthorized: Sign back in to continue`, "red-growl");
-        // riot.mount(document.querySelector("#modalMount"), "login-modal", {
-        //   email: USER.email,
-        //   callback: () => {
-        //     console.log("relogin complete");
-        //   }
-        // });
-      }
+
       if (res.status === 404) {
         // growl(`We could not find a requested resource. 404`, "red-growl");
       }
