@@ -12,7 +12,7 @@ import { Button } from "@zesty-io/core/Button";
 import { ScheduleFlyout } from "./ScheduleFlyout";
 import { VersionSelector } from "./VersionSelector";
 
-import { publishItem } from "../../../../../../store/contentModelItems";
+import { publishItem } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 
 import styles from "./ItemVersioning.less";

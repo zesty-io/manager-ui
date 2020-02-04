@@ -2,11 +2,9 @@ import { request } from "utility/request";
 
 export function user(
   state = {
-    id: "",
-    name: "",
+    ZUID: "",
+    firstName: "",
     email: "",
-    role: "",
-    products: ["content", "media"],
     permissions: [],
     selected_lang: ""
   },
@@ -14,19 +12,10 @@ export function user(
 ) {
   switch (action.type) {
     case "FETCH_VERIFY_SUCCESS":
-      return { ...state, id: action.ZUID };
-
-    // case "FETCHING_USER":
-    // TODO show loading state?
+      return { ...state, ZUID: action.payload.ZUID };
 
     case "FETCH_USER_SUCCESS":
-      return { ...state, ...action.data };
-
-    // case "FETCH_USER_ERROR":
-    // TODO handle failure
-
-    case "FETCH_PRODUCTS_SUCCESS":
-      return { ...state, products: action.data };
+      return { ...state, ...action.payload.data };
 
     case "USER_ROLES":
       return { ...state, ...action.payload };
@@ -43,23 +32,24 @@ export function user(
   }
 }
 
-export function getUser(id) {
+export function fetchUser(zuid) {
   return dispatch => {
     dispatch({
       type: "FETCHING_USER"
     });
 
-    setTimeout(() => {
-      dispatch({
-        type: "FETCH_USER_SUCCESS",
-        data: {
-          id: "xxxxxx1",
-          name: "Stuart Runyan",
-          email: "stuart@zesty.io",
-          role: "admin"
-        }
+    return request(`${CONFIG.API_ACCOUNTS}/users/${zuid}`)
+      .then(res => {
+        dispatch({
+          type: "FETCH_USER_SUCCESS",
+          payload: {
+            data: res.data
+          }
+        });
+      })
+      .catch(err => {
+        console.log(err);
       });
-    }, 3000);
   };
 }
 
@@ -109,26 +99,5 @@ export function fetchRecentItems(userZUID, start) {
 
       return res;
     });
-  };
-}
-
-export function fetchProducts() {
-  return dispatch => {
-    // TODO Fetch product access from API
-
-    setTimeout(() => {
-      dispatch({
-        type: "FETCH_PRODUCTS_SUCCESS",
-        data: [
-          "code",
-          "seo",
-          "leads",
-          "analytics",
-          "forms",
-          "audit-trail",
-          "social"
-        ]
-      });
-    }, 3000);
   };
 }

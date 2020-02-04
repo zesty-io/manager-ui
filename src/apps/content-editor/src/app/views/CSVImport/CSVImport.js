@@ -9,7 +9,7 @@ import { CsvSettings } from "./CsvSettings";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
-import { fetchFields } from "../../../store/contentModelFields";
+import { fetchFields } from "shell/store/fields";
 
 import styles from "./CSVImport.less";
 class CSVImport extends Component {
@@ -330,13 +330,10 @@ class CSVImport extends Component {
 
 export default connect((state, props) => {
   const { modelZUID } = props.match.params;
-  const model = state.contentModels[modelZUID];
-  const fields = Object.keys(state.contentModelFields)
-    .filter(
-      fieldZUID =>
-        state.contentModelFields[fieldZUID].contentModelZUID === modelZUID
-    )
-    .map(fieldZUID => state.contentModelFields[fieldZUID])
+  const model = state.models[modelZUID];
+  const fields = Object.keys(state.fields)
+    .filter(fieldZUID => state.fields[fieldZUID].contentModelZUID === modelZUID)
+    .map(fieldZUID => state.fields[fieldZUID])
     .sort((a, b) => a.sort - b.sort);
   return {
     modelZUID,

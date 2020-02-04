@@ -4,7 +4,7 @@ import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
 
 import { notify } from "shell/store/notifications";
-import { fetchFields } from "../../../store/contentModelFields";
+import { fetchFields } from "shell/store/fields";
 import {
   fetchItem,
   saveItem,
@@ -12,7 +12,7 @@ import {
   checkLock,
   lock,
   unlock
-} from "../../../store/contentModelItems";
+} from "shell/store/content";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -217,8 +217,11 @@ class ItemEdit extends Component {
     return (
       <WithLoader
         condition={!this.state.loading && Object.keys(this.props.item).length}
-        message={`Loading ${this.props.model &&
-          this.props.model.label} Content`}
+        message={
+          this.props.model && this.props.model.label
+            ? `Loading ${this.props.model && this.props.model.label} Content`
+            : "Loading Content"
+        }
       >
         {!this.state.checkingLock &&
           this.state.lock.userZUID !== this.props.user.user_zuid && (
@@ -353,14 +356,11 @@ class ItemEdit extends Component {
 export default connect((state, props) => {
   const { modelZUID, itemZUID } = props.match.params;
 
-  const item = state.contentModelItems[itemZUID] || {};
-  const model = state.contentModels[modelZUID] || {};
-  const fields = Object.keys(state.contentModelFields)
-    .filter(
-      fieldZUID =>
-        state.contentModelFields[fieldZUID].contentModelZUID === modelZUID
-    )
-    .map(fieldZUID => state.contentModelFields[fieldZUID])
+  const item = state.content[itemZUID] || {};
+  const model = state.models[modelZUID] || {};
+  const fields = Object.keys(state.fields)
+    .filter(fieldZUID => state.fields[fieldZUID].contentModelZUID === modelZUID)
+    .map(fieldZUID => state.fields[fieldZUID])
     .sort((a, b) => a.sort - b.sort);
 
   const tags = Object.keys(state.headTags)
@@ -382,9 +382,9 @@ export default connect((state, props) => {
     tags,
     fields,
     user: state.user,
-    logs: state.contentLogs, // TODO filter logs to those for this item,
+    logs: state.logs, // TODO filter logs to those for this item,
     instanceZUID: state.instance.ZUID,
     instance: state.instance,
-    items: state.contentModelItems
+    items: state.content
   };
 })(ItemEdit);

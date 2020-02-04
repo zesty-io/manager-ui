@@ -8,12 +8,8 @@ import { fetchFields } from "../../../../../store/schemaFields";
 import styles from "./RelatedOptions.less";
 export default connect(state => {
   return {
-    models: Object.keys(state.schemaModels).map(
-      modelZUID => state.schemaModels[modelZUID]
-    ),
-    fields: Object.keys(state.schemaFields).map(
-      fieldZUID => state.schemaFields[fieldZUID]
-    )
+    models: Object.keys(state.models).map(modelZUID => state.models[modelZUID]),
+    fields: Object.keys(state.fields).map(fieldZUID => state.fields[fieldZUID])
   };
 })(function RelatedOptions(props) {
   const [loading, setLoading] = useState(false);

@@ -6,15 +6,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCheck } from "@fortawesome/free-solid-svg-icons";
 
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
-import { fetchAuditTrailDrafting } from "../../../../../../../store/contentLogs";
+import { fetchAuditTrailDrafting } from "shell/store/logs";
 
 export default connect((state, props) => {
   return {
     instanceZUID: state.instance.ZUID,
     logs:
-      state.contentLogs[props.itemZUID] &&
-      state.contentLogs[props.itemZUID].auditTrailDraft
-        ? state.contentLogs[props.itemZUID].auditTrailDraft
+      state.logs[props.itemZUID] && state.logs[props.itemZUID].auditTrailDraft
+        ? state.logs[props.itemZUID].auditTrailDraft
         : []
   };
 })(function WidgetDraftHistory(props) {

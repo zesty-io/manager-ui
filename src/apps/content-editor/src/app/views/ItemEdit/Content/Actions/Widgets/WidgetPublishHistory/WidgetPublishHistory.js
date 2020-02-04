@@ -6,11 +6,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCheck } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
-import { fetchAuditTrailPublish } from "../../../../../../../store/contentLogs";
+import { fetchAuditTrailPublish } from "shell/store/logs";
 
 export default connect(state => {
   return {
-    logs: state.contentLogs,
+    logs: state.logs,
     instanceZUID: state.instance.ZUID
   };
 })(

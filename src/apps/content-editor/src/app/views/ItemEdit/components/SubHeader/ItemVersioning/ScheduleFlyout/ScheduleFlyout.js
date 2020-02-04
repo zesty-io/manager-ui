@@ -15,10 +15,7 @@ import { Button } from "@zesty-io/core";
 import { ButtonGroup } from "@zesty-io/core";
 import { FieldTypeDropDown } from "@zesty-io/core";
 
-import {
-  publishItem,
-  unschedule
-} from "../../../../../../../store/contentModelItems";
+import { publishItem, unschedule } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 
 const DISPLAY_FORMAT = "MMMM Do YYYY, [at] h:mm a";

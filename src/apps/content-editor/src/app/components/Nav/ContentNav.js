@@ -8,7 +8,7 @@ import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Select, Option } from "@zesty-io/core/Select";
 
-import { collapseNavItem, hideNavItem } from "../../../store/contentNav";
+import { collapseNavItem, hideNavItem } from "store/navContent";
 
 import styles from "./ContentNav.less";
 export class ContentNav extends React.PureComponent {

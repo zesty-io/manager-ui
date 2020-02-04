@@ -5,12 +5,12 @@ import cx from "classnames";
 
 import { Select, Option } from "@zesty-io/core/Select";
 
-import { fetchVersions } from "../../../../../../../store/contentModelItemVersions";
+import { fetchVersions } from "shell/store/contentVersions";
 
 import styles from "./VersionSelector.less";
 export default connect((state, props) => {
   return {
-    versions: state.contentModelItemVersions[props.itemZUID] || []
+    versions: state.contentVersions[props.itemZUID] || []
   };
 })(
   class VersionSelector extends React.Component {

@@ -1,19 +1,11 @@
 import React from "react";
 import { Provider } from "react-redux";
-import { BrowserRouter, Route } from "react-router-dom";
+import { Route } from "react-router-dom";
 import { get } from "idb-keyval";
 
 import { injectReducer } from "shell/store";
 
-import { contentModels, fetchModels } from "./store/contentModels";
-import {
-  contentModelItems,
-  fetchItemPublishings
-} from "./store/contentModelItems";
-import { contentModelItemVersions } from "./store/contentModelItemVersions";
-import { contentModelFields } from "./store/contentModelFields";
-import { contentNav, fetchNav } from "./store/contentNav";
-import { contentLogs } from "./store/contentLogs";
+import { navContent, fetchNav } from "./store/navContent";
 import { modal } from "./store/modal";
 import { listFilters } from "./store/listFilters";
 import { headTags, fetchHeadTags } from "./store/headTags";
@@ -25,10 +17,10 @@ window.ContentEditorApp = class ContentEditorApp extends React.Component {
     try {
       Promise.all([
         get(`${zesty.instance.zuid}:user:selected_lang`),
-        get(`${zesty.instance.zuid}:contentNav`),
-        get(`${zesty.instance.zuid}:contentModels`),
-        get(`${zesty.instance.zuid}:contentModelFields`),
-        get(`${zesty.instance.zuid}:contentModelItems`)
+        get(`${zesty.instance.zuid}:navContent`),
+        get(`${zesty.instance.zuid}:models`),
+        get(`${zesty.instance.zuid}:fields`),
+        get(`${zesty.instance.zuid}:content`)
       ]).then(results => {
         const [lang, nav, models, fields, items] = results;
 
@@ -83,16 +75,7 @@ window.ContentEditorApp = class ContentEditorApp extends React.Component {
     }
 
     // Inject reducers into shared app shell store
-    injectReducer(ZESTY_REDUX_STORE, "contentModels", contentModels);
-    injectReducer(ZESTY_REDUX_STORE, "contentModelItems", contentModelItems);
-    injectReducer(
-      ZESTY_REDUX_STORE,
-      "contentModelItemVersions",
-      contentModelItemVersions
-    );
-    injectReducer(ZESTY_REDUX_STORE, "contentModelFields", contentModelFields);
-    injectReducer(ZESTY_REDUX_STORE, "contentNav", contentNav);
-    injectReducer(ZESTY_REDUX_STORE, "contentLogs", contentLogs);
+    injectReducer(ZESTY_REDUX_STORE, "navContent", navContent);
     injectReducer(ZESTY_REDUX_STORE, "modal", modal);
     injectReducer(ZESTY_REDUX_STORE, "listFilters", listFilters);
     injectReducer(ZESTY_REDUX_STORE, "headTags", headTags);
@@ -104,8 +87,8 @@ window.ContentEditorApp = class ContentEditorApp extends React.Component {
     // Kick off loading data before app mount
     // to decrease time to first interaction
     ZESTY_REDUX_STORE.dispatch(fetchNav());
-    ZESTY_REDUX_STORE.dispatch(fetchModels());
-    ZESTY_REDUX_STORE.dispatch(fetchItemPublishings());
+    // ZESTY_REDUX_STORE.dispatch(fetchModels());
+    // ZESTY_REDUX_STORE.dispatch(fetchItemPublishings());
     ZESTY_REDUX_STORE.dispatch(fetchHeadTags());
   }
 
@@ -114,21 +97,6 @@ window.ContentEditorApp = class ContentEditorApp extends React.Component {
       <Provider store={ZESTY_REDUX_STORE}>
         <Route component={ContentEditor} />
       </Provider>
-
-      // <Provider store={ZESTY_REDUX_STORE}>
-      //   <BrowserRouter
-      //     getUserConfirmation={(message, callback) => {
-      //       if (message === "confirm") {
-      //         openNavigationModal();
-      //         callback(false);
-      //       } else {
-      //         callback(true);
-      //       }
-      //     }}
-      //   >
-      //     <Route component={ContentEditor} />
-      //   </BrowserRouter>
-      // </Provider>
     );
   }
 };

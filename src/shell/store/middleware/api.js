@@ -1,7 +1,7 @@
 import { request } from "utility/request";
 
-// import { fetchItems } from "../../../app-content-editor/src/store/contentModelItems";
-// import { fetchFields } from "../../../app-content-editor/src/store/contentModelFields";
+import { fetchItems } from "shell/store/content";
+import { fetchFields } from "shell/store/fields";
 
 const inflight = [];
 export const fetchResource = store => next => action => {
@@ -46,20 +46,20 @@ export const resolveFieldOptions = store => next => action => {
           const state = store.getState();
 
           // Only fetch related resources if we have these reducers available
-          if (state.contentModelFields && state.contentModelItems) {
+          if (state.fields && state.content) {
             // Check current state to determine if we should
             // fetch fields and items for a model. Otherwise fetching
             // fields creates an infinite loop due this resolution
-            const fieldsExist = Object.keys(state.contentModelFields).find(
+            const fieldsExist = Object.keys(state.fields).find(
               fieldZUID => fieldZUID === field.relatedFieldZUID
             );
             if (!fieldsExist) {
               store.dispatch(fetchFields(field.relatedModelZUID));
             }
 
-            const itemsExist = Object.keys(state.contentModelItems).find(
+            const itemsExist = Object.keys(state.content).find(
               itemZUID =>
-                state.contentModelItems[itemZUID].meta.contentModelZUID ===
+                state.content[itemZUID].meta.contentModelZUID ===
                 field.relatedModelZUID
             );
 

@@ -4,9 +4,9 @@ import cloneDeep from "lodash.clonedeep";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 
-import { fetchNav } from "./contentNav";
+// import { fetchNav } from "./contentNav";
 
-export function contentModelItems(state = {}, action) {
+export function content(state = {}, action) {
   const item = state[action.itemZUID];
 
   if (action.itemZUID && !item) {
@@ -314,7 +314,7 @@ export function fetchItems(modelZUID) {
 // export function fetchAllItems() {
 //   return (dispatch, getState) => {
 //     const state = getState();
-//     const modelZUIDs = Object.keys(state.contentModels);
+//     const modelZUIDs = Object.keys(state.models);
 //
 //     const modelReqs = modelZUIDs.map(ZUID => dispatch(fetchItems(ZUID)));
 //
@@ -331,14 +331,14 @@ export function fetchItems(modelZUID) {
 export function saveItem(itemZUID, action = "") {
   return (dispatch, getState) => {
     const state = getState();
-    const item = state.contentModelItems[itemZUID];
-    const fields = Object.keys(state.contentModelFields)
+    const item = state.content[itemZUID];
+    const fields = Object.keys(state.fields)
       .filter(
         fieldZUID =>
-          state.contentModelFields[fieldZUID].contentModelZUID ===
+          state.fields[fieldZUID].contentModelZUID ===
           item.meta.contentModelZUID
       )
-      .map(fieldZUID => state.contentModelFields[fieldZUID]);
+      .map(fieldZUID => state.fields[fieldZUID]);
 
     // Check required fields are not empty strings or null valuess
     // Some falsey values are allowed. e.g. false, 0
@@ -389,14 +389,13 @@ export function createItem(modelZUID, itemZUID) {
   return (dispatch, getState) => {
     const state = getState();
 
-    let item = cloneDeep(state.contentModelItems[itemZUID]);
+    let item = cloneDeep(state.content[itemZUID]);
 
-    const fields = Object.keys(state.contentModelFields)
+    const fields = Object.keys(state.fields)
       .filter(
-        fieldZUID =>
-          state.contentModelFields[fieldZUID].contentModelZUID === modelZUID
+        fieldZUID => state.fields[fieldZUID].contentModelZUID === modelZUID
       )
-      .map(fieldZUID => state.contentModelFields[fieldZUID]);
+      .map(fieldZUID => state.fields[fieldZUID]);
 
     // Temp ZUID for store lookups
     delete item.meta.ZUID;
@@ -442,7 +441,7 @@ export function createItem(modelZUID, itemZUID) {
           type: "REMOVE_ITEM",
           itemZUID
         });
-        dispatch(fetchNav());
+        // dispatch(fetchNav());
       }
       return res;
     });
@@ -470,7 +469,7 @@ export function deleteItem(modelZUID, itemZUID) {
 
         // Always update content navigation after deleting an item
         // NOTE: alternatively the contentNav store could listen for the `REMOVE_ITEM` action
-        dispatch(fetchNav());
+        // dispatch(fetchNav());
       }
       return res;
     });
@@ -775,23 +774,20 @@ export function fetchGlobalItem() {
     }
 
     const state = getState();
-    const clippingsModelZUID = Object.keys(state.contentModels).find(
-      modelZUID => state.contentModels[modelZUID].name === "clippings"
+    const clippingsModelZUID = Object.keys(state.models).find(
+      modelZUID => state.models[modelZUID].name === "clippings"
     );
 
     if (clippingsModelZUID) {
-      const clippingsItemZUID = Object.keys(state.contentModelItems).find(
-        itemZUID => {
-          return (
-            state.contentModelItems[itemZUID] &&
-            state.contentModelItems[itemZUID].meta.contentModelZUID ===
-              clippingsModelZUID
-          );
-        }
-      );
+      const clippingsItemZUID = Object.keys(state.content).find(itemZUID => {
+        return (
+          state.content[itemZUID] &&
+          state.content[itemZUID].meta.contentModelZUID === clippingsModelZUID
+        );
+      });
 
       if (clippingsItemZUID) {
-        globalsData = state.contentModelItems[clippingsItemZUID].data;
+        globalsData = state.content[clippingsItemZUID].data;
       } else {
         dispatch(fetchItems(clippingsModelZUID));
       }
