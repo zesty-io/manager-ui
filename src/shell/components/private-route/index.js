@@ -1,51 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { Redirect } from "react-router-dom";
-import { connect } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
-import { verify } from "../../store/auth";
+import { notify } from "shell/store/notifications";
+import { verify } from "shell/store/auth";
 
-export default connect(state => {
-  return {
-    auth: state.auth
-  };
-})(function PrivateRoute(props) {
-  // console.log("PrivateRoute", props);
-
-  const [loading, setLoading] = useState(true);
-  const [auth, setAuth] = useState(true); // TODO switch to false
+export default React.memo(function PrivateRoute(props) {
+  const dispatch = useDispatch();
+  const [auth, setAuth] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
-    props
-      .dispatch(verify())
+    dispatch(verify())
       .then(res => {
-        setLoading(false);
-
         if (res.code === 200) {
           setAuth(true);
+        } else {
+          window.location = `${CONFIG.URL_ACCOUNTS}/login?redirect=${window.location}`;
         }
       })
       .catch(err => {
-        setLoading(false);
+        notify({
+          kind: "warn",
+          message: "Failed to authenticate your account"
+        });
       });
   }, []);
 
   return (
     <WithLoader
-      condition={!loading}
-      message="Checking your users access"
+      condition={auth}
+      message="Checking your account permissions"
       width="100vw"
       height="100vh"
     >
-      {auth ? (
-        props.children
-      ) : (
-        <Redirect
-          to={`${CONFIG.ACCOUNTS_UI}/login?redirect=${window.location}`}
-        />
-      )}
+      {props.children}
     </WithLoader>
   );
 });

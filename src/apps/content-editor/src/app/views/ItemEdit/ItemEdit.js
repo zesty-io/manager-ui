@@ -217,8 +217,11 @@ class ItemEdit extends Component {
     return (
       <WithLoader
         condition={!this.state.loading && Object.keys(this.props.item).length}
-        message={`Loading ${this.props.model &&
-          this.props.model.label} Content`}
+        message={
+          this.props.model && this.props.model.label
+            ? `Loading ${this.props.model && this.props.model.label} Content`
+            : "Loading Content"
+        }
       >
         {!this.state.checkingLock &&
           this.state.lock.userZUID !== this.props.user.user_zuid && (

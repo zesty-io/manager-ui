@@ -56,7 +56,7 @@ export default connect(function(state, props) {
         .format("YYYY-MM-DD");
 
       this.props
-        .dispatch(fetchRecentItems(this.props.user.id, start))
+        .dispatch(fetchRecentItems(this.props.user.ZUID, start))
         .then(res => {
           if (res && res.data) {
             this.setState({

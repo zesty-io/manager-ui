@@ -40,7 +40,10 @@ export default React.memo(function SetRow(props) {
       className={cx(styles.SetRow, props.isDirty && styles.Dirty)}
       style={{ ...props.style }}
     >
-      <PublishStatusCell type={props.model.type} item={item} />
+      <PublishStatusCell
+        type={props.model && props.model.type ? props.model.type : null}
+        item={item}
+      />
       <div className={styles.Cells} onClick={selectRow}>
         {props.fields.map(field => {
           switch (field.datatype) {
