@@ -6,7 +6,6 @@
   "scripts": {
     "test": "cypress run",
     "start": "../../../node_modules/.bin/webpack --display=minimal --progress --watch",
-    "prebuild": "npm --silent install",
     "build": "../../../node_modules/.bin/webpack --display=errors-only --progress -p"
   },
   "author": "Zesty.io Developers <developers@zesty.io>",

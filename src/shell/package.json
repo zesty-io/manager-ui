@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "start": "../../node_modules/.bin/webpack --display=errors-only --progress --watch",
-    "prebuild": "npm --silent install",
     "build": "../../node_modules/.bin/webpack --display=errors-only --progress -p"
   },
   "author": "Stuart Runyan<stuart@zesty.io>",
