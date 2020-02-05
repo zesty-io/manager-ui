@@ -16,6 +16,6 @@ class CodeEditor extends Component {
   }
 }
 
-const CodeEditorApp = connect(state => state)(CodeEditor);
+const CodeApp = connect(state => state)(CodeEditor);
 
-export default CodeEditorApp;
+export default CodeApp;

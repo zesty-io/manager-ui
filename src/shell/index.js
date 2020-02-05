@@ -60,14 +60,25 @@ store
       }
     });
 
-    // Check every second to see if an injected
-    // app have been parsed and are ready
-    const appLoaded = setInterval(() => {
-      console.log("loading apps");
+    // Convert product names to variable references
+    const appTokens = json.data.map(product => {
+      if (product.includes("-")) {
+        product = product
+          .split("-")
+          .map(part => part.replace(/^\w/, c => c.toUpperCase()))
+          .join("");
+      } else {
+        product = product.replace(/^\w/, c => c.toUpperCase());
+      }
+      return `${product}App`;
+    });
 
-      // We check the content editor as this is the
-      // primary sub app and the largest and longest to parse
-      if (window.ContentEditorApp) {
+    // Check every half second to see if injected
+    // apps have been parsed and are ready
+    const appLoaded = setInterval(() => {
+      const missing = appTokens.find(token => !window[token]);
+
+      if (!missing) {
         clearInterval(appLoaded);
 
         // Mount app after inserting sub app bundles
@@ -84,7 +95,7 @@ store
           document.getElementById("root")
         );
       }
-    }, 1000);
+    }, 500);
   })
   .catch(err => {
     console.log(err);

@@ -33,7 +33,7 @@ export default connect(state => {
                       <Route
                         key={product}
                         path="/content"
-                        component={ContentEditorApp}
+                        component={ContentApp}
                       />
                     );
                   case "media":
@@ -58,11 +58,7 @@ export default connect(state => {
                     );
                   case "code":
                     return (
-                      <Route
-                        key={product}
-                        path="/code"
-                        component={CodeEditorApp}
-                      />
+                      <Route key={product} path="/code" component={CodeApp} />
                     );
                   case "leads":
                     return (

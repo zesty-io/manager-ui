@@ -12,7 +12,7 @@ import { headTags, fetchHeadTags } from "./store/headTags";
 
 import ContentEditor from "./app";
 
-window.ContentEditorApp = class ContentEditorApp extends React.Component {
+window.ContentApp = class ContentApp extends React.Component {
   componentWillMount() {
     try {
       Promise.all([
