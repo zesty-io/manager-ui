@@ -12,6 +12,7 @@ export function user(
 ) {
   switch (action.type) {
     case "VERIFY_SUCCESS":
+    case "FETCH_LOGIN_SUCCESS":
       return { ...state, ZUID: action.payload.ZUID };
 
     case "FETCH_USER_SUCCESS":
