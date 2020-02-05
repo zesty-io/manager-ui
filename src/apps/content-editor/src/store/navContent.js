@@ -47,12 +47,7 @@ export function fetchNav() {
   return dispatch => {
     return request(`${CONFIG.API_ACCOUNTS}/roles`)
       .then(data => data.data)
-      .catch(err => {
-        dispatch({ type: "USER_ROLE_ERROR" });
-        throw new Error("Unable to load user data", err);
-      })
       .then(roles => {
-        dispatch({ type: "USER_ROLES", data: { roles } });
         if (
           roles.length &&
           roles.find(role => {
@@ -62,6 +57,7 @@ export function fetchNav() {
           const currentRoleZUID = roles.find(role => {
             return role.entityZUID === zesty.instance.zuid;
           }).ZUID;
+
           return request(
             `//${CONFIG.API_ACCOUNTS}/roles/${currentRoleZUID}`
           ).then(data => {

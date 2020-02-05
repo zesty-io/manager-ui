@@ -5,6 +5,7 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { fetchInstance } from "shell/store/instance";
 import { fetchUser } from "shell/store/user";
+import { fetchUserRoles } from "shell/store/userRole";
 
 // import { store } from "shell/store";
 
@@ -15,11 +16,12 @@ export default connect(state => {
   };
 })(
   React.memo(function LoadInstance(props) {
-    // console.log("LoadInstance", props);
+    console.log("LoadInstance");
 
     useEffect(() => {
-      const user = props.dispatch(fetchUser(props.user.ZUID));
-      const instance = props.dispatch(fetchInstance());
+      props.dispatch(fetchUser(props.user.ZUID));
+      props.dispatch(fetchInstance());
+      props.dispatch(fetchUserRoles());
 
       // Promise.all([instance, products]).then(res => {
       //   // console.log("loaded instance");

@@ -8,6 +8,7 @@ import { localStorage } from "./middleware/local-storage";
 import { auth } from "./auth";
 import { products } from "./products";
 import { user } from "./user";
+import { userRole } from "./userRole";
 import { instance } from "./instance";
 import { languages } from "./languages";
 import { models } from "./models";
@@ -33,6 +34,7 @@ function createReducer(asyncReducers) {
     },
     auth,
     user,
+    userRole,
     products,
     instance,
     languages,

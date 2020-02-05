@@ -13,7 +13,9 @@ export default connect((state, props) => {
   class AppError extends Component {
     constructor(props) {
       super(props);
-      this.state = { error: null };
+      this.state = {
+        error: null
+      };
     }
 
     componentDidCatch(error, errorInfo) {
@@ -24,12 +26,6 @@ export default connect((state, props) => {
         });
         Sentry.captureException(error);
       });
-    }
-
-    componentDidUpdate() {
-      if (this.props.user.permissionsError && this.state.error === null) {
-        this.setState({ error: true });
-      }
     }
 
     render() {

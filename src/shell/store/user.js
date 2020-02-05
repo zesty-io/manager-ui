@@ -11,21 +11,18 @@ export function user(
   action
 ) {
   switch (action.type) {
-    case "FETCH_VERIFY_SUCCESS":
+    case "VERIFY_SUCCESS":
       return { ...state, ZUID: action.payload.ZUID };
 
     case "FETCH_USER_SUCCESS":
       return { ...state, ...action.payload.data };
 
-    case "USER_ROLES":
-      return { ...state, ...action.payload };
+    // case "USER_ROLES":
+    //   return { ...state, roles: action.payload };
 
-    case "USER_ROLE_ERROR":
-      return { ...state, permissionsError: true };
-
-    case "LOADED_LOCAL_USER_LANG":
-    case "USER_SELECTED_LANG":
-      return { ...state, selected_lang: action.payload.lang };
+    // case "LOADED_LOCAL_USER_LANG":
+    // case "USER_SELECTED_LANG":
+    //   return { ...state, selected_lang: action.payload.lang };
 
     default:
       return state;
@@ -34,10 +31,6 @@ export function user(
 
 export function fetchUser(zuid) {
   return dispatch => {
-    dispatch({
-      type: "FETCHING_USER"
-    });
-
     return request(`${CONFIG.API_ACCOUNTS}/users/${zuid}`)
       .then(res => {
         dispatch({
