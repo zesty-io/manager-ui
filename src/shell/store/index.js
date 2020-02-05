@@ -19,6 +19,7 @@ import { bins } from "./bins";
 import { groups } from "./groups";
 import { media } from "./media";
 import { logs } from "./logs";
+import { notifications } from "./notifications";
 
 // import ui from "./ui";
 
@@ -45,7 +46,8 @@ function createReducer(asyncReducers) {
     bins,
     groups,
     media,
-    logs
+    logs,
+    notifications
   };
 
   return combineReducers({

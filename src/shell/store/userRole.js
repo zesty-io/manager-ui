@@ -1,3 +1,6 @@
+import { request } from "utility/request";
+import { notify } from "shell/store/notifications";
+
 export function userRole(state = {}, action) {
   switch (action.type) {
     case "FETCH_USER_ROLE_SUCCESS":
@@ -17,12 +20,14 @@ export function fetchUserRoles() {
           role => role.entityZUID === state.instance.ZUID
         );
 
-        dispatch({
-          type: "FETCH_USER_ROLE_SUCCESS",
-          payload: {
-            data: role
-          }
-        });
+        if (role) {
+          dispatch({
+            type: "FETCH_USER_ROLE_SUCCESS",
+            payload: {
+              data: role
+            }
+          });
+        }
 
         return role;
       })

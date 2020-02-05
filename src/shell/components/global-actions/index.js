@@ -11,6 +11,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "@zesty-io/core/Url";
+import { GlobalNotifications } from "./components/global-notifications";
 
 import styles from "./styles.less";
 export default connect(state => {
@@ -30,9 +31,12 @@ export default connect(state => {
               <FontAwesomeIcon icon={faEye} />
             </Url>
           </span>
-          <span className={styles.action} title="Notifications">
+          {/* <span className={styles.action} title="Notifications">
             <FontAwesomeIcon icon={faBell} />
-          </span>
+          </span> */}
+
+          <GlobalNotifications className={styles.action} />
+
           {/* <span className={styles.action} title="Chat">
             <FontAwesomeIcon icon={faComment} />
           </span> */}
