@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
-import { fetchFields } from "../../../../../store/schemaFields";
+import { fetchFields } from "shell/store/fields";
 
 import styles from "./RelatedOptions.less";
 export default connect(state => {

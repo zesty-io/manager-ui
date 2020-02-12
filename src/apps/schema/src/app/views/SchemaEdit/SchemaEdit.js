@@ -12,7 +12,7 @@ import { Dropzone } from "./Dropzone";
 import { Draggable } from "./Draggable";
 
 import { notify } from "shell/store/notifications";
-import { fetchFields, saveField } from "../../../store/schemaFields";
+import { fetchFields, saveField } from "shell/store/fields";
 import { FIELD_TYPES } from "./FieldSettings";
 
 import styles from "./SchemaEdit.less";

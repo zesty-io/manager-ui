@@ -28,7 +28,7 @@ import { ToggleOptions } from "./ToggleOptions";
 import { RelatedOptions } from "./RelatedOptions";
 import { ImageOptions } from "./ImageOptions";
 
-import { formatName } from "../../../../store/schemaFields";
+import { formatName } from "utility/formatName";
 
 import styles from "./FieldSettings.less";
 export default function FieldSettings(props) {

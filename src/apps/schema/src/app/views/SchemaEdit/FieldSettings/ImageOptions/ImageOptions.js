@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { FieldTypeNumber } from "@zesty-io/core/FieldTypeNumber";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
-import { fetchMediaBins, fetchMediaGroups } from "../../../../../store/media";
+import { fetchMediaBins, fetchMediaGroups } from "shell/store/media";
 
 import styles from "./ImageOptions.less";
 export default connect(state => {
