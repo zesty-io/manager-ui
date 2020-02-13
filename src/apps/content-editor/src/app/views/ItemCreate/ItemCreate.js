@@ -138,7 +138,9 @@ export default connect((state, props) => {
             }
           } else if (res.data && res.data.ZUID) {
             // Redirect to new item after creating
-            window.location = `/content/${this.props.modelZUID}/${res.data.ZUID}`;
+            this.props.history.push(
+              `/content/${this.props.modelZUID}/${res.data.ZUID}`
+            );
 
             this.props.dispatch(
               notify({
