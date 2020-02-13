@@ -1,6 +1,6 @@
 import React, { PureComponent } from "react";
 
-import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 import { Field } from "./Field";
 
 import styles from "./Editor.less";
@@ -133,8 +133,9 @@ export default class Editor extends PureComponent {
           <div className={styles.NoFields}>
             <h1 className={styles.Display}>No fields have been added</h1>
             <h2 className={styles.SubHead}>
-              Use the <Url href={`#!/schema/${model.ZUID}`}>Schema Builder</Url>{" "}
-              to define your items content
+              Use the{" "}
+              <AppLink to={`/schema/${model.ZUID}`}>Schema Builder</AppLink> to
+              define your items content
             </h2>
           </div>
         )}
