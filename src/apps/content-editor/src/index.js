@@ -4,11 +4,13 @@ import { Route } from "react-router-dom";
 import { get } from "idb-keyval";
 
 import { injectReducer } from "shell/store";
+import { fetchModels } from "shell/store/models";
+import { fetchItemPublishings } from "shell/store/content";
 
-import { navContent, fetchNav } from "./store/navContent";
-import { modal } from "./store/modal";
-import { listFilters } from "./store/listFilters";
-import { headTags, fetchHeadTags } from "./store/headTags";
+import { navContent, fetchNav } from "store/navContent";
+import { modal } from "store/modal";
+import { listFilters } from "store/listFilters";
+import { headTags, fetchHeadTags } from "store/headTags";
 
 import ContentEditor from "./app";
 
@@ -87,8 +89,8 @@ window.ContentApp = class ContentApp extends React.Component {
     // Kick off loading data before app mount
     // to decrease time to first interaction
     ZESTY_REDUX_STORE.dispatch(fetchNav());
-    // ZESTY_REDUX_STORE.dispatch(fetchModels());
-    // ZESTY_REDUX_STORE.dispatch(fetchItemPublishings());
+    ZESTY_REDUX_STORE.dispatch(fetchModels());
+    ZESTY_REDUX_STORE.dispatch(fetchItemPublishings());
     ZESTY_REDUX_STORE.dispatch(fetchHeadTags());
   }
 
