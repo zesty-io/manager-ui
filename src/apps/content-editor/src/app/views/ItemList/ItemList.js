@@ -689,10 +689,6 @@ export default connect((state, props) => {
                     });
                     return this.load(this.props.modelZUID);
                   }}
-                  onCancel={() => {
-                    this.props.history.goBack();
-                    closeNavigationModal();
-                  }}
                 />
 
                 <DragScroll

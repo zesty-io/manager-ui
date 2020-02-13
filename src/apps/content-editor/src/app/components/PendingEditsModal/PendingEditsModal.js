@@ -1,76 +1,111 @@
-import React, { PureComponent } from "react";
+import React, { useState, useEffect } from "react";
+import { Prompt } from "react-router-dom";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faSave,
+  faTrash,
+  faSpinner,
+  faBan
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import {
-  NavigationModal,
   Modal,
   ModalHeader,
   ModalContent,
   ModalFooter
-} from "../NavigationModal";
+} from "@zesty-io/core/Modal";
 
 import styles from "./PendingEditsModal.less";
-export class PendingEditsModal extends PureComponent {
-  state = {
-    selected: false
-  };
-  continueNavigation = () => {
-    // Capture the requested hash
-    const hash = window.location.hash;
+export default React.memo(function PendingEditsModal(props) {
+  // FIXME: non memoized onSave & onDiscard props are causing rerenders
+  console.log("PendingEditsModal:render");
 
-    // Change router history so we can reload previous hash
-    window.location.hash = "/content/home";
-    window.location.hash = hash;
-    this.setState({ selected: false }, () => {
-      window.closeNavigationModal();
-    });
+  const [loading, setLoading] = useState(props.loading || false);
+  const [open, setOpen] = useState(false);
+  const [answer, setAnswer] = useState(() => () => {});
+
+  // Expose globals so external components can invoke
+  // NOTE: Should this be a portal?
+  useEffect(() => {
+    window.openNavigationModal = callback => {
+      setOpen(true);
+      setAnswer(() => callback);
+    };
+
+    return () => {
+      window.openNavigationModal = null;
+    };
+  }, []);
+
+  const handler = evt => {
+    switch (evt.currentTarget.attributes["kind"].value) {
+      case "save":
+        setLoading(true);
+        props.onSave().then(() => {
+          answer(true);
+
+          setLoading(false);
+          setOpen(false);
+        });
+      case "warn":
+        setLoading(true);
+        props.onDiscard().then(() => {
+          answer(true);
+
+          setLoading(false);
+          setOpen(false);
+        });
+      case "cancel":
+        answer(false);
+        setOpen(false);
+    }
   };
-  render() {
-    return (
-      <NavigationModal
-        when={this.props.show}
+
+  return (
+    <>
+      <Prompt when={Boolean(props.show)} message={"confirm"} />
+      <Modal
         className={styles.PendingEditsModal}
-        onClose={this.props.onClose}
+        onClose={() => {
+          answer(false);
+          setOpen(false);
+        }}
+        open={open}
       >
         <ModalHeader>
-          <h1>{this.props.title}</h1>
+          <h1>{props.title}</h1>
         </ModalHeader>
         <ModalContent>
-          <p>{this.props.message}</p>
+          <p>{props.message}</p>
         </ModalContent>
         <ModalFooter>
           <ButtonGroup className={styles.Actions}>
-            <Button
-              disabled={this.props.saving || this.state.selected}
-              kind="save"
-              onClick={() => {
-                this.setState({ selected: true });
-                this.props.onSave().then(this.continueNavigation);
-              }}
-            >
+            <Button disabled={loading} kind="save" onClick={handler}>
+              {loading ? (
+                <FontAwesomeIcon icon={faSpinner} />
+              ) : (
+                <FontAwesomeIcon icon={faSave} />
+              )}
               Save
             </Button>
-            <Button
-              disabled={this.props.saving || this.state.selected}
-              kind="warn"
-              onClick={() => {
-                this.setState({ selected: true });
-                this.props.onDiscard().then(this.continueNavigation);
-              }}
-            >
+            <Button disabled={loading} kind="warn" onClick={handler}>
+              {loading ? (
+                <FontAwesomeIcon icon={faSpinner} />
+              ) : (
+                <FontAwesomeIcon icon={faTrash} />
+              )}
               Discard
             </Button>
-            <Button
-              disabled={this.props.saving || this.state.selected}
-              kind="cancel"
-              onClick={this.props.onCancel}
-            >
+            <Button disabled={loading} kind="cancel" onClick={handler}>
+              <FontAwesomeIcon icon={faBan} />
               Cancel
             </Button>
           </ButtonGroup>
         </ModalFooter>
-      </NavigationModal>
-    );
-  }
-}
+      </Modal>
+    </>
+  );
+});

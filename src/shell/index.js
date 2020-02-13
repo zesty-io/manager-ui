@@ -84,7 +84,15 @@ store
         // Mount app after inserting sub app bundles
         ReactDOM.render(
           <Provider store={store}>
-            <BrowserRouter>
+            <BrowserRouter
+              getUserConfirmation={(message, callback) => {
+                if (message === "confirm") {
+                  window.openNavigationModal(callback);
+                } else {
+                  callback(true);
+                }
+              }}
+            >
               <PrivateRoute>
                 <LoadInstance>
                   <Route path="/" component={Shell} />

@@ -244,7 +244,7 @@ class ItemEdit extends Component {
           show={Boolean(this.props.item.dirty)}
           title="Unsaved Changes"
           message="You have unsaved changes that will be lost if you leave this page."
-          saving={this.state.saving}
+          loading={this.state.saving}
           onSave={this.onSave}
           onDiscard={() => {
             this.props.dispatch({
@@ -255,14 +255,6 @@ class ItemEdit extends Component {
             return this.props.dispatch(
               fetchItem(this.props.modelZUID, this.props.itemZUID)
             );
-          }}
-          onCancel={() => {
-            this.props.history.goBack();
-            closeNavigationModal();
-          }}
-          onClose={() => {
-            this.props.history.goBack();
-            closeNavigationModal();
           }}
         />
 
