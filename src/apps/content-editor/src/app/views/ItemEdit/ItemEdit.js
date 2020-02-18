@@ -213,6 +213,17 @@ class ItemEdit extends Component {
       });
   };
 
+  onDiscard = () => {
+    this.props.dispatch({
+      type: "UNMARK_ITEMS_DIRTY",
+      items: [this.props.itemZUID]
+    });
+    // Keep promise chain
+    return this.props.dispatch(
+      fetchItem(this.props.modelZUID, this.props.itemZUID)
+    );
+  };
+
   render() {
     return (
       <WithLoader
@@ -246,16 +257,7 @@ class ItemEdit extends Component {
           message="You have unsaved changes that will be lost if you leave this page."
           loading={this.state.saving}
           onSave={this.onSave}
-          onDiscard={() => {
-            this.props.dispatch({
-              type: "UNMARK_ITEMS_DIRTY",
-              items: [this.props.itemZUID]
-            });
-            // Keep promise chain
-            return this.props.dispatch(
-              fetchItem(this.props.modelZUID, this.props.itemZUID)
-            );
-          }}
+          onDiscard={this.onDiscard}
         />
 
         <section>
