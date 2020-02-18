@@ -13,7 +13,7 @@ import {
 
 import GlobalSearch from "shell/components/global-search";
 
-import styles from "./GlobalTopbar.less";
+import styles from "./GlobalTabs.less";
 export default connect(state => {
   return {
     instanceZUID: state.instance.zuid,
@@ -22,7 +22,7 @@ export default connect(state => {
     files: state.files
   };
 })(
-  React.memo(function GlobalTopbar(props) {
+  React.memo(function GlobalTabs(props) {
     let history = useHistory();
     const [routes, setRoutes] = useState([]);
 
@@ -45,14 +45,16 @@ export default connect(state => {
     useEffect(() => {
       const parts = history.location.pathname.split("/").filter(part => part);
       if (parts.length >= 2) {
-        // Filter out the route that was just loaded if it was already
-        // in our route stack. This way it gets moved to the front and not duplicated
-        const removedRoute = routes.filter(
-          route => route.pathname !== history.location.pathname
+        let newRoutes = [...routes];
+        let exists = newRoutes.find(
+          route => route.pathname === history.location.pathname
         );
+        if (!exists) {
+          newRoutes = [history.location, ...newRoutes];
+        }
 
-        // Maximum of 15 route records
-        const newRoutes = [history.location, ...removedRoute].slice(0, 15);
+        // Maximum of 20 route records
+        newRoutes = newRoutes.slice(0, 20);
 
         // Lookup route resource to get a friendly display name
         // Last zuid in path part is the resource being viewed
@@ -106,7 +108,7 @@ export default connect(state => {
     };
 
     return (
-      <section className={styles.GlobalTopbar}>
+      <section className={styles.GlobalTabs}>
         <GlobalSearch className={styles.GlobalSearch} />
         <nav className={styles.QuickLinks}>
           <ol className={styles.Links}>

@@ -3,7 +3,7 @@ import { Switch, Route } from "react-router-dom";
 import { connect } from "react-redux";
 
 import GlobalSidebar from "shell/components/global-sidebar";
-import GlobalTopbar from "shell/components/global-topbar";
+import GlobalTabs from "shell/components/global-tabs";
 import Welcome from "shell/components/welcome";
 import Missing from "shell/components/missing";
 
@@ -23,7 +23,7 @@ export default connect(state => {
           className={styles.AppLoader}
           // onMouseEnter={this.hideGlobalSubMenu.bind(this)}
         >
-          <GlobalTopbar />
+          <GlobalTabs />
           <div className={styles.SubApp}>
             <Switch>
               {props.products.map(product => {

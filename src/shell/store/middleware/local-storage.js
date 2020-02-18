@@ -46,10 +46,12 @@ export const localStorage = store => next => action => {
         // );
         break;
 
+      case "FETCH_FIELD_SUCCESS":
       case "FETCH_FIELDS_SUCCESS":
         set(`${state.instance.zuid}:fields`, state.fields);
         break;
 
+      case "FETCH_MODEL_SUCCESS":
       case "FETCH_MODELS_SUCCESS":
         set(`${state.instance.zuid}:models`, state.models);
         break;
