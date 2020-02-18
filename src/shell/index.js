@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { BrowserRouter, Route } from "react-router-dom";
+import { get } from "idb-keyval";
 
 import { request } from "utility/request";
 import { fetchProducts } from "shell/store/products";
@@ -35,6 +36,68 @@ window.CONFIG = __CONFIG__;
 const state = store.getState();
 window.CONFIG.API_INSTANCE = `//${state.instance.zuid}${window.CONFIG.API_INSTANCE}`;
 
+// Load Local Storage Data
+try {
+  Promise.all([
+    get(`${zesty.instance.zuid}:user:selected_lang`),
+    get(`${zesty.instance.zuid}:navContent`),
+    get(`${zesty.instance.zuid}:models`),
+    get(`${zesty.instance.zuid}:fields`),
+    get(`${zesty.instance.zuid}:content`)
+  ]).then(results => {
+    const [lang, nav, models, fields, content] = results;
+
+    store.dispatch({
+      type: "LOADED_LOCAL_USER_LANG",
+      payload: { lang }
+    });
+
+    // FIXME: This is broken because on initial nav fetch we modify
+    // the raw response before entering it into local state so when re-loading
+    // from local db it's not in the shape the redux store expects.
+    // store.dispatch({
+    //   type: "LOADED_LOCAL_CONTENT_NAV",
+    //   raw: nav
+    // });
+
+    store.dispatch({
+      type: "LOADED_LOCAL_MODELS",
+      payload: models
+    });
+
+    store.dispatch({
+      type: "LOADED_LOCAL_FIELDS",
+      payload: fields
+    });
+
+    store.dispatch({
+      type: "LOADED_LOCAL_ITEMS",
+      data: content
+    });
+
+    // if (Array.isArray(itemZUIDs)) {
+    //   const items = itemZUIDs.map(itemZUID =>
+    //     get(`${zesty.instance.zuid}:contentModelItems:${itemZUID}`)
+    //   );
+    //
+    //   Promise.all(items).then(itemsArr => {
+    //     const itemsObj = itemsArr.reduce((acc, item) => {
+    //       acc[item.meta.ZUID] = item;
+    //       return acc;
+    //     }, {});
+    //
+    //     store.dispatch({
+    //       type: "LOADED_LOCAL_ITEMS",
+    //       data: itemsObj
+    //     });
+    //   });
+    // }
+  });
+} catch (err) {
+  console.error("IndexedDB:get:error", err);
+}
+
+// Fetch Users Product Access
 store
   .dispatch(fetchProducts())
   .then(json => {
