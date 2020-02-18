@@ -16,7 +16,10 @@ import GlobalSearch from "shell/components/global-search";
 import styles from "./GlobalTopbar.less";
 export default connect(state => {
   return {
-    instanceZUID: state.instance.zuid
+    instanceZUID: state.instance.zuid,
+    models: state.models,
+    content: state.content,
+    files: state.files
   };
 })(
   React.memo(function GlobalTopbar(props) {
@@ -48,22 +51,43 @@ export default connect(state => {
           route => route.pathname !== history.location.pathname
         );
 
-        // TODO resolve ZUID from store to determine display information?
-        // switch (prefix) {
-        //   // model
-        //   case "6":
-        //   // content item
-        //   case "7":
-        //   // code file
-        //   case "":
-        // }
-
+        // Maximum of 15 route records
         const newRoutes = [history.location, ...removedRoute].slice(0, 15);
+
+        // Lookup route resource to get a friendly display name
+        // Last zuid in path part is the resource being viewed
+        newRoutes.forEach(route => {
+          const routePathParts = route.pathname.split("/").filter(part => part);
+          const zuid = routePathParts.pop();
+          const prefix = zuid.charAt(0);
+
+          // resolve ZUID from store to determine display information
+          switch (prefix) {
+            case "6":
+              if (props.models) {
+                const model = props.models[zuid];
+
+                if (model) {
+                  route.name = model.label;
+                }
+              }
+            case "7":
+              if (props.content) {
+                const item = props.content[zuid];
+                if (item && item.web) {
+                  route.name = item.web.metaTitle;
+                }
+              }
+            case "10":
+            case "11":
+              if (props.files) {
+                // const file = props.files[zuid];
+              }
+          }
+        });
 
         // store routes to local storage and reload on app start
         set(`${props.instanceZUID}:session:routes`, newRoutes);
-
-        // Maximum of 25 route records
         setRoutes(newRoutes);
       }
     }, [history.location]);
@@ -91,9 +115,9 @@ export default connect(state => {
                 key={i}
                 className={cx(styles.Route, i === 0 ? styles.active : null)}
               >
-                <AppLink
-                  to={`${route.pathname}${route.search}`}
-                >{`${route.pathname.slice(1)}`}</AppLink>
+                <AppLink to={`${route.pathname}${route.search}`}>
+                  {route.name ? route.name : `${route.pathname.slice(1)}`}
+                </AppLink>
                 <span
                   className={styles.Close}
                   onClick={() => removeRoute(route.pathname)}
