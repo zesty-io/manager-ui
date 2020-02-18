@@ -4,8 +4,8 @@ import moment from "moment-timezone";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCheck } from "@fortawesome/free-solid-svg-icons";
-
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+
 import { fetchAuditTrailDrafting } from "shell/store/logs";
 
 export default connect((state, props) => {
@@ -23,7 +23,7 @@ export default connect((state, props) => {
     setLoading(true);
     props
       .dispatch(fetchAuditTrailDrafting(props.instanceZUID, props.itemZUID))
-      .then(() => {
+      .finally(() => {
         setLoading(false);
       });
   }, []);
