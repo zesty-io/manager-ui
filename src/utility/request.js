@@ -47,55 +47,36 @@ export function request(url, opts = {}) {
     .then(res => {
       // console.log("Request:", res);
 
-      // Success
-      if (res.status < 300) {
-        try {
-          return res.json().then(function(json) {
-            return Object.assign({}, json, { status: res.status });
-          });
-        } catch (err) {
-          // growl(
-          //   `We ran into an issue processing an API response. 200`,
-          //   "red-growl"
-          // );
-        }
-      }
+      try {
+        // // Bad Request
+        // if (res.status === 400) {}
 
-      // Request Denied
-      if (res.status === 400 || res.status === 401) {
-        try {
-          // It's up to the request initiator to handle bad requests
-          return res.json().then(function(json) {
-            return Object.assign({}, json, { status: res.status });
-          });
-        } catch (err) {
-          // growl(
-          //   `We ran into an issue processing an API response. 400`,
-          //   "red-growl"
-          // );
-        }
-      }
+        // // User not authenticatd. Trigger login flow
+        // if (res.status === 401) {}
 
-      if (res.status === 404) {
-        // growl(`We could not find a requested resource. 404`, "red-growl");
-      }
-      if (res.status === 410) {
-        // growl(`Your two factor authentication has expired. 410`, "red-growl");
-      }
-      if (res.status === 422) {
-        try {
-          return res.json();
-        } catch (err) {
-          // growl(
-          //   `We ran into an issue processing an API response. 422`,
-          //   "red-growl"
-          // );
-        }
+        // Not Found
+        // if (res.status === 404) {}
+
+        // if (res.status === 410) {
+        //   // growl(`Your two factor authentication has expired. 410`, "red-growl");
+        // }
+
+        // if (res.status === 422) {}
+
+        return res.json().then(function(json) {
+          return { ...json, status: res.status };
+        });
+      } catch (err) {
+        console.error(err);
+        // growl(
+        //   `We ran into an issue processing an API response.`,
+        //   "red-growl"
+        // );
       }
 
       // Server Failed
       if (res.status >= 500) {
-        throw { res: res, opts: opts, url: url };
+        throw { res, opts, url };
       }
 
       // If a result hasn't been returned yet return the response
@@ -116,10 +97,6 @@ export function request(url, opts = {}) {
           }`
         );
         // growl(`Request failed, our API had an issue. 500`, "red-growl");
-        throw err;
-      } else if (url.endsWith("/roles")) {
-        console.error(err);
-        // growl(`Failed to fetch user role.`, "red-growl");
         throw err;
       } else {
         // Network Failed
