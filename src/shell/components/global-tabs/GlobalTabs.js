@@ -115,7 +115,12 @@ export default connect(state => {
             {routes.map((route, i) => (
               <li
                 key={i}
-                className={cx(styles.Route, i === 0 ? styles.active : null)}
+                className={cx(
+                  styles.Route,
+                  route.pathname === history.location.pathname
+                    ? styles.active
+                    : null
+                )}
               >
                 <AppLink to={`${route.pathname}${route.search}`}>
                   {route.name ? route.name : `${route.pathname.slice(1)}`}
