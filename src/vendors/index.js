@@ -8,6 +8,11 @@ import * as ReactRouterDOM from "react-router-dom";
 import * as Redux from "redux";
 import * as ReduxThunk from "redux-thunk";
 
+// Polyfills
+// @see https://babeljs.io/docs/en/babel-polyfill/
+import "core-js/stable";
+import "regenerator-runtime/runtime";
+
 // TODO refactor out
 import * as riot from "riot";
 import Clipboard from "clipboard";

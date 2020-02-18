@@ -31,19 +31,19 @@ export function user(
 }
 
 export function fetchUser(zuid) {
-  return dispatch => {
-    return request(`${CONFIG.API_ACCOUNTS}/users/${zuid}`)
-      .then(res => {
-        dispatch({
-          type: "FETCH_USER_SUCCESS",
-          payload: {
-            data: res.data
-          }
-        });
-      })
-      .catch(err => {
-        console.log(err);
+  return async dispatch => {
+    try {
+      let user = await request(`${CONFIG.API_ACCOUNTS}/users/${zuid}`);
+
+      dispatch({
+        type: "FETCH_USER_SUCCESS",
+        payload: {
+          data: user.data
+        }
       });
+    } catch (err) {
+      console.log(err);
+    }
   };
 }
 

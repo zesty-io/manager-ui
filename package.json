@@ -30,6 +30,7 @@
     "classnames": "2.2.6",
     "clipboard": "2.0.4",
     "codemirror": "5.50.2",
+    "core-js": "^3.6.4",
     "csv-parse": "4.8.5",
     "flatpickr": "4.6.3",
     "idb-keyval": "3.2.0",
@@ -50,6 +51,7 @@
     "react-window": "1.8.5",
     "redux": "4.0.5",
     "redux-thunk": "2.3.0",
+    "regenerator-runtime": "^0.13.3",
     "riot": "2.6.7",
     "showdown": "1.9.1",
     "uuid": "3.4.0"
