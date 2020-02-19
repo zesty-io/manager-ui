@@ -77,13 +77,17 @@ export default connect(state => {
               if (props.content) {
                 const item = props.content[zuid];
                 if (item && item.web) {
-                  route.name = item.web.metaTitle;
+                  route.name =
+                    item.web.metaTitle ||
+                    item.web.metaLinkText ||
+                    item.web.pathPart;
                 }
               }
             case "10":
             case "11":
               if (props.files) {
                 // const file = props.files[zuid];
+                console.log("// TODO lookup file names");
               }
           }
         });
