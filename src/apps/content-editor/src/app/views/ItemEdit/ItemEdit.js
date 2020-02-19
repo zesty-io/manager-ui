@@ -20,6 +20,8 @@ import { PendingEditsModal } from "../../components/PendingEditsModal";
 import { LockedItem } from "../../components/LockedItem";
 
 import { Header } from "./components/Header";
+import { SubHeader } from "./components/SubHeader";
+import { ItemVersioning } from "./components/SubHeader/ItemVersioning";
 
 import { Content } from "./Content";
 import { Meta } from "./Meta";
@@ -261,6 +263,22 @@ class ItemEdit extends Component {
         />
 
         <section>
+          <SubHeader
+            instance={this.props.instance}
+            modelZUID={this.props.modelZUID}
+            item={this.props.item}
+          >
+            <ItemVersioning
+              instance={this.props.instance}
+              modelZUID={this.props.modelZUID}
+              itemZUID={this.props.itemZUID}
+              item={this.props.item}
+              user={this.props.user}
+              saving={this.props.saving}
+              onSave={this.props.onSave}
+              dispatch={this.props.dispatch}
+            />
+          </SubHeader>
           <Header
             instance={this.props.instance}
             modelZUID={this.props.modelZUID}
@@ -268,6 +286,7 @@ class ItemEdit extends Component {
             itemZUID={this.props.itemZUID}
             item={this.props.item}
           />
+
           <Switch>
             <Route
               exact

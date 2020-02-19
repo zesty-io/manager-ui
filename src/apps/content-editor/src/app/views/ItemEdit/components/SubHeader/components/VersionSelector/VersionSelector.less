@@ -1,0 +1,19 @@
+@import "~@zesty-io/core/colors.less";
+
+.VersionSelector {
+  min-width: 150px !important;
+  max-width: 200px;
+
+  &.NotLatest span span {
+    background-color: @zesty-highlight !important;
+  }
+
+  .VersionOption small {
+    font-size: 10px;
+    color: @zesty-grey;
+  }
+
+  ul {
+    width: 290px;
+  }
+}

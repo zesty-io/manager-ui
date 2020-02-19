@@ -1,60 +1,42 @@
-import React, { Component } from "react";
+import React from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faRocket,
-  faEye,
-  faCodeBranch
-} from "@fortawesome/free-solid-svg-icons";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
+
 import { Url } from "@zesty-io/core/Url";
-import { ItemUrl } from "./ItemUrl";
+import { Save } from "./components/Save";
+import { Status } from "./components/Status";
+import { Publish } from "./components/Publish";
+import { VersionSelector } from "./components/VersionSelector";
 
 import styles from "./SubHeader.less";
-export class SubHeader extends Component {
-  render() {
-    return (
-      <header className={styles.SubHeader}>
-        <div className={styles.Path}>
-          {this.props.item.web.path &&
-            (this.props.instance.live_domain ? (
-              <ItemUrl item={this.props.item} instance={this.props.instance} />
-            ) : (
-              <Url
-                target="_blank"
-                href={`${CONFIG.URL_ACCOUNTS}/instances/${this.props.modelZUID}/launch`}
-              >
-                <FontAwesomeIcon icon={faRocket} />
-                &nbsp;Launch Instance
-              </Url>
-            ))}
-          <div>
-            <span>Preview Links: &nbsp;</span>
-            {this.props.item.web.path && (
-              <Url
-                className={styles.PreviewUrl}
-                target="_blank"
-                title={`${this.props.instance.preview_domain}${this.props.item.web.path}`}
-                href={`${this.props.instance.preview_domain}${this.props.item.web.path}`}
-              >
-                <FontAwesomeIcon icon={faEye} /> Current Version
-              </Url>
-            )}
-            <span>&nbsp;&nbsp;&nbsp;</span>
-            {this.props.item.web.path && (
-              <Url
-                className={styles.PreviewUrl}
-                target="_blank"
-                title={`${this.props.instance.preview_domain}${this.props.item.web.path}`}
-                href={`${this.props.instance.preview_domain}${this.props.item.web.path}?__version=${this.props.item.meta.version}`}
-              >
-                <FontAwesomeIcon icon={faCodeBranch} /> Version{" "}
-                {this.props.item.meta.version}
-              </Url>
-            )}
-          </div>
-        </div>
-        <div className={styles.Actions}>{this.props.children}</div>
-      </header>
-    );
-  }
+export default function SubHeader(props) {
+  return (
+    <header className={styles.SubHeader}>
+      <div className={styles.preview}>
+        {props.item.web.path && (
+          <Url
+            className={styles.PreviewUrl}
+            target="_blank"
+            title={`${props.instance.preview_domain}${props.item.web.path}`}
+            href={`${props.instance.preview_domain}${props.item.web.path}`}
+          >
+            <FontAwesomeIcon icon={faEye} />
+          </Url>
+        )}
+      </div>
+      <div className={styles.status}>
+        <Status item={props.item} />
+      </div>
+      {/* <div className={styles.version}>
+        <VersionSelector item={props.item} />
+      </div> */}
+      <div className={styles.save}>
+        <Save item={props.item} />
+      </div>
+      <div className={styles.publish}>
+        <Publish item={props.item} />
+      </div>
+    </header>
+  );
 }

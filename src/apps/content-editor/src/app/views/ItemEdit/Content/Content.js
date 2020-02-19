@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 
 import { Editor } from "../../../components/Editor";
-import { SubHeader } from "../components/SubHeader";
-import { ItemVersioning } from "../components/SubHeader/ItemVersioning";
 
 import { Actions } from "./Actions";
 
@@ -11,23 +9,6 @@ export default class Content extends Component {
   render() {
     return (
       <main className={styles.Content}>
-        <SubHeader
-          instance={this.props.instance}
-          modelZUID={this.props.modelZUID}
-          item={this.props.item}
-        >
-          <ItemVersioning
-            instance={this.props.instance}
-            modelZUID={this.props.modelZUID}
-            itemZUID={this.props.itemZUID}
-            item={this.props.item}
-            user={this.props.user}
-            saving={this.props.saving}
-            onSave={this.props.onSave}
-            dispatch={this.props.dispatch}
-          />
-        </SubHeader>
-
         <div className={styles.MainEditor}>
           <div className={styles.Editor}>
             <Editor
