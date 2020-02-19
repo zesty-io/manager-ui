@@ -323,7 +323,7 @@ export default connect(state => {
         });
 
         // load related item from API
-        if (value != "0") {
+        if (value && value != "0") {
           dispatch(searchItems(value));
         }
       }
