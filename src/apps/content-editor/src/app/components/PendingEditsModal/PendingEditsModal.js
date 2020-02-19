@@ -45,22 +45,20 @@ export default React.memo(function PendingEditsModal(props) {
       case "save":
         setLoading(true);
         props.onSave().then(() => {
-          answer(true);
-
           setLoading(false);
           setOpen(false);
+          answer(true);
         });
       case "warn":
         setLoading(true);
         props.onDiscard().then(() => {
-          answer(true);
-
           setLoading(false);
           setOpen(false);
+          answer(true);
         });
       case "cancel":
-        answer(false);
         setOpen(false);
+        answer(false);
     }
   };
 
