@@ -21,7 +21,7 @@ export default class Content extends Component {
             modelZUID={this.props.modelZUID}
             itemZUID={this.props.itemZUID}
             item={this.props.item}
-            user={this.props.user}
+            userRole={this.props.userRole}
             saving={this.props.saving}
             onSave={this.props.onSave}
             dispatch={this.props.dispatch}
@@ -45,7 +45,7 @@ export default class Content extends Component {
           <div className={styles.Actions}>
             <Actions
               {...this.props}
-              user={this.props.user}
+              userRole={this.props.userRole}
               site={{}}
               set={{
                 type: this.props.model.type

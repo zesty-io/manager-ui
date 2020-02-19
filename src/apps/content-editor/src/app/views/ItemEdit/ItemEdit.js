@@ -294,7 +294,7 @@ class ItemEdit extends Component {
                   item={this.props.item}
                   items={this.props.items}
                   fields={this.props.fields}
-                  user={this.props.user}
+                  userRole={this.props.userRole}
                   onSave={this.onSave}
                   dispatch={this.props.dispatch}
                   saving={this.state.saving}
@@ -313,7 +313,7 @@ class ItemEdit extends Component {
                   item={this.props.item}
                   items={this.props.items}
                   fields={this.props.fields}
-                  user={this.props.user}
+                  userRole={this.props.userRole}
                   onSave={this.onSave}
                   dispatch={this.props.dispatch}
                   loading={this.state.loading}
@@ -333,7 +333,7 @@ class ItemEdit extends Component {
                   item={this.props.item}
                   items={this.props.items}
                   fields={this.props.fields}
-                  user={this.props.user}
+                  userRole={this.props.userRole}
                   onSave={this.onSave}
                   dispatch={this.props.dispatch}
                   loading={this.state.loading}
@@ -376,6 +376,7 @@ export default connect((state, props) => {
     tags,
     fields,
     user: state.user,
+    userRole: state.userRole,
     logs: state.logs, // TODO filter logs to those for this item,
     instanceZUID: state.instance.ZUID,
     instance: state.instance,

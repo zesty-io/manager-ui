@@ -98,7 +98,7 @@ export class ItemVersioning extends React.PureComponent {
           itemZUID={this.props.itemZUID}
         />
 
-        {this.props.user.permissions.can_publish && (
+        {this.props.userRole.systemRole.publish && (
           <ButtonGroup className={styles.Publish}>
             <Button
               id="PublishButton"

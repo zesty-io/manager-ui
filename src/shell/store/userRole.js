@@ -1,7 +1,12 @@
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 
-export function userRole(state = {}, action) {
+export function userRole(
+  state = {
+    systemRole: {}
+  },
+  action
+) {
   switch (action.type) {
     case "FETCH_USER_ROLE_SUCCESS":
       return action.payload.data;
@@ -11,7 +16,7 @@ export function userRole(state = {}, action) {
   }
 }
 
-export function fetchUserRoles() {
+export function fetchUserRole() {
   return (dispatch, getState) => {
     const state = getState();
 

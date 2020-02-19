@@ -5,7 +5,7 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { fetchInstance } from "shell/store/instance";
 import { fetchUser } from "shell/store/user";
-import { fetchUserRoles } from "shell/store/userRole";
+import { fetchUserRole } from "shell/store/userRole";
 
 // import { store } from "shell/store";
 
@@ -23,7 +23,7 @@ export default connect(state => {
 
       props.dispatch(fetchInstance());
 
-      props.dispatch(fetchUserRoles());
+      props.dispatch(fetchUserRole());
 
       // Promise.all([instance, products]).then(res => {
       //   // console.log("loaded instance");

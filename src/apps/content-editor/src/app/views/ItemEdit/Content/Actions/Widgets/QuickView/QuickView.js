@@ -107,7 +107,7 @@ export const QuickView = React.memo(function QuickView(props) {
                 </Url>
               )}
               {props.is_developer && (
-                <Url href="/editor/">
+                <Url href="/code/">
                   <FontAwesomeIcon icon={faCode} />
                   &nbsp;Edit Code
                 </Url>
