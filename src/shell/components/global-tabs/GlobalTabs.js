@@ -16,7 +16,7 @@ import GlobalSearch from "shell/components/global-search";
 import styles from "./GlobalTabs.less";
 export default connect(state => {
   return {
-    instanceZUID: state.instance.zuid,
+    instanceZUID: state.instance.ZUID,
     models: state.models,
     content: state.content,
     files: state.files

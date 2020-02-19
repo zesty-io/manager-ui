@@ -51,11 +51,11 @@ export function fetchNav() {
         if (
           roles.length &&
           roles.find(role => {
-            return role.entityZUID === zesty.instance.zuid;
+            return role.entityZUID === zesty.instance.ZUID;
           })
         ) {
           const currentRoleZUID = roles.find(role => {
-            return role.entityZUID === zesty.instance.zuid;
+            return role.entityZUID === zesty.instance.ZUID;
           }).ZUID;
 
           return request(

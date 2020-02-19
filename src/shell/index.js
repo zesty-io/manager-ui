@@ -34,16 +34,16 @@ window.CONFIG = __CONFIG__;
 
 // Update urls in config to include the current instance zuid
 const state = store.getState();
-window.CONFIG.API_INSTANCE = `//${state.instance.zuid}${window.CONFIG.API_INSTANCE}`;
+window.CONFIG.API_INSTANCE = `//${state.instance.ZUID}${window.CONFIG.API_INSTANCE}`;
 
 // Load Local Storage Data
 try {
   Promise.all([
-    get(`${zesty.instance.zuid}:user:selected_lang`),
-    get(`${zesty.instance.zuid}:navContent`),
-    get(`${zesty.instance.zuid}:models`),
-    get(`${zesty.instance.zuid}:fields`),
-    get(`${zesty.instance.zuid}:content`)
+    get(`${zesty.instance.ZUID}:user:selected_lang`),
+    get(`${zesty.instance.ZUID}:navContent`),
+    get(`${zesty.instance.ZUID}:models`),
+    get(`${zesty.instance.ZUID}:fields`),
+    get(`${zesty.instance.ZUID}:content`)
   ]).then(results => {
     const [lang, nav, models, fields, content] = results;
 
@@ -77,7 +77,7 @@ try {
 
     // if (Array.isArray(itemZUIDs)) {
     //   const items = itemZUIDs.map(itemZUID =>
-    //     get(`${zesty.instance.zuid}:contentModelItems:${itemZUID}`)
+    //     get(`${zesty.instance.ZUID}:contentModelItems:${itemZUID}`)
     //   );
     //
     //   Promise.all(items).then(itemsArr => {

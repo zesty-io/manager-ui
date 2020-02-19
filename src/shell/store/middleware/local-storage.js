@@ -9,20 +9,20 @@ export const localStorage = store => next => action => {
     switch (action.type) {
       case "SET_LOCAL":
         set(
-          `${state.instance.zuid}:${action.payload.key}`,
+          `${state.instance.ZUID}:${action.payload.key}`,
           action.payload.data
         );
         break;
 
       case "GET_LOCAL":
         // TODO how does this get returned to caller?
-        get(`${state.instance.zuid}:${action.payload.key}`);
+        get(`${state.instance.ZUID}:${action.payload.key}`);
         break;
 
       case "FETCH_ITEM_SUCCESS":
       case "FETCH_ITEMS_SUCCESS":
       case "SEARCH_ITEMS_SUCCESS":
-        set(`${state.instance.zuid}:content`, state.content);
+        set(`${state.instance.ZUID}:content`, state.content);
         // // Write Item data to IndexedDB
         // const items = store.getState().content;
         // Object.keys(items).forEach(itemZUID => {
@@ -48,16 +48,16 @@ export const localStorage = store => next => action => {
 
       case "FETCH_FIELD_SUCCESS":
       case "FETCH_FIELDS_SUCCESS":
-        set(`${state.instance.zuid}:fields`, state.fields);
+        set(`${state.instance.ZUID}:fields`, state.fields);
         break;
 
       case "FETCH_MODEL_SUCCESS":
       case "FETCH_MODELS_SUCCESS":
-        set(`${state.instance.zuid}:models`, state.models);
+        set(`${state.instance.ZUID}:models`, state.models);
         break;
 
       case "FETCH_CONTENT_NAV_SUCCESS":
-        set(`${state.instance.zuid}:navContent`, state.navContent.raw);
+        set(`${state.instance.ZUID}:navContent`, state.navContent.raw);
         break;
     }
   } catch (err) {

@@ -13,9 +13,10 @@ export function userRole(state = {}, action) {
 
 export function fetchUserRoles() {
   return (dispatch, getState) => {
-    return request(`${CONFIG.API_ACCOUNTS}/roles`)
+    const state = getState();
+
+    return request(`${CONFIG.API_ACCOUNTS}/users/${state.user.ZUID}/roles`)
       .then(roles => {
-        const state = getState();
         const role = roles.data.find(
           role => role.entityZUID === state.instance.ZUID
         );
