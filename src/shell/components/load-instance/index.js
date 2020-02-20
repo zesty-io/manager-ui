@@ -20,9 +20,7 @@ export default connect(state => {
 
     useEffect(() => {
       props.dispatch(fetchUser(props.user.ZUID));
-
       props.dispatch(fetchInstance());
-
       props.dispatch(fetchUserRole());
 
       // Promise.all([instance, products]).then(res => {

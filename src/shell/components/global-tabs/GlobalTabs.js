@@ -12,6 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import GlobalSearch from "shell/components/global-search";
+import { Breadcrumbs } from "./components/Breadcrumbs";
 
 import styles from "./GlobalTabs.less";
 export default connect(state => {
@@ -24,7 +25,9 @@ export default connect(state => {
 })(
   React.memo(function GlobalTabs(props) {
     let history = useHistory();
+
     const [routes, setRoutes] = useState([]);
+    const [ZUID, setZUID] = useState("");
 
     // Load prev session routes
     useEffect(() => {
@@ -98,6 +101,22 @@ export default connect(state => {
       }
     }, [history.location]);
 
+    // Update Breadcrumb
+    useEffect(() => {
+      const parts = history.location.pathname.split("/").filter(part => part);
+      const zuid = parts.pop();
+      const prefix = zuid.charAt(0);
+
+      console.log("breadcrumb", parts, zuid, prefix);
+
+      // If current url is a content item change
+      if (prefix === "7") {
+        setZUID(zuid);
+      } else {
+        setZUID("");
+      }
+    }, [history.location]);
+
     const removeRoute = path => {
       const newRoutes = routes.filter(route => route.pathname !== path);
 
@@ -138,7 +157,10 @@ export default connect(state => {
               </li>
             ))}
           </ol>
-          <ol className={styles.BreadCrumbs}>
+
+          {ZUID && <Breadcrumbs itemZUID={ZUID} />}
+
+          {/* <ol className={styles.BreadCrumbs}>
             <li>
               <FontAwesomeIcon icon={faShareAlt} />
             </li>
@@ -153,7 +175,7 @@ export default connect(state => {
               <FontAwesomeIcon icon={faAngleRight} />{" "}
               <AppLink to={`/`}>Crumb 1</AppLink>
             </li>
-          </ol>
+          </ol> */}
         </nav>
       </section>
     );
