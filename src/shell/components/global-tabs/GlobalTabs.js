@@ -15,6 +15,19 @@ import GlobalSearch from "shell/components/global-search";
 import { Breadcrumbs } from "./components/Breadcrumbs";
 
 import styles from "./GlobalTabs.less";
+
+function parse(path) {
+  let parts = path.split("/").filter(part => part);
+  let zuid = parts.pop();
+  let prefix = null;
+
+  if (zuid) {
+    prefix = zuid.charAt(0);
+  }
+
+  return [parts, zuid, prefix];
+}
+
 export default connect(state => {
   return {
     instanceZUID: state.instance.ZUID,
@@ -46,7 +59,8 @@ export default connect(state => {
 
     // Track route changes to display quick links
     useEffect(() => {
-      const parts = history.location.pathname.split("/").filter(part => part);
+      const [parts] = parse(history.location.pathname);
+
       if (parts.length >= 2) {
         let newRoutes = [...routes];
         let exists = newRoutes.find(
@@ -62,11 +76,9 @@ export default connect(state => {
         // Lookup route resource to get a friendly display name
         // Last zuid in path part is the resource being viewed
         newRoutes.forEach(route => {
-          const routePathParts = route.pathname.split("/").filter(part => part);
-          const zuid = routePathParts.pop();
-          const prefix = zuid.charAt(0);
+          const [parts, zuid, prefix] = parse(route.pathname);
 
-          // resolve ZUID from store to determine display information
+          // resove ZUID from store to determine display information
           switch (prefix) {
             case "6":
               if (props.models) {
@@ -103,13 +115,9 @@ export default connect(state => {
 
     // Update Breadcrumb
     useEffect(() => {
-      const parts = history.location.pathname.split("/").filter(part => part);
-      const zuid = parts.pop();
-      const prefix = zuid.charAt(0);
+      const [parts, zuid, prefix] = parse(history.location.pathname);
 
-      console.log("breadcrumb", parts, zuid, prefix);
-
-      // If current url is a content item change
+      // breadcrumbs only exist for content items
       if (prefix === "7") {
         setZUID(zuid);
       } else {
