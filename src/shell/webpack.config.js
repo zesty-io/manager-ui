@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === "production") {
     API_ACCOUNTS: "//accounts.api.zesty.io/v1",
     API_INSTANCE: ".api.zesty.io/v1",
 
-    SERVICE_AUTH: "https://svc.zesty.io/auth",
+    SERVICE_AUTH: "https://auth.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "",
     SERVICE_MEDIA_RESOLVER: "",
@@ -45,7 +45,7 @@ if (process.env.NODE_ENV === "production") {
     API_ACCOUNTS: "//accounts.stage-api.zesty.io/v1",
     API_INSTANCE: ".api.stage-zesty.io/v1",
 
-    SERVICE_AUTH: "https://stage-svc.zesty.io/auth",
+    SERVICE_AUTH: "https://auth.stage.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "https://stage-svc.zesty.io/media-manager-service",
     SERVICE_MEDIA_RESOLVER: "https://stage-svc.zesty.io/media-resolver-service",
@@ -74,7 +74,7 @@ if (process.env.NODE_ENV === "production") {
     API_ACCOUNTS: "//accounts.api.zesty.localdev:3022/v1",
     API_INSTANCE: ".api.zesty.localdev:3023/v1",
 
-    SERVICE_AUTH: "http://svc.zesty.localdev:3011/auth",
+    SERVICE_AUTH: "http://auth.zesty.localdev:3011",
     SERVICE_EMAIL: "",
     SERVICE_MEDIA_MANAGER:
       "http://svc.zesty.localdev:3005/media-manager-service",
