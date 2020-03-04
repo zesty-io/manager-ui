@@ -24,7 +24,7 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_MEDIA_MANAGER: "",
     SERVICE_MEDIA_RESOLVER: "",
     SERVICE_MEDIA_STORAGE: "",
-    SERVICE_REDIS_GATEWAY: "",
+    SERVICE_REDIS_GATEWAY: "https://cache.zesty.io",
     SERVICE_GOOGLE_ANALYTICS_AUTH: "",
     SERVICE_GOOGLE_ANALYTICS_READ: "",
 
@@ -51,7 +51,7 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_MEDIA_RESOLVER: "https://stage-svc.zesty.io/media-resolver-service",
     SERVICE_MEDIA_STORAGE: "https://stage-svc.zesty.io/media-storage-service",
     SERVICE_MEDIA_MODIFY: "https://stage-svc.zesty.io/media-modify-service",
-    SERVICE_REDIS_GATEWAY: "https://cache-svc.stage-zesty.io",
+    SERVICE_REDIS_GATEWAY: "https://cache.stage.zesty.io",
     SERVICE_GOOGLE_ANALYTICS_AUTH:
       "https://us-central1-zesty-stage.cloudfunctions.net/authenticateGoogleAnalytics",
     SERVICE_GOOGLE_ANALYTICS_READ:
