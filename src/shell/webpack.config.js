@@ -21,9 +21,10 @@ if (process.env.NODE_ENV === "production") {
 
     SERVICE_AUTH: "https://auth.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
-    SERVICE_MEDIA_MANAGER: "",
-    SERVICE_MEDIA_RESOLVER: "",
-    SERVICE_MEDIA_STORAGE: "",
+    SERVICE_MEDIA_MANAGER: "https://svc.zesty.io/media-manager-service",
+    SERVICE_MEDIA_RESOLVER: "https://svc.zesty.io/media-resolver-service",
+    SERVICE_MEDIA_STORAGE: "https://svc.zesty.io/media-storage-service",
+    SERVICE_MEDIA_MODIFY: "https://svc.zesty.io/media-modify-service",
     SERVICE_REDIS_GATEWAY: "https://cache.zesty.io",
     SERVICE_GOOGLE_ANALYTICS_AUTH: "",
     SERVICE_GOOGLE_ANALYTICS_READ: "",
