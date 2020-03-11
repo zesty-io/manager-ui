@@ -10,7 +10,8 @@
     "start": "node bin/start & npm run serve",
     "serve": "npx cross-env serve build/ -l 9000 --single",
     "release:stage": "zutil deploy stage .",
-    "release:prod": "npm test && zutil deploy prod ."
+    "release:prod": "npm test && zutil deploy prod .",
+    "cleanup": "echo 'All done'."
   },
   "author": "Zesty.io<developers@zesty.io>",
   "contributors": [
