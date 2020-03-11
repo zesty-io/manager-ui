@@ -9,7 +9,7 @@ export function request(url, opts = {}) {
 
   // Attach session token
   const token = Cookies.get(CONFIG.COOKIE_NAME);
-  opts.headers["X-Auth"] = token;
+  opts.headers["Authorization"] = token;
 
   if (!opts.method && opts.body) {
     opts.method = "POST";

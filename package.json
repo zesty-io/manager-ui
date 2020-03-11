@@ -7,7 +7,7 @@
     "build-dev": "npx cross-env NODE_ENV=development node bin/build",
     "build-stage": "npx cross-env NODE_ENV=stage node bin/build",
     "build-prod": "npx cross-env NODE_ENV=production node bin/build",
-    "start": "npx cross-env NODE_ENV=development node bin/start & npm run serve",
+    "start": "node bin/start & npm run serve",
     "serve": "npx cross-env serve build/ -l 9000 --single",
     "release:stage": "zutil deploy stage .",
     "release:prod": "npm test && zutil deploy prod ."
