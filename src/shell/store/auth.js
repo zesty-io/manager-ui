@@ -10,17 +10,28 @@ export function auth(
   action
 ) {
   switch (action.type) {
-    case "FETCH_AUTH_SUCCESS":
-    case "FETCH_AUTH_ERROR":
-
     case "VERIFY_SUCCESS":
-    case "VERIFY_ERROR":
     case "VERIFY_2FA_SUCCESS":
-    case "VERIFY_2FA_ERROR":
     case "POLL_2FA_SUCCESS":
-    case "POLL_2FA_ERROR":
-
     case "FETCH_LOGIN_SUCCESS":
+      if (action.payload.meta.token) {
+        Cookies.set(CONFIG.COOKIE_NAME, action.payload.meta.token, {
+          path: "/",
+          domain: CONFIG.COOKIE_DOMAIN
+        });
+      }
+
+      return {
+        ...state,
+        checking: false,
+        valid: action.payload.code === 200,
+        token: action.payload.meta.token
+      };
+
+    case "FETCH_AUTH_ERROR":
+    case "VERIFY_ERROR":
+    case "VERIFY_2FA_ERROR":
+    case "POLL_2FA_ERROR":
     case "FETCH_LOGIN_ERROR":
       return { ...state, checking: false, valid: action.payload.auth };
 
@@ -42,10 +53,7 @@ export function verify() {
       .then(json => {
         dispatch({
           type: "VERIFY_SUCCESS",
-          payload: {
-            ZUID: json.meta.userZuid,
-            auth: json.code === 200
-          }
+          payload: json
         });
 
         return json;
@@ -71,10 +79,7 @@ export function verifyTwoFactor(token) {
       .then(json => {
         dispatch({
           type: "VERIFY_2FA_SUCCESS",
-          payload: {
-            ZUID: json.meta.userZuid,
-            auth: json.code === 200
-          }
+          payload: json
         });
 
         return json;
@@ -140,10 +145,7 @@ export function pollTwoFactor() {
       .then(json => {
         dispatch({
           type: "POLL_2FA_SUCCESS",
-          payload: {
-            ZUID: json.meta.userZuid,
-            auth: json.code === 200
-          }
+          payload: json
         });
       })
       .catch(err => {
@@ -169,10 +171,7 @@ export function login(email, password) {
       .then(json => {
         dispatch({
           type: "FETCH_LOGIN_SUCCESS",
-          payload: {
-            ZUID: json.meta.userZuid,
-            auth: json.code === 200
-          }
+          payload: json
         });
 
         return json;

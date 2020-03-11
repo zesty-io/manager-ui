@@ -6,10 +6,7 @@ export function request(url, opts = {}) {
   }
 
   opts.headers = opts.headers || {};
-
-  // Attach session token
-  const token = Cookies.get(CONFIG.COOKIE_NAME);
-  opts.headers["Authorization"] = token;
+  opts.headers["Authorization"] = `Bearer ${Cookies.get(CONFIG.COOKIE_NAME)}`;
 
   if (!opts.method && opts.body) {
     opts.method = "POST";
@@ -40,7 +37,7 @@ export function request(url, opts = {}) {
     }
   }
 
-  opts.credentials = opts.credentials || "include";
+  opts.credentials = opts.credentials || "omit";
   opts.method = opts.method || "GET";
 
   return fetch(url, opts)

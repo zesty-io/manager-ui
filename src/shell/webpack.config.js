@@ -43,7 +43,7 @@ if (process.env.NODE_ENV === "production") {
     VERSION: pjson.version,
     ENV: "stage",
 
-    API_ACCOUNTS: "//accounts.stage-api.zesty.io/v1",
+    API_ACCOUNTS: "//accounts.api.stage.zesty.io/v1",
     API_INSTANCE: ".api.stage-zesty.io/v1",
 
     SERVICE_AUTH: "https://auth.stage.zesty.io",
@@ -58,7 +58,7 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-stage.cloudfunctions.net/googleAnalyticsGetPageViews",
 
-    URL_MANAGER: ".stage-manager.zesty.io",
+    URL_MANAGER: ".manager.stage.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
     URL_PREVIEW: "-dev.stage-preview.zestyio.com",
     URL_PREVIEW_PROTOCOL: "https://",
