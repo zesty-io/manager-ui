@@ -44,7 +44,7 @@ if (process.env.NODE_ENV === "production") {
     ENV: "stage",
 
     API_ACCOUNTS: "//accounts.api.stage.zesty.io/v1",
-    API_INSTANCE: ".api.stage.zesty.io/v1",
+    API_INSTANCE: ".api.stage-zesty.io/v1",
 
     SERVICE_AUTH: "https://auth.stage.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
