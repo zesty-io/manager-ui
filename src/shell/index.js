@@ -4,6 +4,10 @@ import { Provider } from "react-redux";
 import { BrowserRouter, Route } from "react-router-dom";
 import { get } from "idb-keyval";
 
+// interploated by webpack at build time
+// must be setup before starting the store
+window.CONFIG = __CONFIG__;
+
 import { request } from "utility/request";
 import { fetchProducts } from "shell/store/products";
 import { notify } from "shell/store/notifications";
@@ -28,9 +32,6 @@ store.subscribe(() => {
 // FIXME: this needs to get refactored out
 window.request = request;
 window.growl = notify;
-
-// interploated by webpack at build time
-window.CONFIG = __CONFIG__;
 
 // Update urls in config to include the current instance zuid
 const state = store.getState();

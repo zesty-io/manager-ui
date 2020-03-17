@@ -12,7 +12,7 @@ module.exports = {
   entry: "./index.js",
   context: path.resolve(__dirname, "src"),
   devtool: "cheap-module-source-map",
-  mode: process.env.NODE_ENV || "development",
+  mode: process.env.ENV_MODE || "development",
   output: {
     filename: "../../../../build/bundle.media-app.js"
   },

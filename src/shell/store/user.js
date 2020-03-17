@@ -14,8 +14,8 @@ export function user(
     case "VERIFY_SUCCESS":
     case "FETCH_LOGIN_SUCCESS":
       // Only update user if we don't have a user ZUID in the store
-      if (!state.ZUID && action.payload.ZUID) {
-        return { ...state, ZUID: action.payload.ZUID };
+      if (!state.ZUID && action.payload.meta.userZuid) {
+        return { ...state, ZUID: action.payload.meta.userZuid };
       } else {
         return state;
       }

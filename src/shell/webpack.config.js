@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === "production") {
     API_ACCOUNTS: "//accounts.api.zesty.io/v1",
     API_INSTANCE: ".api.zesty.io/v1",
 
-    SERVICE_AUTH: "https://auth.zesty.io",
+    SERVICE_AUTH: "https://auth.api.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "https://svc.zesty.io/media-manager-service",
     SERVICE_MEDIA_RESOLVER: "https://svc.zesty.io/media-resolver-service",
@@ -43,10 +43,10 @@ if (process.env.NODE_ENV === "production") {
     VERSION: pjson.version,
     ENV: "stage",
 
-    API_ACCOUNTS: "//accounts.stage-api.zesty.io/v1",
+    API_ACCOUNTS: "//accounts.api.stage.zesty.io/v1",
     API_INSTANCE: ".api.stage-zesty.io/v1",
 
-    SERVICE_AUTH: "https://auth.stage.zesty.io",
+    SERVICE_AUTH: "https://auth.api.stage.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "https://stage-svc.zesty.io/media-manager-service",
     SERVICE_MEDIA_RESOLVER: "https://stage-svc.zesty.io/media-resolver-service",
@@ -58,7 +58,7 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-stage.cloudfunctions.net/googleAnalyticsGetPageViews",
 
-    URL_MANAGER: ".stage-manager.zesty.io",
+    URL_MANAGER: ".manager.stage.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
     URL_PREVIEW: "-dev.stage-preview.zestyio.com",
     URL_PREVIEW_PROTOCOL: "https://",
@@ -75,7 +75,7 @@ if (process.env.NODE_ENV === "production") {
     API_ACCOUNTS: "//accounts.api.zesty.localdev:3022/v1",
     API_INSTANCE: ".api.zesty.localdev:3023/v1",
 
-    SERVICE_AUTH: "http://auth.zesty.localdev:3011",
+    SERVICE_AUTH: "http://auth.api.zesty.localdev:3011",
     SERVICE_EMAIL: "",
     SERVICE_MEDIA_MANAGER:
       "http://svc.zesty.localdev:3005/media-manager-service",
@@ -104,7 +104,7 @@ module.exports = {
   entry: "./index.js",
   // context: path.resolve(__dirname, "src"),
   devtool: "cheap-module-source-map",
-  mode: process.env.NODE_ENV || "development",
+  mode: process.env.ENV_MODE || "development",
   output: {
     filename: "../../../build/bundle.shell.js"
   },
