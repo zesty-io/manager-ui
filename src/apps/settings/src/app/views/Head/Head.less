@@ -1,0 +1,44 @@
+@import "~@zesty-io/core/colors.less";
+
+.Actions {
+  & > * {
+    margin: 0 0 0 8px !important;
+  }
+}
+
+.HeadWrap {
+  height: calc(100vh - 64px - 9px - 68px);
+  overflow-y: scroll;
+
+  .Head {
+    clear: both;
+
+    .Tags {
+      margin: 0 16px;
+      float: left;
+      width: calc(100vw - 33vw - 15vw - 64px);
+
+      article:first-child {
+        margin-top: 0;
+      }
+
+      .EditTags {
+        margin: 0;
+      }
+    }
+    .NoTags {
+      text-align: center;
+      font-size: 2rem;
+      padding: 16px;
+    }
+  }
+}
+
+.Warn {
+  display: flex;
+  align-items: center;
+  margin: 16px;
+  button {
+    margin-right: 8px;
+  }
+}
