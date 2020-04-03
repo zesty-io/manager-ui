@@ -1,0 +1,1 @@
+export { HeadTag } from "./HeadTag";
