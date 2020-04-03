@@ -1,44 +1,104 @@
 import React from "react";
 import { Switch, Route } from "react-router-dom";
+import { connect } from "react-redux";
 
 import GlobalSidebar from "shell/components/global-sidebar";
-import GlobalTopbar from "shell/components/global-topbar";
+import GlobalTabs from "shell/components/global-tabs";
 import Welcome from "shell/components/welcome";
 import Missing from "shell/components/missing";
 
 // import { subMenuLoad } from "shell/store/ui/global-sub-menu";
 
 import styles from "./Shell.less";
-export default function Shell() {
-  return (
-    <section className={styles.Shell}>
-      <GlobalSidebar />
-      <main
-        className={styles.AppLoader}
-        // onMouseEnter={this.hideGlobalSubMenu.bind(this)}
-      >
-        <GlobalTopbar />
-        <div className={styles.SubApp}>
-          <Switch>
-            <Route path="/content" component={ContentEditorApp} />
-            <Route path="/media" component={MediaApp} />
-            <Route path="/audit-trail" component={AuditTrailApp} />
-            <Route path="/analytics" component={AnalyticsApp} />
-            <Route path="/code" component={CodeEditorApp} />
-            <Route path="/leads" component={LeadsApp} />
-            <Route path="/schema" component={SchemaApp} />
-            <Route path="/seo" component={SeoApp} />
-            <Route path="/settings" component={SettingsApp} />
+export default connect(state => {
+  return {
+    products: state.products
+  };
+})(
+  React.memo(function Shell(props) {
+    return (
+      <section className={styles.Shell}>
+        <GlobalSidebar />
+        <main
+          className={styles.AppLoader}
+          // onMouseEnter={this.hideGlobalSubMenu.bind(this)}
+        >
+          <GlobalTabs />
+          <div className={styles.SubApp}>
+            <Switch>
+              {props.products.map(product => {
+                switch (product) {
+                  case "content":
+                    return (
+                      <Route
+                        key={product}
+                        path="/content"
+                        component={ContentApp}
+                      />
+                    );
+                  case "media":
+                    return (
+                      <Route key={product} path="/media" component={MediaApp} />
+                    );
+                  case "audit-trail":
+                    return (
+                      <Route
+                        key={product}
+                        path="/audit-trail"
+                        component={AuditTrailApp}
+                      />
+                    );
+                  case "analytics":
+                    return (
+                      <Route
+                        key={product}
+                        path="/analytics"
+                        component={AnalyticsApp}
+                      />
+                    );
+                  case "code":
+                    return (
+                      <Route key={product} path="/code" component={CodeApp} />
+                    );
+                  case "leads":
+                    return (
+                      <Route key={product} path="/leads" component={LeadsApp} />
+                    );
+                  case "schema":
+                    return (
+                      <Route
+                        key={product}
+                        path="/schema"
+                        component={SchemaApp}
+                      />
+                    );
+                  case "seo":
+                    return (
+                      <Route key={product} path="/seo" component={SeoApp} />
+                    );
+                  case "settings":
+                    return (
+                      <Route
+                        key={product}
+                        path="/settings"
+                        component={SettingsApp}
+                      />
+                    );
+                  default:
+                    null;
+                }
 
-            {/*this.props.user.products.map(product => {
-              return <Route path={`/${product}`} component={ContentEditorApp} />
-            })*/}
+                // return (
+                //   <Route key={product} path={`/${product}`} component={`${product.replace()}App`} />
+                // );
+              })}
 
-            <Route exact path="/" component={Welcome} />
-            <Route path="*" component={Missing} />
-          </Switch>
-        </div>
-      </main>
-    </section>
-  );
-}
+              <Route exact path="/" component={Welcome} />
+              <Route path="*" component={Missing} />
+            </Switch>
+          </div>
+        </main>
+      </section>
+    );
+  })
+);

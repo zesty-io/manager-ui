@@ -1,11 +1,10 @@
 import { useHistory } from "react-router-dom";
 
+import { formatName } from "utility/formatName";
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 
-import { formatName } from "./schemaFields";
-
-export function schemaModels(state = {}, action) {
+export function models(state = {}, action) {
   switch (action.type) {
     case "FETCH_MODELS_SUCCESS":
     case "LOADED_LOCAL_MODELS":
@@ -117,8 +116,8 @@ export function createModel(payload) {
 export function duplicateModel(ZUID) {
   return (dispatch, getState) => {
     const state = getState();
-    const model = state.schemaModels[ZUID];
-    const fields = Object.values(state.schemaFields).filter(
+    const model = state.models[ZUID];
+    const fields = Object.values(state.fields).filter(
       field => field.contentModelZUID === ZUID
     );
 

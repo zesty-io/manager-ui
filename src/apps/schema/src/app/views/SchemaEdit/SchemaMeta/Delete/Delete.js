@@ -7,7 +7,7 @@ import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 import { Button } from "@zesty-io/core/Button";
 
 import { notify } from "shell/store/notifications";
-import { deleteModel } from "../../../../../store/schemaModels";
+import { deleteModel } from "shell/store/models";
 
 import styles from "./Delete.less";
 export default function Delete(props) {

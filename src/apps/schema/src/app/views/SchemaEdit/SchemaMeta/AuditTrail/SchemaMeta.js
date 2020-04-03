@@ -21,7 +21,7 @@ import {
   createModel,
   deleteModel,
   duplicateModel
-} from "../../../../store/schemaModels";
+} from "shell/store/models";
 
 import styles from "./SchemaMeta.less";
 export default function SchemaMeta(props) {

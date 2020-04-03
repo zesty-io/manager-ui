@@ -2,64 +2,53 @@ import { request } from "utility/request";
 
 export function user(
   state = {
-    id: "",
-    name: "",
+    ZUID: "",
+    firstName: "",
     email: "",
-    role: "",
-    products: ["content", "media"],
     permissions: [],
     selected_lang: ""
   },
   action
 ) {
   switch (action.type) {
-    case "FETCH_VERIFY_SUCCESS":
-      return { ...state, id: action.ZUID };
-
-    // case "FETCHING_USER":
-    // TODO show loading state?
+    case "VERIFY_SUCCESS":
+    case "FETCH_LOGIN_SUCCESS":
+      // Only update user if we don't have a user ZUID in the store
+      if (!state.ZUID && action.payload.meta.userZuid) {
+        return { ...state, ZUID: action.payload.meta.userZuid };
+      } else {
+        return state;
+      }
 
     case "FETCH_USER_SUCCESS":
-      return { ...state, ...action.data };
+      return { ...state, ...action.payload.data };
 
-    // case "FETCH_USER_ERROR":
-    // TODO handle failure
+    // case "USER_ROLES":
+    //   return { ...state, roles: action.payload };
 
-    case "FETCH_PRODUCTS_SUCCESS":
-      return { ...state, products: action.data };
-
-    case "USER_ROLES":
-      return { ...state, ...action.payload };
-
-    case "USER_ROLE_ERROR":
-      return { ...state, permissionsError: true };
-
-    case "LOADED_LOCAL_USER_LANG":
-    case "USER_SELECTED_LANG":
-      return { ...state, selected_lang: action.payload.lang };
+    // case "LOADED_LOCAL_USER_LANG":
+    // case "USER_SELECTED_LANG":
+    //   return { ...state, selected_lang: action.payload.lang };
 
     default:
       return state;
   }
 }
 
-export function getUser(id) {
-  return dispatch => {
-    dispatch({
-      type: "FETCHING_USER"
-    });
+export function fetchUser(zuid) {
+  return async dispatch => {
+    try {
+      let user = await request(`${CONFIG.API_ACCOUNTS}/users/${zuid}`);
 
-    setTimeout(() => {
       dispatch({
         type: "FETCH_USER_SUCCESS",
-        data: {
-          id: "xxxxxx1",
-          name: "Stuart Runyan",
-          email: "stuart@zesty.io",
-          role: "admin"
+        payload: {
+          data: user.data
         }
       });
-    }, 3000);
+    } catch (err) {
+      console.log(err);
+    }
   };
 }
 
@@ -109,26 +98,5 @@ export function fetchRecentItems(userZUID, start) {
 
       return res;
     });
-  };
-}
-
-export function fetchProducts() {
-  return dispatch => {
-    // TODO Fetch product access from API
-
-    setTimeout(() => {
-      dispatch({
-        type: "FETCH_PRODUCTS_SUCCESS",
-        data: [
-          "code",
-          "seo",
-          "leads",
-          "analytics",
-          "forms",
-          "audit-trail",
-          "social"
-        ]
-      });
-    }, 3000);
   };
 }

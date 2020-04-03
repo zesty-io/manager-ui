@@ -38,14 +38,14 @@ class Log extends Component {
         <header className={styles.action}>
           <span className={styles.type + " " + styles["type" + action]} />
           <img
-            src={this.getGravatar(email, 80)}
+            src={this.getGravatar(email, 70)}
             className={styles.avatar}
-            height="80"
-            width="80"
+            height="70"
+            width="70"
           />
         </header>
         <main className={styles.content}>
-          <h1 className={styles.title}>{meta.message}</h1>
+          <h1>{meta.message}</h1>
           <p className={styles.meta}>
             {this.timeFromNow(happenedAt)} ago by{" "}
             {this.getUserLink(firstName, email)} at {this.getMoment(happenedAt)}

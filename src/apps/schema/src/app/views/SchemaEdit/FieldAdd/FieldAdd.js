@@ -17,7 +17,7 @@ import { Url } from "@zesty-io/core/Url";
 import { FieldSettings, FIELD_TYPES } from "../FieldSettings";
 
 import { notify } from "shell/store/notifications";
-import { createField } from "../../../../store/schemaFields";
+import { createField } from "shell/store/fields";
 
 import styles from "./FieldAdd.less";
 export function FieldAdd(props) {

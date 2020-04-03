@@ -4,7 +4,7 @@ const webpack = require("webpack");
 const path = require("path");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const extractLess = new ExtractTextPlugin({
-  filename: "../../../../build/bundle.code-editor-app.css"
+  filename: "../../../../build/bundle.code-app.css"
   // disable: process.env.NODE_ENV === 'development'
 });
 
@@ -12,9 +12,9 @@ module.exports = {
   entry: "./src/index.js",
   // context: path.resolve(__dirname, "src"),
   devtool: "cheap-module-source-map",
-  mode: process.env.NODE_ENV || "development",
+  mode: process.env.ENV_MODE || "development",
   output: {
-    filename: "../../../../build/bundle.code-editor-app.js"
+    filename: "../../../../build/bundle.code-app.js"
   },
   resolve: {
     symlinks: false, // Used for development with npm link

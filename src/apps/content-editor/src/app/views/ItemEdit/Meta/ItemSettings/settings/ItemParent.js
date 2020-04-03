@@ -5,12 +5,12 @@ import debounce from "lodash.debounce";
 import { Select, Option } from "@zesty-io/core/Select";
 import { Infotip } from "@zesty-io/core/Infotip";
 
-import { searchItems } from "../../../../../../store/contentModelItems";
+import { searchItems } from "shell/store/content";
 
 import styles from "./ItemParent.less";
 export const ItemParent = connect(state => {
   return {
-    nav: state.contentNav.raw
+    nav: state.navContent.raw
   };
 })(
   React.memo(

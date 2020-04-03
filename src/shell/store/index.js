@@ -6,11 +6,22 @@ import { fetchResource, resolveFieldOptions } from "./middleware/api";
 import { localStorage } from "./middleware/local-storage";
 
 import { auth } from "./auth";
+import { products } from "./products";
 import { user } from "./user";
-import { languages } from "./languages";
-
+import { userRole } from "./userRole";
 import { instance } from "./instance";
-import ui from "./ui";
+import { languages } from "./languages";
+import { models } from "./models";
+import { fields } from "./fields";
+import { content } from "./content";
+import { contentVersions } from "./contentVersions";
+import { bins } from "./bins";
+import { groups } from "./groups";
+import { media } from "./media";
+import { logs } from "./logs";
+import { notifications } from "./notifications";
+
+// import ui from "./ui";
 
 const actionLogger = createLogger({
   collapsed: true,
@@ -19,19 +30,24 @@ const actionLogger = createLogger({
 
 function createReducer(asyncReducers) {
   let initialReducers = {
-    entities: () => {
-      return {
-        sets: {},
-        items: {},
-        templates: {},
-        files: {}
-      };
+    noop: () => {
+      return {};
     },
     auth,
     user,
-    languages,
+    userRole,
+    products,
     instance,
-    ui
+    languages,
+    models,
+    fields,
+    content,
+    contentVersions,
+    bins,
+    groups,
+    media,
+    logs,
+    notifications
   };
 
   return combineReducers({
@@ -47,7 +63,7 @@ function configureStore(initialState = {}) {
     applyMiddleware(
       localStorage,
       fetchResource,
-      // resolveFieldOptions,
+      resolveFieldOptions,
       thunkMiddleware, // lets us dispatch() functions
       actionLogger
     )

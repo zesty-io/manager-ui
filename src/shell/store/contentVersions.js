@@ -1,19 +1,29 @@
 import { request } from "utility/request";
 
-export function contentModelItemVersions(state = {}, action) {
+export function contentVersions(state = {}, action) {
   const existingVersions = state[action.itemZUID] || [];
 
   switch (action.type) {
     case "FETCH_ITEM_SUCCESS":
       return {
         ...state,
-        [action.itemZUID]: [action.data, ...existingVersions]
+
+        // DeDupe versions
+        [action.itemZUID]: [action.data, ...existingVersions].reduce(
+          (acc, item) => {
+            if (!acc.find(el => el.meta.version === item.meta.version)) {
+              acc.push(item);
+            }
+
+            return acc;
+          },
+          []
+        )
       };
-      break;
 
     case "FETCH_ITEM_VERSIONS_SUCCESS":
       return { ...state, [action.itemZUID]: action.versions };
-      break;
+
     default:
       return state;
   }

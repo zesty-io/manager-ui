@@ -1,6 +1,8 @@
+service: manager-ui
+
 runtime: custom
 env: flex
-service: manager-ui
+
 automatic_scaling:
   min_num_instances: 2
   max_num_instances: 5
@@ -9,14 +11,14 @@ automatic_scaling:
     target_utilization: 0.8
 
 liveness_check:
-  path: "/_health/liveness"
+  path: "/liveness_check"
   check_interval_sec: 30
   timeout_sec: 4
   failure_threshold: 2
   success_threshold: 2
 
 readiness_check:
-  path: "/_health/readiness"
+  path: "/readiness_check"
   check_interval_sec: 5
   timeout_sec: 4
   failure_threshold: 2

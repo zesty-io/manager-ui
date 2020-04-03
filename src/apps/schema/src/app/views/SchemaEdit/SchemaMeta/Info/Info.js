@@ -109,7 +109,7 @@ export default function Info(props) {
             </Url>
           </li>
           <li>
-            <Url href={`/editor`}>
+            <Url href={`/code`}>
               <FontAwesomeIcon icon={faCode} />
               &nbsp;Edit Code
             </Url>

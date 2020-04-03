@@ -12,7 +12,7 @@ import { Button } from "@zesty-io/core/Button";
 import { ScheduleFlyout } from "./ScheduleFlyout";
 import { VersionSelector } from "./VersionSelector";
 
-import { publishItem } from "../../../../../../store/contentModelItems";
+import { publishItem } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 
 import styles from "./ItemVersioning.less";
@@ -98,7 +98,7 @@ export class ItemVersioning extends React.PureComponent {
           itemZUID={this.props.itemZUID}
         />
 
-        {this.props.user.permissions.can_publish && (
+        {this.props.userRole.systemRole.publish && (
           <ButtonGroup className={styles.Publish}>
             <Button
               id="PublishButton"

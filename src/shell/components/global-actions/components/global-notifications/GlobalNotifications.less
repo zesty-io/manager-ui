@@ -1,0 +1,53 @@
+@import "~@zesty-io/core/colors.less";
+
+.notices {
+  position: fixed;
+  z-index: 100;
+  width: 100vw;
+  bottom: 100px;
+  left: 43px;
+
+  ul {
+    list-style-type: none;
+    border-radius: 3px;
+    background: @zesty-grey;
+    width: max-content;
+    padding: 16px;
+
+    box-shadow: 2px 2px 2px #33394a;
+
+    li {
+      margin: 8px 0;
+      font-weight: 500;
+    }
+    li.save {
+      color: @zesty-green;
+    }
+    li.warn {
+      color: @zesty-red;
+    }
+  }
+
+  .caret {
+    color: @zesty-grey;
+    position: absolute;
+    bottom: -14px;
+    left: 5px;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 2000px) {
+  .notices {
+    left: 53px;
+    bottom: 108px;
+    .caret {
+      left: -11px;
+      bottom: 11px;
+      transform: rotate(90deg);
+    }
+  }
+}

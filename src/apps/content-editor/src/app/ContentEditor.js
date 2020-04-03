@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 
-import { fetchNav } from "../store/contentNav";
-import { fetchModels } from "../store/contentModels";
+import { fetchNav } from "../store/navContent";
+import { fetchModels } from "shell/store/models";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -25,8 +25,8 @@ import "@zesty-io/core/vendor.css";
 import styles from "./ContentEditor.less";
 export default connect(state => {
   return {
-    contentModels: state.contentModels,
-    contentNav: state.contentNav
+    contentModels: state.models,
+    navContent: state.navContent
   };
 })(
   class ContentEditor extends Component {
@@ -42,8 +42,8 @@ export default connect(state => {
         <AppError>
           <WithLoader
             condition={
-              this.props.contentNav.nav.length ||
-              this.props.contentNav.headless.length
+              this.props.navContent.nav.length ||
+              this.props.navContent.headless.length
             }
             message="Starting Content Editor"
             width="100vw"
@@ -53,7 +53,7 @@ export default connect(state => {
                 <ContentNav
                   dispatch={this.props.dispatch}
                   models={this.props.contentModels}
-                  nav={this.props.contentNav}
+                  nav={this.props.navContent}
                 />
               </div>
               <div className={styles.Content}>

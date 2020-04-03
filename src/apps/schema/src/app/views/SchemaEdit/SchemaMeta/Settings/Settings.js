@@ -16,11 +16,7 @@ import { Button } from "@zesty-io/core/Button";
 
 import { Parent } from "./Parent";
 import { notify } from "shell/store/notifications";
-import {
-  updateModel,
-  saveModel,
-  duplicateModel
-} from "../../../../../store/schemaModels";
+import { updateModel, saveModel, duplicateModel } from "shell/store/models";
 
 import styles from "./Settings.less";
 export default function Settings(props) {

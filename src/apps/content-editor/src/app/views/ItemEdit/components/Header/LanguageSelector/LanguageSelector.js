@@ -13,7 +13,7 @@ export const LanguageSelector = connect((state, props) => {
   let selectedLang = state.user.selected_lang || "en-US";
 
   if (props.itemZUID) {
-    const item = state.contentModelItems[props.itemZUID];
+    const item = state.content[props.itemZUID];
 
     siblings = item.siblings || {};
     selectedLang = Object.keys(siblings).find(

@@ -26,7 +26,7 @@ export class WorkflowRequest extends PureComponent {
   componentDidMount() {
     //fetch team members and fields
     request(
-      `${CONFIG.API_ACCOUNTS}/instances/${zesty.instance.zuid}/users`
+      `${CONFIG.API_ACCOUNTS}/instances/${zesty.instance.ZUID}/users`
     ).then(data => {
       this.setState({ loaded: true });
       if (data.status === 400) {

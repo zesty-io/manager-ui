@@ -5,8 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "cypress run",
-    "start": "../../../node_modules/.bin/webpack --display=errors-only --progress --watch",
-    "prebuild": "npm --silent install",
+    "start": "../../../node_modules/.bin/webpack --display=minimal --progress --watch",
     "build": "../../../node_modules/.bin/webpack --display=errors-only --progress -p"
   },
   "author": "",

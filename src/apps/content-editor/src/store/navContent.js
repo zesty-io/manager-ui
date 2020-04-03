@@ -1,16 +1,24 @@
 import { request } from "utility/request";
+import {
+  faFile,
+  faListAlt,
+  faDatabase,
+  faExternalLinkSquareAlt,
+  faLink,
+  faHome
+} from "@fortawesome/free-solid-svg-icons";
 
 const ICONS = {
-  templateset: "fas fa-file",
-  pageset: "fas fa-list-alt",
-  dataset: "fas fa-database",
-  external: "fas fa-external-link-square-alt",
-  internal: "fas fa-link",
-  item: "fas fa-file",
-  homepage: "fas fa-home"
+  templateset: faFile,
+  pageset: faListAlt,
+  dataset: faDatabase,
+  external: faExternalLinkSquareAlt,
+  internal: faLink,
+  item: faFile,
+  homepage: faHome
 };
 
-export function contentNav(
+export function navContent(
   state = { nav: [], headless: [], hidden: [], raw: [] },
   action
 ) {
@@ -47,21 +55,17 @@ export function fetchNav() {
   return dispatch => {
     return request(`${CONFIG.API_ACCOUNTS}/roles`)
       .then(data => data.data)
-      .catch(err => {
-        dispatch({ type: "USER_ROLE_ERROR" });
-        throw new Error("Unable to load user data", err);
-      })
       .then(roles => {
-        dispatch({ type: "USER_ROLES", data: { roles } });
         if (
           roles.length &&
           roles.find(role => {
-            return role.entityZUID === zesty.instance.zuid;
+            return role.entityZUID === zesty.instance.ZUID;
           })
         ) {
           const currentRoleZUID = roles.find(role => {
-            return role.entityZUID === zesty.instance.zuid;
+            return role.entityZUID === zesty.instance.ZUID;
           }).ZUID;
+
           return request(
             `//${CONFIG.API_ACCOUNTS}/roles/${currentRoleZUID}`
           ).then(data => {
@@ -88,10 +92,12 @@ export function fetchNav() {
               return console.error("no data returned from fetch sets");
             } else {
               // enrich nav with stored closed/hidden status
+              // FIXME: this should be scoped to the instance
               const closed = localStorage.getItem("zesty:contentNav:closed");
               const closedArr = closed ? JSON.parse(closed) : [];
               const closedZUIDS = closedArr.map(node => node.ZUID);
 
+              // FIXME: this should be scoped to the instance
               const hidden = localStorage.getItem("zesty:contentNav:hidden");
               const hiddenArr = hidden ? JSON.parse(hidden) : [];
               const hiddenZUIDS = hiddenArr.map(node => node.ZUID);
@@ -147,13 +153,14 @@ export function fetchNav() {
 
 export function hideNavItem(path) {
   return (dispatch, getState) => {
-    const raw = getState().contentNav.raw.map(node => {
+    const raw = getState().navContent.raw.map(node => {
       if (node.path === path) {
         node.hidden = !node.hidden;
       }
       return node;
     });
 
+    // FIXME: this should be scoped to the instance
     localStorage.setItem(
       "zesty:contentNav:hidden",
       JSON.stringify(raw.filter(node => node.hidden))
@@ -175,6 +182,7 @@ export function collapseNavItem(path) {
       return node;
     });
 
+    // FIXME: this should be scoped to the instance
     localStorage.setItem(
       "zesty:contentNav:closed",
       JSON.stringify(raw.filter(node => node.closed))

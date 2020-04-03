@@ -2,12 +2,8 @@ import React, { useMemo, useCallback } from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 
-import { fetchFields } from "../../../../store/contentModelFields";
-import {
-  fetchItem,
-  fetchItems,
-  searchItems
-} from "../../../../store/contentModelItems";
+import { fetchFields } from "shell/store/fields";
+import { fetchItem, fetchItems, searchItems } from "shell/store/content";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
@@ -84,8 +80,8 @@ function resolveRelatedOptions(fields, items, fieldZUID, modelZUID) {
 
 export default connect(state => {
   return {
-    allItems: state.contentModelItems,
-    allFields: state.contentModelFields
+    allItems: state.content,
+    allFields: state.fields
   };
 })(function Field(props) {
   const {
@@ -327,7 +323,7 @@ export default connect(state => {
         });
 
         // load related item from API
-        if (value != "0") {
+        if (value && value != "0") {
           dispatch(searchItems(value));
         }
       }

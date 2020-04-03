@@ -12,7 +12,7 @@ import { Dropzone } from "./Dropzone";
 import { Draggable } from "./Draggable";
 
 import { notify } from "shell/store/notifications";
-import { fetchFields, saveField } from "../../../store/schemaFields";
+import { fetchFields, saveField } from "shell/store/fields";
 import { FIELD_TYPES } from "./FieldSettings";
 
 import styles from "./SchemaEdit.less";
@@ -21,9 +21,9 @@ export default connect((state, props) => {
   return {
     fieldZUID,
     modelZUID,
-    model: state.schemaModels[modelZUID] || {},
-    fields: Object.keys(state.schemaFields)
-      .map(key => state.schemaFields[key])
+    model: state.models[modelZUID] || {},
+    fields: Object.keys(state.fields)
+      .map(key => state.fields[key])
       .filter(field => field.contentModelZUID === modelZUID)
       .sort((fieldA, fieldB) => fieldA.sort - fieldB.sort)
   };

@@ -17,8 +17,9 @@ export class Actions extends PureComponent {
       return <Fragment />;
     }
 
+    const is_developer = this.props.userRole.name === "Developer";
+
     const { type } = this.props.model;
-    const { is_developer } = this.props.user;
     const { publishing, scheduling, siblings } = this.props.item;
     const { listed, sort, updatedAt, version } = this.props.item.meta;
     const { path, metaTitle, metaLinkText } = this.props.item.web;
@@ -76,14 +77,14 @@ export class Actions extends PureComponent {
           sort={sort}
         />
 
-        {this.props.user.permissions.can_publish && (
+        {this.props.userRole.systemRole.publish && (
           <WidgetPurgeItem
             dispatch={this.props.dispatch}
             itemZUID={this.props.itemZUID}
             modelZUID={this.props.modelZUID}
           />
         )}
-        {this.props.user.permissions.can_publish && (
+        {this.props.userRole.systemRole.publish && (
           <Unpublish
             dispatch={this.props.dispatch}
             publishing={publishing}
@@ -92,7 +93,7 @@ export class Actions extends PureComponent {
           />
         )}
 
-        {this.props.user.permissions.can_delete && (
+        {this.props.userRole.systemRole.delete && (
           <WidgetDeleteItem
             dispatch={this.props.dispatch}
             itemZUID={this.props.itemZUID}

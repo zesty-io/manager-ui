@@ -26,14 +26,14 @@ const crawlParents = (nav, ZUID, crumbs) => {
 };
 
 export default connect(state => {
-  const flatNav = state.contentNav.raw.reduce((acc, navItem) => {
+  const flatNav = state.navContent.raw.reduce((acc, navItem) => {
     acc[navItem.ZUID] = navItem;
     return acc;
   }, {});
   return {
     flatNav,
-    contentModelItems: state.contentModelItems,
-    contentModels: state.contentModels
+    contentModelItems: state.content,
+    contentModels: state.models
   };
 })(props => {
   const initialItem = props.contentModelItems[props.itemZUID];

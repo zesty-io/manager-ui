@@ -12,7 +12,7 @@ import { SubHeader } from "../components/SubHeader";
 import { HeadTag } from "./HeadTag";
 import { Preview } from "./Preview";
 
-import { fetchGlobalItem } from "../../../../store/contentModelItems";
+import { fetchGlobalItem } from "shell/store/content";
 import { createHeadTag } from "../../../../store/headTags";
 import { notify } from "shell/store/notifications";
 

@@ -22,7 +22,7 @@ import {
   updateFieldSetting,
   deactivateField,
   activateField
-} from "../../../../store/schemaFields";
+} from "shell/store/fields";
 
 import styles from "./FieldEdit.less";
 import { notify } from "shell/store/notifications";

@@ -2,6 +2,7 @@ export function notifications(state = [], action) {
   switch (action.type) {
     case "NEW_NOTIFICATION":
       return [action.data, ...state];
+
     case "REMOVE_NOTIFICATION":
       return state.map(notification => {
         if (notification.epoch === action.epoch) {
@@ -9,6 +10,7 @@ export function notifications(state = [], action) {
         }
         return notificaiton;
       });
+
     default:
       return state;
   }
@@ -19,19 +21,20 @@ export function notify(data) {
     throw new Error("Cannot trigger notification without a message");
   }
 
-  let style = "";
-  switch (data.kind) {
-    case "success":
-    case "save":
-      style = "green-growl";
-      break;
-    case "warn":
-    case "error":
-      style = "red-growl";
-      break;
-  }
+  // let style = "";
+  // switch (data.kind) {
+  //   case "success":
+  //   case "save":
+  //     style = "green-growl";
+  //     break;
 
-  growl(data.message, style);
+  //   case "warn":
+  //   case "error":
+  //     style = "red-growl";
+  //     break;
+  // }
+  // growl(data.message, style);
+
   // future implementation will include
   // a notificaiton in line with the one
   // in accounts-ui

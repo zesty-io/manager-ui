@@ -9,8 +9,8 @@ import { Editor } from "../../components/Editor";
 import { ItemSettings } from "../ItemEdit/Meta/ItemSettings";
 import { DataSettings } from "../ItemEdit/Meta/ItemSettings/DataSettings";
 
-import { fetchFields } from "../../../store/contentModelFields";
-import { createItem, generateItem } from "../../../store/contentModelItems";
+import { fetchFields } from "shell/store/fields";
+import { createItem, generateItem } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 
 import styles from "./ItemCreate.less";
@@ -21,16 +21,15 @@ export default connect((state, props) => {
   return {
     itemZUID,
     modelZUID,
-    model: state.contentModels[modelZUID] || {},
-    item: state.contentModelItems[itemZUID] || {},
+    model: state.models[modelZUID] || {},
+    item: state.content[itemZUID] || {},
     instance: state.instance,
-    contentModelItems: state.contentModelItems,
-    fields: Object.keys(state.contentModelFields)
+    contentModelItems: state.content,
+    fields: Object.keys(state.fields)
       .filter(
-        fieldZUID =>
-          state.contentModelFields[fieldZUID].contentModelZUID === modelZUID
+        fieldZUID => state.fields[fieldZUID].contentModelZUID === modelZUID
       )
-      .map(fieldZUID => state.contentModelFields[fieldZUID])
+      .map(fieldZUID => state.fields[fieldZUID])
       .sort((a, b) => a.sort - b.sort)
   };
 })(
@@ -139,7 +138,9 @@ export default connect((state, props) => {
             }
           } else if (res.data && res.data.ZUID) {
             // Redirect to new item after creating
-            window.location = `/content/${this.props.modelZUID}/${res.data.ZUID}`;
+            this.props.history.push(
+              `/content/${this.props.modelZUID}/${res.data.ZUID}`
+            );
 
             this.props.dispatch(
               notify({

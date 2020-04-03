@@ -10,7 +10,7 @@ import DragList from "./DragComponents/DragList";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
-import { fetchNav } from "../../../store/contentNav";
+import { fetchNav } from "../../../store/navContent";
 
 import styles from "./ReorderNav.less";
 class ReorderNav extends Component {
@@ -143,5 +143,5 @@ class ReorderNav extends Component {
 }
 
 export default connect(state => {
-  return { nav: state.contentNav.nav };
+  return { nav: state.navContent.nav };
 })(ReorderNav);

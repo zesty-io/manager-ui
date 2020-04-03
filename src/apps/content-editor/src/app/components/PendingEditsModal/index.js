@@ -1,1 +1,2 @@
-export { PendingEditsModal } from "./PendingEditsModal";
+import PendingEditsModal from "./PendingEditsModal";
+export { PendingEditsModal };
