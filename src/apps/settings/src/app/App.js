@@ -33,7 +33,7 @@ export default connect(state => state)(function SettingsApp(props) {
               <Link to="/settings/styles">Styles</Link>
             ) : null}
             <Link to="/settings/fonts">Fonts</Link>
-            <Link to="/settings/head">New Head</Link>
+            <Link to="/settings/head">Head Tags</Link>
             <a href={`${CONFIG.URL_ACCOUNTS}/settings/account`}>
               Account Settings
             </a>

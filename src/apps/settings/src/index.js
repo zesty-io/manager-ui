@@ -29,16 +29,6 @@ window.SettingsApp = function SettingsApp() {
   ZESTY_REDUX_STORE.dispatch(fetchFontsInstalled());
   ZESTY_REDUX_STORE.dispatch(fetchHeadTags());
 
-  // useEffect(() => {
-  //   injectReducer(ZESTY_REDUX_STORE, "settings", settings);
-
-  //   ZESTY_REDUX_STORE.dispatch(fetchSettings());
-  //   ZESTY_REDUX_STORE.dispatch(fetchStylesCategories());
-  //   ZESTY_REDUX_STORE.dispatch(fetchStylesVariables());
-  //   ZESTY_REDUX_STORE.dispatch(fetchFonts());
-  //   ZESTY_REDUX_STORE.dispatch(fetchFontsInstalled());
-  // }, []);
-
   return (
     <Provider store={ZESTY_REDUX_STORE}>
       <AppError>

@@ -61,7 +61,7 @@ export default connect(state => {
   const instanceTags = Object.values(props.tags).filter(item => {
     if (
       !item.attributes.some(el => el.key === "custom") &&
-      item.resourceZUID === window.zesty.site.zuid
+      item.resourceZUID === props.itemZUID
     ) {
       return item;
     }
