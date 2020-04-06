@@ -24,7 +24,6 @@
         line-height: 3em;
         margin: 0;
         padding: 0 1em;
-        <!--  font-size: 1.1em;  -->
         font-weight: 600;
         display: flex;
         justify-content: center;
@@ -38,7 +37,6 @@
         flex: 1;
         margin: 0;
         padding: 0 1em;
-        <!--  font-size: 1.1em;  -->
         color: #252D38;
     }
     :scope .field input:disabled {

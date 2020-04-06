@@ -265,17 +265,14 @@
         justify-content: center;
         height: 70vh;
         flex-direction: column;
-        <!--  font-size: 3.7rem;  -->
         color: #EEE;
         line-height: 5rem;
         font-weight: 900;
         text-align: center;
     }
     :scope .empty .or {
-        <!--  font-size: 3rem;  -->
     }
     :scope .empty z-button button {
-        <!--  font-size: 3rem;  -->
         font-weight: 500;
         padding: 1rem 1.5rem;
     }

@@ -164,7 +164,6 @@
     }
     .tree .leaf .item {
         align-items: center;
-        <!--  font-size: 1.2rem;  -->
         font-weight: 500;
         display: flex;
         padding: 0;
@@ -193,13 +192,12 @@
     }
     .tree .leaf .item .name {
         flex: 1;
-        font-family: "Gibson Light", Arial, sans-serif;
+        <!--  font-family: "Gibson Light", Arial, sans-serif;
         padding: 1rem 0;
-        line-height: 16px;
+        line-height: 16px;  -->
     }
 
     .tree .leaf .item.bin .name {
-        <!--  font-size: 1.4em;  -->
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

@@ -280,7 +280,7 @@
         position: absolute;
         bottom: 0;
         width: 100%;
-        height: 3rem;
+        height: 32px;
     }
 
     .item.file .controls .preview {
@@ -290,7 +290,7 @@
         white-space: nowrap;
         vertical-align: middle;
         padding: 0 0.5rem;
-        line-height: 3rem;
+        <!--  line-height: 3rem;  -->
     }
 
     :scope {

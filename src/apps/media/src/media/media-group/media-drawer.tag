@@ -151,7 +151,6 @@
         position: relative;
     }
     #media-drawer .update small {
-        <!--  font-size: 1rem;  -->
     }
     #media-drawer .update .loader {
         min-width: 16px;
@@ -180,8 +179,6 @@
         background-color: #8897AB;
         color: #c7d4ea;
         cursor: pointer;
-        <!--  font-size: 1.7rem;  -->
-        font-family: Arial;
         padding: 0.2rem 0.5rem;
         position: absolute;
         right: 0px;

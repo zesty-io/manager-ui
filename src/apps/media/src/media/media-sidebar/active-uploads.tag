@@ -8,10 +8,9 @@
     </script>
     <style scoped>
     :scope .active-uploads {
-        <!--  font-size: 1.2rem;  -->
         font-weight: 600;
         display: flex;
-        line-height: 1.6rem;
+        <!--  line-height: 1.6rem;  -->
         height: 4rem;
         align-items: center;
         justify-content: center;

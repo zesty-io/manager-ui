@@ -476,5 +476,12 @@
         overflow: hidden;
         height: 100%;
     }
+    #media-manager ul {
+        list-style: none;
+    }
+    #media-manager h1, 
+    #media-manager h2 {
+        font-size: inherit;
+    }
     </style>
 </media-app>

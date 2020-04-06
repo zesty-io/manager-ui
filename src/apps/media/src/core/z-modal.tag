@@ -75,8 +75,6 @@
         background-color: #576374;
         color: #c7d4ea;
         cursor: pointer;
-        <!--  font-size: 1.4rem;  -->
-        font-family: Arial;
         padding: 0.5rem 0.8rem;
         position: absolute;
         right: -1px;

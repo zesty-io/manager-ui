@@ -28,14 +28,12 @@
             border-bottom: 1px solid #5F6F86;
             color: #A7AFBF;
             display: flex;
-            <!--  font-size: 18px;  -->
             padding: 1rem;
             word-break: break-all;
         }
         #groupTitle .name {
             margin-left: 1rem;
             color: #F9F9F9;
-            <!--  font-size: 2.4rem;  -->
             flex: 1;
         }
     </style>

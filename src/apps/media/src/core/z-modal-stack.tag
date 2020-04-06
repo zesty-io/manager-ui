@@ -90,7 +90,6 @@
         color: #c7d4ea;
         cursor: pointer;
         line-height: 26px;
-        font-size: 12px;
         font-family: Arial;
         height: 26px;
         padding: 0px 8px 0px 12px;
