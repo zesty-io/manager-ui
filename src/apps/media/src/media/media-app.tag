@@ -468,6 +468,9 @@
         }
     </script>
     <style>
+    #media-manager {
+        height: 100%;
+    }
     #media-manager #media {
         display: flex;
         overflow: hidden;

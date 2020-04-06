@@ -13,8 +13,9 @@ window.MediaApp = class MediaApp extends React.Component {
 
   render() {
     return (
-      <div id="media">
-        <media-app></media-app>
+      <div id="media" style={{ height: "100%" }}>
+        {/* Yup. React syntax inline styles on a custom element. */}
+        <media-app style={{ display: "block", height: "100%" }}></media-app>
       </div>
     );
   }
