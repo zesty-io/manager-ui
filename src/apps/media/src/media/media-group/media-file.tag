@@ -18,7 +18,7 @@
 
         <footer class="controls" title="Load image preview">
             <z-button handler="{handlePreview}" height="2.3rem">
-                <i class="icon-cog"></i>
+                <i class="fas fa-cog"></i>
             </z-button>
             <h1 class="preview" onclick="{handlePreview}">
                 {opts.file.title}
