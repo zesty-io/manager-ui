@@ -31,7 +31,7 @@ if (process.env.NODE_ENV === "production") {
 
     URL_MANAGER: ".manager.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
-    URL_PREVIEW: "-dev.preview.zestyio.com",
+    URL_PREVIEW: "-dev.preview.zesty.io",
     URL_PREVIEW_PROTOCOL: "https://",
     URL_ACCOUNTS: "",
 
@@ -60,7 +60,7 @@ if (process.env.NODE_ENV === "production") {
 
     URL_MANAGER: ".manager.stage.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
-    URL_PREVIEW: "-dev.stage-preview.zestyio.com",
+    URL_PREVIEW: "-dev.preview.stage.zesty.io",
     URL_PREVIEW_PROTOCOL: "https://",
     URL_ACCOUNTS: "",
 
@@ -91,7 +91,7 @@ if (process.env.NODE_ENV === "production") {
 
     URL_MANAGER: ".manager.zesty.localdev:3020",
     URL_MANAGER_PROTOCOL: "http://",
-    URL_PREVIEW: "-dev.preview.zestyio.localdev:3020",
+    URL_PREVIEW: "-dev.preview.zesty.localdev:3016",
     URL_PREVIEW_PROTOCOL: "http://",
     URL_ACCOUNTS: "http://accounts.zesty.localdev:3100",
 
