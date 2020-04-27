@@ -9,6 +9,10 @@ import Missing from "shell/components/missing";
 
 // import { subMenuLoad } from "shell/store/ui/global-sub-menu";
 
+import { fetchModel } from "shell/store/models";
+import { fetchFields } from "shell/store/fields";
+import { fetchItems } from "shell/store/content";
+
 import styles from "./Shell.less";
 export default connect(state => {
   return {
@@ -16,6 +20,18 @@ export default connect(state => {
   };
 })(
   React.memo(function Shell(props) {
+    // Watch routes and preload expected resources
+    props.history.listen(loc => {
+      loc.pathname.split("/").forEach(part => {
+        if (part.slice(0, 1) === "6") {
+          props.dispatch(fetchModel(part));
+          props.dispatch(fetchFields(part));
+          props.dispatch(fetchItems(part));
+          // AuditTrail logs for model
+        }
+      });
+    });
+
     return (
       <section className={styles.Shell}>
         <GlobalSidebar />
