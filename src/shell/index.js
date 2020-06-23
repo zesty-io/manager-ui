@@ -35,7 +35,7 @@ window.growl = notify;
 
 // Update urls in config to include the current instance zuid
 const state = store.getState();
-window.CONFIG.API_INSTANCE = `//${state.instance.ZUID}${window.CONFIG.API_INSTANCE}`;
+window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${state.instance.ZUID}${window.CONFIG.API_INSTANCE}`;
 
 // Load Local Storage Data
 try {
