@@ -36,7 +36,9 @@ if (process.env.NODE_ENV === "production") {
     URL_ACCOUNTS: "",
 
     COOKIE_NAME: "APP_SID",
-    COOKIE_DOMAIN: ".zesty.io"
+    COOKIE_DOMAIN: ".zesty.io",
+
+    GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
   };
 } else if (process.env.NODE_ENV === "stage") {
   CONFIG = {
@@ -65,7 +67,9 @@ if (process.env.NODE_ENV === "production") {
     URL_ACCOUNTS: "",
 
     COOKIE_NAME: "STAGE_APP_SID",
-    COOKIE_DOMAIN: ".zesty.io"
+    COOKIE_DOMAIN: ".zesty.io",
+
+    GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
   };
 } else {
   CONFIG = {
@@ -96,7 +100,9 @@ if (process.env.NODE_ENV === "production") {
     URL_ACCOUNTS: "http://accounts.zesty.localdev:3100",
 
     COOKIE_NAME: "DEV_APP_SID",
-    COOKIE_DOMAIN: ".zesty.localdev"
+    COOKIE_DOMAIN: ".zesty.localdev",
+
+    GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
   };
 }
 
