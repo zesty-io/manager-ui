@@ -5,11 +5,11 @@ import moment from "moment";
 import { notify } from "shell/store/notifications";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import AuditControls from "components/controls";
-import Log from "components/log";
+import AuditControls from "../../components/controls";
+import Log from "../../components/log";
 // import Pagination from "components/pagination";
 
-import { getLogs } from "store/logsInView";
+import { getLogs } from "../../store/logsInView";
 
 import styles from "./styles.less";
 export default connect(state => state)(function AuditTrail(props) {

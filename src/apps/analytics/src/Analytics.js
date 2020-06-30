@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
+import moment from "moment";
 
 import { Url } from "@zesty-io/core/Url";
 

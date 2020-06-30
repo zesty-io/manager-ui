@@ -1,32 +1,26 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Provider } from "react-redux";
 import { Route } from "react-router-dom";
 
-import { injectReducer } from "shell/store";
-// import { fetchModels } from "shell/store/models";
-// import { fetchItemPublishings } from "shell/store/content";
+import { injectReducer, store } from "shell/store";
 
-import { navContent, fetchNav } from "store/navContent";
-import { modal } from "store/modal";
-import { listFilters } from "store/listFilters";
-import { headTags, fetchHeadTags } from "store/headTags";
+import { navContent } from "./store/navContent";
+import { modal } from "./store/modal";
+import { listFilters } from "./store/listFilters";
+import { headTags } from "./store/headTags";
 
 import ContentEditor from "./app";
 
 // Inject reducers into shared app shell store
-injectReducer(ZESTY_REDUX_STORE, "navContent", navContent);
-injectReducer(ZESTY_REDUX_STORE, "modal", modal);
-injectReducer(ZESTY_REDUX_STORE, "listFilters", listFilters);
-injectReducer(ZESTY_REDUX_STORE, "headTags", headTags);
+injectReducer(store, "navContent", navContent);
+injectReducer(store, "modal", modal);
+injectReducer(store, "listFilters", listFilters);
+injectReducer(store, "headTags", headTags);
 
-// NOTE: We expose the content store globally so ActivePreview can
-// resolve the current routes path
-window.ContentAppStore = ZESTY_REDUX_STORE;
-
-window.ContentApp = function ContentApp() {
+export default function ContentApp() {
   return (
-    <Provider store={ZESTY_REDUX_STORE}>
+    <Provider store={store}>
       <Route component={ContentEditor} />
     </Provider>
   );
-};
+}

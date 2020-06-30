@@ -1,6 +1,7 @@
 import React from "react";
+import riot from "riot";
 
-window.MediaApp = class MediaApp extends React.Component {
+export default class MediaApp extends React.Component {
   componentDidMount() {
     /**
      * YOU AIN'T READY
@@ -19,4 +20,4 @@ window.MediaApp = class MediaApp extends React.Component {
       </div>
     );
   }
-};
+}

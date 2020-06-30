@@ -1,8 +1,8 @@
 // Provides reusable filter actions on leads
 import * as moment from "moment";
 
-import { FORM_GROUP_PRESETS } from "components/LeadExporter/FormGroupSelector/FormGroupSelector.model";
-import { DATE_PRESETS } from "components/LeadExporter/TableDateFilter/TableDateFilter.model";
+import { FORM_GROUP_PRESETS } from "../../components/LeadExporter/FormGroupSelector/FormGroupSelector.model";
+import { DATE_PRESETS } from "../../components/LeadExporter/TableDateFilter/TableDateFilter.model";
 
 /**
  * Filters a list of leads by date

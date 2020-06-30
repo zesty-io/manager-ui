@@ -1,3 +1,4 @@
+import React from "react";
 import ContentSearch from "shell/components/ContentSearch";
 import { useHistory } from "react-router-dom";
 

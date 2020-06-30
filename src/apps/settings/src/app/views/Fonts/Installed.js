@@ -5,7 +5,11 @@ import { Search } from "@zesty-io/core/Search";
 import { Notice } from "@zesty-io/core/Notice";
 import { notify } from "shell/store/notifications";
 
-import { getHeadTags, updateSiteFont, deleteSiteFont } from "store/settings";
+import {
+  getHeadTags,
+  updateSiteFont,
+  deleteSiteFont
+} from "../../../store/settings";
 
 import styles from "./Fonts.less";
 export default function Installed() {

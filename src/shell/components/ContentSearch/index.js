@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import debounce from "lodash.debounce";
+import cx from "classnames";
 
 import { searchItems } from "shell/store/content";
 import { Search } from "@zesty-io/core/Search";
