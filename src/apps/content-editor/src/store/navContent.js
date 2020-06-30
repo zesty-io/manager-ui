@@ -67,7 +67,7 @@ export function fetchNav() {
           }).ZUID;
 
           return request(
-            `//${CONFIG.API_ACCOUNTS}/roles/${currentRoleZUID}`
+            `${CONFIG.API_ACCOUNTS}/roles/${currentRoleZUID}`
           ).then(data => {
             if (data.data && data.data.granularRoles) {
               return data.data.granularRoles.reduce(

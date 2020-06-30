@@ -71,13 +71,44 @@ if (process.env.NODE_ENV === "production") {
 
     GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
   };
-} else {
+} else if (process.env.NODE_ENV === "development") {
   CONFIG = {
     VERSION: pjson.version,
     ENV: "development",
 
+    API_ACCOUNTS: "https://accounts.api.dev.zesty.io/v1",
+    API_INSTANCE: ".api.dev.zesty.io/v1",
+    API_INSTANCE_PROTOCOL: "https://",
+
+    SERVICE_AUTH: "https://auth.api.dev.zesty.io",
+    SERVICE_EMAIL: "https://email.zesty.io/send",
+    SERVICE_MEDIA_MANAGER: "https://dev-svc.zesty.io/media-manager-service",
+    SERVICE_MEDIA_RESOLVER: "https://dev-svc.zesty.io/media-resolver-service",
+    SERVICE_MEDIA_STORAGE: "https://dev-svc.zesty.io/media-storage-service",
+    SERVICE_MEDIA_MODIFY: "https://dev-svc.zesty.io/media-modify-service",
+    SERVICE_REDIS_GATEWAY: "https://cache.dev.zesty.io",
+    SERVICE_GOOGLE_ANALYTICS_AUTH:
+      "https://us-central1-zesty-dev.cloudfunctions.net/authenticateGoogleAnalytics",
+    SERVICE_GOOGLE_ANALYTICS_READ:
+      "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
+
+    URL_MANAGER: ".manager.dev.zesty.io",
+    URL_MANAGER_PROTOCOL: "https://",
+    URL_PREVIEW: "-dev.preview.dev.zesty.io",
+    URL_PREVIEW_PROTOCOL: "https://",
+    URL_ACCOUNTS: "",
+
+    COOKIE_NAME: "DEV_APP_SID",
+    COOKIE_DOMAIN: ".zesty.io"
+  };
+} else {
+  CONFIG = {
+    VERSION: pjson.version,
+    ENV: "local",
+
     API_ACCOUNTS: "//accounts.api.zesty.localdev:3022/v1",
     API_INSTANCE: ".api.zesty.localdev:3023/v1",
+    API_INSTANCE_PROTOCOL: "http://",
 
     SERVICE_AUTH: "http://auth.api.zesty.localdev:3011",
     SERVICE_EMAIL: "",

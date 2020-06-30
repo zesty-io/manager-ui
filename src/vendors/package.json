@@ -4,10 +4,13 @@
   "description": "Creates vendor bundle for Manager UI",
   "main": "index.js",
   "scripts": {
-    "start": "../../node_modules/.bin/webpack --display=errors-only --progress --watch",
+    "start": "cross-env ../../node_modules/.bin/webpack --display=errors-only --progress --watch",
     "prebuild": "npm --silent install",
-    "build": "../../node_modules/.bin/webpack --display=errors-only --progress -p"
+    "build": "cross-env ../../node_modules/.bin/webpack --display=errors-only --progress -p"
   },
   "author": "",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "cross-env": "^7.0.2"
+  }
 }
