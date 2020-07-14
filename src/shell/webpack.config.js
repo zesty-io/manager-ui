@@ -23,6 +23,12 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "https://svc.zesty.io/media-manager-service",
     SERVICE_MEDIA_RESOLVER: "https://svc.zesty.io/media-resolver-service",
+
+    // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
+    service: {
+      media_resolver: ""
+    },
+
     SERVICE_MEDIA_STORAGE: "https://svc.zesty.io/media-storage-service",
     SERVICE_MEDIA_MODIFY: "https://svc.zesty.io/media-modify-service",
     SERVICE_REDIS_GATEWAY: "https://cache.zesty.io",
@@ -52,6 +58,12 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "https://stage-svc.zesty.io/media-manager-service",
     SERVICE_MEDIA_RESOLVER: "https://stage-svc.zesty.io/media-resolver-service",
+
+    // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
+    service: {
+      media_resolver: ""
+    },
+
     SERVICE_MEDIA_STORAGE: "https://stage-svc.zesty.io/media-storage-service",
     SERVICE_MEDIA_MODIFY: "https://stage-svc.zesty.io/media-modify-service",
     SERVICE_REDIS_GATEWAY: "https://cache.stage.zesty.io",
@@ -84,6 +96,12 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "https://dev-svc.zesty.io/media-manager-service",
     SERVICE_MEDIA_RESOLVER: "https://dev-svc.zesty.io/media-resolver-service",
+
+    // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
+    service: {
+      media_resolver: ""
+    },
+
     SERVICE_MEDIA_STORAGE: "https://dev-svc.zesty.io/media-storage-service",
     SERVICE_MEDIA_MODIFY: "https://dev-svc.zesty.io/media-modify-service",
     SERVICE_REDIS_GATEWAY: "https://cache.dev.zesty.io",
@@ -116,6 +134,12 @@ if (process.env.NODE_ENV === "production") {
       "http://svc.zesty.localdev:3005/media-manager-service",
     SERVICE_MEDIA_RESOLVER:
       "http://svc.zesty.localdev:3007/media-resolver-service",
+
+    // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
+    service: {
+      media_resolver: "http://svc.zesty.localdev:3007/media-resolver-service"
+    },
+
     SERVICE_MEDIA_STORAGE:
       "http://svc.zesty.localdev:3008/media-storage-service",
     SERVICE_REDIS_GATEWAY: "http://redis-gateway.zesty.localdev:3025",
