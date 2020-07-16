@@ -5,27 +5,22 @@ describe("Navigation through content editor", () => {
     cy.goHome();
   });
 
-  it("Renders home", () => {
-    cy.visit("//content/home");
-    cy.get(".content-nav", { timeout: 5000 }).should("exist");
-    cy.contains("Pageview/Traffic").should("exist");
-  });
   it("Opens homepage item", () => {
     cy.get("#MainNavigation", { timeout: 5000 })
-      .contains("Homepage")
+      .contains("Page")
       .click({ force: true });
-    cy.contains("Intro Text").should("exist");
-    cy.contains("Main Image").should("exist");
+    cy.contains("Page Title").should("exist");
+    cy.contains("Page Content").should("exist");
   });
   it("Opens list view", () => {
     cy.get("#MainNavigation")
-      .contains("Group")
+      .contains("Group with visible fields in list")
       .click({ force: true });
     cy.get("#ListColumns").should("exist");
   });
   it("Opens the add item view", () => {
     cy.get("#AddItemButton").click();
-    cy.contains("Title").should("exist");
+    cy.contains("title").should("exist");
     cy.contains("New Item").should("exist");
     cy.get("#CreateItemSaveButton").should("exist");
   });
@@ -41,19 +36,19 @@ describe("Navigation through content editor", () => {
   });
   it("Opens list view", () => {
     cy.get("#MainNavigation")
-      .contains("Group")
+      .contains("Group with visible fields in list")
       .click({ force: true });
-    cy.contains("Newell 343").should("exist");
-    cy.contains("Newell 343").click();
+    cy.contains("Turkey Run").should("exist");
+    cy.contains("Turkey Run").click();
   });
-  it("Navigates back to the list view using breadcrumb", () => {
+  it.skip("Navigates back to the list view using breadcrumb", () => {
     cy.get("#MainNavigation")
-      .contains("Group")
+      .contains("Group with visible fields in list")
       .click({ force: true });
     cy.get("#ListColumns").should("exist");
-    cy.contains("Newell 343").click();
+    cy.contains("Turkey Run").click();
   });
-  it("Navigates back to the dashboard using breadcrumb", () => {
+  it.skip("Navigates back to the dashboard using breadcrumb", () => {
     cy.get('[href="/content/home"] > .fa').click();
     cy.get(".content-nav").should("exist");
     cy.contains("Pageview/Traffic").should("exist");
