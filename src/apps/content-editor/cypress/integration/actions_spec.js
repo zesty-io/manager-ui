@@ -75,10 +75,9 @@ describe("Actions in content editor", () => {
     cy.contains("Created new ", { timeout: 5000 }).should("exist");
   });
 
-  it("Saves a new item", () => {
+  it("Saved item becomes publishable", () => {
     cy.get("#PublishButton").should("exist");
     cy.get("#PublishButton").should("contain", "1");
-    // cy.get("#zestyGrowler").should("contain", "Created ");
   });
 
   it("Displays a new item in the list", () => {
