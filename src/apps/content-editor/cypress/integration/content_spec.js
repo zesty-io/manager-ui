@@ -24,12 +24,11 @@ describe("Content Specs", () => {
     });
 
     it("WYSIWYG Basic Field", () => {
-      cy.get("#12-6d41d0-n10vtc")
-        .should("exist")
-        .find(".ProseMirror")
-        .click()
-        .clear()
-        .type(`${TIMESTAMP}`)
+      cy.get("#12-6d41d0-n10vtc").should("exist");
+      cy.iframe("#wysiwyg_basic_ifr")
+        .should("be.visible")
+        .click({ force: true })
+        .type(`{selectall}{backspace}${TIMESTAMP}`, { force: true })
         .contains(`${TIMESTAMP}`);
     });
 
@@ -63,12 +62,12 @@ describe("Content Specs", () => {
     });
 
     it("WYSIWYG Advanced Field", () => {
-      cy.get("#12-be261c-4q7s81")
-        .should("exist")
-        .find(".ProseMirror")
-        .click()
-        .clear()
-        .type(`${TIMESTAMP}`)
+      cy.get("#12-be261c-4q7s81").should("exist");
+
+      cy.iframe("#wysiwyg_advanced_ifr")
+        .should("be.visible")
+        .click({ force: true })
+        .type(`{selectall}{backspace}${TIMESTAMP}`, { force: true })
         .contains(`${TIMESTAMP}`);
     });
 
@@ -142,8 +141,10 @@ describe("Content Specs", () => {
         .find("input.form-control.input")
         .click();
 
+      cy.get(".flatpickr-confirm").click();
+
       // TODO get aria-label and capture in variable
-      cy.get("#12-f3db44-c8kt0q .flatpickr-input.form-control.input").click();
+      // cy.get("#12-f3db44-c8kt0q .flatpickr-input.form-control.input").click();
 
       // TODO compare aria-label value with input value
     });
@@ -272,10 +273,10 @@ describe("Content Specs", () => {
       cy.get("#SaveItemButton").click({ force: true });
       cy.contains("Saved a new ", { timeout: 3000 }).should("exist");
       // testing tag deletion
-      cy.get('[href="/content/6-0c960c-d1n0kx/7-a0e7ae90ce-n3qr0k"]').should(
+      cy.get('[href="#!/content/6-675028-84dq4s/7-480ab4-wg7x7j"]').should(
         "exist"
       );
-      cy.get('[href="/content/6-0c960c-d1n0kx/7-a0e7ae90ce-n3qr0k"]')
+      cy.get('[href="#!/content/6-675028-84dq4s/7-480ab4-wg7x7j"]')
         .siblings("i")
         .last()
         .click({ timeout: 3000 });
@@ -290,7 +291,7 @@ describe("Content Specs", () => {
       //allow relationships to load
       cy.get("#12-edee00-6zb866")
         .find(".Select")
-        .find('[data-value="7-f686b78bb4-8dk5d7"]')
+        .find('[data-value="7-480ab4-wg7x7j"]')
         .last()
         .click({ force: true, timeout: 3000 });
       cy.get("#SaveItemButton").click({ force: true });
@@ -298,7 +299,7 @@ describe("Content Specs", () => {
       cy.get("#12-edee00-6zb866")
         .find(".Select")
         .find("span span")
-        .should("contain", "Hello 5");
+        .should("contain", "zesty.pw");
     });
   });
   // color, UUID?, files

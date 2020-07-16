@@ -15,6 +15,7 @@
 
 // Import commands.js using ES2015 syntax:
 import "./commands";
+import "cypress-iframe";
 
 Cypress.Cookies.defaults({
   whitelist: ["DEV_APP_SID", "ZESTY_LOCAL_MANAGER_SESSION"]
