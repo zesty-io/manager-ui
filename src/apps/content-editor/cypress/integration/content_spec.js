@@ -267,7 +267,7 @@ describe("Content Specs", () => {
       cy.get("#12-edee00-6zb866")
         .find(".Select")
         .click({ timeout: 3000 });
-      cy.get('[data-value="7-a0e7ae90ce-n3qr0k"]')
+      cy.get('[data-value="7-480ab4-wg7x7j"]')
         .last()
         .click({ force: true, timeout: 3000 });
       cy.get("#SaveItemButton").click({ force: true });
