@@ -9,12 +9,9 @@ describe("Schema", () => {
 
   it("Create", () => {
     cy.get('input[name="label"]').type(SCHEMA_NAME);
-    cy.get(".Types .Type")
-      .first()
-      .click();
 
     cy.get('button[kind="save"]')
-      .contains("Create New Schema")
+      .contains("Create New Model")
       .click();
 
     cy.get(".FieldAdd", { timeout: 10000 }).should("exist");

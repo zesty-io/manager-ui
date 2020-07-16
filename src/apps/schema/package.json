@@ -4,7 +4,8 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "test": "cypress run",
+    "test": "cross-env ../../../node_modules/.bin/cypress run",
+    "test:open": "cross-env ../../../node_modules/.bin/cypress open",
     "start": "cross-env ../../../node_modules/.bin/webpack --display=minimal --progress --watch",
     "build": "cross-env ../../../node_modules/.bin/webpack --display=errors-only --progress -p"
   },
