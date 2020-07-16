@@ -22,7 +22,7 @@ describe("Meta", () => {
   });
   it("Selects Parent", () => {
     cy.get("[data-cy=itemParent] >  div").click();
-    cy.get('[data-value="7-d6d2ff8dfc-80dq81"]').click();
+    cy.get('[data-value="7-b89cdca3c4-pwf5rw"]').click();
     // select another parent, but switch it back to root level
     cy.get("[data-cy=itemParent] >  div").click();
     cy.get("[data-cy=itemParent]")

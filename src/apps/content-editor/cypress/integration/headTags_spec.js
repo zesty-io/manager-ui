@@ -35,6 +35,10 @@ describe("Head Tags", () => {
       .clear()
       .type("src");
   });
+  it("Saves head tag", () => {
+    cy.get("#SaveItemButton").click();
+    cy.contains("Successfully updated head tag");
+  });
 
   it("Deletes a head tag", () => {
     cy.contains("Delete Tag").click({ force: true });
