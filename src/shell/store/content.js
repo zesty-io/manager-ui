@@ -457,15 +457,23 @@ export function deleteItem(modelZUID, itemZUID) {
       }
     ).then(res => {
       if (res.status >= 400) {
-        notify({
-          message: `Failure deleting item: ${res.statusText}`,
-          kind: "error"
-        });
+        dispatch(
+          notify({
+            message: `Failure deleting item: ${res.statusText}`,
+            kind: "error"
+          })
+        );
       } else {
         dispatch({
           type: "REMOVE_ITEM",
           itemZUID
         });
+        dispatch(
+          notify({
+            message: `Successfully deleted item`,
+            kind: "save"
+          })
+        );
 
         // Always update content navigation after deleting an item
         // NOTE: alternatively the contentNav store could listen for the `REMOVE_ITEM` action

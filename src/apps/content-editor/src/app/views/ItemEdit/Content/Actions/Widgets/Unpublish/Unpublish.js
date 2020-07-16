@@ -3,7 +3,11 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faUnlink } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
-import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
+import {
+  CollapsibleCard,
+  CardContent,
+  CardFooter
+} from "@zesty-io/core/CollapsibleCard";
 
 import { notify } from "shell/store/notifications";
 import { unpublishItem } from "shell/store/content";
@@ -71,14 +75,21 @@ export const Unpublish = React.memo(function Unpublish(props) {
 
   return (
     <CollapsibleCard
-      className={styles.Unpublish}
+      className={"Unpublish"}
       header={
         <React.Fragment>
           <FontAwesomeIcon icon={faUnlink} />
           &nbsp;Unpublish
         </React.Fragment>
       }
-      footer={
+    >
+      <CardContent>
+        <p>
+          By unpublishing this content it will no longer be served if the URL is
+          requested. The URL will return a 404 not found response.
+        </p>
+      </CardContent>
+      <CardFooter>
         <Button
           id="UnpublishItemButton"
           onClick={handleUnpublish}
@@ -91,12 +102,7 @@ export const Unpublish = React.memo(function Unpublish(props) {
           )}
           Unpublish
         </Button>
-      }
-    >
-      <p>
-        By unpublishing this content it will no longer be served if the URL is
-        requested. The URL will return a 404 not found response.
-      </p>
+      </CardFooter>
     </CollapsibleCard>
   );
 });

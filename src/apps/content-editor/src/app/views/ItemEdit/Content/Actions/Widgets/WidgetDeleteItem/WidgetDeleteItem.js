@@ -1,15 +1,22 @@
 import React, { useState, Fragment } from "react";
+import cx from "classnames";
+import { useHistory } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
-import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
+import {
+  CollapsibleCard,
+  CardContent,
+  CardFooter
+} from "@zesty-io/core/CollapsibleCard";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
 import { notify } from "shell/store/notifications";
 import { deleteItem } from "shell/store/content";
 
 export const WidgetDeleteItem = React.memo(function WidgetDeleteItem(props) {
+  const history = useHistory();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -17,14 +24,21 @@ export const WidgetDeleteItem = React.memo(function WidgetDeleteItem(props) {
     <Fragment>
       <CollapsibleCard
         id="WidgetDeleteItem"
-        className="pageDetailWidget"
+        className={cx("pageDetailWidget", "Delete")}
         header={
           <span>
             <FontAwesomeIcon icon={faTrashAlt} />
             &nbsp;Delete Content
           </span>
         }
-        footer={
+      >
+        <CardContent>
+          <p>
+            Delete this content? Removing it from all locations throughout your
+            site and making it unavailable to API requests.
+          </p>
+        </CardContent>
+        <CardFooter>
           <Button
             kind="warn"
             id="DeleteItemButton"
@@ -38,12 +52,7 @@ export const WidgetDeleteItem = React.memo(function WidgetDeleteItem(props) {
             )}
             Delete
           </Button>
-        }
-      >
-        <p>
-          Delete this content? Removing it from all locations throughout your
-          site and making it unavailable to API requests.
-        </p>
+        </CardFooter>
       </CollapsibleCard>
       <ConfirmDialog
         isOpen={confirmOpen}
@@ -61,21 +70,11 @@ export const WidgetDeleteItem = React.memo(function WidgetDeleteItem(props) {
               .dispatch(deleteItem(props.modelZUID, props.itemZUID))
               .then(res => {
                 if (res.status === 200) {
-                  notify({
-                    message: `Successfully deleted ${props.metaTitle}`,
-                    kind: "save"
-                  });
-                  if (
-                    props.modelType === "pageset" ||
-                    props.modelType === "dataset"
-                  ) {
-                    window.location.hash = `/content/${props.modelZUID}`;
-                  } else {
-                    window.location.hash = "/content/home";
-                  }
+                  history.push("/content/" + props.modelZUID);
+                } else {
+                  // if delete fails, component is still mounted, so we can set state
+                  setDeleting(false);
                 }
-
-                setDeleting(false);
               });
           }}
         >

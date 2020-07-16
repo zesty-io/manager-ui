@@ -44,6 +44,7 @@ describe("Actions in content editor", () => {
   it.skip("Unpublishes an item", () => {
     // go to Content Tab
     cy.get("[data-cy=content]").click();
+    cy.get("article.Unpublish").click();
     cy.get("#UnpublishItemButton").click();
     cy.contains("Successfully sent unpublish request", {
       timeout: 5000
@@ -85,13 +86,13 @@ describe("Actions in content editor", () => {
     cy.contains(timestamp, { timeout: 5000 }).should("exist");
   });
 
-  // TODO: Delete Button is missing
-  it.skip("Deletes an item", () => {
+  it("Deletes an item", () => {
     cy.contains(timestamp).click();
+    cy.get("article.Delete").click();
     cy.get("#DeleteItemButton").click();
     cy.get("#deleteConfirmButton").should("exist");
     cy.get("#deleteConfirmButton").click();
-    cy.contains("Successfully deleted", { timeout: 5000 }).should("exist");
+    cy.contains("Successfully deleted item", { timeout: 5000 }).should("exist");
   });
 
   // TODO: Workflow request doesn't work
