@@ -31,7 +31,6 @@ export function FieldEdit(props) {
     <CollapsibleCard
       className={styles.Card}
       header={Header(props)}
-      footer={Footer(props)}
       open={props.isOpen}
     >
       <FieldSettings
@@ -44,6 +43,7 @@ export function FieldEdit(props) {
         }}
         field={props.field}
       />
+      <Footer {...props} />
     </CollapsibleCard>
   );
 }
