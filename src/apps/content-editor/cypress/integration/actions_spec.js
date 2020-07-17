@@ -7,19 +7,6 @@ describe("Actions in content editor", () => {
 
   const timestamp = Date.now();
 
-  it("Edits homepage item", () => {
-    // cy.get("#MainNavigation")
-    //   .contains("Homepage")
-    //   .click({ force: true });
-
-    cy.get(".ProseMirror").type("Editing the Homepage");
-  });
-
-  it("Saves homepage item data", () => {
-    cy.get("#SaveItemButton").click();
-    cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
-  });
-
   it("Saves homepage item metadata", () => {
     // go to Meta Tab
     cy.get("[data-cy=meta]").click();
@@ -62,6 +49,29 @@ describe("Actions in content editor", () => {
     cy.get("#SchedulePublishButton").click({ force: true });
 
     cy.contains("Scheduled version", { timeout: 5000 }).should("exist");
+  });
+
+  it("Filters list items based on search term", () => {
+    cy.visit("/content/6-0c960c-d1n0kx");
+    cy.get("input[name='filter']").type("turkey");
+    cy.contains("Turkey Run").should("exist");
+  });
+
+  it("Sorts list items", () => {
+    cy.visit("/content/6-0c960c-d1n0kx");
+    cy.get(".ItemList .SortBy")
+      .first()
+      .click();
+    cy.get(".ItemList article")
+      .first()
+      .contains("Parent pre selection with fast typing");
+
+    cy.get(".ItemList .SortBy")
+      .last()
+      .click();
+    cy.get(".ItemList article")
+      .first()
+      .contains("Self-Defense Class");
   });
 
   it("Creates a new item", () => {

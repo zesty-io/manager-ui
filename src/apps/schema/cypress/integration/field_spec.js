@@ -25,8 +25,7 @@ describe("Fields", () => {
     }).should("exist");
   });
 
-  // TODO: implement missing save button for edited field
-  it.skip("Edit", () => {
+  it("Edit", () => {
     // Open the collapsed field
     cy.get(".Fields .Draggable")
       .last()
@@ -50,16 +49,13 @@ describe("Fields", () => {
           .last()
           .click();
 
-        cy.wait(5000);
-
         cy.get('.Fields article input[name="label"]')
           .last()
           .should("have.value", newFieldLabel);
       });
   });
 
-  // TODO: implement missing Deactivate button
-  it.skip("Deactivate", () => {
+  it("Deactivate", () => {
     cy.get(".Fields article footer button.deactivate")
       .last()
       .click({
