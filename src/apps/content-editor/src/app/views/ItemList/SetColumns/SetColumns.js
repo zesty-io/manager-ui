@@ -37,6 +37,7 @@ export class SetColumns extends PureComponent {
                       this.props.onSort(field.name, field.datatype)
                     }
                     className={cx(
+                      "SortBy",
                       styles.Cell,
                       styles[`${field.datatype}Header`]
                     )}

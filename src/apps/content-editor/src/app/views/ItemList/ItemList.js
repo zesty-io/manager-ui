@@ -697,6 +697,7 @@ export default connect((state, props) => {
                   childRef={this.list}
                 >
                   <List
+                    className={"ItemList"}
                     outerRef={this.list}
                     overscanCount={20}
                     itemCount={this.state.items.length}
