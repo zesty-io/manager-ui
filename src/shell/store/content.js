@@ -83,7 +83,6 @@ export function content(state = {}, action) {
       let newState = { ...state };
 
       Object.keys(action.data).forEach(itemZUID => {
-        console.log(action.data[itemZUID]);
         // Update publishings for items we have on hand
         if (newState[itemZUID]) {
           newState[itemZUID] = {
@@ -731,22 +730,18 @@ function parsePublishState(records) {
 
     // 3) Set record if it's the most current version
     if (record.isScheduled) {
-      if (!publishStates[record.itemZUID].scheduling.version) {
+      if (
+        !publishStates[record.itemZUID].scheduling.version ||
+        publishStates[record.itemZUID].scheduling.version < record.version
+      ) {
         publishStates[record.itemZUID].scheduling = record;
-      } else {
-        if (
-          publishStates[record.itemZUID].scheduling.version < record.version
-        ) {
-        }
       }
     } else if (record.isPublished) {
-      if (!publishStates[record.itemZUID].publishing.version) {
+      if (
+        !publishStates[record.itemZUID].publishing.version ||
+        publishStates[record.itemZUID].publishing.version < record.version
+      ) {
         publishStates[record.itemZUID].publishing = record;
-      } else {
-        if (
-          publishStates[record.itemZUID].publishing.version < record.version
-        ) {
-        }
       }
     }
   });
