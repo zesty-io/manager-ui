@@ -12,7 +12,7 @@ import { Button } from "@zesty-io/core/Button";
 import { ScheduleFlyout } from "./ScheduleFlyout";
 import { VersionSelector } from "./VersionSelector";
 
-import { publishItem } from "shell/store/content";
+import { publish } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 
 import styles from "./ItemVersioning.less";
@@ -29,8 +29,8 @@ export class ItemVersioning extends React.PureComponent {
 
     this.props
       .dispatch(
-        publishItem(this.props.modelZUID, this.props.itemZUID, {
-          version_num: this.props.item.meta.version
+        publish(this.props.modelZUID, this.props.itemZUID, {
+          version: this.props.item.meta.version
         })
       )
       .then(() => {
@@ -106,7 +106,8 @@ export class ItemVersioning extends React.PureComponent {
               disabled={publishingDisabled || false}
               onClick={this.handlePublish}
             >
-              Publish Version {this.props.item.meta.version}
+              <i className="fas fa-cloud-upload-alt"></i>Publish Version{" "}
+              {this.props.item.meta.version}
             </Button>
             <Button
               id="PublishScheduleButton"
