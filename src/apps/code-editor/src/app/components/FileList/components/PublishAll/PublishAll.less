@@ -1,0 +1,36 @@
+@import "~@zesty-io/core/typography.less";
+
+.PublishAllBtn {
+  i {
+    margin: 0px;
+  }
+}
+.PublishAll {
+  box-shadow: 2px 2px 4px #333;
+  color: #000;
+  max-height: 80vh;
+  overflow-y: scroll;
+  right: 0;
+  top: 0;
+  width: 500px;
+
+  .ModalContent {
+    ul {
+      margin: 16px 0;
+      li {
+        line-height: 18px;
+        list-style: circle;
+        list-style-position: outside;
+        margin: 0 4px 12px 16px;
+        a {
+          text-shadow: none;
+        }
+      }
+    }
+  }
+
+  .ModalActions {
+    display: flex;
+    justify-content: space-between;
+  }
+}

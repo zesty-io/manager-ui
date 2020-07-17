@@ -140,6 +140,9 @@ store
     // Check every half second to see if injected
     // apps have been parsed and are ready
     const appLoaded = setInterval(() => {
+      // Ensure there are no missing dynamic app references on the
+      // the global window object as the shell uses these to link
+      // components to routes.
       const missing = appTokens.find(token => !window[token]);
 
       if (!missing) {

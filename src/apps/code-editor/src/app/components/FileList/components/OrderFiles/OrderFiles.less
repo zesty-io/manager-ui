@@ -1,0 +1,53 @@
+.OrderFilesModal {
+  max-width: 540px;
+  max-height: 80vh;
+  overflow-y: scroll;
+
+  header {
+    h2 {
+      text-transform: initial;
+      font-weight: 700;
+    }
+  }
+
+  .Desc {
+    margin-bottom: 16px;
+    code {
+      background: #dadadb;
+      border-radius: 2px;
+      font-style: italic;
+      padding: 2px 6px;
+    }
+  }
+
+  .Files {
+    padding: 8px 0;
+
+    .File {
+      align-items: center;
+      cursor: move;
+      display: flex;
+
+      margin: 6px 0;
+      padding: 4px;
+
+      .Position {
+        font-weight: 900;
+        margin: 0 6px 0 4px;
+      }
+      .Icon {
+        margin-left: auto;
+      }
+    }
+
+    i {
+      margin-right: 4px;
+    }
+  }
+
+  footer {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+}

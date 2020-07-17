@@ -1,0 +1,31 @@
+.CodeEditor {
+  display: flex;
+  flex-direction: row;
+
+  height: calc(100vh - 64px - 10px);
+  width: 100vw;
+  overflow: hidden;
+
+  // Typography
+  font-family: "Montserrat", "Gibson Light", Arial, sans-serif;
+  font-weight: 400;
+  font-size: 1.2em;
+  line-height: 24px;
+
+  display: grid;
+  grid-template-columns: minmax(400px, 500px) 1fr;
+
+  @media (max-width: 1980px) {
+    grid-template-columns: minmax(300px, 20vw) 1fr;
+  }
+
+  .Nav {
+    background-color: #404759;
+    word-wrap: break-word;
+  }
+  .FileEditor {
+    background: #1e1e1e;
+    height: calc(100vh - 64px - 9px);
+    overflow: hidden;
+  }
+}
