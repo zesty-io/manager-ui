@@ -274,7 +274,7 @@ class CSVImport extends Component {
       <main className={styles.CSVImport}>
         <div className={styles.Top}>
           <span className={styles.File}>
-            <label for="avatar">Choose a CSV file to import:</label>
+            <label htmlFor="csv">Choose a CSV file to import:</label>
             <input
               type="file"
               id="csv"

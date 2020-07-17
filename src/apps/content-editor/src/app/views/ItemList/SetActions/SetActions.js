@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -133,17 +134,16 @@ export class SetActions extends Component {
                 Edit Schema
               </Button>
             )}
-            <Button
-              kind="tertiary"
-              id="AddCSVButton"
-              className={cx(styles.Action, styles.Create)}
-              onClick={() =>
-                (window.location.hash = `/content/${this.props.modelZUID}/import`)
-              }
-            >
-              <FontAwesomeIcon icon={faUpload} />
-              Import CSV
-            </Button>
+            <Link to={`/content/${this.props.modelZUID}/import`}>
+              <Button
+                kind="tertiary"
+                id="AddCSVButton"
+                className={cx(styles.Action, styles.Create)}
+              >
+                <FontAwesomeIcon icon={faUpload} />
+                Import CSV
+              </Button>
+            </Link>
           </div>
         </header>
       );
