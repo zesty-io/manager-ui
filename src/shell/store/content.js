@@ -83,6 +83,7 @@ export function content(state = {}, action) {
       let newState = { ...state };
 
       Object.keys(action.data).forEach(itemZUID => {
+        console.log(action.data[itemZUID]);
         // Update publishings for items we have on hand
         if (newState[itemZUID]) {
           newState[itemZUID] = {
@@ -486,37 +487,17 @@ export function deleteItem(modelZUID, itemZUID) {
 
 // Implementation through PHP endpoint
 // TODO: need version ZUID of current version
-export function publishItem(modelZUID, itemZUID, data) {
+export function publish(modelZUID, itemZUID, data = {}) {
   return dispatch => {
     return request(
-      `${CONFIG.service.sites}/content/items/${itemZUID}/publish-schedule`,
+      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`,
       {
         method: "POST",
         json: true,
-        body: data
-      }
-    ).then(res => {
-      dispatch(fetchItemPublishing(modelZUID, itemZUID));
-      return res;
-    });
-  };
-}
-
-// TODO: Implement new API endpoint
-export function unpublishItem(
-  modelZUID,
-  itemZUID,
-  publishZUID,
-  time = moment().format("YYYY-MM-DD HH:mm:ss")
-) {
-  return dispatch => {
-    return request(
-      `${CONFIG.service.sites}/content/items/${itemZUID}/publish-schedule/${publishZUID}`,
-      {
-        method: "PATCH",
-        json: true,
         body: {
-          take_offline_at: time
+          publishAt: "now", //default
+          unpublishAt: "never", //default
+          ...data
         }
       }
     ).then(res => {
@@ -526,12 +507,12 @@ export function unpublishItem(
   };
 }
 
-export function unschedule(modelZUID, itemZUID, publishZUID) {
+export function unpublish(modelZUID, itemZUID, publishZUID) {
   return dispatch => {
     return request(
-      `${CONFIG.service.sites}/content/items/${itemZUID}/publishings/${publishZUID}/unschedule`,
+      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings/${publishZUID}`,
       {
-        method: "PATCH"
+        method: "DELETE"
       }
     ).then(res => {
       dispatch(fetchItemPublishing(modelZUID, itemZUID));
@@ -541,7 +522,7 @@ export function unschedule(modelZUID, itemZUID, publishZUID) {
 }
 
 export function fetchItemPublishing(modelZUID, itemZUID) {
-  return (dispatch, getState) => {
+  return dispatch => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`,
