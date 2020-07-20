@@ -195,7 +195,12 @@ export default connect(state => {
             );
         }
       })}
-      <Button kind="save" onClick={saveFields} disabled={loading}>
+      <Button
+        id="saveSettings"
+        kind="save"
+        onClick={saveFields}
+        disabled={loading}
+      >
         {loading ? (
           <i className="fas fa-spinner"></i>
         ) : (
