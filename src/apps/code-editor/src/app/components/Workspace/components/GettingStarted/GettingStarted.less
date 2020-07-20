@@ -1,0 +1,41 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.GettingStarted {
+  color: #9a9b9c;
+  height: calc(100vh - 64px - 60px);
+  padding: 32px;
+
+  .Title {
+    margin: 0 32px;
+  }
+
+  .Topic {
+    margin: 0 0 32px 0;
+    p {
+      font-size: 16px;
+      max-width: 60rem;
+    }
+    a {
+      margin: 0;
+      text-shadow: none;
+    }
+    ul {
+      list-style-type: disc;
+      list-style-position: inside;
+    }
+
+    iframe {
+      max-height: 720px;
+      max-width: 1280px;
+    }
+  }
+
+  .Grid {
+    display: grid;
+    grid-template-columns: minmax(500px, 900px) minmax(500px, 900px);
+    .Column {
+      margin: 32px;
+    }
+  }
+}

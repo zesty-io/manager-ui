@@ -7,12 +7,13 @@ const extractLess = new ExtractTextPlugin({
   filename: "../../../../build/bundle.code-app.css"
   // disable: process.env.NODE_ENV === 'development'
 });
+const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 
 module.exports = {
-  entry: "./src/index.js",
-  // context: path.resolve(__dirname, "src"),
+  entry: "./index.js",
+  context: path.resolve(__dirname, "src"),
   devtool: "cheap-module-source-map",
-  mode: process.env.ENV_MODE || "development",
+  mode: process.env.NODE_ENV || "development",
   output: {
     filename: "../../../../build/bundle.code-app.js"
   },
@@ -30,6 +31,7 @@ module.exports = {
     "react-dom": "ReactDOM",
     "react-router": "ReactRouter",
     "react-router-dom": "ReactRouterDOM",
+    "react-monaco-editor": "ReactMonacoEditor",
     "react-redux": "ReactRedux",
     redux: "Redux",
     "redux-thunk": "ReduxThunk",
@@ -38,10 +40,69 @@ module.exports = {
   },
   plugins: [
     extractLess,
-    new webpack.optimize.ModuleConcatenationPlugin()
-    // new WebpackBar({
-    //   name: "code-editor"
-    // })
+    new webpack.optimize.ModuleConcatenationPlugin(),
+    new MonacoWebpackPlugin({
+      // available options are documented at https://github.com/Microsoft/monaco-editor-webpack-plugin#options
+      output: "../../../../build",
+      languages: [
+        // "coffee",
+        "css",
+        // "dockerfile",
+        "handlebars",
+        "html",
+        "javascript",
+        "json",
+        "less",
+        "markdown",
+        // "pug",
+        "scss",
+        "typescript",
+        "xml"
+        // "yaml"
+      ],
+      features: [
+        "bracketMatching",
+        "!caretOperations",
+        "!clipboard",
+        "!codeAction",
+        "!codelens",
+        "!colorDetector",
+        "comment",
+        "contextmenu",
+        "coreCommands",
+        "!cursorUndo",
+        "!dnd",
+        "find",
+        "folding",
+        "!fontZoom",
+        "format",
+        "!goToDefinitionCommands",
+        "!goToDefinitionMouse",
+        "gotoError",
+        "gotoLine",
+        "!hover",
+        "!inPlaceReplace",
+        "!inspectTokens",
+        "!iPadShowKeyboard",
+        "linesOperations",
+        "!links",
+        "multicursor",
+        "parameterHints",
+        "!quickCommand",
+        "!quickOutline",
+        "!referenceSearch",
+        "!rename",
+        "smartSelect",
+        "!snippets",
+        "suggest",
+        "toggleHighContrast",
+        "!toggleTabFocusMode",
+        "!transpose",
+        "wordHighlighter",
+        "wordOperations",
+        "wordPartOperations"
+      ]
+    })
   ],
   module: {
     rules: [
@@ -80,7 +141,10 @@ module.exports = {
         query: {
           presets: ["@babel/preset-env", "@babel/preset-react"],
           plugins: [
+            // "@babel/plugin-syntax-dynamic-import",
+            // "@babel/plugin-syntax-import-meta",
             ["@babel/plugin-proposal-class-properties", { loose: false }]
+            // "@babel/plugin-proposal-json-strings"
           ]
         }
       }

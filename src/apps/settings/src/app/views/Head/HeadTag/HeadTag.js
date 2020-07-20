@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { notify } from "../../../../../../../shell/store/notifications";
+import { notify } from "shell/store/notifications";
 
 import {
   saveHeadTag,

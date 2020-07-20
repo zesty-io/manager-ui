@@ -1,0 +1,28 @@
+@import "~@zesty-io/core/colors.less";
+
+.DeleteBtn {
+  // margin-left: auto; // pin to flex container right
+  padding-right: 16px;
+}
+
+.DeleteFileModal {
+  top: 0;
+  right: 0;
+  box-shadow: 2px 2px 4px #333;
+
+  .ModalFooter {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.Button {
+  background-color: #2d2a2a !important;
+  transition: all 0.3s ease;
+  color: #9a9b9c;
+
+  &:hover {
+    background-color: #9a2803 !important;
+    color: @zesty-white;
+  }
+}

@@ -31,7 +31,6 @@ export function FieldEdit(props) {
     <CollapsibleCard
       className={styles.Card}
       header={Header(props)}
-      footer={Footer(props)}
       open={props.isOpen}
     >
       <FieldSettings
@@ -44,6 +43,7 @@ export function FieldEdit(props) {
         }}
         field={props.field}
       />
+      <Footer {...props} />
     </CollapsibleCard>
   );
 }
@@ -130,53 +130,55 @@ function Footer(props) {
   });
 
   return (
-    <ButtonGroup className={styles.FieldActions}>
-      <Button kind="save" disabled={!props.field.dirty} onClick={onSave}>
-        {loading ? (
-          <FontAwesomeIcon icon={faSpinner} />
-        ) : (
-          <FontAwesomeIcon icon={faSave} />
-        )}
-        Save Changes
-      </Button>
+    <footer>
+      <ButtonGroup className={styles.FieldActions}>
+        <Button kind="save" disabled={!props.field.dirty} onClick={onSave}>
+          {loading ? (
+            <FontAwesomeIcon icon={faSpinner} />
+          ) : (
+            <FontAwesomeIcon icon={faSave} />
+          )}
+          Save Changes
+        </Button>
 
-      {props.field.deletedAt ? (
-        <Button
-          onClick={evt => {
-            evt.preventDefault();
-            setLoading(true);
-            props.dispatch(
-              activateField(props.field.contentModelZUID, props.field.ZUID)
-            );
-          }}
-        >
-          {loading ? (
-            <FontAwesomeIcon icon={faSpinner} />
-          ) : (
-            <FontAwesomeIcon icon={faPlayCircle} />
-          )}
-          Reactivate
-        </Button>
-      ) : (
-        <Button
-          className="deactivate"
-          kind="cancel"
-          onClick={evt => {
-            evt.preventDefault();
-            setLoading(true);
-            props.dispatch(
-              deactivateField(props.field.contentModelZUID, props.field.ZUID)
-            );
-          }}
-        >
-          {loading ? (
-            <FontAwesomeIcon icon={faSpinner} />
-          ) : (
-            <FontAwesomeIcon icon={faPauseCircle} />
-          )}
-          Deactivate
-        </Button>
-      )}
-    </ButtonGroup>
+        {props.field.deletedAt ? (
+          <Button
+            onClick={evt => {
+              evt.preventDefault();
+              setLoading(true);
+              props.dispatch(
+                activateField(props.field.contentModelZUID, props.field.ZUID)
+              );
+            }}
+          >
+            {loading ? (
+              <FontAwesomeIcon icon={faSpinner} />
+            ) : (
+              <FontAwesomeIcon icon={faPlayCircle} />
+            )}
+            Reactivate
+          </Button>
+        ) : (
+          <Button
+            className="deactivate"
+            kind="cancel"
+            onClick={evt => {
+              evt.preventDefault();
+              setLoading(true);
+              props.dispatch(
+                deactivateField(props.field.contentModelZUID, props.field.ZUID)
+              );
+            }}
+          >
+            {loading ? (
+              <FontAwesomeIcon icon={faSpinner} />
+            ) : (
+              <FontAwesomeIcon icon={faPauseCircle} />
+            )}
+            Deactivate
+          </Button>
+        )}
+      </ButtonGroup>
+    </footer>
   );
 }

@@ -7,19 +7,6 @@ describe("Actions in content editor", () => {
 
   const timestamp = Date.now();
 
-  it("Edits homepage item", () => {
-    // cy.get("#MainNavigation")
-    //   .contains("Homepage")
-    //   .click({ force: true });
-
-    cy.get(".ProseMirror").type("Editing the Homepage");
-  });
-
-  it("Saves homepage item data", () => {
-    cy.get("#SaveItemButton").click();
-    cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
-  });
-
   it("Saves homepage item metadata", () => {
     // go to Meta Tab
     cy.get("[data-cy=meta]").click();
@@ -44,6 +31,7 @@ describe("Actions in content editor", () => {
   it.skip("Unpublishes an item", () => {
     // go to Content Tab
     cy.get("[data-cy=content]").click();
+    cy.get("article.Unpublish").click();
     cy.get("#UnpublishItemButton").click();
     cy.contains("Successfully sent unpublish request", {
       timeout: 5000
@@ -63,6 +51,29 @@ describe("Actions in content editor", () => {
     cy.contains("Scheduled version", { timeout: 5000 }).should("exist");
   });
 
+  it("Filters list items based on search term", () => {
+    cy.visit("/content/6-0c960c-d1n0kx");
+    cy.get("input[name='filter']").type("turkey");
+    cy.contains("Turkey Run").should("exist");
+  });
+
+  it("Sorts list items", () => {
+    cy.visit("/content/6-0c960c-d1n0kx");
+    cy.get(".ItemList .SortBy")
+      .first()
+      .click();
+    cy.get(".ItemList article")
+      .first()
+      .contains("Parent pre selection with fast typing");
+
+    cy.get(".ItemList .SortBy")
+      .last()
+      .click();
+    cy.get(".ItemList article")
+      .first()
+      .contains("Self-Defense Class");
+  });
+
   it("Creates a new item", () => {
     cy.visit("/content/6-a1a600-k0b6f0/new");
 
@@ -75,10 +86,9 @@ describe("Actions in content editor", () => {
     cy.contains("Created new ", { timeout: 5000 }).should("exist");
   });
 
-  it("Saves a new item", () => {
+  it("Saved item becomes publishable", () => {
     cy.get("#PublishButton").should("exist");
     cy.get("#PublishButton").should("contain", "1");
-    // cy.get("#zestyGrowler").should("contain", "Created ");
   });
 
   it("Displays a new item in the list", () => {
@@ -86,13 +96,13 @@ describe("Actions in content editor", () => {
     cy.contains(timestamp, { timeout: 5000 }).should("exist");
   });
 
-  // TODO: Delete Button is missing
-  it.skip("Deletes an item", () => {
+  it("Deletes an item", () => {
     cy.contains(timestamp).click();
+    cy.get("article.Delete").click();
     cy.get("#DeleteItemButton").click();
     cy.get("#deleteConfirmButton").should("exist");
     cy.get("#deleteConfirmButton").click();
-    cy.contains("Successfully deleted", { timeout: 5000 }).should("exist");
+    cy.contains("Successfully deleted item", { timeout: 5000 }).should("exist");
   });
 
   // TODO: Workflow request doesn't work

@@ -1,0 +1,52 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.LinkedSchema {
+  background-color: #292828 !important;
+  color: #b1b1b3 !important;
+
+  header {
+    border-bottom: 1px solid #38383d;
+    h1 {
+      font-weight: 500;
+    }
+  }
+
+  footer {
+    border-top: 1px solid #38383d;
+  }
+
+  .ZUID {
+    background: #333;
+    border-radius: 2px;
+    font-style: italic;
+    margin: 0 8px;
+    padding: 2px 8px;
+  }
+
+  .Link {
+    text-shadow: none;
+    i {
+      padding-right: 8px;
+    }
+  }
+
+  ul {
+    margin: 16px 0;
+    li {
+      .ParsleyRef {
+        font-family: "Monaco", "Lucida Console", "Courier New", monospace;
+
+        .Brace {
+          color: #95c65c;
+        }
+        .ModelRef {
+          color: #91ace8;
+        }
+        .FieldRef {
+          color: @zesty-white;
+        }
+      }
+    }
+  }
+}

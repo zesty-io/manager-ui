@@ -1,0 +1,30 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.Drawer {
+  background-color: #18181a;
+  max-height: 40vh;
+  overflow-y: scroll;
+
+  // override default to allow width to be constrained by relative parent
+  position: absolute;
+
+  .DrawerHandle {
+    align-items: center;
+    border-bottom: 1px solid #404040;
+    cursor: pointer;
+    padding: 4px 16px;
+
+    button {
+      margin-right: 8px;
+    }
+  }
+
+  .DrawerContent {
+    article {
+      display: flex;
+      flex-direction: column;
+      min-width: 300px;
+    }
+  }
+}

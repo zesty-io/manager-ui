@@ -8,7 +8,7 @@ import {
   faClone,
   faCog
 } from "@fortawesome/free-solid-svg-icons";
-import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
+import { CollapsibleCard, CardContent } from "@zesty-io/core/CollapsibleCard";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
@@ -26,34 +26,31 @@ export default function Settings(props) {
   };
 
   return (
-    <CollapsibleCard
-      className={styles.ModelSettings}
-      header={Header(props)}
-      footer={Footer(props)}
-    >
-      <FieldTypeText
-        name="label"
-        label="Display label"
-        value={props.model.label}
-        onChange={update}
-      />
+    <CollapsibleCard className={styles.ModelSettings} header={Header(props)}>
+      <CardContent>
+        <FieldTypeText
+          name="label"
+          label="Display label"
+          value={props.model.label}
+          onChange={update}
+        />
 
-      <FieldTypeText
-        name="name"
-        label="Parsley reference name (no spaces)"
-        value={props.model.name}
-        onChange={update}
-      />
+        <FieldTypeText
+          name="name"
+          label="Parsley reference name (no spaces)"
+          value={props.model.name}
+          onChange={update}
+        />
 
-      <FieldTypeTextarea
-        name="description"
-        label="Description"
-        value={props.model.description}
-        maxLength={500}
-        onChange={update}
-      />
+        <FieldTypeTextarea
+          name="description"
+          label="Description"
+          value={props.model.description}
+          maxLength={500}
+          onChange={update}
+        />
 
-      {/* <label>
+        {/* <label>
         <p>Display in "Add New Item"?</p>
         <ToggleButton
           name="listed"
@@ -92,7 +89,9 @@ export default function Settings(props) {
         onChange={update}
       /> */}
 
-      <Parent parentZUID={props.model.parentZUID} onChange={update} />
+        <Parent parentZUID={props.model.parentZUID} onChange={update} />
+      </CardContent>
+      <Footer {...props} />
     </CollapsibleCard>
   );
 }

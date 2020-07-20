@@ -2,12 +2,9 @@ describe("Meta", () => {
   before(() => {
     //initial login to set the cookie
     cy.login();
-    cy.goHome();
+    cy.visit("//content/6-556370-8sh47g/7-b939a4-457q19");
   });
   it("Opens item meta tab", () => {
-    cy.get("#MainNavigation")
-      .contains("All Field Types")
-      .click({ force: true });
     cy.get("[data-cy=meta]").should("exist");
     cy.get("[data-cy=meta]").click();
   });
@@ -29,21 +26,18 @@ describe("Meta", () => {
       .find('[data-value="0"]')
       .first()
       .click();
-    // cy.pause();
-    cy.get("#SaveItemButton").should("not.be.disabled");
     cy.get("#SaveItemButton").click();
-    cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
+    cy.contains("Saved a new ").should("exist");
   });
-  it("Updates Link Text", () => {
+  it("Updates Navigation Link Text", () => {
     cy.get("[data-cy=metaLinkText]")
       .find("input")
       .click()
       .clear()
       .type("All Field Types");
 
-    cy.get("#SaveItemButton").should("not.be.disabled");
     cy.get("#SaveItemButton").click();
-    cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
+    cy.contains("Saved a new ").should("exist");
   });
   it("Updates Path Part", () => {
     cy.get("[data-cy=itemRoute]")
@@ -52,9 +46,19 @@ describe("Meta", () => {
       .clear()
       .type("new path part");
 
+    cy.get("#SaveItemButton").click();
+    cy.contains("Saved a new ").should("exist");
+  });
+  it("Updates Meta Title", () => {
+    cy.get("[data-cy=metaTitle]")
+      .find("input")
+      .click()
+      .clear()
+      .type("new Meta Title");
+
     cy.get("#SaveItemButton").should("not.be.disabled");
     cy.get("#SaveItemButton").click();
-    cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
+    cy.contains("Saved a new ").should("exist");
   });
   it("Updates Meta Description", () => {
     cy.get("[data-cy=metaDescription]")
@@ -63,9 +67,8 @@ describe("Meta", () => {
       .clear()
       .type("new Meta Description");
 
-    cy.get("#SaveItemButton").should("not.be.disabled");
     cy.get("#SaveItemButton").click();
-    cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
+    cy.contains("Saved a new ").should("exist");
   });
   it("Updates Meta Keywords", () => {
     cy.get("[data-cy=metaKeywords]")
@@ -74,17 +77,14 @@ describe("Meta", () => {
       .clear()
       .type("key, words, here");
 
-    cy.get("#SaveItemButton").should("not.be.disabled");
     cy.get("#SaveItemButton").click();
-    cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
+    cy.contains("Saved a new ").should("exist");
   });
   it("Selects Sitemap Priority", () => {
     cy.get("[data-cy=sitemapPriority] >  div").click();
     cy.get('[data-value="-1"]').click();
-    // cy.pause();
-    cy.get("#SaveItemButton").should("not.be.disabled");
     cy.get("#SaveItemButton").click();
-    cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
+    cy.contains("Saved a new ").should("exist");
   });
   it("Selects Canonical Tag Mode", () => {
     cy.get("[data-cy=canonicalTag] >  div").click();
@@ -95,9 +95,7 @@ describe("Meta", () => {
     cy.get('[data-value="0"]')
       .last()
       .click();
-    // cy.pause();
-    cy.get("#SaveItemButton").should("not.be.disabled");
     cy.get("#SaveItemButton").click();
-    cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
+    cy.contains("Saved a new ").should("exist");
   });
 });

@@ -8,7 +8,7 @@ import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { Select, Option } from "@zesty-io/core/Select";
 import { Button } from "@zesty-io/core/Button";
-import { notify } from "../../../../../../shell/store/notifications";
+import { notify } from "shell/store/notifications";
 
 import { updateSettings } from "../../../store/settings";
 

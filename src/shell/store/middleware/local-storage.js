@@ -27,13 +27,13 @@ export const localStorage = store => next => action => {
         // const items = store.getState().content;
         // Object.keys(items).forEach(itemZUID => {
         //   set(
-        //     `${zesty.site.zuid}:content:${itemZUID}`,
+        //     `${zesty.instance.ZUID}:content:${itemZUID}`,
         //     items[itemZUID]
         //   );
         // });
         //
         // // Merge existing IndexedDB keys with incoming item keys
-        // let currentKeys = get(`${zesty.site.zuid}:content`).then(
+        // let currentKeys = get(`${zesty.instance.ZUID}:content`).then(
         //   currentKeys => {
         //     if (!Array.isArray(currentKeys)) {
         //       currentKeys = [];
@@ -41,7 +41,7 @@ export const localStorage = store => next => action => {
         //     let keys = new Set(currentKeys);
         //     Object.keys(items).forEach(key => keys.add(key));
         //
-        //     set(`${zesty.site.zuid}:content`, Array.from(keys));
+        //     set(`${zesty.instance.ZUID}:content`, Array.from(keys));
         //   }
         // );
         break;
