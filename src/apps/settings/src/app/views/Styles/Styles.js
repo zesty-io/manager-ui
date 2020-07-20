@@ -268,6 +268,7 @@ export default connect(state => {
           </div>
         ))}
         <Button
+          id="SaveSettings"
           kind="save"
           className={styles.SaveBtn}
           onClick={sendData}
