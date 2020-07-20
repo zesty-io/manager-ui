@@ -57,29 +57,6 @@ describe("Actions in content editor", () => {
     cy.contains("Scheduled version", { timeout: 5000 }).should("exist");
   });
 
-  it("Filters list items based on search term", () => {
-    cy.visit("/content/6-0c960c-d1n0kx");
-    cy.get("input[name='filter']").type("turkey");
-    cy.contains("Turkey Run").should("exist");
-  });
-
-  it("Sorts list items", () => {
-    cy.visit("/content/6-0c960c-d1n0kx");
-    cy.get(".ItemList .SortBy")
-      .first()
-      .click();
-    cy.get(".ItemList article")
-      .first()
-      .contains("Parent pre selection with fast typing");
-
-    cy.get(".ItemList .SortBy")
-      .last()
-      .click();
-    cy.get(".ItemList article")
-      .first()
-      .contains("Self-Defense Class");
-  });
-
   it("Creates a new item", () => {
     cy.visit("/content/6-a1a600-k0b6f0/new");
 
