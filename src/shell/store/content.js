@@ -484,7 +484,7 @@ export function deleteItem(modelZUID, itemZUID) {
   };
 }
 
-export function publish(modelZUID, itemZUID, data) {
+export function publish(modelZUID, itemZUID, data, meta = {}) {
   return dispatch => {
     return request(
       `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`,
@@ -499,9 +499,13 @@ export function publish(modelZUID, itemZUID, data) {
       }
     )
       .then(() => {
+        const message = data.publishAt
+          ? `Scheduled version ${data.version} to publish on ${meta.localTime} in the ${meta.localTimezone} timezone`
+          : `Published version ${data.version}`;
+
         return dispatch(
           notify({
-            message: `Published version ${data.version}`,
+            message,
             kind: "save"
           })
         );
@@ -510,9 +514,12 @@ export function publish(modelZUID, itemZUID, data) {
         return dispatch(fetchItemPublishing(modelZUID, itemZUID));
       })
       .catch(() => {
+        const message = data.publishAt
+          ? `Error scheduling version ${data.version}`
+          : `Error publishing version ${data.version}`;
         return dispatch(
           notify({
-            message: `Error publishing version ${data.version}`,
+            message,
             kind: "error"
           })
         );
@@ -520,7 +527,7 @@ export function publish(modelZUID, itemZUID, data) {
   };
 }
 
-export function unpublish(modelZUID, itemZUID, publishZUID) {
+export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
   return dispatch => {
     return request(
       `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings/${publishZUID}`,
@@ -528,20 +535,30 @@ export function unpublish(modelZUID, itemZUID, publishZUID) {
         method: "DELETE"
       }
     )
-      .then(() => {
+      .then(res => {
+        if (res.error) {
+          throw res.error;
+        }
+        const message = options.version
+          ? `Unscheduled Version ${options.version}`
+          : `Unpublished Item ${itemZUID}`;
         return dispatch(
           notify({
-            message: `Unpublished Item ${itemZUID}`
+            message,
+            kind: "save"
           })
         );
       })
       .then(() => {
         return dispatch(fetchItemPublishing(modelZUID, itemZUID));
       })
-      .catch(() => {
+      .catch(err => {
+        const message = options.version
+          ? `Error Unscheduling Version ${options.version}`
+          : `Error Unpublishing Item ${itemZUID}`;
         return dispatch(
           notify({
-            message: `Error Unpublishing Item ${itemZUID}`,
+            message,
             kind: "error"
           })
         );
