@@ -484,9 +484,7 @@ export function deleteItem(modelZUID, itemZUID) {
   };
 }
 
-// Implementation through PHP endpoint
-// TODO: need version ZUID of current version
-export function publish(modelZUID, itemZUID, data = {}) {
+export function publish(modelZUID, itemZUID, data) {
   return dispatch => {
     return request(
       `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`,
@@ -499,10 +497,26 @@ export function publish(modelZUID, itemZUID, data = {}) {
           ...data
         }
       }
-    ).then(res => {
-      dispatch(fetchItemPublishing(modelZUID, itemZUID));
-      return res;
-    });
+    )
+      .then(() => {
+        return dispatch(
+          notify({
+            message: `Published version ${data.version}`,
+            kind: "save"
+          })
+        );
+      })
+      .then(() => {
+        return dispatch(fetchItemPublishing(modelZUID, itemZUID));
+      })
+      .catch(() => {
+        return dispatch(
+          notify({
+            message: `Error publishing version ${data.version}`,
+            kind: "error"
+          })
+        );
+      });
   };
 }
 
@@ -513,10 +527,25 @@ export function unpublish(modelZUID, itemZUID, publishZUID) {
       {
         method: "DELETE"
       }
-    ).then(res => {
-      dispatch(fetchItemPublishing(modelZUID, itemZUID));
-      return res;
-    });
+    )
+      .then(() => {
+        return dispatch(
+          notify({
+            message: `Unpublished Item ${itemZUID}`
+          })
+        );
+      })
+      .then(() => {
+        return dispatch(fetchItemPublishing(modelZUID, itemZUID));
+      })
+      .catch(() => {
+        return dispatch(
+          notify({
+            message: `Error Unpublishing Item ${itemZUID}`,
+            kind: "error"
+          })
+        );
+      });
   };
 }
 

@@ -20,11 +20,7 @@ export const Unpublish = React.memo(function Unpublish(props) {
     setLoading(true);
     props
       .dispatch(
-        unpublish(
-          props.item.meta.contentModelZUID,
-          props.item.meta.ZUID,
-          props.item.publishing.ZUID
-        )
+        unpublish(props.modelZUID, props.itemZUID, props.publishing.ZUID)
       )
       .finally(() => {
         setLoading(false);
