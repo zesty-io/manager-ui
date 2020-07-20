@@ -88,11 +88,11 @@ if (process.env.NODE_ENV === "production") {
     VERSION: pjson.version,
     ENV: "development",
 
-    API_ACCOUNTS: "https://accounts.api.dev.zesty.io/v1",
-    API_INSTANCE: ".api.dev.zesty.io/v1",
+    API_ACCOUNTS: "https://accounts.api.stage.zesty.io/v1",
+    API_INSTANCE: ".api.stage.zesty.io/v1",
     API_INSTANCE_PROTOCOL: "https://",
 
-    SERVICE_AUTH: "https://auth.api.dev.zesty.io",
+    SERVICE_AUTH: "https://auth.api.stage.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "https://dev-svc.zesty.io/media-manager-service",
     SERVICE_MEDIA_RESOLVER: "https://dev-svc.zesty.io/media-resolver-service",
