@@ -130,7 +130,7 @@ describe("Content Specs", () => {
         .find('[data-value="7-b939a4-457q19"]')
         .click();
 
-      cy.contains("#12-10741c-s5jkwg .Select", "All Field Types");
+      cy.contains("#12-10741c-s5jkwg .Select", "new Meta Title");
 
       // cy.get("#SaveItemButton").click({ force: true });
       // cy.contains("Saved a new ", { timeout: 3000 }).should("exist");
@@ -149,14 +149,14 @@ describe("Content Specs", () => {
     });
 
     // TODO: Need to confirm toggling of value
-    it.skip("Yes/No Field", () => {
+    it("Yes/No Field", () => {
       cy.get("#12-575f7c-trw1w3")
         .find("button")
         .click();
     });
 
     // TODO: Need to confirm toggling of value
-    it.skip("Yes/No Field: Custom Options", () => {
+    it("Yes/No Field: Custom Options", () => {
       cy.get("#12-8178cc-z37vq1")
         .find("button")
         .click();
