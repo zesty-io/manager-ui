@@ -42,7 +42,7 @@ export const ItemSettings = React.memo(
               <ItemParent
                 itemZUID={meta.ZUID}
                 modelZUID={props.modelZUID}
-                contentModelItems={props.contentModelItems}
+                content={props.content}
                 parentZUID={web.parentZUID}
                 path={web.path}
                 onChange={onChange}
@@ -96,7 +96,7 @@ export const ItemSettings = React.memo(
     );
   },
   (prevProps, nextProps) => {
-    // NOTE We want to update children when the `item` changes but only when `contentModelItems` length changes
+    // NOTE We want to update children when the `item` changes but only when `content` length changes
 
     // If the model we are viewing changes we need to re-render
     if (prevProps.modelZUID !== nextProps.modelZUID) {
@@ -109,9 +109,9 @@ export const ItemSettings = React.memo(
       return false;
     }
 
-    // Avoid referential equality check and compare contentModelItems length to see if new ones where added
-    let prevItemsLen = Object.keys(prevProps["contentModelItems"]).length;
-    let nextItemsLen = Object.keys(nextProps["contentModelItems"]).length;
+    // Avoid referential equality check and compare content length to see if new ones where added
+    let prevItemsLen = Object.keys(prevProps["content"]).length;
+    let nextItemsLen = Object.keys(nextProps["content"]).length;
     if (prevItemsLen !== nextItemsLen) {
       return false;
     }

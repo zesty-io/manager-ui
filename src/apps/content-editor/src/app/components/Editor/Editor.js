@@ -38,7 +38,9 @@ export default class Editor extends PureComponent {
     }
   };
 
-  onChange = (name, value, datatype) => {
+  onChange = (value, name, datatype) => {
+    console.log("onChange", name, value, datatype);
+
     if (!name) {
       throw new Error("Input is missing name attribute");
     }

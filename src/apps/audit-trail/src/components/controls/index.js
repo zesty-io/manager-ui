@@ -15,7 +15,7 @@ export default React.memo(function AuditControls() {
       <Search
         className={styles.SearchLogs}
         placeholder="Search AuditTrail Logs"
-        onChange={(name, value) => {
+        onChange={value => {
           dispatch(searchInViewLogs(value.trim()));
         }}
       />

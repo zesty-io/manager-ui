@@ -12,8 +12,8 @@ import { LinkedContent } from "./components/LinkedContent";
 import { AuditTrail } from "./components/AuditTrail";
 
 import { fetchAuditTrail } from "../../../store/auditTrail";
-import { fetchItems } from "../../../store/contentModelItems";
-import { fetchFields } from "../../../store/contentModelFields";
+import { fetchItems } from "shell/store/content";
+import { fetchFields } from "shell/store/fields";
 
 import styles from "./FileDrawer.less";
 export const FileDrawer = React.memo(function FileDrawer(props) {

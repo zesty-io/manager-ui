@@ -265,7 +265,7 @@ export function searchItems(itemZUID) {
 
 export function fetchItems(modelZUID) {
   if (!modelZUID) {
-    console.error("contentModelItems:fetchItems() Missing modelZUID");
+    console.error("content:fetchItems() Missing modelZUID");
     console.trace();
     return () => {};
   }
