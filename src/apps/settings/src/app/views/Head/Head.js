@@ -72,7 +72,7 @@ export default connect(state => {
       <div className={styles.Head}>
         <main className={styles.Tags}>
           <h1 className={styles.Warn}>
-            <Button kind="secondary" onClick={onAdd}>
+            <Button kind="secondary" onClick={onAdd} id="NewHeadtag">
               <i className="fa fa-plus" />
               New head tag
             </Button>

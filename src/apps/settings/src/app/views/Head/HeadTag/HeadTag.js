@@ -127,7 +127,12 @@ export const HeadTag = props => {
           <i className="fa fa-plus" /> Add attribute
         </Button>
         {tag.hasOwnProperty("createdAt") ? (
-          <Button className={styles.Delete} onClick={onDelete} kind="warn">
+          <Button
+            className={styles.Delete}
+            onClick={onDelete}
+            kind="warn"
+            id="DelteHeadtag"
+          >
             <i className={`fa fa-trash ${styles.Del}`} />
             Delete Tag
           </Button>
@@ -144,6 +149,7 @@ export const HeadTag = props => {
             <div className={styles.Pair} key={index}>
               <FieldTypeText
                 label="Attribute"
+                id="Attribute"
                 name={`tag-${tag.ZUID}-${index}-attr`}
                 value={attr.key}
                 disabled={attr.key === "custom"}
