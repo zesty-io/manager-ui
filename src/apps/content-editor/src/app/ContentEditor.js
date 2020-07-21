@@ -2,8 +2,10 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 
-import { fetchNav } from "../store/navContent";
 import { fetchModels } from "shell/store/models";
+import { fetchItemPublishings } from "shell/store/content";
+import { fetchNav } from "store/navContent";
+import { fetchHeadTags } from "store/headTags";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -36,6 +38,13 @@ export default connect(state => {
         this.props.dispatch(fetchNav());
         this.props.dispatch(fetchModels());
       });
+
+      // Kick off loading data before app mount
+      // to decrease time to first interaction
+      ZESTY_REDUX_STORE.dispatch(fetchNav());
+      ZESTY_REDUX_STORE.dispatch(fetchModels());
+      ZESTY_REDUX_STORE.dispatch(fetchItemPublishings());
+      ZESTY_REDUX_STORE.dispatch(fetchHeadTags());
     }
     render() {
       return (
