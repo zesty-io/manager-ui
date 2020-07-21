@@ -140,7 +140,7 @@ export default React.memo(function SetRow(props) {
               return (
                 <ToggleCell
                   key={field.name + props.itemZUID}
-                  className={styles.Cell}
+                  className={cx("ToggleCell", styles.Cell)}
                   name={field.name}
                   field={field}
                   value={props.data[field.name]}
@@ -163,7 +163,7 @@ export default React.memo(function SetRow(props) {
               return (
                 <SortCell
                   key={field.name + props.itemZUID}
-                  className={styles.Cell}
+                  className={cx("SortCell", styles.Cell)}
                   name={field.name}
                   value={props.data[field.name]}
                   onChange={(name, value) => {

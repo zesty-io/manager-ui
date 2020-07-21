@@ -258,17 +258,24 @@ export default connect((state, props) => {
             saving: false
           });
 
-          notify({
-            message: `All ${this.props.model.label} changes saved`,
-            kind: "save"
-          });
+          this.props.dispatch(
+            notify({
+              message: `All ${this.props.model.label} changes saved`,
+              kind: "save"
+            })
+          );
         })
         .catch(err => {
-          console.error("ItemList:saveItems:error", err);
-          notify({
-            message: `There was an issue saving these changes`,
-            kind: "warn"
+          this.setState({
+            saving: false
           });
+          console.error("ItemList:saveItems:error", err);
+          this.props.dispatch(
+            notify({
+              message: `There was an issue saving these changes`,
+              kind: "warn"
+            })
+          );
         });
     };
 

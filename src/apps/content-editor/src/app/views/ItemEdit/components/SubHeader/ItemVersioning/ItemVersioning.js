@@ -33,20 +33,7 @@ export class ItemVersioning extends React.PureComponent {
           version: this.props.item.meta.version
         })
       )
-      .then(() => {
-        notify({
-          message: `Published version ${this.props.item.meta.version}`,
-          kind: "save"
-        });
-        this.setState({
-          publishing: false
-        });
-      })
-      .catch(() => {
-        notify({
-          message: `Error publishing version ${this.props.item.meta.version}`,
-          kind: "error"
-        });
+      .finally(() => {
         this.setState({
           publishing: false
         });

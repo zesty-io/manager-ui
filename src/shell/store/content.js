@@ -484,9 +484,7 @@ export function deleteItem(modelZUID, itemZUID) {
   };
 }
 
-// Implementation through PHP endpoint
-// TODO: need version ZUID of current version
-export function publish(modelZUID, itemZUID, data = {}) {
+export function publish(modelZUID, itemZUID, data, meta = {}) {
   return dispatch => {
     return request(
       `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`,
@@ -499,24 +497,72 @@ export function publish(modelZUID, itemZUID, data = {}) {
           ...data
         }
       }
-    ).then(res => {
-      dispatch(fetchItemPublishing(modelZUID, itemZUID));
-      return res;
-    });
+    )
+      .then(() => {
+        const message = data.publishAt
+          ? `Scheduled version ${data.version} to publish on ${meta.localTime} in the ${meta.localTimezone} timezone`
+          : `Published version ${data.version}`;
+
+        return dispatch(
+          notify({
+            message,
+            kind: "save"
+          })
+        );
+      })
+      .then(() => {
+        return dispatch(fetchItemPublishing(modelZUID, itemZUID));
+      })
+      .catch(() => {
+        const message = data.publishAt
+          ? `Error scheduling version ${data.version}`
+          : `Error publishing version ${data.version}`;
+        return dispatch(
+          notify({
+            message,
+            kind: "error"
+          })
+        );
+      });
   };
 }
 
-export function unpublish(modelZUID, itemZUID, publishZUID) {
+export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
   return dispatch => {
     return request(
       `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings/${publishZUID}`,
       {
         method: "DELETE"
       }
-    ).then(res => {
-      dispatch(fetchItemPublishing(modelZUID, itemZUID));
-      return res;
-    });
+    )
+      .then(res => {
+        if (res.error) {
+          throw res.error;
+        }
+        const message = options.version
+          ? `Unscheduled Version ${options.version}`
+          : `Unpublished Item ${itemZUID}`;
+        return dispatch(
+          notify({
+            message,
+            kind: "save"
+          })
+        );
+      })
+      .then(() => {
+        return dispatch(fetchItemPublishing(modelZUID, itemZUID));
+      })
+      .catch(err => {
+        const message = options.version
+          ? `Error Unscheduling Version ${options.version}`
+          : `Error Unpublishing Item ${itemZUID}`;
+        return dispatch(
+          notify({
+            message,
+            kind: "error"
+          })
+        );
+      });
   };
 }
 
