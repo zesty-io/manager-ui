@@ -10,7 +10,7 @@ describe("General", () => {
       .type("example", { force: true });
     cy.get("#saveSettings").should("not.be.disabled");
     cy.get("#saveSettings").click();
-    cy.get("#zestyGrowler");
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -26,6 +26,7 @@ describe("Developer", () => {
       .type("example", { force: true });
     cy.get("#saveSettings").should("not.be.disabled");
     cy.get("#saveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -41,6 +42,7 @@ describe("Contact form", () => {
       .type("myemail@gmail", { force: true });
     cy.get("#saveSettings").should("not.be.disabled");
     cy.get("#saveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -56,6 +58,7 @@ describe("Verification", () => {
       .type("example", { force: true });
     cy.get("#saveSettings").should("not.be.disabled");
     cy.get("#saveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -71,6 +74,7 @@ describe("SEO", () => {
       .type("example", { force: true });
     cy.get("#saveSettings").should("not.be.disabled");
     cy.get("#saveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -86,6 +90,7 @@ describe("Tag manager", () => {
       .type("example", { force: true });
     cy.get("#saveSettings").should("not.be.disabled");
     cy.get("#saveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -101,6 +106,7 @@ describe("Analytics", () => {
       .type("example", { force: true });
     cy.get("#saveSettings").should("not.be.disabled");
     cy.get("#saveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -116,6 +122,7 @@ describe("Twitter", () => {
       .type("example", { force: true });
     cy.get("#saveSettings").should("not.be.disabled");
     cy.get("#saveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -131,5 +138,6 @@ describe("stripe", () => {
       .type("example", { force: true });
     cy.get("#saveSettings").should("not.be.disabled");
     cy.get("#saveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });

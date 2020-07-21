@@ -150,20 +150,22 @@ export default connect(state => {
         );
 
         delete variantsSelected[font];
-
-        notify({
-          kind: "success",
-          message: "Font installed"
-        });
+        props.dispatch(
+          notify({
+            kind: "success",
+            message: "Font installed"
+          })
+        );
       })
       .catch(err => {
         console.log(err);
         setLoading(false);
-
-        notify({
-          kind: "success",
-          message: err.message
-        });
+        props.dispatch(
+          notify({
+            kind: "success",
+            message: err.message
+          })
+        );
       });
   }
 
@@ -234,6 +236,7 @@ export default connect(state => {
               <div>
                 <Button
                   kind="save"
+                  id="InstallFont"
                   className={styles.SaveBtn}
                   onClick={() => onUpdateFont(itemFont.family)}
                   disabled={isLoading}

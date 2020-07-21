@@ -10,7 +10,7 @@ describe("Body colors & spacing", () => {
       .type("1180px", { force: true });
     cy.get("#SaveSettings").should("not.be.disabled");
     cy.get("#SaveSettings").click();
-    cy.get("#zestyGrowler").should("have.class", "green-growl");
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -26,6 +26,7 @@ describe("Typography", () => {
       .get("li", { force: true });
     cy.get("#SaveSettings").should("not.be.disabled");
     cy.get("#SaveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -41,6 +42,7 @@ describe("Responsive grid", () => {
       .type("10px", { force: true });
     cy.get("#SaveSettings").should("not.be.disabled");
     cy.get("#SaveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -56,6 +58,7 @@ describe("Html elements", () => {
       .type("#000", { force: true });
     cy.get("#SaveSettings").should("not.be.disabled");
     cy.get("#SaveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -71,6 +74,7 @@ describe("Links", () => {
       .get("li", { force: true });
     cy.get("#SaveSettings").should("not.be.disabled");
     cy.get("#SaveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -86,6 +90,7 @@ describe("Navigation", () => {
       .type("#000", { force: true });
     cy.get("#SaveSettings").should("not.be.disabled");
     cy.get("#SaveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -101,6 +106,7 @@ describe("Navigation", () => {
       .type("#000", { force: true });
     cy.get("#SaveSettings").should("not.be.disabled");
     cy.get("#SaveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -116,6 +122,7 @@ describe("Buttons", () => {
       .type("#000", { force: true });
     cy.get("#SaveSettings").should("not.be.disabled");
     cy.get("#SaveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -131,6 +138,7 @@ describe("Buttons", () => {
       .type("#000", { force: true });
     cy.get("#SaveSettings").should("not.be.disabled");
     cy.get("#SaveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -146,6 +154,7 @@ describe("Interactive elements", () => {
       .type("300px", { force: true });
     cy.get("#SaveSettings").should("not.be.disabled");
     cy.get("#SaveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -161,6 +170,7 @@ describe("Forms", () => {
       .type("#000", { force: true });
     cy.get("#SaveSettings").should("not.be.disabled");
     cy.get("#SaveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });
 
@@ -176,5 +186,6 @@ describe("UI Styling", () => {
       .type("#000", { force: true });
     cy.get("#SaveSettings").should("not.be.disabled");
     cy.get("#SaveSettings").click();
+    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
   });
 });

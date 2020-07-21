@@ -107,17 +107,21 @@ export default connect(state => {
     Promise.all(requests)
       .then(responses => {
         setLoading(false);
-        notify({
-          kind: "success",
-          message: "Data has been updated"
-        });
+        props.dispatch(
+          notify({
+            kind: "success",
+            message: "Data has been updated"
+          })
+        );
       })
       .catch(err => {
         setLoading(false);
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       });
   }
 

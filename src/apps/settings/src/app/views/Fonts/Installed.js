@@ -128,16 +128,20 @@ export default function Installed() {
 
     request
       .then(res => {
-        notify({
-          kind: "success",
-          message: "Font has been removed"
-        });
+        props.dispatch(
+          notify({
+            kind: "success",
+            message: "Font has been removed"
+          })
+        );
       })
       .catch(err => {
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       });
   }
 
@@ -188,6 +192,7 @@ export default function Installed() {
                 </p>
                 <Button
                   kind="warn"
+                  id="RemoveFont"
                   onClick={() =>
                     toggleEnableFont(variant.label, "0", font.font)
                   }
