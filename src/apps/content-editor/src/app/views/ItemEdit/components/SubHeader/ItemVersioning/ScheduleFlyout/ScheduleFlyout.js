@@ -59,34 +59,13 @@ export default class ScheduleFlyout extends Component {
         unpublish(
           this.props.item.meta.contentModelZUID,
           this.props.item.meta.ZUID,
-          this.props.item.scheduling.ZUID
+          this.props.item.scheduling.ZUID,
+          { version: this.props.item.scheduling.version }
         )
       )
-      .then(res => {
+      .finally(() => {
         this.setState({
           scheduling: false
-        });
-
-        if (res.error) {
-          notify({
-            message: `There was an error unscheduling version ${this.props.item.scheduling.version}: ${res.error}`,
-            kind: "error"
-          });
-        } else {
-          notify({
-            message: `Unscheduled version ${this.props.item.scheduling.version}`,
-            kind: "save"
-          });
-        }
-      })
-      .catch(() => {
-        this.setState({
-          scheduling: false
-        });
-
-        notify({
-          message: `Error unscheduling version ${this.props.item.scheduling.version}`,
-          kind: "error"
         });
       });
   };
@@ -116,25 +95,16 @@ export default class ScheduleFlyout extends Component {
           {
             publishAt: utcTime,
             version: this.props.item.meta.version
+          },
+          {
+            localTime: tzTime,
+            localTimezone: this.state.selectedTimezone
           }
         )
       )
-      .then(() => {
+      .finally(() => {
         this.setState({
           scheduling: false
-        });
-        notify({
-          message: `Scheduled version ${this.props.item.meta.version} to publish on ${tzTime} in the ${this.state.selectedTimezone} timezone`,
-          kind: "save"
-        });
-      })
-      .catch(() => {
-        this.setState({
-          scheduling: false
-        });
-        notify({
-          message: `Error scheduling version ${this.props.item.meta.version}`,
-          kind: "error"
         });
       });
   };
@@ -198,6 +168,7 @@ export default class ScheduleFlyout extends Component {
             <CardFooter>
               <Button
                 kind="secondary"
+                id="UnschedulePublishButton"
                 disabled={this.state.scheduling}
                 onClick={this.handleCancelPublish}
               >
@@ -248,7 +219,11 @@ export default class ScheduleFlyout extends Component {
                 <FontAwesomeIcon icon={faCalendarPlus} /> Schedule Publishing
                 Version {this.props.item.meta.version}
               </Button>
-              <Button kind="cancel" onClick={this.props.toggleOpen}>
+              <Button
+                kind="cancel"
+                id="SchedulePublishClose"
+                onClick={this.props.toggleOpen}
+              >
                 <FontAwesomeIcon icon={faTimesCircle} /> Close
               </Button>
             </CardFooter>
