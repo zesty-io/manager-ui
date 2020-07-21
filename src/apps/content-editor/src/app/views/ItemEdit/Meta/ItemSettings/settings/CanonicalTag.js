@@ -37,12 +37,12 @@ export const CanonicalTag = React.memo(function CanonicalTag(props) {
   };
 
   const handleWhitelist = evt => {
-    props.onChange(evt.target.name, evt.target.value);
+    props.onChange(evt.target.value, evt.target.name);
     setWhitelist(evt.target.value);
   };
 
   const handleCustom = evt => {
-    props.onChange(evt.target.name, evt.target.value);
+    props.onChange(evt.target.value, evt.target.name);
     setCustom(evt.target.value);
   };
 

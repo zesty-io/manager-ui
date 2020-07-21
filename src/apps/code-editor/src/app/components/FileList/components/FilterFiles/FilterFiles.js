@@ -9,7 +9,7 @@ export function FilterFiles(props) {
       name="filterFiles"
       placeholder="Filter file list by name, zuid or code"
       className={styles.FilterFiles}
-      onChange={(name, term) => {
+      onChange={term => {
         term = term.trim().toLowerCase();
         if (term) {
           props.setShownFiles(
