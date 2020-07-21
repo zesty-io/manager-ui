@@ -3,7 +3,12 @@ import { useDispatch } from "react-redux";
 import { useLocation, useHistory } from "react-router";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faArrowsAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSearch,
+  faArrowsAlt,
+  faCaretDown,
+  faCaretLeft
+} from "@fortawesome/free-solid-svg-icons";
 import { ReorderNav } from "../ReorderNav";
 import { Nav } from "@zesty-io/core/Nav";
 import { Button } from "@zesty-io/core/Button";
@@ -28,12 +33,8 @@ export function ContentNav(props) {
     setSelected(location.pathname);
   }, [location]);
 
-  const handleOpen = path => {
+  const collapseNode = path => {
     dispatch(collapseNavItem(path));
-  };
-
-  const handleHide = path => {
-    dispatch(hideNavItem(path));
   };
 
   const handleCreateSelect = (name, ZUID) => {
@@ -41,6 +42,15 @@ export function ContentNav(props) {
       history.push(`/content/${ZUID}/new`);
     }
   };
+
+  const actions = [
+    {
+      icon: "fas fa-eye-slash",
+      onClick: path => {
+        dispatch(hideNavItem(path));
+      }
+    }
+  ];
 
   return (
     <React.Fragment>
@@ -99,8 +109,8 @@ export function ContentNav(props) {
           className={styles.Nav}
           tree={props.nav.nav}
           selected={selected}
-          handleOpen={handleOpen}
-          handleHide={handleHide}
+          collapseNode={collapseNode}
+          actions={actions}
         />
 
         <h1 className={styles.NavTitle}>Headless Content Models</h1>
@@ -109,8 +119,8 @@ export function ContentNav(props) {
           className={styles.Nav}
           tree={props.nav.headless}
           selected={selected}
-          handleOpen={handleOpen}
-          handleHide={handleHide}
+          collapseNode={collapseNode}
+          actions={actions}
         />
 
         <div className={styles.HiddenNav}>
@@ -119,17 +129,19 @@ export function ContentNav(props) {
             onClick={() => setHiddenOpen(!hiddenOpen)}
           >
             <span style={{ flex: 1 }}>Hidden Items</span>
-            <i
-              className={hiddenOpen ? "fa fa-caret-down" : "fa fa-caret-left"}
-            />
+            {hiddenOpen ? (
+              <FontAwesomeIcon icon={faCaretDown} />
+            ) : (
+              <FontAwesomeIcon icon={faCaretLeft} />
+            )}
           </h1>
           <Nav
             id="HiddenNav"
             className={(styles.Nav, hiddenOpen ? "" : styles.HiddenNavClosed)}
             tree={props.nav.hidden}
             selected={selected}
-            handleOpen={handleOpen}
-            handleHide={handleHide}
+            collapseNode={collapseNode}
+            actions={actions}
           />
         </div>
       </div>

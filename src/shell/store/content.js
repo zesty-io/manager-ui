@@ -4,7 +4,7 @@ import cloneDeep from "lodash.clonedeep";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 
-// import { fetchNav } from "./contentNav";
+// import { fetchNav } from "./navContent";
 
 export function content(state = {}, action) {
   const item = state[action.itemZUID];
@@ -476,7 +476,7 @@ export function deleteItem(modelZUID, itemZUID) {
         );
 
         // Always update content navigation after deleting an item
-        // NOTE: alternatively the contentNav store could listen for the `REMOVE_ITEM` action
+        // NOTE: alternatively the navContent store could listen for the `REMOVE_ITEM` action
         // dispatch(fetchNav());
       }
       return res;
