@@ -7,9 +7,10 @@ describe("General", () => {
   it("Edits Search engine crawler", () => {
     cy.get("input")
       .first()
-      .check(1, { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
-    cy.get("#SaveSettings").click();
+      .type("example", { force: true });
+    cy.get("#saveSettings").should("not.be.disabled");
+    cy.get("#saveSettings").click();
+    cy.get("#zestyGrowler");
   });
 });
 
@@ -22,9 +23,9 @@ describe("Developer", () => {
   it("Edits Use parsley debugger", () => {
     cy.get("input")
       .first()
-      .check(1, { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
-    cy.get("#SaveSettings").click();
+      .type("example", { force: true });
+    cy.get("#saveSettings").should("not.be.disabled");
+    cy.get("#saveSettings").click();
   });
 });
 
@@ -38,8 +39,8 @@ describe("Contact form", () => {
     cy.get("input")
       .first()
       .type("myemail@gmail", { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
-    cy.get("#SaveSettings").click();
+    cy.get("#saveSettings").should("not.be.disabled");
+    cy.get("#saveSettings").click();
   });
 });
 
@@ -53,8 +54,8 @@ describe("Verification", () => {
     cy.get("input")
       .first()
       .type("example", { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
-    cy.get("#SaveSettings").click();
+    cy.get("#saveSettings").should("not.be.disabled");
+    cy.get("#saveSettings").click();
   });
 });
 
@@ -68,8 +69,8 @@ describe("SEO", () => {
     cy.get("input")
       .first()
       .type("example", { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
-    cy.get("#SaveSettings").click();
+    cy.get("#saveSettings").should("not.be.disabled");
+    cy.get("#saveSettings").click();
   });
 });
 
@@ -83,8 +84,8 @@ describe("Tag manager", () => {
     cy.get("input")
       .first()
       .type("example", { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
-    cy.get("#SaveSettings").click();
+    cy.get("#saveSettings").should("not.be.disabled");
+    cy.get("#saveSettings").click();
   });
 });
 
@@ -98,8 +99,8 @@ describe("Analytics", () => {
     cy.get("input")
       .first()
       .type("example", { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
-    cy.get("#SaveSettings").click();
+    cy.get("#saveSettings").should("not.be.disabled");
+    cy.get("#saveSettings").click();
   });
 });
 
@@ -113,8 +114,8 @@ describe("Twitter", () => {
     cy.get("input")
       .first()
       .type("example", { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
-    cy.get("#SaveSettings").click();
+    cy.get("#saveSettings").should("not.be.disabled");
+    cy.get("#saveSettings").click();
   });
 });
 
@@ -127,8 +128,8 @@ describe("stripe", () => {
   it("Edits store is live", () => {
     cy.get("input")
       .first()
-      .check(1, { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
-    cy.get("#SaveSettings").click();
+      .type("example", { force: true });
+    cy.get("#saveSettings").should("not.be.disabled");
+    cy.get("#saveSettings").click();
   });
 });

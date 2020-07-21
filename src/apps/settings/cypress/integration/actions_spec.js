@@ -10,6 +10,7 @@ describe("Body colors & spacing", () => {
       .type("1180px", { force: true });
     cy.get("#SaveSettings").should("not.be.disabled");
     cy.get("#SaveSettings").click();
+    cy.get("#zestyGrowler").should("have.class", "green-growl");
   });
 });
 
@@ -20,9 +21,9 @@ describe("Typography", () => {
   });
 
   it("Edits typography", () => {
-    cy.get("select")
+    cy.get("ul")
       .first()
-      .select("Abel", { force: true });
+      .get("li", { force: true });
     cy.get("#SaveSettings").should("not.be.disabled");
     cy.get("#SaveSettings").click();
   });
@@ -65,9 +66,9 @@ describe("Links", () => {
   });
 
   it("Edits link over decoration", () => {
-    cy.get("select")
+    cy.get("ul")
       .first()
-      .select("none", { force: true });
+      .get("li", { force: true });
     cy.get("#SaveSettings").should("not.be.disabled");
     cy.get("#SaveSettings").click();
   });
