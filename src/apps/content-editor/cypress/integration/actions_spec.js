@@ -43,18 +43,28 @@ describe("Actions in content editor", () => {
   });
 
   // TODO: fix race condition so schedule publish will work
-  it.skip("Schedules a Publish for an item", () => {
+  it("Schedules a Publish for an item", () => {
+    // TODO: remove reload when UI state is consistent
+    cy.reload();
     cy.get("#PublishScheduleButton").click();
     // select date and time
     cy.get(".form-control")
-      .last()
+      .first()
       .click();
-    cy.focused().type(
-      "{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{enter}{esc}"
-    );
-    cy.get("#SchedulePublishButton").click({ force: true });
+    cy.get(".flatpickr-calendar.open .flatpickr-next-month").click();
+    cy.get(".flatpickr-calendar.open .flatpickr-day:not(.prevMonthDay)")
+      .first()
+      .click();
+    cy.get(".flatpickr-calendar.open .flatpickr-confirm").click();
+    cy.get("#SchedulePublishButton").click();
+    cy.contains("Scheduled version").should("exist");
+    cy.get("#SchedulePublishClose").click();
+  });
 
-    cy.contains("Scheduled version", { timeout: 5000 }).should("exist");
+  it("Unschedules a Publish for an item", () => {
+    cy.get("#PublishScheduleButton").click();
+    cy.get("#UnschedulePublishButton").click();
+    cy.get("#SchedulePublishClose").click();
   });
 
   it("Creates a new item", () => {

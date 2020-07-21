@@ -168,6 +168,7 @@ export default class ScheduleFlyout extends Component {
             <CardFooter>
               <Button
                 kind="secondary"
+                id="UnschedulePublishButton"
                 disabled={this.state.scheduling}
                 onClick={this.handleCancelPublish}
               >
@@ -218,7 +219,11 @@ export default class ScheduleFlyout extends Component {
                 <FontAwesomeIcon icon={faCalendarPlus} /> Schedule Publishing
                 Version {this.props.item.meta.version}
               </Button>
-              <Button kind="cancel" onClick={this.props.toggleOpen}>
+              <Button
+                kind="cancel"
+                id="SchedulePublishClose"
+                onClick={this.props.toggleOpen}
+              >
                 <FontAwesomeIcon icon={faTimesCircle} /> Close
               </Button>
             </CardFooter>
