@@ -96,7 +96,7 @@ export function FieldAdd(props) {
           name="type"
           options={FIELD_TYPES}
           defaultOptText="— Select a Field Type —"
-          onChange={(key, val) => {
+          onChange={val => {
             setField({ ...field, datatype: val });
           }}
         />
@@ -132,7 +132,7 @@ export function FieldAdd(props) {
             field={field}
             new={true}
             dispatch={props.dispatch}
-            updateValue={(name, val) =>
+            updateValue={(val, name) =>
               setField({
                 ...field,
                 [name]: val,
@@ -146,7 +146,7 @@ export function FieldAdd(props) {
                 dirty: true
               });
             }}
-            updateFieldSetting={(name, val) =>
+            updateFieldSetting={(val, name) =>
               setField({
                 ...field,
                 settings: {

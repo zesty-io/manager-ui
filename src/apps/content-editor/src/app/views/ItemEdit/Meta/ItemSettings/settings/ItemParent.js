@@ -27,7 +27,7 @@ export const ItemParent = connect(state => {
         parentOptions(props.path, props.content)
       );
 
-      const onSearch = debounce((_, term) => {
+      const onSearch = debounce(term => {
         if (term) {
           setLoading(true);
           props.dispatch(searchItems(term)).then(res => {
@@ -81,7 +81,7 @@ export const ItemParent = connect(state => {
             parentZUID = result.ZUID;
 
             // Update redux store so if the item is saved we know it's parent
-            props.onChange("parentZUID", parentZUID);
+            props.onChange(parentZUID, "parentZUID");
           }
         }
 

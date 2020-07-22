@@ -77,8 +77,8 @@ export class HeadTag extends React.Component {
             className={styles.DropDown}
             name={tag.ZUID}
             label="Tag"
-            onChange={(value, name) => {
-              dispatch(updateTagType(tag.ZUID, name));
+            onChange={value => {
+              dispatch(updateTagType(tag.ZUID, value));
             }}
             value={tag.type}
             options={[

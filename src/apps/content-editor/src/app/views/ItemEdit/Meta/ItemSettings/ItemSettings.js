@@ -20,7 +20,7 @@ export const ItemSettings = React.memo(
     web = web || {};
 
     const onChange = useCallback(
-      (name, value) => {
+      (value, name) => {
         if (!name) {
           throw new Error("Input is missing name attribute");
         }

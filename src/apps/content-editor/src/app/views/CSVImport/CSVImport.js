@@ -148,7 +148,7 @@ class CSVImport extends Component {
     this.setState({ mappedItems, warn });
   };
 
-  handleWebToCSVMap = (webKey, csvCol) => {
+  handleWebToCSVMap = (csvCol, webKey) => {
     this.setState({
       webMaps: {
         ...this.state.webMaps,

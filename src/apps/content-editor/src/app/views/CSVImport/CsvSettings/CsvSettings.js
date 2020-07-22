@@ -138,7 +138,7 @@ class CanonicalTag extends Component {
           <div>
             <Select
               name="canonicalTagMode"
-              onSelect={(name, value) => {
+              onSelect={(value, name) => {
                 this.setState({ canonicalTagMode: value });
                 this.props.onChange(Number(value), name);
               }}

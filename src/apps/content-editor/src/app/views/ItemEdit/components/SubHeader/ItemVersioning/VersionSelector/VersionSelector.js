@@ -42,7 +42,7 @@ export default connect((state, props) => {
     }, [props.latestVersionNum]);
 
     // Set item editing view to selected version
-    const onSelect = (name, versionNumber) => {
+    const onSelect = versionNumber => {
       const version = props.versions.find(
         version => version.meta.version == versionNumber
       );

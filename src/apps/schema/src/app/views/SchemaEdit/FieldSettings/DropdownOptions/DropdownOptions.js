@@ -56,7 +56,7 @@ export function DropdownOptions(props) {
             label="Option Label"
             name="value"
             value={option.value}
-            onChange={(name, val) => {
+            onChange={(val, name) => {
               updateOption(option, i, name, val);
             }}
           />
@@ -65,7 +65,7 @@ export function DropdownOptions(props) {
             label="Option Value"
             name="key"
             value={option.key}
-            onChange={(name, val) => {
+            onChange={(val, name) => {
               updateOption(option, i, name, val);
             }}
           />

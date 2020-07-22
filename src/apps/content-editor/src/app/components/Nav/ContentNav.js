@@ -37,7 +37,7 @@ export function ContentNav(props) {
     dispatch(collapseNavItem(path));
   };
 
-  const handleCreateSelect = (name, ZUID) => {
+  const handleCreateSelect = ZUID => {
     if (ZUID && ZUID != "0") {
       history.push(`/content/${ZUID}/new`);
     }

@@ -11,11 +11,11 @@ import styles from "./OneToManyCell.less";
 export class OneToManyCell extends PureComponent {
   onRemove = (name, itemZUID) => {
     this.props.onRemove(
-      this.props.name,
       this.props.value
         .split(",")
         .filter(item => item !== itemZUID)
-        .join(",")
+        .join(","),
+      this.props.name
     );
   };
 

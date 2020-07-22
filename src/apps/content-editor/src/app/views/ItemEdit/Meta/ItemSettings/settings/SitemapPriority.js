@@ -14,9 +14,9 @@ export const SitemapPriority = React.memo(function SitemapPriority(props) {
       <Select
         name="sitemapPriority"
         value={props.sitemapPriority || "-1.0"}
-        onSelect={(name, value) => {
+        onSelect={(value, name) => {
           // this value is coerced here due to API restrictions
-          props.onChange(name, Number(value));
+          props.onChange(Number(value), name);
         }}
       >
         <Option value={-1.0} text="Automatically Set Priority" />

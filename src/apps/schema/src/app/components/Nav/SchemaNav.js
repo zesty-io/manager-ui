@@ -44,7 +44,7 @@ export default function SchemaNav(props) {
           className={styles.Search}
           name="filter_schema"
           placeholder="Filter model list"
-          onChange={(name, term) => {
+          onChange={term => {
             term = term.trim().toLowerCase();
             if (term) {
               setNav(

@@ -61,7 +61,7 @@ export default function FieldSettings(props) {
             label="Field Label"
             value={props.field.label}
             maxLength="200"
-            onChange={(key, val) => {
+            onChange={(val, key) => {
               if (props.new && props.updateMultipleValues) {
                 props.updateMultipleValues({
                   [key]: val, // dynamic property key, name of field
@@ -78,7 +78,7 @@ export default function FieldSettings(props) {
             label="Field Name (Parsley Code Reference). Can not contain spaces, uppercase or special characters."
             value={props.field.name}
             maxLength="50"
-            onChange={(name, val) => props.updateValue(name, formatName(val))}
+            onChange={(val, name) => props.updateValue(name, formatName(val))}
           />
 
           <FieldTypeBinary

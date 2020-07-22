@@ -105,7 +105,7 @@ export const HeadTag = props => {
           className={styles.DropDown}
           name={tag.ZUID}
           label="Tag"
-          onChange={(name, value) => dispatch(updateTagType(tag.ZUID, value))}
+          onChange={value => dispatch(updateTagType(tag.ZUID, value))}
           value={tag.type}
           options={[
             { text: "Script", value: "script" },
@@ -118,7 +118,7 @@ export const HeadTag = props => {
           name={tag.ZUID}
           label="Sort"
           className={styles.Sort}
-          onChange={(name, value) => dispatch(updateTagSort(tag.ZUID, value))}
+          onChange={value => dispatch(updateTagSort(tag.ZUID, value))}
         />
         <Button
           kind="primary"
@@ -147,7 +147,7 @@ export const HeadTag = props => {
                 name={`tag-${tag.ZUID}-${index}-attr`}
                 value={attr.key}
                 disabled={attr.key === "custom"}
-                onChange={(name, newKey) =>
+                onChange={newKey =>
                   dispatch(
                     updateTagAttribute(tag.ZUID, index, {
                       key: newKey,
@@ -162,7 +162,7 @@ export const HeadTag = props => {
                 name={`tag-${tag.ZUID}-${index}-val`}
                 value={attr.value}
                 disabled={attr.key === "custom"}
-                onChange={(name, value) =>
+                onChange={value =>
                   dispatch(
                     updateTagAttribute(tag.ZUID, index, {
                       key: attr.key,

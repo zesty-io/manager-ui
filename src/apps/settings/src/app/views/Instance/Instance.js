@@ -86,7 +86,7 @@ export default connect(state => {
     }, 100);
   }, [props.instance.length, props.match]);
 
-  function setValue(ZUID, value) {
+  function setValue(value, ZUID) {
     setFieldValues({ ...fieldValues, [ZUID]: value });
   }
 
@@ -129,7 +129,7 @@ export default connect(state => {
                   <div className={styles.selectProtocol}>
                     <Select
                       name={field.ZUID}
-                      onSelect={(name, value) => setValue(name, value)}
+                      onSelect={(value, name) => setValue(name, value)}
                       value={fieldValues[field.ZUID]}
                     >
                       <Option value="Select" text="Select" />

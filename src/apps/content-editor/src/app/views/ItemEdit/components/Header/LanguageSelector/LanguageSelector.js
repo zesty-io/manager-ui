@@ -36,7 +36,7 @@ export const LanguageSelector = connect((state, props) => {
     }
   });
 
-  const handleSelect = (name, val) => {
+  const handleSelect = val => {
     props.dispatch(selectLang(val));
 
     // If we are at a content item level then reload newly selected language item
@@ -45,11 +45,6 @@ export const LanguageSelector = connect((state, props) => {
       const subpath = parts.slice(0, 3);
       subpath.push(props.siblings[val]);
       window.location = `${subpath.join("/")}`;
-    }
-
-    // Trigger provided onSelect logic
-    if (props.onSelect) {
-      props.onSelect(name, val);
     }
   };
 
