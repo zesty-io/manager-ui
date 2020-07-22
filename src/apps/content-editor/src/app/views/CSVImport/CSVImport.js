@@ -93,7 +93,7 @@ class CSVImport extends Component {
     });
   };
 
-  handleFieldToCSVMap = (csvCol, fieldName) => {
+  handleFieldToCSVMap = (fieldName, csvCol) => {
     if (fieldName === "none") {
       // filter out the field association if it exists in the fieldMap
       if (this.state.fieldMaps[csvCol]) {

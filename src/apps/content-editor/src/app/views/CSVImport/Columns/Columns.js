@@ -15,7 +15,7 @@ export class Columns extends PureComponent {
                 <Select
                   name={col}
                   onSelect={value => {
-                    this.props.handleMap(col, value);
+                    this.props.handleMap(value, col);
                   }}
                 >
                   <Option text="none" value="none" />
