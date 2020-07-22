@@ -78,7 +78,7 @@ try {
 
     // if (Array.isArray(itemZUIDs)) {
     //   const items = itemZUIDs.map(itemZUID =>
-    //     get(`${zesty.instance.ZUID}:contentModelItems:${itemZUID}`)
+    //     get(`${zesty.instance.ZUID}:content:${itemZUID}`)
     //   );
     //
     //   Promise.all(items).then(itemsArr => {

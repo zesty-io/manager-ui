@@ -21,7 +21,7 @@ import { updateModel, saveModel, duplicateModel } from "shell/store/models";
 import styles from "./Settings.less";
 export default function Settings(props) {
   let history = useHistory();
-  const update = (name, val) => {
+  const update = (val, name) => {
     props.dispatch(updateModel(props.model.ZUID, name, val));
   };
 

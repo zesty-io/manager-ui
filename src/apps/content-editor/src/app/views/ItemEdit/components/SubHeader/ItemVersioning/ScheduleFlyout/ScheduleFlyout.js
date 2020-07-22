@@ -109,7 +109,7 @@ export default class ScheduleFlyout extends Component {
       });
   };
 
-  handleChangePublish = (name, value) => {
+  handleChangePublish = value => {
     // Convert emited date object into the local time without timezone information
     // moment creates local time objects by default
     const selectedTime = moment(value).format(UTC_FORMAT);
@@ -118,7 +118,7 @@ export default class ScheduleFlyout extends Component {
     });
   };
 
-  handleChangeTimezone = (name, value) => {
+  handleChangeTimezone = value => {
     return this.setState({
       selectedTimezone: value
     });

@@ -65,7 +65,7 @@ export default React.memo(function SetRow(props) {
                 <OneToManyCell
                   key={field.name + props.itemZUID}
                   className={styles.Cell}
-                  onRemove={(name, value) => {
+                  onRemove={(value, name) => {
                     return props.onChange(props.itemZUID, name, value);
                   }}
                   value={props.data[field.name] || ""}
@@ -144,7 +144,7 @@ export default React.memo(function SetRow(props) {
                   name={field.name}
                   field={field}
                   value={props.data[field.name]}
-                  onChange={(name, value) =>
+                  onChange={(value, name) =>
                     props.onChange(props.itemZUID, name, value)
                   }
                 />
@@ -166,7 +166,7 @@ export default React.memo(function SetRow(props) {
                   className={cx("SortCell", styles.Cell)}
                   name={field.name}
                   value={props.data[field.name]}
-                  onChange={(name, value) => {
+                  onChange={(value, name) => {
                     return props.onChange(props.itemZUID, name, value);
                   }}
                 />

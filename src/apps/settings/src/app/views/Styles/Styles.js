@@ -172,7 +172,7 @@ export default connect(state => {
             value={state[field.referenceName]}
             description={field.description}
             name={field.referenceName}
-            onChange={(name, value) => setValue(name, value)}
+            onChange={(value, name) => setValue(name, value)}
             label={field.name}
           />
         );
@@ -183,7 +183,7 @@ export default connect(state => {
             name={field.referenceName}
             label={field.name}
             value={state[field.referenceName]}
-            callback={(name, value) => setValue(name, value)}
+            onChange={(value, name) => setValue(name, value)}
             description={field.description}
             options={Object.keys(field.options).map(option => ({
               value: option,
@@ -198,7 +198,7 @@ export default connect(state => {
             <div className={styles.fontPicker}>
               <Select
                 name={field.referenceName}
-                onSelect={(name, value) => setValue(name, value)}
+                onSelect={(value, name) => setValue(name, value)}
                 className={[styles.selectFont]}
                 value="Select"
               >
@@ -253,7 +253,7 @@ export default connect(state => {
             label={field.name}
             name={field.referenceName}
             value={state[field.referenceName]}
-            onChange={(name, value) => setValue(name, value)}
+            onChange={(value, name) => setValue(name, value)}
             description={field.tips}
             maxLength={640}
           />

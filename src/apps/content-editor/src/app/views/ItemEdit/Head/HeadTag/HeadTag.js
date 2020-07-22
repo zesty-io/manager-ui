@@ -77,7 +77,9 @@ export class HeadTag extends React.Component {
             className={styles.DropDown}
             name={tag.ZUID}
             label="Tag"
-            onChange={(name, value) => dispatch(updateTagType(tag.ZUID, value))}
+            onChange={value => {
+              dispatch(updateTagType(tag.ZUID, value));
+            }}
             value={tag.type}
             options={[
               { text: "Script", value: "script" },
@@ -90,7 +92,7 @@ export class HeadTag extends React.Component {
             name={tag.ZUID}
             label="Sort"
             className={styles.Sort}
-            onChange={(name, value) => dispatch(updateTagSort(tag.ZUID, value))}
+            onChange={value => dispatch(updateTagSort(tag.ZUID, value))}
           />
           <Button
             kind="primary"
@@ -112,7 +114,7 @@ export class HeadTag extends React.Component {
                   label="Attribute"
                   name={`tag-${tag.ZUID}-${index}-attr`}
                   value={attr.key}
-                  onChange={(name, newKey) =>
+                  onChange={newKey =>
                     dispatch(
                       updateTagAttribute(tag.ZUID, index, {
                         key: newKey,
@@ -126,7 +128,7 @@ export class HeadTag extends React.Component {
                   label="Value"
                   name={`tag-${tag.ZUID}-${index}-val`}
                   value={attr.value}
-                  onChange={(name, value) =>
+                  onChange={value =>
                     dispatch(
                       updateTagAttribute(tag.ZUID, index, {
                         key: attr.key,

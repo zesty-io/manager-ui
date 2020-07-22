@@ -76,7 +76,7 @@ export default class Robots extends Component {
     }
   };
 
-  handleRobotsOn = (name, value) => {
+  handleRobotsOn = value => {
     this.setState({
       robots_on: {
         ...this.state.robots_on,
@@ -85,7 +85,7 @@ export default class Robots extends Component {
     });
   };
 
-  handleRobotsText = (name, value) => {
+  handleRobotsText = value => {
     this.setState({
       robots_text: {
         ...this.state.robots_text,

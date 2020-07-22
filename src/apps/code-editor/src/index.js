@@ -8,8 +8,6 @@ import { files } from "./store/files";
 import { status } from "./store/status";
 import { auditTrail } from "./store/auditTrail";
 import { headers } from "./store/headers";
-import { contentModelItems } from "./store/contentModelItems";
-import { contentModelFields } from "./store/contentModelFields";
 import { codeNav } from "./store/codeNav";
 
 import { CodeEditor } from "./app/views/CodeEditor";
@@ -18,8 +16,6 @@ injectReducer(ZESTY_REDUX_STORE, "files", files);
 injectReducer(ZESTY_REDUX_STORE, "status", status);
 injectReducer(ZESTY_REDUX_STORE, "auditTrail", auditTrail);
 injectReducer(ZESTY_REDUX_STORE, "headers", headers);
-injectReducer(ZESTY_REDUX_STORE, "contentModelItems", contentModelItems);
-injectReducer(ZESTY_REDUX_STORE, "contentModelFields", contentModelFields);
 injectReducer(ZESTY_REDUX_STORE, "codeNav", codeNav);
 
 // try {

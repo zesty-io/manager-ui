@@ -106,7 +106,7 @@ class CanonicalTag extends Component {
   };
 
   handleWhitelist = evt => {
-    this.props.onChange(evt.target.name, evt.target.value);
+    this.props.onChange(evt.target.value, evt.target.name);
     this.setState({
       whitelist: evt.target.value
     });
@@ -114,7 +114,7 @@ class CanonicalTag extends Component {
 
   handleCustom = evt => {
     //   basil.change_detected = true
-    this.props.onChange(evt.target.name, evt.target.value);
+    this.props.onChange(evt.target.value, evt.target.name);
     this.setState({
       custom: evt.target.value
     });
@@ -138,9 +138,9 @@ class CanonicalTag extends Component {
           <div>
             <Select
               name="canonicalTagMode"
-              onSelect={(name, value) => {
+              onSelect={(value, name) => {
                 this.setState({ canonicalTagMode: value });
-                this.props.onChange(name, Number(value));
+                this.props.onChange(Number(value), name);
               }}
               value={
                 this.state.canonicalOptions[this.state.canonicalTagMode].value

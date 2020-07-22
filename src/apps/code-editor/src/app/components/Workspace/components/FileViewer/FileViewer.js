@@ -7,8 +7,8 @@ import cx from "classnames";
 // TODO implement multitab: https://github.com/Microsoft/monaco-editor/issues/604#issuecomment-344214706
 
 import { notify } from "shell/store/notifications";
+import { fetchFields } from "shell/store/fields";
 import { fetchFile } from "../../../../../store/files";
-import { fetchFields } from "../../../../../store/contentModelFields";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -23,14 +23,13 @@ export const FileViewer = connect((state, props) => {
   );
   const fields =
     file && file.contentModelZUID
-      ? Object.keys(state.contentModelFields)
+      ? Object.keys(state.fields)
           .filter(
             fieldZUID =>
-              state.contentModelFields[fieldZUID].contentModelZUID ===
-              file.contentModelZUID
+              state.fields[fieldZUID].contentModelZUID === file.contentModelZUID
           )
           .reduce((acc, fieldZUID) => {
-            acc.push(state.contentModelFields[fieldZUID]);
+            acc.push(state.fields[fieldZUID]);
             return acc;
           }, [])
       : [];

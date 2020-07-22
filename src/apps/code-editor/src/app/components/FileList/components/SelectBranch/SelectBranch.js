@@ -9,7 +9,7 @@ export const SelectBranch = React.memo(function SelectBranch(props) {
       name="branch"
       className={styles.SelectBranch}
       value={props.branch}
-      onChange={(name, value) => {
+      onChange={value => {
         props.setBranch(value);
       }}
     >

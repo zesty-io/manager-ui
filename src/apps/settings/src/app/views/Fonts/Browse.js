@@ -355,7 +355,7 @@ export default connect(state => {
           className={styles.previewField}
           name="previewText"
           value={previewText}
-          onChange={(name, value) => setPreviewText(value)}
+          onChange={value => setPreviewText(value)}
         />
       </header>
       {renderFontsList()}

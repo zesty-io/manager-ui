@@ -52,7 +52,7 @@ export default connect(state => {
             name="relatedModelZUID"
             label="Related model"
             value={selectedModel}
-            onChange={(name, val) => {
+            onChange={(val, name) => {
               setSelectedModel(val);
               // when changing the model reset the selected field
               setSelectedField("0");
@@ -71,7 +71,7 @@ export default connect(state => {
             name="relatedFieldZUID"
             label="Model field to display"
             value={selectedField}
-            onChange={(name, val) => {
+            onChange={(val, name) => {
               setSelectedField(val);
               props.updateValue(name, val);
             }}

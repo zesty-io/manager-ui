@@ -41,7 +41,7 @@ export default connect(state => {
      * Dispatches the Set Filter End Date action
      * @param {event} The date input's On Change event
      */
-    setEndDate = (name, value) => {
+    setEndDate = value => {
       this.props.dispatch(setFilterEndDate(moment(value).format("YYYY-MM-DD")));
     };
 
@@ -50,7 +50,7 @@ export default connect(state => {
      * Dispatches the Set Filter Start Date action
      * @param {event} The date input's On Change event
      */
-    setStartDate = (name, value) => {
+    setStartDate = value => {
       this.props.dispatch(
         setFilterStartDate(moment(value).format("YYYY-MM-DD"))
       );
@@ -61,7 +61,7 @@ export default connect(state => {
      *
      * Emits the SetFilterEndDate and SetFilterStartDate for each case
      */
-    onDateRangeChange = (name, value) => {
+    onDateRangeChange = value => {
       // Hide the datepicker by default
       this.setState({
         datePickerIsVisible: false

@@ -50,7 +50,7 @@ export default class RedirectCreator extends Component {
       path: evt.currentTarget.value
     });
   }
-  handleCode(name, value) {
+  handleCode(value) {
     this.setState({
       code: value
     });

@@ -31,18 +31,18 @@ export const CanonicalTag = React.memo(function CanonicalTag(props) {
     props.mode || props.mode == 0 ? props.mode : 1
   );
 
-  const handleMode = (name, value) => {
+  const handleMode = (value, name) => {
     setMode(value);
-    props.onChange(name, Number(value));
+    props.onChange(Number(value), name);
   };
 
   const handleWhitelist = evt => {
-    props.onChange(evt.target.name, evt.target.value);
+    props.onChange(evt.target.value, evt.target.name);
     setWhitelist(evt.target.value);
   };
 
   const handleCustom = evt => {
-    props.onChange(evt.target.name, evt.target.value);
+    props.onChange(evt.target.value, evt.target.name);
     setCustom(evt.target.value);
   };
 

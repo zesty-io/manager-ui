@@ -35,10 +35,10 @@ export function FieldEdit(props) {
     >
       <FieldSettings
         className={cx(props.field.deletedAt ? styles.Disabled : null)}
-        updateValue={(name, value) => {
+        updateValue={(value, name) => {
           props.dispatch(updateField(props.field.ZUID, name, value));
         }}
-        updateFieldSetting={(name, value) => {
+        updateFieldSetting={(value, name) => {
           props.dispatch(updateFieldSetting(props.field.ZUID, name, value));
         }}
         field={props.field}

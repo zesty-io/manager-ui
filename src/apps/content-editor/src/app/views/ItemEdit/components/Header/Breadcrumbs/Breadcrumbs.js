@@ -32,11 +32,11 @@ export default connect(state => {
   }, {});
   return {
     flatNav,
-    contentModelItems: state.content,
+    content: state.content,
     contentModels: state.models
   };
 })(props => {
-  const initialItem = props.contentModelItems[props.itemZUID];
+  const initialItem = props.content[props.itemZUID];
   const initialModel =
     props.contentModels[initialItem.meta.contentModelZUID] || {};
   const initialZUID =

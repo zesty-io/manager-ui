@@ -77,7 +77,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
               name="file_type"
               className={styles.FileType}
               label="File Type"
-              onChange={(_, value) => {
+              onChange={value => {
                 setType(value);
               }}
             >
@@ -91,7 +91,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
             <FieldTypeText
               name="file_name"
               label="File Name"
-              onChange={(_, value) => setName(value)}
+              onChange={value => setName(value)}
             />
           </ModalContent>
           <ModalFooter>

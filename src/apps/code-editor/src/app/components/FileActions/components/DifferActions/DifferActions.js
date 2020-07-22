@@ -130,7 +130,7 @@ export const DifferActions = React.memo(function DifferActions(props) {
         name="codeOne"
         className={styles.VersionSelector}
         value={options[0] && options[0].value}
-        onSelect={(name, value) => {
+        onSelect={value => {
           const version = versions.find(version => version.version == value);
           if (version) {
             props.setVersionCodeLeft(version.code);
@@ -150,7 +150,7 @@ export const DifferActions = React.memo(function DifferActions(props) {
         name="codeTwo"
         className={styles.VersionSelector}
         value={selectedVersion}
-        onSelect={(name, value) => {
+        onSelect={value => {
           const version = versions.find(version => version.version == value);
           if (version) {
             props.setVersionCodeRight(version.code);

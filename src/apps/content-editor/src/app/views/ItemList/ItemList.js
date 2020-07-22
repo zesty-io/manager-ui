@@ -199,9 +199,9 @@ export default connect((state, props) => {
               () => {
                 const { filterTerm, sortedBy, status, colType } = this.state;
                 if (filterTerm) {
-                  this.onFilter(null, filterTerm);
+                  this.onFilter(filterTerm);
                 } else if (status) {
-                  this.onStatus(null, status);
+                  this.onStatus(status);
                 } else if (sortedBy) {
                   this.onSort(sortedBy, colType);
                 }
@@ -219,9 +219,9 @@ export default connect((state, props) => {
               () => {
                 const { filterTerm, sortedBy, status, colType } = this.state;
                 if (filterTerm) {
-                  this.onFilter(null, filterTerm);
+                  this.onFilter(filterTerm);
                 } else if (status) {
-                  this.onStatus(null, status);
+                  this.onStatus(status);
                 } else if (sortedBy) {
                   this.onSort(sortedBy, colType);
                 }
@@ -321,9 +321,9 @@ export default connect((state, props) => {
           { filterTerm, sortedBy, status, colType, reverseSort },
           () => {
             if (filterTerm) {
-              this.onFilter(null, filterTerm);
+              this.onFilter(filterTerm);
             } else if (status) {
-              this.onStatus(null, status);
+              this.onStatus(status);
             } else if (sortedBy) {
               this.onSort(sortedBy, colType);
             }
@@ -373,7 +373,7 @@ export default connect((state, props) => {
     onSort only deals with the in state items so can work
     autonomously.
     */
-    onFilter = (name, value) => {
+    onFilter = value => {
       let items = findItems(
         this.props.allItems,
         this.props.modelZUID,
@@ -516,13 +516,13 @@ export default connect((state, props) => {
       );
     };
 
-    onStatus = (name, value) => {
+    onStatus = value => {
       // if there is a filter term in place
       // run the onFilter which will also
       // handle the status filter
       if (this.state.filterTerm || this.state.sortedBy) {
         return this.setState({ status: value }, () =>
-          this.onFilter(null, this.state.filterTerm)
+          this.onFilter(this.state.filterTerm)
         );
       }
 

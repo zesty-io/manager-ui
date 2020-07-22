@@ -3,8 +3,8 @@ import { Provider } from "react-redux";
 import { Route } from "react-router-dom";
 
 import { injectReducer } from "shell/store";
-import { fetchModels } from "shell/store/models";
-import { fetchItemPublishings } from "shell/store/content";
+// import { fetchModels } from "shell/store/models";
+// import { fetchItemPublishings } from "shell/store/content";
 
 import { navContent, fetchNav } from "store/navContent";
 import { modal } from "store/modal";
@@ -22,13 +22,6 @@ injectReducer(ZESTY_REDUX_STORE, "headTags", headTags);
 // NOTE: We expose the content store globally so ActivePreview can
 // resolve the current routes path
 window.ContentAppStore = ZESTY_REDUX_STORE;
-
-// Kick off loading data before app mount
-// to decrease time to first interaction
-ZESTY_REDUX_STORE.dispatch(fetchNav());
-ZESTY_REDUX_STORE.dispatch(fetchModels());
-ZESTY_REDUX_STORE.dispatch(fetchItemPublishings());
-ZESTY_REDUX_STORE.dispatch(fetchHeadTags());
 
 window.ContentApp = function ContentApp() {
   return (

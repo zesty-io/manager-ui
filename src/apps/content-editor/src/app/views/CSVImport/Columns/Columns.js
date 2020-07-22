@@ -14,8 +14,8 @@ export class Columns extends PureComponent {
               <div className={styles.column}>
                 <Select
                   name={col}
-                  onSelect={(name, value) => {
-                    this.props.handleMap(col, value);
+                  onSelect={value => {
+                    this.props.handleMap(value, col);
                   }}
                 >
                   <Option text="none" value="none" />

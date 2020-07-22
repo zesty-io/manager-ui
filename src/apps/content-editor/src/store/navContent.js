@@ -93,12 +93,12 @@ export function fetchNav() {
             } else {
               // enrich nav with stored closed/hidden status
               // FIXME: this should be scoped to the instance
-              const closed = localStorage.getItem("zesty:contentNav:closed");
+              const closed = localStorage.getItem("zesty:navContent:closed");
               const closedArr = closed ? JSON.parse(closed) : [];
               const closedZUIDS = closedArr.map(node => node.ZUID);
 
               // FIXME: this should be scoped to the instance
-              const hidden = localStorage.getItem("zesty:contentNav:hidden");
+              const hidden = localStorage.getItem("zesty:navContent:hidden");
               const hiddenArr = hidden ? JSON.parse(hidden) : [];
               const hiddenZUIDS = hiddenArr.map(node => node.ZUID);
 
@@ -162,7 +162,7 @@ export function hideNavItem(path) {
 
     // FIXME: this should be scoped to the instance
     localStorage.setItem(
-      "zesty:contentNav:hidden",
+      "zesty:navContent:hidden",
       JSON.stringify(raw.filter(node => node.hidden))
     );
 
@@ -175,7 +175,7 @@ export function hideNavItem(path) {
 
 export function collapseNavItem(path) {
   return (dispatch, getState) => {
-    const raw = getState().contentNav.raw.map(node => {
+    const raw = getState().navContent.raw.map(node => {
       if (node.path === path) {
         node.closed = !node.closed;
       }
@@ -184,7 +184,7 @@ export function collapseNavItem(path) {
 
     // FIXME: this should be scoped to the instance
     localStorage.setItem(
-      "zesty:contentNav:closed",
+      "zesty:navContent:closed",
       JSON.stringify(raw.filter(node => node.closed))
     );
 

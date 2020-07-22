@@ -24,17 +24,17 @@ export const ItemParent = connect(state => {
       });
 
       const [parents, setParents] = useState(
-        parentOptions(props.path, props.contentModelItems)
+        parentOptions(props.path, props.content)
       );
 
-      const onSearch = debounce((_, term) => {
+      const onSearch = debounce(term => {
         if (term) {
           setLoading(true);
           props.dispatch(searchItems(term)).then(res => {
             setLoading(false);
             setParents(
               parentOptions(props.path, {
-                ...props.contentModelItems,
+                ...props.content,
                 ...res.data
               })
             );
@@ -81,13 +81,13 @@ export const ItemParent = connect(state => {
             parentZUID = result.ZUID;
 
             // Update redux store so if the item is saved we know it's parent
-            props.onChange("parentZUID", parentZUID);
+            props.onChange(parentZUID, "parentZUID");
           }
         }
 
         // Try to preselect parent
         if (parentZUID && parentZUID != "0" && parentZUID !== null) {
-          const item = props.contentModelItems[parentZUID];
+          const item = props.content[parentZUID];
           if (item && item.meta && item.meta.ZUID && item.meta.path) {
             setParent(item);
           } else {
@@ -95,16 +95,16 @@ export const ItemParent = connect(state => {
               setParent(res.data[0]);
 
               /**
-               * // HACK Because we pre-load all item publishings and store them in the same reducer as the `contentModelItems`
+               * // HACK Because we pre-load all item publishings and store them in the same reducer as the `content`
                * we can't use array length comparision to determine a new parent has been added. Also since updates to the item
-               * currently being edited cause a new `contentModelItems` object to be created in it's reducer we can't use
+               * currently being edited cause a new `content` object to be created in it's reducer we can't use
                * referential equality checks to determine re-rendering. This scenario causes either the parent to not be pre-selected
                * or a performance issue. To work around this we maintain the `parents` state internal and add the new parent we load from the
                * API to allow it to be pre-selected while avoiding re-renders on changes to this item.
                */
               setParents(
                 parentOptions(props.path, {
-                  ...props.contentModelItems,
+                  ...props.content,
                   [res.data[0].meta.ZUID]: res.data[0]
                 })
               );
@@ -152,18 +152,18 @@ export const ItemParent = connect(state => {
 
       // Shallow compare all props
       Object.keys(prevProps).forEach(key => {
-        // ignore contentModelItems, we'll check it seperately after
-        if (key !== "contentModelItems") {
+        // ignore content, we'll check it seperately after
+        if (key !== "content") {
           if (prevProps[key] !== nextProps[key]) {
             isEqual = false;
           }
         }
       });
 
-      let prevItemsLen = Object.keys(prevProps["contentModelItems"]).length;
-      let nextItemsLen = Object.keys(nextProps["contentModelItems"]).length;
+      let prevItemsLen = Object.keys(prevProps["content"]).length;
+      let nextItemsLen = Object.keys(nextProps["content"]).length;
 
-      // Compare contentModelItems length to see if new ones where added
+      // Compare content length to see if new ones where added
       if (prevItemsLen !== nextItemsLen) {
         isEqual = false;
       }

@@ -24,7 +24,7 @@ export default connect((state, props) => {
     model: state.models[modelZUID] || {},
     item: state.content[itemZUID] || {},
     instance: state.instance,
-    contentModelItems: state.content,
+    content: state.content,
     fields: Object.keys(state.fields)
       .filter(
         fieldZUID => state.fields[fieldZUID].contentModelZUID === modelZUID
@@ -185,7 +185,7 @@ export default connect((state, props) => {
                   scrolled={this.makeActive}
                   itemZUID={this.props.itemZUID}
                   item={this.props.item}
-                  items={this.props.contentModelItems}
+                  items={this.props.content}
                   instance={this.props.instance}
                   modelZUID={this.props.modelZUID}
                   model={this.props.model}
@@ -210,7 +210,7 @@ export default connect((state, props) => {
                       instance={this.props.instance}
                       modelZUID={this.props.modelZUID}
                       item={this.props.item}
-                      contentModelItems={this.props.contentModelItems}
+                      content={this.props.content}
                       dispatch={this.props.dispatch}
                     />
                   )}

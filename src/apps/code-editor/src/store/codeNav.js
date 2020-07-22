@@ -1,4 +1,14 @@
 import { set } from "idb-keyval";
+
+import {
+  faStickyNote,
+  faDatabase,
+  faListAlt,
+  faFileCode,
+  faBolt,
+  faDirections
+} from "@fortawesome/free-solid-svg-icons";
+
 import { resolvePathPart } from "./files";
 
 export function codeNav(
@@ -146,14 +156,14 @@ export function collapseNavItem(path) {
 function resolveNavData(file) {
   const ICONS = {
     // Parsley views
-    snippet: "fas fa-sticky-note",
-    dataset: "fas fa-database",
-    pageset: "fas fa-list",
-    templateset: "fas fa-file-code",
+    snippet: faStickyNote,
+    dataset: faDatabase,
+    pageset: faListAlt,
+    templateset: faFileCode,
 
     // Instant api
-    "ajax-json": "fas fa-bolt",
-    "ajax-html": "fas fa-bolt",
+    "ajax-json": faBolt,
+    "ajax-html": faBolt,
 
     // JavaScript
     "text/js": "fab fa-js",
@@ -165,7 +175,7 @@ function resolveNavData(file) {
     "text/scss": "fab fa-sass",
     "text/sass": "fab fa-sass",
 
-    "404": "fas fa-directions"
+    "404": faDirections
   };
 
   const pathPart = resolvePathPart(file.type);
