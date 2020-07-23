@@ -281,10 +281,12 @@ export function fetchItems(modelZUID) {
       handler: res => {
         if (res.status === 400) {
           console.error("fetchItems():response", res);
-          notify({
-            kind: "warn",
-            message: res.error
-          });
+          dispatch(
+            notify({
+              kind: "warn",
+              message: res.error
+            })
+          );
         }
 
         dispatch({

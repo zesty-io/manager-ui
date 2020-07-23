@@ -22,10 +22,12 @@ export class FileCell extends Component {
       .then(res => {
         this.setState({ loading: false });
         if (res.status === 400) {
-          notify({
-            message: `Failure fetching filename: ${res.error}`,
-            kind: "error"
-          });
+          this.props.dispatch(
+            notify({
+              message: `Failure fetching filename: ${res.error}`,
+              kind: "error"
+            })
+          );
         } else {
           const filename = res.data[0].filename;
           this.setState({

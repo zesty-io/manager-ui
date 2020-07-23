@@ -39,9 +39,11 @@ export function fetchInstance() {
         return res;
       })
       .catch(err => {
-        notify({
-          message: "Failed to load instance"
-        });
+        dispatch(
+          notify({
+            message: "Failed to load instance"
+          })
+        );
       });
   };
 }

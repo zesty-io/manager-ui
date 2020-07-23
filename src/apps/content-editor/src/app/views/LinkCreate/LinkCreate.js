@@ -1,6 +1,5 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import { connect } from "react-redux";
-import cx from "classnames";
 import debounce from "lodash.debounce";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
@@ -16,10 +15,7 @@ import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 
 import styles from "./LinkCreate.less";
-export const LinkCreate = connect((state, props) => {
-  // NOTE: I don't think this compoentn needs to be connected
-  return {};
-})(
+export const LinkCreate = connect()(
   class LinkCreate extends Component {
     constructor(props) {
       super(props);
@@ -91,31 +87,43 @@ export const LinkCreate = connect((state, props) => {
         .then(res => {
           this.setState({ saving: false });
           if (res.error) {
-            notify({
-              message: `Failure creating link: ${res.message}`,
-              kind: "error"
-            });
+            this.props.dispatch(
+              notify({
+                message: `Failure creating link: ${res.message}`,
+                kind: "error"
+              })
+            );
           } else {
             // this is a successful save
             // message and redirect to new item here
-            notify({ message: "Successfully created link", kind: "save" });
+            this.props.dispatch(
+              notify({ message: "Successfully created link", kind: "save" })
+            );
             window.location.hash = `/content/link/${res.current_znode_id}`;
           }
         })
         .catch(err => {
           console.error("Failed to load link: ", err);
           this.setState({ saving: false });
+          this.props.dispatch(
+            notify({
+              message: `Failure creating link`,
+              kind: "error"
+            })
+          );
         });
     };
 
-    handleSearch = debounce(term => {
+    handleSearch = term => {
       return request(`${CONFIG.API_INSTANCE}/search/items?q=${term}`)
         .then(res => {
           if (res.status === 400) {
-            return notify({
-              message: `Failure searching: ${res.error}`,
-              kind: "error"
-            });
+            return this.props.dispatch(
+              notify({
+                message: `Failure searching: ${res.error}`,
+                kind: "error"
+              })
+            );
           }
           // TODO: filter out duplicates
           const internalLinkOptions = [
@@ -135,9 +143,9 @@ export const LinkCreate = connect((state, props) => {
         .catch(err => {
           console.error("LinkCreate:handleSearch", err);
         });
-    }, 500);
+    };
 
-    onChange = (name, value) => {
+    onChange = (value, name) => {
       this.setState({
         [name]: value
       });
@@ -209,7 +217,7 @@ export const LinkCreate = connect((state, props) => {
                   name="target"
                   checked={this.state.target}
                   onClick={evt => {
-                    this.onChange("target", evt.target.checked);
+                    this.onChange(evt.target.checked, "target");
                   }}
                 />
                 target = _blank
@@ -220,7 +228,7 @@ export const LinkCreate = connect((state, props) => {
                   name="rel"
                   checked={this.state.rel}
                   onClick={evt => {
-                    this.onChange("rel", evt.target.checked);
+                    this.onChange(evt.target.checked, "rel");
                   }}
                 />
                 rel = nofollow

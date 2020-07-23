@@ -22,19 +22,23 @@ export function fetchAuditTrail(fileZUID) {
             payload: res.data
           });
         } else {
-          notify({
-            kind: "warn",
-            message: `Unable to load file versions. ${res.status}`
-          });
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `Unable to load file versions. ${res.status}`
+            })
+          );
         }
         return res;
       })
       .catch(err => {
         console.error(err);
-        notify({
-          kind: "warn",
-          message: "API Error loading file versions"
-        });
+        dispatch(
+          notify({
+            kind: "warn",
+            message: "API Error loading file versions"
+          })
+        );
       });
   };
 }

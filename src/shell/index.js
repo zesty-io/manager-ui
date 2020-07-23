@@ -174,8 +174,10 @@ store
   })
   .catch(err => {
     console.log(err);
-    notify({
-      kind: "warn",
-      message: "Failed to load manager app products"
-    });
+    store.dispatch(
+      notify({
+        kind: "warn",
+        message: "Failed to load manager app products"
+      })
+    );
   });

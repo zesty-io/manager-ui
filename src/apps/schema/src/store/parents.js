@@ -31,10 +31,12 @@ export function fetchParents() {
       })
       .catch(err => {
         console.error(err);
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       });
   };
 }

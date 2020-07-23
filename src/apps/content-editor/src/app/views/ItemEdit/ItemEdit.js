@@ -173,12 +173,14 @@ class ItemEdit extends Component {
           this.setState({
             makeActive: res.missingRequired[0].ZUID
           });
-          return notify({
-            message: `You are missing data in ${res.missingRequired.map(
-              f => f.label + " "
-            )}`,
-            kind: "error"
-          });
+          return this.props.dispatch(
+            notify({
+              message: `You are missing data in ${res.missingRequired.map(
+                f => f.label + " "
+              )}`,
+              kind: "error"
+            })
+          );
         } else if (res.status === 400) {
           this.props.dispatch(
             notify({

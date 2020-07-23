@@ -50,10 +50,12 @@ export default connect(state => {
         .catch(err => {
           console.log(err);
           setLoading(false);
-          notify({
-            kind: "warn",
-            message: "There was an error trying to login"
-          });
+          props.dispatch(
+            notify({
+              kind: "warn",
+              message: "There was an error trying to login"
+            })
+          );
         });
     };
 

@@ -71,10 +71,12 @@ export const FileViewer = connect((state, props) => {
         .catch(err => {
           if (err !== "duplicate request") {
             console.error(err);
-            notify({
-              kind: "warn",
-              message: `Could not load ${match.params.fileType} ${match.params.fileZUID}`
-            });
+            props.dispatch(
+              notify({
+                kind: "warn",
+                message: `Could not load ${match.params.fileType} ${match.params.fileZUID}`
+              })
+            );
           }
         })
         .finally(() => {

@@ -1,6 +1,7 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
+import { connect } from "react-redux";
 
 import { DateCell } from "./DateCell";
 import { ImageCell } from "./ImageCell";
@@ -18,7 +19,7 @@ import { InternalLinkCell } from "./InternalLinkCell";
 import { PublishStatusCell } from "./PublishStatusCell";
 
 import styles from "./SetRow.less";
-export default React.memo(function SetRow(props) {
+export default connect()(function SetRow(props) {
   let history = useHistory();
 
   const item = props.allItems[props.itemZUID];
@@ -124,6 +125,7 @@ export default React.memo(function SetRow(props) {
                   key={field.name + props.itemZUID}
                   className={styles.Cell}
                   data={props.data[field.name]}
+                  dispatch={props.dispatch}
                 />
               );
 

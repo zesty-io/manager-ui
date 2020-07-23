@@ -59,12 +59,14 @@ function Footer(props) {
               .catch(err => {
                 console.error(err);
                 setIsOpen(false);
-                notify({
-                  kind: "warn",
-                  message:
-                    err.message ||
-                    `Failed to delete model: ${props.model.label}`
-                });
+                props.dispatch(
+                  notify({
+                    kind: "warn",
+                    message:
+                      err.message ||
+                      `Failed to delete model: ${props.model.label}`
+                  })
+                );
               });
           }}
         >

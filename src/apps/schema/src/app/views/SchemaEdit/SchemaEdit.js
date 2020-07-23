@@ -41,10 +41,12 @@ export default connect((state, props) => {
       })
       .catch(err => {
         console.error("fetchFields()", err);
-        notify({
-          kind: "warn",
-          message: `There was an error loading the schema fields. ${err.message}`
-        });
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message: `There was an error loading the schema fields. ${err.message}`
+          })
+        );
         setLoading(true);
       });
   }, [props.modelZUID]);
@@ -77,19 +79,23 @@ export default connect((state, props) => {
           }, {})
         });
 
-        notify({
-          kind: "save",
-          message: `${props.model.label} field order updated`
-        });
+        props.dispatch(
+          notify({
+            kind: "save",
+            message: `${props.model.label} field order updated`
+          })
+        );
 
         setSorting(false);
       })
       .catch(err => {
         setSorting(false);
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
         console.error(err);
       });
   };

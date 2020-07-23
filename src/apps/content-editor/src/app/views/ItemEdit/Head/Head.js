@@ -7,8 +7,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 
-import { SubHeader } from "../components/SubHeader";
-
 import { HeadTag } from "./HeadTag";
 import { Preview } from "./Preview";
 

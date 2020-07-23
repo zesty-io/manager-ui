@@ -2,7 +2,7 @@ import React from "react";
 import cx from "classnames";
 
 import { MetaTitle } from "./settings/MetaTitle";
-import { MetaDescription } from "./settings/MetaDescription";
+import MetaDescription from "./settings/MetaDescription";
 import { MetaKeywords } from "./settings/MetaKeywords";
 import { MetaLinkText } from "./settings/MetaLinkText";
 

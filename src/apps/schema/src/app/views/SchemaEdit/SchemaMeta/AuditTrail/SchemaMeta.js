@@ -41,20 +41,24 @@ export default function SchemaMeta(props) {
         if (res.status === 200) {
           history.push(`/schema/${res.data.ZUID}/`);
         } else {
-          notify({
-            kind: "warn",
-            message: res.error
-          });
+          props.dispatch(
+            notify({
+              kind: "warn",
+              message: res.error
+            })
+          );
         }
         setLoading(false);
       })
       .catch(err => {
         console.error("SchemaMeta:duplicate:catch", err);
-        notify({
-          kind: "warn",
-          message:
-            err.message || `Failed to duplicate model: ${props.model.label}`
-        });
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message:
+              err.message || `Failed to duplicate model: ${props.model.label}`
+          })
+        );
         setLoading(false);
       });
   };
@@ -162,25 +166,31 @@ export default function SchemaMeta(props) {
                   .dispatch(saveModel(props.model.ZUID, props.model))
                   .then(res => {
                     if (res.status === 200) {
-                      notify({
-                        kind: "save",
-                        message: `Save ${props.model.label} changes`
-                      });
+                      props.dispatch(
+                        notify({
+                          kind: "save",
+                          message: `Save ${props.model.label} changes`
+                        })
+                      );
                     } else {
                       console.error(res);
-                      notify({
-                        kind: "warn",
-                        message: `${res.error}`
-                      });
+                      props.dispatch(
+                        notify({
+                          kind: "warn",
+                          message: `${res.error}`
+                        })
+                      );
                     }
                     setLoading(false);
                   })
                   .catch(err => {
                     console.err(err);
-                    notify({
-                      kind: "warn",
-                      message: `Failed saving ${props.model.label} changes. ${err.message}`
-                    });
+                    props.dispatch(
+                      notify({
+                        kind: "warn",
+                        message: `Failed saving ${props.model.label} changes. ${err.message}`
+                      })
+                    );
                     setLoading(false);
                   });
               }}
@@ -235,12 +245,14 @@ export default function SchemaMeta(props) {
                   .catch(err => {
                     console.error(err);
                     setIsOpen(false);
-                    notify({
-                      kind: "warn",
-                      message:
-                        err.message ||
-                        `Failed to delete model: ${props.model.label}`
-                    });
+                    props.dispatch(
+                      notify({
+                        kind: "warn",
+                        message:
+                          err.message ||
+                          `Failed to delete model: ${props.model.label}`
+                      })
+                    );
                   });
               }}
             >

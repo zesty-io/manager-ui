@@ -170,10 +170,12 @@ export function createField(modelZUID, payload) {
       })
       .catch(err => {
         console.error("Failed creating field", err);
-        notify({
-          kind: "warn",
-          message: `Failed to create field. ${err.message}`
-        });
+        dispatch(
+          notify({
+            kind: "warn",
+            message: `Failed to create field. ${err.message}`
+          })
+        );
       });
   };
 }

@@ -368,10 +368,12 @@ export default connect(state => {
                 )
                 .then(res => {
                   if (res.status === 200) {
-                    notify({
-                      kind: "save",
-                      message: `Created ${label} model`
-                    });
+                    props.dispatch(
+                      notify({
+                        kind: "save",
+                        message: `Created ${label} model`
+                      })
+                    );
 
                     if (res.data.ZUID) {
                       if (type === "templateset") {
@@ -401,24 +403,30 @@ export default connect(state => {
 
                       history.push(`/schema/${res.data.ZUID}`);
                     } else {
-                      notify({
-                        kind: "error",
-                        message: `Model ${label} is missing ZUID.`
-                      });
+                      props.dispatch(
+                        notify({
+                          kind: "error",
+                          message: `Model ${label} is missing ZUID.`
+                        })
+                      );
                     }
                   } else {
-                    notify({
-                      kind: "error",
-                      message: `Failed creating ${label} model. ${res.error}`
-                    });
+                    props.dispatch(
+                      notify({
+                        kind: "error",
+                        message: `Failed creating ${label} model. ${res.error}`
+                      })
+                    );
                   }
                 })
                 .catch(err => {
                   console.error(err);
-                  notify({
-                    kind: "error",
-                    message: `Network error occured. Failed to create ${label} model.`
-                  });
+                  props.dispatch(
+                    notify({
+                      kind: "error",
+                      message: `Network error occured. Failed to create ${label} model.`
+                    })
+                  );
                 });
             }}
           >

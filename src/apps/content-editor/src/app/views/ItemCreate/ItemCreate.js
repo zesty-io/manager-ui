@@ -117,12 +117,14 @@ export default connect((state, props) => {
 
           if (res.err || res.error) {
             if (res.missingRequired) {
-              notify({
-                message: `You are missing data in ${res.missingRequired
-                  .map(f => f.label)
-                  .join(", ")}`,
-                kind: "error"
-              });
+              this.props.dispatch(
+                notify({
+                  message: `You are missing data in ${res.missingRequired
+                    .map(f => f.label)
+                    .join(", ")}`,
+                  kind: "error"
+                })
+              );
 
               // scroll to required field
               this.setState({
@@ -131,10 +133,12 @@ export default connect((state, props) => {
               });
             }
             if (res.error) {
-              notify({
-                message: res.error,
-                kind: "warn"
-              });
+              this.props.dispatch(
+                notify({
+                  message: res.error,
+                  kind: "warn"
+                })
+              );
             }
           } else if (res.data && res.data.ZUID) {
             // Redirect to new item after creating
@@ -149,10 +153,12 @@ export default connect((state, props) => {
               })
             );
           } else {
-            notify({
-              message: "Unknown issue creating new item",
-              kind: "warn"
-            });
+            this.props.dispatch(
+              notify({
+                message: "Unknown issue creating new item",
+                kind: "warn"
+              })
+            );
           }
         })
         .catch(err => {

@@ -99,15 +99,19 @@ function Footer(props) {
         setLoading(false);
 
         if (res.status === 200) {
-          notify({
-            kind: "save",
-            message: `Saved field: ${props.field.name}`
-          });
+          props.dispatch(
+            notify({
+              kind: "save",
+              message: `Saved field: ${props.field.name}`
+            })
+          );
         } else {
-          notify({
-            kind: "warn",
-            message: `Failed tyring to save field: ${props.field.name}`
-          });
+          props.dispatch(
+            notify({
+              kind: "warn",
+              message: `Failed tyring to save field: ${props.field.name}`
+            })
+          );
         }
       })
       .catch(() => setLoading(false));

@@ -33,17 +33,21 @@ export default connect(state => {
     Promise.all(requests)
       .then(res => {
         if (res) {
-          notify({
-            kind: "success",
-            message: "All files has been published"
-          });
+          props.dispatch(
+            notify({
+              kind: "success",
+              message: "All files has been published"
+            })
+          );
         }
       })
       .catch(err => {
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       })
       .finally(() => {
         setLoading(false);

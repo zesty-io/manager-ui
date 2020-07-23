@@ -73,10 +73,12 @@ export function fetchRecentItems(userZUID, start) {
       `${CONFIG.API_INSTANCE}/search/items?q=${userZUID}&order=created&dir=DESC&start_date=${start}`
     ).then(res => {
       if (res.status === 400) {
-        notify({
-          message: `Failure fetching recent items: ${res.error}`,
-          kind: "error"
-        });
+        dispatch(
+          notify({
+            message: `Failure fetching recent items: ${res.error}`,
+            kind: "error"
+          })
+        );
       } else {
         dispatch({
           type: "FETCH_ITEMS_SUCCESS",

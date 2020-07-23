@@ -39,10 +39,12 @@ export function fetchUserRole() {
       })
       .catch(err => {
         console.log(err);
-        notify({
-          kind: "warn",
-          message: "Failed to load your user role for this instance."
-        });
+        dispatch(
+          notify({
+            kind: "warn",
+            message: "Failed to load your user role for this instance."
+          })
+        );
       });
   };
 }

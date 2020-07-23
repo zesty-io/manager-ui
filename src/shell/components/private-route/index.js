@@ -16,11 +16,13 @@ export default connect(state => {
   React.memo(function PrivateRoute(props) {
     useEffect(() => {
       const checkSession = () => {
-        props.dispatch(verify()).catch(err => {
-          notify({
-            kind: "warn",
-            message: "Failed to authenticate your account"
-          });
+        props.dispatch(verify()).catch(() => {
+          props.dispatch(
+            notify({
+              kind: "warn",
+              message: "Failed to authenticate your account"
+            })
+          );
         });
       };
 

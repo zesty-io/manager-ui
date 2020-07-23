@@ -149,10 +149,12 @@ export function pollTwoFactor() {
         });
       })
       .catch(err => {
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
 
         // Kick user out
         dispatch(logout());

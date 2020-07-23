@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
@@ -8,9 +9,10 @@ import { Infotip } from "@zesty-io/core/Infotip";
 import { notify } from "shell/store/notifications";
 
 import styles from "./MetaDescription.less";
-export const MetaDescription = React.memo(function MetaDescription({
+export default connect()(function MetaDescription({
   meta_description,
-  onChange
+  onChange,
+  dispatch
 }) {
   const [error, setError] = useState("");
 
@@ -43,10 +45,12 @@ export const MetaDescription = React.memo(function MetaDescription({
   }, [meta_description]);
 
   if (error) {
-    notify({
-      kind: "warn",
-      message: error
-    });
+    dispatch(
+      notify({
+        kind: "warn",
+        message: error
+      })
+    );
   }
 
   return (

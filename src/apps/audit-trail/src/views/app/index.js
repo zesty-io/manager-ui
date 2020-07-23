@@ -22,10 +22,12 @@ export default connect(state => state)(function AuditTrail(props) {
       })
       .catch(err => {
         setLoading(false);
-        notify({
-          kind: "warn",
-          message: "Failed to load AuditTrail logs"
-        });
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message: "Failed to load AuditTrail logs"
+          })
+        );
       });
   }, []);
 

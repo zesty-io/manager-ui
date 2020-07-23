@@ -84,10 +84,12 @@ class LinkEdit extends Component {
       .then(res => {
         if (this.__mounted) {
           if (res.error) {
-            notify({
-              message: `Failure updating link: ${res.message}`,
-              kind: "error"
-            });
+            this.props.dispatch(
+              notify({
+                message: `Failure updating link: ${res.message}`,
+                kind: "error"
+              })
+            );
           } else {
             this.setState({
               zuid: res.znode.zuid,
@@ -137,11 +139,13 @@ class LinkEdit extends Component {
           }
         }
       })
-      .catch(err => {
-        notify({
-          message: "Something went wrong fetching your data",
-          kind: "error"
-        });
+      .catch(() => {
+        this.props.dispatch(
+          notify({
+            message: "Something went wrong fetching your data",
+            kind: "error"
+          })
+        );
         this.setState({
           loading: false
         });
@@ -179,30 +183,36 @@ class LinkEdit extends Component {
     })
       .then(res => {
         if (res.error) {
-          notify({
-            message: `Failure creating link: ${res.message}`,
-            kind: "error"
-          });
+          this.props.dispatch(
+            notify({
+              message: `Failure creating link: ${res.message}`,
+              kind: "error"
+            })
+          );
         } else {
           this.setState({ saving: false });
-          notify({ message: "Saved link", kind: "save" });
+          this.props.dispatch(notify({ message: "Saved link", kind: "save" }));
         }
       })
       .catch(err => {
-        notify({ message: "Error saving link", kind: "error" });
+        this.props.dispatch(
+          notify({ message: "Error saving link", kind: "error" })
+        );
         this.setState({ saving: false });
       });
   };
 
-  handleSearch = debounce(term => {
+  handleSearch = term => {
     return request(`${CONFIG.API_INSTANCE}/search/items?q=${term}`)
       .then(res => {
         // TODO: filter out duplicates
         if (res.status === 400) {
-          notify({
-            message: `Failure searching: ${res.message}`,
-            kind: "error"
-          });
+          this.props.dispatch(
+            notify({
+              message: `Failure searching: ${res.message}`,
+              kind: "error"
+            })
+          );
         } else {
           const internalLinkOptions = [
             ...this.state.internalLinkOptions,
@@ -222,17 +232,19 @@ class LinkEdit extends Component {
       .catch(err => {
         console.error("LinkCreate:handleSearch", err);
       });
-  }, 500);
+  };
 
   resolveLink = term => {
     return request(`${CONFIG.API_INSTANCE}/search/items?q=${term}`)
       .then(res => {
         // TODO: filter out duplicates
         if (res.status === 400) {
-          notify({
-            message: `Failure searching: ${res.message}`,
-            kind: "error"
-          });
+          this.props.dispatch(
+            notify({
+              message: `Failure searching: ${res.message}`,
+              kind: "error"
+            })
+          );
         } else {
           const internalLinkOptions = [
             ...this.state.internalLinkOptions,
@@ -254,7 +266,7 @@ class LinkEdit extends Component {
       });
   };
 
-  onChange = (name, value) => {
+  onChange = (value, name) => {
     this.setState({
       [name]: value
     });
@@ -315,7 +327,7 @@ class LinkEdit extends Component {
                   name="target"
                   checked={this.state.target}
                   onClick={evt => {
-                    this.onChange("target", evt.target.checked);
+                    this.onChange(evt.target.checked, "target");
                   }}
                 />
                 target = _blank
@@ -326,7 +338,7 @@ class LinkEdit extends Component {
                   name="rel"
                   checked={this.state.rel}
                   onClick={evt => {
-                    this.onChange("rel", evt.target.checked);
+                    this.onChange(evt.target.checked, "rel");
                   }}
                 />
                 rel = nofollow

@@ -84,10 +84,12 @@ export function fetchNav() {
         return request(`${CONFIG.API_INSTANCE}/env/nav`)
           .then(data => {
             if (data.status === 400) {
-              notify({
-                message: `Failure fetching nav: ${data.error}`,
-                kind: "error"
-              });
+              dispatch(
+                notify({
+                  message: `Failure fetching nav: ${data.error}`,
+                  kind: "error"
+                })
+              );
             } else if (!data || !data.data) {
               return console.error("no data returned from fetch sets");
             } else {

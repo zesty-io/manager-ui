@@ -242,20 +242,24 @@ export function fetchFiles(type) {
             }
           });
         } else {
-          notify({
-            kind: "warn",
-            message: `Failed to load instance ${type}. ${res.status} | ${res.error}`
-          });
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `Failed to load instance ${type}. ${res.status} | ${res.error}`
+            })
+          );
         }
 
         return res;
       })
       .catch(err => {
         console.error(err);
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       });
   };
 }
@@ -278,9 +282,11 @@ export function fetchFile(fileZUID, fileType, options = { forceSync: false }) {
     return request(`${CONFIG.API_INSTANCE}/web/${fileType}/${fileZUID}`).then(
       res => {
         if (res.status === 200) {
-          notify({
-            message: `Loaded ${res.data.fileName} version ${res.data.version}`
-          });
+          dispatch(
+            notify({
+              message: `Loaded ${res.data.fileName} version ${res.data.version}`
+            })
+          );
 
           dispatch({
             type: "FETCH_FILE_SUCCESS",
@@ -295,17 +301,21 @@ export function fetchFile(fileZUID, fileType, options = { forceSync: false }) {
         }
 
         if (res.status === 404) {
-          notify({
-            kind: "warn",
-            message: `File could not be found. ${fileZUID}`
-          });
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `File could not be found. ${fileZUID}`
+            })
+          );
         }
 
         if (res.error) {
-          notify({
-            kind: "warn",
-            message: `Failed to load file. ${res.status} | ${res.error}`
-          });
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `Failed to load file. ${res.status} | ${res.error}`
+            })
+          );
         }
 
         return res;
@@ -334,10 +344,12 @@ export function fetchFileVersions(fileZUID, fileType) {
             }
           });
         } else {
-          notify({
-            kind: "warn",
-            message: `Unable to load file versions. ${res.status}`
-          });
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `Unable to load file versions. ${res.status}`
+            })
+          );
         }
         return res;
       })
@@ -367,37 +379,43 @@ export function createFile(name, type, code = "") {
         res.pathPart = pathPart;
 
         if (res.status === 201) {
-          notify({
-            kind: "success",
-            message: `Created new file ${name}`
-          });
+          dispatch(
+            notify({
+              kind: "success",
+              message: `Created new file ${name}`
+            })
+          );
 
           // File will be fetched when redirected to after creation
           dispatch({
             type: "CREATE_FILE_SUCCESS"
           });
         } else {
-          notify({
-            kind: "warn",
-            message: `Failed to create file ${name}. ${res.error}`
-          });
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `Failed to create file ${name}. ${res.error}`
+            })
+          );
         }
 
         return res;
       })
       .catch(err => {
         console.error(err);
-        notify({
-          kind: "warn",
-          message: `Failed to create file ${name}. ${err}`
-        });
+        dispatch(
+          notify({
+            kind: "warn",
+            message: `Failed to create file ${name}. ${err}`
+          })
+        );
       });
   };
 }
 
 export function saveFile(ZUID, status) {
   return (dispatch, getState) => {
-    const file = resolveFile(getState().files, ZUID, status);
+    const file = resolveFile(dispatch, getState().files, ZUID, status);
     const pathPart = resolvePathPart(file.type);
 
     // delete file.version;
@@ -410,10 +428,12 @@ export function saveFile(ZUID, status) {
     })
       .then(res => {
         if (res.status === 200) {
-          notify({
-            kind: "success",
-            message: `Saved ${file.fileName}`
-          });
+          dispatch(
+            notify({
+              kind: "success",
+              message: `Saved ${file.fileName}`
+            })
+          );
 
           dispatch({
             type: "SAVE_FILE_SUCCESS",
@@ -423,20 +443,24 @@ export function saveFile(ZUID, status) {
           // Re-fetch file to ensure we have latest version number
           return dispatch(fetchFile(file.ZUID, pathPart));
         } else {
-          notify({
-            kind: "warn",
-            message: `Failed to save file. ${res.status} | ${res.error}`
-          });
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `Failed to save file. ${res.status} | ${res.error}`
+            })
+          );
         }
 
         return res.data;
       })
       .catch(err => {
         console.error(err);
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       });
   };
 }
@@ -461,7 +485,7 @@ export function saveFile(ZUID, status) {
 
 export function publishFile(fileZUID, fileStatus) {
   return (dispatch, getState) => {
-    const file = resolveFile(getState().files, fileZUID, fileStatus);
+    const file = resolveFile(dispatch, getState().files, fileZUID, fileStatus);
     const pathPart = resolvePathPart(file.type);
     const latestVersion = file.latestVersion || file.version;
 
@@ -473,10 +497,12 @@ export function publishFile(fileZUID, fileStatus) {
     )
       .then(res => {
         if (res.status === 200) {
-          notify({
-            kind: "success",
-            message: `Published ${file.fileName} version ${latestVersion}`
-          });
+          dispatch(
+            notify({
+              kind: "success",
+              message: `Published ${file.fileName} version ${latestVersion}`
+            })
+          );
 
           dispatch({
             type: "PUBLISH_FILE_SUCCESS",
@@ -485,27 +511,31 @@ export function publishFile(fileZUID, fileStatus) {
             }
           });
         } else {
-          notify({
-            kind: "warn",
-            message: `Failed to publish file. ${res.status} | ${res.error}`
-          });
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `Failed to publish file. ${res.status} | ${res.error}`
+            })
+          );
         }
 
         return res;
       })
       .catch(err => {
         console.error(err);
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       });
   };
 }
 
 export function deleteFile(fileZUID, fileStatus) {
   return (dispatch, getState) => {
-    const file = resolveFile(getState().files, fileZUID, fileStatus);
+    const file = resolveFile(dispatch, getState().files, fileZUID, fileStatus);
     const pathPart = resolvePathPart(file.type);
 
     return request(`${CONFIG.API_INSTANCE}/web/${pathPart}/${fileZUID}`, {
@@ -521,20 +551,24 @@ export function deleteFile(fileZUID, fileStatus) {
             }
           });
         } else {
-          notify({
-            kind: "warn",
-            message: `Failed to delete file ${file.fileName}. ${res.error}`
-          });
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `Failed to delete file ${file.fileName}. ${res.error}`
+            })
+          );
         }
 
         return res;
       })
       .catch(err => {
         console.log(err);
-        notify({
-          kind: "warn",
-          message: `API error occured trying to delete file. ${file.fileName}`
-        });
+        dispatch(
+          notify({
+            kind: "warn",
+            message: `API error occured trying to delete file. ${file.fileName}`
+          })
+        );
       });
   };
 }
@@ -611,16 +645,18 @@ export function resolvePathPart(type) {
   }
 }
 
-function resolveFile(files, fileZUID, fileStatus) {
+function resolveFile(dispatch, files, fileZUID, fileStatus) {
   let file = files.find(
     file => file.ZUID === fileZUID && file.status === fileStatus
   );
 
   if (!file) {
-    notify({
-      kind: "warn",
-      message: "We were not able to find the file you are trying to save."
-    });
+    dispatch(
+      notify({
+        kind: "warn",
+        message: "We were not able to find the file you are trying to save."
+      })
+    );
   }
 
   return { ...file };

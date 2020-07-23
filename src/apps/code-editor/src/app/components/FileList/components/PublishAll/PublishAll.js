@@ -39,23 +39,29 @@ export default connect(state => {
       Promise.all(requests)
         .then(responses => {
           if (responses.find(res => res.status !== 200)) {
-            notify({
-              kind: "warn",
-              message: "We were unable to publish one or more files"
-            });
+            props.dispatch(
+              notify({
+                kind: "warn",
+                message: "We were unable to publish one or more files"
+              })
+            );
           } else {
-            notify({
-              kind: "success",
-              message: "All files has been published"
-            });
+            props.dispatch(
+              notify({
+                kind: "success",
+                message: "All files has been published"
+              })
+            );
             setOpen(false);
           }
         })
         .catch(err => {
-          notify({
-            kind: "warn",
-            message: err.message
-          });
+          props.dispatch(
+            notify({
+              kind: "warn",
+              message: err.message
+            })
+          );
         })
         .finally(() => {
           setLoading(false);

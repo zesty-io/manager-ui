@@ -22,17 +22,21 @@ export const CreateFile = React.memo(function CreateFile(props) {
 
   const handleCreateFile = () => {
     if (!type) {
-      notify({
-        kind: "warn",
-        message: "You must select a file type to create a new file"
-      });
+      props.dispatch(
+        notify({
+          kind: "warn",
+          message: "You must select a file type to create a new file"
+        })
+      );
       return;
     }
     if (!name) {
-      notify({
-        kind: "warn",
-        message: "You must provide a name for the new file"
-      });
+      props.dispatch(
+        notify({
+          kind: "warn",
+          message: "You must provide a name for the new file"
+        })
+      );
       return;
     }
 

@@ -119,10 +119,12 @@ export function fetchSettings() {
       })
       .catch(err => {
         console.error(err);
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       });
   };
 }
@@ -140,10 +142,12 @@ export function fetchStylesCategories() {
       })
       .catch(err => {
         console.error(err);
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       });
   };
 }
@@ -160,10 +164,12 @@ export function fetchStylesVariables() {
       })
       .catch(err => {
         console.error(err);
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       });
   };
 }

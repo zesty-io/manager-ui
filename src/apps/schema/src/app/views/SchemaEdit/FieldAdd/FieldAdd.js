@@ -43,17 +43,21 @@ export function FieldAdd(props) {
     // TODO validate fields
 
     if (!field.label) {
-      notify({
-        kind: "warn",
-        message: "Missing required field label"
-      });
+      props.dispatch(
+        notify({
+          kind: "warn",
+          message: "Missing required field label"
+        })
+      );
       return;
     }
     if (!field.name) {
-      notify({
-        kind: "warn",
-        message: "Missing required field name"
-      });
+      props.dispatch(
+        notify({
+          kind: "warn",
+          message: "Missing required field name"
+        })
+      );
       return;
     }
 
@@ -65,26 +69,32 @@ export function FieldAdd(props) {
         setLoading(false);
 
         if (res.status === 201) {
-          notify({
-            kind: "save",
-            message: `Created new field: ${field.label}`
-          });
+          props.dispatch(
+            notify({
+              kind: "save",
+              message: `Created new field: ${field.label}`
+            })
+          );
           setField(initialState);
           history.push(`/schema/${props.modelZUID}/field/${res.data.ZUID}`);
         } else {
-          notify({
-            kind: "warn",
-            message: `${res.error}`
-          });
+          props.dispatch(
+            notify({
+              kind: "warn",
+              message: `${res.error}`
+            })
+          );
         }
       })
       .catch(err => {
         console.error(err);
         setLoading(false);
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       });
   };
 

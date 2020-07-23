@@ -122,10 +122,12 @@ export function duplicateModel(ZUID) {
     );
 
     if (!model) {
-      notify({
-        kind: "warn",
-        message: `Missing model: ${ZUID}`
-      });
+      dispatch(
+        notify({
+          kind: "warn",
+          message: `Missing model: ${ZUID}`
+        })
+      );
       return;
     }
 

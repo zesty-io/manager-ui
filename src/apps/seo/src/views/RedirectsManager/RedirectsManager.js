@@ -19,10 +19,12 @@ export default function RedirectManager(props) {
         setLoading(false);
       })
       .catch(err => {
-        notify({
-          kind: "warn",
-          message: "Failed to load redirects data"
-        });
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message: "Failed to load redirects data"
+          })
+        );
         setLoading(false);
       });
   }, []);

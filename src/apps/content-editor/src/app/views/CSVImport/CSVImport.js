@@ -170,16 +170,20 @@ class CSVImport extends Component {
   handleCreateItems = () => {
     this.setState({ failure: [] });
     if (!this.props.model.type === "dataset" && !this.state.webMaps.pathPart) {
-      return notify({
-        message: "You must select a column for Path Part",
-        kind: "warn"
-      });
+      return this.props.dispatch(
+        notify({
+          message: "You must select a column for Path Part",
+          kind: "warn"
+        })
+      );
     }
     if (this.state.warn) {
-      return notify({
-        message: "You must resolve duplicate column conflicts",
-        kind: "warn"
-      });
+      return this.props.dispatch(
+        notify({
+          message: "You must resolve duplicate column conflicts",
+          kind: "warn"
+        })
+      );
     }
 
     const mappedMetaItems = this.state.mappedItems.map((item, i) => {
@@ -243,10 +247,12 @@ class CSVImport extends Component {
           )
             .then(res => {
               if (res.status === 400) {
-                notify({
-                  message: `Failure creating item: ${res.error}`,
-                  kind: "error"
-                });
+                this.props.dispatch(
+                  notify({
+                    message: `Failure creating item: ${res.error}`,
+                    kind: "error"
+                  })
+                );
                 this.addFailure(i);
               } else if (res.error) {
                 this.addFailure(i);

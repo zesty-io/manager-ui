@@ -43,10 +43,12 @@ export default connect(state => {
     }
 
     getHeadTags().catch(err => {
-      notify({
-        kind: "warn",
-        message: "Failed to load instance head tags"
-      });
+      props.dispatch(
+        notify({
+          kind: "warn",
+          message: "Failed to load instance head tags"
+        })
+      );
     });
 
     return () => (isSubscribed = false);
