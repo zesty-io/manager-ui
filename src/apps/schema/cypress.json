@@ -3,7 +3,7 @@
   "viewportWidth": 1920,
   "viewportHeight": 1080,
   "chromeWebSecurity": false,
-  "baseUrl": "http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:9000/",
+  "baseUrl": "http://8-f48cf3a682-7fthvk.manager.stage.zesty.io:9000",
   "env": {
     "ACCOUNTS_UI": "http://accounts.dev.zesty.io:6006/",
     "API_ACCOUNTS": "https://accounts.api.dev.zesty.io/v1",
