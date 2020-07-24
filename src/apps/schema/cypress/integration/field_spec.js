@@ -10,7 +10,7 @@ describe("Fields", () => {
     const fieldLabel = `Text Field: ${timestamp}`;
     const fieldName = `text_field_${timestamp}`;
 
-    cy.get(".FieldAdd .Select .fa-caret-down").click();
+    cy.get(".FieldAdd .Select").click();
 
     cy.get(".FieldAdd .selections .options li[data-value='text']").click();
 
@@ -66,7 +66,7 @@ describe("Fields", () => {
     const fieldLabel = `TextArea Field: ${timestamp}`;
     const fieldName = `textarea_field_${timestamp}`;
 
-    cy.get(".FieldAdd .Select .fa-caret-down").click();
+    cy.get(".FieldAdd .Select").click();
     cy.get(".FieldAdd .selections .options li[data-value='textarea']").click();
 
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
@@ -83,7 +83,7 @@ describe("Fields", () => {
     const fieldLabel = `wysiwyg field: ${timestamp}`;
     const fieldName = `wysiwyg_field_${timestamp}`;
 
-    cy.get(".FieldAdd .Select .fa-caret-down").click();
+    cy.get(".FieldAdd .Select").click();
     cy.get(
       ".FieldAdd .selections .options li[data-value='wysiwyg_basic']"
     ).click();
