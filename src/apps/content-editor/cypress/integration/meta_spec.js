@@ -18,10 +18,10 @@ describe("Meta", () => {
     cy.get("[data-cy=canonicalTag]").should("exist");
   });
   it("Selects Parent", () => {
-    cy.get("[data-cy=itemParent] >  div").click();
-    cy.get('[data-value="7-b89cdca3c4-pwf5rw"]').click();
+    cy.get("[data-cy=itemParent] .Select").click();
+    cy.get('[data-value="7-f40360-7vcf5h"]').click();
     // select another parent, but switch it back to root level
-    cy.get("[data-cy=itemParent] >  div").click();
+    cy.get("[data-cy=itemParent] .Select").click();
     cy.get("[data-cy=itemParent]")
       .find('[data-value="0"]')
       .first()

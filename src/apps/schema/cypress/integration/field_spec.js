@@ -1,7 +1,6 @@
 describe("Fields", () => {
   before(() => {
     cy.login();
-    cy.gotoSchema();
     cy.visit("/schema/6-852490-2mhz4v");
   });
 

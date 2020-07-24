@@ -1,10 +1,3 @@
-// TODO we may need this as Cypress seems to indicate cookies are not
-// preserved across tests.
-// @see https://docs.cypress.io/api/cypress-api/cookies.html#Set-global-default-cookies
-// Cypress.Cookies.defaults({
-//   whitelist: Cypress.env("COOKIE_NAME")
-// });
-
 Cypress.Commands.add("login", (eml, pass) => {
   const formBody = new FormData();
 

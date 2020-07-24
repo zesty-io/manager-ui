@@ -21,7 +21,7 @@ describe("Content Specs", () => {
       cy.get("#12-6d41d0-n10vtc").should("exist");
       cy.iframe("#wysiwyg_basic_ifr")
         .should("be.visible")
-        .click()
+        .click({ force: true })
         .type(`{selectall}{backspace}${TIMESTAMP}`)
         .contains(`${TIMESTAMP}`);
     });
@@ -100,7 +100,7 @@ describe("Content Specs", () => {
         .find(".Select")
         .click()
         .find('[data-value="custom_option_one"]')
-        .click();
+        .click({ force: true });
 
       cy.contains("#12-f3152c-kjz88l .Select", "Custom Option One");
 
@@ -108,7 +108,7 @@ describe("Content Specs", () => {
         .find(".Select")
         .click()
         .find('[data-value="custom_option_two"]')
-        .click();
+        .click({ force: true });
 
       cy.contains("#12-f3152c-kjz88l .Select", "Custom Option Two");
     });
@@ -130,7 +130,7 @@ describe("Content Specs", () => {
         .find('[data-value="7-b939a4-457q19"]')
         .click();
 
-      cy.contains("#12-10741c-s5jkwg .Select", "new Meta Title");
+      cy.contains("#12-10741c-s5jkwg .Select", "/newpathpart/");
 
       // cy.get("#SaveItemButton").click({ force: true });
       // cy.contains("Saved a new ", { timeout: 3000 }).should("exist");
@@ -270,8 +270,7 @@ describe("Content Specs", () => {
         "exist"
       );
       cy.get('[href="#!/content/6-675028-84dq4s/7-480ab4-wg7x7j"]')
-        .siblings("i")
-        .last()
+        .siblings("svg")
         .click({ timeout: 3000 });
     });
 

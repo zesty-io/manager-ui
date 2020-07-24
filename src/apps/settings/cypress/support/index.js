@@ -19,6 +19,9 @@ import "./commands";
 Cypress.Cookies.defaults({
   whitelist: ["DEV_APP_SID", "ZESTY_LOCAL_MANAGER_SESSION"]
 });
+Cypress.Cookies.defaults({
+  whitelist: Cypress.env("COOKIE_NAME")
+});
 //Turn off fail on console errors
 Cypress.on("uncaught:exception", (err, runnable) => {
   // returning false here prevents Cypress from

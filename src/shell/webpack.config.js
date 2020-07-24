@@ -55,6 +55,7 @@ if (process.env.NODE_ENV === "production") {
     ACCOUNTS_URL: "https://accounts.stage.zesty.io",
     API_ACCOUNTS: "//accounts.api.stage.zesty.io/v1",
     API_INSTANCE: ".api.stage.zesty.io/v1",
+    API_INSTANCE_PROTOCOL: "https://",
 
     SERVICE_AUTH: "https://auth.api.stage.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
