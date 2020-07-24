@@ -1,13 +1,14 @@
 describe("Actions in content editor", () => {
   before(() => {
     //initial login to set the cookie
-    cy.login();
-    cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
+    Cypress.Cookies.debug(true);
   });
 
   const timestamp = Date.now();
 
-  it("Saves homepage item metadata", () => {
+  it.only("Saves homepage item metadata", () => {
+    cy.login();
+    cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     // go to Meta Tab
     cy.get("[data-cy=meta]").click();
     cy.get("textarea")
