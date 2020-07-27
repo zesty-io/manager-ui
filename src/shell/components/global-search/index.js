@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import debounce from "lodash.debounce";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 import { searchItems } from "shell/store/content";
 import { Search } from "@zesty-io/core/Search";
@@ -11,6 +11,8 @@ export default React.memo(function GlobalSearch(props) {
   const dispatch = useDispatch();
   const [searchResults, setSearchResults] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const history = useHistory();
 
   useEffect(() => {
     if (searchTerm !== "") {
@@ -40,7 +42,26 @@ export default React.memo(function GlobalSearch(props) {
   }
 
   function handleKeydown(evt) {
-    // console.log(evt.keyCode);
+    if (searchResults.length === 0) {
+      return;
+    }
+    if (evt.key === "ArrowDown") {
+      if (selectedIndex === searchResults.length - 1) {
+        setSelectedIndex(0);
+      } else {
+        setSelectedIndex(selectedIndex + 1);
+      }
+    } else if (evt.key === "ArrowUp") {
+      if (selectedIndex <= 0) {
+        setSelectedIndex(searchResults.length - 1);
+      } else {
+        setSelectedIndex(selectedIndex - 1);
+      }
+    } else if (evt.key === "Enter") {
+      clearSearch();
+      const item = searchResults[selectedIndex];
+      history.push(`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`);
+    }
   }
 
   return (
@@ -56,7 +77,11 @@ export default React.memo(function GlobalSearch(props) {
         onChange={onChange}
       />
       {searchResults && (
-        <SearchResults results={searchResults} clearSearch={clearSearch} />
+        <SearchResults
+          results={searchResults}
+          clearSearch={clearSearch}
+          selectedIndex={selectedIndex}
+        />
       )}
     </div>
   );
@@ -84,8 +109,11 @@ function SearchResults(props) {
       className={styles.SearchResults}
       onClick={props.clearSearch}
     >
-      {props.results.map(result => (
-        <li key={result.meta.ZUID}>
+      {props.results.map((result, index) => (
+        <li
+          key={result.meta.ZUID}
+          className={props.selectedIndex === index ? styles.SelectedRow : null}
+        >
           <Link
             to={`/content/${result.meta.contentModelZUID}/${result.meta.ZUID}`}
           >
