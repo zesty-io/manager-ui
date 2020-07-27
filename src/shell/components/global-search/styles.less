@@ -1,5 +1,6 @@
 @import "~@zesty-io/core/colors.less";
 .GlobalSearch {
+  position: relative;
   border-left: 1px solid lighten(@globalMenuBkgColor, 5%);
   border-right: 1px solid darken(@globalMenuBkgColor, 5%);
 
@@ -12,10 +13,36 @@
   }
 }
 
-// @media (max-width: 2000px) {
-//   .GlobalSearch {
-//     .InstanceName {
-//       font-size: 12px;
-//     }
-//   }
-// }
+.SearchResults {
+  position: absolute;
+  z-index: 110;
+  max-height: 400px;
+  min-width: 500px;
+  border-left: 1px solid @globalMenuBkgColor;
+  border-right: 1px solid @globalMenuBkgColor;
+
+  list-style: none;
+  overflow: auto;
+  font-size: 16px;
+
+  > li {
+    background: #fff;
+    border-bottom: 1px solid #000;
+    > a {
+      display: block;
+      text-decoration: none;
+      color: #000;
+      padding: 8px;
+
+      &:hover {
+        background-color: @zesty-light-blue;
+      }
+    }
+  }
+}
+.SearchResultTitle {
+  font-size: 20px;
+}
+.SearchResultPath {
+  color: grey;
+}
