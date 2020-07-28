@@ -18,11 +18,15 @@ import styles from "./GlobalTabs.less";
 
 function parse(path) {
   let parts = path.split("/").filter(part => part);
-  let zuid = parts.pop();
+  let zuid = null;
   let prefix = null;
 
+  if (parts.length > 1) {
+    zuid = parts.pop();
+  }
+
   if (zuid) {
-    prefix = zuid.charAt(0);
+    prefix = zuid.split("-")[0];
   }
 
   return [parts, zuid, prefix];
@@ -55,13 +59,13 @@ export default connect(state => {
           }
         }
       });
-    }, []);
+    }, [props.instanceZUID]);
 
     // Track route changes to display quick links
     useEffect(() => {
-      const [parts] = parse(history.location.pathname);
+      const [, zuid] = parse(history.location.pathname);
 
-      if (parts.length >= 2) {
+      if (zuid) {
         let newRoutes = [...routes];
         let exists = newRoutes.find(
           route => route.pathname === history.location.pathname
@@ -101,8 +105,12 @@ export default connect(state => {
             case "10":
             case "11":
               if (props.files) {
-                // const file = props.files[zuid];
-                // TODO lookup file names
+                const selectedFile = props.files.find(
+                  file => file.ZUID === zuid
+                );
+                if (selectedFile) {
+                  route.name = selectedFile.fileName;
+                }
               }
           }
         });
@@ -111,7 +119,7 @@ export default connect(state => {
         set(`${props.instanceZUID}:session:routes`, newRoutes);
         setRoutes(newRoutes);
       }
-    }, [history.location]);
+    }, [history.location, props.models, props.content, props.files]);
 
     // Update Breadcrumb
     useEffect(() => {

@@ -140,7 +140,7 @@ export default connect(function(state, props) {
                   [{this.props.instanceZUID}]
                 </span>
               </div>
-              <div className={`${styles.column} ${styles.isAlignedRight}`}>
+              {/* <div className={`${styles.column} ${styles.isAlignedRight}`}>
                 <div className={styles.webEngineLinks}>
                   Web Engine URLs
                   <span className={styles.encompassedBlock}>
@@ -159,7 +159,7 @@ export default connect(function(state, props) {
                     </Url>
                   </span>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
           <div className={styles.container}>
