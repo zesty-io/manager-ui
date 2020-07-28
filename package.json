@@ -22,6 +22,7 @@
     "@aeaton/react-prosemirror": "0.21.1",
     "@aeaton/react-prosemirror-config-default": "0.11.0",
     "@fortawesome/fontawesome-svg-core": "1.2.27",
+    "@fortawesome/free-brands-svg-icons": "^5.14.0",
     "@fortawesome/free-solid-svg-icons": "^5.12.1",
     "@fortawesome/react-fontawesome": "0.1.9",
     "@sentry/browser": "4.4.1",

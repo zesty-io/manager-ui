@@ -8,6 +8,12 @@ import {
   faBolt,
   faDirections
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  faJs,
+  faCss3Alt,
+  faLess,
+  faSass
+} from "@fortawesome/free-brands-svg-icons";
 
 import { resolvePathPart } from "./files";
 
@@ -166,14 +172,14 @@ function resolveNavData(file) {
     "ajax-html": faBolt,
 
     // JavaScript
-    "text/js": "fab fa-js",
-    "text/javascript": "fab fa-js",
+    "text/js": faJs,
+    "text/javascript": faJs,
 
     // Stylesheets
-    "text/css": "fab fa-css3-alt",
-    "text/less": "fab fa-less",
-    "text/scss": "fab fa-sass",
-    "text/sass": "fab fa-sass",
+    "text/css": faCss3Alt,
+    "text/less": faLess,
+    "text/scss": faSass,
+    "text/sass": faSass,
 
     "404": faDirections
   };
