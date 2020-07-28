@@ -16,12 +16,18 @@ import { Breadcrumbs } from "./components/Breadcrumbs";
 
 import styles from "./GlobalTabs.less";
 
+const ZUID_REGEX = /[a-zA-Z0-9]{1,2}-[a-zA-Z0-9]{6}-[a-zA-Z0-9]{6}/;
+
+function toCapitalCase(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 function parse(path) {
   let parts = path.split("/").filter(part => part);
   let zuid = null;
   let prefix = null;
 
-  if (parts.length > 1) {
+  if (parts.length > 1 && ZUID_REGEX.test(parts[parts.length - 1])) {
     zuid = parts.pop();
   }
 
@@ -63,9 +69,9 @@ export default connect(state => {
 
     // Track route changes to display quick links
     useEffect(() => {
-      const [, zuid] = parse(history.location.pathname);
+      const [parts, zuid] = parse(history.location.pathname);
 
-      if (zuid) {
+      if (zuid || parts.length > 1) {
         let newRoutes = [...routes];
         let exists = newRoutes.find(
           route => route.pathname === history.location.pathname
@@ -112,6 +118,15 @@ export default connect(state => {
                   route.name = selectedFile.fileName;
                 }
               }
+          }
+          if (parts[0] === "settings" && parts[1] === "instance" && parts[2]) {
+            route.name =
+              parts[2]
+                .replace("-", " ")
+                .replace("_", " ")
+                .split(" ")
+                .map(toCapitalCase)
+                .join(" ") + " Settings";
           }
         });
 
