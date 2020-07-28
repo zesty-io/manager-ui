@@ -1,5 +1,6 @@
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
+import { faCog } from "@fortawesome/free-solid-svg-icons";
 
 export function settings(
   state = {
@@ -46,7 +47,7 @@ export function settings(
               label: item.category.replace(/_|-/g, " "),
               value: item.category,
               path: `/settings/instance/${item.category}`,
-              icon: ICONS[item.category] || "fas fa-cog"
+              icon: ICONS[item.category] || faCog
             };
           })
       };
@@ -59,7 +60,7 @@ export function settings(
             label: item.name,
             value: item.ID,
             path: `/settings/styles/${item.ID}`,
-            icon: ICONS[item.icon] || "fas fa-cog"
+            icon: ICONS[item.icon] || faCog
           };
         })
       };
@@ -89,7 +90,7 @@ export function settings(
 }
 
 const ICONS = {
-  general: "fas fa-cog",
+  general: faCog,
   tools: "fas fa-tools",
   contact: "fas fa-envelope"
 };
