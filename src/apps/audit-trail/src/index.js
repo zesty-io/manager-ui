@@ -11,12 +11,10 @@ import { logsInView } from "store/logsInView";
 
 import AuditApp from "./views/app";
 
-window.AuditTrailApp = function AuditTrailApp() {
-  useEffect(() => {
-    injectReducer(window.ZESTY_REDUX_STORE, "logs", logs);
-    injectReducer(window.ZESTY_REDUX_STORE, "logsInView", logsInView);
-  }, []);
+injectReducer(window.ZESTY_REDUX_STORE, "logs", logs);
+injectReducer(window.ZESTY_REDUX_STORE, "logsInView", logsInView);
 
+window.AuditTrailApp = function AuditTrailApp() {
   return (
     <Provider store={ZESTY_REDUX_STORE}>
       <Route component={AuditApp} />

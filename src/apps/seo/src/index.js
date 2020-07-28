@@ -10,12 +10,12 @@ import { paths } from "store/paths";
 
 import HealthApp from "./app";
 
-window.SeoApp = function SeoApp() {
-  injectReducer(ZESTY_REDUX_STORE, "redirects", redirects);
-  injectReducer(ZESTY_REDUX_STORE, "redirectsFilter", redirectsFilter);
-  injectReducer(ZESTY_REDUX_STORE, "imports", imports);
-  injectReducer(ZESTY_REDUX_STORE, "paths", paths);
+injectReducer(ZESTY_REDUX_STORE, "redirects", redirects);
+injectReducer(ZESTY_REDUX_STORE, "redirectsFilter", redirectsFilter);
+injectReducer(ZESTY_REDUX_STORE, "imports", imports);
+injectReducer(ZESTY_REDUX_STORE, "paths", paths);
 
+window.SeoApp = function SeoApp() {
   return (
     <Provider store={ZESTY_REDUX_STORE}>
       <Route component={HealthApp} />

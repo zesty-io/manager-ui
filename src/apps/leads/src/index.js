@@ -9,11 +9,10 @@ import { filter } from "store/filter";
 import AppError from "./app/AppError";
 import Leads from "./app/views/Leads";
 
-// import "@zesty-io/core/vendor.css";
-window.LeadsApp = function LeadsApp() {
-  injectReducer(ZESTY_REDUX_STORE, "leads", leads);
-  injectReducer(ZESTY_REDUX_STORE, "filter", filter);
+injectReducer(ZESTY_REDUX_STORE, "leads", leads);
+injectReducer(ZESTY_REDUX_STORE, "filter", filter);
 
+window.LeadsApp = function LeadsApp() {
   return (
     <AppError>
       <Provider store={ZESTY_REDUX_STORE}>

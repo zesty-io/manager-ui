@@ -29,7 +29,7 @@ export const fetchResource = store => next => action => {
         });
     } else {
       // console.log("request inflight ", action.uri, inflight);
-      return Promise.reject(`duplicate request`);
+      return Promise.reject(`duplicate request: ${action.uri}`);
     }
   } else {
     return next(action);

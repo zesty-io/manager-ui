@@ -16,18 +16,18 @@ import { fetchHeadTags, headTags } from "./store/headTags";
 import AppError from "./app/AppError";
 import Settings from "./app/App";
 
+injectReducer(ZESTY_REDUX_STORE, "settings", settings);
+injectReducer(ZESTY_REDUX_STORE, "headTags", headTags);
+
 window.SettingsApp = function SettingsApp() {
-  console.log("SettingsApp", settings);
-
-  injectReducer(ZESTY_REDUX_STORE, "settings", settings);
-  injectReducer(ZESTY_REDUX_STORE, "headTags", headTags);
-
-  ZESTY_REDUX_STORE.dispatch(fetchSettings());
-  ZESTY_REDUX_STORE.dispatch(fetchStylesCategories());
-  ZESTY_REDUX_STORE.dispatch(fetchStylesVariables());
-  ZESTY_REDUX_STORE.dispatch(fetchFonts());
-  ZESTY_REDUX_STORE.dispatch(fetchFontsInstalled());
-  ZESTY_REDUX_STORE.dispatch(fetchHeadTags());
+  useEffect(() => {
+    ZESTY_REDUX_STORE.dispatch(fetchSettings());
+    ZESTY_REDUX_STORE.dispatch(fetchStylesCategories());
+    ZESTY_REDUX_STORE.dispatch(fetchStylesVariables());
+    ZESTY_REDUX_STORE.dispatch(fetchFonts());
+    ZESTY_REDUX_STORE.dispatch(fetchFontsInstalled());
+    ZESTY_REDUX_STORE.dispatch(fetchHeadTags());
+  });
 
   return (
     <Provider store={ZESTY_REDUX_STORE}>
