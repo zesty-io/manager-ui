@@ -102,7 +102,7 @@ export default connect(state => {
             case "11":
               if (props.files) {
                 // const file = props.files[zuid];
-                console.log("// TODO lookup file names");
+                // TODO lookup file names
               }
           }
         });

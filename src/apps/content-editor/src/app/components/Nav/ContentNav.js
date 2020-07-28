@@ -19,8 +19,6 @@ import { collapseNavItem, hideNavItem } from "store/navContent";
 
 import styles from "./ContentNav.less";
 export function ContentNav(props) {
-  console.log("ContentNav:render", props);
-
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();

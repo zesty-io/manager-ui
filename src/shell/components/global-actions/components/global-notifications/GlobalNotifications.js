@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
-import { Link } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -33,8 +32,6 @@ export default connect(state => {
         clearTimeout(token);
       };
     }, [props.notifications.length]);
-
-    console.log("GlobalNotifications:render", open);
 
     return (
       <aside className={cx(styles.Notifications, props.className)}>

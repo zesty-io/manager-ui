@@ -10,8 +10,6 @@ import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./Breadcrumbs.less";
 const crawlParents = (nav, ZUID, crumbs) => {
-  console.log("crawling", nav, ZUID, crumbs);
-
   const parent = nav[ZUID];
 
   if (parent) {
@@ -35,8 +33,6 @@ export default connect(state => {
   };
 })(
   React.memo(function Breadcrumbs(props) {
-    console.log("Breadcrumbs:render");
-
     const trail = useMemo(() => {
       const normalizedNav = props.navContent.raw.reduce((acc, item) => {
         acc[item.ZUID] = item;
@@ -79,8 +75,6 @@ export default connect(state => {
 
       return crumbs;
     }, [props.itemZUID, props.navContent]);
-
-    console.log("bread crumb trail", trail);
 
     return (
       <ol className={styles.Breadcrumbs}>

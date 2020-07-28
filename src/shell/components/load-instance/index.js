@@ -16,8 +16,6 @@ export default connect(state => {
   };
 })(
   React.memo(function LoadInstance(props) {
-    console.log("LoadInstance");
-
     useEffect(() => {
       props.dispatch(fetchUser(props.user.ZUID));
       props.dispatch(fetchInstance());

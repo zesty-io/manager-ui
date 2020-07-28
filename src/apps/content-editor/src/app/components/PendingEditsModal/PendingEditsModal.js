@@ -21,7 +21,6 @@ import {
 import styles from "./PendingEditsModal.less";
 export default React.memo(function PendingEditsModal(props) {
   // FIXME: non memoized onSave & onDiscard props are causing rerenders
-  console.log("PendingEditsModal:render");
 
   const [loading, setLoading] = useState(props.loading || false);
   const [open, setOpen] = useState(false);
