@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Provider } from "react-redux";
 import { Route } from "react-router-dom";
 
@@ -10,11 +10,13 @@ import { parents } from "./store/parents";
 
 import { SchemaBuilder } from "./app";
 
-window.SchemaApp = function SchemaApp() {
-  injectReducer(ZESTY_REDUX_STORE, "schemaNav", schemaNav);
-  injectReducer(ZESTY_REDUX_STORE, "parents", parents);
+injectReducer(ZESTY_REDUX_STORE, "schemaNav", schemaNav);
+injectReducer(ZESTY_REDUX_STORE, "parents", parents);
 
-  ZESTY_REDUX_STORE.dispatch(fetchModels());
+window.SchemaApp = function SchemaApp() {
+  useEffect(() => {
+    ZESTY_REDUX_STORE.dispatch(fetchModels());
+  }, []);
 
   return (
     <Provider store={ZESTY_REDUX_STORE}>
