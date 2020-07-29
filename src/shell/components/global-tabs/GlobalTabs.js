@@ -95,6 +95,7 @@ export default connect(state => {
                 route.name = model.label;
               }
             }
+            break;
           case "7":
             if (props.content) {
               const item = props.content[zuid];
@@ -105,6 +106,7 @@ export default connect(state => {
                   item.web.pathPart;
               }
             }
+            break;
           case "10":
           case "11":
             if (props.files) {
@@ -113,6 +115,9 @@ export default connect(state => {
                 route.name = selectedFile.fileName;
               }
             }
+            break;
+          case "17":
+            break;
         }
         if (parts[0] === "settings") {
           if (parts[1] === "instance" && parts[2]) {
@@ -139,7 +144,7 @@ export default connect(state => {
       const [parts, zuid, prefix] = parse(history.location.pathname);
 
       // breadcrumbs only exist for content items
-      if (prefix === "7") {
+      if (prefix === "7" || prefix === "6") {
         setZUID(zuid);
       } else {
         setZUID("");
