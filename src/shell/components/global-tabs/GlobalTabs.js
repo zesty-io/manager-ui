@@ -119,14 +119,18 @@ export default connect(state => {
                 }
               }
           }
-          if (parts[0] === "settings" && parts[1] === "instance" && parts[2]) {
-            route.name =
-              parts[2]
-                .replace("-", " ")
-                .replace("_", " ")
-                .split(" ")
-                .map(toCapitalCase)
-                .join(" ") + " Settings";
+          if (parts[0] === "settings") {
+            if (parts[1] === "instance" && parts[2]) {
+              route.name =
+                parts[2]
+                  .replace("-", " ")
+                  .replace("_", " ")
+                  .split(" ")
+                  .map(toCapitalCase)
+                  .join(" ") + " Settings";
+            } else {
+              route.name = toCapitalCase(parts[1]) + " Settings";
+            }
           }
         });
 
