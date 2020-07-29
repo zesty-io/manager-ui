@@ -9,7 +9,7 @@ import {
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./Breadcrumbs.less";
-const crawlParents = (nav, ZUID, crumbs) => {
+const crawlParents = (nav, ZUID, crumbs, content) => {
   const parent = nav[ZUID];
 
   if (parent) {
@@ -18,7 +18,21 @@ const crawlParents = (nav, ZUID, crumbs) => {
       parent.parentZUID &&
       !crumbs.filter(crumb => crumb.ZUID === parent.parentZUID).length
     ) {
-      crawlParents(nav, parent.parentZUID, crumbs);
+      crawlParents(nav, parent.parentZUID, crumbs, content);
+    }
+  }
+  // multipage set item
+  else if (ZUID) {
+    const item = content[ZUID];
+    if (item) {
+      const parentZUID = item.meta.contentModelZUID;
+      crumbs.push({
+        ZUID,
+        contentModelZUID: parentZUID,
+        label: item.web.metaLinkText,
+        type: "item"
+      });
+      crawlParents(nav, parentZUID, crumbs, content);
     }
   }
 
@@ -60,7 +74,7 @@ export default connect(state => {
       let crumbs = [];
 
       // recursively build bread crumb trail
-      crawlParents(normalizedNav, props.itemZUID, crumbs);
+      crawlParents(normalizedNav, props.itemZUID, crumbs, props.content);
 
       // Add Start: Content Dashboard
       crumbs.push({
