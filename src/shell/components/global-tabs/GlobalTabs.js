@@ -16,7 +16,7 @@ import { Breadcrumbs } from "./components/Breadcrumbs";
 
 import styles from "./GlobalTabs.less";
 
-const ZUID_REGEX = /[a-zA-Z0-9]{1,2}-[a-zA-Z0-9]{6}-[a-zA-Z0-9]{6}/;
+const ZUID_REGEX = /[a-zA-Z0-9]{1,2}-[a-zA-Z0-9]{6,10}-[a-zA-Z0-9]{6}/;
 
 function toCapitalCase(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -69,75 +69,69 @@ export default connect(state => {
 
     // Track route changes to display quick links
     useEffect(() => {
-      const [parts, zuid] = parse(history.location.pathname);
-
-      if (zuid || parts.length > 1) {
-        let newRoutes = [...routes];
-        let exists = newRoutes.find(
-          route => route.pathname === history.location.pathname
-        );
-        if (!exists) {
-          newRoutes = [history.location, ...newRoutes];
-        }
-
-        // Maximum of 20 route records
-        newRoutes = newRoutes.slice(0, 20);
-
-        // Lookup route resource to get a friendly display name
-        // Last zuid in path part is the resource being viewed
-        newRoutes.forEach(route => {
-          const [parts, zuid, prefix] = parse(route.pathname);
-
-          // resove ZUID from store to determine display information
-          switch (prefix) {
-            case "6":
-              if (props.models) {
-                const model = props.models[zuid];
-
-                if (model) {
-                  route.name = model.label;
-                }
-              }
-            case "7":
-              if (props.content) {
-                const item = props.content[zuid];
-                if (item && item.web) {
-                  route.name =
-                    item.web.metaTitle ||
-                    item.web.metaLinkText ||
-                    item.web.pathPart;
-                }
-              }
-            case "10":
-            case "11":
-              if (props.files) {
-                const selectedFile = props.files.find(
-                  file => file.ZUID === zuid
-                );
-                if (selectedFile) {
-                  route.name = selectedFile.fileName;
-                }
-              }
-          }
-          if (parts[0] === "settings") {
-            if (parts[1] === "instance" && parts[2]) {
-              route.name =
-                parts[2]
-                  .replace("-", " ")
-                  .replace("_", " ")
-                  .split(" ")
-                  .map(toCapitalCase)
-                  .join(" ") + " Settings";
-            } else {
-              route.name = toCapitalCase(parts[1]) + " Settings";
-            }
-          }
-        });
-
-        // store routes to local storage and reload on app start
-        set(`${props.instanceZUID}:session:routes`, newRoutes);
-        setRoutes(newRoutes);
+      let newRoutes = [...routes];
+      let exists = newRoutes.find(
+        route => route.pathname === history.location.pathname
+      );
+      if (!exists) {
+        newRoutes = [history.location, ...newRoutes];
       }
+
+      // Maximum of 20 route records
+      newRoutes = newRoutes.slice(0, 20);
+
+      // Lookup route resource to get a friendly display name
+      // Last zuid in path part is the resource being viewed
+      newRoutes.forEach(route => {
+        const [parts, zuid, prefix] = parse(route.pathname);
+
+        // resove ZUID from store to determine display information
+        switch (prefix) {
+          case "6":
+            if (props.models) {
+              const model = props.models[zuid];
+
+              if (model) {
+                route.name = model.label;
+              }
+            }
+          case "7":
+            if (props.content) {
+              const item = props.content[zuid];
+              if (item && item.web) {
+                route.name =
+                  item.web.metaTitle ||
+                  item.web.metaLinkText ||
+                  item.web.pathPart;
+              }
+            }
+          case "10":
+          case "11":
+            if (props.files) {
+              const selectedFile = props.files.find(file => file.ZUID === zuid);
+              if (selectedFile) {
+                route.name = selectedFile.fileName;
+              }
+            }
+        }
+        if (parts[0] === "settings") {
+          if (parts[1] === "instance" && parts[2]) {
+            route.name =
+              parts[2]
+                .replace("-", " ")
+                .replace("_", " ")
+                .split(" ")
+                .map(toCapitalCase)
+                .join(" ") + " Settings";
+          } else {
+            route.name = toCapitalCase(parts[1]) + " Settings";
+          }
+        }
+      });
+
+      // store routes to local storage and reload on app start
+      set(`${props.instanceZUID}:session:routes`, newRoutes);
+      setRoutes(newRoutes);
     }, [history.location, props.models, props.content, props.files]);
 
     // Update Breadcrumb
