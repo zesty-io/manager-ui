@@ -1,4 +1,4 @@
-describe.skip("Code Editor: Create File", () => {
+describe("Code Editor: Create File", () => {
   before(() => {
     cy.login();
     cy.visit("/code");
@@ -17,7 +17,7 @@ describe.skip("Code Editor: Create File", () => {
   });
 });
 
-describe.skip("Code Editor: Publish files", () => {
+describe("Code Editor: Publish files", () => {
   before(() => {
     cy.login();
     cy.visit("/code");
@@ -43,7 +43,7 @@ describe.skip("Code Editor: Publish files", () => {
   });
 });
 
-describe.skip("Code Editor: Sort resources", () => {
+describe("Code Editor: Sort resources", () => {
   before(() => {
     cy.login();
     cy.visit("/code");
