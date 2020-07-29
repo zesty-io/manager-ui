@@ -37,7 +37,6 @@ export default connect(state => {
       props
         .dispatch(login(evt.target.email.value, evt.target.password.value))
         .then(res => {
-          setLoading(false);
           if (res.status === 202) {
             setTwoFactor(true);
 
@@ -45,6 +44,7 @@ export default connect(state => {
             props.dispatch(pollTwoFactor());
           } else if (res.message) {
             setError(res.message);
+            setLoading(false);
           }
         })
         .catch(err => {
