@@ -16,6 +16,8 @@ export function instance(
   switch (action.type) {
     case "FETCHING_INSTANCE_SUCCESS":
       return { ...state, ...action.payload.data };
+    case "FETCH_DOMAINS_SUCCESS":
+      return { ...state, domains: { ...action.payload.data } };
     default:
       return state;
   }
@@ -42,6 +44,29 @@ export function fetchInstance() {
         dispatch(
           notify({
             message: "Failed to load instance"
+          })
+        );
+      });
+  };
+}
+
+export function fetchDomains() {
+  return dispatch => {
+    request(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}/domains`)
+      .then(res => {
+        dispatch({
+          type: "FETCH_DOMAINS_SUCCESS",
+          payload: {
+            data: res.data
+          }
+        });
+
+        return res;
+      })
+      .catch(err => {
+        dispatch(
+          notify({
+            message: "Failed to load domains"
           })
         );
       });

@@ -16,6 +16,7 @@ if (process.env.NODE_ENV === "production") {
     VERSION: pjson.version,
     ENV: "production",
 
+    ACCOUNTS_URL: "https://accounts.zesty.io",
     API_ACCOUNTS: "//accounts.api.zesty.io/v1",
     API_INSTANCE: ".api.zesty.io/v1",
 
@@ -51,6 +52,7 @@ if (process.env.NODE_ENV === "production") {
     VERSION: pjson.version,
     ENV: "stage",
 
+    ACCOUNTS_URL: "https://accounts.stage.zesty.io",
     API_ACCOUNTS: "//accounts.api.stage.zesty.io/v1",
     API_INSTANCE: ".api.stage.zesty.io/v1",
 
@@ -88,6 +90,7 @@ if (process.env.NODE_ENV === "production") {
     VERSION: pjson.version,
     ENV: "development",
 
+    ACCOUNTS_URL: "https://accounts.stage.zesty.io",
     API_ACCOUNTS: "https://accounts.api.stage.zesty.io/v1",
     API_INSTANCE: ".api.stage.zesty.io/v1",
     API_INSTANCE_PROTOCOL: "https://",

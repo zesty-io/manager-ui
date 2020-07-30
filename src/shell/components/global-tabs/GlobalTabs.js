@@ -5,11 +5,7 @@ import { get, set } from "idb-keyval";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faAngleRight,
-  faShareAlt,
-  faTimesCircle
-} from "@fortawesome/free-solid-svg-icons";
+import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 
 import GlobalSearch from "shell/components/global-search";
 import { Breadcrumbs } from "./components/Breadcrumbs";

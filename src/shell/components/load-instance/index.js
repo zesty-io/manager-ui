@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
-import { fetchInstance } from "shell/store/instance";
+import { fetchInstance, fetchDomains } from "shell/store/instance";
 import { fetchUser } from "shell/store/user";
 import { fetchUserRole } from "shell/store/userRole";
 
@@ -20,6 +20,7 @@ export default connect(state => {
       props.dispatch(fetchUser(props.user.ZUID));
       props.dispatch(fetchInstance());
       props.dispatch(fetchUserRole());
+      props.dispatch(fetchDomains());
 
       // Promise.all([instance, products]).then(res => {
       //   // console.log("loaded instance");
