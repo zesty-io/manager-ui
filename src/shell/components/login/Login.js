@@ -42,7 +42,7 @@ export default connect(state => {
 
             // Start polling for one-touch acceptance
             props.dispatch(pollTwoFactor());
-          } else if (res.message) {
+          } else if (res.status !== 200) {
             setError(res.message);
             setLoading(false);
           }
