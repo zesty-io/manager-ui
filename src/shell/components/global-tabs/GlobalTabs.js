@@ -16,7 +16,7 @@ import { Breadcrumbs } from "./components/Breadcrumbs";
 
 import styles from "./GlobalTabs.less";
 
-const ZUID_REGEX = /[a-zA-Z0-9]{1,2}-[a-zA-Z0-9]{6,10}-[a-zA-Z0-9]{6}/;
+const ZUID_REGEX = /[a-zA-Z0-9]{1,5}-[a-zA-Z0-9]{6,10}-[a-zA-Z0-9]{6,35}/;
 
 function toCapitalCase(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -141,10 +141,10 @@ export default connect(state => {
 
     // Update Breadcrumb
     useEffect(() => {
-      const [parts, zuid, prefix] = parse(history.location.pathname);
+      const [, zuid, prefix] = parse(history.location.pathname);
 
       // breadcrumbs only exist for content items
-      if (prefix === "7" || prefix === "6") {
+      if (prefix === "7" || prefix === "6" || prefix === "17") {
         setZUID(zuid);
       } else {
         setZUID("");
