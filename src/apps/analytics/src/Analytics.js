@@ -153,12 +153,15 @@ export default connect(function(state) {
                       Stage
                     </Url>
 
-                    <Url
-                      target="_blank"
-                      href={`https://${this.props.instance.domains[0].domain}`}
-                    >
-                      Live
-                    </Url>
+                    {this.props.instance.domains &&
+                      this.props.instance.domains[0] && (
+                        <Url
+                          target="_blank"
+                          href={`https://${this.props.instance.domains[0].domain}`}
+                        >
+                          Live
+                        </Url>
+                      )}
                   </span>
                 </div>
               </div>
