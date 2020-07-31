@@ -41,11 +41,6 @@ export default connect(function(state) {
       favoriteModels: [],
       loading: true,
       webEngineOn: true, // in the future this will be a boolean pulled off the account, it will change the dash
-      domainSet: Boolean(
-        this.props.instance.domains &&
-          this.props.instance.domains[0] &&
-          this.props.instance.domains[0].domain
-      ),
       gaAuthenticated: Boolean(this.props.instance.google_profile_id),
       gaLegacyAuth: false // we need response body from cloud function could change this
     };
@@ -127,6 +122,11 @@ export default connect(function(state) {
     }
 
     render() {
+      const domainSet = Boolean(
+        this.props.instance.domains &&
+          this.props.instance.domains[1] &&
+          this.props.instance.domains[1].domain
+      );
       return (
         <section className={styles.Dashboard}>
           <div className={styles.topBar}>
@@ -154,10 +154,10 @@ export default connect(function(state) {
                     </Url>
 
                     {this.props.instance.domains &&
-                      this.props.instance.domains[0] && (
+                      this.props.instance.domains[1] && (
                         <Url
                           target="_blank"
-                          href={`https://${this.props.instance.domains[0].domain}`}
+                          href={`https://${this.props.instance.domains[1].domain}`}
                         >
                           Live
                         </Url>
@@ -178,7 +178,7 @@ export default connect(function(state) {
               {(!this.state.gaAuthenticated || this.state.gaLegacyAuth) && (
                 <GoogleAuthOverlay
                   gaLegacyAuth={this.state.gaLegacyAuth}
-                  domainSet={this.state.domainSet}
+                  domainSet={domainSet}
                   gaAuthenticated={this.state.gaAuthenticated}
                   user={this.props.user}
                   instance={this.props.instance}
@@ -191,7 +191,7 @@ export default connect(function(state) {
                   instanceZUID={this.props.instanceZUID}
                   profileID={this.props.instance.google_profile_id}
                   data={shelldata.shellBarData()}
-                  domainSet={this.state.domainSet}
+                  domainSet={domainSet}
                 />
               </div>
 
@@ -201,14 +201,14 @@ export default connect(function(state) {
                   instanceZUID={this.props.instanceZUID}
                   profileID={this.props.instance.google_profile_id}
                   data={shelldata.shellDoughnutData()}
-                  domainSet={this.state.domainSet}
+                  domainSet={domainSet}
                 />
                 <SocialTraffic
                   setGALegacyStatus={this.setGALegacyStatus}
                   instanceZUID={this.props.instanceZUID}
                   profileID={this.props.instance.google_profile_id}
                   data={shelldata.shellDoughnutData()}
-                  domainSet={this.state.domainSet}
+                  domainSet={domainSet}
                 />
               </div>
             </div>
