@@ -66,6 +66,10 @@ export default connect(state => {
     // Track route changes to display quick links
     useEffect(() => {
       let newRoutes = [...routes];
+      const [parts, zuid] = parse(history.location.pathname);
+      if (parts.length === 1 && !zuid) {
+        return;
+      }
       let exists = newRoutes.find(
         route => route.pathname === history.location.pathname
       );
