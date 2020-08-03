@@ -43,7 +43,7 @@ describe("Headtag: create a tag", () => {
 
     cy.get("article")
       .first()
-      .get("#DelteHeadtag")
+      .get("#DeleteHeadtag")
       .first()
       .click({ force: true });
     cy.contains("Head tag deleted", { timeout: 5000 }).should("exist");
