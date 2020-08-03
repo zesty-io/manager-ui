@@ -17,9 +17,12 @@ describe("Head Tags", () => {
   });
   it("Changes the tag type", () => {
     cy.get("[data-cy=tagCard]")
-      .find(".Select")
+      .find(".Select button")
+      .last()
       .click();
-    cy.get('[data-value="script"]').click();
+    cy.get('[data-value="script"]')
+      .last()
+      .click();
   });
   it("Changes the value of an attribute", () => {
     cy.contains("Value")

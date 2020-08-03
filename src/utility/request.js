@@ -44,40 +44,26 @@ export function request(url, opts = {}) {
     .then(res => {
       // console.log("Request:", res);
 
-      try {
-        // // Bad Request
-        // if (res.status === 400) {}
+      // // Bad Request
+      // if (res.status === 400) {}
 
-        // // User not authenticatd. Trigger login flow
-        // if (res.status === 401) {}
-
-        // Not Found
-        // if (res.status === 404) {}
-
-        // if (res.status === 410) {
-        //   // growl(`Your two factor authentication has expired. 410`, "red-growl");
-        // }
-
-        // if (res.status === 422) {}
-
-        return res.json().then(function(json) {
-          return { ...json, status: res.status };
-        });
-      } catch (err) {
-        console.error(err);
-        // growl(
-        //   `We ran into an issue processing an API response.`,
-        //   "red-growl"
-        // );
-      }
-
-      // Server Failed
-      if (res.status >= 500) {
+      // User not authenticatd. Trigger login flow
+      if (res.status === 401) {
         throw { res, opts, url };
       }
 
-      // If a result hasn't been returned yet return the response
-      return res;
+      // Not Found
+      // if (res.status === 404) {}
+
+      // if (res.status === 410) {
+      //   // growl(`Your two factor authentication has expired. 410`, "red-growl");
+      // }
+
+      // if (res.status === 422) {}
+
+      return res.json().then(function(json) {
+        return { ...json, status: res.status };
+      });
     })
     .then(json => {
       if (opts.callback) {
@@ -93,12 +79,8 @@ export function request(url, opts = {}) {
             err.res.status
           }`
         );
-        // growl(`Request failed, our API had an issue. 500`, "red-growl");
         throw err;
       } else {
-        // Network Failed
-        console.error(err);
-        // growl(`A network request failed.`, "red-growl");
         throw err;
       }
     });

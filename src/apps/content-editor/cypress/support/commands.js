@@ -4,13 +4,17 @@ Cypress.Commands.add("login", (eml, pass) => {
   formBody.append("email", eml || Cypress.env("validEmail"));
   formBody.append("password", pass || Cypress.env("validPassword"));
 
-  return fetch(`${Cypress.env("API_AUTH")}/login`, {
+  fetch(`${Cypress.env("API_AUTH")}/login`, {
     method: "POST",
     credentials: "include",
     body: formBody
   })
     .then(res => res.json())
-    .then(json => json.data.data);
+    .then(json => {
+      // We need the cookie value returned reset so it is unsecure and
+      // accessible by javascript
+      cy.setCookie(Cypress.env("COOKIE_NAME"), json.meta.token);
+    });
 });
 
 Cypress.Commands.add("goHome", () => {

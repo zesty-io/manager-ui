@@ -43,7 +43,7 @@ describe("Actions in content editor", () => {
   });
 
   // TODO: fix race condition so schedule publish will work
-  it("Schedules a Publish for an item", () => {
+  it.skip("Schedules a Publish for an item", () => {
     // TODO: remove reload when UI state is consistent
     cy.reload();
     cy.get("#PublishScheduleButton").click();
@@ -61,7 +61,7 @@ describe("Actions in content editor", () => {
     cy.get("#SchedulePublishClose").click();
   });
 
-  it("Unschedules a Publish for an item", () => {
+  it.skip("Unschedules a Publish for an item", () => {
     cy.get("#PublishScheduleButton").click();
     cy.get("#UnschedulePublishButton").click();
     cy.get("#SchedulePublishClose").click();
