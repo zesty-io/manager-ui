@@ -36,6 +36,7 @@ function parse(path) {
 
 export default connect(state => {
   return {
+    instanceName: state.instance.name,
     instanceZUID: state.instance.ZUID,
     models: state.models,
     content: state.content,
@@ -166,7 +167,10 @@ export default connect(state => {
 
     return (
       <section className={styles.GlobalTabs}>
-        <GlobalSearch className={styles.GlobalSearch} />
+        <GlobalSearch
+          className={styles.GlobalSearch}
+          instanceName={props.instanceName}
+        />
         <nav className={styles.QuickLinks}>
           <ol className={styles.Links}>
             {routes.map((route, i) => (

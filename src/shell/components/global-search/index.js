@@ -70,7 +70,7 @@ export default React.memo(function GlobalSearch(props) {
       onKeyDown={handleKeydown}
       tabIndex={-1}
     >
-      <h1 className={styles.InstanceName}>zesty.pw prod testing instance</h1>
+      <h1 className={styles.InstanceName}>{props.instanceName}</h1>
       <Search
         value={searchTerm}
         placeholder="Global Search (CMD + Shift + K) "
