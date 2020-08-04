@@ -17,7 +17,7 @@ export function instance(
     case "FETCHING_INSTANCE_SUCCESS":
       return { ...state, ...action.payload.data };
     case "FETCH_DOMAINS_SUCCESS":
-      return { ...state, domains: { ...action.payload.data } };
+      return { ...state, domains: action.payload.data };
     default:
       return state;
   }
@@ -57,7 +57,15 @@ export function fetchDomains() {
         dispatch({
           type: "FETCH_DOMAINS_SUCCESS",
           payload: {
-            data: res.data
+            data: res.data.sort((a, b) => {
+              const dateA = new Date(a.createdAt);
+              const dateB = new Date(b.createdAt);
+
+              const epochA = dateA.valueOf();
+              const epochB = dateB.valueOf();
+
+              return epochA - epochB;
+            })
           }
         });
 

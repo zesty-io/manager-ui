@@ -124,8 +124,8 @@ export default connect(function(state) {
     render() {
       const domainSet = Boolean(
         this.props.instance.domains &&
-          this.props.instance.domains[1] &&
-          this.props.instance.domains[1].domain
+          this.props.instance.domains[0] &&
+          this.props.instance.domains[0].domain
       );
       return (
         <section className={styles.Dashboard}>
@@ -154,10 +154,10 @@ export default connect(function(state) {
                     </Url>
 
                     {this.props.instance.domains &&
-                      this.props.instance.domains[1] && (
+                      this.props.instance.domains[0] && (
                         <Url
                           target="_blank"
-                          href={`https://${this.props.instance.domains[1].domain}`}
+                          href={`https://${this.props.instance.domains[0].domain}`}
                         >
                           Live
                         </Url>

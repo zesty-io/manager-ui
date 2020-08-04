@@ -30,7 +30,7 @@ export class GoogleAuthOverlay extends React.Component {
         "&account_id=" +
         this.props.instance.ID +
         "&domain=" +
-        this.props.instance.domains[1].domain
+        this.props.instance.domains[0].domain
     );
     console.log(address);
 
