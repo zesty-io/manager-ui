@@ -117,7 +117,9 @@ function SearchResults(props) {
           <Link
             to={`/content/${result.meta.contentModelZUID}/${result.meta.ZUID}`}
           >
-            <div className={styles.SearchResultTitle}>{result.data.title}</div>
+            <div className={styles.SearchResultTitle}>
+              {result.web.metaTitle}
+            </div>
             <div className={styles.SearchResultPath}>
               {result.web.path}
               {result.web.pathpart}

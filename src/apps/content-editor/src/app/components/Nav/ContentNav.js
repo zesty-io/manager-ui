@@ -4,7 +4,6 @@ import { useLocation, useHistory } from "react-router";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faSearch,
   faArrowsAlt,
   faCaretDown,
   faCaretLeft
@@ -54,15 +53,6 @@ export function ContentNav(props) {
     <React.Fragment>
       <div className={styles.Actions}>
         <ButtonGroup className={styles.ButtonGroup}>
-          <Button
-            title="Open content search"
-            onClick={() =>
-              riot.mount(document.querySelector("#modalMount"), "z-spotlight")
-            }
-          >
-            <FontAwesomeIcon icon={faSearch} />
-            Search
-          </Button>
           <Button id="ReorderNavButton" onClick={() => setReorderOpen(true)}>
             <FontAwesomeIcon
               icon={faArrowsAlt}
