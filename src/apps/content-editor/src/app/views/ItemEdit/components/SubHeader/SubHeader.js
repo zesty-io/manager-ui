@@ -27,9 +27,9 @@ export class SubHeader extends Component {
                 &nbsp;Launch Instance
               </Url>
             ))}
-          <div>
-            <span>Preview Links: &nbsp;</span>
-            {this.props.item.web.path && (
+          {this.props.item.web.path && (
+            <div>
+              <span>Preview Links: &nbsp;</span>
               <Url
                 className={styles.PreviewUrl}
                 target="_blank"
@@ -38,9 +38,7 @@ export class SubHeader extends Component {
               >
                 <FontAwesomeIcon icon={faEye} /> Current Version
               </Url>
-            )}
-            <span>&nbsp;&nbsp;&nbsp;</span>
-            {this.props.item.web.path && (
+              <span>&nbsp;&nbsp;&nbsp;</span>
               <Url
                 className={styles.PreviewUrl}
                 target="_blank"
@@ -50,8 +48,8 @@ export class SubHeader extends Component {
                 <FontAwesomeIcon icon={faCodeBranch} /> Version{" "}
                 {this.props.item.meta.version}
               </Url>
-            )}
-          </div>
+            </div>
+          )}
         </div>
         <div className={styles.Actions}>{this.props.children}</div>
       </header>
