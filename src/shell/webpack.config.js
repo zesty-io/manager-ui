@@ -16,7 +16,6 @@ if (process.env.NODE_ENV === "production") {
     VERSION: pjson.version,
     ENV: "production",
 
-    ACCOUNTS_URL: "https://accounts.zesty.io",
     API_ACCOUNTS: "//accounts.api.zesty.io/v1",
     API_INSTANCE: ".api.zesty.io/v1",
     API_INSTANCE_PROTOCOL: "https://",
@@ -41,7 +40,7 @@ if (process.env.NODE_ENV === "production") {
     URL_MANAGER_PROTOCOL: "https://",
     URL_PREVIEW: "-dev.preview.zesty.io",
     URL_PREVIEW_PROTOCOL: "https://",
-    URL_ACCOUNTS: "",
+    URL_ACCOUNTS: "https://accounts.zesty.io",
 
     COOKIE_NAME: "APP_SID",
     COOKIE_DOMAIN: ".zesty.io",
@@ -53,7 +52,6 @@ if (process.env.NODE_ENV === "production") {
     VERSION: pjson.version,
     ENV: "stage",
 
-    ACCOUNTS_URL: "https://accounts.stage.zesty.io",
     API_ACCOUNTS: "//accounts.api.stage.zesty.io/v1",
     API_INSTANCE: ".api.stage.zesty.io/v1",
     API_INSTANCE_PROTOCOL: "https://",
@@ -80,7 +78,7 @@ if (process.env.NODE_ENV === "production") {
     URL_MANAGER_PROTOCOL: "https://",
     URL_PREVIEW: "-dev.preview.stage.zesty.io",
     URL_PREVIEW_PROTOCOL: "https://",
-    URL_ACCOUNTS: "",
+    URL_ACCOUNTS: "https://accounts.stage.zesty.io",
 
     COOKIE_NAME: "STAGE_APP_SID",
     COOKIE_DOMAIN: ".zesty.io",
@@ -92,7 +90,6 @@ if (process.env.NODE_ENV === "production") {
     VERSION: pjson.version,
     ENV: "development",
 
-    ACCOUNTS_URL: "https://accounts.dev.zesty.io",
     API_ACCOUNTS: "https://accounts.api.dev.zesty.io/v1",
     API_INSTANCE: ".api.dev.zesty.io/v1",
     API_INSTANCE_PROTOCOL: "https://",
@@ -119,7 +116,7 @@ if (process.env.NODE_ENV === "production") {
     URL_MANAGER_PROTOCOL: "https://",
     URL_PREVIEW: "-dev.preview.dev.zesty.io",
     URL_PREVIEW_PROTOCOL: "https://",
-    URL_ACCOUNTS: "",
+    URL_ACCOUNTS: "https://accounts.dev.zesty.io",
 
     COOKIE_NAME: "DEV_APP_SID",
     COOKIE_DOMAIN: ".zesty.io"
