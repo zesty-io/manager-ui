@@ -29,7 +29,7 @@ export function fetchInstance() {
       type: "FETCHING_INSTANCE"
     });
 
-    request(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`)
+    return request(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`)
       .then(res => {
         dispatch({
           type: "FETCHING_INSTANCE_SUCCESS",

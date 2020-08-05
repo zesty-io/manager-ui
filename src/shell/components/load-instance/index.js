@@ -18,7 +18,9 @@ export default connect(state => {
   React.memo(function LoadInstance(props) {
     useEffect(() => {
       props.dispatch(fetchUser(props.user.ZUID));
-      props.dispatch(fetchInstance());
+      props.dispatch(fetchInstance()).then(res => {
+        document.title = `Zesty Manager - ${res.data.name}`;
+      });
       props.dispatch(fetchUserRole());
       props.dispatch(fetchDomains());
 
