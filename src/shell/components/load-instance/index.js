@@ -7,8 +7,6 @@ import { fetchInstance, fetchDomains } from "shell/store/instance";
 import { fetchUser } from "shell/store/user";
 import { fetchUserRole } from "shell/store/userRole";
 
-// import { store } from "shell/store";
-
 export default connect(state => {
   return {
     instance: state.instance,

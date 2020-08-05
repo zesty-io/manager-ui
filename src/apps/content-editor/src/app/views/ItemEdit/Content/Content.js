@@ -47,6 +47,7 @@ export default class Content extends Component {
             <Actions
               {...this.props}
               userRole={this.props.userRole}
+              user={this.props.user}
               site={{}}
               set={{
                 type: this.props.model.type

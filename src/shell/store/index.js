@@ -21,8 +21,6 @@ import { media } from "./media";
 import { logs } from "./logs";
 import { notifications } from "./notifications";
 
-// import ui from "./ui";
-
 const actionLogger = createLogger({
   collapsed: true,
   diff: false

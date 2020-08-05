@@ -8,7 +8,7 @@ import AuditControls from "components/controls";
 import Log from "components/log";
 // import Pagination from "components/pagination";
 
-import { getLogs } from "store/logs";
+import { getLogs } from "store/logsInView";
 
 import styles from "./styles.less";
 export default connect(state => state)(function AuditTrail(props) {

@@ -6,12 +6,10 @@ import { Route } from "react-router-dom";
 
 import { injectReducer } from "shell/store";
 
-import { logs } from "store/logs";
 import { logsInView } from "store/logsInView";
 
 import AuditApp from "./views/app";
 
-injectReducer(window.ZESTY_REDUX_STORE, "logs", logs);
 injectReducer(window.ZESTY_REDUX_STORE, "logsInView", logsInView);
 
 window.AuditTrailApp = function AuditTrailApp() {

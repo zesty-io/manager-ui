@@ -19,11 +19,9 @@ export default connect(state => {
 
     useEffect(() => {
       setLoading(true);
-      props
-        .dispatch(fetchAuditTrailPublish(props.instanceZUID, props.itemZUID))
-        .finally(() => {
-          setLoading(false);
-        });
+      props.dispatch(fetchAuditTrailPublish(props.itemZUID)).finally(() => {
+        setLoading(false);
+      });
     }, []);
 
     const logs =
@@ -46,9 +44,6 @@ export default connect(state => {
             <ul className="logs">
               {Array.isArray(logs) &&
                 logs.map(log => {
-                  const dataformat = new Date(log.happenedAt)
-                    .toISOString()
-                    .slice(0, 10);
                   const { firstName, lastName } = log;
                   return (
                     <li className="log" key={log.ZUID}>

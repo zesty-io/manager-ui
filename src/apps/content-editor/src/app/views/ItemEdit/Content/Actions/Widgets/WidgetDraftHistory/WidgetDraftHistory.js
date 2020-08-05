@@ -21,11 +21,9 @@ export default connect((state, props) => {
 
   useEffect(() => {
     setLoading(true);
-    props
-      .dispatch(fetchAuditTrailDrafting(props.instanceZUID, props.itemZUID))
-      .finally(() => {
-        setLoading(false);
-      });
+    props.dispatch(fetchAuditTrailDrafting(props.itemZUID)).finally(() => {
+      setLoading(false);
+    });
   }, []);
 
   return (
