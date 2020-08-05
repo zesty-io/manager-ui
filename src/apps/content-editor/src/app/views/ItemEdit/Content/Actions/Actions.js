@@ -77,14 +77,14 @@ export class Actions extends PureComponent {
           sort={sort}
         />
 
-        {this.props.userRole.systemRole.publish && (
+        {(this.props.userRole.systemRole.publish || this.props.user.staff) && (
           <WidgetPurgeItem
             dispatch={this.props.dispatch}
             itemZUID={this.props.itemZUID}
             modelZUID={this.props.modelZUID}
           />
         )}
-        {this.props.userRole.systemRole.publish && (
+        {(this.props.userRole.systemRole.publish || this.props.user.staff) && (
           <Unpublish
             dispatch={this.props.dispatch}
             publishing={publishing}
@@ -93,7 +93,7 @@ export class Actions extends PureComponent {
           />
         )}
 
-        {this.props.userRole.systemRole.delete && (
+        {(this.props.userRole.systemRole.delete || this.props.user.staff) && (
           <WidgetDeleteItem
             dispatch={this.props.dispatch}
             itemZUID={this.props.itemZUID}
