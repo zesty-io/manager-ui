@@ -22,6 +22,7 @@ export default class Content extends Component {
             itemZUID={this.props.itemZUID}
             item={this.props.item}
             userRole={this.props.userRole}
+            user={this.props.user}
             saving={this.props.saving}
             onSave={this.props.onSave}
             dispatch={this.props.dispatch}

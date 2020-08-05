@@ -13,7 +13,6 @@ import { ScheduleFlyout } from "./ScheduleFlyout";
 import { VersionSelector } from "./VersionSelector";
 
 import { publish } from "shell/store/content";
-import { notify } from "shell/store/notifications";
 
 import styles from "./ItemVersioning.less";
 export class ItemVersioning extends React.PureComponent {
@@ -85,7 +84,7 @@ export class ItemVersioning extends React.PureComponent {
           itemZUID={this.props.itemZUID}
         />
 
-        {this.props.userRole.systemRole.publish && (
+        {(this.props.userRole.systemRole.publish || this.props.user.staff) && (
           <ButtonGroup className={styles.Publish}>
             <Button
               id="PublishButton"
