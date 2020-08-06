@@ -33,7 +33,7 @@ export default function RedirectManager(props) {
     <div className={styles.RedirectsManager}>
       <RedirectActions
         dispatch={props.dispatch}
-        redirectsTotal={props.redirects.length}
+        redirectsTotal={Object.keys(props.redirects).length}
       />
 
       <WithLoader condition={!loading} message="Loading Redirects">
