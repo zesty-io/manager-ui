@@ -21,7 +21,7 @@ export const ItemNavigation = ({
             styles.Item,
             slug === "content" ? styles.Selected : null
           )}
-          to={`/content/${modelZUID}/${itemZUID}/content`}
+          to={`/content/${modelZUID}/${itemZUID}`}
         >
           Content
         </Link>

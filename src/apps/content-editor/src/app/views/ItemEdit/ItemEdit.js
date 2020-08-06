@@ -305,27 +305,6 @@ class ItemEdit extends Component {
             />
             <Route
               exact
-              path="/content/:modelZUID/:itemZUID/content"
-              render={props => (
-                <Content
-                  instance={this.props.instance}
-                  modelZUID={this.props.modelZUID}
-                  model={this.props.model}
-                  itemZUID={this.props.itemZUID}
-                  item={this.props.item}
-                  items={this.props.items}
-                  fields={this.props.fields}
-                  userRole={this.props.userRole}
-                  user={this.props.user}
-                  onSave={this.onSave}
-                  dispatch={this.props.dispatch}
-                  loading={this.state.loading}
-                  saving={this.state.saving}
-                />
-              )}
-            />
-            <Route
-              exact
               path="/content/:modelZUID/:itemZUID"
               render={props => (
                 <Content

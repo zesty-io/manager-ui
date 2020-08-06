@@ -22,16 +22,25 @@ function parse(path) {
   let parts = path.split("/").filter(part => part);
   let zuid = null;
   let prefix = null;
+  let contentSection = null;
 
-  if (parts.length > 1 && ZUID_REGEX.test(parts[parts.length - 1])) {
-    zuid = parts.pop();
+  if (parts.length > 1) {
+    if (
+      parts[parts.length - 1] === "head" ||
+      parts[parts.length - 1] === "meta"
+    ) {
+      contentSection = parts.pop();
+    }
+    if (ZUID_REGEX.test(parts[parts.length - 1])) {
+      zuid = parts.pop();
+    }
   }
 
   if (zuid) {
     prefix = zuid.split("-")[0];
   }
 
-  return [parts, zuid, prefix];
+  return [parts, zuid, prefix, contentSection];
 }
 
 export default connect(state => {
@@ -67,8 +76,10 @@ export default connect(state => {
     // Track route changes to display quick links
     useEffect(() => {
       let newRoutes = [...routes];
-      const [parts, zuid] = parse(history.location.pathname);
-      if (parts.length === 1 && !zuid) {
+      const [parts, zuid, prefix, contentSection] = parse(
+        history.location.pathname
+      );
+      if ((parts.length === 1 && !zuid) || contentSection) {
         return;
       }
       let exists = newRoutes.find(
