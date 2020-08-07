@@ -74,7 +74,7 @@ export default class RedirectTable extends React.Component {
     if (order.length) {
       return order.map(key => {
         const redirect = this.props.redirects[key];
-        const callback = this.handleRemoveRedirect.bind(this, redirect.zuid);
+        const callback = this.handleRemoveRedirect.bind(this, redirect.ZUID);
 
         return (
           <RedirectsTableRow
