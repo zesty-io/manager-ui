@@ -178,10 +178,10 @@ export default connect(state => {
 
     return (
       <section className={styles.GlobalTabs}>
-        <GlobalSearch
-          className={styles.GlobalSearch}
-          instanceName={props.instanceName}
-        />
+        <div>
+          <h1 className={styles.InstanceName}>{props.instanceName}</h1>
+          <GlobalSearch className={styles.GlobalSearch} />
+        </div>
         <nav className={styles.QuickLinks}>
           <ol className={styles.Links}>
             {routes.map((route, i) => (

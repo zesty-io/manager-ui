@@ -6,14 +6,12 @@ import { injectReducer } from "shell/store";
 import { redirects } from "store/redirects";
 import { redirectsFilter } from "store/redirectsFilter";
 import { imports } from "store/imports";
-import { paths } from "store/paths";
 
 import HealthApp from "./app";
 
 injectReducer(ZESTY_REDUX_STORE, "redirects", redirects);
 injectReducer(ZESTY_REDUX_STORE, "redirectsFilter", redirectsFilter);
 injectReducer(ZESTY_REDUX_STORE, "imports", imports);
-injectReducer(ZESTY_REDUX_STORE, "paths", paths);
 
 window.SeoApp = function SeoApp() {
   return (

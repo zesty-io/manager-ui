@@ -1,5 +1,3 @@
-import { IMPORT_LOADING, IMPORT_REDIRECTS } from "./imports";
-
 export function redirects(state = {}, action) {
   switch (action.type) {
     case "REDIRECTS_FETCH_SUCCESS":
@@ -73,22 +71,20 @@ export function createRedirect(redirect) {
       body: redirect
     })
       .then(json => {
-        if (!json.errors) {
+        if (!json.error) {
           dispatch({
             type: "REDIRECT_CREATE_SUCCESS",
             redirect: { ...redirect, zuid: json.new_redirect_zuid }
           });
         } else {
           // Notify user of all errors
-          json.errors.forEach(err => growl(err.message, "red-growl"));
           dispatch({
             type: "REDIRECT_CREATE_ERROR",
-            err: json.errors
+            err: json.error
           });
         }
       })
       .catch(err => {
-        console.error("createRedirect: ", err);
         dispatch({
           type: "REDIRECT_CREATE_ERROR",
           err
@@ -106,7 +102,7 @@ export function removeRedirect(zuid) {
       method: "DELETE"
     })
       .then(json => {
-        if (!json.errors) {
+        if (!json.error) {
           dispatch({
             type: "REDIRECT_REMOVE_SUCCESS",
             zuid
@@ -114,12 +110,11 @@ export function removeRedirect(zuid) {
         } else {
           dispatch({
             type: "REDIRECT_REMOVE_ERROR",
-            err: json.errors
+            err: json.error
           });
         }
       })
       .catch(err => {
-        console.error("removeRedirect: ", err);
         dispatch({
           type: "REDIRECT_REMOVE_ERROR",
           err

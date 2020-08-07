@@ -15,13 +15,7 @@ export default class RedirectTable extends React.Component {
       redirects: this.props.redirects,
       redirectsOrder: Object.keys(this.props.redirects),
       sortBy: "",
-      sortDirection: "",
-      toOptions: [
-        {
-          html: "/",
-          value: "0"
-        }
-      ]
+      sortDirection: ""
     };
   }
   componentWillReceiveProps(nextProps) {

@@ -1,5 +1,3 @@
-import { REDIRECT_CREATE_SUCCESS } from "./redirects";
-
 export const IMPORT_LOADING = "IMPORT_LOADING";
 export const IMPORT_REDIRECTS = "IMPORT_REDIRECTS";
 export const IMPORT_CODE = "IMPORT_CODE";
@@ -11,7 +9,7 @@ export function imports(state = {}, action) {
     case IMPORT_REDIRECTS:
       return action.redirects;
 
-    case REDIRECT_CREATE_SUCCESS:
+    case "REDIRECT_CREATE_SUCCESS":
       return Object.keys(state).reduce((acc, key) => {
         if (key === action.redirect.path) {
           // We take the states computed target over the zuid used
