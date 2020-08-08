@@ -55,7 +55,6 @@ export default connect(state => {
               this.props.navContent.headless.length
             }
             message="Starting Content Editor"
-            width="100vw"
           >
             <section className={styles.ContentEditor}>
               <div className={styles.Nav}>
