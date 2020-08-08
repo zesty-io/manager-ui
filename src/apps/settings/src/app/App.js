@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
-import { Switch, Route, Link, Redirect } from "react-router-dom";
 
-import AppError from "./AppError";
 import { Instance } from "./views/Instance";
 import { Styles } from "./views/Styles";
 import { Head } from "./views/Head";
@@ -12,14 +11,10 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import { SettingsNav } from "./components/Nav";
 
 import styles from "./App.less";
-export default connect(state => state)(function SettingsApp(props) {
-  const [isHide, setHide] = useState(false);
-  useEffect(() => {
-    setHide(props.location.pathname === "/settings/head" ? true : false);
-  }, [props]);
 
-  return (
-    <AppError>
+export default connect(state => ({ settings: state.settings }))(
+  function SettingsApp(props) {
+    return (
       <WithLoader
         condition={Object.keys(props.settings).length}
         message="Starting Settings"
@@ -27,20 +22,8 @@ export default connect(state => state)(function SettingsApp(props) {
         height="100vh"
       >
         <section className={styles.Settings}>
-          <nav className={styles.AppNav}>
-            <Link to="/settings/instance">Instance Settings</Link>
-            {props.settings.styles.length ? (
-              <Link to="/settings/styles">Styles</Link>
-            ) : null}
-            <Link to="/settings/fonts">Fonts</Link>
-            <Link to="/settings/head">Head Tags</Link>
-            <a href={`${CONFIG.URL_ACCOUNTS}/settings/account`}>
-              Account Settings
-            </a>
-          </nav>
-
           <div className={styles.AppWrap}>
-            {!isHide && <SettingsNav />}
+            <SettingsNav />
             <div className={styles.OverflowWrap}>
               <main className={styles.Content}>
                 <Switch>
@@ -79,6 +62,6 @@ export default connect(state => state)(function SettingsApp(props) {
           </div>
         </section>
       </WithLoader>
-    </AppError>
-  );
-});
+    );
+  }
+);

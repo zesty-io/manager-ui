@@ -5,38 +5,13 @@
   height: calc(100vh - 64px - 10px);
   overflow: hidden;
 
-  .AppNav {
-    height: 60px;
-    background: #4c5568;
-    box-shadow: 0px 3px 5px rgba(27, 32, 44, 0.4);
-    z-index: 20;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    position: relative;
-
-    a {
-      text-decoration: none;
-      display: inline-block;
-      margin-right: 15px;
-      padding: 0.5em 1em;
-      border-radius: 5px;
-      margin: 0 0 0 10px;
-      background-color: #76879f;
-      color: #b8cce6;
-      font-weight: bold;
-      text-decoration: none;
-      letter-spacing: 0.25px;
-    }
-  }
-
   .AppWrap {
     display: flex;
     flex-direction: row;
 
     .OverflowWrap {
-      height: calc(100vh - 74px - 60px);
-      overflow-y: scroll;
+      height: calc(100vh - 92px);
+      overflow-y: auto;
       flex: 2;
 
       .Content {

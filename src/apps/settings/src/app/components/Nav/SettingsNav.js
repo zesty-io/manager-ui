@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
+import { useLocation } from "react-router";
 import cx from "classnames";
 
 import { Nav } from "@zesty-io/core/Nav";
@@ -12,34 +13,27 @@ export default connect(state => {
     fontsNav: state.settings.catFonts
   };
 })(function SettingsNav(props) {
-  const [selected, setSelected] = useState(window.location.hash);
-  const [navName, setNavName] = useState(
-    window.location.hash.split("/")[2] || "instance"
-  );
-
-  const handleHashChange = () => {
-    setNavName(window.location.hash.split("/")[2]);
-    if (window.location.hash !== selected) {
-      setSelected(window.location.hash);
-    }
-  };
-
+  const location = useLocation();
+  const [selected, setSelected] = useState(location.pathname);
   useEffect(() => {
-    window.addEventListener("hashchange", handleHashChange);
-    return () => {
-      window.removeEventListener("hashchange", handleHashChange);
-    };
-  }, []);
+    setSelected(location.pathname);
+  }, [location]);
+  console.log(selected);
 
+  const tree = [
+    { label: "Instance", children: props.instanceNav },
+    { label: "Styles", children: props.stylesNav },
+    { label: "Fonts", children: props.fontsNav }
+  ];
   return (
-    <nav className={cx("SchemaNav", styles.SchemaNav)}>
+    <nav className={cx(styles.SettingsNav)}>
       <div className={styles.ModelList}>
         <Nav
           className={styles.PageSets}
           id="settings"
           name="settings"
           selected={selected}
-          tree={navName && props[`${navName}Nav`] ? props[`${navName}Nav`] : []}
+          tree={tree}
         />
       </div>
     </nav>
