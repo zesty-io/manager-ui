@@ -4,6 +4,7 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CleanupStatsPlugin = require("./CleanupStatsPlugin");
 
 const CONFIG = require("./app.config");
 
@@ -50,7 +51,8 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       __CONFIG__: JSON.stringify(CONFIG)
-    })
+    }),
+    new CleanupStatsPlugin()
   ],
   optimization: {
     splitChunks: {
