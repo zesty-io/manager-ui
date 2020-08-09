@@ -7,7 +7,8 @@
     "build-dev": "cross-env NODE_ENV=development node bin/build",
     "build-stage": "cross-env NODE_ENV=stage node bin/build",
     "build-prod": "cross-env NODE_ENV=production node bin/build",
-    "start": "cross-env NODE_ENV=development webpack-dev-server --display=minimal --progress --config src/shell/webpack.config.js",
+    "gulp": "cd src/apps/media; ./node_modules/.bin/gulp",
+    "start": "npm run gulp && cross-env NODE_ENV=development webpack-dev-server --display=minimal --progress --config src/shell/webpack.config.js",
     "release:stage": "zutil deploy stage .",
     "release:prod": "npm test && zutil deploy prod .",
     "cleanup": "echo 'All done'."
