@@ -1,5 +1,4 @@
 import React from "react";
-import riot from "riot";
 
 export default class MediaApp extends React.Component {
   componentDidMount() {
@@ -9,14 +8,14 @@ export default class MediaApp extends React.Component {
      * Gross!!!
      * FIXME: Rebuild as a React sub app
      */
-    riot.mount("*");
+    riot.mount(document.querySelector("#media"), "media-app");
   }
 
   render() {
     return (
       <div id="media" style={{ height: "100%" }}>
         {/* Yup. React syntax inline styles on a custom element. */}
-        <media-app style={{ display: "block", height: "100%" }}></media-app>
+        {/* <media-app style={{ display: "block", height: "100%" }}></media-app> */}
       </div>
     );
   }

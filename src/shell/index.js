@@ -3,7 +3,6 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { BrowserRouter, Route } from "react-router-dom";
 import { get } from "idb-keyval";
-import * as riot from "riot";
 
 import { request } from "utility/request";
 import { fetchProducts } from "shell/store/products";

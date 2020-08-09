@@ -1,6 +1,6 @@
 const webpack = require("webpack");
 const path = require("path");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const HtmlWebpackTagsPlugin = require("html-webpack-tags-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -35,7 +35,6 @@ module.exports = {
     }
   },
   plugins: [
-    new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({
       ignoreOrder: true,
       filename:
@@ -49,6 +48,12 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "src/index.html"
     }),
+
+    new HtmlWebpackTagsPlugin({
+      scripts: ["riot.min.js", "dnd.js", "clipboard.min.js", "tags.js"],
+      append: false
+    }),
+
     new webpack.DefinePlugin({
       __CONFIG__: JSON.stringify(CONFIG)
     }),

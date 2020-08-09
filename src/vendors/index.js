@@ -15,7 +15,7 @@ import "core-js/stable";
 import "regenerator-runtime/runtime";
 
 // TODO refactor out
-import * as riot from "riot";
+import riot from "riot";
 import Clipboard from "clipboard";
 import DnD from "./common/dnd";
 
