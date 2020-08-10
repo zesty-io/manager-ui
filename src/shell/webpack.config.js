@@ -12,7 +12,9 @@ module.exports = {
   entry: path.resolve(__dirname, "./index.js"),
   output: {
     filename:
-      process.env.NODE_ENV !== "development" ? "[name].[hash].js" : "[name].js",
+      process.env.NODE_ENV !== "development"
+        ? "[name].[contenthash].js"
+        : "[name].js",
     path: path.resolve(__dirname, "../../build/"),
     publicPath: "/"
   },
@@ -42,7 +44,7 @@ module.exports = {
       ignoreOrder: true,
       filename:
         process.env.NODE_ENV !== "development"
-          ? "[name].[hash].css"
+          ? "[name].[contenthash].css"
           : "[name].css"
     }),
     new CopyPlugin({
