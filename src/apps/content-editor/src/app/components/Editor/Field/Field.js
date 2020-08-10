@@ -75,9 +75,9 @@ function resolveRelatedOptions(fields, items, fieldZUID, modelZUID) {
     )
     .map(itemZUID => {
       return {
-        text: items[itemZUID].data[field.name],
+        filterValue: items[itemZUID].data[field.name],
         value: itemZUID,
-        text: (
+        component: (
           <span>
             <span onClick={evt => evt.stopPropagation()}>
               <AppLink
@@ -396,8 +396,9 @@ export default connect(state => {
       if (value && !oneToOneOptions.find(opt => opt.value === value)) {
         //the related option is not in the array, we need ot insert it
         oneToOneOptions.unshift({
+          filterValue: value,
           value: value,
-          text: (
+          component: (
             <span>
               <span onClick={evt => evt.stopPropagation()}>
                 <AppLink
