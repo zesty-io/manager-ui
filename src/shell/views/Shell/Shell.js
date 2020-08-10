@@ -154,10 +154,6 @@ export default connect(state => {
                     default:
                       null;
                   }
-
-                  // return (
-                  //   <Route key={product} path={`/${product}`} component={`${product.replace()}App`} />
-                  // );
                 })}
 
                 <Route exact path="/" component={Welcome} />
