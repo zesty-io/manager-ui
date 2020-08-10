@@ -6,11 +6,15 @@ import { fetchFields } from "shell/store/fields";
 import { fetchItem, fetchItems, searchItems } from "shell/store/content";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEdit,
+  faExclamationTriangle
+} from "@fortawesome/free-solid-svg-icons";
 
 // it would be nice to have a central import for all of these
 // instead of individually importing
 import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
@@ -72,7 +76,20 @@ function resolveRelatedOptions(fields, items, fieldZUID, modelZUID) {
     .map(itemZUID => {
       return {
         text: items[itemZUID].data[field.name],
-        value: itemZUID
+        value: itemZUID,
+        text: (
+          <span>
+            <span onClick={evt => evt.stopPropagation()}>
+              <AppLink
+                className={styles.relatedItemLink}
+                to={`/content/${modelZUID}/${itemZUID}`}
+              >
+                <FontAwesomeIcon icon={faEdit} />
+              </AppLink>
+            </span>
+            &nbsp;{items[itemZUID].data[field.name]}
+          </span>
+        )
       };
     })
     .sort(sortTitle);
@@ -348,6 +365,20 @@ export default connect(state => {
       );
 
     case "one_to_one":
+      // If the initial value doesn't exist in local store load from API
+      if (value && (!props.allItems[value] || !props.allItems[value].meta)) {
+        if (relatedModelZUID && value) {
+          if (value != "0") {
+            dispatch(fetchItem(relatedModelZUID, value));
+          }
+        }
+      }
+
+      const onOneToOneOpen = useCallback(
+        () => Promise.resolve(dispatch(fetchItems(relatedModelZUID))),
+        []
+      );
+
       let oneToOneOptions = useMemo(() => {
         return resolveRelatedOptions(
           props.allFields,
@@ -362,29 +393,29 @@ export default connect(state => {
         relatedFieldZUID
       ]);
 
-      // If the initial value doesn't exist in local store load from API
-      if (value && (!props.allItems[value] || !props.allItems[value].meta)) {
-        if (relatedModelZUID && value) {
-          if (value != "0") {
-            dispatch(fetchItem(relatedModelZUID, value));
-          }
-        }
-      }
       if (value && !oneToOneOptions.find(opt => opt.value === value)) {
         //the related option is not in the array, we need ot insert it
         oneToOneOptions.unshift({
           value: value,
-          text: `Related item: ${value}`
+          text: (
+            <span>
+              <span onClick={evt => evt.stopPropagation()}>
+                <AppLink
+                  className={styles.relatedItemLink}
+                  to={`/content/${relatedModelZUID}/${value}`}
+                >
+                  <FontAwesomeIcon icon={faEdit} />
+                </AppLink>
+              </span>
+              &nbsp;Selected item: {value}
+            </span>
+          )
         });
       }
 
-      const onOneToOneOpen = useCallback(
-        () => Promise.resolve(dispatch(fetchItems(relatedModelZUID))),
-        []
-      );
-
       return (
         <FieldTypeOneToOne
+          className={styles.FieldTypeOneToOne}
           name={name}
           label={label}
           description={description}
@@ -437,6 +468,7 @@ export default connect(state => {
 
       return (
         <FieldTypeOneToMany
+          className={styles.FieldTypeOneToMany}
           name={name}
           label={label}
           description={description}
