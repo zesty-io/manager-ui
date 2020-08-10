@@ -5,7 +5,7 @@ if (process.env.NODE_ENV === "production") {
     VERSION: pjson.version,
     ENV: "production",
 
-    API_ACCOUNTS: "//accounts.api.zesty.io/v1",
+    API_ACCOUNTS: "https://accounts.api.zesty.io/v1",
     API_INSTANCE: ".api.zesty.io/v1",
     API_INSTANCE_PROTOCOL: "https://",
 
@@ -41,8 +41,9 @@ if (process.env.NODE_ENV === "production") {
     VERSION: pjson.version,
     ENV: "stage",
 
-    API_ACCOUNTS: "//accounts.api.stage.zesty.io/v1",
+    API_ACCOUNTS: "https://accounts.api.stage.zesty.io/v1",
     API_INSTANCE: ".api.stage.zesty.io/v1",
+    API_INSTANCE_PROTOCOL: "https://",
 
     SERVICE_AUTH: "https://auth.api.stage.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",

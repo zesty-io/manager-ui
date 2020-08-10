@@ -23,7 +23,10 @@ module.exports = {
     disableHostCheck: true,
     historyApiFallback: true
   },
-  devtool: "cheap-module-source-map",
+  devtool:
+    process.env.NODE_ENV !== "development"
+      ? "source-map"
+      : "cheap-module-source-map",
   mode: process.env.NODE_ENV !== "development" ? "production" : "development",
   resolve: {
     symlinks: false, // Used for development with npm link
