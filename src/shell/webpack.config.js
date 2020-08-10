@@ -12,7 +12,7 @@ module.exports = {
   entry: path.resolve(__dirname, "./index.js"),
   output: {
     filename:
-      process.env.NODE_ENV !== "production" ? "[name].js" : "[name].[hash].js",
+      process.env.NODE_ENV !== "development" ? "[name].[hash].js" : "[name].js",
     path: path.resolve(__dirname, "../../build/"),
     publicPath: "/"
   },
@@ -24,7 +24,7 @@ module.exports = {
     historyApiFallback: true
   },
   devtool: "cheap-module-source-map",
-  mode: process.env.NODE_ENV === "production" ? "production" : "development",
+  mode: process.env.NODE_ENV !== "development" ? "production" : "development",
   resolve: {
     symlinks: false, // Used for development with npm link
     alias: {
@@ -38,9 +38,9 @@ module.exports = {
     new MiniCssExtractPlugin({
       ignoreOrder: true,
       filename:
-        process.env.NODE_ENV !== "production"
-          ? "[name].css"
-          : "[name].[hash].css"
+        process.env.NODE_ENV !== "development"
+          ? "[name].[hash].css"
+          : "[name].css"
     }),
     new CopyPlugin({
       patterns: ["public"]
@@ -78,7 +78,7 @@ module.exports = {
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
-              hmr: process.env.NODE_ENV !== "production"
+              hmr: process.env.NODE_ENV === "development"
             }
           },
           {
