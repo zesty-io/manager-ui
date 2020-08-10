@@ -217,7 +217,7 @@ export default connect(state => {
             ))}
           </ol>
 
-          {/* {ZUID && <Breadcrumbs itemZUID={ZUID} />} */}
+          {ZUID && <Breadcrumbs itemZUID={ZUID} />}
 
           {/* <ol className={styles.BreadCrumbs}>
             <li>
