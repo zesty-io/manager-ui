@@ -7,7 +7,7 @@
         <input id="copy" type="text" value="{opts.value}" />
     </label>
     <script type="es6">
-        let clipboard = new Clipboard('.btn.copy')
+        let clipboard = new ClipboardJS('.btn.copy')
         clipboard.on('success', (e) => {
             e.trigger.setAttribute('aria-label', 'Copied!')
         })
