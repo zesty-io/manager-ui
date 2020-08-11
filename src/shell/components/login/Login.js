@@ -48,14 +48,8 @@ export default connect(state => {
           }
         })
         .catch(err => {
-          console.log(err);
           setLoading(false);
-          props.dispatch(
-            notify({
-              kind: "warn",
-              message: "There was an error trying to login"
-            })
-          );
+          setError("There was a problem signing you in");
         });
     };
 

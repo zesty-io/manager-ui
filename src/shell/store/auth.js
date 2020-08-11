@@ -179,12 +179,12 @@ export function login(email, password) {
         return json;
       })
       .catch(err => {
-        console.error("LOGIN ERR", err);
         dispatch({
           type: "FETCH_LOGIN_ERROR",
           payload: { auth: false },
           err
         });
+        throw err;
       });
   };
 }
