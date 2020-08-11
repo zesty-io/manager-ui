@@ -1,6 +1,6 @@
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
-import { faCog } from "@fortawesome/free-solid-svg-icons";
+import { faCog, faFont } from "@fortawesome/free-solid-svg-icons";
 
 export function settings(
   state = {
@@ -11,13 +11,13 @@ export function settings(
         label: "Installed fonts",
         value: "installed_fonts",
         path: "/settings/fonts/installed",
-        icon: "fas fa-font"
+        icon: faFont
       },
       {
         label: "Browse fonts",
         value: "browse_fonts",
         path: "/settings/fonts/browse",
-        icon: "fas fa-font"
+        icon: faFont
       }
     ],
     fonts: [],

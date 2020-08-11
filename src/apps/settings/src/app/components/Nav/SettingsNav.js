@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { useLocation } from "react-router";
+import { faCog, faFont } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 
 import { Nav } from "@zesty-io/core/Nav";
@@ -18,12 +19,26 @@ export default connect(state => {
   useEffect(() => {
     setSelected(location.pathname);
   }, [location]);
-  console.log(selected);
 
   const tree = [
-    { label: "Instance", children: props.instanceNav },
-    { label: "Styles", children: props.stylesNav },
-    { label: "Fonts", children: props.fontsNav }
+    {
+      label: "Instance",
+      children: props.instanceNav,
+      path: "/settings/instance",
+      icon: faCog
+    },
+    {
+      label: "Styles",
+      children: props.stylesNav,
+      path: "/settings/styles",
+      icon: faCog
+    },
+    {
+      label: "Fonts",
+      children: props.fontsNav,
+      path: "/settings/fonts",
+      icon: faFont
+    }
   ];
   return (
     <nav className={cx(styles.SettingsNav)}>
