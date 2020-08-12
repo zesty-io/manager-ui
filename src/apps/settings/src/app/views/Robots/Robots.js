@@ -12,7 +12,11 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import { notify } from "shell/store/notifications";
 
 import styles from "./Robots.less";
-export default connect()(
+export default connect(state => {
+  return {
+    domains: state.instance.domains
+  };
+})(
   class Robots extends Component {
     constructor(props) {
       super(props);
@@ -37,7 +41,7 @@ export default connect()(
           keyFriendly: "Custom Robots.txt Content",
           parsleyAccess: false
         },
-        robotsUrl: `https://${WEBSITE_URL}/robots.txt`
+        robotsUrl: `https://${props.domains[0].domain}/robots.txt`
       };
     }
 
@@ -109,7 +113,7 @@ export default connect()(
 
       Promise.all([robotsOn, robotsText])
         .then(res => {
-          props.dispatch(
+          this.props.dispatch(
             notify({
               kind: "success",
               message: "robots.txt file settings have been updated"
@@ -121,7 +125,7 @@ export default connect()(
         })
         .catch(err => {
           console.log(err);
-          props.dispatch(
+          this.props.dispatch(
             notify({
               kind: "warn",
               message: `Failed saving robots.txt settings. ${err}`
@@ -167,7 +171,7 @@ export default connect()(
               </Notice>
               <Notice>
                 <p>
-                  Stage/preview urls ALWAYS have robot.txt off to avoid being
+                  Stage/preview urls ALWAYS have robots.txt off to avoid being
                   crawled by search engines.
                 </p>
               </Notice>

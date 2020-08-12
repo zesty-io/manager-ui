@@ -6,6 +6,7 @@ import { Instance } from "./views/Instance";
 import { Styles } from "./views/Styles";
 import { Head } from "./views/Head";
 import { Browse, Installed } from "./views/Fonts";
+import { Robots } from "./views/Robots";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { SettingsNav } from "./components/Nav";
@@ -54,6 +55,7 @@ export default connect(state => ({ settings: state.settings }))(
                     from="/settings/instance"
                     to="/settings/instance/general"
                   />
+                  <Route path="/settings/robots" component={Robots} />
 
                   <Redirect from="/settings" to="/settings/instance/general" />
                 </Switch>

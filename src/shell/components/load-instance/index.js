@@ -35,7 +35,7 @@ export default connect(state => {
 
     return (
       <WithLoader
-        condition={props.instance.ID}
+        condition={props.instance.ID && props.instance.domains && props.user.ID}
         message="Loading Instance"
         width="100vw"
         height="100vh"

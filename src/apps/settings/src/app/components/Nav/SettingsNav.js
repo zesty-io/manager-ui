@@ -38,6 +38,11 @@ export default connect(state => {
       children: props.fontsNav,
       path: "/settings/fonts",
       icon: faFont
+    },
+    {
+      label: "Robots.txt",
+      path: "/settings/robots",
+      icon: faCog
     }
   ];
   return (
