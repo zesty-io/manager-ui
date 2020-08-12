@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
+import moment from "moment";
 
 import { notify } from "shell/store/notifications";
 
@@ -31,7 +32,10 @@ export default connect(state => state)(function AuditTrail(props) {
       });
   }, []);
 
-  const logs = Object.keys(props.logsInView || {});
+  const logs = Object.values(props.logsInView);
+  logs.sort(
+    (a, b) => moment(b.createdAt).valueOf() - moment(a.createdAt).valueOf()
+  );
 
   return (
     <WithLoader condition={!loading} message="Loading AuditTrail">
@@ -39,7 +43,7 @@ export default connect(state => state)(function AuditTrail(props) {
         <AuditControls logCount={logs.length} />
         <section className={styles.logList}>
           {logs.length ? (
-            logs.map(zuid => <Log log={props.logsInView[zuid]} key={zuid} />)
+            logs.map(log => <Log log={log} key={log.ZUID} />)
           ) : (
             <h1 className={styles.noLogs}>No Logs Found</h1>
           )}
