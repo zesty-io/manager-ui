@@ -119,7 +119,7 @@ export function CSVImporter(evt) {
               targets = parse(xml);
             }
 
-            targets = findTargetPages(targets, state.paths);
+            targets = findTargetPages(targets);
 
             // Avoid flash of loader
             setTimeout(() => {
@@ -206,13 +206,9 @@ function compareKeys(imports, redirects) {
  * @param  {object} paths   System page paths
  * @return {object}         Redirect imports keyed by path
  */
-function findTargetPages(imports, paths) {
+function findTargetPages(imports) {
   return Object.keys(imports).reduce((acc, path) => {
     acc[path] = { ...imports[path] };
-    if (paths[imports[path].target]) {
-      acc[path].target_type = "page";
-      acc[path].target_zuid = paths[imports[path].target].zuid;
-    }
     return acc;
   }, {});
 }

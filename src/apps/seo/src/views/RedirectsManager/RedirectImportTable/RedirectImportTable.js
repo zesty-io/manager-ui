@@ -1,5 +1,7 @@
 import React from "react";
 import cx from "classnames";
+import { Button } from "@zesty-io/core/Button";
+
 import styles from "./RedirectImportTable.less";
 
 import RedirectImportTableRow from "./RedirectImportTableRow";

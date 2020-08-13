@@ -1,8 +1,12 @@
 import React from "react";
 import styles from "./RedirectImportTableRow.less";
 
+import { Button } from "@zesty-io/core/Button";
+import { Input } from "@zesty-io/core/Input";
+import { ToggleButton } from "@zesty-io/core/ToggleButton";
+import { Select, Option } from "@zesty-io/core/Select";
+
 import { createRedirect } from "../../../../store/redirects";
-import { importCode } from "../../../../store/imports";
 import { importTarget } from "../../../../store/imports";
 import { importQuery } from "../../../../store/imports";
 
@@ -10,7 +14,11 @@ export default class RedirectImportTableRow extends React.Component {
   constructor(props) {
     super(props);
 
-    this.handleToggle = this.handleToggle.bind(this);
+    this.state = {
+      code: 1
+    };
+
+    this.handleCode = this.handleCode.bind(this);
     this.handlePageTarget = this.handlePageTarget.bind(this);
     this.handlePathTarget = this.handlePathTarget.bind(this);
     this.handleQuery = this.handleQuery.bind(this);
@@ -23,21 +31,15 @@ export default class RedirectImportTableRow extends React.Component {
           {this.props.path}
         </span>
 
-        <span className={styles.RowCell}>
-          <Toggle className={styles.code} onClick={this.handleToggle}>
-            <ToggleOption
-              value="301"
-              selected={this.props.code == "301" ? "true" : ""}
-            >
-              301
-            </ToggleOption>
-            <ToggleOption
-              value="302"
-              selected={this.props.code == "302" ? "true" : ""}
-            >
-              302
-            </ToggleOption>
-          </Toggle>
+        <span className={styles.RedirectCreatorCell}>
+          <ToggleButton
+            className={styles.code}
+            name="redirectType"
+            value={this.state.code}
+            offValue="302"
+            onValue="301"
+            onChange={this.handleCode}
+          />
         </span>
 
         <span className={styles.RowCell} style={{ flex: "1" }}>
@@ -51,19 +53,15 @@ export default class RedirectImportTableRow extends React.Component {
 
                 if (path.path_full !== this.props.target) {
                   return (
-                    <SelectOption key={key} value={path.path_full}>
+                    <Option key={key} value={path.path_full}>
                       {path.path_full}
-                    </SelectOption>
+                    </Option>
                   );
                 } else {
                   return (
-                    <SelectOption
-                      selected="true"
-                      key={key}
-                      value={path.path_full}
-                    >
+                    <Option selected="true" key={key} value={path.path_full}>
                       {path.path_full}
-                    </SelectOption>
+                    </Option>
                   );
                 }
               })}
@@ -89,8 +87,10 @@ export default class RedirectImportTableRow extends React.Component {
       </div>
     );
   }
-  handleToggle(evt, code) {
-    this.props.dispatch(importCode(this.props.path, code));
+  handleCode(value) {
+    this.setState({
+      code: value
+    });
   }
   handlePageTarget(evt) {
     const path = this.props.paths[evt.target.dataset.value];
@@ -109,9 +109,9 @@ export default class RedirectImportTableRow extends React.Component {
       createRedirect({
         path: this.props.path,
         query_string: this.props.query_string,
-        target_type: this.props.target_type,
+        targetType: this.props.target_type,
         target: this.props.target_zuid || this.props.target,
-        code: this.props.code
+        code: this.state.code === 1 ? 301 : 302
       })
     );
   }
