@@ -17,8 +17,6 @@
         </article>
     </aside>
     <script type="es6">
-        this.selected = []
-        
         this.handleUnselect = (evt) => {
             if (evt.item) {
                 zesty.trigger('media:file:unselect', evt.item)
