@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -7,6 +7,8 @@ import { fetchInstance, fetchDomains } from "shell/store/instance";
 import { fetchUser } from "shell/store/user";
 import { fetchUserRole } from "shell/store/userRole";
 
+import styles from "./LoadInstance.less";
+
 export default connect(state => {
   return {
     instance: state.instance,
@@ -14,11 +16,19 @@ export default connect(state => {
   };
 })(
   React.memo(function LoadInstance(props) {
+    const [error, setError] = useState("");
     useEffect(() => {
       props.dispatch(fetchUser(props.user.ZUID));
-      props.dispatch(fetchInstance()).then(res => {
-        document.title = `Zesty Manager - ${res.data.name}`;
-      });
+      props
+        .dispatch(fetchInstance())
+        .then(res => {
+          document.title = `Zesty Manager - ${res.data.name}`;
+        })
+        .catch(res => {
+          if (res.status === 403) {
+            setError("You do not have permission to access to this instance");
+          }
+        });
       props.dispatch(fetchUserRole());
       props.dispatch(fetchDomains());
 
@@ -34,14 +44,24 @@ export default connect(state => {
     }, []);
 
     return (
-      <WithLoader
-        condition={props.instance.ID && props.instance.domains && props.user.ID}
-        message="Loading Instance"
-        width="100vw"
-        height="100vh"
-      >
-        {props.children}
-      </WithLoader>
+      <>
+        {error ? (
+          <div className={styles.ErrorMessage}>
+            <h1>{error}</h1>
+          </div>
+        ) : (
+          <WithLoader
+            condition={
+              props.instance.ID && props.instance.domains && props.user.ID
+            }
+            message="Loading Instance"
+            width="100vw"
+            height="100vh"
+          >
+            {props.children}
+          </WithLoader>
+        )}
+      </>
     );
   })
 );

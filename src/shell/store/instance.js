@@ -29,24 +29,19 @@ export function fetchInstance() {
       type: "FETCHING_INSTANCE"
     });
 
-    return request(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`)
-      .then(res => {
-        dispatch({
-          type: "FETCHING_INSTANCE_SUCCESS",
-          payload: {
-            data: res.data
-          }
-        });
-
-        return res;
-      })
-      .catch(err => {
-        dispatch(
-          notify({
-            message: "Failed to load instance"
-          })
-        );
+    return request(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`).then(res => {
+      if (res.status === 403) {
+        throw res;
+      }
+      dispatch({
+        type: "FETCHING_INSTANCE_SUCCESS",
+        payload: {
+          data: res.data
+        }
       });
+
+      return res;
+    });
   };
 }
 
