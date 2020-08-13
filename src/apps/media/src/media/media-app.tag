@@ -88,6 +88,14 @@
                         })
                     }
 
+                    // Deduplicate bins
+                    bins = bins.reduce((acc, bin) => {
+                        if (!acc.find(el => el.id === bin.id)) {
+                            acc.push(bin)
+                        }
+                        return acc
+                    }, [])
+
                     this.update({bins})
 
                     let groups = Promise.all(bins.map(bin => this.fetchAllGroups(bin.id)))
