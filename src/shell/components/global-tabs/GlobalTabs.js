@@ -47,6 +47,7 @@ export default connect(state => {
   return {
     instanceName: state.instance.name,
     instanceZUID: state.instance.ZUID,
+    domains: state.instance.domains,
     models: state.models,
     content: state.content,
     files: state.files
@@ -179,7 +180,15 @@ export default connect(state => {
     return (
       <section className={styles.GlobalTabs}>
         <div>
-          <h1 className={styles.InstanceName}>{props.instanceName}</h1>
+          <h1 className={styles.InstanceName}>
+            {props.domains && props.domains[0] && props.domains[0].domain ? (
+              <a href={`https://${props.domains[0].domain}`}>
+                {props.instanceName}
+              </a>
+            ) : (
+              props.instanceName
+            )}
+          </h1>
           <GlobalSearch className={styles.GlobalSearch} />
         </div>
         <nav className={styles.QuickLinks}>
