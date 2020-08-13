@@ -9,7 +9,7 @@
             show="{!opts.file.loading}"
             class="select {selected: opts.file.selected}"
             title="Select this image">
-            <i class="icon-ok"></i>
+            <i class="fas fa-check"></i>
         </z-button>
 
         <section class="thumbnail {progress: opts.file.progress}">
