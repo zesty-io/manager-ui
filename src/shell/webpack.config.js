@@ -56,8 +56,8 @@ module.exports = {
     }),
 
     new HtmlWebpackTagsPlugin({
-      scripts: ["riot.min.js", "dnd.js", "clipboard.min.js", "tags.js"],
-      append: false
+      // scripts: ["riot.min.js", "dnd.js", "clipboard.min.js", "tags.js"],
+      scripts: ["tags.js"]
     }),
 
     new webpack.DefinePlugin({

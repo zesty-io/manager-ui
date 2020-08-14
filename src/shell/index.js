@@ -3,15 +3,22 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { BrowserRouter, Route } from "react-router-dom";
 import { get } from "idb-keyval";
+import riot from "riot";
+import Clipboard from "clipboard";
+import DnD from "../vendors/common/dnd";
 
 import { request } from "utility/request";
 import { fetchProducts } from "shell/store/products";
 import { notify } from "shell/store/notifications";
-import { store } from "shell/store";
+import { store, injectReducer } from "shell/store";
+import { navContent } from "../apps/content-editor/src/store/navContent";
 
 import PrivateRoute from "./components/private-route";
 import LoadInstance from "./components/load-instance";
 import Shell from "./views/Shell";
+
+// needed for Breadcrumbs in Shell
+injectReducer(store, "navContent", navContent);
 
 // interploated by webpack at build time
 // must be setup before starting the store
@@ -23,6 +30,10 @@ window.zesty = riot.observable(store.getState());
 store.subscribe(() => {
   window.zesty = riot.observable(store.getState());
 });
+
+window.ClipboardJS = Clipboard;
+window.DnD = DnD;
+window.riot = riot;
 
 // Media riot app depends on these references
 // FIXME: this needs to get refactored out
