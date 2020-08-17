@@ -28,10 +28,12 @@ window.CONFIG = __CONFIG__;
 
 // Some legacy code refers to this global which is an observable
 // FIXME: this needs to get refactored out
-window.zesty = riot.observable(store.getState());
-store.subscribe(() => {
+if (window.zesty == null) {
   window.zesty = riot.observable(store.getState());
-});
+  store.subscribe(() => {
+    window.zesty = riot.observable(store.getState());
+  });
+}
 
 window.ClipboardJS = Clipboard;
 window.DnD = DnD;
