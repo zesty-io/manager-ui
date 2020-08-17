@@ -22,6 +22,8 @@ export default React.memo(function ContentSearch(props) {
     }
   }, [searchTerm]);
 
+  const refs = searchResults.map(() => React.createRef());
+
   const debouncedSearch = useCallback(
     debounce(term => {
       dispatch(searchItems(term)).then(res => {
@@ -48,17 +50,29 @@ export default React.memo(function ContentSearch(props) {
       return;
     }
     if (evt.key === "ArrowDown") {
+      let newIndex;
       if (selectedIndex === searchResults.length - 1) {
-        setSelectedIndex(0);
+        newIndex = 0;
       } else {
-        setSelectedIndex(selectedIndex + 1);
+        newIndex = selectedIndex + 1;
       }
+      setSelectedIndex(newIndex);
+      refs[newIndex].current.scrollIntoView({
+        block: "center",
+        inline: "nearest"
+      });
     } else if (evt.key === "ArrowUp") {
+      let newIndex;
       if (selectedIndex <= 0) {
-        setSelectedIndex(searchResults.length - 1);
+        newIndex = searchResults.length - 1;
       } else {
-        setSelectedIndex(selectedIndex - 1);
+        newIndex = selectedIndex - 1;
       }
+      setSelectedIndex(newIndex);
+      refs[newIndex].current.scrollIntoView({
+        block: "center",
+        inline: "nearest"
+      });
     } else if (evt.key === "Enter") {
       if (props.clearSearchOnSelect) {
         clearSearch();
@@ -84,6 +98,7 @@ export default React.memo(function ContentSearch(props) {
           clearSearchOnSelect={props.clearSearchOnSelect}
           setSearchTerm={setSearchTerm}
           selectedIndex={selectedIndex}
+          refs={refs}
           onSelect={props.onSelect}
         />
       )}
@@ -122,6 +137,7 @@ function SearchResults(props) {
       {props.results.map((result, index) => (
         <li
           key={result.meta.ZUID}
+          ref={props.refs[index]}
           className={props.selectedIndex === index ? styles.SelectedRow : null}
         >
           <div

@@ -19,19 +19,18 @@
   overflow: auto;
   font-size: 16px;
 
-  > li {
+  li {
     background: #fff;
     border-bottom: 1px solid #000;
-    > a {
-      display: block;
-      text-decoration: none;
-      color: #000;
-      padding: 8px;
+    padding: 8px;
+    height: 60px;
 
-      &:hover {
-        background-color: @zesty-light-blue;
-      }
+    &:hover {
+      background-color: @zesty-light-blue;
     }
+  }
+  li.SelectedRow {
+    background-color: @zesty-light-blue;
   }
 }
 .SearchResultTitle {
@@ -39,8 +38,4 @@
 }
 .SearchResultPath {
   color: grey;
-}
-
-.SelectedRow > a {
-  background-color: @zesty-light-blue;
 }
