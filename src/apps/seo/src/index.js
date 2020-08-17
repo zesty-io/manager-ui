@@ -1,3 +1,4 @@
+import { hot } from "react-hot-loader/root";
 import React from "react";
 import { Provider } from "react-redux";
 import { Route } from "react-router-dom";
@@ -13,10 +14,10 @@ injectReducer(store, "redirects", redirects);
 injectReducer(store, "redirectsFilter", redirectsFilter);
 injectReducer(store, "imports", imports);
 
-export default function SeoApp() {
+export default hot(function SeoApp() {
   return (
     <Provider store={store}>
       <Route component={HealthApp} />
     </Provider>
   );
-}
+});

@@ -1,3 +1,5 @@
+import "react-hot-loader";
+import { hot } from "react-hot-loader/root";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
@@ -108,27 +110,28 @@ try {
 // Fetch Users Product Access
 store.dispatch(fetchProducts());
 
+const App = hot(() => (
+  <Provider store={store}>
+    <BrowserRouter
+      getUserConfirmation={(message, callback) => {
+        if (message === "confirm") {
+          window.openNavigationModal(callback);
+        } else {
+          callback(true);
+        }
+      }}
+    >
+      <PrivateRoute>
+        <LoadInstance>
+          <Route path="/" component={Shell} />
+        </LoadInstance>
+      </PrivateRoute>
+    </BrowserRouter>
+  </Provider>
+));
+
 function render() {
-  ReactDOM.render(
-    <Provider store={store}>
-      <BrowserRouter
-        getUserConfirmation={(message, callback) => {
-          if (message === "confirm") {
-            window.openNavigationModal(callback);
-          } else {
-            callback(true);
-          }
-        }}
-      >
-        <PrivateRoute>
-          <LoadInstance>
-            <Route path="/" component={Shell} />
-          </LoadInstance>
-        </PrivateRoute>
-      </BrowserRouter>
-    </Provider>,
-    document.getElementById("root")
-  );
+  ReactDOM.render(<App />, document.getElementById("root"));
 }
 
 render();

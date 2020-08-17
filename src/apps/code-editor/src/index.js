@@ -1,3 +1,4 @@
+import { hot } from "react-hot-loader/root";
 import React from "react";
 import { Provider } from "react-redux";
 import { Route } from "react-router-dom";
@@ -34,10 +35,10 @@ injectReducer(store, "codeNav", codeNav);
 //   console.error("IndexedDB:get:error", err);
 // }
 
-export default function CodeApp() {
+export default hot(function CodeApp() {
   return (
     <Provider store={store}>
       <Route component={CodeEditor} />
     </Provider>
   );
-}
+});
