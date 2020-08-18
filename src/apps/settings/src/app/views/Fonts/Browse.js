@@ -7,7 +7,7 @@ import { Search } from "@zesty-io/core/Search";
 import { Notice } from "@zesty-io/core/Notice";
 import { notify } from "shell/store/notifications";
 
-import { installSiteFont, getHeadTags } from "store/settings";
+import { installSiteFont, getHeadTags } from "../../../store/settings";
 
 import styles from "./Fonts.less";
 export default connect(state => {

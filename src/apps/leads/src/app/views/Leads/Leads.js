@@ -3,11 +3,11 @@ import { connect } from "react-redux";
 import { Route } from "react-router-dom";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import { LeadExporter } from "components/LeadExporter";
-import { LeadsTable } from "components/LeadsTable";
+import { LeadExporter } from "../../components/LeadExporter";
+import { LeadsTable } from "../../components/LeadsTable";
 import { GetStarted } from "../GetStarted";
 
-import { fetchLeads } from "store/leads";
+import { fetchLeads } from "../../../store/leads";
 
 import styles from "./Leads.less";
 export default connect(state => state)(function Leads(props) {

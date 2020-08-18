@@ -5,7 +5,7 @@ import { createBrowserHistory } from "history";
 import { Button } from "@zesty-io/core/Button";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 
-import { deleteLead } from "store/leads";
+import { deleteLead } from "../../../store/leads";
 import * as FilterService from "../../views/Leads/LeadFilter.service";
 
 function filterLeadsData(leads, filter) {

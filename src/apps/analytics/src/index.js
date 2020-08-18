@@ -1,3 +1,3 @@
+import { hot } from "react-hot-loader/root";
 import Analytics from "./Analytics";
-window.AnalyticsApp = Analytics;
-export { Analytics };
+export default hot(Analytics);

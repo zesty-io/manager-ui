@@ -6,13 +6,15 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import { fetchInstance, fetchDomains } from "shell/store/instance";
 import { fetchUser } from "shell/store/user";
 import { fetchUserRole } from "shell/store/userRole";
+import { fetchProducts } from "shell/store/products";
 
 import styles from "./LoadInstance.less";
 
 export default connect(state => {
   return {
     instance: state.instance,
-    user: state.user
+    user: state.user,
+    products: state.products
   };
 })(
   React.memo(function LoadInstance(props) {
@@ -31,6 +33,7 @@ export default connect(state => {
         });
       props.dispatch(fetchUserRole());
       props.dispatch(fetchDomains());
+      props.dispatch(fetchProducts());
 
       // Promise.all([instance, products]).then(res => {
       //   // console.log("loaded instance");
@@ -52,7 +55,10 @@ export default connect(state => {
         ) : (
           <WithLoader
             condition={
-              props.instance.ID && props.instance.domains && props.user.ID
+              props.products &&
+              props.instance.ID &&
+              props.instance.domains &&
+              props.user.ID
             }
             message="Loading Instance"
             width="100vw"

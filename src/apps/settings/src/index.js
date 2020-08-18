@@ -1,8 +1,9 @@
+import { hot } from "react-hot-loader/root";
 import React, { useEffect } from "react";
 import { Provider } from "react-redux";
 import { Route } from "react-router-dom";
 
-import { injectReducer } from "shell/store";
+import { store, injectReducer } from "shell/store";
 import {
   fetchSettings,
   fetchStylesVariables,
@@ -10,30 +11,30 @@ import {
   fetchFonts,
   fetchFontsInstalled,
   settings
-} from "store/settings";
+} from "./store/settings";
 import { fetchHeadTags, headTags } from "./store/headTags";
 
 import AppError from "./app/AppError";
 import Settings from "./app/App";
 
-injectReducer(ZESTY_REDUX_STORE, "settings", settings);
-injectReducer(ZESTY_REDUX_STORE, "headTags", headTags);
+injectReducer(store, "settings", settings);
+injectReducer(store, "headTags", headTags);
 
-window.SettingsApp = function SettingsApp() {
+export default hot(function SettingsApp() {
   useEffect(() => {
-    ZESTY_REDUX_STORE.dispatch(fetchSettings());
-    ZESTY_REDUX_STORE.dispatch(fetchStylesCategories());
-    ZESTY_REDUX_STORE.dispatch(fetchStylesVariables());
-    ZESTY_REDUX_STORE.dispatch(fetchFonts());
-    ZESTY_REDUX_STORE.dispatch(fetchFontsInstalled());
-    ZESTY_REDUX_STORE.dispatch(fetchHeadTags());
-  });
+    store.dispatch(fetchSettings());
+    store.dispatch(fetchStylesCategories());
+    store.dispatch(fetchStylesVariables());
+    store.dispatch(fetchFonts());
+    store.dispatch(fetchFontsInstalled());
+    store.dispatch(fetchHeadTags());
+  }, []);
 
   return (
-    <Provider store={ZESTY_REDUX_STORE}>
+    <Provider store={store}>
       <AppError>
         <Route component={Settings} />
       </AppError>
     </Provider>
   );
-};
+});

@@ -15,7 +15,7 @@ import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
-import { fetchParents } from "store/parents";
+import { fetchParents } from "../../../store/parents";
 import { createModel } from "shell/store/models";
 import { formatName } from "utility/formatName";
 

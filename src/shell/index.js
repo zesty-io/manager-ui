@@ -1,32 +1,42 @@
+import "react-hot-loader";
+import { hot } from "react-hot-loader/root";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { BrowserRouter, Route } from "react-router-dom";
 import { get } from "idb-keyval";
-
-// interploated by webpack at build time
-// must be setup before starting the store
-window.CONFIG = __CONFIG__;
+import riot from "riot";
+import Clipboard from "clipboard";
+import DnD from "../vendors/common/dnd";
 
 import { request } from "utility/request";
-import { fetchProducts } from "shell/store/products";
 import { notify } from "shell/store/notifications";
-import { store } from "shell/store";
+import { store, injectReducer } from "shell/store";
+import { navContent } from "../apps/content-editor/src/store/navContent";
 
 import PrivateRoute from "./components/private-route";
 import LoadInstance from "./components/load-instance";
 import Shell from "./views/Shell";
 
-// Exposed as a global so dynamically loaded apps
-// can inject their reducers into the store
-window.ZESTY_REDUX_STORE = store;
+// needed for Breadcrumbs in Shell
+injectReducer(store, "navContent", navContent);
+
+// interploated by webpack at build time
+// must be setup before starting the store
+window.CONFIG = __CONFIG__;
 
 // Some legacy code refers to this global which is an observable
 // FIXME: this needs to get refactored out
-window.zesty = riot.observable(store.getState());
-store.subscribe(() => {
+if (window.zesty == null) {
   window.zesty = riot.observable(store.getState());
-});
+  store.subscribe(() => {
+    window.zesty = riot.observable(store.getState());
+  });
+}
+
+window.ClipboardJS = Clipboard;
+window.DnD = DnD;
+window.riot = riot;
 
 // Media riot app depends on these references
 // FIXME: this needs to get refactored out
@@ -98,86 +108,28 @@ try {
   console.error("IndexedDB:get:error", err);
 }
 
-// Fetch Users Product Access
-store
-  .dispatch(fetchProducts())
-  .then(json => {
-    // Inject sub apps into DOM
-    json.data.forEach(product => {
-      const link = document.createElement("link");
-      link.type = "text/css";
-      link.rel = "stylesheet";
-      link.href = `/bundle.${product}-app.css`;
-      document.body.appendChild(link);
+const App = hot(() => (
+  <Provider store={store}>
+    <BrowserRouter
+      getUserConfirmation={(message, callback) => {
+        if (message === "confirm") {
+          window.openNavigationModal(callback);
+        } else {
+          callback(true);
+        }
+      }}
+    >
+      <PrivateRoute>
+        <LoadInstance>
+          <Route path="/" component={Shell} />
+        </LoadInstance>
+      </PrivateRoute>
+    </BrowserRouter>
+  </Provider>
+));
 
-      const script = document.createElement("script");
-      script.type = "text/javascript";
-      script.src = `/bundle.${product}-app.js`;
-      document.body.appendChild(script);
+function render() {
+  ReactDOM.render(<App />, document.getElementById("root"));
+}
 
-      // FIXME: special case to support riot.js tags
-      if (product === "media") {
-        const tags = document.createElement("script");
-        tags.type = "text/javascript";
-        tags.src = `/tags.js`;
-        document.body.appendChild(tags);
-      }
-    });
-
-    // Convert product names to variable references
-    const appTokens = json.data.map(product => {
-      if (product.includes("-")) {
-        product = product
-          .split("-")
-          .map(part => part.replace(/^\w/, c => c.toUpperCase()))
-          .join("");
-      } else {
-        product = product.replace(/^\w/, c => c.toUpperCase());
-      }
-      return `${product}App`;
-    });
-
-    // Check every half second to see if injected
-    // apps have been parsed and are ready
-    const appLoaded = setInterval(() => {
-      // Ensure there are no missing dynamic app references on the
-      // the global window object as the shell uses these to link
-      // components to routes.
-      const missing = appTokens.find(token => !window[token]);
-
-      if (!missing) {
-        clearInterval(appLoaded);
-
-        // Mount app after inserting sub app bundles
-        ReactDOM.render(
-          <Provider store={store}>
-            <BrowserRouter
-              getUserConfirmation={(message, callback) => {
-                if (message === "confirm") {
-                  window.openNavigationModal(callback);
-                } else {
-                  callback(true);
-                }
-              }}
-            >
-              <PrivateRoute>
-                <LoadInstance>
-                  <Route path="/" component={Shell} />
-                </LoadInstance>
-              </PrivateRoute>
-            </BrowserRouter>
-          </Provider>,
-          document.getElementById("root")
-        );
-      }
-    }, 500);
-  })
-  .catch(err => {
-    console.log(err);
-    store.dispatch(
-      notify({
-        kind: "warn",
-        message: "Failed to load manager app products"
-      })
-    );
-  });
+render();

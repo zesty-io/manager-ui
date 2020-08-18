@@ -5,7 +5,7 @@ import { Search } from "@zesty-io/core/Search";
 import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 
-import { searchInViewLogs, filterInViewLogs } from "store/logsInView";
+import { searchInViewLogs, filterInViewLogs } from "../../store/logsInView";
 
 import styles from "./styles.less";
 export default React.memo(function AuditControls() {

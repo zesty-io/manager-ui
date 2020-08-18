@@ -9,7 +9,7 @@ import { Select, Option } from "@zesty-io/core/Select";
 import { Button } from "@zesty-io/core/Button";
 
 import { notify } from "shell/store/notifications";
-import { saveVariables } from "store/settings";
+import { saveVariables } from "../../../store/settings";
 
 import styles from "./Styles.less";
 export default connect(state => {
