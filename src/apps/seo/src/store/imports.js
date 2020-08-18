@@ -1,3 +1,4 @@
+import { notify } from "shell/store/notifications";
 export const IMPORT_LOADING = "IMPORT_LOADING";
 export const IMPORT_REDIRECTS = "IMPORT_REDIRECTS";
 export const IMPORT_CODE = "IMPORT_CODE";
@@ -92,10 +93,15 @@ export function CSVImporter(evt) {
 
     if (evt.currentTarget.files.length) {
       const state = getState();
+      const CSV_REGEXP = /.*\.csv$/;
       for (var i = evt.currentTarget.files.length - 1; i >= 0; i--) {
         const file = evt.currentTarget.files[i];
 
-        if (file.type === "text/csv" || file.type === "text/xml") {
+        if (
+          file.type === "text/csv" ||
+          file.type === "text/xml" ||
+          file.name.match(CSV_REGEXP) // workaround for Windows CSV which have no MIME type
+        ) {
           const fileReader = new FileReader();
 
           fileReader.onerror = err => {
@@ -110,7 +116,7 @@ export function CSVImporter(evt) {
           fileReader.onloadend = () => {
             let targets = {};
 
-            if (file.type === "text/csv") {
+            if (file.type === "text/csv" || file.name.match(CSV_REGEXP)) {
               const [columns, imports] = CSVToArray(fileReader.result);
               targets = compareKeys(imports, state.redirects);
             } else if (file.type === "text/xml") {
@@ -136,7 +142,7 @@ export function CSVImporter(evt) {
             type: IMPORT_REDIRECTS,
             redirects: []
           });
-          growl("Imports must be a CSV file.", "red-growl");
+          dispatch(notify({ message: "Imports must be a CSV file" }));
           throw new Error("Importer requires a CSV");
         }
       }
