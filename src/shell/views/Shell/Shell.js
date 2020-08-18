@@ -16,62 +16,6 @@ import styles from "./Shell.less";
 // loads sub-app bundles in background during idle time)
 // see: https://webpack.js.org/guides/code-splitting/#dynamic-imports
 // see: https://reactjs.org/docs/code-splitting.html#route-based-code-splitting
-const ContentApp = lazy(() =>
-  import(
-    /* webpackChunkName: "content-editor" */
-    /* webpackPrefetch: true */
-    "apps/content-editor/src"
-  )
-);
-const AuditTrailApp = lazy(() =>
-  import(
-    /* webpackChunkName: "audit-trail" */
-    /* webpackPrefetch: true */
-    "apps/audit-trail/src"
-  )
-);
-const AnalyticsApp = lazy(() =>
-  import(
-    /* webpackChunkName: "analytics" */
-    /* webpackPrefetch: true */
-    "apps/analytics/src"
-  )
-);
-const CodeApp = lazy(() =>
-  import(
-    /* webpackChunkName: "code" */
-    /* webpackPrefetch: true */
-    "apps/code-editor/src"
-  )
-);
-const LeadsApp = lazy(() =>
-  import(
-    /* webpackChunkName: "leads" */
-    /* webpackPrefetch: true */
-    "apps/leads/src"
-  )
-);
-const SchemaApp = lazy(() =>
-  import(
-    /* webpackChunkName: "schema" */
-    /* webpackPrefetch: true */
-    "apps/schema/src"
-  )
-);
-const SeoApp = lazy(() =>
-  import(
-    /* webpackChunkName: "seo" */
-    /* webpackPrefetch: true */
-    "apps/seo/src"
-  )
-);
-const SettingsApp = lazy(() =>
-  import(
-    /* webpackChunkName: "settings" */
-    /* webpackPrefetch: true */
-    "apps/settings/src"
-  )
-);
 
 export default connect(state => {
   return {
@@ -93,6 +37,13 @@ export default connect(state => {
                 {props.products.map(product => {
                   switch (product) {
                     case "content":
+                      const ContentApp = lazy(() =>
+                        import(
+                          /* webpackChunkName: "content-editor" */
+                          /* webpackPrefetch: true */
+                          "apps/content-editor/src"
+                        )
+                      );
                       return (
                         <Route
                           key={product}
@@ -109,6 +60,13 @@ export default connect(state => {
                         />
                       );
                     case "audit-trail":
+                      const AuditTrailApp = lazy(() =>
+                        import(
+                          /* webpackChunkName: "audit-trail" */
+                          /* webpackPrefetch: true */
+                          "apps/audit-trail/src"
+                        )
+                      );
                       return (
                         <Route
                           key={product}
@@ -117,6 +75,13 @@ export default connect(state => {
                         />
                       );
                     case "analytics":
+                      const AnalyticsApp = lazy(() =>
+                        import(
+                          /* webpackChunkName: "analytics" */
+                          /* webpackPrefetch: true */
+                          "apps/analytics/src"
+                        )
+                      );
                       return (
                         <Route
                           key={product}
@@ -125,10 +90,24 @@ export default connect(state => {
                         />
                       );
                     case "code":
+                      const CodeApp = lazy(() =>
+                        import(
+                          /* webpackChunkName: "code" */
+                          /* webpackPrefetch: true */
+                          "apps/code-editor/src"
+                        )
+                      );
                       return (
                         <Route key={product} path="/code" component={CodeApp} />
                       );
                     case "leads":
+                      const LeadsApp = lazy(() =>
+                        import(
+                          /* webpackChunkName: "leads" */
+                          /* webpackPrefetch: true */
+                          "apps/leads/src"
+                        )
+                      );
                       return (
                         <Route
                           key={product}
@@ -137,6 +116,13 @@ export default connect(state => {
                         />
                       );
                     case "schema":
+                      const SchemaApp = lazy(() =>
+                        import(
+                          /* webpackChunkName: "schema" */
+                          /* webpackPrefetch: true */
+                          "apps/schema/src"
+                        )
+                      );
                       return (
                         <Route
                           key={product}
@@ -145,10 +131,24 @@ export default connect(state => {
                         />
                       );
                     case "seo":
+                      const SeoApp = lazy(() =>
+                        import(
+                          /* webpackChunkName: "seo" */
+                          /* webpackPrefetch: true */
+                          "apps/seo/src"
+                        )
+                      );
                       return (
                         <Route key={product} path="/seo" component={SeoApp} />
                       );
                     case "settings":
+                      const SettingsApp = lazy(() =>
+                        import(
+                          /* webpackChunkName: "settings" */
+                          /* webpackPrefetch: true */
+                          "apps/settings/src"
+                        )
+                      );
                       return (
                         <Route
                           key={product}

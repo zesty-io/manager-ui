@@ -10,7 +10,6 @@ import Clipboard from "clipboard";
 import DnD from "../vendors/common/dnd";
 
 import { request } from "utility/request";
-import { fetchProducts } from "shell/store/products";
 import { notify } from "shell/store/notifications";
 import { store, injectReducer } from "shell/store";
 import { navContent } from "../apps/content-editor/src/store/navContent";
@@ -108,9 +107,6 @@ try {
 } catch (err) {
   console.error("IndexedDB:get:error", err);
 }
-
-// Fetch Users Product Access
-store.dispatch(fetchProducts());
 
 const App = hot(() => (
   <Provider store={store}>
