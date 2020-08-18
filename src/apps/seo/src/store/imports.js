@@ -138,7 +138,6 @@ export function CSVImporter(evt) {
 
           fileReader.readAsText(file, "UTF-8");
         } else {
-          console.log(file);
           dispatch({
             type: IMPORT_REDIRECTS,
             redirects: []
