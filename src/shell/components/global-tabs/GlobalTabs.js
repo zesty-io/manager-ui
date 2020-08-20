@@ -6,7 +6,13 @@ import cx from "classnames";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTimesCircle,
+  faEdit,
+  faDatabase,
+  faCodeBranch,
+  faCog
+} from "@fortawesome/free-solid-svg-icons";
 
 import GlobalSearch from "shell/components/global-search";
 import { Breadcrumbs } from "./components/Breadcrumbs";
@@ -109,6 +115,7 @@ export default connect(state => {
                 route.name = model.label;
               }
             }
+            route.icon = faDatabase;
             break;
           case "7":
             if (props.content) {
@@ -120,6 +127,7 @@ export default connect(state => {
                   item.web.pathPart;
               }
             }
+            route.icon = faEdit;
             break;
           case "10":
           case "11":
@@ -129,6 +137,7 @@ export default connect(state => {
                 route.name = selectedFile.fileName;
               }
             }
+            route.icon = faCodeBranch;
             break;
           case "17":
             break;
@@ -145,6 +154,7 @@ export default connect(state => {
           } else {
             route.name = toCapitalCase(parts[1]) + " Settings";
           }
+          route.icon = faCog;
         }
       });
 
@@ -205,6 +215,8 @@ export default connect(state => {
                 )}
               >
                 <AppLink to={`${route.pathname}${route.search}`}>
+                  {route.icon && <FontAwesomeIcon icon={route.icon} />}
+                  &nbsp;
                   {route.name ? route.name : `${route.pathname.slice(1)}`}
                 </AppLink>
                 <span
