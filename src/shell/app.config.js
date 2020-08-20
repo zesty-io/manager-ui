@@ -9,6 +9,8 @@ if (process.env.NODE_ENV === "production") {
     API_INSTANCE: ".api.zesty.io/v1",
     API_INSTANCE_PROTOCOL: "https://",
 
+    CLOUD_FUNCTIONS_DOMAIN: "https://us-central1-zesty-prod.cloudfunctions.net",
+
     SERVICE_AUTH: "https://auth.api.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "https://svc.zesty.io/media-manager-service",
@@ -45,6 +47,9 @@ if (process.env.NODE_ENV === "production") {
     API_INSTANCE: ".api.stage.zesty.io/v1",
     API_INSTANCE_PROTOCOL: "https://",
 
+    CLOUD_FUNCTIONS_DOMAIN:
+      "https://us-central1-zesty-stage.cloudfunctions.net",
+
     SERVICE_AUTH: "https://auth.api.stage.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "https://stage-svc.zesty.io/media-manager-service",
@@ -76,6 +81,8 @@ if (process.env.NODE_ENV === "production") {
     API_ACCOUNTS: "https://accounts.api.dev.zesty.io/v1",
     API_INSTANCE: ".api.dev.zesty.io/v1",
     API_INSTANCE_PROTOCOL: "https://",
+
+    CLOUD_FUNCTIONS_DOMAIN: "https://us-central1-zesty-dev.cloudfunctions.net",
 
     SERVICE_AUTH: "https://auth.api.dev.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",

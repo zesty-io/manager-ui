@@ -13,7 +13,12 @@ import { Button } from "@zesty-io/core/Button";
 import { Textarea } from "@zesty-io/core/Textarea";
 
 import styles from "./WorkflowRequests.less";
-export default connect()(
+export default connect(state => {
+  return {
+    user: state.user,
+    instance: state.instance
+  };
+})(
   class WorkflowRequest extends PureComponent {
     state = {
       users: [],
@@ -75,20 +80,27 @@ export default connect()(
     };
 
     handleSend = () => {
-      const body = {};
-      body.url = window.location.href;
-      body.page = this.props.itemTitle;
-      body.message = this.state.message;
-      this.state.selectedFields.forEach(field => {
-        body[`sections[${field}]`] = "on";
-      });
-      this.state.selectedMembers.forEach(user => {
-        body[`email[${user}]`] = "on";
-      });
+      const header = `<h3>Workflow Request on the ${this.props.itemTitle} page from ${this.props.user.firstName}</h3>`;
+      const message = this.state.message
+        ? `<p>${this.state.message}</p>`
+        : `<p>${this.props.user.firstName} is requesting content for the "${this.props.itemTitle}" page.</p>`;
+      const reviewMessage = `<p>Areas to review or edit: ${this.state.selectedFields.join(
+        ", "
+      )}</p>`;
+      const reviewLink = `<p>Please click <a href="${window.location.href}">this link</a> to view this page in Zesty.</p>`;
+      const reviewLinkRaw = `<p><a href="${window.location.href}">${window.location.href}</a></p>`;
+      const thankYou = `<p>Thank you!</p>`;
+      const body = `${header}${message}${reviewMessage}${reviewLink}${reviewLinkRaw}${thankYou}`;
+      const subject = `${this.props.instance.name} Workflow Request from ${this.props.user.firstName}`;
+      const to = this.state.selectedMembers.join(", ");
       this.setState({ sending: true });
-      request(`${CONFIG.service.manager}/ajax/request_content.ajax.php`, {
-        method: "POST",
-        body
+      request(`${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/sendEmail`, {
+        json: true,
+        body: {
+          body,
+          subject,
+          to
+        }
       }).then(res => {
         this.props.dispatch(
           notify({
