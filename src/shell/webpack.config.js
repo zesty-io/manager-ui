@@ -10,7 +10,10 @@ const CleanupStatsPlugin = require("./CleanupStatsPlugin");
 const CONFIG = require("./app.config");
 
 module.exports = {
-  entry: path.resolve(__dirname, "./index.js"),
+  entry: {
+    main: path.resolve(__dirname, "./index.js"),
+    livePreview: path.resolve(__dirname, "../apps/live-preview/index.js")
+  },
   output: {
     filename:
       process.env.NODE_ENV !== "development"
@@ -53,12 +56,16 @@ module.exports = {
       patterns: ["public"]
     }),
     new HtmlWebpackPlugin({
-      template: "src/index.html"
+      inject: false,
+      chunks: ["main"],
+      template: "src/index.html",
+      filename: "index.html"
     }),
 
-    new HtmlWebpackTagsPlugin({
-      // scripts: ["riot.min.js", "dnd.js", "clipboard.min.js", "tags.js"],
-      scripts: ["tags.js"]
+    new HtmlWebpackPlugin({
+      chunks: ["livePreview"],
+      template: "src/apps/live-preview/index.html",
+      filename: "livePreview.html"
     }),
 
     new webpack.DefinePlugin({

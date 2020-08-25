@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import { Switch, Route } from "react-router-dom";
 import { connect } from "react-redux";
 
@@ -23,6 +23,9 @@ export default connect(state => {
   };
 })(
   React.memo(function Shell(props) {
+    useEffect(() => {
+      zesty.trigger("locationChange");
+    }, [props.location]);
     return (
       <section className={styles.Shell}>
         <GlobalSidebar />

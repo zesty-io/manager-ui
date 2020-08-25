@@ -102,8 +102,8 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
 
-    URL_MANAGER: ".manager.dev.zesty.io",
-    URL_MANAGER_PROTOCOL: "https://",
+    URL_MANAGER: ".manager.dev.zesty.io:8080",
+    URL_MANAGER_PROTOCOL: "http://",
     URL_PREVIEW: "-dev.preview.dev.zesty.io",
     URL_PREVIEW_PROTOCOL: "https://",
     URL_ACCOUNTS: "https://accounts.dev.zesty.io",
