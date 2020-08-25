@@ -87,7 +87,7 @@ export function codeNav(
 
       // Store files which are collapsed locally
       set(
-        `${zesty.instance.ZUID}:openFiles`,
+        `${action.payload.instanceZUID}:openFiles`,
         files.filter(file => file.open || file.closed)
       );
 
@@ -149,11 +149,12 @@ export function codeNav(
 }
 
 export function collapseNavItem(path) {
-  return dispatch => {
+  return (dispatch, getState) => {
     dispatch({
       type: "COLLAPSE_DIRECTORY",
       payload: {
-        path
+        path,
+        instanceZUID: getState().instance.ZUID
       }
     });
   };

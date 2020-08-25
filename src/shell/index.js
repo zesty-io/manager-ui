@@ -28,11 +28,9 @@ window.CONFIG = __CONFIG__;
 // Some legacy code refers to this global which is an observable
 // FIXME: this needs to get refactored out
 if (window.zesty == null) {
-  window.zesty = riot.observable(store.getState());
-  store.subscribe(() => {
-    window.zesty = riot.observable(store.getState());
-  });
+  window.zesty = riot.observable();
 }
+window.zestyStore = store;
 
 window.ClipboardJS = Clipboard;
 window.DnD = DnD;
@@ -47,14 +45,16 @@ window.growl = notify;
 const state = store.getState();
 window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${state.instance.ZUID}${window.CONFIG.API_INSTANCE}`;
 
+const instanceZUID = store.getState().instance.ZUID;
+
 // Load Local Storage Data
 try {
   Promise.all([
-    get(`${zesty.instance.ZUID}:user:selected_lang`),
-    get(`${zesty.instance.ZUID}:navContent`),
-    get(`${zesty.instance.ZUID}:models`),
-    get(`${zesty.instance.ZUID}:fields`),
-    get(`${zesty.instance.ZUID}:content`)
+    get(`${instanceZUID}:user:selected_lang`),
+    get(`${instanceZUID}:navContent`),
+    get(`${instanceZUID}:models`),
+    get(`${instanceZUID}:fields`),
+    get(`${instanceZUID}:content`)
   ]).then(results => {
     const [lang, nav, models, fields, content] = results;
 

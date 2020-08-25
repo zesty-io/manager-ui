@@ -158,8 +158,8 @@
         })
 
         this.fetchAllEcoBins = () => {
-            if (zesty.instance.ecoID) {
-                return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/eco/${zesty.instance.ecoID}/bins`)
+            if (zestyStore.getState().instance.ecoID) {
+                return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/eco/${zestyStore.getState().instance.ecoID}/bins`)
                 .then(json => {
                     if (json && json.code === 200) {
                         json.data.forEach(bin => bin.type = 'bin')
@@ -174,10 +174,10 @@
         }
 
         this.fetchAllSiteBins = () => {
-            console.log("media-app:fetchAllSiteBins", zesty.instance.ID)
+            console.log("media-app:fetchAllSiteBins", zestyStore.getState().instance.ID)
 
-            if (zesty.instance.ID) {
-                return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/site/${zesty.instance.ID}/bins`)
+            if (zestyStore.getState().instance.ID) {
+                return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/site/${zestyStore.getState().instance.ID}/bins`)
                 .then(json => {
                     if (typeof json.code == 'undefined') return []
 

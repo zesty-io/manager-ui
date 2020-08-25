@@ -124,7 +124,9 @@ class CanonicalTag extends Component {
     return (
       <article className={{ display: "flex" }}>
         <label>Canonical Tag</label>
-        {zesty.instance.settings.seo["canonical-tags-enabled"] === "1" ? (
+        {zestyStore.getState().instance.settings.seo[
+          "canonical-tags-enabled"
+        ] === "1" ? (
           <small className={`desc notEnabled`}>
             Canonical tags are not enabled. For more information, read
             <a

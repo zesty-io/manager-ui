@@ -52,18 +52,18 @@ export function navContent(
 }
 
 export function fetchNav() {
-  return dispatch => {
+  return (dispatch, getState) => {
     return request(`${CONFIG.API_ACCOUNTS}/roles`)
       .then(data => data.data)
       .then(roles => {
         if (
           roles.length &&
           roles.find(role => {
-            return role.entityZUID === zesty.instance.ZUID;
+            return role.entityZUID === getState().instance.ZUID;
           })
         ) {
           const currentRoleZUID = roles.find(role => {
-            return role.entityZUID === zesty.instance.ZUID;
+            return role.entityZUID === getState().instance.ZUID;
           }).ZUID;
 
           return request(

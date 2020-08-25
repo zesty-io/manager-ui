@@ -74,7 +74,8 @@ export default function Info(props) {
           </li>
           <li>
             Instant API:{" "}
-            {zesty.instance.settings.basic_content_api_enabled == 1 ? (
+            {zestyStore.getState().instance.settings
+              .basic_content_api_enabled == 1 ? (
               <Url
                 target="_blank"
                 href={`${CONFIG.URL_PREVIEW}/-/instant/${props.model.ZUID}.json`}

@@ -109,7 +109,7 @@
             body.append('file', opts.file.file)
             body.append('bin_id', opts.file.bin_id)
             body.append('group_id', opts.file.group_id)
-            body.append('user_id', zesty.user.ZUID)
+            body.append('user_id', zestyStore.getState().user.ZUID)
 
             xhr.withCredentials = true
 

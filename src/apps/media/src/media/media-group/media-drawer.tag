@@ -7,7 +7,7 @@
             <z-text-field class="title" label="Title" value="{opts.file.title}"></z-text-field>
             <z-text-field class="filename" label="Filename" value="{opts.file.filename}"></z-text-field>
             <z-copy-field label="Copy" value="{opts.file.url}" disabled="true"></z-copy-field>
-            <div if="{zesty.userRole.systemRole.delete}" class="controls">
+            <div if="{zestyStore.getState().userRole.systemRole.delete}" class="controls">
                 <z-button-save class="update" handler="{save}">
                     <span if="{!parent.opts.file.saving}">
                         Save&nbsp;<small>(CTRL + S)</small>

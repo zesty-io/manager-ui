@@ -145,7 +145,7 @@ export function files(state = [], action) {
       });
 
       set(
-        `${zesty.instance.ZUID}:openFiles`,
+        `${action.payload.instanceZUID}:openFiles`,
         files.filter(file => file.open)
       );
 
@@ -160,7 +160,7 @@ export function files(state = [], action) {
 
       // Make sure to udpate openFiles local storage
       set(
-        `${zesty.instance.ZUID}:openFiles`,
+        `${action.payload.instanceZUID}:openFiles`,
         files.filter(file => file.open)
       );
 
@@ -184,7 +184,7 @@ export function files(state = [], action) {
       });
 
       set(
-        `${zesty.instance.ZUID}:openFiles`,
+        `${action.payload.instanceZUID}:openFiles`,
         files.filter(file => file.open)
       );
 
@@ -206,7 +206,7 @@ export function files(state = [], action) {
       });
 
       set(
-        `${zesty.instance.ZUID}:openFiles`,
+        `${action.payload.instanceZUID}:openFiles`,
         files.filter(file => file.open)
       );
 
@@ -218,13 +218,14 @@ export function files(state = [], action) {
 }
 
 export function fileOpen(fileZUID, env, open) {
-  return dispatch => {
+  return (dispatch, getState) => {
     dispatch({
       type: "FILE_OPEN",
       payload: {
         fileZUID,
         env,
-        open
+        open,
+        instanceZUID: getState().instance.ZUID
       }
     });
   };
@@ -265,13 +266,14 @@ export function fetchFiles(type) {
 }
 
 export function updateFileCode(ZUID, status, code) {
-  return dispatch => {
+  return (dispatch, getState) => {
     return dispatch({
       type: "UPDATE_FILE_CODE",
       payload: {
         ZUID,
         status,
-        code
+        code,
+        instanceZUID: getState().instance.ZUID
       }
     });
   };
@@ -437,7 +439,7 @@ export function saveFile(ZUID, status) {
 
           dispatch({
             type: "SAVE_FILE_SUCCESS",
-            payload: { file }
+            payload: { file, instanceZUID: getState().instance.ZUID }
           });
 
           // Re-fetch file to ensure we have latest version number
@@ -547,7 +549,8 @@ export function deleteFile(fileZUID, fileStatus) {
           dispatch({
             type: "DELETE_FILE_SUCCESS",
             payload: {
-              fileZUID
+              fileZUID,
+              instanceZUID: getState().instance.ZUID
             }
           });
         } else {

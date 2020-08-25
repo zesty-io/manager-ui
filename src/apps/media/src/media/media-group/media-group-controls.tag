@@ -1,6 +1,6 @@
 <media-group-controls>
     <h1 id="groupTitle">
-        <z-button-set if="{zesty.userRole.systemRole.delete}">
+        <z-button-set if="{zestyStore.getState().userRole.systemRole.delete}">
             <z-button handler="{parent.edit}" group="{parent.opts.group}">
                 <span class="pictos">p</span>
             </z-button>
