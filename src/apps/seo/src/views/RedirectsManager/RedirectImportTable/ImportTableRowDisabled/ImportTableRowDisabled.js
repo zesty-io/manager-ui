@@ -1,4 +1,6 @@
-// import React from 'react'
+import React from "react";
+import { ToggleButton } from "@zesty-io/core/ToggleButton";
+
 import styles from "./ImportTableRowDisabled.less";
 
 export default function ImportTableRowDisabled({
@@ -16,7 +18,7 @@ export default function ImportTableRowDisabled({
         <ToggleButton
           className={styles.code}
           name="redirectType"
-          value={props.code}
+          value={code}
           offValue="302"
           onValue="301"
         />
