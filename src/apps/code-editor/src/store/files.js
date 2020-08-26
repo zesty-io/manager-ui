@@ -442,6 +442,9 @@ export function saveFile(ZUID, status) {
             payload: { file, instanceZUID: getState().instance.ZUID }
           });
 
+          // re-render ActivePreview on code file save
+          zesty.trigger("FORCE_PREVIEW_RERENDER");
+
           // Re-fetch file to ensure we have latest version number
           return dispatch(fetchFile(file.ZUID, pathPart));
         } else {

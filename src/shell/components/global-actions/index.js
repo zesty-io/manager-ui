@@ -100,37 +100,6 @@ function openLivePreview(instanceZUID, instanceHash, content) {
     );
   });
 
-  zesty.on("LOADED_MODEL_TEMPLATE", function(modelZUID) {
-    // var state = window.ContentAppStore.getState();
-    // var item = state.contentModelItems.find(item => item.meta.contentModelZUID === modelZUID)
-    //
-    // if (item) {
-    //     preview.postMessage({
-    //         type: "RENDER_CONTENT_ITEM",
-    //         domain: CONFIG.service.sitePreviewURL,
-    //         route: item.web.path,
-    //         itemZUID: item.meta.ZUID
-    //     }, CONFIG.service.manager);
-    // }
-
-    // NOTE: Super expensive looking up all the items for a model
-    request(`${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items`).then(
-      res => {
-        var item = res.data[0];
-        if (item) {
-          preview.postMessage(
-            {
-              type: "RENDER_CONTENT_ITEM",
-              domain: previewDomain,
-              route: item.web.path,
-              itemZUID: item.meta.ZUID
-            },
-            origin
-          );
-        }
-      }
-    );
-  });
   const activePreviewRoute = setActivePreviewRoute.bind(
     null,
     preview,
@@ -143,6 +112,7 @@ function openLivePreview(instanceZUID, instanceHash, content) {
   preview.addEventListener("load", activePreviewRoute);
   preview.addEventListener("beforeunload", function(evt) {
     zesty.off("UPDATED_CONTENT_ITEM");
+    zesty.off("FORCE_PREVIEW_RERENDER");
     zesty.off("locationChange");
     window.removeEventListener("beforeunload", closeActivePreview, false);
   });
