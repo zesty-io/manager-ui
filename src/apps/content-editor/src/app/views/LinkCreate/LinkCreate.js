@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import debounce from "lodash.debounce";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
@@ -11,11 +10,13 @@ import { Option } from "@zesty-io/core/Select";
 import { Input } from "@zesty-io/core/Input";
 import { Button } from "@zesty-io/core/Button";
 
-import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 
 import styles from "./LinkCreate.less";
-export const LinkCreate = connect()(
+export const LinkCreate = connect((state, props) => {
+  // NOTE: I don't think this compoentn needs to be connected
+  return {};
+})(
   class LinkCreate extends Component {
     constructor(props) {
       super(props);
@@ -76,7 +77,11 @@ export const LinkCreate = connect()(
       });
       // trim the ampersand from the end of the string
       const body = data.substr(0, data.length - 1);
-      this.setState({ saving: true });
+
+      this.setState({
+        saving: true
+      });
+
       return request(`${CONFIG.service.manager}/ajax/process_link.ajax.php`, {
         method: "POST",
         headers: {
@@ -87,65 +92,67 @@ export const LinkCreate = connect()(
         .then(res => {
           this.setState({ saving: false });
           if (res.error) {
-            this.props.dispatch(
-              notify({
-                message: `Failure creating link: ${res.message}`,
-                kind: "error"
-              })
-            );
+            notify({
+              message: `Failure creating link: ${res.message}`,
+              kind: "error"
+            });
           } else {
             // this is a successful save
             // message and redirect to new item here
-            this.props.dispatch(
-              notify({ message: "Successfully created link", kind: "save" })
-            );
-            window.location.hash = `/content/link/${res.current_znode_id}`;
+            notify({
+              message: "Successfully created link",
+              kind: "save"
+            });
+
+            window.location.hash = `#!/content/link/${res.current_znode_id}`;
           }
         })
         .catch(err => {
-          console.error("Failed to load link: ", err);
+          console.error(err);
           this.setState({ saving: false });
-          this.props.dispatch(
-            notify({
-              message: `Failure creating link`,
-              kind: "error"
-            })
-          );
         });
     };
 
     handleSearch = term => {
-      return request(`${CONFIG.API_INSTANCE}/search/items?q=${term}`)
+      return request(`${CONFIG.service.instance_api}/search/items?q=${term}`)
         .then(res => {
-          if (res.status === 400) {
-            return this.props.dispatch(
-              notify({
-                message: `Failure searching: ${res.error}`,
-                kind: "error"
-              })
-            );
-          }
-          // TODO: filter out duplicates
-          const internalLinkOptions = [
-            ...this.state.internalLinkOptions,
-            ...res.data.map(item => {
-              return {
-                value: item.meta.ZUID,
-                text: item.web.metaTitle
-              };
-            })
-          ];
+          if (res.status === 200) {
+            const searchResults = res.data
+              .filter(item => item.web.path)
+              .map(item => {
+                return {
+                  value: item.meta.ZUID,
+                  text: item.web.path
+                };
+              });
 
-          this.setState({
-            internalLinkOptions
-          });
+            const dedupeOptions = [
+              ...this.state.internalLinkOptions,
+              ...searchResults
+            ].reduce((acc, el) => {
+              if (!acc.find(opt => opt.value === el.value)) {
+                acc.push(el);
+              }
+
+              return acc;
+            }, []);
+
+            this.setState({
+              internalLinkOptions: dedupeOptions
+            });
+          } else {
+            return notify({
+              message: `Failure searching: ${res.error}`,
+              kind: "error"
+            });
+          }
         })
         .catch(err => {
           console.error("LinkCreate:handleSearch", err);
         });
     };
 
-    onChange = (value, name) => {
+    onChange = (name, value) => {
       this.setState({
         [name]: value
       });
@@ -217,7 +224,7 @@ export const LinkCreate = connect()(
                   name="target"
                   checked={this.state.target}
                   onClick={evt => {
-                    this.onChange(evt.target.checked, "target");
+                    this.onChange("target", evt.target.checked);
                   }}
                 />
                 target = _blank
@@ -228,7 +235,7 @@ export const LinkCreate = connect()(
                   name="rel"
                   checked={this.state.rel}
                   onClick={evt => {
-                    this.onChange(evt.target.checked, "rel");
+                    this.onChange("rel", evt.target.checked);
                   }}
                 />
                 rel = nofollow
