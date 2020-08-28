@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
+import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -88,7 +89,11 @@ function Header(props) {
   );
 }
 
-function Footer(props) {
+const Footer = connect(state => {
+  return {
+    platform: state.platform
+  };
+})(function Footer(props) {
   const [loading, setLoading] = useState(false);
 
   const onSave = () => {
@@ -118,7 +123,11 @@ function Footer(props) {
   };
 
   const handleKeyDown = evt => {
-    if ((evt.metaKey || evt.ctrlKey) && evt.keyCode == 83) {
+    if (
+      ((props.platform.isMac && evt.metaKey) ||
+        (!props.platform.isMac && evt.ctrlKey)) &&
+      evt.key == "s"
+    ) {
       evt.preventDefault();
       if (props.field.dirty) {
         onSave();
@@ -185,4 +194,4 @@ function Footer(props) {
       </ButtonGroup>
     </footer>
   );
-}
+});

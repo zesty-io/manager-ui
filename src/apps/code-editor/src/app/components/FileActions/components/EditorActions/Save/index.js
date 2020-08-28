@@ -1,1 +1,2 @@
-export { Save } from "./Save";
+import Save from "./Save";
+export { Save };

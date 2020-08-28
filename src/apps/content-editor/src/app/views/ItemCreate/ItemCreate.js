@@ -19,6 +19,7 @@ export default connect((state, props) => {
   const itemZUID = `new:${modelZUID}`;
 
   return {
+    platform: state.platform,
     itemZUID,
     modelZUID,
     model: state.models[modelZUID] || {},
@@ -94,8 +95,11 @@ export default connect((state, props) => {
     };
 
     handleSave = evt => {
-      // NOTE: this is likely OS dependant
-      if ((evt.metaKey || evt.ctrlKey) && evt.keyCode == 83) {
+      if (
+        ((this.props.platform.isMac && evt.metaKey) ||
+          (!this.props.platform.isMac && evt.ctrlKey)) &&
+        evt.key == "s"
+      ) {
         evt.preventDefault();
         this.onSave();
       }

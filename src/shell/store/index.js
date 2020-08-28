@@ -20,6 +20,7 @@ import { groups } from "./groups";
 import { media } from "./media";
 import { logs } from "./logs";
 import { notifications } from "./notifications";
+import { platform } from "./platform";
 
 const actionLogger = createLogger({
   collapsed: true,
@@ -45,7 +46,8 @@ function createReducer(asyncReducers) {
     groups,
     media,
     logs,
-    notifications
+    notifications,
+    platform
   };
 
   return combineReducers({

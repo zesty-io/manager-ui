@@ -1,4 +1,5 @@
-import React, { PureComponent, Fragment } from "react";
+import React from "react";
+import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -12,39 +13,39 @@ import { Button } from "@zesty-io/core/Button";
 import { Url } from "@zesty-io/core/Url";
 
 import styles from "./Header.less";
-export class Header extends PureComponent {
-  render() {
-    return (
-      <header className={styles.Header}>
-        <span>
-          <Url href="/content/home">
-            <FontAwesomeIcon icon={faTachometerAlt} />
-          </Url>
-          <FontAwesomeIcon icon={faAngleRight} />
-          <Url href={`/content/${this.props.model.ZUID}`}>
-            {this.props.model.label}
-          </Url>
-          <FontAwesomeIcon icon={faAngleRight} />
-          &nbsp;New Item
-        </span>
+export default connect(state => {
+  return {
+    platform: state.platform
+  };
+})(function Header(props) {
+  return (
+    <header className={styles.Header}>
+      <span>
+        <Url href="/content/home">
+          <FontAwesomeIcon icon={faTachometerAlt} />
+        </Url>
+        <FontAwesomeIcon icon={faAngleRight} />
+        <Url href={`/content/${props.model.ZUID}`}>{props.model.label}</Url>
+        <FontAwesomeIcon icon={faAngleRight} />
+        &nbsp;New Item
+      </span>
 
-        <ButtonGroup className={styles.Actions}>
-          <Button
-            kind="save"
-            id="CreateItemSaveButton"
-            disabled={this.props.saving || !this.props.isDirty}
-            onClick={this.props.onSave}
-          >
-            {this.props.saving ? (
-              <FontAwesomeIcon icon={faSpinner} />
-            ) : (
-              <FontAwesomeIcon icon={faSave} />
-            )}
-            Create New Item&nbsp;
-            <small>({this.props.OS === "win" ? "CTRL" : "CMD"} + S)</small>
-          </Button>
-        </ButtonGroup>
-      </header>
-    );
-  }
-}
+      <ButtonGroup className={styles.Actions}>
+        <Button
+          kind="save"
+          id="CreateItemSaveButton"
+          disabled={props.saving || !props.isDirty}
+          onClick={props.onSave}
+        >
+          {props.saving ? (
+            <FontAwesomeIcon icon={faSpinner} />
+          ) : (
+            <FontAwesomeIcon icon={faSave} />
+          )}
+          Create New Item&nbsp;
+          <small>({props.platform.isMac ? "CMD" : "CTRL"} + S)</small>
+        </Button>
+      </ButtonGroup>
+    </header>
+  );
+});

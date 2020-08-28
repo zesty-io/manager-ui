@@ -14,7 +14,8 @@ import { notify } from "shell/store/notifications";
 import styles from "./Robots.less";
 export default connect(state => {
   return {
-    domains: state.instance.domains
+    domains: state.instance.domains,
+    platform: state.platform
   };
 })(
   class Robots extends Component {
@@ -76,7 +77,11 @@ export default connect(state => {
     }
 
     handleKeyDown = evt => {
-      if ((evt.metaKey || evt.ctrlKey) && evt.keyCode == 83) {
+      if (
+        ((props.platform.isMac && evt.metaKey) ||
+          (!props.platform.isMac && evt.ctrlKey)) &&
+        evt.key == "s"
+      ) {
         evt.preventDefault();
         this.handleSave();
       }

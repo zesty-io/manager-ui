@@ -84,7 +84,11 @@ class ItemEdit extends Component {
 
   handleSave = evt => {
     // NOTE: this is likely OS dependant
-    if ((evt.metaKey || evt.ctrlKey) && evt.keyCode == 83) {
+    if (
+      ((this.props.platform.isMac && evt.metaKey) ||
+        (!this.props.platform.isMac && evt.ctrlKey)) &&
+      evt.key == "s"
+    ) {
       evt.preventDefault();
       if (this.props.item.dirty) {
         this.onSave();
@@ -352,6 +356,7 @@ export default connect((state, props) => {
     });
 
   return {
+    platform: state.platform,
     modelZUID,
     model,
     itemZUID,

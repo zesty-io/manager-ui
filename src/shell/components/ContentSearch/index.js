@@ -7,7 +7,7 @@ import { searchItems } from "shell/store/content";
 import { Search } from "@zesty-io/core/Search";
 import styles from "./styles.less";
 
-export default React.memo(function ContentSearch(props) {
+export default React.forwardRef(function ContentSearch(props, ref) {
   const dispatch = useDispatch();
   const [searchResults, setSearchResults] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -86,10 +86,11 @@ export default React.memo(function ContentSearch(props) {
   return (
     <div className={cx(styles.GlobalSearch, props.className)}>
       <Search
+        ref={ref}
         value={searchTerm}
         onKeyDown={handleKeydown}
         onChange={handleChange}
-        placeholder="Global Search (CMD + Shift + K) "
+        placeholder={props.placeholder}
       />
       {searchResults && (
         <SearchResults
