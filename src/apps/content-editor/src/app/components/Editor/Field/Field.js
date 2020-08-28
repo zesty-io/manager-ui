@@ -234,7 +234,9 @@ export default connect(state => {
           tooltip={settings.tooltip}
           required={required}
           limit={(settings && settings.limit) || 1}
-          locked={(settings && settings.group_id) || null}
+          locked={Boolean(
+            settings && settings.group_id && settings.group_id != "0"
+          )}
           onChange={onChange}
           value={value}
         />
