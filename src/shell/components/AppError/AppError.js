@@ -7,8 +7,8 @@ import { faBug, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 
 import styles from "./AppError.less";
-export default connect((state, props) => {
-  return { ...props, user: state.user };
+export default connect(state => {
+  return { user: state.user, platform: state.platform };
 })(
   class AppError extends Component {
     constructor(props) {
@@ -37,15 +37,8 @@ export default connect((state, props) => {
               &nbsp;We apologize but something went wrong
             </h1>
             <h3 className={styles.SubHead}>
-              Try reloading the application (CMD + R).&nbsp;
-              {/*<a
-                      href={`mailto:support@zesty.io?subject=Accounts App Crash&body=REPLACE WITH EXTRA INFORMATION ---- ${
-                        this.state.err
-                      }`}
-                      target="_blank"
-                    >
-                      Report to support@zesty.io
-                    </a>*/}
+              Try reloading the application (
+              {this.props.platform.isMac ? "CMD" : "CTRL"} + R).&nbsp;
               <a onClick={() => Sentry.showReportDialog()}>
                 Report to support@zesty.io
               </a>

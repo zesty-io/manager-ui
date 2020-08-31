@@ -14,7 +14,6 @@ import {
 } from "./store/settings";
 import { fetchHeadTags, headTags } from "./store/headTags";
 
-import AppError from "./app/AppError";
 import Settings from "./app/App";
 
 injectReducer(store, "settings", settings);
@@ -32,9 +31,7 @@ export default hot(function SettingsApp() {
 
   return (
     <Provider store={store}>
-      <AppError>
-        <Route component={Settings} />
-      </AppError>
+      <Route component={Settings} />
     </Provider>
   );
 });

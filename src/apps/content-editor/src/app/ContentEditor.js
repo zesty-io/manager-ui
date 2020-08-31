@@ -9,7 +9,6 @@ import { fetchHeadTags } from "../store/headTags";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
-import AppError from "./AppError";
 import { ContentNav } from "./components/Nav";
 
 import { Dashboard } from "./views/Dashboard";
@@ -48,64 +47,59 @@ export default connect(state => {
     }
     render() {
       return (
-        <AppError>
-          <WithLoader
-            condition={
-              this.props.navContent.nav.length ||
-              this.props.navContent.headless.length
-            }
-            message="Starting Content Editor"
-          >
-            <section className={styles.ContentEditor}>
-              <div className={styles.Nav}>
-                <ContentNav
-                  dispatch={this.props.dispatch}
-                  models={this.props.contentModels}
-                  nav={this.props.navContent}
-                />
+        <WithLoader
+          condition={
+            this.props.navContent.nav.length ||
+            this.props.navContent.headless.length
+          }
+          message="Starting Content Editor"
+        >
+          <section className={styles.ContentEditor}>
+            <div className={styles.Nav}>
+              <ContentNav
+                dispatch={this.props.dispatch}
+                models={this.props.contentModels}
+                nav={this.props.navContent}
+              />
+            </div>
+            <div className={styles.Content}>
+              <div className={styles.ContentWrap}>
+                <Switch>
+                  <Route exact path="/content" component={Dashboard} />
+
+                  <Route
+                    exact
+                    path="/content/link/new"
+                    component={LinkCreate}
+                  />
+
+                  <Route
+                    exact
+                    path="/content/:modelZUID/new"
+                    component={ItemCreate}
+                  />
+                  <Route path="/content/link/:linkZUID" component={LinkEdit} />
+                  <Route
+                    exact
+                    path="/content/:modelZUID/import"
+                    component={CSVImport}
+                  />
+                  <Route
+                    path="/content/:modelZUID/:itemZUID"
+                    component={ItemEdit}
+                  />
+                  <Route
+                    exact
+                    path="/content/:modelZUID"
+                    component={ItemList}
+                  />
+
+                  <Route path="*" component={NotFound} />
+                </Switch>
               </div>
-              <div className={styles.Content}>
-                <div className={styles.ContentWrap}>
-                  <Switch>
-                    <Route exact path="/content" component={Dashboard} />
-
-                    <Route
-                      exact
-                      path="/content/link/new"
-                      component={LinkCreate}
-                    />
-
-                    <Route
-                      exact
-                      path="/content/:modelZUID/new"
-                      component={ItemCreate}
-                    />
-                    <Route
-                      path="/content/link/:linkZUID"
-                      component={LinkEdit}
-                    />
-                    <Route
-                      exact
-                      path="/content/:modelZUID/import"
-                      component={CSVImport}
-                    />
-                    <Route
-                      path="/content/:modelZUID/:itemZUID"
-                      component={ItemEdit}
-                    />
-                    <Route
-                      exact
-                      path="/content/:modelZUID"
-                      component={ItemList}
-                    />
-
-                    <Route path="*" component={NotFound} />
-                  </Switch>
-                </div>
-              </div>
-            </section>
-          </WithLoader>
-        </AppError>
+            </div>
+          </section>
+        </WithLoader>
       );
     }
   }
