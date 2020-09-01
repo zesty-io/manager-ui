@@ -1,11 +1,10 @@
-# Site Manager Application
-
-Site Manager is comprised of several sub applications
+# Instance Manager Application
+> The Cloud CMS for Marketers + Developers
 
 ## Architecture
-The manager-app as been architected as a PWA using an app shell. Following closesly [Google's PRPL strategy](https://developers.google.com/web/fundamentals/performance/prpl-pattern/).
+The manager-ui has been architected following closesly [Google's PRPL strategy](https://developers.google.com/web/fundamentals/performance/prpl-pattern/). Every sub application has it's own bundle build. Application bundles are then pre cached dynamically by the app shell based upon the users settings.
 
-Every sub application has it's own bundle build. Application bundles are then pre cached dynamically by the app shell based upon the users settings.
+Our long term vision is to add more Progressive Web App features over time.
 
 ### Dependencies
 
@@ -15,6 +14,10 @@ In order to avoid the confusion of sub-bundles specificying different versions t
 
 This means all sub dependency declarations are resolved, per npm default behaviour of traversing up the project until it finds a `node_modules`, at the root `node_modules` directory.
 
+### Bundling
+
+We use Webpack as our bundler of choice. There is a [single webpack config in the app shell](https://github.com/zesty-io/manager-ui/blob/master/src/shell/webpack.config.js) which, using lazy routes, separates the sub-apps into individual bundles.
+
+---
 
 **Notes**
-- TinyMCE loads assets from our host. These will need to be available from this shell.
