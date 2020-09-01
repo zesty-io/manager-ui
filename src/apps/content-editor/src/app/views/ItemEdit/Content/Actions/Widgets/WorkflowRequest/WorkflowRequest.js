@@ -33,7 +33,7 @@ export default connect(state => {
     componentDidMount() {
       //fetch team members and fields
       request(
-        `${CONFIG.API_ACCOUNTS}/instances/${zesty.instance.ZUID}/users`
+        `${CONFIG.API_ACCOUNTS}/instances/${this.props.instance.ZUID}/users`
       ).then(data => {
         this.setState({ loaded: true });
         if (data.status === 400) {
