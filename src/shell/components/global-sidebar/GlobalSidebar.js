@@ -14,7 +14,7 @@ export default function GlobalSidebar(props) {
         <GlobalMenu />
         <GlobalActions />
       </div>
-      <GlobalAccountMenu accountsMenuVisible={false} />
+      <GlobalAccountMenu />
     </aside>
   );
 }

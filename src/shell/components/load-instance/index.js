@@ -8,6 +8,7 @@ import { fetchUser } from "shell/store/user";
 import { fetchUserRole } from "shell/store/userRole";
 import { fetchProducts } from "shell/store/products";
 import { detectPlatform } from "shell/store/platform";
+import { fetchInstances } from "shell/store/instances";
 
 import styles from "./LoadInstance.less";
 
@@ -36,6 +37,7 @@ export default connect(state => {
       props.dispatch(fetchDomains());
       props.dispatch(fetchProducts());
       props.dispatch(detectPlatform());
+      props.dispatch(fetchInstances());
 
       // Promise.all([instance, products]).then(res => {
       //   // console.log("loaded instance");

@@ -10,6 +10,7 @@ import { products } from "./products";
 import { user } from "./user";
 import { userRole } from "./userRole";
 import { instance } from "./instance";
+import { instances } from "./instances";
 import { languages } from "./languages";
 import { models } from "./models";
 import { fields } from "./fields";
@@ -21,6 +22,7 @@ import { media } from "./media";
 import { logs } from "./logs";
 import { notifications } from "./notifications";
 import { platform } from "./platform";
+import ui from "./ui";
 
 const actionLogger = createLogger({
   collapsed: true,
@@ -37,6 +39,7 @@ function createReducer(asyncReducers) {
     userRole,
     products,
     instance,
+    instances,
     languages,
     models,
     fields,
@@ -47,7 +50,8 @@ function createReducer(asyncReducers) {
     media,
     logs,
     notifications,
-    platform
+    platform,
+    ui
   };
 
   return combineReducers({

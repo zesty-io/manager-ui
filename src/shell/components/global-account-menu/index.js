@@ -1,89 +1,54 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import cx from "classnames";
+import { connect } from "react-redux";
 
 import { Select, Option } from "@zesty-io/core/Select";
 
 import styles from "./styles.less";
 
-import { toggleAccountsMenu } from "shell/store/ui/global-accounts-menu";
-import { subMenuLoad } from "shell/store/ui/global-sub-menu";
-
-export default React.memo(function GlobalAccount(props) {
-  const dispatch = useDispatch();
-
+export default connect(state => {
+  return {
+    ui: state.ui,
+    instance: state.instance,
+    instances: state.instances,
+    user: state.user
+  };
+})(function GlobalAccount(props) {
   return (
     <section
       className={cx(
         styles.accountMenu,
-        props.accountsMenuVisible ? styles.show : styles.hide
+        props.ui.accountsMenuVisible ? styles.show : styles.hide
       )}
-      onMouseEnter={() => {
-        dispatch(subMenuLoad(""));
-        dispatch(toggleAccountsMenu(true));
-      }}
-      onMouseLeave={() => {
-        dispatch(toggleAccountsMenu(false));
-      }}
     >
       <header className={styles.user}>
         <h1>
-          <i
-            className={cx(styles.icon, "fa fa-user-circle-o")}
-            aria-hidden="true"
-          />
-          Stuart Runyan
+          {props.user.firstName} {props.user.lastName}
         </h1>
       </header>
 
       <main className={styles.siteSelector}>
-        <Select
-          name="instance"
-          selection={{ value: "xxxxx1", html: "alphauniverse.com" }}
-        >
-          <Option value="xxxxx1" text="alphauniverse.com" />
-          <Option value="xxxxx2" text="alphauniverse.com" />
-          <Option value="xxxxx3" text="alphauniverse.com" />
-          <Option value="xxxxx4" text="alphauniverse.com" />
-          <Option value="xxxxx5" text="alphauniverse.com" />
-          <Option value="xxxxx6" text="alphauniverse.com" />
-          <Option value="xxxxx7" text="alphauniverse.com" />
-          <Option value="xxxxx8" text="alphauniverse.com" />
-          <Option value="xxxxx9" text="alphauniverse.com" />
-          <Option value="xxxxx10" text="alphauniverse.com" />
-          <Option value="xxxxx11" text="alphauniverse.com" />
-          <Option value="xxxxx12" text="alphauniverse.com" />
-          <Option value="xxxxx13" text="alphauniverse.com" />
-          <Option value="xxxxx14" text="alphauniverse.com" />
-          <Option value="xxxxx15" text="alphauniverse.com" />
-          <Option value="xxxxx16" text="alphauniverse.com" />
+        <Select name="instance" value={props.instance.ZUID}>
+          {props.instances.map(instance => (
+            <Option
+              key={instance.ZUID}
+              value={instance.ZUID}
+              text={instance.name}
+              onClick={() => {
+                window.location.href = `${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}`;
+              }}
+            />
+          ))}
         </Select>
       </main>
 
       <menu className={styles.accountActions}>
-        <ul className={styles.linkList}>
-          <li className={styles.link}>
-            <i
-              className={cx(styles.icon, "fa fa-tachometer")}
-              aria-hidden="true"
-            />
-            Dashboard
-          </li>
-          <li className={styles.link}>
-            <i
-              className={cx(styles.icon, "fa fa-life-ring")}
-              aria-hidden="true"
-            />
-            Support
-          </li>
-          <li className={cx(styles.link, styles.logout)}>
-            <i
-              className={cx(styles.icon, "fa fa-sign-out")}
-              aria-hidden="true"
-            />
-            Logout
-          </li>
-        </ul>
+        <a
+          href={`${CONFIG.URL_ACCOUNTS}/logout`}
+          className={cx(styles.link, styles.logout)}
+        >
+          Logout
+        </a>
       </menu>
     </section>
   );

@@ -30,10 +30,7 @@ export default connect(state => {
     return (
       <section className={styles.Shell}>
         <GlobalSidebar />
-        <main
-          className={styles.AppLoader}
-          // onMouseEnter={this.hideGlobalSubMenu.bind(this)}
-        >
+        <main className={styles.AppLoader}>
           <GlobalTabs />
           <div className={styles.SubApp}>
             <AppError>

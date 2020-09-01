@@ -106,7 +106,7 @@ if (process.env.NODE_ENV === "production") {
     URL_MANAGER_PROTOCOL: "http://",
     URL_PREVIEW: "-dev.preview.dev.zesty.io",
     URL_PREVIEW_PROTOCOL: "https://",
-    URL_ACCOUNTS: "https://accounts.dev.zesty.io",
+    URL_ACCOUNTS: "https://accounts.dev.zesty.io:9001",
 
     COOKIE_NAME: "DEV_APP_SID",
     COOKIE_DOMAIN: ".zesty.io"
