@@ -316,7 +316,11 @@ class CSVImport extends Component {
           <span className={styles.save}>
             <Button
               kind="save"
-              disabled={this.state.inFlight || !this.state.fieldMaps}
+              disabled={
+                this.state.complete ||
+                this.state.inFlight ||
+                !this.state.fieldMaps
+              }
               onClick={this.handleCreateItems}
             >
               Create Items
