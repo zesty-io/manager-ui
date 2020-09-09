@@ -9,44 +9,30 @@
   border-bottom: 1px solid darken(@globalMenuBkgColor, 5%);
 
   a {
-    color: @zesty-field-blue;
-    padding: 1rem 0.5rem;
+    color: @zesty-dark-blue;
     text-decoration: none;
     letter-spacing: 1px;
-
-    svg {
-      margin-right: 8px;
-      width: 24px !important;
-      text-align: center;
-    }
+    border-radius: 50%;
+    background-color: @zesty-light-blue;
+    margin: 1rem 0.5rem;
+    padding: 0.5rem;
   }
 
-  .control {
-    &:hover,
-    &:active,
-    &:focus {
-      color: @zesty-green;
-    }
-  }
-  .build {
-    &:hover,
-    &:active,
-    &:focus {
-      color: @zesty-blue;
-    }
-  }
-  .optimize {
-    &:hover,
-    &:active,
-    &:focus {
+  .control,
+  .build,
+  .optimize,
+  .settings {
+    &:hover {
       color: @zesty-orange;
     }
   }
+  .control,
+  .build,
+  .optimize,
   .settings {
-    &:hover,
     &:active,
     &:focus {
-      color: @zesty-yellow;
+      color: @zesty-green;
     }
   }
 }
