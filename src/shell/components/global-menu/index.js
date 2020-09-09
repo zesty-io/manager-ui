@@ -13,7 +13,6 @@ import {
   faChartLine,
   faHistory,
   faCog,
-  faTerminal,
   faFileCode
 } from "@fortawesome/free-solid-svg-icons";
 
