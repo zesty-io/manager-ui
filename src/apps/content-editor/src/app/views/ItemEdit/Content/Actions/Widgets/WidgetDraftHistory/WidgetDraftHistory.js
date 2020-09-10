@@ -8,6 +8,8 @@ import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
 import { fetchAuditTrailDrafting } from "shell/store/logs";
 
+import styles from "../../../Content.less";
+
 export default connect((state, props) => {
   return {
     instanceZUID: state.instance.ZUID,
@@ -27,11 +29,15 @@ export default connect((state, props) => {
   }, []);
 
   return (
-    <Card id="WidgetDraftHistory" className="pageDetailWidget">
+    <Card
+      id="WidgetDraftHistory"
+      className="pageDetailWidget"
+      className={styles.SharedCardStyles}
+    >
       <CardHeader>
         <span className="audit-title">
           <FontAwesomeIcon icon={faUserCheck} />
-          &nbsp;Drafting History
+          &nbsp;Drafting History&nbsp;
         </span>
         <small>Audit Trail&trade;</small>
       </CardHeader>

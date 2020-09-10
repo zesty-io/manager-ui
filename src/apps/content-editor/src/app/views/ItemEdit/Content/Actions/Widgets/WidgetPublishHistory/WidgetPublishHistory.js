@@ -8,6 +8,8 @@ import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
 import { fetchAuditTrailPublish } from "shell/store/logs";
 
+import styles from "../../../Content.less";
+
 export default connect(state => {
   return {
     logs: state.logs,
@@ -29,11 +31,15 @@ export default connect(state => {
       props.logs[props.itemZUID].auditTrailPublish;
 
     return (
-      <Card id="WidgetPublishHistory" className="pageDetailWidget">
+      <Card
+        id="WidgetPublishHistory"
+        className="pageDetailWidget"
+        className={styles.SharedCardStyles}
+      >
         <CardHeader>
           <span className="audit-title">
             <FontAwesomeIcon icon={faUserCheck} />
-            &nbsp;Publish History
+            &nbsp;Publish History &nbsp;
           </span>
           <small>Audit Trail&trade;</small>
         </CardHeader>
