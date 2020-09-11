@@ -9,6 +9,14 @@
 
   .InstanceName {
     font-weight: 500;
+
+    a {
+      color: @white;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 
   .GlobalSearch {
@@ -35,7 +43,7 @@
         &.active {
           background-color: lighten(@globalMenuBkgColor, 5%);
           a {
-            color: #fff;
+            color: @white;
           }
         }
       }

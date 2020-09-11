@@ -26,7 +26,7 @@
     "@babel/runtime": "^7.10.4",
     "@fortawesome/fontawesome-svg-core": "1.2.27",
     "@fortawesome/free-brands-svg-icons": "^5.14.0",
-    "@fortawesome/free-solid-svg-icons": "^5.12.1",
+    "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@fortawesome/react-fontawesome": "0.1.9",
     "@hot-loader/react-dom": "^16.13.0",
     "@sentry/browser": "4.4.1",
