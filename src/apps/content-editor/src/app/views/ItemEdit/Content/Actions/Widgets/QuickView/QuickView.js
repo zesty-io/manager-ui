@@ -17,6 +17,8 @@ import { Url } from "@zesty-io/core/Url";
 import { WorkflowRequest } from "../WorkflowRequest";
 
 import styles from "./QuickView.less";
+import SharedWidgetStyles from "../SharedWidget.less";
+
 export const QuickView = React.memo(function QuickView(props) {
   const isPublished = props.publishing && props.publishing.isPublished;
   const isScheduled = props.scheduling && props.scheduling.isScheduled;
@@ -93,9 +95,13 @@ export const QuickView = React.memo(function QuickView(props) {
             <li>Viewing version {props.version}</li>
           </ul>
         </CardContent>
-        <CardFooter>
+        <CardFooter className={SharedWidgetStyles.FooterSpacing}>
           <ButtonGroup>
-            <Button id="WorkflowRequestButton" onClick={handleWorkflow}>
+            <Button
+              className={SharedWidgetStyles.BtnFont}
+              id="WorkflowRequestButton"
+              onClick={handleWorkflow}
+            >
               <FontAwesomeIcon icon={faEnvelope} />
               Workflow Request
             </Button>
