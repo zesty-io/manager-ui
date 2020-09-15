@@ -2,7 +2,7 @@
 
 .Actions {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 
   & > * {
     margin: 0 0 0 8px !important;
@@ -14,6 +14,14 @@
   .Publish {
     button {
       margin: 0;
+      span {
+        display: none;
+      }
+      @media (min-width: 1200px) {
+        span {
+          display: block;
+        }
+      }
       i {
         line-height: 24px;
       }
@@ -35,6 +43,13 @@
     }
     .Scheduled {
       background-color: @zesty-orange;
+    }
+  }
+  .HideVersion {
+    display: none;
+
+    @media (min-width: 1200px) {
+      display: block;
     }
   }
 }
