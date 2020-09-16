@@ -6,62 +6,71 @@ export const CsvSettings = props => {
     <section className={props.styles}>
       <article>
         <label>Meta Description</label>
-        <Select name={"metaDescription"} onSelect={props.handleMap}>
+        <Select
+          name={"metaDescription"}
+          onSelect={props.handleMap}
+          value="none"
+        >
           <Option text="none" value="none" />
           {props.cols.map(col => (
-            <Option text={col} value={col} />
+            <Option key={col} text={col} value={col} />
           ))}
         </Select>
       </article>
       <article>
         <label>Meta Keywords</label>
-        <Select name="metaKeywords" onSelect={props.handleMap}>
+        <Select name="metaKeywords" onSelect={props.handleMap} value="none">
           <Option text="none" value="none" />
           {props.cols.map(col => (
-            <Option text={col} value={col} />
+            <Option key={col} text={col} value={col} />
           ))}
         </Select>
       </article>
       <article>
         <label>Meta Link Text</label>
-        <Select name="metaLinkText" onSelect={props.handleMap}>
+        <Select name="metaLinkText" onSelect={props.handleMap} value="none">
           <Option text="none" value="none" />
           {props.cols.map(col => (
-            <Option text={col} value={col} />
+            <Option key={col} text={col} value={col} />
           ))}
         </Select>
       </article>
       <article>
         <label>Meta Title</label>
-        <Select name="metaTitle" onSelect={props.handleMap}>
+        <Select name="metaTitle" onSelect={props.handleMap} value="none">
           <Option text="none" value="none" />
           {props.cols.map(col => (
-            <Option text={col} value={col} />
+            <Option key={col} text={col} value={col} />
           ))}
         </Select>
       </article>
       <article>
         <label>Parent ZUID</label>
-        <Select name="parentZUID" onSelect={props.handleMap}>
+        <Select name="parentZUID" onSelect={props.handleMap} value="none">
           <Option text="none" value="none" />
           {props.cols.map(col => (
-            <Option text={col} value={col} />
+            <Option key={col} text={col} value={col} />
           ))}
         </Select>
       </article>
       <article>
         <label>Path Part</label>
-        <Select name="pathPart" onSelect={props.handleMap}>
+        <Select name="pathPart" onSelect={props.handleMap} value="none">
           <Option text="none" value="none" />
           {props.cols.map(col => (
-            <Option text={col} value={col} />
+            <Option key={col} text={col} value={col} />
           ))}
         </Select>
       </article>
       <CanonicalTag name="canonicalTagMode" onChange={props.handleMap} />
       <article>
         <label>Sitemap Priority</label>
-        <Select name="sitemapPriority" value="-1.0" onSelect={props.handleMap}>
+        <Select
+          name="sitemapPriority"
+          value="-1.0"
+          onSelect={props.handleMap}
+          value={-1.0}
+        >
           <Option value={-1.0} text="Automatically Set Priority" />
           <Option value={1.0} text="1.0" />
           <Option value={0.9} text="0.9" />
@@ -85,18 +94,22 @@ class CanonicalTag extends Component {
     canonicalTagMode: 1,
     canonicalOptions: [
       {
+        key: 0,
         value: 0,
         text: "Off"
       },
       {
+        key: 1,
         value: 1,
         text: "On (Ignores query parameters)"
       },
       {
+        key: 2,
         value: 2,
         text: "On - Allow certain parameters"
       },
       {
+        key: 3,
         value: 3,
         text: "On - Custom Path or Custom URL"
       }
@@ -150,7 +163,9 @@ class CanonicalTag extends Component {
               options={this.state.canonicalOptions}
             >
               {this.state.canonicalOptions.map(opt => {
-                return <Option value={opt.value} text={opt.text} />;
+                return (
+                  <Option key={opt.key} value={opt.value} text={opt.text} />
+                );
               })}
             </Select>
 

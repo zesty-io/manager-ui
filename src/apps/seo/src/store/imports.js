@@ -1,3 +1,4 @@
+import parse from "csv-parse/lib/es5/sync";
 import { notify } from "shell/store/notifications";
 export const IMPORT_LOADING = "IMPORT_LOADING";
 export const IMPORT_REDIRECTS = "IMPORT_REDIRECTS";
@@ -122,7 +123,7 @@ export function CSVImporter(evt) {
             } else if (file.type === "text/xml") {
               const parser = new DOMParser();
               const xml = parser.parseFromString(fileReader.result, "text/xml");
-              targets = parse(xml);
+              targets = parseXML(xml);
             }
 
             targets = findTargetPages(targets);
@@ -156,12 +157,14 @@ export function CSVImporter(evt) {
  * row a list column headers
  */
 function CSVToArray(csv) {
-  const rows = csv.split(/\r?\n|\r/); // linebreaks
-  const columns = rows[0].split(",");
+  const rows = parse(csv, {
+    skip_empty_lines: true
+  });
+  const columns = rows[0];
   const redirects = rows
     .slice(1)
     .map(row => {
-      const [original, target, code] = row.split(",");
+      const [original, target, code] = row;
       const [path, query] = original.split("?");
       return {
         path: path,
@@ -219,7 +222,7 @@ function findTargetPages(imports) {
   }, {});
 }
 
-function parse(xml) {
+function parseXML(xml) {
   const urlset = xml.children[0];
 
   if (urlset.nodeName !== "urlset") {

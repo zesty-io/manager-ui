@@ -11,21 +11,24 @@ export class Columns extends PureComponent {
         <span className={styles.wrap}>
           {this.props.cols.map(col => {
             return (
-              <div className={styles.column}>
+              <div key={col} className={styles.column}>
                 <Select
                   name={col}
                   onSelect={value => {
                     this.props.handleMap(value, col);
                   }}
+                  value="none"
                 >
                   <Option text="none" value="none" />
                   {this.props.fields.map(field => (
-                    <Option text={field.label} value={field.name} />
+                    <Option
+                      key={field.name}
+                      text={field.label}
+                      value={field.name}
+                    />
                   ))}
                 </Select>
-                <span key={col} className={cx(styles.Cell)}>
-                  {col.toUpperCase()}
-                </span>
+                <span className={cx(styles.Cell)}>{col.toUpperCase()}</span>
               </div>
             );
           })}
