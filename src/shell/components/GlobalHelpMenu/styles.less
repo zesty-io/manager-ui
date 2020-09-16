@@ -1,0 +1,44 @@
+@import "~@zesty-io/core/colors.less";
+@width: 44rem;
+.helpMenu {
+  position: absolute;
+  width: @width;
+  color: @zesty-field-blue;
+  background: @zesty-dark-blue;
+  // box-shadow: 1px 1px 4px @zesty-dark-blue;
+  bottom: 7rem;
+  left: 0;
+  padding: 1rem;
+  z-index: 2;
+
+  &.hide {
+    bottom: 0;
+    left: -@width - 1rem;
+  }
+  header {
+    margin-bottom: 1rem;
+    a {
+      display: block;
+      color: @zesty-white;
+    }
+  }
+}
+
+.helpModules {
+  display: flex;
+}
+
+.helpModule {
+  flex-grow: 1;
+  margin-left: 1rem;
+  &.primary {
+    flex-grow: 2;
+    margin-left: 0;
+  }
+}
+.helpBox {
+  list-style-type: none;
+  background-color: @zesty-light-blue;
+  color: @zesty-black;
+  padding: 1rem;
+}
