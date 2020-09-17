@@ -74,7 +74,11 @@ export function createRedirect(redirect) {
         if (!json.error) {
           dispatch({
             type: "REDIRECT_CREATE_SUCCESS",
-            redirect: { ...redirect, zuid: json.new_redirect_zuid }
+            redirect: {
+              ...redirect,
+              zuid: json.new_redirect_zuid,
+              created: true
+            }
           });
         } else {
           // Notify user of all errors

@@ -86,16 +86,16 @@ if (process.env.NODE_ENV === "production") {
 
     SERVICE_AUTH: "https://auth.api.dev.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
-    SERVICE_MEDIA_MANAGER: "https://dev-svc.zesty.io/media-manager-service",
-    SERVICE_MEDIA_RESOLVER: "https://dev-svc.zesty.io/media-resolver-service",
+    SERVICE_MEDIA_MANAGER: "https://media-manager.api.dev.zesty.io",
+    SERVICE_MEDIA_RESOLVER: "https://media-resolver.api.dev.zesty.io",
 
     // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
     service: {
       media_resolver: ""
     },
 
-    SERVICE_MEDIA_STORAGE: "https://dev-svc.zesty.io/media-storage-service",
-    SERVICE_MEDIA_MODIFY: "https://dev-svc.zesty.io/media-modify-service",
+    SERVICE_MEDIA_STORAGE: "https://media-storage.api.dev.zesty.io",
+    SERVICE_MEDIA_MODIFY: "https://media-modify.api.dev.zesty.io",
     SERVICE_REDIS_GATEWAY: "https://cache.dev.zesty.io",
     SERVICE_GOOGLE_ANALYTICS_AUTH:
       "https://us-central1-zesty-dev.cloudfunctions.net/authenticateGoogleAnalytics",

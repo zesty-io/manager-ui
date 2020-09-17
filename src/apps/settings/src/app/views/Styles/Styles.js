@@ -234,16 +234,20 @@ export default connect(state => {
             label={field.name}
             description={field.description}
             limit="1"
-            default={
-              field.value
-                ? field.value.map(val => ({
-                    id: val,
-                    title: val,
-                    url: val
-                  }))
-                : []
+            images={
+              state[field.referenceName] ? [state[field.referenceName]] : []
             }
-            callback={(name, value) => setValue(name, value)}
+            onChange={(value, name) => setValue(name, value)}
+            resolveImage={(zuid, width, height) =>
+              `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
+            }
+            mediaBrowser={opts => {
+              riot.mount(
+                document.querySelector("#modalMount"),
+                "media-app-modal",
+                opts
+              );
+            }}
           />
         );
       default:
