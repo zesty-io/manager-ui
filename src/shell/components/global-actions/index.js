@@ -12,11 +12,13 @@ import {
 
 import { Url } from "@zesty-io/core/Url";
 import { GlobalNotifications } from "./components/global-notifications";
+import { toggleHelpMenu } from "shell/store/ui/globalHelpMenu";
 
 import styles from "./styles.less";
 import CONFIG from "../../app.config";
 export default connect(state => {
   return {
+    ui: state.ui,
     instance: state.instance,
     content: state.content
   };
@@ -39,7 +41,13 @@ export default connect(state => {
           {/* <span className={styles.action} title="Chat">
             <FontAwesomeIcon icon={faComment} />
           </span> */}
-          <span className={styles.action} title="Help">
+          <span
+            className={styles.action}
+            title="Help"
+            onClick={() => {
+              props.dispatch(toggleHelpMenu(!props.ui.helpMenuVisible));
+            }}
+          >
             <FontAwesomeIcon icon={faQuestion} />
           </span>
         </div>
