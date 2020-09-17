@@ -1,9 +1,6 @@
 @import "~@zesty-io/core/colors.less";
 
 .CSVImport {
-  overflow-y: scroll;
-  overflow-x: auto;
-  width: 85vw;
   flex-direction: column;
   .Top {
     display: flex;
@@ -31,6 +28,10 @@
       padding: 16px;
     }
   }
+  .Mid {
+    display: flex;
+    justify-content: space-between;
+  }
   .Settings {
     display: grid;
     width: 800px;
@@ -41,4 +42,30 @@
     background-color: darken(@zesty-light-blue, 3%);
     box-shadow: inset 0px 0px 4px darken(@zesty-light-blue, 10%);
   }
+
+  .ImportResults {
+    font-size: 16px;
+    padding: 8px;
+    text-align: right;
+  }
+}
+
+.wrap {
+  border-bottom: 1px solid #000;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-height: 60px;
+  height: 60px;
+  .column {
+    display: flex;
+    min-width: 250px;
+    padding: 4px 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.failure {
+  background-color: @zesty-red;
 }

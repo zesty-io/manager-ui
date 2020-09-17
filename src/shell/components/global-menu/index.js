@@ -12,7 +12,8 @@ import {
   faChartPie,
   faChartLine,
   faHistory,
-  faCog
+  faCog,
+  faFileCode
 } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./styles.less";
@@ -84,14 +85,19 @@ export default connect(state => {
                   to="/code"
                   title="Code Editor"
                 >
-                  <FontAwesomeIcon icon={faCodeBranch} />
+                  <FontAwesomeIcon icon={faFileCode} />
                   <span className={styles.title}>Code</span>
                 </Link>
               );
 
             case "leads":
               return (
-                <Link key={product} className={styles.control} to="/leads">
+                <Link
+                  key={product}
+                  className={styles.control}
+                  to="/leads"
+                  title="Leads"
+                >
                   <FontAwesomeIcon icon={faAddressCard} />
                   <span className={styles.title}>Leads</span>
                 </Link>
@@ -112,7 +118,12 @@ export default connect(state => {
 
             case "seo":
               return (
-                <Link key={product} className={styles.optimize} to="/seo">
+                <Link
+                  key={product}
+                  className={styles.optimize}
+                  to="/seo"
+                  title="SEO"
+                >
                   <FontAwesomeIcon icon={faChartLine} />
                   <span className={styles.title}>SEO</span>
                 </Link>
@@ -124,6 +135,7 @@ export default connect(state => {
                   key={product}
                   className={styles.optimize}
                   to="/audit-trail"
+                  title="Audit Trail"
                 >
                   <FontAwesomeIcon icon={faHistory} />
                   <span className={styles.title}>AuditTrail</span>
@@ -132,7 +144,12 @@ export default connect(state => {
 
             case "settings":
               return (
-                <Link key={product} className={styles.settings} to="/settings">
+                <Link
+                  key={product}
+                  className={styles.settings}
+                  to="/settings"
+                  title="Settings"
+                >
                   <FontAwesomeIcon icon={faCog} />
                   <span className={styles.title}>Settings</span>
                 </Link>

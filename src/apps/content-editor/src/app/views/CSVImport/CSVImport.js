@@ -1,10 +1,12 @@
-import React, { Component } from "react";
+import React, { Component, PureComponent } from "react";
 import { connect } from "react-redux";
 import parse from "csv-parse/lib/es5/sync";
+import chunk from "lodash/chunk";
+import { FixedSizeList } from "react-window";
+import cx from "classnames";
 
 import { Button } from "@zesty-io/core/Button";
 import { Columns } from "./Columns";
-import { Row } from "./Rows";
 import { CsvSettings } from "./CsvSettings";
 
 import { request } from "utility/request";
@@ -17,9 +19,13 @@ class CSVImport extends Component {
     modelZUID: this.props.modelZUID,
     fields: this.props.fields,
     warn: "",
+    complete: false,
     inFlight: false,
     success: [],
     failure: [],
+    records: [],
+    successes: 0,
+    height: document.documentElement.clientHeight - 522,
     webMaps: {
       metaDescription: "",
       metaKeywords: null,
@@ -31,6 +37,8 @@ class CSVImport extends Component {
       canonicalTagMode: 0
     }
   };
+
+  chunkSize = 30;
 
   componentDidMount() {
     // if there are no fields, we need to fetch them here
@@ -162,11 +170,6 @@ class CSVImport extends Component {
     this.setState({ failure: [...this.state.failure, index] });
   };
 
-  addSuccess = index => {
-    // add the index to the array of uploaded items
-    this.setState({ success: [...this.state.success, index] });
-  };
-
   handleCreateItems = () => {
     this.setState({ failure: [] });
     if (!this.props.model.type === "dataset" && !this.state.webMaps.pathPart) {
@@ -235,47 +238,67 @@ class CSVImport extends Component {
 
     this.setState({ mappedMetaItems, inFlight: true }, () => {
       // we make the fetch call after state has been set
-      Promise.all(
-        this.state.mappedMetaItems.map((item, i) => {
-          return request(
-            `${CONFIG.API_INSTANCE}/content/models/${this.props.modelZUID}/items`,
-            {
-              method: "POST",
-              json: true,
-              body: item
-            }
-          )
-            .then(res => {
-              if (res.status === 400) {
-                this.props.dispatch(
-                  notify({
-                    message: `Failure creating item: ${res.error}`,
-                    kind: "error"
-                  })
-                );
-                this.addFailure(i);
-              } else if (res.error) {
-                this.addFailure(i);
-              } else {
-                this.addSuccess(i);
-                return res;
-              }
-            })
-            .catch(err => {
-              this.addFailure(i);
-            });
-        })
-      ).then(() => {
-        this.setState({ inFlight: false });
-        if (!this.state.failure.length) {
-          //redirect to the model list view
-          window.location.hash = `/content/${this.props.modelZUID}`;
-        }
+      this.createAllItems().then(() => {
+        this.setState({ inFlight: false, complete: true });
       });
     });
   };
 
+  createBatchItems(batch, index) {
+    return Promise.allSettled(
+      batch.map((item, i) => {
+        return request(
+          `${CONFIG.API_INSTANCE}/content/models/${this.props.modelZUID}/items`,
+          {
+            method: "POST",
+            json: true,
+            body: item
+          }
+        )
+          .then(res => {
+            if (res.status === 400) {
+              this.props.dispatch(
+                notify({
+                  message: `Failure creating item: ${res.error}`,
+                  kind: "error"
+                })
+              );
+              this.addFailure(index * this.chunkSize + i);
+            } else if (res.error) {
+              this.addFailure(index * this.chunkSize + i);
+            } else {
+              const successes = this.state.successes + 1;
+              this.setState({ successes });
+              return res;
+            }
+          })
+          .catch(err => {
+            this.addFailure(index * this.chunkSize + i);
+          });
+      })
+    );
+  }
+
+  createAllItems() {
+    const chunkedItems = chunk(this.state.mappedMetaItems, this.chunkSize);
+
+    return chunkedItems.reduce((promise, batch, index) => {
+      return promise.then(results => {
+        return this.createBatchItems(batch, index).then(data => {
+          results.push(data);
+          return results;
+        });
+      });
+    }, Promise.resolve([]));
+  }
+
   render() {
+    // if import is complete, records shown are errors only
+    const records = this.state.complete
+      ? this.state.records.filter((record, index) =>
+          this.state.failure.includes(index)
+        )
+      : this.state.records;
     return (
       <main className={styles.CSVImport}>
         <div className={styles.Top}>
@@ -291,26 +314,41 @@ class CSVImport extends Component {
             <span className={styles.warning}>{this.state.warn}</span>
           </span>
           <span className={styles.save}>
-            {this.state.fieldMaps && (
-              <Button
-                kind="save"
-                disabled={this.state.inFlight}
-                onClick={this.handleCreateItems}
-              >
-                Create Items
-              </Button>
-            )}
+            <Button
+              kind="save"
+              disabled={
+                this.state.complete ||
+                this.state.inFlight ||
+                !this.state.fieldMaps
+              }
+              onClick={this.handleCreateItems}
+            >
+              Create Items
+            </Button>
           </span>
         </div>
-        {/* WebData/MetaData Mapping */}
-        {this.state.cols && (
-          <CsvSettings
-            handleMap={this.handleWebToCSVMap}
-            webMaps={this.state.webMaps}
-            cols={this.state.cols}
-            styles={styles.Settings}
-          />
-        )}
+        <div className={styles.Mid}>
+          {/* WebData/MetaData Mapping */}
+          {this.state.cols && (
+            <CsvSettings
+              handleMap={this.handleWebToCSVMap}
+              webMaps={this.state.webMaps}
+              cols={this.state.cols}
+              styles={styles.Settings}
+            />
+          )}
+          <div className={styles.ImportResults}>
+            {this.state.mappedMetaItems && (
+              <div>
+                Imported {this.state.successes} of{" "}
+                {this.state.mappedMetaItems.length}
+              </div>
+            )}
+            {this.state.failure.length ? (
+              <div>Errors {this.state.failure.length}</div>
+            ) : null}
+          </div>
+        </div>
         {this.state.cols && (
           <Columns
             handleMap={this.handleFieldToCSVMap}
@@ -318,18 +356,44 @@ class CSVImport extends Component {
             cols={this.state.cols}
           />
         )}
-        {/* map all records to rows */}
-        {this.state.records &&
-          this.state.records.map((record, i) => {
-            return (
-              <Row
-                success={this.state.success.includes(i)}
-                failure={this.state.failure.includes(i)}
-                record={record}
-              />
-            );
-          })}
+        {records && (
+          <FixedSizeList
+            itemCount={records.length}
+            itemData={{
+              data: records,
+              // if import is complete, records shown are errors only
+              error: this.state.complete
+            }}
+            itemSize={61}
+            height={this.state.height}
+            width="100%"
+          >
+            {Row}
+          </FixedSizeList>
+        )}
       </main>
+    );
+  }
+}
+
+class Row extends PureComponent {
+  render() {
+    const item = this.props.data.data[this.props.index];
+    return (
+      <span
+        style={this.props.style}
+        className={cx(styles.wrap, { [styles.failure]: this.props.data.error })}
+      >
+        {Object.keys(item).map(key => {
+          return (
+            <div key={key} className={styles.column}>
+              <span key={item[key]} className={styles.Cell}>
+                {item[key].substr(0, 120)}
+              </span>
+            </div>
+          );
+        })}
+      </span>
     );
   }
 }

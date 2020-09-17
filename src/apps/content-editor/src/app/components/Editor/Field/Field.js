@@ -239,6 +239,16 @@ export default connect(state => {
           )}
           onChange={onChange}
           value={value}
+          resolveImage={(zuid, width, height) =>
+            `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
+          }
+          mediaBrowser={opts => {
+            riot.mount(
+              document.querySelector("#modalMount"),
+              "media-app-modal",
+              opts
+            );
+          }}
         />
       );
 
