@@ -52,16 +52,6 @@ export function ContentNav(props) {
   return (
     <React.Fragment>
       <div className={styles.Actions}>
-        <ButtonGroup className={styles.ButtonGroup}>
-          <Button id="ReorderNavButton" onClick={() => setReorderOpen(true)}>
-            <FontAwesomeIcon
-              icon={faArrowsAlt}
-              title="Re-order content navigation"
-            />
-            Reorder
-          </Button>
-        </ButtonGroup>
-
         <Select
           name="createItemFromModel"
           className={`${styles.CreateSelect} ${styles.Select} CreateItemDropdown`}
@@ -88,6 +78,12 @@ export function ContentNav(props) {
               />
             ))}
         </Select>
+        <Button id="ReorderNavButton" onClick={() => setReorderOpen(true)}>
+          <FontAwesomeIcon
+            icon={faArrowsAlt}
+            title="Re-order content navigation"
+          />
+        </Button>
       </div>
 
       <div className={styles.NavWrap}>
