@@ -193,7 +193,7 @@ export default connect(state => {
         <div>
           <h1 className={styles.InstanceName}>
             {props.domains && props.domains[0] && props.domains[0].domain ? (
-              <a href={`https://${props.domains[0].domain}`}>
+              <a href={`https://${props.domains[0].domain}`} target="_blank">
                 {props.instanceName}
               </a>
             ) : (

@@ -30,25 +30,22 @@
     padding: 1rem 0.5rem 0.5rem;
   }
   .accountActions {
-    .linkList {
+    .link {
+      cursor: pointer;
+      list-style: none;
       margin: 0;
-      padding: 0;
-      .link {
-        cursor: pointer;
-        list-style: none;
-        margin: 0;
-        padding: 0.5rem 0;
+      padding: 0.5rem 0;
 
-        &:hover,
-        &:focus,
-        &:active {
-          color: @zesty-blue;
-        }
+      &:hover,
+      &:focus,
+      &:active {
+        color: @zesty-blue;
       }
-      .logout {
-        color: @zesty-orange;
-        background-color: @zesty-dark-blue;
-      }
+    }
+    .logout {
+      color: @zesty-orange;
+      background-color: @zesty-dark-blue;
+      text-transform: uppercase;
     }
   }
 }

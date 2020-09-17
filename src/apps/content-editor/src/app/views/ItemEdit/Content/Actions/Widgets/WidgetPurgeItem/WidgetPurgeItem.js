@@ -6,6 +6,7 @@ import { faSync, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 
 import { notify } from "shell/store/notifications";
+import SharedWidgetStyles from "../SharedWidget.less";
 
 export const WidgetPurgeItem = React.memo(function WidgetPurgeItem(props) {
   const [loading, setLoading] = useState(false);
@@ -23,14 +24,15 @@ export const WidgetPurgeItem = React.memo(function WidgetPurgeItem(props) {
           across the entire global network.
         </p>
       </CardContent>
-      <CardFooter>
+      <CardFooter className={SharedWidgetStyles.FooterSpacing}>
         {loading ? (
-          <Button disabled={loading}>
+          <Button className={SharedWidgetStyles.BtnFont} disabled={loading}>
             <FontAwesomeIcon icon={faSpinner} />
             Refreshing Cached Item&hellip;
           </Button>
         ) : (
           <Button
+            className={SharedWidgetStyles.BtnFont}
             id="RefreshCache"
             onClick={() => {
               setLoading(true);

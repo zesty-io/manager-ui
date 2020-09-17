@@ -100,7 +100,8 @@ export default connect(state => {
                 disabled={publishingDisabled || false}
                 onClick={this.handlePublish}
               >
-                <i className="fas fa-cloud-upload-alt"></i>Publish Version{" "}
+                <i className="fas fa-cloud-upload-alt"></i>Publish{" "}
+                <span>&nbsp;Version&nbsp;</span>
                 {this.props.item.meta.version}
               </Button>
               <Button
@@ -138,7 +139,8 @@ export default connect(state => {
             ) : (
               <FontAwesomeIcon icon={faSave} />
             )}
-            Save New Version&nbsp;
+            Save{" "}
+            <span className={styles.HideVersion}>&nbsp; New Version&nbsp;</span>
             <small>({this.props.platform.isMac ? "CMD" : "CTRL"} + S)</small>
           </Button>
         </ButtonGroup>
