@@ -5,10 +5,31 @@
   width: @width;
   color: @zesty-field-blue;
   background: @zesty-dark-blue;
-  bottom: 7rem;
-  left: 0;
+  bottom: 5rem;
+  left: 3.7rem;
   padding: 2rem;
   z-index: 2;
+
+  @media (min-width: 2001px) {
+    bottom: 4rem;
+    left: 12.5rem;
+  }
+
+  &:after {
+    content: "";
+    transition: 0.5s all ease;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+
+    border-right: 10px solid @zesty-light-blue;
+    left: -0.7rem;
+    bottom: 0.1rem;
+  }
 
   &.hide {
     bottom: 0;
