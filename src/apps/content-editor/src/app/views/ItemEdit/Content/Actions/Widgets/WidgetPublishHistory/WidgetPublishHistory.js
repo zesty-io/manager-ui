@@ -33,7 +33,7 @@ export default connect(state => {
         <CardHeader>
           <span className="audit-title">
             <FontAwesomeIcon icon={faUserCheck} />
-            &nbsp;Publish History
+            &nbsp;Publish History &nbsp;
           </span>
           <small>Audit Trail&trade;</small>
         </CardHeader>

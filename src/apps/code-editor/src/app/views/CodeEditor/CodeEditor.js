@@ -60,12 +60,12 @@ export default connect(state => {
           />
         </nav>
         <section className={styles.FileEditor}>
-          <FileTabs
+          {/* <FileTabs
             dispatch={props.dispatch}
             files={props.files}
             openFileZUID={match && match.params.fileZUID}
             status={props.status}
-          />
+          /> */}
           <Workspace
             dispatch={props.dispatch}
             files={props.files}

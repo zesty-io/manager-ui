@@ -31,7 +31,7 @@ export default connect((state, props) => {
       <CardHeader>
         <span className="audit-title">
           <FontAwesomeIcon icon={faUserCheck} />
-          &nbsp;Drafting History
+          &nbsp;Drafting History&nbsp;
         </span>
         <small>Audit Trail&trade;</small>
       </CardHeader>

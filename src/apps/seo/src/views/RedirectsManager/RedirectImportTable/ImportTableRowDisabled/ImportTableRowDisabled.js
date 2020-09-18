@@ -7,7 +7,8 @@ export default function ImportTableRowDisabled({
   path,
   code,
   target,
-  query_string
+  query_string,
+  created
 }) {
   return (
     <div className={styles.ImportTableRowDisabled}>
@@ -28,7 +29,7 @@ export default function ImportTableRowDisabled({
         {query_string ? `?${query_string}` : null}
       </span>
       <span className={styles.RowCell}>
-        <span>Pre-Existing</span>
+        {created ? <span>Created</span> : <span>Pre-Existing</span>}
       </span>
     </div>
   );

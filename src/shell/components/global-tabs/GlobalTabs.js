@@ -11,7 +11,8 @@ import {
   faEdit,
   faDatabase,
   faCodeBranch,
-  faCog
+  faCog,
+  faExternalLinkSquareAlt
 } from "@fortawesome/free-solid-svg-icons";
 
 import GlobalSearch from "shell/components/global-search";
@@ -190,10 +191,12 @@ export default connect(state => {
 
     return (
       <section className={styles.GlobalTabs}>
-        <div>
+        <div className={styles.InstanceSearch}>
           <h1 className={styles.InstanceName}>
+            <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
+            &nbsp;
             {props.domains && props.domains[0] && props.domains[0].domain ? (
-              <a href={`https://${props.domains[0].domain}`}>
+              <a href={`https://${props.domains[0].domain}`} target="_blank">
                 {props.instanceName}
               </a>
             ) : (
@@ -230,23 +233,6 @@ export default connect(state => {
           </ol>
 
           {ZUID && <Breadcrumbs itemZUID={ZUID} />}
-
-          {/* <ol className={styles.BreadCrumbs}>
-            <li>
-              <FontAwesomeIcon icon={faShareAlt} />
-            </li>
-            <li>
-              <AppLink to={`/`}>Crumb 1</AppLink>
-            </li>
-            <li>
-              <FontAwesomeIcon icon={faAngleRight} />{" "}
-              <AppLink to={`/`}>Crumb 1</AppLink>
-            </li>
-            <li>
-              <FontAwesomeIcon icon={faAngleRight} />{" "}
-              <AppLink to={`/`}>Crumb 1</AppLink>
-            </li>
-          </ol> */}
         </nav>
       </section>
     );

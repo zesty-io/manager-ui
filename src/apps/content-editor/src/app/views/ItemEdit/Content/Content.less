@@ -1,14 +1,16 @@
 .Content {
   display: flex;
   height: calc(100vh - 64px - 9px - 48px);
-  overflow-y: auto;
+  overflow: auto;
   flex-direction: column;
 
   .MainEditor {
     display: flex;
     flex-direction: row;
+    margin: 10px 0;
+
     .Editor {
-      width: 60vw;
+      width: 40vw;
       padding: 0;
 
       &.NewItem {

@@ -50,9 +50,9 @@ export const ItemSettings = React.memo(
               <ItemRoute
                 ZUID={meta.ZUID}
                 meta={meta}
+                parentZUID={web.parentZUID}
                 path_part={web.pathPart}
                 path_to={web.path}
-                dispatch={props.dispatch}
               />
             </React.Fragment>
           )}

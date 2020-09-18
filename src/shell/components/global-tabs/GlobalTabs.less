@@ -3,12 +3,17 @@
 .GlobalTabs {
   background-color: @globalMenuBkgColor;
   box-shadow: 0px 0px 3px @globalMenuBkgColor;
-
   display: flex;
-  height: 92px;
+  min-height: 76px;
+
+  .InstanceSearch {
+    padding: 4px 8px;
+    min-width: 245px;
+    width: calc(15vw - 16px);
+  }
 
   .InstanceName {
-    font-weight: 500;
+    font-weight: 200;
 
     a {
       color: @white;
@@ -49,7 +54,20 @@
       }
     }
     .Links {
-      flex: 1;
+      // flex: 1;
+      overflow-x: auto;
+
+      &::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+      &::-webkit-scrollbar-track-piece {
+        background-color: lighten(#171b26, 10%);
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: lighten(#171b26, 5%);
+      }
+
       li {
         align-items: center;
         display: flex;
@@ -58,7 +76,8 @@
         padding: 0 8px;
         flex-shrink: 0;
         a {
-          padding: 6px 12px 6px 8px;
+          padding: 12px 6px;
+          display: inline-block;
         }
         .Close {
           cursor: pointer;
@@ -81,7 +100,7 @@
       }
     }
     .BreadCrumbs {
-      background-color: lighten(@globalMenuBkgColor, 5%);
+      // background-color: lighten(@globalMenuBkgColor, 5%);
       display: flex;
       font-size: 12px;
       padding: 4px 16px;

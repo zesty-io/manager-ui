@@ -1,25 +1,29 @@
-import React from "react";
-import { connect } from "react-redux";
+import React, { useState } from "react";
+import useOnclickOutside from "react-cool-onclickoutside";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 
-import { toggleAccountsMenu } from "shell/store/ui/global-accounts-menu";
+import GlobalAccountMenu from "shell/components/global-account-menu";
 
 import css from "./GlobalAccount.less";
-export default connect(state => {
-  return {
-    ui: state.ui
-  };
-})(function GlobalAccount(props) {
+
+export default function GlobalAccount(props) {
+  const [openMenu, setOpenMenu] = useState(false);
+  const ref = useOnclickOutside(() => {
+    setOpenMenu(false);
+  });
+
   return (
     <div
+      ref={ref}
       className={css.GlobalAccount}
       onClick={() => {
-        props.dispatch(toggleAccountsMenu(!props.ui.accountsMenuVisible));
+        setOpenMenu(!openMenu);
       }}
     >
       <FontAwesomeIcon icon={faGlobe} />
+      {openMenu && <GlobalAccountMenu />}
     </div>
   );
-});
+}
