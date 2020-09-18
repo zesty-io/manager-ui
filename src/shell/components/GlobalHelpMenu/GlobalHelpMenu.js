@@ -2,6 +2,18 @@ import React, { useRef, useEffect } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faComment,
+  faComments,
+  faEnvelope,
+  faExternalLinkAlt,
+  faSignOutAlt
+} from "@fortawesome/free-solid-svg-icons";
+
+import { Button } from "@zesty-io/core/Button";
+import { Url } from "@zesty-io/core/Url";
+
 import { toggleHelpMenu } from "shell/store/ui/globalHelpMenu";
 import styles from "./styles.less";
 
@@ -138,8 +150,6 @@ export default connect(state => {
   useEffect(() => {
     function handleClickOutside(event) {
       if (ref.current && !ref.current.contains(event.target)) {
-        console.log(event);
-        console.log(event.target);
         props.dispatch(toggleHelpMenu(false));
       }
     }
@@ -159,68 +169,79 @@ export default connect(state => {
     >
       <header>
         {props.instance.planID && (
-          <a target="_blank" href="mailto:support@zesty.io">
-            support@zesty.io
-          </a>
+          <Url target="_blank" href="mailto:support@zesty.io">
+            <Button kind="" title="Support">
+              <FontAwesomeIcon icon={faEnvelope} />
+              support@zesty.io
+            </Button>
+          </Url>
         )}
-        <a target="_blank" href="https://chat.zesty.io">
-          chat.zesty.io
-        </a>
+
+        <Url target="_blank" href="https://chat.zesty.io">
+          <Button kind="alt" title="Chat">
+            <FontAwesomeIcon icon={faComments} />
+            chat.zesty.io
+          </Button>
+        </Url>
       </header>
 
       <div className={styles.helpModules}>
         <div className={cx(styles.helpModule, styles.primary)}>
-          <span className={styles.helpModuleTitle}>zesty.org</span>
+          <span className={styles.title}>zesty.org</span>
           <ul className={styles.helpBox}>
             {links.map(link => (
               <li key={link.name}>
-                <a target="_blank" href={link.url}>
+                <Url target="_blank" href={link.url}>
                   {link.name}
-                </a>
+                </Url>
               </li>
             ))}
           </ul>
         </div>
         <div className={styles.helpModule}>
-          <span className={styles.helpModuleTitle}>APIs</span>
+          <span className={styles.title}>APIs</span>
           <ul className={styles.helpBox}>
             <li>
-              <a target="_blank" href="https://instances-api.zesty.org/">
+              <Url
+                className={cx(styles.helpLinkFirst, styles.helpLinkAfter)}
+                target="_blank"
+                href="https://instances-api.zesty.org/"
+              >
                 Instances API
-              </a>
+              </Url>
             </li>
             <li>
-              <a target="_blank" href="https://accounts-api.zesty.org/">
+              <Url target="_blank" href="https://accounts-api.zesty.org/">
                 Accounts API
-              </a>
+              </Url>
             </li>
             <li>
-              <a target="_blank" href="https://auth-api.zesty.org/">
+              <Url target="_blank" href="https://auth-api.zesty.org/">
                 Auth API
-              </a>
+              </Url>
             </li>
           </ul>
         </div>
         <div className={styles.helpModule}>
-          <span className={styles.helpModuleTitle}>github</span>
+          <span className={styles.title}>github</span>
           <ul className={styles.helpBox}>
             <li>
-              <a target="_blank" href="https://github.com/zesty-io/node-sdk">
+              <Url target="_blank" href="https://github.com/zesty-io/node-sdk">
                 SDK
-              </a>
+              </Url>
             </li>
             <li>
-              <a target="_blank" href="https://github.com/zesty-io/cli">
+              <Url target="_blank" href="https://github.com/zesty-io/cli">
                 CLI
-              </a>
+              </Url>
             </li>
             <li>
-              <a
+              <Url
                 target="_blank"
                 href="https://github.com/zesty-io/manager-ui/issues/new?assignees=&labels=&template=bug_report.md&title="
               >
                 Report a Bug
-              </a>
+              </Url>
             </li>
           </ul>
         </div>

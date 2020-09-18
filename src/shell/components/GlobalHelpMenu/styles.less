@@ -1,25 +1,56 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
 @width: 44rem;
 .helpMenu {
+  border-radius: 4px;
   position: absolute;
   width: @width;
-  color: @zesty-field-blue;
-  background: @zesty-dark-blue;
-  // box-shadow: 1px 1px 4px @zesty-dark-blue;
-  bottom: 7rem;
-  left: 0;
-  padding: 1rem;
+  bottom: 5rem;
+  left: 3.7rem;
+  padding: 2rem;
   z-index: 2;
+  background: #c7d4ea;
+  box-shadow: 1px 1px 19px #171b26;
+  border-radius: 0 4px 4px 0;
+
+  @media (min-width: 2001px) {
+    bottom: 4rem;
+    left: 12.5rem;
+  }
+
+  &:after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid @zesty-light-blue;
+    left: -0.7rem;
+    bottom: 0.1rem;
+  }
 
   &.hide {
     bottom: 0;
     left: -@width - 1rem;
   }
+
   header {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
     margin-bottom: 1rem;
+
     a {
       display: block;
       color: @zesty-white;
+      margin: 0;
+    }
+
+    button {
+      margin-bottom: 8px;
+      min-width: 200px;
     }
   }
 }
@@ -30,7 +61,8 @@
 
 .helpModule {
   flex-grow: 1;
-  margin-left: 1rem;
+  margin-left: 26px;
+
   &.primary {
     flex-grow: 2;
     margin-left: 0;
@@ -40,5 +72,10 @@
   list-style-type: none;
   background-color: @zesty-light-blue;
   color: @zesty-black;
-  padding: 1rem;
+  padding: 12px;
+  border-radius: 4px;
+
+  li {
+    margin: 1rem 0;
+  }
 }
