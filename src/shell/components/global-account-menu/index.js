@@ -15,19 +15,13 @@ import { Url } from "@zesty-io/core/Url";
 import styles from "./styles.less";
 export default connect(state => {
   return {
-    ui: state.ui,
     instance: state.instance,
     instances: state.instances,
     user: state.user
   };
 })(function GlobalAccount(props) {
   return (
-    <section
-      className={cx(
-        styles.accountMenu,
-        props.ui.accountsMenuVisible ? styles.show : styles.hide
-      )}
-    >
+    <section className={cx(styles.accountMenu)}>
       <header className={styles.user}>
         <h1>
           <img

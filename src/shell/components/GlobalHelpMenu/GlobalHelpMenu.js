@@ -138,6 +138,8 @@ export default connect(state => {
   useEffect(() => {
     function handleClickOutside(event) {
       if (ref.current && !ref.current.contains(event.target)) {
+        console.log(event);
+        console.log(event.target);
         props.dispatch(toggleHelpMenu(false));
       }
     }
