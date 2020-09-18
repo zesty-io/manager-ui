@@ -187,61 +187,61 @@ export default connect(state => {
 
       <div className={styles.helpModules}>
         <div className={cx(styles.helpModule, styles.primary)}>
-          <span className={styles.helpModuleTitle}>zesty.org</span>
+          <span className={styles.title}>zesty.org</span>
           <ul className={styles.helpBox}>
             {links.map(link => (
               <li key={link.name}>
-                <a target="_blank" href={link.url}>
+                <Url target="_blank" href={link.url}>
                   {link.name}
-                </a>
+                </Url>
               </li>
             ))}
           </ul>
         </div>
         <div className={styles.helpModule}>
-          <span className={styles.helpModuleTitle}>APIs</span>
+          <span className={styles.title}>APIs</span>
           <ul className={styles.helpBox}>
             <li>
-              <a
+              <Url
                 className={cx(styles.helpLinkFirst, styles.helpLinkAfter)}
                 target="_blank"
                 href="https://instances-api.zesty.org/"
               >
                 Instances API
-              </a>
+              </Url>
             </li>
             <li>
-              <a target="_blank" href="https://accounts-api.zesty.org/">
+              <Url target="_blank" href="https://accounts-api.zesty.org/">
                 Accounts API
-              </a>
+              </Url>
             </li>
             <li>
-              <a target="_blank" href="https://auth-api.zesty.org/">
+              <Url target="_blank" href="https://auth-api.zesty.org/">
                 Auth API
-              </a>
+              </Url>
             </li>
           </ul>
         </div>
         <div className={styles.helpModule}>
-          <span className={styles.helpModuleTitle}>github</span>
+          <span className={styles.title}>github</span>
           <ul className={styles.helpBox}>
             <li>
-              <a target="_blank" href="https://github.com/zesty-io/node-sdk">
+              <Url target="_blank" href="https://github.com/zesty-io/node-sdk">
                 SDK
-              </a>
+              </Url>
             </li>
             <li>
-              <a target="_blank" href="https://github.com/zesty-io/cli">
+              <Url target="_blank" href="https://github.com/zesty-io/cli">
                 CLI
-              </a>
+              </Url>
             </li>
             <li>
-              <a
+              <Url
                 target="_blank"
                 href="https://github.com/zesty-io/manager-ui/issues/new?assignees=&labels=&template=bug_report.md&title="
               >
                 Report a Bug
-              </a>
+              </Url>
             </li>
           </ul>
         </div>

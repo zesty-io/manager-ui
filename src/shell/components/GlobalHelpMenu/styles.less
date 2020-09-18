@@ -1,15 +1,18 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
 @width: 44rem;
 .helpMenu {
   border-radius: 4px;
   position: absolute;
   width: @width;
-  color: @zesty-field-blue;
-  background: @zesty-dark-blue;
   bottom: 5rem;
   left: 3.7rem;
   padding: 2rem;
   z-index: 2;
+  background: #c7d4ea;
+  box-shadow: 1px 1px 19px #171b26;
+  border-radius: 0 4px 4px 0;
 
   @media (min-width: 2001px) {
     bottom: 4rem;
@@ -18,15 +21,11 @@
 
   &:after {
     content: "";
-    transition: 0.5s all ease;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
     position: absolute;
     width: 0;
     height: 0;
     border-top: 10px solid transparent;
     border-bottom: 10px solid transparent;
-
     border-right: 10px solid @zesty-light-blue;
     left: -0.7rem;
     bottom: 0.1rem;
@@ -36,88 +35,47 @@
     bottom: 0;
     left: -@width - 1rem;
   }
+
   header {
     display: flex;
     align-items: flex-start;
     flex-direction: column;
-
     margin-bottom: 1rem;
+
     a {
       display: block;
       color: @zesty-white;
+      margin: 0;
     }
+
     button {
-      margin-bottom: 1rem;
-      transition: 0.2s color ease;
-      min-width: 12.5rem;
-      &:hover {
-        background-color: @zesty-light-blue;
-        color: @zesty-black;
-      }
+      margin-bottom: 8px;
+      min-width: 200px;
     }
   }
 }
 
 .helpModules {
   display: flex;
-  span {
-    font-size: 2rem;
-    margin-left: 1rem;
-  }
 }
 
 .helpModule {
   flex-grow: 1;
-  margin-left: 1rem;
+  margin-left: 26px;
 
-  padding-bottom: 2rem;
   &.primary {
     flex-grow: 2;
     margin-left: 0;
   }
 }
 .helpBox {
-  margin-top: 1rem;
-  li {
-    margin: 1rem 0;
-  }
   list-style-type: none;
   background-color: @zesty-light-blue;
   color: @zesty-black;
-  padding: 1rem;
+  padding: 12px;
   border-radius: 4px;
-  a {
-    backface-visibility: hidden;
-    position: relative;
-    transition: 0.5s color ease;
-    color: black;
-    font-size: 1em;
-    &:hover {
-      color: @zesty-orange;
-      text-decoration: none;
-    }
 
-    &::after {
-      content: "";
-      transition: 0.5s all ease;
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden;
-      position: absolute;
-    }
-
-    &::after {
-      bottom: -0.25em;
-      left: 0;
-    }
-
-    &::after {
-      height: 0.15rem;
-      width: 0;
-      background: @zesty-orange;
-    }
-    &:hover::after {
-      width: 100%;
-      color: @zesty-orange;
-    }
+  li {
+    margin: 1rem 0;
   }
 }
