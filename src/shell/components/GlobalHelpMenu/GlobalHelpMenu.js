@@ -170,7 +170,7 @@ export default connect(state => {
       <header>
         {props.instance.planID && (
           <Url target="_blank" href="mailto:support@zesty.io">
-            <Button kind="alt" title="Support">
+            <Button kind="" title="Support">
               <FontAwesomeIcon icon={faEnvelope} />
               support@zesty.io
             </Button>
