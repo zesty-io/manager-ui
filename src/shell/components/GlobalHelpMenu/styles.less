@@ -5,10 +5,9 @@
   width: @width;
   color: @zesty-field-blue;
   background: @zesty-dark-blue;
-  // box-shadow: 1px 1px 4px @zesty-dark-blue;
   bottom: 7rem;
   left: 0;
-  padding: 1rem;
+  padding: 2rem;
   z-index: 2;
 
   &.hide {
@@ -16,29 +15,87 @@
     left: -@width - 1rem;
   }
   header {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+
     margin-bottom: 1rem;
     a {
       display: block;
       color: @zesty-white;
+    }
+    button {
+      margin-bottom: 1rem;
+      transition: 0.3s color ease;
+      min-width: 12.5rem;
+      &:hover {
+        background-color: @zesty-light-blue;
+        color: @zesty-black;
+      }
     }
   }
 }
 
 .helpModules {
   display: flex;
+  span {
+    font-size: 2rem;
+    margin-left: 1rem;
+  }
 }
 
 .helpModule {
   flex-grow: 1;
   margin-left: 1rem;
+
+  padding-bottom: 2rem;
   &.primary {
     flex-grow: 2;
     margin-left: 0;
   }
 }
 .helpBox {
+  margin-top: 1rem;
+  li {
+    margin: 1rem 0;
+  }
   list-style-type: none;
   background-color: @zesty-light-blue;
   color: @zesty-black;
   padding: 1rem;
+  border-radius: 4px;
+  a {
+    backface-visibility: hidden;
+    position: relative;
+    transition: 0.5s color ease;
+    color: black;
+    font-size: 1em;
+    &:hover {
+      color: @zesty-orange;
+      text-decoration: none;
+    }
+
+    &::after {
+      content: "";
+      transition: 0.5s all ease;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      position: absolute;
+    }
+
+    &::after {
+      bottom: -0.25em;
+      left: 0;
+    }
+
+    &::after {
+      height: 0.15rem;
+      width: 0;
+      background: @zesty-orange;
+    }
+    &:hover::after {
+      width: 100%;
+      color: @zesty-orange;
+    }
+  }
 }

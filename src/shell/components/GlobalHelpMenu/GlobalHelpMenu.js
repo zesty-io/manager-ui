@@ -2,6 +2,18 @@ import React, { useRef, useEffect } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faComment,
+  faComments,
+  faEnvelope,
+  faExternalLinkAlt,
+  faSignOutAlt
+} from "@fortawesome/free-solid-svg-icons";
+
+import { Button } from "@zesty-io/core/Button";
+import { Url } from "@zesty-io/core/Url";
+
 import { toggleHelpMenu } from "shell/store/ui/globalHelpMenu";
 import styles from "./styles.less";
 
@@ -157,13 +169,20 @@ export default connect(state => {
     >
       <header>
         {props.instance.planID && (
-          <a target="_blank" href="mailto:support@zesty.io">
-            support@zesty.io
-          </a>
+          <Url target="_blank" href="mailto:support@zesty.io">
+            <Button kind="alt" title="Support">
+              <FontAwesomeIcon icon={faEnvelope} />
+              support@zesty.io
+            </Button>
+          </Url>
         )}
-        <a target="_blank" href="https://chat.zesty.io">
-          chat.zesty.io
-        </a>
+
+        <Url target="_blank" href="https://chat.zesty.io">
+          <Button kind="alt" title="Chat">
+            <FontAwesomeIcon icon={faComments} />
+            chat.zesty.io
+          </Button>
+        </Url>
       </header>
 
       <div className={styles.helpModules}>
@@ -183,7 +202,11 @@ export default connect(state => {
           <span className={styles.helpModuleTitle}>APIs</span>
           <ul className={styles.helpBox}>
             <li>
-              <a target="_blank" href="https://instances-api.zesty.org/">
+              <a
+                className={cx(styles.helpLinkFirst, styles.helpLinkAfter)}
+                target="_blank"
+                href="https://instances-api.zesty.org/"
+              >
                 Instances API
               </a>
             </li>
