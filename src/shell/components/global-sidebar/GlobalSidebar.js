@@ -20,8 +20,6 @@ export default connect(state => {
         <GlobalMenu />
         <GlobalActions />
       </div>
-      <GlobalAccountMenu />
-
       {props.ui.helpMenuVisible && <GlobalHelpMenu />}
     </aside>
   );
