@@ -51,8 +51,16 @@
 
   .helpBox {
     li {
+      list-style: none;
+      padding-left: 8px;
+      text-indent: -16px;
+      line-height: 24px;
+      margin-bottom: 8px;
       &:before {
-        margin-right: 0;
+        content: "○";
+        width: 16px;
+        height: 16px;
+        color: @zesty-light-gray;
       }
     }
   }
