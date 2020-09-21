@@ -91,10 +91,13 @@ export default connect(state => {
       if ((parts.length === 1 && !zuid) || contentSection) {
         return;
       }
-      let exists = newRoutes.find(
+      let existingIndex = newRoutes.findIndex(
         route => route.pathname === history.location.pathname
       );
-      if (!exists) {
+      if (existingIndex === -1) {
+        newRoutes = [history.location, ...newRoutes];
+      } else {
+        newRoutes.splice(existingIndex, 1);
         newRoutes = [history.location, ...newRoutes];
       }
 
