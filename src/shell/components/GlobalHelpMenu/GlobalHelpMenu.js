@@ -178,11 +178,7 @@ export default connect(state => {
           <CardContent>
             <ul className={styles.helpBox}>
               <li>
-                <Url
-                  className={cx(styles.helpLinkFirst, styles.helpLinkAfter)}
-                  target="_blank"
-                  href="https://instances-api.zesty.org/"
-                >
+                <Url target="_blank" href="https://instances-api.zesty.org/">
                   Instances API
                 </Url>
               </li>
