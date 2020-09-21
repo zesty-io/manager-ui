@@ -21,7 +21,7 @@ export default connect(state => {
     const [showAll, setShowAll] = useState(false);
 
     useEffect(() => {
-      setOpen(true);
+      setOpen(Boolean(props.notifications.length));
 
       // On every render set timeout to hide notices
       const token = setTimeout(() => {
