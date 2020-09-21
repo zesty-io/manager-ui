@@ -127,208 +127,234 @@ export default connect(state => {
           </h1>
         </CardHeader>
         <CardContent className={styles.CardContent}>
-          <section className={cx(styles.Step, styles.SchemaType)}>
-            <h2 className={styles.StepTitle}>1. Model Type</h2>
-            <p className={styles.StepDesc}>
-              There are three different types of models. The type you choose
-              affects how the admin interface displays, content items render and
-              urls are routed.
-            </p>
-
-            <div className={styles.questionnaire}>
-              <FieldTypeBinary
-                name="url"
-                label="Will this content be a public webpage and need a url?"
-                offValue={"No"}
-                onValue={"Yes"}
-                value={url}
-                onChange={val =>
-                  setType({
-                    type: "url",
-                    payload: val
-                  })
-                }
-              />
-            </div>
-
-            <div className={styles.questionnaire}>
-              <FieldTypeBinary
-                name="multiple"
-                label="Will this content have multiple entries?"
-                offValue={"No"}
-                onValue={"Yes"}
-                value={multiple}
-                onChange={val =>
-                  setType({
-                    type: "multiple",
-                    payload: val
-                  })
-                }
-              />
-            </div>
-
-            <FieldTypeDropDown
-              name="type"
-              label="Selected Model Type"
-              value={type}
-              onChange={val =>
-                setType({
-                  type: "type",
-                  payload: val
-                })
-              }
-              options={SCHEMA_TYPES}
-              error={errors["type"]}
-            />
-
-            <main className={cx(styles.Types)}>
-              <div
-                className={cx(
-                  "Type",
-                  styles.Type,
-                  type === "templateset" ? styles.selected : styles.hidden
-                )}
-              >
-                <h3>Pages are individually routed</h3>
-                <p>
-                  <em>e.g. Homepages, Landing Pages, Unique Page Designs</em>
-                </p>
-                <p>
-                  The Single Page Model represents a set of single pages of
-                  content. Each page created in this model can live in separate
-                  places on a website. Which means they can also have different
-                  page parents.
+          <Card>
+            <section className={cx(styles.Step, styles.SchemaType)}>
+              <CardHeader>
+                <h2 className={styles.StepTitle}>1. Model Type</h2>
+              </CardHeader>
+              <CardContent>
+                <p className={styles.StepDesc}>
+                  There are three different types of models. The type you choose
+                  affects how the admin interface displays, content items render
+                  and urls are routed.
                 </p>
 
-                <p>
-                  A template file will be created which is shared by all pages
-                  created in this model.
+                <div className={styles.questionnaire}>
+                  <FieldTypeBinary
+                    name="url"
+                    label="Will this content be a public webpage and need a url?"
+                    offValue={"No"}
+                    onValue={"Yes"}
+                    value={url}
+                    onChange={val =>
+                      setType({
+                        type: "url",
+                        payload: val
+                      })
+                    }
+                  />
+                </div>
+
+                <div className={styles.questionnaire}>
+                  <FieldTypeBinary
+                    name="multiple"
+                    label="Will this content have multiple entries?"
+                    offValue={"No"}
+                    onValue={"Yes"}
+                    value={multiple}
+                    onChange={val =>
+                      setType({
+                        type: "multiple",
+                        payload: val
+                      })
+                    }
+                  />
+                </div>
+
+                <FieldTypeDropDown
+                  name="type"
+                  label="Selected Model Type"
+                  value={type}
+                  onChange={val =>
+                    setType({
+                      type: "type",
+                      payload: val
+                    })
+                  }
+                  options={SCHEMA_TYPES}
+                  error={errors["type"]}
+                />
+
+                <main className={cx(styles.Types)}>
+                  <div
+                    className={cx(
+                      "Type",
+                      styles.Type,
+                      type === "templateset" ? styles.selected : styles.hidden
+                    )}
+                  >
+                    <h3>Pages are individually routed</h3>
+                    <p>
+                      <em>
+                        e.g. Homepages, Landing Pages, Unique Page Designs
+                      </em>
+                    </p>
+                    <p>
+                      The Single Page Model represents a set of single pages of
+                      content. Each page created in this model can live in
+                      separate places on a website. Which means they can also
+                      have different page parents.
+                    </p>
+
+                    <p>
+                      A template file will be created which is shared by all
+                      pages created in this model.
+                    </p>
+                  </div>
+
+                  <div
+                    className={cx(
+                      "Type",
+                      styles.Type,
+                      type === "pageset" ? styles.selected : styles.hidden
+                    )}
+                  >
+                    <h3>Pages are routed as a group</h3>
+                    <p>
+                      <em>e.g. Blog Posts, Team Members, or Services.</em>
+                    </p>
+
+                    <p>
+                      All content created in this model is routed to a single
+                      page parent. For example articles to a category page or
+                      team members to a team page.
+                    </p>
+
+                    <p>
+                      A template file will be created which is shared by all
+                      pages created in this model.
+                    </p>
+                  </div>
+
+                  <div
+                    className={cx(
+                      "Type",
+                      styles.Type,
+                      type === "dataset" ? styles.selected : styles.hidden
+                    )}
+                  >
+                    <h3>No routing</h3>
+                    <p>
+                      <em>e.g. Tags, Categories, API data</em>
+                    </p>
+                    <p>
+                      Headless Data Models typically represent data that can be
+                      referenced in other content items inside of your instance
+                      or will be used as headless API data consumed by external
+                      clients. They are useful for relational or miscellaneous
+                      grouping of data.
+                    </p>
+
+                    <p>
+                      Headless models do not have views therefore no template
+                      file is created.
+                    </p>
+                  </div>
+                </main>
+              </CardContent>
+
+              {errors["type"] && (
+                <p className={styles.error}>{errors["type"]}</p>
+              )}
+            </section>
+          </Card>
+
+          <Card>
+            <section className={cx(styles.Step, styles.SchemaMeta)}>
+              <CardHeader>
+                <h2 className={styles.StepTitle}>2. Model Description</h2>
+              </CardHeader>
+              <CardContent>
+                <p className={styles.StepDesc}>
+                  Name and describe your model. This will be displayed to
+                  content editors providing them insight into the purpose of
+                  this model.
                 </p>
-              </div>
 
-              <div
-                className={cx(
-                  "Type",
-                  styles.Type,
-                  type === "pageset" ? styles.selected : styles.hidden
-                )}
-              >
-                <h3>Pages are routed as a group</h3>
-                <p>
-                  <em>e.g. Blog Posts, Team Members, or Services.</em>
+                <FieldTypeText
+                  name="label"
+                  label="Display Name"
+                  description="This is what is shown to content editors"
+                  placeholder=""
+                  value={label}
+                  maxLength="100"
+                  onChange={value => {
+                    setLabel(value);
+                    // When changing the label update the reference name as well
+                    setName(formatName(value));
+                  }}
+                  error={errors["label"]}
+                />
+
+                <FieldTypeText
+                  name="name"
+                  label="Reference Name"
+                  description="This is what is used to reference this model in Parsley"
+                  placeholder=""
+                  value={name}
+                  maxLength="100"
+                  onChange={value => setName(formatName(value))}
+                  error={errors["name"]}
+                />
+
+                <FieldTypeTextarea
+                  className={styles.TextDescription}
+                  name="description"
+                  label="Description"
+                  description="A description of this model is shown to content editors. It can be helpful to provide context and explain what this model is used for."
+                  value={description}
+                  maxLength={500}
+                  onChange={value => setDescription(value)}
+                />
+              </CardContent>
+            </section>
+          </Card>
+
+          <Card>
+            <section className={cx(styles.Step, styles.SchemaMeta)}>
+              <CardHeader>
+                <h2 className={styles.StepTitle}>3. Model Parent</h2>
+              </CardHeader>
+              <CardContent>
+                <p className={styles.StepDesc}>
+                  Parenting a model will affect how it displays in the admin
+                  navigation and default routing for this model's items.
                 </p>
 
-                <p>
-                  All content created in this model is routed to a single page
-                  parent. For example articles to a category page or team
-                  members to a team page.
-                </p>
+                <FieldTypeDropDown
+                  name="parent"
+                  label="Select this model's parent"
+                  onChange={value => setParent(value)}
+                  options={props.parents}
+                />
 
-                <p>
-                  A template file will be created which is shared by all pages
-                  created in this model.
-                </p>
-              </div>
-
-              <div
-                className={cx(
-                  "Type",
-                  styles.Type,
-                  type === "dataset" ? styles.selected : styles.hidden
-                )}
-              >
-                <h3>No routing</h3>
-                <p>
-                  <em>e.g. Tags, Categories, API data</em>
-                </p>
-                <p>
-                  Headless Data Models typically represent data that can be
-                  referenced in other content items inside of your instance or
-                  will be used as headless API data consumed by external
-                  clients. They are useful for relational or miscellaneous
-                  grouping of data.
-                </p>
-
-                <p>
-                  Headless models do not have views therefore no template file
-                  is created.
-                </p>
-              </div>
-            </main>
-
-            {errors["type"] && <p className={styles.error}>{errors["type"]}</p>}
-          </section>
-
-          <section className={cx(styles.Step, styles.SchemaMeta)}>
-            <h2 className={styles.StepTitle}>2. Model Description</h2>
-            <p className={styles.StepDesc}>
-              Name and describe your model. This will be displayed to content
-              editors providing them insight into the purpose of this model.
-            </p>
-
-            <FieldTypeText
-              name="label"
-              label="Display Name"
-              description="This is what is shown to content editors"
-              placeholder=""
-              value={label}
-              maxLength="100"
-              onChange={value => {
-                setLabel(value);
-                // When changing the label update the reference name as well
-                setName(formatName(value));
-              }}
-              error={errors["label"]}
-            />
-
-            <FieldTypeText
-              name="name"
-              label="Reference Name"
-              description="This is what is used to reference this model in Parsley"
-              placeholder=""
-              value={name}
-              maxLength="100"
-              onChange={value => setName(formatName(value))}
-              error={errors["name"]}
-            />
-
-            <FieldTypeTextarea
-              name="description"
-              label="Description"
-              description="A description of this model is shown to content editors. It can be helpful to provide context and explain what this model is used for."
-              value={description}
-              maxLength={500}
-              onChange={value => setDescription(value)}
-            />
-          </section>
-
-          <section className={cx(styles.Step, styles.SchemaMeta)}>
-            <h2 className={styles.StepTitle}>3. Model Parent</h2>
-            <p className={styles.StepDesc}>
-              Parenting a model will affect how it displays in the admin
-              navigation and default routing for this model's items.
-            </p>
-
-            <FieldTypeDropDown
-              name="parent"
-              label="Select this model's parent"
-              onChange={value => setParent(value)}
-              options={props.parents}
-            />
-
-            <div className={styles.questionnaire}>
-              <FieldTypeBinary
-                name="listed"
-                label="Should this model be listed?"
-                description="Listed models have their content items available to programatic
+                <div className={styles.questionnaire}>
+                  <FieldTypeBinary
+                    name="listed"
+                    label="Should this model be listed?"
+                    description="Listed models have their content items available to programatic
                 navigation calls."
-                offValue="No"
-                onValue="Yes"
-                value={Number(listed)}
-                onChange={() => setListed(!listed)}
-              />
-            </div>
-          </section>
+                    offValue="No"
+                    onValue="Yes"
+                    value={Number(listed)}
+                    onChange={() => setListed(!listed)}
+                  />
+                </div>
+              </CardContent>
+            </section>
+          </Card>
+
+          {/* //parent card */}
         </CardContent>
 
         <CardFooter>
