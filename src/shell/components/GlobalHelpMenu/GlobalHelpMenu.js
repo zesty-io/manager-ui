@@ -12,6 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
+import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
 
 import styles from "./styles.less";
@@ -163,65 +164,76 @@ export default connect(state => {
       </header>
 
       <div className={styles.helpModules}>
-        <div className={cx(styles.helpModule, styles.primary)}>
-          <span className={styles.title}>zesty.org</span>
-          <ul className={styles.helpBox}>
-            {links.map(link => (
-              <li key={link.name}>
-                <Url target="_blank" href={link.url}>
-                  {link.name}
+        <Card className={cx(styles.helpModule, styles.primary)}>
+          <CardHeader className={styles.title}>zesty.org</CardHeader>
+          <CardContent>
+            <ul className={styles.helpBox}>
+              {links.map(link => (
+                <li key={link.name}>
+                  <Url target="_blank" href={link.url}>
+                    {link.name}
+                  </Url>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+
+        <Card className={styles.helpModule}>
+          <CardHeader className={styles.title}>APIs</CardHeader>
+          <CardContent>
+            <ul className={styles.helpBox}>
+              <li>
+                <Url
+                  className={cx(styles.helpLinkFirst, styles.helpLinkAfter)}
+                  target="_blank"
+                  href="https://instances-api.zesty.org/"
+                >
+                  Instances API
                 </Url>
               </li>
-            ))}
-          </ul>
-        </div>
-        <div className={styles.helpModule}>
-          <span className={styles.title}>APIs</span>
-          <ul className={styles.helpBox}>
-            <li>
-              <Url
-                className={cx(styles.helpLinkFirst, styles.helpLinkAfter)}
-                target="_blank"
-                href="https://instances-api.zesty.org/"
-              >
-                Instances API
-              </Url>
-            </li>
-            <li>
-              <Url target="_blank" href="https://accounts-api.zesty.org/">
-                Accounts API
-              </Url>
-            </li>
-            <li>
-              <Url target="_blank" href="https://auth-api.zesty.org/">
-                Auth API
-              </Url>
-            </li>
-          </ul>
-        </div>
-        <div className={styles.helpModule}>
-          <span className={styles.title}>github</span>
-          <ul className={styles.helpBox}>
-            <li>
-              <Url target="_blank" href="https://github.com/zesty-io/node-sdk">
-                SDK
-              </Url>
-            </li>
-            <li>
-              <Url target="_blank" href="https://github.com/zesty-io/cli">
-                CLI
-              </Url>
-            </li>
-            <li>
-              <Url
-                target="_blank"
-                href="https://github.com/zesty-io/manager-ui/issues/new?assignees=&labels=&template=bug_report.md&title="
-              >
-                Report a Bug
-              </Url>
-            </li>
-          </ul>
-        </div>
+              <li>
+                <Url target="_blank" href="https://accounts-api.zesty.org/">
+                  Accounts API
+                </Url>
+              </li>
+              <li>
+                <Url target="_blank" href="https://auth-api.zesty.org/">
+                  Auth API
+                </Url>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        <Card className={styles.helpModule}>
+          <CardHeader className={styles.title}>github</CardHeader>
+          <CardContent>
+            <ul className={styles.helpBox}>
+              <li>
+                <Url
+                  target="_blank"
+                  href="https://github.com/zesty-io/node-sdk"
+                >
+                  SDK
+                </Url>
+              </li>
+              <li>
+                <Url target="_blank" href="https://github.com/zesty-io/cli">
+                  CLI
+                </Url>
+              </li>
+              <li>
+                <Url
+                  target="_blank"
+                  href="https://github.com/zesty-io/manager-ui/issues/new?assignees=&labels=&template=bug_report.md&title="
+                >
+                  Report a Bug
+                </Url>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
       </div>
     </section>
   );

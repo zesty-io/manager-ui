@@ -1,24 +1,28 @@
 @import "~@zesty-io/core/colors.less";
 @import "~@zesty-io/core/typography.less";
 
-@width: 44rem;
+@width: 50rem;
+
+.helpModules {
+  display: flex;
+}
+
 .helpMenu {
-  border-radius: 4px;
   position: absolute;
   width: @width;
-  bottom: 5rem;
-  left: 3.7rem;
-  padding: 2rem;
+  bottom: 85px;
+  left: 60px;
+  padding: 24px;
   z-index: 2;
   background: #c7d4ea;
   box-shadow: 1px 1px 19px #171b26;
   border-radius: 0 4px 4px 0;
 
   @media (min-width: 2001px) {
-    bottom: 4rem;
-    left: 12.5rem;
+    bottom: 70px;
+    left: 200px;
   }
-
+  //triangle pointing to question icon
   &:after {
     content: "";
     position: absolute;
@@ -30,47 +34,26 @@
     left: -10px;
     bottom: 0;
   }
-
-  header {
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
-    margin-bottom: 1rem;
-
-    a {
-      display: block;
-      color: @zesty-white;
-      margin: 0;
-    }
-
-    button {
-      margin-bottom: 8px;
-      min-width: 200px;
-    }
-  }
-}
-
-.helpModules {
-  display: flex;
 }
 
 .helpModule {
   flex-grow: 1;
-  margin-left: 26px;
+  box-shadow: 1px 1px 5px #171b26;
+
+  .title {
+    color: #253c63;
+  }
 
   &.primary {
     flex-grow: 2;
     margin-left: 0;
   }
-}
-.helpBox {
-  list-style-type: none;
-  background-color: @zesty-light-blue;
-  color: @zesty-black;
-  padding: 12px;
-  border-radius: 4px;
 
-  li {
-    margin: 1rem 0;
+  .helpBox {
+    li {
+      &:before {
+        margin-right: 0;
+      }
+    }
   }
 }
