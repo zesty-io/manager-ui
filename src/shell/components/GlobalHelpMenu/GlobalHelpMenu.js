@@ -3,13 +3,7 @@ import cx from "classnames";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faComment,
-  faComments,
-  faEnvelope,
-  faExternalLinkAlt,
-  faSignOutAlt
-} from "@fortawesome/free-solid-svg-icons";
+import { faComments, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
