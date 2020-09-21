@@ -1,51 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
+import useOnclickOutside from "react-cool-onclickoutside";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBell,
-  faComment,
-  faQuestion,
-  faEye
-} from "@fortawesome/free-solid-svg-icons";
+import { faQuestion, faEye } from "@fortawesome/free-solid-svg-icons";
 
-import { Url } from "@zesty-io/core/Url";
+import GlobalHelpMenu from "shell/components/GlobalHelpMenu";
 import { GlobalNotifications } from "./components/global-notifications";
-import { toggleHelpMenu } from "shell/store/ui/globalHelpMenu";
 
 import styles from "./styles.less";
 import CONFIG from "../../app.config";
 export default connect(state => {
   return {
-    ui: state.ui,
     instance: state.instance,
     content: state.content
   };
 })(
   React.memo(function GlobalActions(props) {
+    const [openMenu, setOpenMenu] = useState(false);
+    const ref = useOnclickOutside(() => {
+      setOpenMenu(false);
+    });
     return (
-      <div className={styles.GlobalSubMenu}>
+      <div ref={ref} className={styles.GlobalSubMenu}>
         <div className={styles.GlobalActions}>
           <LivePreview
             instanceHash={props.instance.randomHashID}
             instanceZUID={props.instance.ZUID}
             content={props.content}
           />
-          {/* <span className={styles.action} title="Notifications">
-            <FontAwesomeIcon icon={faBell} />
-          </span> */}
 
           <GlobalNotifications className={styles.action} />
 
-          {/* <span className={styles.action} title="Chat">
-            <FontAwesomeIcon icon={faComment} />
-          </span> */}
           <span
             className={styles.action}
             title="Help"
             onClick={() => {
-              props.dispatch(toggleHelpMenu(!props.ui.helpMenuVisible));
+              setOpenMenu(!openMenu);
             }}
           >
             <FontAwesomeIcon icon={faQuestion} />
@@ -61,6 +53,7 @@ export default connect(state => {
           />
           <span className={styles.VersionNumber}>{CONFIG.VERSION}</span>
         </span>
+        {openMenu && <GlobalHelpMenu />}
       </div>
     );
   })

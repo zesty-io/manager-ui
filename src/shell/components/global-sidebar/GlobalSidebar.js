@@ -3,8 +3,6 @@ import { connect } from "react-redux";
 import styles from "./GlobalSidebar.less";
 
 import GlobalAccount from "shell/components/global-account";
-import GlobalAccountMenu from "shell/components/global-account-menu";
-import GlobalHelpMenu from "shell/components/GlobalHelpMenu";
 import GlobalMenu from "shell/components/global-menu";
 import GlobalActions from "shell/components/global-actions";
 
@@ -20,7 +18,6 @@ export default connect(state => {
         <GlobalMenu />
         <GlobalActions />
       </div>
-      {props.ui.helpMenuVisible && <GlobalHelpMenu />}
     </aside>
   );
 });

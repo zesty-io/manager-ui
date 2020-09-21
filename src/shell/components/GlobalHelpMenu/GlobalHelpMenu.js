@@ -14,7 +14,6 @@ import {
 import { Button } from "@zesty-io/core/Button";
 import { Url } from "@zesty-io/core/Url";
 
-import { toggleHelpMenu } from "shell/store/ui/globalHelpMenu";
 import styles from "./styles.less";
 
 const linkMap = {
@@ -138,35 +137,13 @@ const linkMap = {
 
 export default connect(state => {
   return {
-    ui: state.ui,
     instance: state.instance
   };
 })(function GlobalHelpMenu(props) {
   const section = location.pathname.split("/")[1];
   const links = linkMap[section];
-  const ref = useRef(null);
-
-  // close Help Menu on outside click
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (ref.current && !ref.current.contains(event.target)) {
-        props.dispatch(toggleHelpMenu(false));
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [ref]);
   return (
-    <section
-      ref={ref}
-      className={cx(
-        styles.helpMenu,
-        props.ui.helpMenuVisible ? styles.show : styles.hide
-      )}
-    >
+    <section className={cx(styles.helpMenu)}>
       <header>
         {props.instance.planID && (
           <Url target="_blank" href="mailto:support@zesty.io">
