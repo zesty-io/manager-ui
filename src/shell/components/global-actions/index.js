@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
-import useOnclickOutside from "react-cool-onclickoutside";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestion, faEye } from "@fortawesome/free-solid-svg-icons";
@@ -19,11 +18,8 @@ export default connect(state => {
 })(
   React.memo(function GlobalActions(props) {
     const [openMenu, setOpenMenu] = useState(false);
-    const ref = useOnclickOutside(() => {
-      setOpenMenu(false);
-    });
     return (
-      <div ref={ref} className={styles.GlobalSubMenu}>
+      <div className={styles.GlobalSubMenu}>
         <div className={styles.GlobalActions}>
           <LivePreview
             instanceHash={props.instance.randomHashID}
@@ -36,11 +32,15 @@ export default connect(state => {
           <span
             className={styles.action}
             title="Help"
-            onClick={() => {
-              setOpenMenu(!openMenu);
+            onMouseEnter={() => {
+              setOpenMenu(true);
+            }}
+            onMouseLeave={() => {
+              setOpenMenu(false);
             }}
           >
             <FontAwesomeIcon icon={faQuestion} />
+            {openMenu && <GlobalHelpMenu />}
           </span>
         </div>
 
@@ -53,7 +53,6 @@ export default connect(state => {
           />
           <span className={styles.VersionNumber}>{CONFIG.VERSION}</span>
         </span>
-        {openMenu && <GlobalHelpMenu />}
       </div>
     );
   })
