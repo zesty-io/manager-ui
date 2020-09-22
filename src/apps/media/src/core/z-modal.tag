@@ -1,7 +1,7 @@
 <z-modal>
     <section id="modal">
         <button class="close" onclick="{close}">
-            <span class="pictos">*</span>
+            <span class="pictos">X</span>
         </button>
         <yield />
     </section>

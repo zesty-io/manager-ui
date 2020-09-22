@@ -2,7 +2,9 @@
     <label class="field">
         <button class="btn copy" type="button" data-clipboard-target="#copy" title="Click to copy">
             <span if="{opts.label}">{opts.label}</span>
-            <img class="clippy" src="/ui/images/icons/clippy.svg" width="13" alt="Copy to clipboard">
+            <!-- <img class="clippy" src="/ui/images/icons/clippy.svg" width="13" alt="Copy to clipboard"> -->
+            <i class="fas fa-clipboard" style="margin-left: 0.5rem;" ></i>
+
         </button>
         <input id="copy" type="text" value="{opts.value}" />
     </label>

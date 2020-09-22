@@ -22,7 +22,7 @@
             <p>Drag &amp; drop files here</p>
             <p class="or">or</p>
             <z-button id="assetUpload" handler="{showFileModal}">
-                <i class="icon-cloud-upload"></i>&nbsp;Choose Files to Upload
+                <i class="fas fa-cloud-upload-alt"></i>&nbsp;Choose Files to Upload
             </z-button>
             <input type="file" id="upload" name="upload" onchange="{handleFileUpload}" multiple />
         </div>
