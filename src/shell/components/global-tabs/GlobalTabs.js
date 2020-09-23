@@ -56,6 +56,7 @@ export default connect(state => {
     instanceName: state.instance.name,
     instanceZUID: state.instance.ZUID,
     domains: state.instance.domains,
+    fields: state.fields,
     models: state.models,
     content: state.content,
     files: state.files
@@ -149,6 +150,17 @@ export default connect(state => {
             }
             route.icon = faDatabase;
             break;
+          case "12":
+            if (props.fields) {
+              const field = props.fields[zuid];
+
+              if (field) {
+                route.name = "Field: " + field.label;
+              }
+            }
+            route.icon = faDatabase;
+            break;
+
           case "7":
             if (props.content) {
               const item = props.content[zuid];
