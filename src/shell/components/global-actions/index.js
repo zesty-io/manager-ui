@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
+import useOnclickOutside from "react-cool-onclickoutside";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestion, faEye } from "@fortawesome/free-solid-svg-icons";
@@ -18,6 +19,9 @@ export default connect(state => {
 })(
   React.memo(function GlobalActions(props) {
     const [openMenu, setOpenMenu] = useState(false);
+    const ref = useOnclickOutside(() => {
+      setOpenMenu(false);
+    });
     return (
       <div className={styles.GlobalSubMenu}>
         <div className={styles.GlobalActions}>
@@ -30,14 +34,10 @@ export default connect(state => {
           <GlobalNotifications className={styles.action} />
 
           <span
+            ref={ref}
+            onClick={() => setOpenMenu(!openMenu)}
             className={styles.action}
             title="Help"
-            onMouseEnter={() => {
-              setOpenMenu(true);
-            }}
-            onMouseLeave={() => {
-              setOpenMenu(false);
-            }}
           >
             <FontAwesomeIcon icon={faQuestion} />
             {openMenu && <GlobalHelpMenu />}
