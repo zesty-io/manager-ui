@@ -88,9 +88,37 @@ export default connect(state => {
       const [parts, zuid, prefix, contentSection] = parse(
         history.location.pathname
       );
-      if ((parts.length === 1 && !zuid) || contentSection) {
+      // don't show root
+      if (parts.length === 0) {
         return;
       }
+      // don't show global tab for top level section
+      if (parts.length === 1 && !zuid) {
+        return;
+      }
+      // don't show global tab for content head/meta sections
+      if (contentSection) {
+        return;
+      }
+      // don't show global tab for settings first level section (except robots, styles)
+      if (
+        parts.length === 2 &&
+        parts[0] === "settings" &&
+        parts[1] !== "robots" &&
+        parts[1] !== "styles"
+      ) {
+        return;
+      }
+
+      // don't show tertiary style tabs
+      if (
+        parts.length === 3 &&
+        parts[0] === "settings" &&
+        parts[1] === "styles"
+      ) {
+        return;
+      }
+
       let existingIndex = newRoutes.findIndex(
         route => route.pathname === history.location.pathname
       );
@@ -147,18 +175,24 @@ export default connect(state => {
             break;
         }
         if (parts[0] === "settings") {
-          if (parts[1] === "instance" && parts[2]) {
-            route.name =
-              parts[2]
-                .replace("-", " ")
-                .replace("_", " ")
-                .split(" ")
-                .map(toCapitalCase)
-                .join(" ") + " Settings";
-          } else {
+          route.icon = faCog;
+          if (parts[2]) {
+            if (parts[1] === "instance") {
+              route.name =
+                parts[2]
+                  .replace("-", " ")
+                  .replace("_", " ")
+                  .split(" ")
+                  .map(toCapitalCase)
+                  .join(" ") + " Settings";
+            } else if (parts[1] === "fonts") {
+              route.name = toCapitalCase(parts[2]) + " Fonts";
+            } else {
+              route.name = toCapitalCase(parts[1]) + " Settings";
+            }
+          } else if (parts[1] === "styles") {
             route.name = toCapitalCase(parts[1]) + " Settings";
           }
-          route.icon = faCog;
         }
       });
 
