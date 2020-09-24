@@ -2,12 +2,13 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 
-import { fetchNav } from "../store/contentNav";
-import { fetchModels } from "../store/contentModels";
+import { fetchModels } from "shell/store/models";
+import { fetchItemPublishings } from "shell/store/content";
+import { fetchNav } from "../store/navContent";
+import { fetchHeadTags } from "../store/headTags";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
-import AppError from "./AppError";
 import { ContentNav } from "./components/Nav";
 
 import { Dashboard } from "./views/Dashboard";
@@ -25,8 +26,8 @@ import "@zesty-io/core/vendor.css";
 import styles from "./ContentEditor.less";
 export default connect(state => {
   return {
-    contentModels: state.contentModels,
-    contentNav: state.contentNav
+    contentModels: state.models,
+    navContent: state.navContent
   };
 })(
   class ContentEditor extends Component {
@@ -36,68 +37,69 @@ export default connect(state => {
         this.props.dispatch(fetchNav());
         this.props.dispatch(fetchModels());
       });
+
+      // Kick off loading data before app mount
+      // to decrease time to first interaction
+      this.props.dispatch(fetchNav());
+      this.props.dispatch(fetchModels());
+      this.props.dispatch(fetchItemPublishings());
+      this.props.dispatch(fetchHeadTags());
     }
     render() {
       return (
-        <AppError>
-          <WithLoader
-            condition={
-              this.props.contentNav.nav.length ||
-              this.props.contentNav.headless.length
-            }
-            message="Starting Content Editor"
-            width="100vw"
-          >
-            <section className={styles.ContentEditor}>
-              <div className={styles.Nav}>
-                <ContentNav
-                  dispatch={this.props.dispatch}
-                  models={this.props.contentModels}
-                  nav={this.props.contentNav}
-                />
+        <WithLoader
+          condition={
+            this.props.navContent.nav.length ||
+            this.props.navContent.headless.length
+          }
+          message="Starting Content Editor"
+        >
+          <section className={styles.ContentEditor}>
+            <div className={styles.Nav}>
+              <ContentNav
+                dispatch={this.props.dispatch}
+                models={this.props.contentModels}
+                nav={this.props.navContent}
+              />
+            </div>
+            <div className={styles.Content}>
+              <div className={styles.ContentWrap}>
+                <Switch>
+                  <Route exact path="/content" component={Dashboard} />
+
+                  <Route
+                    exact
+                    path="/content/link/new"
+                    component={LinkCreate}
+                  />
+
+                  <Route
+                    exact
+                    path="/content/:modelZUID/new"
+                    component={ItemCreate}
+                  />
+                  <Route path="/content/link/:linkZUID" component={LinkEdit} />
+                  <Route
+                    exact
+                    path="/content/:modelZUID/import"
+                    component={CSVImport}
+                  />
+                  <Route
+                    path="/content/:modelZUID/:itemZUID"
+                    component={ItemEdit}
+                  />
+                  <Route
+                    exact
+                    path="/content/:modelZUID"
+                    component={ItemList}
+                  />
+
+                  <Route path="*" component={NotFound} />
+                </Switch>
               </div>
-              <div className={styles.Content}>
-                <div className={styles.ContentWrap}>
-                  <Switch>
-                    <Route exact path="/content" component={Dashboard} />
-
-                    <Route
-                      exact
-                      path="/content/link/new"
-                      component={LinkCreate}
-                    />
-
-                    <Route
-                      exact
-                      path="/content/:modelZUID/new"
-                      component={ItemCreate}
-                    />
-                    <Route
-                      path="/content/link/:linkZUID"
-                      component={LinkEdit}
-                    />
-                    <Route
-                      exact
-                      path="/content/:modelZUID/import"
-                      component={CSVImport}
-                    />
-                    <Route
-                      path="/content/:modelZUID/:itemZUID"
-                      component={ItemEdit}
-                    />
-                    <Route
-                      exact
-                      path="/content/:modelZUID"
-                      component={ItemList}
-                    />
-
-                    <Route path="*" component={NotFound} />
-                  </Switch>
-                </div>
-              </div>
-            </section>
-          </WithLoader>
-        </AppError>
+            </div>
+          </section>
+        </WithLoader>
       );
     }
   }

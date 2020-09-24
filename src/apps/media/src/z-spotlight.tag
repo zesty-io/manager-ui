@@ -70,7 +70,7 @@
                 const keys = Object.keys(results)
                 const arr = keys.map(key => results[key])
 
-                if (zesty.addons.i18n.settings.activated) {
+                if (zestyStore.getState().addons.i18n.settings.activated) {
                     arr.forEach((el) => {
                         if (el.lang_id && basil.view_object.langs[el.lang_id]) {
                             el.lang_code = basil.view_object.langs[el.lang_id].code.toLowerCase()

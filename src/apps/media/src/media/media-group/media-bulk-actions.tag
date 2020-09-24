@@ -55,8 +55,6 @@
           /*background: #ececec;*/
           /*color: #555;*/
           /*cursor: help;*/
-          /*font-family: "Gill Sans", Impact, sans-serif;*/
-          /*font-size: 20px;*/
           /*margin: 100px 75px 10px 75px;*/
           /*padding: 15px 20px;*/
           position: relative;

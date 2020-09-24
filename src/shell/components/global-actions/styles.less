@@ -6,11 +6,15 @@
   width: 100%;
   border-top: 1px solid lighten(@globalMenuBkgColor, 5%);
 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
   .GlobalActions {
     display: flex;
-    flex-direction: column;
     flex-wrap: wrap;
     align-content: center;
+    flex-direction: column;
   }
 
   .AppVersion {
@@ -25,8 +29,13 @@
 
   .action {
     cursor: pointer;
-    margin: 8px;
+    padding: 8px;
+    width: 100%;
+    text-align: center;
 
+    a {
+      margin: 0;
+    }
     svg {
       width: 24px;
       height: 24px;
@@ -35,19 +44,23 @@
     &:hover,
     &:focus,
     &:active {
-      color: @zesty-blue;
+      color: @zesty-orange;
     }
   }
 }
 
 @media (max-width: 2000px) {
   .GlobalSubMenu {
-    .action {
-      svg {
-        width: 18px;
-        height: 18px;
+    .GlobalActions {
+      flex-direction: column;
+      .action {
+        svg {
+          width: 18px;
+          height: 18px;
+        }
       }
     }
+
     .AppVersion {
       flex-direction: column;
       img {

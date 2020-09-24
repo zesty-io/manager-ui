@@ -8,15 +8,15 @@
                 title="CMD + Click to collapse group">
 
                 <span class="caret" onclick="{handleCollapse}">
-                    <i if="{!this.dir.collapsed && this.children.length}" class="icon-caret-down"></i>
-                    <i if="{this.dir.collapsed && this.children.length}" class="icon-caret-right"></i>
+                    <i if="{!this.dir.collapsed && this.children.length}" class="fas fa-caret-down"></i>
+                    <i if="{this.dir.collapsed && this.children.length}" class="fas fa-caret-right"></i>
                 </span>
 
                 <span class="folder">
-                    <i if="{this.dir.type === 'group' && !this.dir.selected && !over}" class="icon icon-folder-close-alt">&nbsp;</i>
-                    <i if="{this.dir.type === 'group' && this.dir.selected && !over}" class="icon icon-folder-open-alt">&nbsp;</i>
+                    <i if="{this.dir.type === 'group' && !this.dir.selected && !over}" class="fas fa-folder">&nbsp;</i>
+                    <i if="{this.dir.type === 'group' && this.dir.selected && !over}" class="fas fa-folder-open">&nbsp;</i>
                     <i if="{this.dir.type === 'bin' && !over}" class="icon icon-cloud">&nbsp;</i>
-                    <i if="{over}" class="icon icon-cloud-upload">&nbsp;</i>
+                    <i if="{over}" class="fas fa-cloud-upload-alt">&nbsp;</i>
                 </span>
 
                 <span class="name">
@@ -28,7 +28,7 @@
             <ul class="tree" if="{this.dir.collapsed}">
                 <li class="leaf">
                     <h1 class="item collapsed">
-                        <i class="icon icon-ellipsis-horizontal">&nbsp;</i>
+                        <i class="fas fa-ellipsis-h">&nbsp;</i>
                     </h1>
                 </li>
             </ul>
@@ -164,7 +164,6 @@
     }
     .tree .leaf .item {
         align-items: center;
-        <!--  font-size: 1.2rem;  -->
         font-weight: 500;
         display: flex;
         padding: 0;
@@ -193,13 +192,12 @@
     }
     .tree .leaf .item .name {
         flex: 1;
-        font-family: "Gibson Light", Arial, sans-serif;
+        <!--  font-family: "Gibson Light", Arial, sans-serif;
         padding: 1rem 0;
-        line-height: 16px;
+        line-height: 16px;  -->
     }
 
     .tree .leaf .item.bin .name {
-        <!--  font-size: 1.4em;  -->
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

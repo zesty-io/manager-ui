@@ -17,9 +17,12 @@ describe("Head Tags", () => {
   });
   it("Changes the tag type", () => {
     cy.get("[data-cy=tagCard]")
-      .find(".Select")
+      .find(".Select button")
+      .last()
       .click();
-    cy.get('[data-value="script"]').click();
+    cy.get('[data-value="script"]')
+      .last()
+      .click();
   });
   it("Changes the value of an attribute", () => {
     cy.contains("Value")
@@ -34,6 +37,10 @@ describe("Head Tags", () => {
       .click()
       .clear()
       .type("src");
+  });
+  it("Saves head tag", () => {
+    cy.get("#SaveItemButton").click();
+    cy.contains("Successfully updated head tag");
   });
 
   it("Deletes a head tag", () => {

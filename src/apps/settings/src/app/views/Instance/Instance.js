@@ -2,15 +2,20 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FielLabel, FieldLabel } from "@zesty-io/core/FieldLabel";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
+import { Select, Option } from "@zesty-io/core/Select";
 import { Button } from "@zesty-io/core/Button";
-
 import { notify } from "shell/store/notifications";
-import { updateSettings } from "store/settings";
+
+import { updateSettings } from "../../../store/settings";
 
 const TooltipStyle = `
+          .tip--2Be6h {
+            z-index: 10 !important;
+          }
           .Tooltip:hover .tipText--1ga9d{
             display: block;
             position: absolute;
@@ -47,7 +52,7 @@ export default connect(state => {
     catInstance: state.settings.catInstance,
     instance: state.settings.instance
   };
-})(function Instance(props) {
+})(function Settings(props) {
   const [loading, setLoading] = useState(false);
   const [fields, setFields] = useState(props.instance);
   const [fieldValues, setFieldValues] = useState({});
@@ -81,7 +86,7 @@ export default connect(state => {
     }, 100);
   }, [props.instance.length, props.match]);
 
-  function setValue(ZUID, value) {
+  function setValue(value, ZUID) {
     setFieldValues({ ...fieldValues, [ZUID]: value });
   }
 
@@ -100,16 +105,20 @@ export default connect(state => {
     Promise.all(requests)
       .then(responses => {
         setLoading(false);
-        notify({
-          kind: "success",
-          message: "Data has been updated"
-        });
+        props.dispatch(
+          notify({
+            kind: "success",
+            message: "Data has been updated"
+          })
+        );
       })
       .catch(err => {
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       });
   }
   return (
@@ -117,18 +126,43 @@ export default connect(state => {
       {fields.map(field => {
         switch (field.dataType) {
           case "checkbox":
-            return (
-              <FieldTypeBinary
-                key={field.ZUID}
-                name={field.ZUID}
-                value={fieldValues[field.ZUID]}
-                label={field.keyFriendly}
-                tooltip={field.tips}
-                onValue="On"
-                offValue="Off"
-                onChange={setValue}
-              />
-            );
+            if (field.key === "site_protocol") {
+              return (
+                <div key={field.ZUID}>
+                  <FieldLabel label={field.keyFriendly} />
+                  <div className={styles.selectProtocol}>
+                    <Select
+                      name={field.ZUID}
+                      onSelect={(value, name) => setValue(name, value)}
+                      value={fieldValues[field.ZUID]}
+                    >
+                      <Option value="Select" text="Select" />
+                      {field.options.split(",").map((option, index) => (
+                        <Option
+                          key={index}
+                          value={option}
+                          text={option}
+                          selected={fieldValues[field.ZUID] === option}
+                        />
+                      ))}
+                    </Select>
+                  </div>
+                </div>
+              );
+            } else {
+              return (
+                <FieldTypeBinary
+                  key={field.ZUID}
+                  name={field.ZUID}
+                  value={fieldValues[field.ZUID]}
+                  label={field.keyFriendly}
+                  tooltip={field.tips}
+                  onValue="On"
+                  offValue="Off"
+                  onChange={setValue}
+                />
+              );
+            }
           case "textarea":
             return (
               <FieldTypeTextarea
@@ -165,7 +199,12 @@ export default connect(state => {
             );
         }
       })}
-      <Button kind="save" onClick={saveFields} disabled={loading}>
+      <Button
+        id="saveSettings"
+        kind="save"
+        onClick={saveFields}
+        disabled={loading}
+      >
         {loading ? (
           <i className="fas fa-spinner"></i>
         ) : (

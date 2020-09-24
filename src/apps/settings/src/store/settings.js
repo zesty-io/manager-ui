@@ -1,5 +1,6 @@
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
+import { faCog, faFont } from "@fortawesome/free-solid-svg-icons";
 
 export function settings(
   state = {
@@ -10,13 +11,13 @@ export function settings(
         label: "Installed fonts",
         value: "installed_fonts",
         path: "/settings/fonts/installed",
-        icon: "fas fa-font"
+        icon: faFont
       },
       {
         label: "Browse fonts",
         value: "browse_fonts",
         path: "/settings/fonts/browse",
-        icon: "fas fa-font"
+        icon: faFont
       }
     ],
     fonts: [],
@@ -46,7 +47,7 @@ export function settings(
               label: item.category.replace(/_|-/g, " "),
               value: item.category,
               path: `/settings/instance/${item.category}`,
-              icon: ICONS[item.category] || "fas fa-cog"
+              icon: ICONS[item.category] || faCog
             };
           })
       };
@@ -59,7 +60,7 @@ export function settings(
             label: item.name,
             value: item.ID,
             path: `/settings/styles/${item.ID}`,
-            icon: ICONS[item.icon] || "fas fa-cog"
+            icon: ICONS[item.icon] || faCog
           };
         })
       };
@@ -89,7 +90,7 @@ export function settings(
 }
 
 const ICONS = {
-  general: "fas fa-cog",
+  general: faCog,
   tools: "fas fa-tools",
   contact: "fas fa-envelope"
 };
@@ -119,10 +120,12 @@ export function fetchSettings() {
       })
       .catch(err => {
         console.error(err);
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       });
   };
 }
@@ -140,10 +143,12 @@ export function fetchStylesCategories() {
       })
       .catch(err => {
         console.error(err);
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       });
   };
 }
@@ -160,10 +165,12 @@ export function fetchStylesVariables() {
       })
       .catch(err => {
         console.error(err);
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       });
   };
 }

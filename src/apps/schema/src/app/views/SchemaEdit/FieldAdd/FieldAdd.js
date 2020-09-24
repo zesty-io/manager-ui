@@ -17,7 +17,7 @@ import { Url } from "@zesty-io/core/Url";
 import { FieldSettings, FIELD_TYPES } from "../FieldSettings";
 
 import { notify } from "shell/store/notifications";
-import { createField } from "../../../../store/schemaFields";
+import { createField } from "shell/store/fields";
 
 import styles from "./FieldAdd.less";
 export function FieldAdd(props) {
@@ -43,17 +43,21 @@ export function FieldAdd(props) {
     // TODO validate fields
 
     if (!field.label) {
-      notify({
-        kind: "warn",
-        message: "Missing required field label"
-      });
+      props.dispatch(
+        notify({
+          kind: "warn",
+          message: "Missing required field label"
+        })
+      );
       return;
     }
     if (!field.name) {
-      notify({
-        kind: "warn",
-        message: "Missing required field name"
-      });
+      props.dispatch(
+        notify({
+          kind: "warn",
+          message: "Missing required field name"
+        })
+      );
       return;
     }
 
@@ -65,26 +69,32 @@ export function FieldAdd(props) {
         setLoading(false);
 
         if (res.status === 201) {
-          notify({
-            kind: "save",
-            message: `Created new field: ${field.label}`
-          });
+          props.dispatch(
+            notify({
+              kind: "save",
+              message: `Created new field: ${field.label}`
+            })
+          );
           setField(initialState);
           history.push(`/schema/${props.modelZUID}/field/${res.data.ZUID}`);
         } else {
-          notify({
-            kind: "warn",
-            message: `${res.error}`
-          });
+          props.dispatch(
+            notify({
+              kind: "warn",
+              message: `${res.error}`
+            })
+          );
         }
       })
       .catch(err => {
         console.error(err);
         setLoading(false);
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       });
   };
 
@@ -96,7 +106,7 @@ export function FieldAdd(props) {
           name="type"
           options={FIELD_TYPES}
           defaultOptText="— Select a Field Type —"
-          onChange={(key, val) => {
+          onChange={val => {
             setField({ ...field, datatype: val });
           }}
         />
@@ -132,7 +142,7 @@ export function FieldAdd(props) {
             field={field}
             new={true}
             dispatch={props.dispatch}
-            updateValue={(name, val) =>
+            updateValue={(val, name) =>
               setField({
                 ...field,
                 [name]: val,
@@ -146,7 +156,7 @@ export function FieldAdd(props) {
                 dirty: true
               });
             }}
-            updateFieldSetting={(name, val) =>
+            updateFieldSetting={(val, name) =>
               setField({
                 ...field,
                 settings: {

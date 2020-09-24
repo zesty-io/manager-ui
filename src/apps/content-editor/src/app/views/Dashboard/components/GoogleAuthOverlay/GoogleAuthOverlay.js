@@ -31,7 +31,7 @@ export class GoogleAuthOverlay extends React.Component {
     var address = encodeURI(
       CONFIG.SERVICE_GOOGLE_ANALYTICS_AUTH +
         "?user_id=" +
-        this.props.user.id +
+        this.props.user.ZUID +
         "&account_id=" +
         this.props.user.account +
         "&domain=" +

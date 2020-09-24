@@ -1,11 +1,20 @@
+import {
+  faFile,
+  faListAlt,
+  faDatabase,
+  faExternalLinkSquareAlt,
+  faLink,
+  faHome
+} from "@fortawesome/free-solid-svg-icons";
+
 const ICONS = {
-  templateset: "fas fa-file",
-  pageset: "fas fa-list-alt",
-  dataset: "fas fa-database",
-  external: "fas fa-external-link-square-alt",
-  internal: "fas fa-link",
-  item: "fas fa-file",
-  homepage: "fas fa-home"
+  templateset: faFile,
+  pageset: faListAlt,
+  dataset: faDatabase,
+  external: faExternalLinkSquareAlt,
+  internal: faLink,
+  item: faFile,
+  homepage: faHome
 };
 
 const sortNav = (a, b) => {

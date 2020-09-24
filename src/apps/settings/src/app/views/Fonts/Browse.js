@@ -7,7 +7,7 @@ import { Search } from "@zesty-io/core/Search";
 import { Notice } from "@zesty-io/core/Notice";
 import { notify } from "shell/store/notifications";
 
-import { installSiteFont, getHeadTags } from "store/settings";
+import { installSiteFont, getHeadTags } from "../../../store/settings";
 
 import styles from "./Fonts.less";
 export default connect(state => {
@@ -43,10 +43,12 @@ export default connect(state => {
     }
 
     getHeadTags().catch(err => {
-      notify({
-        kind: "warn",
-        message: "Failed to load instance head tags"
-      });
+      props.dispatch(
+        notify({
+          kind: "warn",
+          message: "Failed to load instance head tags"
+        })
+      );
     });
 
     return () => (isSubscribed = false);
@@ -150,20 +152,22 @@ export default connect(state => {
         );
 
         delete variantsSelected[font];
-
-        notify({
-          kind: "success",
-          message: "Font installed"
-        });
+        props.dispatch(
+          notify({
+            kind: "success",
+            message: "Font installed"
+          })
+        );
       })
       .catch(err => {
         console.log(err);
         setLoading(false);
-
-        notify({
-          kind: "success",
-          message: err.message
-        });
+        props.dispatch(
+          notify({
+            kind: "success",
+            message: err.message
+          })
+        );
       });
   }
 
@@ -234,6 +238,7 @@ export default connect(state => {
               <div>
                 <Button
                   kind="save"
+                  id="InstallFont"
                   className={styles.SaveBtn}
                   onClick={() => onUpdateFont(itemFont.family)}
                   disabled={isLoading}
@@ -352,7 +357,7 @@ export default connect(state => {
           className={styles.previewField}
           name="previewText"
           value={previewText}
-          onChange={(name, value) => setPreviewText(value)}
+          onChange={value => setPreviewText(value)}
         />
       </header>
       {renderFontsList()}

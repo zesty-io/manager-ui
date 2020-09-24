@@ -12,7 +12,7 @@ import { Dropzone } from "./Dropzone";
 import { Draggable } from "./Draggable";
 
 import { notify } from "shell/store/notifications";
-import { fetchFields, saveField } from "../../../store/schemaFields";
+import { fetchFields, saveField } from "shell/store/fields";
 import { FIELD_TYPES } from "./FieldSettings";
 
 import styles from "./SchemaEdit.less";
@@ -21,9 +21,9 @@ export default connect((state, props) => {
   return {
     fieldZUID,
     modelZUID,
-    model: state.schemaModels[modelZUID] || {},
-    fields: Object.keys(state.schemaFields)
-      .map(key => state.schemaFields[key])
+    model: state.models[modelZUID] || {},
+    fields: Object.keys(state.fields)
+      .map(key => state.fields[key])
       .filter(field => field.contentModelZUID === modelZUID)
       .sort((fieldA, fieldB) => fieldA.sort - fieldB.sort)
   };
@@ -41,10 +41,12 @@ export default connect((state, props) => {
       })
       .catch(err => {
         console.error("fetchFields()", err);
-        notify({
-          kind: "warn",
-          message: `There was an error loading the schema fields. ${err.message}`
-        });
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message: `There was an error loading the schema fields. ${err.message}`
+          })
+        );
         setLoading(true);
       });
   }, [props.modelZUID]);
@@ -77,19 +79,23 @@ export default connect((state, props) => {
           }, {})
         });
 
-        notify({
-          kind: "save",
-          message: `${props.model.label} field order updated`
-        });
+        props.dispatch(
+          notify({
+            kind: "save",
+            message: `${props.model.label} field order updated`
+          })
+        );
 
         setSorting(false);
       })
       .catch(err => {
         setSorting(false);
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
         console.error(err);
       });
   };

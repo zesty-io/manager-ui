@@ -3,11 +3,11 @@ import { useDispatch } from "react-redux";
 import cx from "classnames";
 
 import { Search } from "@zesty-io/core/Search";
-import { DownloadCSVButton } from "components/LeadExporter/DownloadCSVButton";
-import { FormGroupSelector } from "components/LeadExporter/FormGroupSelector";
-import { TableDateFilter } from "components/LeadExporter/TableDateFilter";
+import { DownloadCSVButton } from "./DownloadCSVButton";
+import { FormGroupSelector } from "./FormGroupSelector";
+import { TableDateFilter } from "./TableDateFilter";
 
-import { setFilterText } from "store/filter";
+import { setFilterText } from "../../../store/filter";
 
 import styles from "./LeadExporter.less";
 export function LeadExporter() {
@@ -19,10 +19,10 @@ export function LeadExporter() {
         <Search
           name="text-filter"
           placeholder="Search across all of your leads"
-          onChange={(name, value) => {
+          onChange={value => {
             dispatch(setFilterText(value));
           }}
-          onSubmit={(name, value) => {
+          onSubmit={value => {
             dispatch(setFilterText(value));
           }}
         />

@@ -27,12 +27,12 @@ export default connect(function(state, props) {
     instanceZUID: state.instance.ZUID,
     instance: state.instance,
     instanceName: state.instance.name,
-    contentModels: Object.keys(state.contentModels).reduce((acc, modelZUID) => {
+    contentModels: Object.keys(state.models).reduce((acc, modelZUID) => {
       if (
-        state.contentModels[modelZUID] &&
-        state.contentModels[modelZUID].label !== "Dashboard Widgets"
+        state.models[modelZUID] &&
+        state.models[modelZUID].label !== "Dashboard Widgets"
       ) {
-        acc[modelZUID] = state.contentModels[modelZUID];
+        acc[modelZUID] = state.models[modelZUID];
       }
       return acc;
     }, {})
@@ -56,7 +56,7 @@ export default connect(function(state, props) {
         .format("YYYY-MM-DD");
 
       this.props
-        .dispatch(fetchRecentItems(this.props.user.id, start))
+        .dispatch(fetchRecentItems(this.props.user.ZUID, start))
         .then(res => {
           if (res && res.data) {
             this.setState({
@@ -140,7 +140,7 @@ export default connect(function(state, props) {
                   [{this.props.instanceZUID}]
                 </span>
               </div>
-              <div className={`${styles.column} ${styles.isAlignedRight}`}>
+              {/* <div className={`${styles.column} ${styles.isAlignedRight}`}>
                 <div className={styles.webEngineLinks}>
                   Web Engine URLs
                   <span className={styles.encompassedBlock}>
@@ -159,7 +159,7 @@ export default connect(function(state, props) {
                     </Url>
                   </span>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
           <div className={styles.container}>

@@ -1,30 +1,20 @@
-"use strict";
-
-import React, { useEffect } from "react";
+import { hot } from "react-hot-loader/root";
+import React from "react";
 import { Provider } from "react-redux";
 import { Route } from "react-router-dom";
 
-import { injectReducer } from "shell/store";
+import { injectReducer, store } from "shell/store";
 
-import { getLogs } from "store/logs";
-import { logs } from "store/logs";
-import { loadingLogs } from "store/loadingLogs";
-import { inViewLogs } from "store/inViewLogs";
+import { logsInView } from "./store/logsInView";
 
 import AuditApp from "./views/app";
 
-window.AuditTrailApp = function AuditTrailApp() {
-  useEffect(() => {
-    injectReducer(window.ZESTY_REDUX_STORE, "logs", logs);
-    injectReducer(window.ZESTY_REDUX_STORE, "loadingLogs", loadingLogs);
-    injectReducer(window.ZESTY_REDUX_STORE, "inViewLogs", inViewLogs);
+injectReducer(store, "logsInView", logsInView);
 
-    ZESTY_REDUX_STORE.dispatch(getLogs());
-  }, []);
-
+export default hot(function AuditTrailApp() {
   return (
-    <Provider store={ZESTY_REDUX_STORE}>
+    <Provider store={store}>
       <Route component={AuditApp} />
     </Provider>
   );
-};
+});

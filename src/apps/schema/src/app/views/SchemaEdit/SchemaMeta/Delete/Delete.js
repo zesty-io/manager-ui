@@ -2,26 +2,25 @@ import React, { useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
+import { CollapsibleCard, CardContent } from "@zesty-io/core/CollapsibleCard";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 import { Button } from "@zesty-io/core/Button";
 
 import { notify } from "shell/store/notifications";
-import { deleteModel } from "../../../../../store/schemaModels";
+import { deleteModel } from "shell/store/models";
 
 import styles from "./Delete.less";
 export default function Delete(props) {
   return (
-    <CollapsibleCard
-      className={styles.Delete}
-      header={Header(props)}
-      footer={Footer(props)}
-    >
-      <p>
-        Deleting a model is a permanent action that can not be undone. By doing
-        so all content items created from this model will be deleted along with
-        it. Ensure you want to do this action.
-      </p>
+    <CollapsibleCard className={styles.Delete} header={Header(props)}>
+      <CardContent>
+        <p>
+          Deleting a model is a permanent action that can not be undone. By
+          doing so all content items created from this model will be deleted
+          along with it. Ensure you want to do this action.
+        </p>
+      </CardContent>
+      <Footer {...props} />
     </CollapsibleCard>
   );
 }
@@ -60,12 +59,14 @@ function Footer(props) {
               .catch(err => {
                 console.error(err);
                 setIsOpen(false);
-                notify({
-                  kind: "warn",
-                  message:
-                    err.message ||
-                    `Failed to delete model: ${props.model.label}`
-                });
+                props.dispatch(
+                  notify({
+                    kind: "warn",
+                    message:
+                      err.message ||
+                      `Failed to delete model: ${props.model.label}`
+                  })
+                );
               });
           }}
         >

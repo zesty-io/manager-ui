@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,6 +14,7 @@ import {
 import { Button } from "@zesty-io/core/Button";
 import { Search } from "@zesty-io/core/Search";
 import { Select, Option } from "@zesty-io/core/Select";
+import { AppLink } from "@zesty-io/core/AppLink";
 
 import { LanguageSelector } from "../../ItemEdit/components/Header/LanguageSelector";
 
@@ -60,14 +62,13 @@ export class SetActions extends Component {
               kind="secondary"
               id="AddItemButton"
               className={cx(styles.Action, styles.Create)}
-              onClick={() =>
-                (window.location.hash = `/content/${this.props.modelZUID}/new`)
-              }
             >
-              <FontAwesomeIcon icon={faPlus} />
-              {this.props.model
-                ? `${this.props.model.label} Item`
-                : "New Model Item"}
+              <AppLink to={`/content/${this.props.modelZUID}/new`}>
+                <FontAwesomeIcon icon={faPlus} />
+                {this.props.model
+                  ? `${this.props.model.label} Item`
+                  : "New Model Item"}
+              </AppLink>
             </Button>
 
             {Boolean(this.props.isDirty) && (
@@ -105,17 +106,22 @@ export class SetActions extends Component {
             )}
           </div>
           <div className={styles.Right}>
-            <Button
-              kind="tertiary"
-              id="AddCSVButton"
-              className={cx(styles.Action, styles.Create)}
-              onClick={() =>
-                (window.location.hash = `/content/${this.props.modelZUID}/import`)
-              }
-            >
-              <FontAwesomeIcon icon={faUpload} />
-              Import CSV
-            </Button>
+            <span>{this.props.itemCount} Total Items</span>
+
+            {this.props.instance.basicApi ? (
+              <Url
+                className={styles.InstantApi}
+                target="_blank"
+                href={`${
+                  this.props.instance.live_domain
+                    ? `${this.props.instance.protocol}://${this.props.instance.live_domain}`
+                    : this.props.instance.preview_domain
+                }/-/instant/${this.props.modelZUID}.json`}
+              >
+                <i className="fa fa-bolt" aria-hidden="true" />
+                &nbsp;Instant API
+              </Url>
+            ) : null}
 
             {this.props.model && this.props.user.is_developer && (
               <Button
@@ -128,26 +134,16 @@ export class SetActions extends Component {
                 Edit Schema
               </Button>
             )}
-
-            <h2 className={styles.ModelItemCount}>
-              {/*this.props.instance.basicApi ? (
-            <Url
-            className={styles.InstantApi}
-            target="_blank"
-            href={`${
-              this.props.instance.live_domain
-              ? `${this.props.instance.protocol}://${
-                this.props.instance.live_domain
-              }`
-              : this.props.instance.preview_domain
-            }/-/instant/${this.props.modelZUID}.json`}
-            >
-            <i className="fa fa-bolt" aria-hidden="true" />
-            &nbsp;Instant API
-            </Url>
-          ) : null*/}
-              <span>{this.props.itemCount} Total Items</span>
-            </h2>
+            <Link to={`/content/${this.props.modelZUID}/import`}>
+              <Button
+                kind="tertiary"
+                id="AddCSVButton"
+                className={cx(styles.Action, styles.Create)}
+              >
+                <FontAwesomeIcon icon={faUpload} />
+                Import CSV
+              </Button>
+            </Link>
           </div>
         </header>
       );

@@ -4,17 +4,16 @@ import moment from "moment-timezone";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCheck } from "@fortawesome/free-solid-svg-icons";
-
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
-import { fetchAuditTrailDrafting } from "../../../../../../../store/contentLogs";
+
+import { fetchAuditTrailDrafting } from "shell/store/logs";
 
 export default connect((state, props) => {
   return {
     instanceZUID: state.instance.ZUID,
     logs:
-      state.contentLogs[props.itemZUID] &&
-      state.contentLogs[props.itemZUID].auditTrailDraft
-        ? state.contentLogs[props.itemZUID].auditTrailDraft
+      state.logs[props.itemZUID] && state.logs[props.itemZUID].auditTrailDraft
+        ? state.logs[props.itemZUID].auditTrailDraft
         : []
   };
 })(function WidgetDraftHistory(props) {
@@ -22,11 +21,9 @@ export default connect((state, props) => {
 
   useEffect(() => {
     setLoading(true);
-    props
-      .dispatch(fetchAuditTrailDrafting(props.instanceZUID, props.itemZUID))
-      .then(() => {
-        setLoading(false);
-      });
+    props.dispatch(fetchAuditTrailDrafting(props.itemZUID)).finally(() => {
+      setLoading(false);
+    });
   }, []);
 
   return (
@@ -34,7 +31,7 @@ export default connect((state, props) => {
       <CardHeader>
         <span className="audit-title">
           <FontAwesomeIcon icon={faUserCheck} />
-          &nbsp;Drafting History
+          &nbsp;Drafting History&nbsp;
         </span>
         <small>Audit Trail&trade;</small>
       </CardHeader>

@@ -1,18 +1,12 @@
 describe("Content Specs", () => {
   before(() => {
     cy.login();
-    cy.visit("//content/6-556370-8sh47g/7-b939a4-457q19", { timeout: 10000 });
+    cy.visit("//content/6-556370-8sh47g/7-b939a4-457q19");
   });
 
   const TIMESTAMP = Date.now();
 
-  context("rendering app", () => {
-    it("view is ready", () => {
-      cy.get("#12-13d590-9v2nr2", { timeout: 10000 }).should("exist");
-    });
-  });
-
-  context("editing All Field Types model", () => {
+  describe("editing All Field Types content", () => {
     it("Text Field", () => {
       cy.get("#12-13d590-9v2nr2")
         .should("exist")
@@ -24,17 +18,16 @@ describe("Content Specs", () => {
     });
 
     it("WYSIWYG Basic Field", () => {
-      cy.get("#12-6d41d0-n10vtc")
-        .should("exist")
-        .find(".ProseMirror")
-        .click()
-        .clear()
-        .type(`${TIMESTAMP}`)
+      cy.get("#12-6d41d0-n10vtc").should("exist");
+      cy.iframe("#wysiwyg_basic_ifr")
+        .should("be.visible")
+        .click({ force: true })
+        .type(`{selectall}{backspace}${TIMESTAMP}`)
         .contains(`${TIMESTAMP}`);
     });
 
-    it("Image Field", () => {
-      // TODO select image and confirm it's ZUID set
+    // TODO: implement add image functionality, select and verify image ZUID is in field
+    it.skip("Image Field", () => {
       cy.get("#12-1c94d4-pg8dvx").should("exist");
     });
 
@@ -54,21 +47,40 @@ describe("Content Specs", () => {
         .find("input")
         .click();
 
-      // TODO get aria-label and capture in variable
-      cy.get('[name="date"]')
-        .first()
+      cy.get(
+        '.flatpickr-calendar:not(.hasTime) [aria-label="March 5, 2019"]'
+      ).click();
+
+      cy.get("#12-63ab04-0nkwcc")
+        .find("input")
+        .should("have.value", "2019-03-05");
+    });
+
+    it("Date & Time Field", () => {
+      cy.get("#12-f3db44-c8kt0q")
+        .should("exist")
+        .find("input.form-control")
         .click();
+
+      cy.get(
+        '.flatpickr-calendar.hasTime [aria-label="March 5, 2019"]'
+      ).click();
+
+      cy.get(".flatpickr-confirm").click();
+
+      // TODO get aria-label and capture in variable
+      // cy.get("#12-f3db44-c8kt0q .flatpickr-input.form-control.input").click();
 
       // TODO compare aria-label value with input value
     });
 
     it("WYSIWYG Advanced Field", () => {
-      cy.get("#12-be261c-4q7s81")
-        .should("exist")
-        .find(".ProseMirror")
+      cy.get("#12-be261c-4q7s81").should("exist");
+
+      cy.iframe("#wysiwyg_advanced_ifr")
+        .should("be.visible")
         .click()
-        .clear()
-        .type(`${TIMESTAMP}`)
+        .type(`{selectall}{backspace}${TIMESTAMP}`)
         .contains(`${TIMESTAMP}`);
     });
 
@@ -88,7 +100,7 @@ describe("Content Specs", () => {
         .find(".Select")
         .click()
         .find('[data-value="custom_option_one"]')
-        .click();
+        .click({ force: true });
 
       cy.contains("#12-f3152c-kjz88l .Select", "Custom Option One");
 
@@ -96,7 +108,7 @@ describe("Content Specs", () => {
         .find(".Select")
         .click()
         .find('[data-value="custom_option_two"]')
-        .click();
+        .click({ force: true });
 
       cy.contains("#12-f3152c-kjz88l .Select", "Custom Option Two");
     });
@@ -118,50 +130,36 @@ describe("Content Specs", () => {
         .find('[data-value="7-b939a4-457q19"]')
         .click();
 
-      cy.contains("#12-10741c-s5jkwg .Select", "All Field Types");
+      cy.contains("#12-10741c-s5jkwg .Select", "/newpathpart/");
 
-      cy.get("#SaveItemButton").click({ force: true });
-      cy.contains("Saved a new ", { timeout: 3000 }).should("exist");
-      // checks selected data was save
-      cy.contains("#12-10741c-s5jkwg .Select", "All Field Types");
+      // cy.get("#SaveItemButton").click({ force: true });
+      // cy.contains("Saved a new ", { timeout: 3000 }).should("exist");
+      // // checks selected data was save
+      // cy.contains("#12-10741c-s5jkwg .Select", "All Field Types");
 
-      // revert the data
-      cy.get("#12-10741c-s5jkwg")
-        .find(".Select")
-        .click()
-        .find('[data-value="0"]')
-        .click();
+      // // revert the data
+      // cy.get("#12-10741c-s5jkwg")
+      //   .find(".Select")
+      //   .click()
+      //   .find('[data-value="0"]')
+      //   .click();
 
-      cy.contains("#12-10741c-s5jkwg .Select", "— None —");
-      cy.get("#SaveItemButton").click({ force: true });
+      // cy.contains("#12-10741c-s5jkwg .Select", "— None —");
+      // cy.get("#SaveItemButton").click({ force: true });
     });
 
-    it("Date & Tme Field", () => {
-      cy.get("#12-f3db44-c8kt0q")
-        .should("exist")
-        .find("input.form-control.input")
-        .click();
-
-      // TODO get aria-label and capture in variable
-      cy.get("#12-f3db44-c8kt0q .flatpickr-input.form-control.input").click();
-
-      // TODO compare aria-label value with input value
-    });
-
+    // TODO: Need to confirm toggling of value
     it("Yes/No Field", () => {
       cy.get("#12-575f7c-trw1w3")
         .find("button")
         .click();
-
-      // TODO: Need to confirm toggling of value
     });
 
+    // TODO: Need to confirm toggling of value
     it("Yes/No Field: Custom Options", () => {
       cy.get("#12-8178cc-z37vq1")
         .find("button")
         .click();
-
-      // TODO: Need to confirm toggling of value
     });
 
     it("Fontawesome Field", () => {
@@ -214,40 +212,36 @@ describe("Content Specs", () => {
         .should("have.value", "731a0b2f-e3f9-44bf-b142-59488c0834e9");
     });
 
-    it("File Field", () => {
-      // TODO select file and confirm it's ZUID set
+    // TODO: implement file selection; select file and confirm it's ZUID set
+    it.skip("File Field", () => {
       cy.get("#12-178fe8-nf6mfn").should("exist");
     });
 
     it("Sort Field", () => {
       cy.get("#12-4e1914-kcqznz")
         .should("exist")
+        .find("input[type='number']")
+        .clear()
+        .type("12");
+
+      cy.get("#12-4e1914-kcqznz")
         .find("button")
         .first()
-        .then($btn => {
-          // const initialVal = parseFloat($input.val());
+        .click();
 
-          $btn.click();
+      cy.get("#12-4e1914-kcqznz")
+        .find("input[type='number']")
+        .should("have.value", "13");
 
-          // const incrementedVal = parseFloat($input.val());
+      cy.get("#12-4e1914-kcqznz")
+        .find("button")
+        .last()
+        .click();
 
-          // Increment should have increased value by one
-          // expect(incrementedVal - initialVal).to.eq(1);
-        });
+      cy.get("#12-4e1914-kcqznz")
+        .find("input[type='number']")
+        .should("have.value", "12");
     });
-
-    // it("Textarea Field", () => {
-    //   cy.get("#12-7f75bc-wsd9g4")
-    //     .find("textarea")
-    //     .click()
-    //     .clear()
-    //     .type(`Editing in the text area, ${timestamp}`);
-    //   cy.get("#SaveItemButton").click();
-    //   cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
-    //   cy.get("#12-7f75bc-wsd9g4")
-    //     .find("textarea")
-    //     .should("contain", timestamp);
-    // });
 
     it("Markdown Field", () => {
       cy.get("#12-796b3c-8n93rc")
@@ -256,31 +250,28 @@ describe("Content Specs", () => {
         .clear()
         .type(`## Editing in the markdown field type _${TIMESTAMP}_`);
       cy.get("#SaveItemButton").click();
-      cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
+      cy.contains("Saved a new ").should("exist");
       cy.get("#12-796b3c-8n93rc")
         .find("textarea")
         .should("contain", TIMESTAMP);
     });
 
     it("One to many Field", () => {
-      cy.get("#12-edee00-6zb866")
+      cy.get("#12-269a28-1bkm34")
         .find(".Select")
-        .click({ timeout: 3000 });
-      cy.get('[data-value="7-a0e7ae90ce-n3qr0k"]')
+        .click();
+      cy.get('[data-value="7-480ab4-wg7x7j"]')
         .last()
-        .click({ force: true, timeout: 3000 });
-      cy.get("#SaveItemButton").click({ force: true });
+        .click({ timeout: 3000 });
+      cy.get("#SaveItemButton").click();
       cy.contains("Saved a new ", { timeout: 3000 }).should("exist");
       // testing tag deletion
-      cy.get('[href="/content/6-0c960c-d1n0kx/7-a0e7ae90ce-n3qr0k"]').should(
+      cy.get('[href="#!/content/6-675028-84dq4s/7-480ab4-wg7x7j"]').should(
         "exist"
       );
-      cy.get('[href="/content/6-0c960c-d1n0kx/7-a0e7ae90ce-n3qr0k"]')
-        .siblings("i")
-        .last()
+      cy.get('[href="#!/content/6-675028-84dq4s/7-480ab4-wg7x7j"]')
+        .siblings("svg")
         .click({ timeout: 3000 });
-      cy.get("#SaveItemButton").click({ force: true });
-      cy.contains("Saved a new ").should("exist");
     });
 
     it("One to one Field", () => {
@@ -290,15 +281,19 @@ describe("Content Specs", () => {
       //allow relationships to load
       cy.get("#12-edee00-6zb866")
         .find(".Select")
-        .find('[data-value="7-f686b78bb4-8dk5d7"]')
+        .find('[data-value="7-480ab4-wg7x7j"]')
         .last()
-        .click({ force: true, timeout: 3000 });
-      cy.get("#SaveItemButton").click({ force: true });
-      cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
+        .click({ timeout: 3000 });
+      // cy.get("#SaveItemButton").click({ force: true });
+      // cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
       cy.get("#12-edee00-6zb866")
         .find(".Select")
         .find("span span")
-        .should("contain", "Hello 5");
+        .should("contain", "zesty.pw");
+    });
+    it("Saves Content updates", () => {
+      cy.get("#SaveItemButton").click();
+      cy.contains("Saved a new ", { timeout: 3000 }).should("exist");
     });
   });
   // color, UUID?, files
@@ -318,9 +313,4 @@ describe("Content Specs", () => {
   //   cy.get('#SaveItemButton').click();
   //   cy.contains('Saved a new ', { timeout: 5000 }).should('exist');
   // });
-
-  context("saving", () => {
-    // TODO confirm save is successful
-    // cy.get("#SaveItemButton", { timeout: 5000 }).click();
-  });
 });

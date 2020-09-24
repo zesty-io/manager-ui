@@ -9,7 +9,7 @@
             show="{!opts.file.loading}"
             class="select {selected: opts.file.selected}"
             title="Select this image">
-            <i class="icon-ok"></i>
+            <i class="fas fa-check"></i>
         </z-button>
 
         <section class="thumbnail {progress: opts.file.progress}">
@@ -18,7 +18,7 @@
 
         <footer class="controls" title="Load image preview">
             <z-button handler="{handlePreview}" height="2.3rem">
-                <i class="icon-cog"></i>
+                <i class="fas fa-cog"></i>
             </z-button>
             <h1 class="preview" onclick="{handlePreview}">
                 {opts.file.title}
@@ -109,7 +109,7 @@
             body.append('file', opts.file.file)
             body.append('bin_id', opts.file.bin_id)
             body.append('group_id', opts.file.group_id)
-            body.append('user_id', zesty.user.id)
+            body.append('user_id', zestyStore.getState().user.ZUID)
 
             xhr.withCredentials = true
 
@@ -280,7 +280,7 @@
         position: absolute;
         bottom: 0;
         width: 100%;
-        height: 3rem;
+        height: 32px;
     }
 
     .item.file .controls .preview {
@@ -290,7 +290,7 @@
         white-space: nowrap;
         vertical-align: middle;
         padding: 0 0.5rem;
-        line-height: 3rem;
+        <!--  line-height: 3rem;  -->
     }
 
     :scope {

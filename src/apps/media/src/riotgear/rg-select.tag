@@ -161,7 +161,6 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      font-size: 1em;
       line-height: normal;
       outline: 0;
     }
@@ -193,7 +192,6 @@
       box-sizing: border-box;
       width: 100%;
       padding: 10px;
-      font-size: 0.9rem;
       border: 0;
       outline: none;
       color: #555;

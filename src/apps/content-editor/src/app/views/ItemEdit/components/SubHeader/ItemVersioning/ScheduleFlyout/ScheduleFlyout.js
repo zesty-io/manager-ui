@@ -4,21 +4,18 @@ import moment from "moment-timezone";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBan,
-  faTimes,
+  faTimesCircle,
   faCalendar,
+  faCalendarPlus,
   faExclamationTriangle
 } from "@fortawesome/free-solid-svg-icons";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core";
-import { FieldTypeDate } from "@zesty-io/core";
-import { Button } from "@zesty-io/core";
-import { ButtonGroup } from "@zesty-io/core";
-import { FieldTypeDropDown } from "@zesty-io/core";
+import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
+import { Button } from "@zesty-io/core/Button";
+import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
-import {
-  publishItem,
-  unschedule
-} from "../../../../../../../store/contentModelItems";
+import { publish, unpublish } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 
 const DISPLAY_FORMAT = "MMMM Do YYYY, [at] h:mm a";
@@ -59,37 +56,16 @@ export default class ScheduleFlyout extends Component {
 
     this.props
       .dispatch(
-        unschedule(
+        unpublish(
           this.props.item.meta.contentModelZUID,
           this.props.item.meta.ZUID,
-          this.props.item.scheduling.ZUID
+          this.props.item.scheduling.ZUID,
+          { version: this.props.item.scheduling.version }
         )
       )
-      .then(res => {
+      .finally(() => {
         this.setState({
           scheduling: false
-        });
-
-        if (res.error) {
-          notify({
-            message: `There was an error unscheduling version ${this.props.item.scheduling.version}: ${res.error}`,
-            kind: "error"
-          });
-        } else {
-          notify({
-            message: `Unscheduled version ${this.props.item.scheduling.version}`,
-            kind: "save"
-          });
-        }
-      })
-      .catch(() => {
-        this.setState({
-          scheduling: false
-        });
-
-        notify({
-          message: `Error unscheduling version ${this.props.item.scheduling.version}`,
-          kind: "error"
         });
       });
   };
@@ -113,36 +89,27 @@ export default class ScheduleFlyout extends Component {
 
     this.props
       .dispatch(
-        publishItem(
+        publish(
           this.props.item.meta.contentModelZUID,
           this.props.item.meta.ZUID,
           {
-            publish_at: utcTime,
-            version_num: this.props.item.meta.version
+            publishAt: utcTime,
+            version: this.props.item.meta.version
+          },
+          {
+            localTime: tzTime,
+            localTimezone: this.state.selectedTimezone
           }
         )
       )
-      .then(() => {
+      .finally(() => {
         this.setState({
           scheduling: false
-        });
-        notify({
-          message: `Scheduled version ${this.props.item.meta.version} to publish on ${tzTime} in the ${this.state.selectedTimezone} timezone`,
-          kind: "save"
-        });
-      })
-      .catch(() => {
-        this.setState({
-          scheduling: false
-        });
-        notify({
-          message: `Error scheduling version ${this.props.item.meta.version}`,
-          kind: "error"
         });
       });
   };
 
-  handleChangePublish = (name, value) => {
+  handleChangePublish = value => {
     // Convert emited date object into the local time without timezone information
     // moment creates local time objects by default
     const selectedTime = moment(value).format(UTC_FORMAT);
@@ -151,7 +118,7 @@ export default class ScheduleFlyout extends Component {
     });
   };
 
-  handleChangeTimezone = (name, value) => {
+  handleChangeTimezone = value => {
     return this.setState({
       selectedTimezone: value
     });
@@ -199,21 +166,20 @@ export default class ScheduleFlyout extends Component {
               </p>
             </CardContent>
             <CardFooter>
-              <ButtonGroup>
-                <Button
-                  // kind="warn"
-                  disabled={this.state.scheduling}
-                  onClick={this.handleCancelPublish}
-                >
-                  <FontAwesomeIcon icon={faBan} />
-                  &nbsp;Cancel Publishing Version&nbsp;
-                  {this.props.item.scheduling.version}
-                </Button>
-                <Button kind="cancel" onClick={this.props.toggleOpen}>
-                  <FontAwesomeIcon icon={faTimes} />
-                  &nbsp;Close
-                </Button>
-              </ButtonGroup>
+              <Button
+                kind="secondary"
+                id="UnschedulePublishButton"
+                disabled={this.state.scheduling}
+                onClick={this.handleCancelPublish}
+              >
+                <FontAwesomeIcon icon={faBan} />
+                &nbsp;Cancel Publishing Version&nbsp;
+                {this.props.item.scheduling.version}
+              </Button>
+              <Button kind="cancel" onClick={this.props.toggleOpen}>
+                <FontAwesomeIcon icon={faTimesCircle} />
+                &nbsp;Close
+              </Button>
             </CardFooter>
           </Card>
         </section>
@@ -222,37 +188,44 @@ export default class ScheduleFlyout extends Component {
           <Card className={styles.Card}>
             <CardHeader>Schedule Publishing</CardHeader>
             <CardContent>
-              <FieldTypeDropDown
-                label="Timezone where this will be published"
-                name="selectedTimezone"
-                onChange={this.handleChangeTimezone}
-                value={this.state.selectedTimezone}
-                options={this.state.timezones}
-              />
-              <FieldTypeDate
-                type="date"
-                name="publish"
-                label="Publish date and time"
-                future={true}
-                value={this.state.selectedTime}
-                datatype={"datetime"}
-                onChange={this.handleChangePublish}
-              />
+              <div className={styles.row}>
+                <FieldTypeDropDown
+                  label="Timezone where this will be published"
+                  name="selectedTimezone"
+                  onChange={this.handleChangeTimezone}
+                  value={this.state.selectedTimezone}
+                  options={this.state.timezones}
+                />
+              </div>
+              <div className={styles.row}>
+                <FieldTypeDate
+                  type="date"
+                  name="publish"
+                  label="Publish date and time"
+                  future={true}
+                  value={this.state.selectedTime}
+                  datatype={"datetime"}
+                  onChange={this.handleChangePublish}
+                />
+              </div>
             </CardContent>
-            <CardFooter>
-              <ButtonGroup>
-                <Button
-                  kind="save"
-                  id="SchedulePublishButton"
-                  onClick={this.handleSchedulePublish}
-                  disabled={this.state.scheduling}
-                >
-                  Schedule Publishing Version {this.props.item.meta.version}
-                </Button>
-                <Button kind="cancel" onClick={this.props.toggleOpen}>
-                  Close
-                </Button>
-              </ButtonGroup>
+            <CardFooter className={styles.CardFooter}>
+              <Button
+                kind="save"
+                id="SchedulePublishButton"
+                onClick={this.handleSchedulePublish}
+                disabled={this.state.scheduling}
+              >
+                <FontAwesomeIcon icon={faCalendarPlus} /> Schedule Publishing
+                Version {this.props.item.meta.version}
+              </Button>
+              <Button
+                kind="cancel"
+                id="SchedulePublishClose"
+                onClick={this.props.toggleOpen}
+              >
+                <FontAwesomeIcon icon={faTimesCircle} /> Close
+              </Button>
             </CardFooter>
           </Card>
         </section>

@@ -1,9 +1,97 @@
 @import "~@zesty-io/core/colors.less";
-.AnalyticsApp {
+@border-color: #dee6ff;
+
+.Dashboard {
   width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  text-shadow: 1px 1px 1px darken(@zesty-white, 5%);
+
+  .introduction {
+    padding: 32px 0;
+    color: @zesty-grey;
+    text-align: center;
+    h1 {
+      margin: 0 0 24px;
+    }
+  }
+
+  .webEngineLinks {
+    font-weight: 300;
+    padding: 0px 12px;
+
+    .encompassedBlock {
+      border-radius: 4px;
+      padding: 4px;
+      border: 1px @border-color solid;
+      margin-left: 12px;
+    }
+  }
+  .muted {
+    font-weight: 300;
+    opacity: 0.5;
+  }
+  .isAlignedRight {
+    text-align: right;
+  }
+  .isAlignedCentered {
+    text-align: center;
+  }
+  .topBar {
+    background: white;
+    border-bottom: 1px @border-color solid;
+    height: 48px;
+    line-height: 48px;
+    .instanceName {
+      padding: 0 0 0 12px;
+    }
+  }
+
+  h1 {
+    font-size: 48px;
+  }
+
+  h2 {
+    .icon {
+      padding-right: 5px;
+    }
+  }
+
+  .analyticsContainer {
+    position: relative;
+  }
+
+  .columns {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .column {
+    flex: 1 1 300px;
+  }
+
+  .container {
+    height: calc(100vh - 64px - 9px - 49px);
+    overflow: scroll;
+
+    .Card {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 300px;
+
+      ul {
+        list-style: circle;
+        margin-left: 24px;
+        a {
+          margin: 0;
+        }
+      }
+    }
+
+    .graphs {
+      .primary {
+        flex: 2;
+      }
+    }
+
+    .recent {
+      flex: 2;
+    }
+  }
 }

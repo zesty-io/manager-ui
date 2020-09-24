@@ -1,7 +1,6 @@
 describe("Fields", () => {
   before(() => {
     cy.login();
-    cy.gotoSchema();
     cy.visit("/schema/6-852490-2mhz4v");
   });
 
@@ -11,9 +10,9 @@ describe("Fields", () => {
     const fieldLabel = `Text Field: ${timestamp}`;
     const fieldName = `text_field_${timestamp}`;
 
-    cy.get(".FieldAdd .selections .options li[data-value='text']").click({
-      force: true
-    });
+    cy.get(".FieldAdd .Select").click();
+
+    cy.get(".FieldAdd .selections .options li[data-value='text']").click();
 
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
     cy.get('.FieldAdd input[name="name"]').type(fieldName);
@@ -27,7 +26,7 @@ describe("Fields", () => {
 
   it("Edit", () => {
     // Open the collapsed field
-    cy.get(".Fields article header")
+    cy.get(".Fields .Draggable")
       .last()
       .click();
 
@@ -49,8 +48,6 @@ describe("Fields", () => {
           .last()
           .click();
 
-        cy.wait(5000);
-
         cy.get('.Fields article input[name="label"]')
           .last()
           .should("have.value", newFieldLabel);
@@ -69,9 +66,8 @@ describe("Fields", () => {
     const fieldLabel = `TextArea Field: ${timestamp}`;
     const fieldName = `textarea_field_${timestamp}`;
 
-    cy.get(".FieldAdd .selections .options li[data-value='textarea']").click({
-      force: true
-    });
+    cy.get(".FieldAdd .Select").click();
+    cy.get(".FieldAdd .selections .options li[data-value='textarea']").click();
 
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
     cy.get('.FieldAdd input[name="name"]').type(fieldName);
@@ -87,9 +83,10 @@ describe("Fields", () => {
     const fieldLabel = `wysiwyg field: ${timestamp}`;
     const fieldName = `wysiwyg_field_${timestamp}`;
 
-    cy.get(".FieldAdd .selections .options li[data-value='wysiwyg']").click({
-      force: true
-    });
+    cy.get(".FieldAdd .Select").click();
+    cy.get(
+      ".FieldAdd .selections .options li[data-value='wysiwyg_basic']"
+    ).click();
 
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
     cy.get('.FieldAdd input[name="name"]').type(fieldName);

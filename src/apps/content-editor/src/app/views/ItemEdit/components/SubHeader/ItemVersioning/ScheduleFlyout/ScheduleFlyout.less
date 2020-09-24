@@ -10,6 +10,16 @@
   z-index: 50;
   width: @box-width;
 
+  .row {
+    margin: 4px 0 8px;
+    label {
+      width: 100%;
+      input {
+        flex: 1;
+      }
+    }
+  }
+
   &::before {
     background-color: white;
     width: @boxsize;
@@ -37,6 +47,10 @@
     }
     em {
       font-style: italic;
+    }
+    .CardFooter {
+      justify-content: space-between;
+      display: flex;
     }
   }
 

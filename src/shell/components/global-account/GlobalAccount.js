@@ -1,28 +1,27 @@
-import React from "react";
-import { useDispatch } from "react-redux";
+import React, { useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 
-import { toggleAccountsMenu } from "shell/store/ui/global-accounts-menu";
-import { subMenuLoad } from "shell/store/ui/global-sub-menu";
+import GlobalAccountMenu from "shell/components/global-account-menu";
 
 import css from "./GlobalAccount.less";
-export default React.memo(function GlobalAccount(props) {
-  const dispatch = useDispatch();
+
+export default function GlobalAccount(props) {
+  const [openMenu, setOpenMenu] = useState(false);
 
   return (
     <div
       className={css.GlobalAccount}
       onMouseEnter={() => {
-        dispatch(subMenuLoad(""));
-        dispatch(toggleAccountsMenu(true));
+        setOpenMenu(true);
       }}
       onMouseLeave={() => {
-        dispatch(toggleAccountsMenu(false));
+        setOpenMenu(false);
       }}
     >
       <FontAwesomeIcon icon={faGlobe} />
+      {openMenu && <GlobalAccountMenu />}
     </div>
   );
-});
+}

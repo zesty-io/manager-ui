@@ -19,8 +19,7 @@
   font-family: "Montserrat", "Gibson Light", Arial, sans-serif;
   font-size: 16px;
   height: 100vh;
-  overflow: hidden;
-  width: 100vw;
+  overflow-y: hidden;
 
   display: grid;
   grid-template-columns: 200px 1fr;
@@ -31,10 +30,11 @@
   .AppLoader {
     flex: 2;
     z-index: 1;
+    overflow: hidden;
 
     // .GlobalTopbar {}
     .SubApp {
-      height: calc(100vh - 92px);
+      height: calc(100vh - 76px);
     }
   }
 }

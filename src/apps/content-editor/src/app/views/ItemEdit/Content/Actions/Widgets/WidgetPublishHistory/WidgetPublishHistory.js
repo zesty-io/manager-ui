@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 
@@ -6,72 +6,44 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCheck } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
-import { fetchAuditTrailPublish } from "../../../../../../../store/contentLogs";
+import { fetchAuditTrailPublish } from "shell/store/logs";
 
 export default connect(state => {
   return {
-    logs: state.contentLogs,
+    logs: state.logs,
     instanceZUID: state.instance.ZUID
   };
 })(
-  class WidgetPublishHistory extends React.PureComponent {
-    state = {
-      loading: true,
-      ZUID: this.props.ZUID
-    };
+  React.memo(function WidgetPublishHistory(props) {
+    const [loading, setLoading] = useState(false);
 
-    componentDidMount() {
-      this.props
-        .dispatch(
-          fetchAuditTrailPublish(this.props.instanceZUID, this.props.itemZUID)
-        )
-        .then(() => {
-          this.setState({
-            loading: false
-          });
-        });
-    }
-    componentDidUpdate() {
-      if (this.state.ZUID !== this.props.ZUID) {
-        this.setState({ loading: true, ZUID: this.props.ZUID }, () => {
-          this.props
-            .dispatch(
-              fetchAuditTrailPublish(
-                this.props.instanceZUID,
-                this.props.itemZUID
-              )
-            )
-            .then(() => {
-              this.setState({
-                loading: false
-              });
-            });
-        });
-      }
-    }
-    render() {
-      const logs =
-        this.props.logs[this.props.itemZUID] &&
-        this.props.logs[this.props.itemZUID].auditTrailPublish;
-      return (
-        <Card id="WidgetPublishHistory" className="pageDetailWidget">
-          <CardHeader>
-            <span className="audit-title">
-              <FontAwesomeIcon icon={faUserCheck} />
-              &nbsp;Publish History
-            </span>
-            <small>Audit Trail&trade;</small>
-          </CardHeader>
-          <CardContent className="setting-field audit-trail-content">
-            {/* Show Loading, Show no logs available, or show logs */}
-            {this.state.loading ? (
-              <p>Loading Logs</p>
-            ) : logs && logs.length ? (
-              <ul className="logs">
-                {logs.map(log => {
-                  const dataformat = new Date(log.happenedAt)
-                    .toISOString()
-                    .slice(0, 10);
+    useEffect(() => {
+      setLoading(true);
+      props.dispatch(fetchAuditTrailPublish(props.itemZUID)).finally(() => {
+        setLoading(false);
+      });
+    }, []);
+
+    const logs =
+      props.logs[props.itemZUID] &&
+      props.logs[props.itemZUID].auditTrailPublish;
+
+    return (
+      <Card id="WidgetPublishHistory" className="pageDetailWidget">
+        <CardHeader>
+          <span className="audit-title">
+            <FontAwesomeIcon icon={faUserCheck} />
+            &nbsp;Publish History &nbsp;
+          </span>
+          <small>Audit Trail&trade;</small>
+        </CardHeader>
+        <CardContent className="setting-field audit-trail-content">
+          {loading ? (
+            <p>Loading Logs</p>
+          ) : (
+            <ul className="logs">
+              {Array.isArray(logs) &&
+                logs.map(log => {
                   const { firstName, lastName } = log;
                   return (
                     <li className="log" key={log.ZUID}>
@@ -80,15 +52,10 @@ export default connect(state => {
                     </li>
                   );
                 })}
-              </ul>
-            ) : (
-              <p className="noLogs">
-                No Audit Trail&trade; publish logs for this content.
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      );
-    }
-  }
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+    );
+  })
 );

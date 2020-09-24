@@ -1,1 +1,2 @@
-export { WorkflowRequest } from "./WorkflowRequest";
+import WorkflowRequest from "./WorkflowRequest";
+export { WorkflowRequest };

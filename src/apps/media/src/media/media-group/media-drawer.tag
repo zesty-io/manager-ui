@@ -7,7 +7,7 @@
             <z-text-field class="title" label="Title" value="{opts.file.title}"></z-text-field>
             <z-text-field class="filename" label="Filename" value="{opts.file.filename}"></z-text-field>
             <z-copy-field label="Copy" value="{opts.file.url}" disabled="true"></z-copy-field>
-            <div if="{zesty.user.permissions.can_delete}" class="controls">
+            <div if="{zestyStore.getState().userRole.systemRole.delete}" class="controls">
                 <z-button-save class="update" handler="{save}">
                     <span if="{!parent.opts.file.saving}">
                         Save&nbsp;<small>(CTRL + S)</small>
@@ -151,7 +151,6 @@
         position: relative;
     }
     #media-drawer .update small {
-        <!--  font-size: 1rem;  -->
     }
     #media-drawer .update .loader {
         min-width: 16px;
@@ -180,8 +179,6 @@
         background-color: #8897AB;
         color: #c7d4ea;
         cursor: pointer;
-        <!--  font-size: 1.7rem;  -->
-        font-family: Arial;
         padding: 0.2rem 0.5rem;
         position: absolute;
         right: 0px;

@@ -1,8 +1,6 @@
 import React, { PureComponent } from "react";
 
-import { Card, CardContent } from "@zesty-io/core/Card";
-import { Url } from "@zesty-io/core/Url";
-
+import { AppLink } from "@zesty-io/core/AppLink";
 import { Field } from "./Field";
 
 import styles from "./Editor.less";
@@ -40,7 +38,7 @@ export default class Editor extends PureComponent {
     }
   };
 
-  onChange = (name, value, datatype) => {
+  onChange = (value, name) => {
     if (!name) {
       throw new Error("Input is missing name attribute");
     }
@@ -104,49 +102,44 @@ export default class Editor extends PureComponent {
   render() {
     const { item, makeActive, model, fields, onSave } = this.props;
     return (
-      <Card className={styles.Editor} key={item.meta && item.meta.version}>
-        <CardContent className={styles.ContentArea}>
-          {fields.length ? (
-            fields
-              .filter(field => !field.deletedAt)
-              .map(field => {
-                return (
-                  <div
-                    key={field.ZUID}
-                    id={field.ZUID}
-                    className={styles.Field}
-                  >
-                    <Field
-                      ZUID={field.ZUID}
-                      contentModelZUID={field.contentModelZUID}
-                      active={makeActive === field.ZUID}
-                      name={field.name}
-                      label={field.label}
-                      description={field.description}
-                      required={field.required}
-                      relatedFieldZUID={field.relatedFieldZUID}
-                      relatedModelZUID={field.relatedModelZUID}
-                      datatype={field.datatype}
-                      options={field.options}
-                      settings={field.settings}
-                      onChange={this.onChange}
-                      onSave={onSave}
-                      value={item && item.data && item.data[field.name]}
-                    />
-                  </div>
-                );
-              })
-          ) : (
-            <div className={styles.NoFields}>
-              <h1 className={styles.Display}>No fields have been added</h1>
-              <h2 className={styles.SubHead}>
-                Use the <Url href={`/schema/${model.ZUID}`}>Schema Builder</Url>{" "}
-                to define your items content
-              </h2>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <div className={styles.Fields}>
+        {fields.length ? (
+          fields
+            .filter(field => !field.deletedAt)
+            .map(field => {
+              return (
+                <div key={field.ZUID} id={field.ZUID} className={styles.Field}>
+                  <Field
+                    ZUID={field.ZUID}
+                    contentModelZUID={field.contentModelZUID}
+                    active={makeActive === field.ZUID}
+                    name={field.name}
+                    label={field.label}
+                    description={field.description}
+                    required={field.required}
+                    relatedFieldZUID={field.relatedFieldZUID}
+                    relatedModelZUID={field.relatedModelZUID}
+                    datatype={field.datatype}
+                    options={field.options}
+                    settings={field.settings}
+                    onChange={this.onChange}
+                    onSave={onSave}
+                    value={item && item.data && item.data[field.name]}
+                  />
+                </div>
+              );
+            })
+        ) : (
+          <div className={styles.NoFields}>
+            <h1 className={styles.Display}>No fields have been added</h1>
+            <h2 className={styles.SubHead}>
+              Use the{" "}
+              <AppLink to={`/schema/${model.ZUID}`}>Schema Builder</AppLink> to
+              define your items content
+            </h2>
+          </div>
+        )}
+      </div>
     );
   }
 }

@@ -1,90 +1,84 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import cx from "classnames";
+import { connect } from "react-redux";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faExternalLinkAlt,
+  faSignOutAlt
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Select, Option } from "@zesty-io/core/Select";
+import { Button } from "@zesty-io/core/Button";
+import { Url } from "@zesty-io/core/Url";
 
 import styles from "./styles.less";
-
-import { toggleAccountsMenu } from "shell/store/ui/global-accounts-menu";
-import { subMenuLoad } from "shell/store/ui/global-sub-menu";
-
-export default React.memo(function GlobalAccount(props) {
-  const dispatch = useDispatch();
-
+export default connect(state => {
+  return {
+    instance: state.instance,
+    instances: state.instances,
+    user: state.user
+  };
+})(function GlobalAccount(props) {
   return (
-    <section
-      className={cx(
-        styles.accountMenu,
-        props.accountsMenuVisible ? styles.show : styles.hide
-      )}
-      onMouseEnter={() => {
-        dispatch(subMenuLoad(""));
-        dispatch(toggleAccountsMenu(true));
-      }}
-      onMouseLeave={() => {
-        dispatch(toggleAccountsMenu(false));
-      }}
-    >
+    <section className={cx(styles.accountMenu)}>
       <header className={styles.user}>
         <h1>
-          <i
-            className={cx(styles.icon, "fa fa-user-circle-o")}
-            aria-hidden="true"
+          <img
+            alt={`${props.user.firstName} ${props.user.lastName} Avatar`}
+            src={`https://www.gravatar.com/avatar/${props.user.emailHash}?d=mm&s=40`}
           />
-          Stuart Runyan
+          <div className={styles.meta}>
+            <span className={styles.name}>
+              {props.user.firstName} {props.user.lastName}
+            </span>
+            <span className={styles.subheadline}>{props.user.email}</span>
+          </div>
         </h1>
       </header>
 
       <main className={styles.siteSelector}>
-        <Select
-          name="instance"
-          selection={{ value: "xxxxx1", html: "alphauniverse.com" }}
-        >
-          <Option value="xxxxx1" text="alphauniverse.com" />
-          <Option value="xxxxx2" text="alphauniverse.com" />
-          <Option value="xxxxx3" text="alphauniverse.com" />
-          <Option value="xxxxx4" text="alphauniverse.com" />
-          <Option value="xxxxx5" text="alphauniverse.com" />
-          <Option value="xxxxx6" text="alphauniverse.com" />
-          <Option value="xxxxx7" text="alphauniverse.com" />
-          <Option value="xxxxx8" text="alphauniverse.com" />
-          <Option value="xxxxx9" text="alphauniverse.com" />
-          <Option value="xxxxx10" text="alphauniverse.com" />
-          <Option value="xxxxx11" text="alphauniverse.com" />
-          <Option value="xxxxx12" text="alphauniverse.com" />
-          <Option value="xxxxx13" text="alphauniverse.com" />
-          <Option value="xxxxx14" text="alphauniverse.com" />
-          <Option value="xxxxx15" text="alphauniverse.com" />
-          <Option value="xxxxx16" text="alphauniverse.com" />
+        <Select name="instance" value={props.instance.ZUID}>
+          {props.instances.map(instance => (
+            <Option
+              key={instance.ZUID}
+              value={instance.ZUID}
+              text={instance.name}
+              onClick={() => {
+                window.location.href = `${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}`;
+              }}
+            />
+          ))}
         </Select>
       </main>
 
-      <menu className={styles.accountActions}>
-        <ul className={styles.linkList}>
-          <li className={styles.link}>
-            <i
-              className={cx(styles.icon, "fa fa-tachometer")}
-              aria-hidden="true"
-            />
-            Dashboard
-          </li>
-          <li className={styles.link}>
-            <i
-              className={cx(styles.icon, "fa fa-life-ring")}
-              aria-hidden="true"
-            />
-            Support
-          </li>
-          <li className={cx(styles.link, styles.logout)}>
-            <i
-              className={cx(styles.icon, "fa fa-sign-out")}
-              aria-hidden="true"
-            />
-            Logout
-          </li>
+      <main className={styles.Domains}>
+        {props.instance.screenshotURL && (
+          <img src={props.instance.screenshotURL} width="275px" />
+        )}
+
+        <ul className={styles.bodyText}>
+          {props.instance.domains.map(domain => (
+            <li key={domain.domain}>
+              <Url href={`http://${domain.domain}`}>
+                <FontAwesomeIcon icon={faExternalLinkAlt} />
+                &nbsp;
+                {domain.domain}
+              </Url>
+            </li>
+          ))}
         </ul>
-      </menu>
+      </main>
+
+      <Url
+        href={`${CONFIG.URL_ACCOUNTS}/logout`}
+        className={cx(styles.link, styles.logout)}
+      >
+        <Button kind="alt">
+          <FontAwesomeIcon icon={faSignOutAlt} />
+          Logout
+        </Button>
+      </Url>
     </section>
   );
 });

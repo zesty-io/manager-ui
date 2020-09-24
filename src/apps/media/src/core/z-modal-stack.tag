@@ -32,34 +32,6 @@
                 --this.count
             })
         })
-
-
-        // this.on('mount', () => {
-        //     this.blur('on')
-        //     document.addEventListener('keyup', this.closeOnEsc)
-        // })
-        // this.on('unmount', () => {
-        //     this.blur('off')
-        //     document.removeEventListener('keyup', this.closeOnEsc)
-        // })
-        // this.close = () => this.unmount()
-        // this.closeOnEsc = (e) => {
-        //     if (27 == e.which) {
-        //         this.unmount()
-        //     }
-        // }
-
-        this.blur = (blur) => {
-            switch (blur) {
-                case 'on':
-                    $$('#zesty-wrap').addClass('blur')
-                    break
-                default:
-                    // defaults to off
-                    $$('#zesty-wrap').removeClass('blur')
-                    break
-            }
-        }
     </script>
     <style>
     #modalStack {
@@ -90,7 +62,6 @@
         color: #c7d4ea;
         cursor: pointer;
         line-height: 26px;
-        font-size: 12px;
         font-family: Arial;
         height: 26px;
         padding: 0px 8px 0px 12px;

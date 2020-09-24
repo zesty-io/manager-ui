@@ -1,8 +1,9 @@
+import { hot } from "react-hot-loader/root";
 import React, { useEffect } from "react";
 import { Provider } from "react-redux";
 import { Route } from "react-router-dom";
 
-import { injectReducer } from "shell/store";
+import { store, injectReducer } from "shell/store";
 import {
   fetchSettings,
   fetchStylesVariables,
@@ -10,37 +11,27 @@ import {
   fetchFonts,
   fetchFontsInstalled,
   settings
-} from "store/settings";
+} from "./store/settings";
+import { fetchHeadTags, headTags } from "./store/headTags";
 
-import AppError from "./app/AppError";
 import Settings from "./app/App";
 
-window.SettingsApp = function SettingsApp() {
-  console.log("SettingsApp", settings);
+injectReducer(store, "settings", settings);
+injectReducer(store, "headTags", headTags);
 
-  injectReducer(ZESTY_REDUX_STORE, "settings", settings);
-
-  ZESTY_REDUX_STORE.dispatch(fetchSettings());
-  ZESTY_REDUX_STORE.dispatch(fetchStylesCategories());
-  ZESTY_REDUX_STORE.dispatch(fetchStylesVariables());
-  ZESTY_REDUX_STORE.dispatch(fetchFonts());
-  ZESTY_REDUX_STORE.dispatch(fetchFontsInstalled());
-
-  // useEffect(() => {
-  //   injectReducer(ZESTY_REDUX_STORE, "settings", settings);
-
-  //   ZESTY_REDUX_STORE.dispatch(fetchSettings());
-  //   ZESTY_REDUX_STORE.dispatch(fetchStylesCategories());
-  //   ZESTY_REDUX_STORE.dispatch(fetchStylesVariables());
-  //   ZESTY_REDUX_STORE.dispatch(fetchFonts());
-  //   ZESTY_REDUX_STORE.dispatch(fetchFontsInstalled());
-  // }, []);
+export default hot(function SettingsApp() {
+  useEffect(() => {
+    store.dispatch(fetchSettings());
+    store.dispatch(fetchStylesCategories());
+    store.dispatch(fetchStylesVariables());
+    store.dispatch(fetchFonts());
+    store.dispatch(fetchFontsInstalled());
+    store.dispatch(fetchHeadTags());
+  }, []);
 
   return (
-    <Provider store={ZESTY_REDUX_STORE}>
-      <AppError>
-        <Route component={Settings} />
-      </AppError>
+    <Provider store={store}>
+      <Route component={Settings} />
     </Provider>
   );
-};
+});

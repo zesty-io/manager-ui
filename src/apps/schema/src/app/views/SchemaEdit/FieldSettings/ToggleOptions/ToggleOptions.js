@@ -74,7 +74,7 @@ export function ToggleOptions(props) {
             label="Toggle Label"
             name="value"
             value={opt.value}
-            onChange={(name, val) => {
+            onChange={(val, name) => {
               updateOption(i, name, val);
             }}
           />
@@ -84,7 +84,7 @@ export function ToggleOptions(props) {
             name="key"
             value={opt.key}
             disabled="true"
-            // onChange={(name, val) => {
+            // onChange={(val, name) => {
             //   updateOption(i, name, val);
             // }}
           />

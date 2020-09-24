@@ -5,7 +5,11 @@ import { Search } from "@zesty-io/core/Search";
 import { Notice } from "@zesty-io/core/Notice";
 import { notify } from "shell/store/notifications";
 
-import { getHeadTags, updateSiteFont, deleteSiteFont } from "store/settings";
+import {
+  getHeadTags,
+  updateSiteFont,
+  deleteSiteFont
+} from "../../../store/settings";
 
 import styles from "./Fonts.less";
 export default function Installed() {
@@ -128,16 +132,20 @@ export default function Installed() {
 
     request
       .then(res => {
-        notify({
-          kind: "success",
-          message: "Font has been removed"
-        });
+        props.dispatch(
+          notify({
+            kind: "success",
+            message: "Font has been removed"
+          })
+        );
       })
       .catch(err => {
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       });
   }
 
@@ -188,6 +196,7 @@ export default function Installed() {
                 </p>
                 <Button
                   kind="warn"
+                  id="RemoveFont"
                   onClick={() =>
                     toggleEnableFont(variant.label, "0", font.font)
                   }

@@ -3,54 +3,35 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  height: 100vh;
-  overflow-y: scroll;
-  width: 100%;
-  // margin-right: -7px;
-  padding: 0 0 0 24px;
 
   border-top: 1px solid lighten(@globalMenuBkgColor, 5%);
   border-bottom: 1px solid darken(@globalMenuBkgColor, 5%);
 
   a {
     color: @zesty-field-blue;
-    padding: 1rem 0.5rem;
     text-decoration: none;
     letter-spacing: 1px;
-
+    padding: 1rem 0.5rem;
     svg {
       margin-right: 8px;
-      width: 24px !important;
-      text-align: center;
     }
   }
 
-  .control {
-    &:hover,
-    &:active,
-    &:focus {
-      color: @zesty-green;
-    }
-  }
-  .build {
-    &:hover,
-    &:active,
-    &:focus {
-      color: @zesty-blue;
-    }
-  }
-  .optimize {
-    &:hover,
-    &:active,
-    &:focus {
+  .control,
+  .build,
+  .optimize,
+  .settings {
+    &:hover {
       color: @zesty-orange;
     }
   }
+  .control,
+  .build,
+  .optimize,
   .settings {
-    &:hover,
     &:active,
     &:focus {
-      color: @zesty-yellow;
+      color: @zesty-green;
     }
   }
 }

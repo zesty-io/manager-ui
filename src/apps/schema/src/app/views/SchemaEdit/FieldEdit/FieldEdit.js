@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
+import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -22,7 +23,7 @@ import {
   updateFieldSetting,
   deactivateField,
   activateField
-} from "../../../../store/schemaFields";
+} from "shell/store/fields";
 
 import styles from "./FieldEdit.less";
 import { notify } from "shell/store/notifications";
@@ -31,19 +32,19 @@ export function FieldEdit(props) {
     <CollapsibleCard
       className={styles.Card}
       header={Header(props)}
-      footer={Footer(props)}
       open={props.isOpen}
     >
       <FieldSettings
         className={cx(props.field.deletedAt ? styles.Disabled : null)}
-        updateValue={(name, value) => {
+        updateValue={(value, name) => {
           props.dispatch(updateField(props.field.ZUID, name, value));
         }}
-        updateFieldSetting={(name, value) => {
+        updateFieldSetting={(value, name) => {
           props.dispatch(updateFieldSetting(props.field.ZUID, name, value));
         }}
         field={props.field}
       />
+      <Footer {...props} />
     </CollapsibleCard>
   );
 }
@@ -88,7 +89,11 @@ function Header(props) {
   );
 }
 
-function Footer(props) {
+const Footer = connect(state => {
+  return {
+    platform: state.platform
+  };
+})(function Footer(props) {
   const [loading, setLoading] = useState(false);
 
   const onSave = () => {
@@ -99,22 +104,30 @@ function Footer(props) {
         setLoading(false);
 
         if (res.status === 200) {
-          notify({
-            kind: "save",
-            message: `Saved field: ${props.field.name}`
-          });
+          props.dispatch(
+            notify({
+              kind: "save",
+              message: `Saved field: ${props.field.name}`
+            })
+          );
         } else {
-          notify({
-            kind: "warn",
-            message: `Failed tyring to save field: ${props.field.name}`
-          });
+          props.dispatch(
+            notify({
+              kind: "warn",
+              message: `Failed tyring to save field: ${props.field.name}`
+            })
+          );
         }
       })
       .catch(() => setLoading(false));
   };
 
   const handleKeyDown = evt => {
-    if ((evt.metaKey || evt.ctrlKey) && evt.keyCode == 83) {
+    if (
+      ((props.platform.isMac && evt.metaKey) ||
+        (!props.platform.isMac && evt.ctrlKey)) &&
+      evt.key == "s"
+    ) {
       evt.preventDefault();
       if (props.field.dirty) {
         onSave();
@@ -130,53 +143,55 @@ function Footer(props) {
   });
 
   return (
-    <ButtonGroup className={styles.FieldActions}>
-      <Button kind="save" disabled={!props.field.dirty} onClick={onSave}>
-        {loading ? (
-          <FontAwesomeIcon icon={faSpinner} />
-        ) : (
-          <FontAwesomeIcon icon={faSave} />
-        )}
-        Save Changes
-      </Button>
+    <footer>
+      <ButtonGroup className={styles.FieldActions}>
+        <Button kind="save" disabled={!props.field.dirty} onClick={onSave}>
+          {loading ? (
+            <FontAwesomeIcon icon={faSpinner} />
+          ) : (
+            <FontAwesomeIcon icon={faSave} />
+          )}
+          Save Changes
+        </Button>
 
-      {props.field.deletedAt ? (
-        <Button
-          onClick={evt => {
-            evt.preventDefault();
-            setLoading(true);
-            props.dispatch(
-              activateField(props.field.contentModelZUID, props.field.ZUID)
-            );
-          }}
-        >
-          {loading ? (
-            <FontAwesomeIcon icon={faSpinner} />
-          ) : (
-            <FontAwesomeIcon icon={faPlayCircle} />
-          )}
-          Reactivate
-        </Button>
-      ) : (
-        <Button
-          className="deactivate"
-          kind="cancel"
-          onClick={evt => {
-            evt.preventDefault();
-            setLoading(true);
-            props.dispatch(
-              deactivateField(props.field.contentModelZUID, props.field.ZUID)
-            );
-          }}
-        >
-          {loading ? (
-            <FontAwesomeIcon icon={faSpinner} />
-          ) : (
-            <FontAwesomeIcon icon={faPauseCircle} />
-          )}
-          Deactivate
-        </Button>
-      )}
-    </ButtonGroup>
+        {props.field.deletedAt ? (
+          <Button
+            onClick={evt => {
+              evt.preventDefault();
+              setLoading(true);
+              props.dispatch(
+                activateField(props.field.contentModelZUID, props.field.ZUID)
+              );
+            }}
+          >
+            {loading ? (
+              <FontAwesomeIcon icon={faSpinner} />
+            ) : (
+              <FontAwesomeIcon icon={faPlayCircle} />
+            )}
+            Reactivate
+          </Button>
+        ) : (
+          <Button
+            className="deactivate"
+            kind="cancel"
+            onClick={evt => {
+              evt.preventDefault();
+              setLoading(true);
+              props.dispatch(
+                deactivateField(props.field.contentModelZUID, props.field.ZUID)
+              );
+            }}
+          >
+            {loading ? (
+              <FontAwesomeIcon icon={faSpinner} />
+            ) : (
+              <FontAwesomeIcon icon={faPauseCircle} />
+            )}
+            Deactivate
+          </Button>
+        )}
+      </ButtonGroup>
+    </footer>
   );
-}
+});

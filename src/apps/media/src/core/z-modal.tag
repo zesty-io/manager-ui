@@ -7,7 +7,6 @@
     </section>
     <script type="es6">
         this.on('mount', () => {
-            this.blur('on')
             this.modal.addEventListener('click', this.handleModalClick)
             this.root.addEventListener('click', this.handleRootClick)
             if (!opts.secure) {
@@ -15,7 +14,6 @@
             }
         })
         this.on('unmount', () => {
-            this.blur('off')
             this.modal.removeEventListener('click', this.handleModalClick)
             this.root.removeEventListener('click', this.handleRootClick)
             document.removeEventListener('keyup', this.closeOnEsc)
@@ -38,17 +36,6 @@
             // then we know it was outside the modal
             // and we should close it
             this.unmount()
-        }
-        this.blur = (blur) => {
-            switch (blur) {
-                case 'on':
-                    $$('#zesty-wrap').addClass('blur')
-                    break
-                default:
-                    // defaults to off
-                    $$('#zesty-wrap').removeClass('blur')
-                    break
-            }
         }
     </script>
     <style>
@@ -75,8 +62,6 @@
         background-color: #576374;
         color: #c7d4ea;
         cursor: pointer;
-        <!--  font-size: 1.4rem;  -->
-        font-family: Arial;
         padding: 0.5rem 0.8rem;
         position: absolute;
         right: -1px;

@@ -9,54 +9,56 @@ export const localStorage = store => next => action => {
     switch (action.type) {
       case "SET_LOCAL":
         set(
-          `${state.instance.zuid}:${action.payload.key}`,
+          `${state.instance.ZUID}:${action.payload.key}`,
           action.payload.data
         );
+        break;
 
       case "GET_LOCAL":
         // TODO how does this get returned to caller?
-        get(`${state.instance.zuid}:${action.payload.key}`);
+        get(`${state.instance.ZUID}:${action.payload.key}`);
+        break;
 
       case "FETCH_ITEM_SUCCESS":
       case "FETCH_ITEMS_SUCCESS":
       case "SEARCH_ITEMS_SUCCESS":
-        set(
-          `${state.instance.zuid}:contentModelItems`,
-          state.contentModelItems
-        );
-      // // Write Item data to IndexedDB
-      // const items = store.getState().contentModelItems;
-      // Object.keys(items).forEach(itemZUID => {
-      //   set(
-      //     `${zesty.site.zuid}:contentModelItems:${itemZUID}`,
-      //     items[itemZUID]
-      //   );
-      // });
-      //
-      // // Merge existing IndexedDB keys with incoming item keys
-      // let currentKeys = get(`${zesty.site.zuid}:contentModelItems`).then(
-      //   currentKeys => {
-      //     if (!Array.isArray(currentKeys)) {
-      //       currentKeys = [];
-      //     }
-      //     let keys = new Set(currentKeys);
-      //     Object.keys(items).forEach(key => keys.add(key));
-      //
-      //     set(`${zesty.site.zuid}:contentModelItems`, Array.from(keys));
-      //   }
-      // );
+        set(`${state.instance.ZUID}:content`, state.content);
+        // // Write Item data to IndexedDB
+        // const items = store.getState().content;
+        // Object.keys(items).forEach(itemZUID => {
+        //   set(
+        //     `${zesty.instance.ZUID}:content:${itemZUID}`,
+        //     items[itemZUID]
+        //   );
+        // });
+        //
+        // // Merge existing IndexedDB keys with incoming item keys
+        // let currentKeys = get(`${zesty.instance.ZUID}:content`).then(
+        //   currentKeys => {
+        //     if (!Array.isArray(currentKeys)) {
+        //       currentKeys = [];
+        //     }
+        //     let keys = new Set(currentKeys);
+        //     Object.keys(items).forEach(key => keys.add(key));
+        //
+        //     set(`${zesty.instance.ZUID}:content`, Array.from(keys));
+        //   }
+        // );
+        break;
 
+      case "FETCH_FIELD_SUCCESS":
       case "FETCH_FIELDS_SUCCESS":
-        set(
-          `${state.instance.zuid}:contentModelFields`,
-          state.contentModelFields
-        );
+        set(`${state.instance.ZUID}:fields`, state.fields);
+        break;
 
+      case "FETCH_MODEL_SUCCESS":
       case "FETCH_MODELS_SUCCESS":
-        set(`${state.instance.zuid}:contentModels`, state.contentModels);
+        set(`${state.instance.ZUID}:models`, state.models);
+        break;
 
       case "FETCH_CONTENT_NAV_SUCCESS":
-        set(`${state.instance.zuid}:contentNav`, state.contentNav.raw);
+        set(`${state.instance.ZUID}:navContent`, state.navContent.raw);
+        break;
     }
   } catch (err) {
     console.error("IndexedDB:set:error", err);

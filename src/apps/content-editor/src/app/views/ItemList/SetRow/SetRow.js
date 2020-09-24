@@ -1,6 +1,7 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
+import { connect } from "react-redux";
 
 import { DateCell } from "./DateCell";
 import { ImageCell } from "./ImageCell";
@@ -18,7 +19,7 @@ import { InternalLinkCell } from "./InternalLinkCell";
 import { PublishStatusCell } from "./PublishStatusCell";
 
 import styles from "./SetRow.less";
-export default React.memo(function SetRow(props) {
+export default connect()(function SetRow(props) {
   let history = useHistory();
 
   const item = props.allItems[props.itemZUID];
@@ -40,7 +41,10 @@ export default React.memo(function SetRow(props) {
       className={cx(styles.SetRow, props.isDirty && styles.Dirty)}
       style={{ ...props.style }}
     >
-      <PublishStatusCell type={props.model.type} item={item} />
+      <PublishStatusCell
+        type={props.model && props.model.type ? props.model.type : null}
+        item={item}
+      />
       <div className={styles.Cells} onClick={selectRow}>
         {props.fields.map(field => {
           switch (field.datatype) {
@@ -62,7 +66,7 @@ export default React.memo(function SetRow(props) {
                 <OneToManyCell
                   key={field.name + props.itemZUID}
                   className={styles.Cell}
-                  onRemove={(name, value) => {
+                  onRemove={(value, name) => {
                     return props.onChange(props.itemZUID, name, value);
                   }}
                   value={props.data[field.name] || ""}
@@ -121,6 +125,7 @@ export default React.memo(function SetRow(props) {
                   key={field.name + props.itemZUID}
                   className={styles.Cell}
                   data={props.data[field.name]}
+                  dispatch={props.dispatch}
                 />
               );
 
@@ -137,11 +142,11 @@ export default React.memo(function SetRow(props) {
               return (
                 <ToggleCell
                   key={field.name + props.itemZUID}
-                  className={styles.Cell}
+                  className={cx("ToggleCell", styles.Cell)}
                   name={field.name}
                   field={field}
                   value={props.data[field.name]}
-                  onChange={(name, value) =>
+                  onChange={(value, name) =>
                     props.onChange(props.itemZUID, name, value)
                   }
                 />
@@ -160,10 +165,10 @@ export default React.memo(function SetRow(props) {
               return (
                 <SortCell
                   key={field.name + props.itemZUID}
-                  className={styles.Cell}
+                  className={cx("SortCell", styles.Cell)}
                   name={field.name}
                   value={props.data[field.name]}
-                  onChange={(name, value) => {
+                  onChange={(value, name) => {
                     return props.onChange(props.itemZUID, name, value);
                   }}
                 />

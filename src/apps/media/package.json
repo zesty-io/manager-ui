@@ -5,9 +5,9 @@
   "main": "src/index.js",
   "scripts": {
     "test": "cypress run",
-    "start": "../../../node_modules/.bin/webpack --display=errors-only --progress --watch && npx gulp watch",
+    "start": "concurrently \"cross-env ../../../node_modules/.bin/webpack --display=errors-only --progress --watch\" \"gulp\"",
     "prebuild": "npm --silent install",
-    "build": "../../../node_modules/.bin/webpack --display=errors-only --progress -p && npx gulp"
+    "build": "concurrently \"cross-env ../../../node_modules/.bin/webpack --display=errors-only --progress -p\" \"gulp\""
   },
   "author": "",
   "license": "UNLICENSED",
@@ -18,9 +18,11 @@
     }
   },
   "dependencies": {
+    "concurrently": "^5.2.0",
     "riot": "2.0.15"
   },
   "devDependencies": {
+    "cross-env": "^7.0.2",
     "gulp": "4.0.2",
     "gulp-cli": "^2.2.0",
     "gulp-concat": "2.6.1",

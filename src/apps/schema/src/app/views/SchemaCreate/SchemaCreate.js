@@ -16,8 +16,8 @@ import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
 import { fetchParents } from "../../../store/parents";
-import { createModel } from "../../../store/schemaModels";
-import { formatName } from "../../../store/schemaFields";
+import { createModel } from "shell/store/models";
+import { formatName } from "utility/formatName";
 
 const SCHEMA_TYPES = [
   {
@@ -142,7 +142,7 @@ export default connect(state => {
                 offValue={"No"}
                 onValue={"Yes"}
                 value={url}
-                onChange={(name, val) =>
+                onChange={val =>
                   setType({
                     type: "url",
                     payload: val
@@ -158,7 +158,7 @@ export default connect(state => {
                 offValue={"No"}
                 onValue={"Yes"}
                 value={multiple}
-                onChange={(name, val) =>
+                onChange={val =>
                   setType({
                     type: "multiple",
                     payload: val
@@ -171,7 +171,7 @@ export default connect(state => {
               name="type"
               label="Selected Model Type"
               value={type}
-              onChange={(name, val) =>
+              onChange={val =>
                 setType({
                   type: "type",
                   payload: val
@@ -273,7 +273,7 @@ export default connect(state => {
               placeholder=""
               value={label}
               maxLength="100"
-              onChange={(name, value) => {
+              onChange={value => {
                 setLabel(value);
                 // When changing the label update the reference name as well
                 setName(formatName(value));
@@ -288,7 +288,7 @@ export default connect(state => {
               placeholder=""
               value={name}
               maxLength="100"
-              onChange={(name, value) => setName(formatName(value))}
+              onChange={value => setName(formatName(value))}
               error={errors["name"]}
             />
 
@@ -298,7 +298,7 @@ export default connect(state => {
               description="A description of this model is shown to content editors. It can be helpful to provide context and explain what this model is used for."
               value={description}
               maxLength={500}
-              onChange={(name, value) => setDescription(value)}
+              onChange={value => setDescription(value)}
             />
           </section>
 
@@ -312,7 +312,7 @@ export default connect(state => {
             <FieldTypeDropDown
               name="parent"
               label="Select this model's parent"
-              onChange={(name, value) => setParent(value)}
+              onChange={value => setParent(value)}
               options={props.parents}
             />
 
@@ -368,10 +368,12 @@ export default connect(state => {
                 )
                 .then(res => {
                   if (res.status === 200) {
-                    notify({
-                      kind: "save",
-                      message: `Created ${label} model`
-                    });
+                    props.dispatch(
+                      notify({
+                        kind: "save",
+                        message: `Created ${label} model`
+                      })
+                    );
 
                     if (res.data.ZUID) {
                       if (type === "templateset") {
@@ -401,24 +403,30 @@ export default connect(state => {
 
                       history.push(`/schema/${res.data.ZUID}`);
                     } else {
-                      notify({
-                        kind: "error",
-                        message: `Model ${label} is missing ZUID.`
-                      });
+                      props.dispatch(
+                        notify({
+                          kind: "error",
+                          message: `Model ${label} is missing ZUID.`
+                        })
+                      );
                     }
                   } else {
-                    notify({
-                      kind: "error",
-                      message: `Failed creating ${label} model. ${res.error}`
-                    });
+                    props.dispatch(
+                      notify({
+                        kind: "error",
+                        message: `Failed creating ${label} model. ${res.error}`
+                      })
+                    );
                   }
                 })
                 .catch(err => {
                   console.error(err);
-                  notify({
-                    kind: "error",
-                    message: `Network error occured. Failed to create ${label} model.`
-                  });
+                  props.dispatch(
+                    notify({
+                      kind: "error",
+                      message: `Network error occured. Failed to create ${label} model.`
+                    })
+                  );
                 });
             }}
           >

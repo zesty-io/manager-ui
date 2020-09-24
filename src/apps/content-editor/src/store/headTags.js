@@ -134,6 +134,7 @@ export const createHeadTag = tag => {
           tag: res.data
         });
       }
+      return res;
     });
   };
 };
@@ -148,6 +149,7 @@ export const deleteHeadTag = id => {
           type: "DELETE_HEADTAG",
           id
         });
+        return res;
       }
     });
   };

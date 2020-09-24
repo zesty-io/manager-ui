@@ -49,7 +49,7 @@ export const WidgetListed = React.memo(function WidgetListed(props) {
             </span>
           }
           value={props.sort}
-          onChange={(name, value) => {
+          onChange={(value, name) => {
             props.dispatch({
               type: "SET_ITEM_META",
               itemZUID: props.itemZUID,

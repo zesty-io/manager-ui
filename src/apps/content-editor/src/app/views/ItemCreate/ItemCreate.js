@@ -9,8 +9,8 @@ import { Editor } from "../../components/Editor";
 import { ItemSettings } from "../ItemEdit/Meta/ItemSettings";
 import { DataSettings } from "../ItemEdit/Meta/ItemSettings/DataSettings";
 
-import { fetchFields } from "../../../store/contentModelFields";
-import { createItem, generateItem } from "../../../store/contentModelItems";
+import { fetchFields } from "shell/store/fields";
+import { createItem, generateItem } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 
 import styles from "./ItemCreate.less";
@@ -19,18 +19,18 @@ export default connect((state, props) => {
   const itemZUID = `new:${modelZUID}`;
 
   return {
+    platform: state.platform,
     itemZUID,
     modelZUID,
-    model: state.contentModels[modelZUID] || {},
-    item: state.contentModelItems[itemZUID] || {},
+    model: state.models[modelZUID] || {},
+    item: state.content[itemZUID] || {},
     instance: state.instance,
-    contentModelItems: state.contentModelItems,
-    fields: Object.keys(state.contentModelFields)
+    content: state.content,
+    fields: Object.keys(state.fields)
       .filter(
-        fieldZUID =>
-          state.contentModelFields[fieldZUID].contentModelZUID === modelZUID
+        fieldZUID => state.fields[fieldZUID].contentModelZUID === modelZUID
       )
-      .map(fieldZUID => state.contentModelFields[fieldZUID])
+      .map(fieldZUID => state.fields[fieldZUID])
       .sort((a, b) => a.sort - b.sort)
   };
 })(
@@ -95,8 +95,11 @@ export default connect((state, props) => {
     };
 
     handleSave = evt => {
-      // NOTE: this is likely OS dependant
-      if ((evt.metaKey || evt.ctrlKey) && evt.keyCode == 83) {
+      if (
+        ((this.props.platform.isMac && evt.metaKey) ||
+          (!this.props.platform.isMac && evt.ctrlKey)) &&
+        evt.key == "s"
+      ) {
         evt.preventDefault();
         this.onSave();
       }
@@ -118,12 +121,14 @@ export default connect((state, props) => {
 
           if (res.err || res.error) {
             if (res.missingRequired) {
-              notify({
-                message: `You are missing data in ${res.missingRequired
-                  .map(f => f.label)
-                  .join(", ")}`,
-                kind: "error"
-              });
+              this.props.dispatch(
+                notify({
+                  message: `You are missing data in ${res.missingRequired
+                    .map(f => f.label)
+                    .join(", ")}`,
+                  kind: "error"
+                })
+              );
 
               // scroll to required field
               this.setState({
@@ -132,14 +137,18 @@ export default connect((state, props) => {
               });
             }
             if (res.error) {
-              notify({
-                message: res.error,
-                kind: "warn"
-              });
+              this.props.dispatch(
+                notify({
+                  message: res.error,
+                  kind: "warn"
+                })
+              );
             }
           } else if (res.data && res.data.ZUID) {
             // Redirect to new item after creating
-            window.location = `/content/${this.props.modelZUID}/${res.data.ZUID}`;
+            this.props.history.push(
+              `/content/${this.props.modelZUID}/${res.data.ZUID}`
+            );
 
             this.props.dispatch(
               notify({
@@ -148,10 +157,12 @@ export default connect((state, props) => {
               })
             );
           } else {
-            notify({
-              message: "Unknown issue creating new item",
-              kind: "warn"
-            });
+            this.props.dispatch(
+              notify({
+                message: "Unknown issue creating new item",
+                kind: "warn"
+              })
+            );
           }
         })
         .catch(err => {
@@ -184,7 +195,7 @@ export default connect((state, props) => {
                   scrolled={this.makeActive}
                   itemZUID={this.props.itemZUID}
                   item={this.props.item}
-                  items={this.props.contentModelItems}
+                  items={this.props.content}
                   instance={this.props.instance}
                   modelZUID={this.props.modelZUID}
                   model={this.props.model}
@@ -209,7 +220,7 @@ export default connect((state, props) => {
                       instance={this.props.instance}
                       modelZUID={this.props.modelZUID}
                       item={this.props.item}
-                      contentModelItems={this.props.contentModelItems}
+                      content={this.props.content}
                       dispatch={this.props.dispatch}
                     />
                   )}

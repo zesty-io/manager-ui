@@ -9,13 +9,13 @@ import { Url } from "@zesty-io/core/Url";
 
 import styles from "./OneToManyCell.less";
 export class OneToManyCell extends PureComponent {
-  onRemove = (name, itemZUID) => {
+  onRemove = itemZUID => {
     this.props.onRemove(
-      this.props.name,
       this.props.value
         .split(",")
         .filter(item => item !== itemZUID)
-        .join(",")
+        .join(","),
+      this.props.name
     );
   };
 

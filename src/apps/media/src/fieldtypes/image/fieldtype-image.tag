@@ -189,9 +189,6 @@
         }
         .fieldtype.image .title {
             display: block;
-            font-family: 'Gibson Light', Arial;
-            font-weight: normal;
-            <!--  font-size: 1.4rem;  -->
             margin-bottom: 5px;
             margin-top: 0px;
         }
@@ -209,7 +206,6 @@
             margin: 1rem;
         }
         .fieldtype.image section .controls p {
-            <!--  font-size: 1.4rem;  -->
             font-weight: 600;
             margin-left: 1rem;
             padding: 0.5rem;
@@ -223,7 +219,6 @@
             flex-wrap: wrap;
         }
         .fieldtype.image section .images p {
-            <!--  font-size: 1.4rem;  -->
             font-weight: 700;
         }
         .fieldtype.image section z-button button {
@@ -239,7 +234,6 @@
             position: absolute;
             height: 100%;
             width: 100%;
-            <!--  font-sifont-sizeze: 1.8rem;  -->
             display: flex;
             color: #EFEFEF;
             text-shadow: 1px 1px 1px #000;

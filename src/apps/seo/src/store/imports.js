@@ -1,5 +1,5 @@
-import { REDIRECT_CREATE_SUCCESS } from "./redirects";
-
+import parse from "csv-parse/lib/es5/sync";
+import { notify } from "shell/store/notifications";
 export const IMPORT_LOADING = "IMPORT_LOADING";
 export const IMPORT_REDIRECTS = "IMPORT_REDIRECTS";
 export const IMPORT_CODE = "IMPORT_CODE";
@@ -11,7 +11,7 @@ export function imports(state = {}, action) {
     case IMPORT_REDIRECTS:
       return action.redirects;
 
-    case REDIRECT_CREATE_SUCCESS:
+    case "REDIRECT_CREATE_SUCCESS":
       return Object.keys(state).reduce((acc, key) => {
         if (key === action.redirect.path) {
           // We take the states computed target over the zuid used
@@ -94,10 +94,15 @@ export function CSVImporter(evt) {
 
     if (evt.currentTarget.files.length) {
       const state = getState();
+      const CSV_REGEXP = /.*\.csv$/;
       for (var i = evt.currentTarget.files.length - 1; i >= 0; i--) {
         const file = evt.currentTarget.files[i];
 
-        if (file.type === "text/csv" || file.type === "text/xml") {
+        if (
+          file.type === "text/csv" ||
+          file.type === "text/xml" ||
+          file.name.match(CSV_REGEXP) // workaround for Windows CSV which have no MIME type
+        ) {
           const fileReader = new FileReader();
 
           fileReader.onerror = err => {
@@ -112,16 +117,16 @@ export function CSVImporter(evt) {
           fileReader.onloadend = () => {
             let targets = {};
 
-            if (file.type === "text/csv") {
+            if (file.type === "text/csv" || file.name.match(CSV_REGEXP)) {
               const [columns, imports] = CSVToArray(fileReader.result);
               targets = compareKeys(imports, state.redirects);
             } else if (file.type === "text/xml") {
               const parser = new DOMParser();
               const xml = parser.parseFromString(fileReader.result, "text/xml");
-              targets = parse(xml);
+              targets = parseXML(xml);
             }
 
-            targets = findTargetPages(targets, state.paths);
+            targets = findTargetPages(targets);
 
             // Avoid flash of loader
             setTimeout(() => {
@@ -138,7 +143,7 @@ export function CSVImporter(evt) {
             type: IMPORT_REDIRECTS,
             redirects: []
           });
-          growl("Imports must be a CSV file.", "red-growl");
+          dispatch(notify({ message: "Imports must be a CSV file" }));
           throw new Error("Importer requires a CSV");
         }
       }
@@ -152,12 +157,14 @@ export function CSVImporter(evt) {
  * row a list column headers
  */
 function CSVToArray(csv) {
-  const rows = csv.split(/\r?\n|\r/); // linebreaks
-  const columns = rows[0].split(",");
+  const rows = parse(csv, {
+    skip_empty_lines: true
+  });
+  const columns = rows[0];
   const redirects = rows
     .slice(1)
     .map(row => {
-      const [original, target, code] = row.split(",");
+      const [original, target, code] = row;
       const [path, query] = original.split("?");
       return {
         path: path,
@@ -208,18 +215,14 @@ function compareKeys(imports, redirects) {
  * @param  {object} paths   System page paths
  * @return {object}         Redirect imports keyed by path
  */
-function findTargetPages(imports, paths) {
+function findTargetPages(imports) {
   return Object.keys(imports).reduce((acc, path) => {
     acc[path] = { ...imports[path] };
-    if (paths[imports[path].target]) {
-      acc[path].target_type = "page";
-      acc[path].target_zuid = paths[imports[path].target].zuid;
-    }
     return acc;
   }, {});
 }
 
-function parse(xml) {
+function parseXML(xml) {
   const urlset = xml.children[0];
 
   if (urlset.nodeName !== "urlset") {

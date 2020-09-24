@@ -8,18 +8,23 @@
   li {
     display: flex;
     align-content: center;
+    padding: 0 6px;
+
     .Item {
       margin: 0;
-      padding: 0 24px;
+      padding: 2.2px 24px;
       font-size: 18px;
       font-weight: 400;
       text-shadow: none;
       letter-spacing: 1px;
       color: @zesty-light-gray;
       transition: all 0.1s linear;
+      text-decoration: none;
+      background-color: #404759;
+      border: 1px solid @zesty-dark-blue;
+      border-radius: 4px;
       &.Selected {
         color: @zesty-white;
-        border-bottom: 2px solid @zesty-white;
       }
       &:hover {
         color: @zesty-white;

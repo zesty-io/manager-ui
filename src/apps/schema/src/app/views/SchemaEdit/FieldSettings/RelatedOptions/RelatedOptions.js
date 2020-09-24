@@ -3,17 +3,13 @@ import { connect } from "react-redux";
 
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
-import { fetchFields } from "../../../../../store/schemaFields";
+import { fetchFields } from "shell/store/fields";
 
 import styles from "./RelatedOptions.less";
 export default connect(state => {
   return {
-    models: Object.keys(state.schemaModels).map(
-      modelZUID => state.schemaModels[modelZUID]
-    ),
-    fields: Object.keys(state.schemaFields).map(
-      fieldZUID => state.schemaFields[fieldZUID]
-    )
+    models: Object.keys(state.models).map(modelZUID => state.models[modelZUID]),
+    fields: Object.keys(state.fields).map(fieldZUID => state.fields[fieldZUID])
   };
 })(function RelatedOptions(props) {
   const [loading, setLoading] = useState(false);
@@ -56,7 +52,7 @@ export default connect(state => {
             name="relatedModelZUID"
             label="Related model"
             value={selectedModel}
-            onChange={(name, val) => {
+            onChange={(val, name) => {
               setSelectedModel(val);
               // when changing the model reset the selected field
               setSelectedField("0");
@@ -75,7 +71,7 @@ export default connect(state => {
             name="relatedFieldZUID"
             label="Model field to display"
             value={selectedField}
-            onChange={(name, val) => {
+            onChange={(val, name) => {
               setSelectedField(val);
               props.updateValue(name, val);
             }}

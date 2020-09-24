@@ -19,10 +19,12 @@ export default function RedirectManager(props) {
         setLoading(false);
       })
       .catch(err => {
-        notify({
-          kind: "warn",
-          message: "Failed to load redirects data"
-        });
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message: "Failed to load redirects data"
+          })
+        );
         setLoading(false);
       });
   }, []);
@@ -31,7 +33,7 @@ export default function RedirectManager(props) {
     <div className={styles.RedirectsManager}>
       <RedirectActions
         dispatch={props.dispatch}
-        redirectsTotal={props.redirects.length}
+        redirectsTotal={Object.keys(props.redirects).length}
       />
 
       <WithLoader condition={!loading} message="Loading Redirects">

@@ -1,172 +1,136 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { useLocation, useHistory } from "react-router";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faArrowsAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowsAlt,
+  faCaretDown,
+  faCaretLeft
+} from "@fortawesome/free-solid-svg-icons";
 import { ReorderNav } from "../ReorderNav";
 import { Nav } from "@zesty-io/core/Nav";
 import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Select, Option } from "@zesty-io/core/Select";
 
-import { collapseNavItem, hideNavItem } from "../../../store/contentNav";
+import { collapseNavItem, hideNavItem } from "../../../store/navContent";
 
 import styles from "./ContentNav.less";
-export class ContentNav extends React.PureComponent {
-  state = {
-    selected: window.location.hash || "",
-    openReorder: false,
-    hiddenClosed: true
+export function ContentNav(props) {
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const location = useLocation();
+
+  const [selected, setSelected] = useState(location.pathname);
+  const [reorderOpen, setReorderOpen] = useState(false);
+  const [hiddenOpen, setHiddenOpen] = useState(false);
+
+  useEffect(() => {
+    setSelected(location.pathname);
+  }, [location]);
+
+  const collapseNode = path => {
+    dispatch(collapseNavItem(path));
   };
 
-  componentWillUnmount() {
-    window.removeEventListener("hashchange", this.handleHashChange);
-  }
-
-  componentDidMount() {
-    window.addEventListener("hashchange", this.handleHashChange);
-  }
-
-  handleOpen = path => {
-    this.props.dispatch(collapseNavItem(path));
-  };
-
-  handleHide = path => {
-    this.props.dispatch(hideNavItem(path));
-  };
-
-  handleCreateSelect = (name, ZUID) => {
+  const handleCreateSelect = ZUID => {
     if (ZUID && ZUID != "0") {
-      window.location = `/content/${ZUID}/new`;
+      history.push(`/content/${ZUID}/new`);
     }
   };
 
-  handleHashChange = () => {
-    if (window.location.hash !== this.state.selected) {
-      this.setState({
-        selected: window.location
-      });
+  const actions = [
+    {
+      icon: "fas fa-eye-slash",
+      onClick: path => {
+        dispatch(hideNavItem(path));
+      }
     }
-  };
+  ];
 
-  render() {
-    return (
-      <React.Fragment>
-        <div className={styles.Actions}>
-          <ButtonGroup className={styles.ButtonGroup}>
-            <Button
-              title="Open content search"
-              onClick={() =>
-                riot.mount(document.querySelector("#modalMount"), "z-spotlight")
-              }
-            >
-              <FontAwesomeIcon icon={faSearch} />
-              Search
-            </Button>
-            <Button
-              id="ReorderNavButton"
-              onClick={() => this.setState({ openReorder: true })}
-            >
-              <FontAwesomeIcon
-                icon={faArrowsAlt}
-                title="Re-order content navigation"
+  return (
+    <React.Fragment>
+      <div className={styles.Actions}>
+        <Select
+          name="createItemFromModel"
+          className={`${styles.CreateSelect} ${styles.Select} CreateItemDropdown`}
+          onSelect={handleCreateSelect}
+          value="0"
+        >
+          <Option value="0" text="— Create New Item —" />
+          <Option value="link" text="Internal/External Link" />
+          {Object.keys(props.models)
+            .filter(modelZUID => {
+              return (
+                props.models[modelZUID].label !==
+                ("Dashboard Widgets" || "Widgets")
+              );
+            })
+            .sort((a, b) => {
+              return props.models[a].label >= props.models[b].label ? 1 : -1;
+            })
+            .map(modelZUID => (
+              <Option
+                key={modelZUID}
+                value={modelZUID}
+                text={props.models[modelZUID].label}
               />
-              Reorder
-            </Button>
-          </ButtonGroup>
+            ))}
+        </Select>
+        <Button id="ReorderNavButton" onClick={() => setReorderOpen(true)}>
+          <FontAwesomeIcon
+            icon={faArrowsAlt}
+            title="Re-order content navigation"
+          />
+        </Button>
+      </div>
 
-          <Select
-            name="createItemFromModel"
-            className={`${styles.CreateSelect} ${styles.Select} CreateItemDropdown`}
-            onSelect={this.handleCreateSelect}
-            value="0"
+      <div className={styles.NavWrap}>
+        <h1 className={styles.NavTitle}>Content</h1>
+        <Nav
+          id="MainNavigation"
+          className={styles.Nav}
+          tree={props.nav.nav}
+          selected={selected}
+          collapseNode={collapseNode}
+          actions={actions}
+        />
+
+        <h1 className={styles.NavTitle}>Headless Content Models</h1>
+        <Nav
+          id="HeadlessNavigation"
+          className={styles.Nav}
+          tree={props.nav.headless}
+          selected={selected}
+          collapseNode={collapseNode}
+          actions={actions}
+        />
+
+        <div className={styles.HiddenNav}>
+          <h1
+            className={styles.NavTitle}
+            onClick={() => setHiddenOpen(!hiddenOpen)}
           >
-            <Option value="0" text="— Create New Item —" />
-            <Option value="link" text="Internal/External Link" />
-            {Object.keys(this.props.models)
-              .filter(modelZUID => {
-                return (
-                  this.props.models[modelZUID].label !==
-                  ("Dashboard Widgets" || "Widgets")
-                );
-              })
-              .sort((a, b) => {
-                return this.props.models[a].label >= this.props.models[b].label
-                  ? 1
-                  : -1;
-              })
-              .map(modelZUID => (
-                <Option
-                  key={modelZUID}
-                  value={modelZUID}
-                  text={this.props.models[modelZUID].label}
-                />
-              ))}
-          </Select>
-        </div>
-
-        <div className={styles.NavWrap}>
-          <h1 className={styles.NavTitle}>Content</h1>
+            <span style={{ flex: 1 }}>Hidden Items</span>
+            {hiddenOpen ? (
+              <FontAwesomeIcon icon={faCaretDown} />
+            ) : (
+              <FontAwesomeIcon icon={faCaretLeft} />
+            )}
+          </h1>
           <Nav
-            id="MainNavigation"
-            className={styles.Nav}
-            tree={this.props.nav.nav}
-            selected={this.state.selected}
-            handleOpen={this.handleOpen}
-            handleHide={this.handleHide}
+            id="HiddenNav"
+            className={(styles.Nav, hiddenOpen ? "" : styles.HiddenNavClosed)}
+            tree={props.nav.hidden}
+            selected={selected}
+            collapseNode={collapseNode}
+            actions={actions}
           />
-
-          <h1 className={styles.NavTitle}>Headless Content Models</h1>
-          <Nav
-            id="HeadlessNavigation"
-            className={styles.Nav}
-            tree={this.props.nav.headless}
-            selected={this.state.selected}
-            handleOpen={this.handleOpen}
-            handleHide={this.handleHide}
-          />
-
-          <div className={styles.HiddenNav}>
-            <h1
-              className={styles.NavTitle}
-              onClick={() =>
-                this.setState({
-                  hiddenClosed: !this.state.hiddenClosed
-                })
-              }
-            >
-              <span style={{ flex: 1 }}>Hidden Items</span>
-              <i
-                className={
-                  this.state.hiddenClosed
-                    ? "fa fa-caret-left"
-                    : "fa fa-caret-down"
-                }
-              />
-            </h1>
-            <Nav
-              id="HiddenNav"
-              className={
-                (styles.Nav,
-                this.state.hiddenClosed ? styles.HiddenNavClosed : "")
-              }
-              tree={this.props.nav.hidden}
-              selected={this.state.selected}
-              handleOpen={this.handleOpen}
-              handleHide={this.handleHide}
-            />
-          </div>
         </div>
+      </div>
 
-        {this.state.openReorder && (
-          <ReorderNav
-            handleClose={() =>
-              this.setState({
-                openReorder: false
-              })
-            }
-          />
-        )}
-      </React.Fragment>
-    );
-  }
+      {reorderOpen && <ReorderNav handleClose={() => setReorderOpen(false)} />}
+    </React.Fragment>
+  );
 }

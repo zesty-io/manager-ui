@@ -21,15 +21,15 @@ import {
   searchItems,
   saveItem,
   fetchItemPublishing
-} from "../../../store/contentModelItems";
-import { fetchFields } from "../../../store/contentModelFields";
+} from "shell/store/content";
+import { fetchFields } from "shell/store/fields";
 import { notify } from "shell/store/notifications";
 import { findFields, findItems } from "./findUtils";
 
 import styles from "./ItemList.less";
 export default connect((state, props) => {
   const { modelZUID } = props.match.params;
-  const model = state.contentModels[modelZUID];
+  const model = state.models[modelZUID];
 
   const selectedLang = state.languages
     ? state.languages.find(lang => lang.code === state.user.selected_lang) || {}
@@ -44,14 +44,14 @@ export default connect((state, props) => {
     sortedBy: "",
     reverseSort: false,
     instance: state.instance,
-    allItems: state.contentModelItems,
-    allFields: state.contentModelFields,
-    dirtyItems: Object.keys(state.contentModelItems).filter(
+    allItems: state.content,
+    allFields: state.fields,
+    dirtyItems: Object.keys(state.content).filter(
       item =>
-        state.contentModelItems[item].meta &&
-        state.contentModelItems[item].meta.contentModelZUID === modelZUID &&
-        state.contentModelItems[item].dirty &&
-        state.contentModelItems[item].meta.ZUID.slice(0, 3) !== "new" // Don't include new items
+        state.content[item].meta &&
+        state.content[item].meta.contentModelZUID === modelZUID &&
+        state.content[item].dirty &&
+        state.content[item].meta.ZUID.slice(0, 3) !== "new" // Don't include new items
     )
   };
 })(
@@ -199,9 +199,9 @@ export default connect((state, props) => {
               () => {
                 const { filterTerm, sortedBy, status, colType } = this.state;
                 if (filterTerm) {
-                  this.onFilter(null, filterTerm);
+                  this.onFilter(filterTerm);
                 } else if (status) {
-                  this.onStatus(null, status);
+                  this.onStatus(status);
                 } else if (sortedBy) {
                   this.onSort(sortedBy, colType);
                 }
@@ -219,9 +219,9 @@ export default connect((state, props) => {
               () => {
                 const { filterTerm, sortedBy, status, colType } = this.state;
                 if (filterTerm) {
-                  this.onFilter(null, filterTerm);
+                  this.onFilter(filterTerm);
                 } else if (status) {
-                  this.onStatus(null, status);
+                  this.onStatus(status);
                 } else if (sortedBy) {
                   this.onSort(sortedBy, colType);
                 }
@@ -258,17 +258,24 @@ export default connect((state, props) => {
             saving: false
           });
 
-          notify({
-            message: `All ${this.props.model.label} changes saved`,
-            kind: "save"
-          });
+          this.props.dispatch(
+            notify({
+              message: `All ${this.props.model.label} changes saved`,
+              kind: "save"
+            })
+          );
         })
         .catch(err => {
-          console.error("ItemList:saveItems:error", err);
-          notify({
-            message: `There was an issue saving these changes`,
-            kind: "warn"
+          this.setState({
+            saving: false
           });
+          console.error("ItemList:saveItems:error", err);
+          this.props.dispatch(
+            notify({
+              message: `There was an issue saving these changes`,
+              kind: "warn"
+            })
+          );
         });
     };
 
@@ -314,9 +321,9 @@ export default connect((state, props) => {
           { filterTerm, sortedBy, status, colType, reverseSort },
           () => {
             if (filterTerm) {
-              this.onFilter(null, filterTerm);
+              this.onFilter(filterTerm);
             } else if (status) {
-              this.onStatus(null, status);
+              this.onStatus(status);
             } else if (sortedBy) {
               this.onSort(sortedBy, colType);
             }
@@ -366,7 +373,7 @@ export default connect((state, props) => {
     onSort only deals with the in state items so can work
     autonomously.
     */
-    onFilter = (name, value) => {
+    onFilter = value => {
       let items = findItems(
         this.props.allItems,
         this.props.modelZUID,
@@ -509,13 +516,13 @@ export default connect((state, props) => {
       );
     };
 
-    onStatus = (name, value) => {
+    onStatus = value => {
       // if there is a filter term in place
       // run the onFilter which will also
       // handle the status filter
       if (this.state.filterTerm || this.state.sortedBy) {
         return this.setState({ status: value }, () =>
-          this.onFilter(null, this.state.filterTerm)
+          this.onFilter(this.state.filterTerm)
         );
       }
 
@@ -689,10 +696,6 @@ export default connect((state, props) => {
                     });
                     return this.load(this.props.modelZUID);
                   }}
-                  onCancel={() => {
-                    this.props.history.goBack();
-                    closeNavigationModal();
-                  }}
                 />
 
                 <DragScroll
@@ -701,6 +704,7 @@ export default connect((state, props) => {
                   childRef={this.list}
                 >
                   <List
+                    className={"ItemList"}
                     outerRef={this.list}
                     overscanCount={20}
                     itemCount={this.state.items.length}

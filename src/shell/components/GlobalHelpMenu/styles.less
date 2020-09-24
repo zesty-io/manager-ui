@@ -1,0 +1,67 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+@width: 50rem;
+
+.helpModules {
+  display: flex;
+}
+
+.helpMenu {
+  position: absolute;
+  width: @width;
+  bottom: 85px;
+  left: 60px;
+  padding: 24px;
+  z-index: 2;
+  background: #c7d4ea;
+  box-shadow: 1px 1px 19px #171b26;
+  border-radius: 0 4px 4px 0;
+
+  @media (min-width: 2001px) {
+    bottom: 70px;
+    left: 200px;
+  }
+  //triangle pointing to question icon
+  &:after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid @zesty-light-blue;
+    left: -10px;
+    bottom: 0;
+  }
+}
+
+.helpModule {
+  flex-grow: 1;
+  box-shadow: 1px 1px 5px #171b26;
+
+  .title {
+    color: #253c63;
+  }
+
+  &.primary {
+    flex-grow: 2;
+    margin-left: 0;
+  }
+
+  .helpBox {
+    li {
+      list-style: none;
+      padding-left: 8px;
+      text-indent: -16px;
+      line-height: 24px;
+      margin-bottom: 8px;
+      &:before {
+        content: "○";
+        width: 16px;
+        height: 16px;
+        color: @zesty-light-gray;
+      }
+    }
+  }
+}

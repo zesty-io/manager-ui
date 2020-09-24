@@ -1,7 +1,5 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import { connect } from "react-redux";
-import cx from "classnames";
-import debounce from "lodash.debounce";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -11,7 +9,6 @@ import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
 import { Input } from "@zesty-io/core/Input";
 import { Button } from "@zesty-io/core/Button";
 
-import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 
 import styles from "./LinkEdit.less";
@@ -29,12 +26,7 @@ class LinkEdit extends Component {
       seo_link_title: "",
       target: false,
       rel: false,
-      internalLinkOptions: [
-        {
-          value: "0",
-          html: "<i class='fa fa-home'></i>&nbsp;/"
-        }
-      ],
+      internalLinkOptions: [],
       linkZUID: this.props.linkZUID,
       loading: false
     };
@@ -57,12 +49,7 @@ class LinkEdit extends Component {
         seo_link_title: "",
         target: false,
         rel: false,
-        internalLinkOptions: [
-          {
-            value: "0",
-            html: "<i class='fa fa-home'></i>&nbsp;/"
-          }
-        ],
+        internalLinkOptions: [],
         linkZUID: this.props.linkZUID,
         loading: false
       });
@@ -74,6 +61,7 @@ class LinkEdit extends Component {
     this.setState({
       loading: true
     });
+
     return request(`${CONFIG.service.manager}/ajax/content_call.ajax.php`, {
       method: "POST",
       headers: {
@@ -83,12 +71,54 @@ class LinkEdit extends Component {
     })
       .then(res => {
         if (this.__mounted) {
+          this.setState({
+            loading: false
+          });
+
           if (res.error) {
             notify({
-              message: `Failure updating link: ${res.message}`,
+              message: `Failure loading link: ${res.message}`,
               kind: "error"
             });
           } else {
+            // 0 indicates a top level menu link, nothing to resolve
+            // otherwise if a parent zuid value exists resolve it's data
+            if (res.znode.parent_zuid != "0" && res.znode.parent_zuid) {
+              let parent = this.props.items[res.znode.parent_zuid];
+
+              if (!parent || !parent.meta.ZUID) {
+                this.search(res.znode.parent_zuid);
+              } else {
+                this.setState({
+                  internalLinkOptions: [
+                    ...this.state.internalLinkOptions,
+                    {
+                      value: parent.meta.ZUID,
+                      text: parent.web.path
+                    }
+                  ]
+                });
+              }
+            }
+
+            // Internal links store the linked zuid on the path_part
+            if (res.znode.type === "internal" && res.znode.path_part) {
+              let link = this.props.items[res.znode.path_part];
+              if (!link || !link.meta.ZUID) {
+                this.search(res.znode.path_part);
+              } else {
+                this.setState({
+                  internalLinkOptions: [
+                    ...this.state.internalLinkOptions,
+                    {
+                      value: link.meta.ZUID,
+                      text: link.web.path
+                    }
+                  ]
+                });
+              }
+            }
+
             this.setState({
               zuid: res.znode.zuid,
               set_name: res.znode.set_name,
@@ -97,49 +127,15 @@ class LinkEdit extends Component {
               seo_link_title: res.znode.seo_link_title,
               target: res.znode.target == null ? false : true,
               rel: res.znode.rel == null ? false : true,
-              [res.znode.type]: res.znode.path_part,
-              loading: false
+              [res.znode.type]: res.znode.path_part
             });
-            // take the parentZUID and see if it's in the store
-            if (this.props.items[res.znode.parent_zuid]) {
-              const parent = this.props.items[res.znode.parent_zuid];
-              this.setState({
-                internalLinkOptions: [
-                  ...this.state.internalLinkOptions,
-                  {
-                    value: parent.meta.ZUID,
-                    text: parent.web.metaTitle
-                  }
-                ]
-              });
-            } else {
-              // if it isnt we have to search for it
-              this.handleSearch(res.znode.parent_zuid);
-            }
-            // take the internal link ZUID and see if it's in the store
-            if (res.znode.type === "internal") {
-              const linkValue = this.props.items[res.znode.path_part];
-              if (!linkValue) {
-                // if it isnt we have to search for it
-                this.resolveLink(res.znode.path_part);
-              } else {
-                this.setState({
-                  internalLinkOptions: [
-                    ...this.state.internalLinkOptions,
-                    {
-                      value: linkValue.meta.ZUID,
-                      text: linkValue.web.metaTitle
-                    }
-                  ]
-                });
-              }
-            }
           }
         }
       })
       .catch(err => {
+        console.error(err);
         notify({
-          message: "Something went wrong fetching your data",
+          message: "There was an issue loading this link",
           kind: "error"
         });
         this.setState({
@@ -189,68 +185,55 @@ class LinkEdit extends Component {
         }
       })
       .catch(err => {
-        notify({ message: "Error saving link", kind: "error" });
+        console.error(err);
         this.setState({ saving: false });
+        notify({ message: "Error saving link", kind: "error" });
       });
   };
 
-  handleSearch = debounce(term => {
-    return request(`${CONFIG.API_INSTANCE}/search/items?q=${term}`)
+  search = zuid => {
+    return request(`${CONFIG.service.instance_api}/search/items?q=${zuid}`)
       .then(res => {
-        // TODO: filter out duplicates
-        if (res.status === 400) {
+        if (res.status !== 200) {
           notify({
-            message: `Failure searching: ${res.message}`,
+            message: "Error fetching API",
             kind: "error"
           });
-        } else {
-          const internalLinkOptions = [
-            ...this.state.internalLinkOptions,
-            ...res.data.map(item => {
-              return {
-                value: item.meta.ZUID,
-                text: item.web.metaTitle
-              };
-            })
-          ];
-
-          this.setState({
-            internalLinkOptions
-          });
+          throw res;
         }
+
+        const searchResults = res.data
+          .filter(item => item.web.path)
+          .map(item => {
+            return {
+              value: item.meta.ZUID,
+              text: item.web.path
+            };
+          });
+
+        const dedupeOptions = [
+          ...this.state.internalLinkOptions,
+          ...searchResults
+        ].reduce((acc, el) => {
+          if (!acc.find(opt => opt.value === el.value)) {
+            acc.push(el);
+          }
+
+          return acc;
+        }, []);
+
+        this.setState({
+          internalLinkOptions: dedupeOptions
+        });
+
+        return res;
       })
       .catch(err => {
-        console.error("LinkCreate:handleSearch", err);
-      });
-  }, 500);
-
-  resolveLink = term => {
-    return request(`${CONFIG.API_INSTANCE}/search/items?q=${term}`)
-      .then(res => {
-        // TODO: filter out duplicates
-        if (res.status === 400) {
-          notify({
-            message: `Failure searching: ${res.message}`,
-            kind: "error"
-          });
-        } else {
-          const internalLinkOptions = [
-            ...this.state.internalLinkOptions,
-            ...res.data.map(item => {
-              return {
-                value: item.meta.ZUID,
-                text: item.web.metaTitle
-              };
-            })
-          ];
-
-          this.setState({
-            internalLinkOptions
-          });
-        }
-      })
-      .catch(err => {
-        console.error("LinkCreate:handleSearch", err);
+        console.error(err);
+        notify({
+          message: "Failed loading API",
+          kind: "error"
+        });
       });
   };
 
@@ -279,7 +262,7 @@ class LinkEdit extends Component {
                   op => op.value !== this.state.internal
                 )}
                 onChange={this.onChange}
-                onSearch={this.handleSearch}
+                onSearch={this.search}
               />
 
               {this.state.type === "internal" ? (
@@ -290,7 +273,7 @@ class LinkEdit extends Component {
                   value={this.state.internal}
                   options={this.state.internalLinkOptions}
                   onChange={this.onChange}
-                  onSearch={this.handleSearch}
+                  onSearch={this.search}
                 />
               ) : (
                 <FieldTypeUrl

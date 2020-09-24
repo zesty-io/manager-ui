@@ -6,7 +6,7 @@
             each="{selected}"
             class="item file"
             onclick="{parent.handleUnselect}">
-            <i class="icon-ok"></i>
+            <i class="fas fa-check"></i>
             <media-thumbnail
                 id="{id}"
                 url="{url}"
@@ -17,8 +17,6 @@
         </article>
     </aside>
     <script type="es6">
-        this.selected = []
-        
         this.handleUnselect = (evt) => {
             if (evt.item) {
                 zesty.trigger('media:file:unselect', evt.item)
@@ -65,7 +63,7 @@
         width: 100px;
         flex-shrink: 0;
     }
-    #mediaSelected .file .icon-ok {
+    #mediaSelected .file .fa-check {
         position: absolute;
         background: #74BE24;
         padding: 0.3rem;

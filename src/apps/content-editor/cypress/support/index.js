@@ -15,10 +15,16 @@
 
 // Import commands.js using ES2015 syntax:
 import "./commands";
+import "cypress-iframe";
 
+// @see https://docs.cypress.io/api/cypress-api/cookies.html#Set-global-default-cookies
 Cypress.Cookies.defaults({
   whitelist: ["DEV_APP_SID", "ZESTY_LOCAL_MANAGER_SESSION"]
 });
+Cypress.Cookies.defaults({
+  whitelist: Cypress.env("COOKIE_NAME")
+});
+
 //Turn off fail on console errors
 Cypress.on("uncaught:exception", (err, runnable) => {
   // returning false here prevents Cypress from

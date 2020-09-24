@@ -22,7 +22,7 @@ export class Meta extends React.PureComponent {
             modelZUID={this.props.modelZUID}
             itemZUID={this.props.itemZUID}
             item={this.props.item}
-            user={this.props.user}
+            userRole={this.props.userRole}
             saving={this.props.saving}
             onSave={this.props.onSave}
             dispatch={this.props.dispatch}
@@ -36,7 +36,7 @@ export class Meta extends React.PureComponent {
             instance={this.props.instance}
             modelZUID={this.props.modelZUID}
             item={this.props.item}
-            contentModelItems={this.props.items}
+            content={this.props.items}
             dispatch={this.props.dispatch}
           />
         )}

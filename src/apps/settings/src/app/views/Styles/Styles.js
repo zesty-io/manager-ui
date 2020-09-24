@@ -9,7 +9,7 @@ import { Select, Option } from "@zesty-io/core/Select";
 import { Button } from "@zesty-io/core/Button";
 
 import { notify } from "shell/store/notifications";
-import { saveVariables } from "store/settings";
+import { saveVariables } from "../../../store/settings";
 
 import styles from "./Styles.less";
 export default connect(state => {
@@ -107,17 +107,21 @@ export default connect(state => {
     Promise.all(requests)
       .then(responses => {
         setLoading(false);
-        notify({
-          kind: "success",
-          message: "Data has been updated"
-        });
+        props.dispatch(
+          notify({
+            kind: "success",
+            message: "Data has been updated"
+          })
+        );
       })
       .catch(err => {
         setLoading(false);
-        notify({
-          kind: "warn",
-          message: err.message
-        });
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message: err.message
+          })
+        );
       });
   }
 
@@ -168,7 +172,7 @@ export default connect(state => {
             value={state[field.referenceName]}
             description={field.description}
             name={field.referenceName}
-            onChange={(name, value) => setValue(name, value)}
+            onChange={(value, name) => setValue(name, value)}
             label={field.name}
           />
         );
@@ -179,7 +183,7 @@ export default connect(state => {
             name={field.referenceName}
             label={field.name}
             value={state[field.referenceName]}
-            callback={(name, value) => setValue(name, value)}
+            onChange={(value, name) => setValue(name, value)}
             description={field.description}
             options={Object.keys(field.options).map(option => ({
               value: option,
@@ -194,7 +198,7 @@ export default connect(state => {
             <div className={styles.fontPicker}>
               <Select
                 name={field.referenceName}
-                onSelect={(name, value) => setValue(name, value)}
+                onSelect={(value, name) => setValue(name, value)}
                 className={[styles.selectFont]}
                 value="Select"
               >
@@ -230,16 +234,20 @@ export default connect(state => {
             label={field.name}
             description={field.description}
             limit="1"
-            default={
-              field.value
-                ? field.value.map(val => ({
-                    id: val,
-                    title: val,
-                    url: val
-                  }))
-                : []
+            images={
+              state[field.referenceName] ? [state[field.referenceName]] : []
             }
-            callback={(name, value) => setValue(name, value)}
+            onChange={(value, name) => setValue(name, value)}
+            resolveImage={(zuid, width, height) =>
+              `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
+            }
+            mediaBrowser={opts => {
+              riot.mount(
+                document.querySelector("#modalMount"),
+                "media-app-modal",
+                opts
+              );
+            }}
           />
         );
       default:
@@ -249,7 +257,7 @@ export default connect(state => {
             label={field.name}
             name={field.referenceName}
             value={state[field.referenceName]}
-            onChange={(name, value) => setValue(name, value)}
+            onChange={(value, name) => setValue(name, value)}
             description={field.tips}
             maxLength={640}
           />
@@ -268,6 +276,7 @@ export default connect(state => {
           </div>
         ))}
         <Button
+          id="SaveSettings"
           kind="save"
           className={styles.SaveBtn}
           onClick={sendData}

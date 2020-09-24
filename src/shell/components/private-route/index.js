@@ -1,51 +1,47 @@
-import React, { useState, useEffect } from "react";
-import { Redirect } from "react-router-dom";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
-import { verify } from "../../store/auth";
+import Login from "shell/components/login";
+
+import { notify } from "shell/store/notifications";
+import { verify } from "shell/store/auth";
 
 export default connect(state => {
   return {
     auth: state.auth
   };
-})(function PrivateRoute(props) {
-  // console.log("PrivateRoute", props);
+})(
+  React.memo(function PrivateRoute(props) {
+    useEffect(() => {
+      const checkSession = () => {
+        props.dispatch(verify()).catch(() => {
+          props.dispatch(
+            notify({
+              kind: "warn",
+              message: "Failed to authenticate your account"
+            })
+          );
+        });
+      };
 
-  const [loading, setLoading] = useState(true);
-  const [auth, setAuth] = useState(true); // TODO switch to false
+      // Poll auth service every minute to ensure session is still valid
+      setInterval(checkSession, 60000);
 
-  useEffect(() => {
-    setLoading(true);
-    props
-      .dispatch(verify())
-      .then(res => {
-        setLoading(false);
+      // Initial app load check
+      checkSession();
+    }, []);
 
-        if (res.code === 200) {
-          setAuth(true);
-        }
-      })
-      .catch(err => {
-        setLoading(false);
-      });
-  }, []);
-
-  return (
-    <WithLoader
-      condition={!loading}
-      message="Checking your users access"
-      width="100vw"
-      height="100vh"
-    >
-      {auth ? (
-        props.children
-      ) : (
-        <Redirect
-          to={`${CONFIG.ACCOUNTS_UI}/login?redirect=${window.location}`}
-        />
-      )}
-    </WithLoader>
-  );
-});
+    return (
+      <WithLoader
+        condition={!props.auth.checking}
+        message="Checking your account permissions"
+        width="100vw"
+        height="100vh"
+      >
+        {props.auth.valid ? props.children : <Login />}
+      </WithLoader>
+    );
+  })
+);

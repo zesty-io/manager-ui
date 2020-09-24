@@ -1,12 +1,16 @@
 import React from "react";
+import { connect } from "react-redux";
 import styles from "./GlobalSidebar.less";
 
 import GlobalAccount from "shell/components/global-account";
-import GlobalAccountMenu from "shell/components/global-account-menu";
 import GlobalMenu from "shell/components/global-menu";
 import GlobalActions from "shell/components/global-actions";
 
-export default function GlobalSidebar(props) {
+export default connect(state => {
+  return {
+    ui: state.ui
+  };
+})(function GlobalSidebar(props) {
   return (
     <aside className={styles.GlobalSidebar}>
       <div className={styles.topMenu}>
@@ -14,7 +18,6 @@ export default function GlobalSidebar(props) {
         <GlobalMenu />
         <GlobalActions />
       </div>
-      <GlobalAccountMenu accountsMenuVisible={false} />
     </aside>
   );
-}
+});

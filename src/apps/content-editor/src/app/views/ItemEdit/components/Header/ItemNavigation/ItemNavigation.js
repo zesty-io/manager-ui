@@ -21,9 +21,9 @@ export const ItemNavigation = ({
             styles.Item,
             slug === "content" ? styles.Selected : null
           )}
-          to={`/content/${modelZUID}/${itemZUID}/content`}
+          to={`/content/${modelZUID}/${itemZUID}`}
         >
-          Content
+          CONTENT
         </Link>
       </li>
       <li
@@ -38,7 +38,7 @@ export const ItemNavigation = ({
           className={cx(styles.Item, slug === "meta" ? styles.Selected : null)}
           to={`/content/${modelZUID}/${itemZUID}/meta`}
         >
-          Meta
+          META
         </Link>
       </li>
       <li>
@@ -47,7 +47,7 @@ export const ItemNavigation = ({
           className={cx(styles.Item, slug === "head" ? styles.Selected : null)}
           to={`/content/${modelZUID}/${itemZUID}/head`}
         >
-          Head
+          HEAD
         </Link>
       </li>
     </ul>

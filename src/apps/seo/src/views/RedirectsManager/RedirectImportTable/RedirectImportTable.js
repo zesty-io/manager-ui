@@ -1,12 +1,14 @@
 import React from "react";
 import cx from "classnames";
+import { Button } from "@zesty-io/core/Button";
+
 import styles from "./RedirectImportTable.less";
 
 import RedirectImportTableRow from "./RedirectImportTableRow";
 import ImportTableRowDisabled from "./ImportTableRowDisabled";
 
-import { createRedirect } from "store/redirects";
-import { cancelImports } from "store/imports";
+import { createRedirect } from "../../../store/redirects";
+import { cancelImports } from "../../../store/imports";
 
 export default class RedirectImportTable extends React.Component {
   constructor(props) {

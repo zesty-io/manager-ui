@@ -1,169 +1,116 @@
 "use strict";
-
-var pjson = require("./package.json");
-
 const webpack = require("webpack");
 const path = require("path");
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const extractLess = new ExtractTextPlugin({
-  filename: "../../../build/bundle.shell.css"
-  // disable: process.env.NODE_ENV === 'development'
-});
+const HtmlWebpackTagsPlugin = require("html-webpack-tags-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CleanupStatsPlugin = require("./CleanupStatsPlugin");
 
-let CONFIG = {};
-if (process.env.NODE_ENV === "production") {
-  CONFIG = {
-    VERSION: pjson.version,
-    ENV: "production",
-
-    API_ACCOUNTS: "//accounts.api.zesty.io/v1",
-    API_INSTANCE: ".api.zesty.io/v1",
-
-    SERVICE_AUTH: "https://svc.zesty.io/auth",
-    SERVICE_EMAIL: "https://email.zesty.io/send",
-    SERVICE_MEDIA_MANAGER: "",
-    SERVICE_MEDIA_RESOLVER: "",
-    SERVICE_MEDIA_STORAGE: "",
-    SERVICE_REDIS_GATEWAY: "",
-    SERVICE_GOOGLE_ANALYTICS_AUTH: "",
-    SERVICE_GOOGLE_ANALYTICS_READ: "",
-
-    URL_MANAGER: ".manager.zesty.io",
-    URL_MANAGER_PROTOCOL: "https://",
-    URL_PREVIEW: "-dev.preview.zestyio.com",
-    URL_PREVIEW_PROTOCOL: "https://",
-    URL_ACCOUNTS: "",
-
-    COOKIE_NAME: "APP_SID",
-    COOKIE_DOMAIN: ".zesty.io"
-  };
-} else if (process.env.NODE_ENV === "stage") {
-  CONFIG = {
-    VERSION: pjson.version,
-    ENV: "stage",
-
-    API_ACCOUNTS: "//accounts.stage-api.zesty.io/v1",
-    API_INSTANCE: ".api.stage-zesty.io/v1",
-
-    SERVICE_AUTH: "https://stage-svc.zesty.io/auth",
-    SERVICE_EMAIL: "https://email.zesty.io/send",
-    SERVICE_MEDIA_MANAGER: "https://stage-svc.zesty.io/media-manager-service",
-    SERVICE_MEDIA_RESOLVER: "https://stage-svc.zesty.io/media-resolver-service",
-    SERVICE_MEDIA_STORAGE: "https://stage-svc.zesty.io/media-storage-service",
-    SERVICE_MEDIA_MODIFY: "https://stage-svc.zesty.io/media-modify-service",
-    SERVICE_REDIS_GATEWAY: "https://cache-svc.stage-zesty.io",
-    SERVICE_GOOGLE_ANALYTICS_AUTH:
-      "https://us-central1-zesty-stage.cloudfunctions.net/authenticateGoogleAnalytics",
-    SERVICE_GOOGLE_ANALYTICS_READ:
-      "https://us-central1-zesty-stage.cloudfunctions.net/googleAnalyticsGetPageViews",
-
-    URL_MANAGER: ".stage-manager.zesty.io",
-    URL_MANAGER_PROTOCOL: "https://",
-    URL_PREVIEW: "-dev.stage-preview.zestyio.com",
-    URL_PREVIEW_PROTOCOL: "https://",
-    URL_ACCOUNTS: "",
-
-    COOKIE_NAME: "STAGE_APP_SID",
-    COOKIE_DOMAIN: ".zesty.io"
-  };
-} else {
-  CONFIG = {
-    VERSION: pjson.version,
-    ENV: "development",
-
-    API_ACCOUNTS: "//accounts.api.zesty.localdev:3022/v1",
-    API_INSTANCE: ".api.zesty.localdev:3023/v1",
-
-    SERVICE_AUTH: "http://svc.zesty.localdev:3011/auth",
-    SERVICE_EMAIL: "",
-    SERVICE_MEDIA_MANAGER:
-      "http://svc.zesty.localdev:3005/media-manager-service",
-    SERVICE_MEDIA_RESOLVER:
-      "http://svc.zesty.localdev:3007/media-resolver-service",
-    SERVICE_MEDIA_STORAGE:
-      "http://svc.zesty.localdev:3008/media-storage-service",
-    SERVICE_REDIS_GATEWAY: "http://redis-gateway.zesty.localdev:3025",
-    SERVICE_GOOGLE_ANALYTICS_AUTH:
-      "https://us-central1-zesty-dev.cloudfunctions.net/authenticateGoogleAnalytics",
-    SERVICE_GOOGLE_ANALYTICS_READ:
-      "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
-
-    URL_MANAGER: ".manager.zesty.localdev:3020",
-    URL_MANAGER_PROTOCOL: "http://",
-    URL_PREVIEW: "-dev.preview.zestyio.localdev:3020",
-    URL_PREVIEW_PROTOCOL: "http://",
-    URL_ACCOUNTS: "http://accounts.zesty.localdev:3100",
-
-    COOKIE_NAME: "DEV_APP_SID",
-    COOKIE_DOMAIN: ".zesty.localdev"
-  };
-}
+const CONFIG = require("./app.config");
 
 module.exports = {
-  entry: "./index.js",
-  // context: path.resolve(__dirname, "src"),
-  devtool: "cheap-module-source-map",
-  mode: process.env.NODE_ENV || "development",
-  output: {
-    filename: "../../../build/bundle.shell.js"
+  entry: {
+    main: path.resolve(__dirname, "./index.js"),
+    livePreview: path.resolve(__dirname, "../apps/live-preview/index.js")
   },
+  output: {
+    filename:
+      process.env.NODE_ENV !== "development"
+        ? "[name].[contenthash].js"
+        : "[name].js",
+    path: path.resolve(__dirname, "../../build/"),
+    publicPath: "/"
+  },
+  devServer: {
+    host: "0.0.0.0",
+    compress: true,
+    contentBase: path.resolve(__dirname, "../../build"),
+    hot: true,
+    disableHostCheck: true,
+    historyApiFallback: true
+  },
+  devtool:
+    process.env.NODE_ENV !== "development"
+      ? "source-map"
+      : "cheap-module-source-map",
+  mode: process.env.NODE_ENV !== "development" ? "production" : "development",
   resolve: {
     symlinks: false, // Used for development with npm link
     alias: {
+      "react-dom": "@hot-loader/react-dom",
       shell: path.resolve(__dirname, "../shell"),
       utility: path.resolve(__dirname, "../utility"),
       apps: path.resolve(__dirname, "../apps")
     }
   },
-  externals: {
-    riot: "riot",
-    react: "React",
-    "react-dom": "ReactDOM",
-    "react-router": "ReactRouter",
-    "react-router-dom": "ReactRouterDOM",
-    "react-redux": "ReactRedux",
-    redux: "Redux",
-    "redux-thunk": "ReduxThunk",
-    moment: "moment",
-    "moment-timezone": "moment"
-  },
   plugins: [
-    extractLess,
-    // Inject app config into bundle
+    new MiniCssExtractPlugin({
+      ignoreOrder: true,
+      filename:
+        process.env.NODE_ENV !== "development"
+          ? "[name].[contenthash].css"
+          : "[name].css"
+    }),
+    new CopyPlugin({
+      patterns: ["public"]
+    }),
+    new HtmlWebpackPlugin({
+      inject: false,
+      chunks: ["main"],
+      template: "src/index.html",
+      filename: "index.html"
+    }),
+
+    new HtmlWebpackPlugin({
+      chunks: ["livePreview"],
+      template: "src/apps/live-preview/index.html",
+      filename: "livePreview.html"
+    }),
+
     new webpack.DefinePlugin({
       __CONFIG__: JSON.stringify(CONFIG)
     }),
-    new webpack.optimize.ModuleConcatenationPlugin()
+    new CleanupStatsPlugin()
   ],
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "vendors",
+          chunks: "all"
+        }
+      }
+    }
+  },
   module: {
     rules: [
       {
         test: /\.less$/,
-        use: extractLess.extract({
-          use: [
-            {
-              loader: "css-loader",
-              options: {
-                modules: {
-                  localIdentName: "[local]--[hash:base64:5]"
-                }
-              }
-            },
-            {
-              loader: "less-loader"
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              hmr: process.env.NODE_ENV === "development"
             }
-          ]
-        })
+          },
+          {
+            loader: "css-loader",
+            options: {
+              modules: {
+                localIdentName: "[local]--[hash:base64:5]"
+              }
+            }
+          },
+          {
+            loader: "less-loader"
+          }
+        ]
       },
       {
         test: /\.css$/,
-        use: extractLess.extract({
-          use: [
-            {
-              loader: "css-loader"
-            }
-          ]
-        })
+        use: ["style-loader", "css-loader"]
       },
       {
         test: /\.js$/,
@@ -172,7 +119,9 @@ module.exports = {
         query: {
           presets: ["@babel/preset-env", "@babel/preset-react"],
           plugins: [
-            ["@babel/plugin-proposal-class-properties", { loose: false }]
+            ["@babel/plugin-proposal-class-properties", { loose: false }],
+            "@babel/plugin-transform-runtime", // https://babeljs.io/docs/en/babel-plugin-transform-runtime
+            "react-hot-loader/babel"
           ]
         }
       }

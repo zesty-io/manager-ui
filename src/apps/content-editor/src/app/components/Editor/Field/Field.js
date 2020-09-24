@@ -2,19 +2,19 @@ import React, { useMemo, useCallback } from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 
-import { fetchFields } from "../../../../store/contentModelFields";
-import {
-  fetchItem,
-  fetchItems,
-  searchItems
-} from "../../../../store/contentModelItems";
+import { fetchFields } from "shell/store/fields";
+import { fetchItem, fetchItems, searchItems } from "shell/store/content";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEdit,
+  faExclamationTriangle
+} from "@fortawesome/free-solid-svg-icons";
 
 // it would be nice to have a central import for all of these
 // instead of individually importing
 import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
@@ -75,8 +75,21 @@ function resolveRelatedOptions(fields, items, fieldZUID, modelZUID) {
     )
     .map(itemZUID => {
       return {
-        text: items[itemZUID].data[field.name],
-        value: itemZUID
+        filterValue: items[itemZUID].data[field.name],
+        value: itemZUID,
+        component: (
+          <span>
+            <span onClick={evt => evt.stopPropagation()}>
+              <AppLink
+                className={styles.relatedItemLink}
+                to={`/content/${modelZUID}/${itemZUID}`}
+              >
+                <FontAwesomeIcon icon={faEdit} />
+              </AppLink>
+            </span>
+            &nbsp;{items[itemZUID].data[field.name]}
+          </span>
+        )
       };
     })
     .sort(sortTitle);
@@ -84,8 +97,8 @@ function resolveRelatedOptions(fields, items, fieldZUID, modelZUID) {
 
 export default connect(state => {
   return {
-    allItems: state.contentModelItems,
-    allFields: state.contentModelFields
+    allItems: state.content,
+    allFields: state.fields
   };
 })(function Field(props) {
   const {
@@ -221,9 +234,21 @@ export default connect(state => {
           tooltip={settings.tooltip}
           required={required}
           limit={(settings && settings.limit) || 1}
-          locked={(settings && settings.group_id) || null}
+          locked={Boolean(
+            settings && settings.group_id && settings.group_id != "0"
+          )}
           onChange={onChange}
           value={value}
+          resolveImage={(zuid, width, height) =>
+            `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
+          }
+          mediaBrowser={opts => {
+            riot.mount(
+              document.querySelector("#modalMount"),
+              "media-app-modal",
+              opts
+            );
+          }}
         />
       );
 
@@ -327,7 +352,7 @@ export default connect(state => {
         });
 
         // load related item from API
-        if (value != "0") {
+        if (value && value != "0") {
           dispatch(searchItems(value));
         }
       }
@@ -352,6 +377,20 @@ export default connect(state => {
       );
 
     case "one_to_one":
+      // If the initial value doesn't exist in local store load from API
+      if (value && (!props.allItems[value] || !props.allItems[value].meta)) {
+        if (relatedModelZUID && value) {
+          if (value != "0") {
+            dispatch(fetchItem(relatedModelZUID, value));
+          }
+        }
+      }
+
+      const onOneToOneOpen = useCallback(
+        () => Promise.resolve(dispatch(fetchItems(relatedModelZUID))),
+        []
+      );
+
       let oneToOneOptions = useMemo(() => {
         return resolveRelatedOptions(
           props.allFields,
@@ -366,29 +405,30 @@ export default connect(state => {
         relatedFieldZUID
       ]);
 
-      // If the initial value doesn't exist in local store load from API
-      if (value && (!props.allItems[value] || !props.allItems[value].meta)) {
-        if (relatedModelZUID && value) {
-          if (value != "0") {
-            dispatch(fetchItem(relatedModelZUID, value));
-          }
-        }
-      }
       if (value && !oneToOneOptions.find(opt => opt.value === value)) {
         //the related option is not in the array, we need ot insert it
         oneToOneOptions.unshift({
+          filterValue: value,
           value: value,
-          text: `Related item: ${value}`
+          component: (
+            <span>
+              <span onClick={evt => evt.stopPropagation()}>
+                <AppLink
+                  className={styles.relatedItemLink}
+                  to={`/content/${relatedModelZUID}/${value}`}
+                >
+                  <FontAwesomeIcon icon={faEdit} />
+                </AppLink>
+              </span>
+              &nbsp;Selected item: {value}
+            </span>
+          )
         });
       }
 
-      const onOneToOneOpen = useCallback(
-        () => Promise.resolve(dispatch(fetchItems(relatedModelZUID))),
-        []
-      );
-
       return (
         <FieldTypeOneToOne
+          className={styles.FieldTypeOneToOne}
           name={name}
           label={label}
           description={description}
@@ -441,6 +481,7 @@ export default connect(state => {
 
       return (
         <FieldTypeOneToMany
+          className={styles.FieldTypeOneToMany}
           name={name}
           label={label}
           description={description}
@@ -502,13 +543,13 @@ export default connect(state => {
        * causing it to re-render as well. This `onChange` handler doesn't need
        * to change once created.
        */
-      const onDateChange = useCallback((name, value, datatype) => {
+      const onDateChange = useCallback((value, name, datatype) => {
         /**
          * Flatpickr emits a utc timestamp, offset from users local time.
          * Legacy behavior did not send utc but sent the value as is selected by the user
          * this ensures that behavior is maintained
          */
-        onChange(name, moment(value).format("YYYY-MM-DD HH:mm:ss"), datatype);
+        onChange(moment(value).format("YYYY-MM-DD HH:mm:ss"), name, datatype);
       }, []);
 
       return (

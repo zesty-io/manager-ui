@@ -2,13 +2,13 @@ import React from "react";
 import cx from "classnames";
 
 import { MetaTitle } from "./settings/MetaTitle";
-import { MetaDescription } from "./settings/MetaDescription";
+import MetaDescription from "./settings/MetaDescription";
 import { MetaKeywords } from "./settings/MetaKeywords";
 import { MetaLinkText } from "./settings/MetaLinkText";
 
 import styles from "./ItemSettings.less";
 export class DataSettings extends React.Component {
-  onChange = (name, value) => {
+  onChange = (value, name) => {
     if (!name) {
       throw new Error("Input is missing name attribute");
     }
@@ -22,7 +22,6 @@ export class DataSettings extends React.Component {
 
   render() {
     let web = this.props.item.web || {};
-    let meta = this.props.item.meta || {};
     return (
       <section className={styles.Meta}>
         <div className={cx(styles.Settings, styles.DataSettings)}>

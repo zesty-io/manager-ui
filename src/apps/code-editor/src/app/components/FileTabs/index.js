@@ -1,0 +1,1 @@
+export { FileTabs } from "./FileTabs";

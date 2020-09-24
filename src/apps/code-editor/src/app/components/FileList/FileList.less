@@ -1,0 +1,90 @@
+@import "~@zesty-io/core/colors.less";
+
+.FileList {
+  margin: 0;
+  background: #404759;
+  padding: 0;
+
+  .NavActions {
+    padding: 0 12px 8px 12px;
+    background-color: #5b667d;
+    display: flex;
+    flex-direction: column;
+
+    .Actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+
+      .Action {
+        padding: 4px 0;
+      }
+
+      .Branch {
+        margin-right: 8px;
+        flex: 1;
+        ul {
+          min-width: 230px;
+        }
+      }
+
+      .FilterFiles {
+        flex: 1;
+        margin: 0;
+        input {
+          flex: 1;
+        }
+      }
+
+      .CreateFile,
+      .PublishAll {
+        button {
+          height: 40px;
+        }
+      }
+
+      .PublishAll {
+        margin-right: 8px;
+      }
+    }
+  }
+
+  .Title {
+    align-items: center;
+    background-color: #5b667d;
+    display: flex;
+    padding: 12px 12px 4px 12px;
+
+    h1 {
+      color: #c3cddf;
+      text-transform: uppercase;
+      margin-right: auto;
+    }
+  }
+
+  .List {
+    background: #404759;
+    height: calc(100vh - 73px - 103px);
+    margin: 0;
+    overflow-x: hidden;
+    padding: 0;
+    transition: all 0.3s ease;
+
+    .Files {
+      margin-bottom: 40px;
+    }
+  }
+
+  .Action {
+    color: @zesty-orange;
+  }
+}
+
+.DragHandle {
+  cursor: move;
+  padding: 8px;
+  i {
+    margin-right: 0 !important;
+    cursor: move !important;
+  }
+}
