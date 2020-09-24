@@ -5,6 +5,8 @@ export function logsInView(state = {}, action) {
   switch (action.type) {
     case "FETCH_LOGS_SUCCESS":
       return action.data;
+    default:
+      return state;
   }
 }
 
