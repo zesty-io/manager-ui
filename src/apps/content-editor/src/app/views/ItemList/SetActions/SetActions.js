@@ -63,7 +63,10 @@ export class SetActions extends Component {
               id="AddItemButton"
               className={cx(styles.Action, styles.Create)}
             >
-              <AppLink to={`/content/${this.props.modelZUID}/new`}>
+              <AppLink
+                className={styles.AppLink}
+                to={`/content/${this.props.modelZUID}/new`}
+              >
                 <FontAwesomeIcon icon={faPlus} />
                 {this.props.model
                   ? `${this.props.model.label} Item`
