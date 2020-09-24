@@ -29,7 +29,7 @@
         color: #252D38;
     }
     :scope .field input:disabled {
-        opacity: 0.5;
+        opacity: 0.8;
     }
     :scope .field span {
         border: none;
