@@ -51,12 +51,11 @@
             zesty.off('media:group:create', this.createGroup)
             zesty.off('media:bin:save', this.saveBin)
             zesty.off('media:bin:load', this.loadBin)
+            zesty.off('media:bin:groups', this.fetchAllGroups)
             zesty.off('media:search', this.search)
         })
 
         this.on('mount', () => {
-            console.log('media-app:mount')
-
             zesty.on('media:file:save', this.saveFile)
             zesty.on('media:file:upload', this.uploadFile)
             zesty.on('media:file:delete', this.deleteFile)
@@ -69,6 +68,7 @@
             zesty.on('media:group:create', this.createGroup)
             zesty.on('media:bin:save', this.saveBin)
             zesty.on('media:bin:load', this.loadBin)
+            zesty.on('media:bin:groups', this.fetchAllGroups)
             zesty.on('media:search', this.search)
 
             let siteBins = this.fetchAllSiteBins()
@@ -98,26 +98,7 @@
 
                     this.update({bins})
 
-                    let groups = Promise.all(bins.map(bin => this.fetchAllGroups(bin.id)))
-                    .then((results) => {
-
-                        let groups = [].concat.apply([], results)
-                        let collapsedIds = localStorage.getItem('media:groups:collapsed')
-
-                        if (collapsedIds && collapsedIds.length) {
-                            groups.forEach((group) => {
-                                if (collapsedIds.indexOf(group.id) !== -1) {
-                                    group.collapsed = true
-                                }
-                            })
-                        }
-
-                        groups.reverse()
-
-                        this.update({
-                            groups: groups
-                        })
-                    })
+                    let groups = this.fetchAllGroups(bins.map(bin => bin.id))
 
                     let files = Promise.all(bins.map(bin => this.fetchAllFiles(bin.id)))
                     .then((results) => {
@@ -193,20 +174,61 @@
             }
         }
 
-        this.fetchAllGroups = (binId) => {
-            return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/bin/${binId}/groups`)
-            .then(json => {
-                json.data.forEach(group => group.type = 'group')
-                return json.data
+        this.fetchAllGroups = (bins) => {
+            // Do not fetch groups for collapsed bins
+            let collapsedBinIds = localStorage.getItem('media:bins:collapsed') || [];
+            
+            let requests = bins.filter(id => collapsedBinIds.indexOf(id) < 0).map(id => {
+                return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/bin/${id}/groups`).then(json => {
+                    json.data.forEach(group => group.type = 'group')
+                    return json.data
+                })
+            })
+
+            return Promise.all(requests).then((results) => {
+
+                // results are returned in descending creation, we want them aescending
+                results.forEach(result => result.reverse())
+
+                // combine existing and new groups
+                let groups = [].concat.apply(this.groups, results)
+                
+                // Deduplicate groups
+                groups = groups.reduce((acc, group) => {
+                    if (!acc.find(el => el.id === group.id)) {
+                        acc.push(group)
+                    }
+                    return acc
+                }, [])
+
+                let collapsedIds = localStorage.getItem('media:groups:collapsed')
+
+                if (collapsedIds && collapsedIds.length) {
+                    groups.forEach((group) => {
+                        if (collapsedIds.indexOf(group.id) !== -1) {
+                            group.collapsed = true
+                        }
+                    })
+                }
+
+                this.update({
+                    groups: groups
+                })
             })
         }
 
         this.fetchAllFiles = (binId) => {
-            return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/bin/${binId}/files`)
-            .then(json => {
-                json.data.forEach(file => file.type = 'file')
-                return json.data
-            })
+            // Do not fetch files for collapsed bins
+            let collapsedBinIds = localStorage.getItem('media:bins:collapsed') || [];
+            if (collapsedBinIds.indexOf(binId) === -1) {
+                return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/bin/${binId}/files`)
+                .then(json => {
+                    json.data.forEach(file => file.type = 'file')
+                    return json.data
+                })
+            } else {
+                return Promise.resolve([])
+            }
         }
 
         /**
