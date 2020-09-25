@@ -45,7 +45,14 @@
     flex-direction: column;
     padding: 0 16px;
     color: @zesty-gray;
-
+    h1 {
+      font-size: @font-size-label;
+      line-height: 28px;
+      letter-spacing: 0.32px;
+      @media screen and (min-width: 2000px) {
+        font-size: initial;
+      }
+    }
     .meta {
       color: #959db4;
       flex: 1;
@@ -54,6 +61,7 @@
         text-decoration: none;
         &:hover {
           color: @zesty-gray;
+          border-bottom: 1px solid @zesty-gray;
         }
       }
     }
