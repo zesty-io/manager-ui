@@ -23,7 +23,10 @@ export const WidgetListed = React.memo(function WidgetListed(props) {
           name="listed"
           label={
             <span>
-              <Infotip title="Determines if this item will be available in Parsley loops. A common example of this is listing a blog post as an entry on an article listing page." />
+              <Infotip
+                className={styles.tipText}
+                title="Determines if this item will be available in Parsley loops. A common example of this is listing a blog post as an entry on an article listing page."
+              />
               &nbsp;Available in Loops
             </span>
           }
@@ -44,7 +47,10 @@ export const WidgetListed = React.memo(function WidgetListed(props) {
           name="sort"
           label={
             <span>
-              <Infotip title="Automated Navigation Order controls the output of the automated parsley {{navigation}} and {{sectionlinks}}. It can also be used in an each loop like: {{each items as items sort by z.sort}} calls." />
+              <Infotip
+                className={styles.tipText}
+                title="Automated Navigation Order controls the output of the automated parsley {{navigation}} and {{sectionlinks}}. It can also be used in an each loop like: {{each items as items sort by z.sort}} calls."
+              />
               &nbsp;Automated Navigation Order
             </span>
           }

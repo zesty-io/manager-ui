@@ -2,4 +2,20 @@
   article {
     margin-bottom: 16px;
   }
+
+  .tipText {
+    z-index: 9;
+    &:hover {
+      small {
+        padding: 16px;
+        width: 14rem;
+        @media (min-width: 1200px) {
+          width: 18rem;
+        }
+        @media (min-width: 2000px) {
+          width: 25rem;
+        }
+      }
+    }
+  }
 }
