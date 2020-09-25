@@ -11,6 +11,20 @@ import { Url } from "@zesty-io/core/Url";
 
 import styles from "./styles.less";
 
+const defaultLinks = [
+  {
+    name: "Introduction",
+    url: "https://zesty.org/"
+  },
+  {
+    name: "Getting Started",
+    url: "https://zesty.org/getting-started"
+  },
+  {
+    name: "Guides",
+    url: "https://zesty.org/guides"
+  }
+];
 const linkMap = {
   content: [
     {
@@ -136,7 +150,7 @@ export default connect(state => {
   };
 })(function GlobalHelpMenu(props) {
   const section = location.pathname.split("/")[1];
-  const links = linkMap[section];
+  const links = section ? linkMap[section] : defaultLinks;
   return (
     <section className={cx(styles.helpMenu)}>
       <header>

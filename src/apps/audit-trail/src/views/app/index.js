@@ -14,6 +14,8 @@ import { getLogs } from "../../store/logsInView";
 import styles from "./styles.less";
 export default connect(state => state)(function AuditTrail(props) {
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [filterByDays, setFilterByDays] = useState(-1);
 
   useEffect(() => {
     props
@@ -32,7 +34,16 @@ export default connect(state => state)(function AuditTrail(props) {
       });
   }, []);
 
-  const logs = Object.values(props.logsInView);
+  let logs = Object.values(props.logsInView);
+  if (search) {
+    logs = logs.filter(
+      log => log.meta.message.toLowerCase().indexOf(search) !== -1
+    );
+  }
+  if (filterByDays !== -1) {
+    const subtractDays = +moment().subtract(filterByDays, "days");
+    logs = logs.filter(log => +moment(log.createdAt) > subtractDays);
+  }
   logs.sort(
     (a, b) => moment(b.createdAt).valueOf() - moment(a.createdAt).valueOf()
   );
@@ -40,7 +51,12 @@ export default connect(state => state)(function AuditTrail(props) {
   return (
     <WithLoader condition={!loading} message="Loading AuditTrail">
       <main className={styles.auditApp}>
-        <AuditControls logCount={logs.length} />
+        <AuditControls
+          setSearch={setSearch}
+          filter={filterByDays}
+          setFilter={setFilterByDays}
+          logCount={logs.length}
+        />
         <section className={styles.logList}>
           {logs.length ? (
             logs.map(log => <Log log={log} key={log.ZUID} />)

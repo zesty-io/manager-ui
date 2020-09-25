@@ -6,19 +6,15 @@
 
   .MainEditor {
     display: flex;
-    flex-direction: row;
     margin: 10px 0;
 
     .Editor {
-      width: 60vw;
+      flex: 2;
       padding: 0;
-
-      &.NewItem {
-        width: 85vw;
-      }
     }
     .Actions {
-      flex-basis: 25vw;
+      flex: 0;
+      min-width: 25vw;
       position: relative;
       padding-right: 16px;
       background: #f2f7fc;
