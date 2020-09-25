@@ -14,7 +14,7 @@ import styles from "./CodeEditor.less";
 export default connect(state => {
   return {
     files: state.files,
-    codeNav: state.codeNav,
+    navCode: state.navCode,
     status: "dev"
   };
 })(function CodeEditor(props) {
@@ -54,7 +54,7 @@ export default connect(state => {
         <nav className={styles.Nav}>
           <FileList
             branch={props.status}
-            codeNav={props.codeNav}
+            navCode={props.navCode}
             dispatch={props.dispatch}
             openFileZUID={match && match.params.fileZUID}
           />

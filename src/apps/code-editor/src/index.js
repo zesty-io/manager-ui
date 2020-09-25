@@ -8,7 +8,7 @@ import { files } from "./store/files";
 import { status } from "./store/status";
 import { auditTrail } from "./store/auditTrail";
 import { headers } from "./store/headers";
-import { codeNav } from "./store/codeNav";
+import { navCode } from "./store/navCode";
 
 import { CodeEditor } from "./app/views/CodeEditor";
 
@@ -16,7 +16,7 @@ injectReducer(store, "files", files);
 injectReducer(store, "status", status);
 injectReducer(store, "auditTrail", auditTrail);
 injectReducer(store, "headers", headers);
-injectReducer(store, "codeNav", codeNav);
+injectReducer(store, "navCode", navCode);
 
 // try {
 //   Promise.all([get(`${zesty.instance.ZUID}:openFiles`)]).then(results => {

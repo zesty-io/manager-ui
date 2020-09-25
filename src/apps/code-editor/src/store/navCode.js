@@ -17,7 +17,7 @@ import {
 
 import { resolvePathPart } from "./files";
 
-export function codeNav(
+export function navCode(
   state = {
     raw: [],
     tree: []
@@ -76,10 +76,6 @@ export function codeNav(
     case "COLLAPSE_DIRECTORY":
       let files = state.raw.map(node => {
         if (node.fileName.includes(action.payload.path)) {
-          console.log("path", action.payload.path);
-
-          console.log("collapsing", node);
-
           node.closed = !node.closed;
         }
         return node;
