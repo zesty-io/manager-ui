@@ -1,7 +1,7 @@
 import React from "react";
 
 // import { Breadcrumbs } from "./Breadcrumbs";
-import { ItemNavigation } from "./ItemNavigation";
+import ItemNavigation from "./ItemNavigation";
 import { LanguageSelector } from "./LanguageSelector";
 
 import styles from "./Header.less";

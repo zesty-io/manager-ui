@@ -1,1 +1,2 @@
-export { ItemNavigation } from "./ItemNavigation";
+import ItemNavigation from "./ItemNavigation";
+export default ItemNavigation;
