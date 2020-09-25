@@ -156,7 +156,7 @@ export default connect(state => {
       <header>
         {props.instance.planID && (
           <Url target="_blank" href="mailto:support@zesty.io">
-            <Button kind="" title="Support">
+            <Button className={styles.Button} kind="" title="Support">
               <FontAwesomeIcon icon={faEnvelope} />
               support@zesty.io
             </Button>
@@ -164,7 +164,7 @@ export default connect(state => {
         )}
 
         <Url target="_blank" href="https://chat.zesty.io">
-          <Button kind="alt" title="Chat">
+          <Button className={styles.Button} kind="alt" title="Chat">
             <FontAwesomeIcon icon={faComments} />
             chat.zesty.io
           </Button>
