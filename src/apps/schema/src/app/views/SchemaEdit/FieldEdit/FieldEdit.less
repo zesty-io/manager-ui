@@ -1,3 +1,5 @@
+@import "~@zesty-io/core/typography.less";
+
 .FieldEdit {
   label {
     margin: 0 0 16px;
@@ -21,7 +23,7 @@
   opacity: 0.5;
 }
 .Header {
-  align-items: baseline;
+  align-items: center;
   display: flex;
   cursor: pointer;
 
@@ -31,10 +33,18 @@
   }
   .Title {
     flex: 1;
+    font-size: @font-size-caption;
+    @media screen and (min-width: 2000px) {
+      font-size: 16px;
+    }
   }
   .Type {
     color: grey;
     margin-right: 8px;
+    font-size: @font-size-caption;
+    @media screen and (min-width: 2000px) {
+      font-size: 16px;
+    }
   }
 
   i {
