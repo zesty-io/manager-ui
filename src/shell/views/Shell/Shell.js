@@ -20,12 +20,6 @@ import SettingsApp from "apps/settings/src";
 
 import styles from "./Shell.less";
 
-// We use React.lazy and React.Suspense allow dynamic imports for Route
-// components. webpack hints are required to enable prefetching (which
-// loads sub-app bundles in background during idle time)
-// see: https://webpack.js.org/guides/code-splitting/#dynamic-imports
-// see: https://reactjs.org/docs/code-splitting.html#route-based-code-splitting
-
 export default connect(state => {
   return {
     products: state.products

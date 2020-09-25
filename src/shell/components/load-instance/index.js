@@ -33,9 +33,10 @@ export default connect(state => {
             setError("You do not have permission to access to this instance");
           }
         });
-      props.dispatch(fetchUserRole());
+      props.dispatch(fetchUserRole()).then(() => {
+        props.dispatch(fetchProducts());
+      });
       props.dispatch(fetchDomains());
-      props.dispatch(fetchProducts());
       props.dispatch(detectPlatform());
       props.dispatch(fetchInstances());
 
