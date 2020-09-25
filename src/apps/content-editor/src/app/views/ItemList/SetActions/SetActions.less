@@ -55,14 +55,30 @@
         padding-left: 8px;
       }
     }
+    .AppLink {
+      text-shadow: none;
+    }
   }
 
   .Right {
     color: #fff;
     display: flex;
     align-items: center;
-    flex: 1;
-    justify-content: flex-end;
+    flex: 0;
+    min-width: 16rem;
+    justify-content: flex-start;
+
+    @media screen and (min-width: 1200px) {
+      flex: 1;
+      min-width: auto;
+      justify-content: flex-end;
+    }
+    a {
+      text-decoration: none;
+    }
+    span {
+      margin-right: 8px;
+    }
   }
 
   .Action {

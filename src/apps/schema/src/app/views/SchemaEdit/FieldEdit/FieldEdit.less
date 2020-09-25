@@ -1,3 +1,5 @@
+@import "~@zesty-io/core/typography.less";
+
 .FieldEdit {
   label {
     margin: 0 0 16px;
@@ -5,6 +7,11 @@
 }
 .Card {
   background-color: #f2f7fc !important;
+}
+
+.FieldFooter {
+  border-top: 1px solid #dee6ff;
+  padding: 8px 20px;
 }
 
 .FieldActions {
@@ -16,7 +23,7 @@
   opacity: 0.5;
 }
 .Header {
-  align-items: baseline;
+  align-items: center;
   display: flex;
   cursor: pointer;
 
@@ -26,10 +33,18 @@
   }
   .Title {
     flex: 1;
+    font-size: @font-size-caption;
+    @media screen and (min-width: 2000px) {
+      font-size: 16px;
+    }
   }
   .Type {
     color: grey;
     margin-right: 8px;
+    font-size: @font-size-caption;
+    @media screen and (min-width: 2000px) {
+      font-size: 16px;
+    }
   }
 
   i {

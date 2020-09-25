@@ -12,21 +12,21 @@ import { FilterFiles } from "./components/FilterFiles";
 // import { SelectBranch } from "./components/SelectBranch";
 
 import { resolvePathPart, publishFile } from "../../../store/files";
-import { collapseNavItem } from "../../../store/codeNav";
+import { collapseNavItem } from "../../../store/navCode";
 
 import styles from "./FileList.less";
 export const FileList = React.memo(function FileList(props) {
   // const [branch, setBranch] = useState(props.branch);
   const [shownFiles, setShownFiles] = useState(
-    props.codeNav.tree.sort(byLabel)
+    props.navCode.tree.sort(byLabel)
   );
 
   let { pathname } = useLocation();
   let hashPath = `/#!${pathname}`;
 
   useEffect(() => {
-    setShownFiles(props.codeNav.tree.sort(byLabel));
-  }, [props.codeNav]);
+    setShownFiles(props.navCode.tree.sort(byLabel));
+  }, [props.navCode]);
 
   const views = shownFiles.filter(file => {
     let pathPart = resolvePathPart(file.type);
@@ -81,7 +81,7 @@ export const FileList = React.memo(function FileList(props) {
 
         <div className={styles.Actions}>
           <div className={cx(styles.Action, styles.FilterFiles)}>
-            <FilterFiles setShownFiles={setShownFiles} nav={props.codeNav} />
+            <FilterFiles setShownFiles={setShownFiles} nav={props.navCode} />
           </div>
         </div>
       </header>

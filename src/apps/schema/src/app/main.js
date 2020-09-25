@@ -11,17 +11,17 @@ import { SchemaEdit } from "./views/SchemaEdit";
 
 import styles from "./main.less";
 export default connect(state => {
-  return { schemaNav: state.schemaNav };
+  return { navSchema: state.navSchema };
 })(function SchemaBuilder(props) {
   return (
     <WithLoader
-      condition={props.schemaNav.length}
+      condition={props.navSchema.length}
       message="Starting Schema Builder"
       width="100vw"
       height="100vh"
     >
       <section className={styles.SchemaBuilder}>
-        <SchemaNav nav={props.schemaNav} />
+        <SchemaNav nav={props.navSchema} />
         <div className={styles.SchemaMain}>
           <Switch>
             <Route exact path="/schema/new" component={SchemaCreate} />

@@ -11,32 +11,56 @@ export function products(state = ["content", "media"], action) {
 }
 
 export function fetchProducts() {
-  return dispatch => {
-    // TODO Fetch product access from API
-    // return request().then().catch()
-
-    const json = {
-      data: [
-        "content",
-        "media",
-        "schema",
-        "code",
-        "leads",
-        "analytics",
-        "seo",
-        "audit-trail",
-        "settings"
-      ]
-    };
+  return (dispatch, getState) => {
+    let data;
+    switch (getState().userRole.name) {
+      case "Owner":
+      case "Admin":
+        data = [
+          "content",
+          "media",
+          "schema",
+          "code",
+          "leads",
+          "analytics",
+          "seo",
+          "audit-trail",
+          "settings"
+        ];
+        break;
+      case "Developer":
+        data = [
+          "content",
+          "media",
+          "schema",
+          "code",
+          "leads",
+          "analytics",
+          "seo",
+          "settings"
+        ];
+        break;
+      case "SEO":
+        data = ["content", "media", "leads", "analytics", "seo"];
+        break;
+      case "Publisher":
+        data = ["content", "media", "leads", "analytics"];
+        break;
+      case "Contributor":
+        data = ["content", "media"];
+        break;
+      default:
+        data = [];
+    }
 
     dispatch({
       type: "FETCH_PRODUCTS_SUCCESS",
       payload: {
-        data: json.data
+        data
       }
     });
 
     // mimic promise api until we make api request
-    return Promise.resolve(json);
+    return Promise.resolve(data);
   };
 }

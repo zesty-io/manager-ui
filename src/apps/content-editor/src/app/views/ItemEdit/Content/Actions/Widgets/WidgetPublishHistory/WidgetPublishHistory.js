@@ -7,6 +7,8 @@ import { faUserCheck } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
 import { fetchAuditTrailPublish } from "shell/store/logs";
+import cx from "classnames";
+import SharedWidgetStyles from "../SharedWidget.less";
 
 export default connect(state => {
   return {
@@ -37,7 +39,12 @@ export default connect(state => {
           </span>
           <small>Audit Trail&trade;</small>
         </CardHeader>
-        <CardContent className="setting-field audit-trail-content">
+        <CardContent
+          className={cx(
+            "setting-field audit-trail-content",
+            SharedWidgetStyles.CardListSpace
+          )}
+        >
           {loading ? (
             <p>Loading Logs</p>
           ) : (

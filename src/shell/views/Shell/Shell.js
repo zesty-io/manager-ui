@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Switch, Route } from "react-router-dom";
 import { connect } from "react-redux";
 
@@ -8,15 +8,17 @@ import GlobalTabs from "shell/components/global-tabs";
 import Welcome from "shell/components/welcome";
 import Missing from "shell/components/missing";
 
+import ContentApp from "apps/content-editor/src";
 import MediaApp from "apps/media/src";
+import AuditTrailApp from "apps/audit-trail/src";
+import AnalyticsApp from "apps/analytics/src";
+import CodeApp from "apps/code-editor/src";
+import LeadsApp from "apps/leads/src";
+import SchemaApp from "apps/schema/src";
+import SeoApp from "apps/seo/src";
+import SettingsApp from "apps/settings/src";
 
 import styles from "./Shell.less";
-
-// We use React.lazy and React.Suspense allow dynamic imports for Route
-// components. webpack hints are required to enable prefetching (which
-// loads sub-app bundles in background during idle time)
-// see: https://webpack.js.org/guides/code-splitting/#dynamic-imports
-// see: https://reactjs.org/docs/code-splitting.html#route-based-code-splitting
 
 export default connect(state => {
   return {
@@ -34,143 +36,81 @@ export default connect(state => {
           <GlobalTabs />
           <div className={styles.SubApp}>
             <AppError>
-              <Suspense fallback={<div></div>}>
-                <Switch>
-                  {props.products.map(product => {
-                    switch (product) {
-                      case "content":
-                        const ContentApp = lazy(() =>
-                          import(
-                            /* webpackChunkName: "content-editor" */
-                            /* webpackPrefetch: true */
-                            "apps/content-editor/src"
-                          )
-                        );
-                        return (
-                          <Route
-                            key={product}
-                            path="/content"
-                            component={ContentApp}
-                          />
-                        );
-                      case "media":
-                        return (
-                          <Route
-                            key={product}
-                            path="/media"
-                            component={MediaApp}
-                          />
-                        );
-                      case "audit-trail":
-                        const AuditTrailApp = lazy(() =>
-                          import(
-                            /* webpackChunkName: "audit-trail" */
-                            /* webpackPrefetch: true */
-                            "apps/audit-trail/src"
-                          )
-                        );
-                        return (
-                          <Route
-                            key={product}
-                            path="/audit-trail"
-                            component={AuditTrailApp}
-                          />
-                        );
-                      case "analytics":
-                        const AnalyticsApp = lazy(() =>
-                          import(
-                            /* webpackChunkName: "analytics" */
-                            /* webpackPrefetch: true */
-                            "apps/analytics/src"
-                          )
-                        );
-                        return (
-                          <Route
-                            key={product}
-                            path="/analytics"
-                            component={AnalyticsApp}
-                          />
-                        );
-                      case "code":
-                        const CodeApp = lazy(() =>
-                          import(
-                            /* webpackChunkName: "code" */
-                            /* webpackPrefetch: true */
-                            "apps/code-editor/src"
-                          )
-                        );
-                        return (
-                          <Route
-                            key={product}
-                            path="/code"
-                            component={CodeApp}
-                          />
-                        );
-                      case "leads":
-                        const LeadsApp = lazy(() =>
-                          import(
-                            /* webpackChunkName: "leads" */
-                            /* webpackPrefetch: true */
-                            "apps/leads/src"
-                          )
-                        );
-                        return (
-                          <Route
-                            key={product}
-                            path="/leads"
-                            component={LeadsApp}
-                          />
-                        );
-                      case "schema":
-                        const SchemaApp = lazy(() =>
-                          import(
-                            /* webpackChunkName: "schema" */
-                            /* webpackPrefetch: true */
-                            "apps/schema/src"
-                          )
-                        );
-                        return (
-                          <Route
-                            key={product}
-                            path="/schema"
-                            component={SchemaApp}
-                          />
-                        );
-                      case "seo":
-                        const SeoApp = lazy(() =>
-                          import(
-                            /* webpackChunkName: "seo" */
-                            /* webpackPrefetch: true */
-                            "apps/seo/src"
-                          )
-                        );
-                        return (
-                          <Route key={product} path="/seo" component={SeoApp} />
-                        );
-                      case "settings":
-                        const SettingsApp = lazy(() =>
-                          import(
-                            /* webpackChunkName: "settings" */
-                            /* webpackPrefetch: true */
-                            "apps/settings/src"
-                          )
-                        );
-                        return (
-                          <Route
-                            key={product}
-                            path="/settings"
-                            component={SettingsApp}
-                          />
-                        );
-                      default:
-                        null;
-                    }
-                  })}
+              <Switch>
+                {props.products.map(product => {
+                  switch (product) {
+                    case "content":
+                      return (
+                        <Route
+                          key={product}
+                          path="/content"
+                          component={ContentApp}
+                        />
+                      );
+                    case "media":
+                      return (
+                        <Route
+                          key={product}
+                          path="/media"
+                          component={MediaApp}
+                        />
+                      );
+                    case "audit-trail":
+                      return (
+                        <Route
+                          key={product}
+                          path="/audit-trail"
+                          component={AuditTrailApp}
+                        />
+                      );
+                    case "analytics":
+                      return (
+                        <Route
+                          key={product}
+                          path="/analytics"
+                          component={AnalyticsApp}
+                        />
+                      );
+                    case "code":
+                      return (
+                        <Route key={product} path="/code" component={CodeApp} />
+                      );
+                    case "leads":
+                      return (
+                        <Route
+                          key={product}
+                          path="/leads"
+                          component={LeadsApp}
+                        />
+                      );
+                    case "schema":
+                      return (
+                        <Route
+                          key={product}
+                          path="/schema"
+                          component={SchemaApp}
+                        />
+                      );
+                    case "seo":
+                      return (
+                        <Route key={product} path="/seo" component={SeoApp} />
+                      );
+                    case "settings":
+                      return (
+                        <Route
+                          key={product}
+                          path="/settings"
+                          component={SettingsApp}
+                        />
+                      );
+                    default:
+                      null;
+                  }
+                })}
 
-                  <Route exact path="/" component={Welcome} />
-                  <Route path="*" component={Missing} />
-                </Switch>
-              </Suspense>
+                <Route exact path="/" component={Welcome} />
+                <Route path="*" component={Missing} />
+              </Switch>
             </AppError>
           </div>
         </main>

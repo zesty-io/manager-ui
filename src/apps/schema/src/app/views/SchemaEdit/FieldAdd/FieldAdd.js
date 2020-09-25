@@ -116,10 +116,10 @@ export function FieldAdd(props) {
         {field.datatype == 0 && (
           <React.Fragment>
             {props.firstField && (
-              <h1>
+              <div className={styles.AlignHeader}>
                 <FontAwesomeIcon icon={faHandPointUp} />
-                &nbsp; Get started by selecting this models first field type
-              </h1>
+                <h1>Get started by selecting this models first field type</h1>
+              </div>
             )}
             <p>
               Fields provide the model structure and guidance to content editors

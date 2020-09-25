@@ -143,7 +143,7 @@ const Footer = connect(state => {
   });
 
   return (
-    <footer>
+    <footer className={styles.FieldFooter}>
       <ButtonGroup className={styles.FieldActions}>
         <Button kind="save" disabled={!props.field.dirty} onClick={onSave}>
           {loading ? (

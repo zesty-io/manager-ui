@@ -15,7 +15,7 @@ import { Button } from "@zesty-io/core/Button";
 import { Url } from "@zesty-io/core/Url";
 
 import { WorkflowRequest } from "../WorkflowRequest";
-
+import cx from "classnames";
 import styles from "./QuickView.less";
 import SharedWidgetStyles from "../SharedWidget.less";
 
@@ -55,7 +55,9 @@ export const QuickView = React.memo(function QuickView(props) {
             </article>
           </section>
         </CardHeader>
-        <CardContent className={styles.Content}>
+        <CardContent
+          className={cx(styles.Content, SharedWidgetStyles.CardListSpace)}
+        >
           <ul>
             <li>
               <strong>ZUID:</strong>&nbsp;

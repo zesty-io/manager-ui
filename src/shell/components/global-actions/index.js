@@ -23,7 +23,7 @@ export default connect(state => {
       setOpenMenu(false);
     });
     return (
-      <div ref={ref} className={styles.GlobalSubMenu}>
+      <div className={styles.GlobalSubMenu}>
         <div className={styles.GlobalActions}>
           <LivePreview
             instanceHash={props.instance.randomHashID}
@@ -34,13 +34,13 @@ export default connect(state => {
           <GlobalNotifications className={styles.action} />
 
           <span
+            ref={ref}
+            onClick={() => setOpenMenu(!openMenu)}
             className={styles.action}
             title="Help"
-            onClick={() => {
-              setOpenMenu(!openMenu);
-            }}
           >
             <FontAwesomeIcon icon={faQuestion} />
+            {openMenu && <GlobalHelpMenu />}
           </span>
         </div>
 
@@ -53,7 +53,6 @@ export default connect(state => {
           />
           <span className={styles.VersionNumber}>{CONFIG.VERSION}</span>
         </span>
-        {openMenu && <GlobalHelpMenu />}
       </div>
     );
   })

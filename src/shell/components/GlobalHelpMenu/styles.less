@@ -34,10 +34,13 @@
     left: -10px;
     bottom: 0;
   }
+  .Button {
+    margin-bottom: 8px;
+  }
 }
 
 .helpModule {
-  flex-grow: 1;
+  flex: 1;
   box-shadow: 1px 1px 5px #171b26;
 
   .title {
@@ -45,11 +48,13 @@
   }
 
   &.primary {
-    flex-grow: 2;
+    flex: 2;
     margin-left: 0;
   }
 
   .helpBox {
+    text-align: left;
+
     li {
       list-style: none;
       padding-left: 8px;
@@ -61,6 +66,7 @@
         width: 16px;
         height: 16px;
         color: @zesty-light-gray;
+        margin-right: 8px;
       }
     }
   }

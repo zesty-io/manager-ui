@@ -70,12 +70,14 @@ export class Actions extends PureComponent {
           />
         )}
 
-        <WidgetListed
-          dispatch={this.props.dispatch}
-          itemZUID={this.props.itemZUID}
-          listed={listed}
-          sort={sort}
-        />
+        {this.props.userRole.name !== "Contributor" && (
+          <WidgetListed
+            dispatch={this.props.dispatch}
+            itemZUID={this.props.itemZUID}
+            listed={listed}
+            sort={sort}
+          />
+        )}
 
         {(this.props.userRole.systemRole.publish || this.props.user.staff) && (
           <WidgetPurgeItem

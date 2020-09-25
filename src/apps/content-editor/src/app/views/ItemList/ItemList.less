@@ -1,6 +1,6 @@
 @import "~@zesty-io/core/colors.less";
 .ItemList {
-  min-width: 100%;
+  // min-width: 100%;
   background-color: #fff;
   // background: transparent;
   // @supports (display: grid) {
@@ -8,9 +8,12 @@
   // }
 
   .TableWrap {
-    width: 77vw;
     // Parents height minus total height of actions container
-    height: calc(100vh - 64px - 9px - 43px);
+    height: calc(100vh - 82px - 52px);
+
+    @media screen and (max-width: 2000px) {
+      height: calc(100vh - 76px - 52px);
+    }
 
     // div::-webkit-scrollbar {
     //   width: 15px;

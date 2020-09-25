@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Switch, Route } from "react-router-dom";
-import cx from "classnames";
+import { Switch, Route, Redirect } from "react-router-dom";
 
 import { notify } from "shell/store/notifications";
 import { fetchFields } from "shell/store/fields";
@@ -278,15 +277,21 @@ class ItemEdit extends Component {
             <Route
               exact
               path="/content/:modelZUID/:itemZUID/head"
-              render={() => (
-                <Head
-                  instance={this.props.instance}
-                  itemZUID={this.props.itemZUID}
-                  item={this.props.item}
-                  tags={this.props.tags}
-                  dispatch={this.props.dispatch}
-                />
-              )}
+              render={({ match }) => {
+                return this.props.userRole.name !== "Contributor" ? (
+                  <Head
+                    instance={this.props.instance}
+                    itemZUID={this.props.itemZUID}
+                    item={this.props.item}
+                    tags={this.props.tags}
+                    dispatch={this.props.dispatch}
+                  />
+                ) : (
+                  <Redirect
+                    to={`/content/${match.params.modelZUID}/${match.params.itemZUID}`}
+                  />
+                );
+              }}
             />
             <Route
               exact

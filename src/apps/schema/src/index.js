@@ -6,12 +6,12 @@ import { Route } from "react-router-dom";
 import { store, injectReducer } from "shell/store";
 import { fetchModels } from "shell/store/models";
 
-import { schemaNav } from "./store/schemaNav";
+import { navSchema } from "./store/navSchema";
 import { parents } from "./store/parents";
 
 import { SchemaBuilder } from "./app";
 
-injectReducer(store, "schemaNav", schemaNav);
+injectReducer(store, "navSchema", navSchema);
 injectReducer(store, "parents", parents);
 
 export default hot(function SchemaApp() {

@@ -8,8 +8,8 @@
                 title="CMD + Click to collapse group">
 
                 <span class="caret" onclick="{handleCollapse}">
-                    <i if="{!this.dir.collapsed && this.children.length}" class="fas fa-caret-down"></i>
-                    <i if="{this.dir.collapsed && this.children.length}" class="fas fa-caret-right"></i>
+                    <i if="{(!this.dir.collapsed && this.dir.type === 'bin') || (!this.dir.collapsed && this.children.length)}" class="icon-caret-down"></i>
+                    <i if="{(this.dir.collapsed && this.dir.type === 'bin') || (this.dir.collapsed && this.children.length)}" class="icon-caret-right"></i>
                 </span>
 
                 <span class="folder">
@@ -106,6 +106,13 @@
             } else {
                 let ids = opts.groups.filter(el => el.collapsed).map(el => el.id)
                 localStorage.setItem('media:groups:collapsed', ids)
+            }
+
+            // must happen after updating local storage
+            if (!this.dir.collapsed) {
+                if (this.dir.type === 'bin') {
+                    zesty.trigger('media:bin:groups', [this.dir.id])
+                }
             }
         }
 

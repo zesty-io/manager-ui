@@ -6,7 +6,7 @@ import { fetchFields } from "shell/store/fields";
 const inflight = [];
 export const fetchResource = store => next => action => {
   if (action.type === "FETCH_RESOURCE") {
-    // If we are not currently making this API call
+    // Track inflight API requests
     if (inflight.indexOf(action.uri) === -1) {
       inflight.push(action.uri);
       return request(action.uri)
@@ -27,9 +27,6 @@ export const fetchResource = store => next => action => {
             throw err;
           }
         });
-    } else {
-      // console.log("request inflight ", action.uri, inflight);
-      return Promise.reject(`duplicate request: ${action.uri}`);
     }
   } else {
     return next(action);

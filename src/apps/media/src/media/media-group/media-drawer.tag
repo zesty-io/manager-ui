@@ -4,6 +4,8 @@
             <span class="pictos">X</span>
         </button>
         <div class="meta-info" show="{opts.file.url}">
+            <z-text-field class="zuid" label="ZUID" disabled="true" value="{opts.file.id}"></z-text-field>
+            <z-text-field class="zuid" label="Uploaded" disabled="true" value="{opts.file.created_at}"></z-text-field>
             <z-text-field class="title" label="Title" value="{opts.file.title}"></z-text-field>
             <z-text-field class="filename" label="Filename" value="{opts.file.filename}"></z-text-field>
             <z-copy-field label="Copy" value="{opts.file.url}" disabled="true"></z-copy-field>

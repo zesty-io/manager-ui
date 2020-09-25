@@ -1,17 +1,22 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
 import cx from "classnames";
 
-// import { Url } from "@zesty-io/core/Url";
-
 import styles from "./ItemNavigation.less";
-export const ItemNavigation = ({
+
+export default connect(state => {
+  return {
+    userRole: state.userRole
+  };
+})(function ItemNavigation({
   modelZUID,
   itemZUID,
   item: {
     web: { metaLinkText, metaTitle, metaDescription }
-  }
-}) => {
+  },
+  userRole
+}) {
   const slug = window.location.href.split("/").pop();
   return (
     <ul className={styles.ItemNavigation}>
@@ -41,15 +46,20 @@ export const ItemNavigation = ({
           META
         </Link>
       </li>
-      <li>
-        <Link
-          data-cy="head"
-          className={cx(styles.Item, slug === "head" ? styles.Selected : null)}
-          to={`/content/${modelZUID}/${itemZUID}/head`}
-        >
-          HEAD
-        </Link>
-      </li>
+      {userRole.name !== "Contributor" && (
+        <li>
+          <Link
+            data-cy="head"
+            className={cx(
+              styles.Item,
+              slug === "head" ? styles.Selected : null
+            )}
+            to={`/content/${modelZUID}/${itemZUID}/head`}
+          >
+            HEAD
+          </Link>
+        </li>
+      )}
     </ul>
   );
-};
+});

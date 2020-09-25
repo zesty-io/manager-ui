@@ -31,7 +31,7 @@ const sortNav = (a, b) => {
   return 0;
 };
 
-export function schemaNav(state = [], action) {
+export function navSchema(state = [], action) {
   switch (action.type) {
     case "FETCH_MODELS_SUCCESS":
       return Object.keys(action.payload)
