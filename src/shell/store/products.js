@@ -53,6 +53,20 @@ export function fetchProducts() {
         data = [];
     }
 
+    if (getState().user.staff) {
+      data = [
+        "content",
+        "media",
+        "schema",
+        "code",
+        "leads",
+        "analytics",
+        "seo",
+        "audit-trail",
+        "settings"
+      ];
+    }
+
     dispatch({
       type: "FETCH_PRODUCTS_SUCCESS",
       payload: {
