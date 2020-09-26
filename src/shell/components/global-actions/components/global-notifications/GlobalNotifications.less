@@ -1,17 +1,18 @@
 @import "~@zesty-io/core/colors.less";
 
 .notices {
+  background-color: #c7d4ea;
   position: fixed;
   z-index: 100;
-  bottom: 100px;
-  left: 43px;
+  bottom: 110px;
+  left: 200px;
+  color: #253c63;
 
   ul {
     list-style-type: none;
     border-radius: 3px;
-    background: @zesty-grey;
     width: max-content;
-    padding: 16px;
+    padding: 24px;
 
     box-shadow: 2px 2px 2px #33394a;
 
@@ -28,10 +29,11 @@
   }
 
   .caret {
-    color: @zesty-grey;
+    color: #c7d4ea;
     position: absolute;
-    bottom: -14px;
-    left: 5px;
+    bottom: -4.5px;
+    left: -14.5px;
+    transform: rotate(90deg);
   }
 }
 
@@ -41,8 +43,9 @@
 
 @media (max-width: 2000px) {
   .notices {
-    left: 53px;
-    bottom: 108px;
+    left: 60px;
+    bottom: 105px;
+
     .caret {
       left: -11px;
       bottom: 11px;

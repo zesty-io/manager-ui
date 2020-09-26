@@ -6,7 +6,7 @@
   width: 350px;
   color: #253c63;
   top: 0;
-  right: -387px;
+  right: -399px;
   padding: 24px;
   background: #c7d4ea;
   box-shadow: 1px 1px 19px #171b26;
@@ -20,8 +20,16 @@
     right: 0;
   }
 
-  .icon {
-    // 60vwmargin-right: 0.5rem;
+  &:after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid #c3cddf;
+    left: -10px;
+    top: 23px;
   }
 
   .user {
