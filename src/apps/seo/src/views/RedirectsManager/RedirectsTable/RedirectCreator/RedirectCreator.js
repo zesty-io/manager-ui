@@ -69,6 +69,7 @@ export default class RedirectCreator extends Component {
         </span>
         <span className={styles.RedirectCreatorCell} style={{ flex: "1" }}>
           <ContentSearch
+            className={styles.SearchBar}
             onSelect={(item, setSearchTerm) => {
               setSearchTerm(item.web.path);
               this.handleTarget(item.web.path);
