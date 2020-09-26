@@ -8,6 +8,7 @@ import { get } from "idb-keyval";
 import riot from "riot";
 import Clipboard from "clipboard";
 import DnD from "../vendors/common/dnd";
+import * as Sentry from "@sentry/react";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
@@ -18,12 +19,19 @@ import PrivateRoute from "./components/private-route";
 import LoadInstance from "./components/load-instance";
 import Shell from "./views/Shell";
 
-// needed for Breadcrumbs in Shell
-injectReducer(store, "navContent", navContent);
-
 // interploated by webpack at build time
 // must be setup before starting the store
 window.CONFIG = __CONFIG__;
+
+if (CONFIG.env !== "development") {
+  Sentry.init({
+    dsn:
+      "https://2e83c3767c484794a56832affe2d26d9@o162121.ingest.sentry.io/5441698"
+  });
+}
+
+// needed for Breadcrumbs in Shell
+injectReducer(store, "navContent", navContent);
 
 // Some legacy code refers to this global which is an observable
 // FIXME: this needs to get refactored out

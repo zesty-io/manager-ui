@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Switch, Route } from "react-router-dom";
 import { connect } from "react-redux";
+import * as Sentry from "@sentry/react";
 
 import AppError from "shell/components/AppError";
 import GlobalSidebar from "shell/components/global-sidebar";
@@ -35,7 +36,7 @@ export default connect(state => {
         <main className={styles.AppLoader}>
           <GlobalTabs />
           <div className={styles.SubApp}>
-            <AppError>
+            <Sentry.ErrorBoundary fallback={() => <AppError />}>
               <Switch>
                 {props.products.map(product => {
                   switch (product) {
@@ -111,7 +112,7 @@ export default connect(state => {
                 <Route exact path="/" component={Welcome} />
                 <Route path="*" component={Missing} />
               </Switch>
-            </AppError>
+            </Sentry.ErrorBoundary>
           </div>
         </main>
       </section>
