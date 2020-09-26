@@ -2,7 +2,11 @@ import React, { useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { CollapsibleCard, CardContent } from "@zesty-io/core/CollapsibleCard";
+import {
+  CollapsibleCard,
+  CardContent,
+  CardFooter
+} from "@zesty-io/core/CollapsibleCard";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 import { Button } from "@zesty-io/core/Button";
 
@@ -10,6 +14,7 @@ import { notify } from "shell/store/notifications";
 import { deleteModel } from "shell/store/models";
 
 import styles from "./Delete.less";
+import { Card } from "@zesty-io/core/Card";
 export default function Delete(props) {
   return (
     <CollapsibleCard className={styles.Delete} header={Header(props)}>
@@ -38,10 +43,12 @@ function Footer(props) {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <React.Fragment>
-      <Button kind="warn" onClick={() => setIsOpen(true)}>
-        <FontAwesomeIcon icon={faTrash} />
-        Delete Model
-      </Button>
+      <CardFooter>
+        <Button kind="warn" onClick={() => setIsOpen(true)}>
+          <FontAwesomeIcon icon={faTrash} />
+          Delete Model
+        </Button>
+      </CardFooter>
 
       <ConfirmDialog
         isOpen={isOpen}
