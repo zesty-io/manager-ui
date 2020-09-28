@@ -4,6 +4,8 @@ import { Button } from "@zesty-io/core/Button";
 
 import { publishFile, fetchFiles } from "../../../../../../store/files";
 
+import styles from "../EditorActions.less";
+
 export const Publish = React.memo(function Publish(props) {
   const [publishing, setPublishing] = useState(false);
 
@@ -29,7 +31,8 @@ export const Publish = React.memo(function Publish(props) {
       ) : (
         <i className="fas fa-cloud-upload-alt"></i>
       )}
-      Publish Version {props.version}
+      Publish{" "}
+      <span className={styles.HideSmall}>&nbsp;Version {props.version}</span>
     </Button>
   );
 });
