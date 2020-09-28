@@ -27,6 +27,7 @@ export default connect(state => {
         .dispatch(fetchInstance())
         .then(res => {
           document.title = `Zesty Manager - ${res.data.name}`;
+          CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data.randomHashID}${CONFIG.URL_PREVIEW}`;
         })
         .catch(res => {
           if (res.status === 403) {
