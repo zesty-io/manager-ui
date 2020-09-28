@@ -17,7 +17,7 @@
                         href="#!/content/{result.zuid}/new"
                         onclick="{parent.parent.handleClickSelect}">
                         <span class="spotlight-icon">
-                            <i class="result-icon icon-plus"></i>
+                            <i class="fas fa-plus"></i>
                         </span>
                         <span class="spotlight-content">
                             <span class="spotlight-title">{result.seo_link_title} </span>

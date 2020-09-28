@@ -1,10 +1,10 @@
 <media-app-controls>
     <section class="control-bar">
         <z-button id="assetUpload" handler="{showFileModal}">
-            <i class="icon-cloud-upload"></i>&nbsp;Upload Files
+            <i class="fas fa-cloud-upload-alt"></i>&nbsp;Upload Files
         </z-button>
         <z-button id="createGroup" handler="{showGroupModal}">
-            <i class="icon-plus"></i>&nbsp;New Group
+            <i class="fas fa-plus"></i>&nbsp;New Group
         </z-button>
         <z-search-field handler="{search}" placeholder="Search across all your files"></z-search-field>
         <input type="file" id="upload" name="upload" onchange="{handleFileUpload}" multiple />
@@ -13,7 +13,7 @@
             <media-bulk-actions></media-bulk-actions>
         </z-button>-->
         <z-button handler="{handleTutorial}">
-            <i class="icon-facetime-video"></i>&nbsp;Tutorial
+            <i class="fas fa-video"></i>&nbsp;Tutorial
         </z-button>
     </section>
     <script type="es6">

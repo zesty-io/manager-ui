@@ -1,7 +1,7 @@
 <media-drawer>
     <aside id="media-drawer" if="{opts.file}">
         <button class="close" onclick="{close}">
-            <span class="pictos">*</span>
+            <span class="pictos">X</span>
         </button>
         <div class="meta-info" show="{opts.file.url}">
             <z-text-field class="zuid" label="ZUID" disabled="true" value="{opts.file.id}"></z-text-field>
