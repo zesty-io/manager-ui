@@ -46,7 +46,7 @@ export class ItemUrl extends React.Component {
           {urlString}
         </Url>
         {!isPublished && (
-          <small className={styles.pubMessage}>[Unpublished}</small>
+          <small className={styles.pubMessage}>[Unpublished]</small>
         )}
       </article>
     );
