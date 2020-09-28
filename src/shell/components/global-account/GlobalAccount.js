@@ -6,22 +6,25 @@ import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import GlobalAccountMenu from "shell/components/global-account-menu";
 
 import css from "./GlobalAccount.less";
-
-export default function GlobalAccount(props) {
+export default function GlobalAccount() {
   const [openMenu, setOpenMenu] = useState(false);
+  const [token, setToken] = useState(false);
 
   return (
     <div
       className={css.GlobalAccount}
       onMouseEnter={() => {
+        if (token) {
+          clearTimeout(token);
+        }
         setOpenMenu(true);
       }}
       onMouseLeave={() => {
-        setOpenMenu(false);
+        setToken(setTimeout(() => setOpenMenu(false), 500));
       }}
     >
       <FontAwesomeIcon icon={faGlobe} />
-      {openMenu && <GlobalAccountMenu />}
+      <GlobalAccountMenu display={openMenu} />
     </div>
   );
 }

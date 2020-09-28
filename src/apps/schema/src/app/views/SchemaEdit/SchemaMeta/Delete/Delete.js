@@ -14,7 +14,7 @@ import { notify } from "shell/store/notifications";
 import { deleteModel } from "shell/store/models";
 
 import styles from "./Delete.less";
-import { Card } from "@zesty-io/core/Card";
+
 export default function Delete(props) {
   return (
     <CollapsibleCard className={styles.Delete} header={Header(props)}>

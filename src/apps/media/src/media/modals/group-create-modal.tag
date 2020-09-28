@@ -38,7 +38,7 @@
         }
         #group-create-modal .group-create-modal {
             display: flex;
-            margin-top: 2rem;
+            margin-top: 2.6rem;
             padding: 1rem;
         }
         #group-create-modal button {

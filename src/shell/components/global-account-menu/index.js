@@ -21,15 +21,18 @@ export default connect(state => {
   };
 })(function GlobalAccount(props) {
   return (
-    <section className={cx(styles.accountMenu)}>
+    <section
+      className={cx(styles.accountMenu, props.display ? null : styles.hide)}
+    >
       <header className={styles.user}>
         <h1>
           <img
             alt={`${props.user.firstName} ${props.user.lastName} Avatar`}
-            src={`https://www.gravatar.com/avatar/${props.user.emailHash}?d=mm&s=40`}
+            src={`https://www.gravatar.com/avatar/${props.user.emailHash}?d=mm&s=60`}
+            width="60px"
           />
           <div className={styles.meta}>
-            <span className={styles.name}>
+            <span className={styles.headline}>
               {props.user.firstName} {props.user.lastName}
             </span>
             <span className={styles.subheadline}>{props.user.email}</span>

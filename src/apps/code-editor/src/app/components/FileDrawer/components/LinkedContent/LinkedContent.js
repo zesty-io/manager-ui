@@ -37,7 +37,7 @@ export default function LinkedContent(props) {
                 <p>
                   <Url
                     className={styles.Link}
-                    href={`${CONFIG.service.sitePreviewURL}${item.web.path}`}
+                    href={`${CONFIG.URL_PREVIEW_FULL}${item.web.path}`}
                     target="_blank"
                     title="Preview item webpage"
                   >

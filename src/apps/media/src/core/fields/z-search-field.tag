@@ -1,7 +1,7 @@
 <z-search-field>
     <div class="z-search-field">
         <z-button>
-            <i if="{!parent.opts.loading}" class="icon-search"></i>
+            <i if="{!parent.opts.loading}" class="fas fa-search"></i>
             <i if="{parent.opts.loading}" class="loader"></i>
         </z-button>
         <input

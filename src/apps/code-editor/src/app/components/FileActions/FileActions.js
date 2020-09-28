@@ -21,7 +21,7 @@ export const FileActions = React.memo(function FileActions(props) {
         {props.contentModelZUID ? (
           <Url
             className={styles.FileLink}
-            href={`${CONFIG.service.sitePreviewURL}/-/instant/${props.contentModelZUID}.json`}
+            href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.contentModelZUID}.json`}
             target="_blank"
           >
             <i className="fas fa-bolt"></i>
