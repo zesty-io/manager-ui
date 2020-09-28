@@ -70,7 +70,7 @@ export class Preview extends Component {
           state.route = evt.data.route;
           window.history.pushState(
             null,
-            "Zesty Manager",
+            "Live Preview",
             `?route=${evt.data.route}`
           );
         }

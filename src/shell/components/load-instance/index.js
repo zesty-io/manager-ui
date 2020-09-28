@@ -26,7 +26,7 @@ export default connect(state => {
       props
         .dispatch(fetchInstance())
         .then(res => {
-          document.title = `Zesty Manager - ${res.data.name}`;
+          document.title = `Manager - ${res.data.name} - Zesty`;
           CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data.randomHashID}${CONFIG.URL_PREVIEW}`;
         })
         .catch(res => {
