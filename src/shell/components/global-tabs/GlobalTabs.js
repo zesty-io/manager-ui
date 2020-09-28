@@ -231,11 +231,6 @@ export default connect(state => {
       // store routes to local storage and reload on app start
       set(`${props.instanceZUID}:session:routes`, newRoutes);
       setRoutes(newRoutes);
-
-      // jump to the first route in our list after
-      if (newRoutes.length) {
-        history.push(newRoutes[0].pathname);
-      }
     };
 
     return (
