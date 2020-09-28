@@ -91,7 +91,8 @@ export default connect(state => {
             itemZUID={this.props.itemZUID}
           />
 
-          {(this.props.userRole.systemRole.publish ||
+          {/* NOTE: hide publishing for alpha test */}
+          {/* {(this.props.userRole.systemRole.publish ||
             this.props.user.staff) && (
             <ButtonGroup className={styles.Publish}>
               <Button
@@ -126,7 +127,7 @@ export default connect(state => {
                 toggleOpen={this.handleOpenSchedule}
               />
             </ButtonGroup>
-          )}
+          )} */}
 
           <Button
             kind="save"
