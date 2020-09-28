@@ -1,11 +1,11 @@
 @import "~@zesty-io/core/colors.less";
 .GlobalMenu {
+  border-top: 1px solid lighten(@globalMenuBkgColor, 5%);
+  border-bottom: 1px solid darken(@globalMenuBkgColor, 5%);
   display: flex;
   flex: 1;
   flex-direction: column;
-
-  border-top: 1px solid lighten(@globalMenuBkgColor, 5%);
-  border-bottom: 1px solid darken(@globalMenuBkgColor, 5%);
+  padding: 8px 32px;
 
   a {
     color: @zesty-field-blue;
