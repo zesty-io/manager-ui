@@ -87,6 +87,7 @@ export default React.forwardRef(function ContentSearch(props, ref) {
     <div className={cx(styles.GlobalSearch, props.className)}>
       <Search
         ref={ref}
+        className={styles.Search}
         value={searchTerm}
         onKeyDown={handleKeydown}
         onChange={handleChange}

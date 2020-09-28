@@ -16,7 +16,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import GlobalSearch from "shell/components/global-search";
-import { Breadcrumbs } from "./components/Breadcrumbs";
 
 import styles from "./GlobalTabs.less";
 
@@ -236,19 +235,9 @@ export default connect(state => {
     return (
       <section className={styles.GlobalTabs}>
         <div className={styles.InstanceSearch}>
-          <h1 className={styles.InstanceName}>
-            <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
-            &nbsp;
-            {props.domains && props.domains[0] && props.domains[0].domain ? (
-              <a href={`https://${props.domains[0].domain}`} target="_blank">
-                {props.instanceName}
-              </a>
-            ) : (
-              props.instanceName
-            )}
-          </h1>
           <GlobalSearch className={styles.GlobalSearch} />
         </div>
+
         <nav className={styles.QuickLinks}>
           <ol className={styles.Links}>
             {routes.map((route, i) => (
@@ -275,9 +264,19 @@ export default connect(state => {
               </li>
             ))}
           </ol>
-
-          {ZUID && <Breadcrumbs itemZUID={ZUID} />}
         </nav>
+
+        <h1 className={cx(styles.bodyText, styles.InstanceName)}>
+          <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
+          &nbsp;
+          {props.domains && props.domains[0] && props.domains[0].domain ? (
+            <a href={`https://${props.domains[0].domain}`} target="_blank">
+              {props.instanceName}
+            </a>
+          ) : (
+            props.instanceName
+          )}
+        </h1>
       </section>
     );
   })

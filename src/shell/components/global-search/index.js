@@ -1,7 +1,8 @@
 import React, { useEffect, useCallback, useRef } from "react";
 import { connect } from "react-redux";
-import ContentSearch from "shell/components/ContentSearch";
 import { useHistory } from "react-router-dom";
+
+import ContentSearch from "shell/components/ContentSearch";
 
 export default connect(state => {
   return {

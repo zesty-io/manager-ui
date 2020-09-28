@@ -6,7 +6,9 @@ import {
   faTachometerAlt,
   faAngleRight
 } from "@fortawesome/free-solid-svg-icons";
+
 import { AppLink } from "@zesty-io/core/AppLink";
+import { Url } from "@zesty-io/core/Url";
 
 import styles from "./Breadcrumbs.less";
 const crawlParents = (nav, ZUID, crumbs, content) => {
@@ -106,10 +108,10 @@ export default connect(state => {
                 {i !== 0 && (
                   <FontAwesomeIcon
                     icon={faAngleRight}
-                    style={{ color: "white" }}
+                    style={{ color: "#afbcd4" }}
                   />
                 )}
-                <AppLink to={url}>{item.label}</AppLink>
+                <Url href={url}>{item.label}</Url>
               </li>
             );
           })}

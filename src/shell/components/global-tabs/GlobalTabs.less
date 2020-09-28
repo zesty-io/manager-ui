@@ -1,22 +1,31 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
 
 .GlobalTabs {
   background-color: @globalMenuBkgColor;
   box-shadow: 0px 0px 3px @globalMenuBkgColor;
   display: flex;
-  height: 76px;
+  height: 61px;
+  position: relative;
 
   .InstanceSearch {
-    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
     width: 350px;
     // width: calc(15vw - 16px);
+
     @media screen and (max-width: 1999px) {
       width: 290px;
     }
   }
 
   .InstanceName {
-    font-weight: 200;
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+    border-left: 1px solid #626b82;
+    background: #4b5468;
 
     a {
       color: @white;
@@ -100,17 +109,6 @@
         .Close {
           visibility: visible;
         }
-      }
-    }
-    .BreadCrumbs {
-      // background-color: lighten(@globalMenuBkgColor, 5%);
-      display: flex;
-      font-size: 12px;
-      padding: 4px 16px;
-      align-items: center;
-      a {
-        color: #fff;
-        padding: 8px 16px;
       }
     }
   }

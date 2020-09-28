@@ -1,18 +1,22 @@
 @import "~@zesty-io/core/colors.less";
 
 .Breadcrumbs {
-  margin: 4px 0;
+  display: flex;
+
+  li {
+    list-style: none;
+    display: flex;
+    align-items: center;
+
+    a {
+      word-break: keep-all;
+    }
+  }
 
   svg {
     padding: 0px 4px;
   }
-  .crumb {
-    a {
-      color: @zesty-light-gray;
-      text-shadow: none;
-      &:hover {
-        color: white;
-      }
-    }
+  svg:first-child {
+    padding: 0;
   }
 }

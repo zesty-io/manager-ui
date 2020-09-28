@@ -7,9 +7,16 @@ import { Url } from "@zesty-io/core/Url";
 import styles from "./ItemUrl.less";
 export class ItemUrl extends React.Component {
   render() {
-    const urlString = `${this.props.instance.protocol}://${
-      this.props.instance.prefix == 1 ? "www." : ""
-    }${this.props.instance.live_domain}${
+    // TODO fix instance protocol and prefix
+    // const urlString = `${this.props.instance.protocol}://${
+    //   this.props.instance.prefix == 1 ? "www." : ""
+    // }${this.props.instance.domain}${
+    //   this.props.item.web.pathPart !== "zesty_home"
+    //     ? this.props.item.web.path
+    //     : ""
+    // }`;
+
+    const urlString = `http://${this.props.instance.domain}${
       this.props.item.web.pathPart !== "zesty_home"
         ? this.props.item.web.path
         : ""

@@ -1,6 +1,5 @@
 import React from "react";
 
-// import { Breadcrumbs } from "./Breadcrumbs";
 import ItemNavigation from "./ItemNavigation";
 import { LanguageSelector } from "./LanguageSelector";
 
@@ -10,9 +9,6 @@ export class Header extends React.PureComponent {
     return (
       <header className={styles.Header}>
         <div className={styles.ItemNav}>
-          {/* <menu className={styles.Path}>
-            <Breadcrumbs itemZUID={this.props.itemZUID} />
-          </menu> */}
           <ItemNavigation
             modelZUID={this.props.modelZUID}
             itemZUID={this.props.itemZUID}
