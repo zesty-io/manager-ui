@@ -17,7 +17,7 @@
         </section>
 
         <footer class="controls" title="Load image preview">
-            <z-button handler="{handlePreview}" height="2.3rem">
+            <z-button handler="{handlePreview}" height="1.1rem">
                 <i class="fas fa-cog"></i>
             </z-button>
             <h1 class="preview" onclick="{handlePreview}">
@@ -206,7 +206,7 @@
         cursor: pointer;
         display: inline-block;
         height: 200px;
-        margin: 6px;
+        margin: 8px;
         overflow: hidden;
         position: relative;
         width: 200px;
@@ -275,8 +275,9 @@
     }
 
     .item.file .controls {
-        display: flex;
         background-color: #C2CEE2;
+        display: flex;
+        align-items: center;
         position: absolute;
         bottom: 0;
         width: 100%;

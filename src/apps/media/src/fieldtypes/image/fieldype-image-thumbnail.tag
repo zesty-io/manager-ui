@@ -6,7 +6,7 @@
         <header class="meta">
             <h1 class="title">{this.image.title}</h1>
             <z-button class="remove" handler="{handleRemove}">
-                <span class="pictos">*</span>
+                <span class="pictos">X</span>
             </z-button>
         </header>
         <div class="loaderWrap" show="{this.loading}">
