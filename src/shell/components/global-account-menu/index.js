@@ -57,7 +57,7 @@ export default connect(state => {
 
       <main className={styles.Domains}>
         {props.instance.screenshotURL && (
-          <img src={props.instance.screenshotURL} width="300px" />
+          <img src={props.instance.screenshotURL} />
         )}
 
         <ul className={styles.bodyText}>

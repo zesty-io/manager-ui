@@ -134,7 +134,7 @@ export default connect(function(state, props) {
                   Content Instance Dashboard
                 </span>
               </div>
-              <div className={`${styles.column} ${styles.isAlignedCentered}`}>
+              <div className={`${styles.column} ${styles.isAlignedRight}`}>
                 <strong>{this.props.instanceName}</strong>{" "}
                 <span className={styles.muted}>
                   [{this.props.instanceZUID}]

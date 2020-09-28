@@ -8,7 +8,11 @@ import {
   faClone,
   faCog
 } from "@fortawesome/free-solid-svg-icons";
-import { CollapsibleCard, CardContent } from "@zesty-io/core/CollapsibleCard";
+import {
+  CollapsibleCard,
+  CardContent,
+  CardFooter
+} from "@zesty-io/core/CollapsibleCard";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
@@ -139,60 +143,62 @@ function Footer(props) {
   };
 
   return (
-    <ButtonGroup>
-      <Button
-        kind="save"
-        disabled={!props.model.dirty || loading}
-        onClick={() => {
-          setLoading(true);
-          props
-            .dispatch(saveModel(props.model.ZUID, props.model))
-            .then(res => {
-              if (res.status === 200) {
-                props.dispatch(
-                  notify({
-                    kind: "save",
-                    message: `Save ${props.model.label} changes`
-                  })
-                );
-              } else {
-                console.error(res);
+    <CardFooter className={styles.CardFooter}>
+      <ButtonGroup>
+        <Button
+          kind="save"
+          disabled={!props.model.dirty || loading}
+          onClick={() => {
+            setLoading(true);
+            props
+              .dispatch(saveModel(props.model.ZUID, props.model))
+              .then(res => {
+                if (res.status === 200) {
+                  props.dispatch(
+                    notify({
+                      kind: "save",
+                      message: `Save ${props.model.label} changes`
+                    })
+                  );
+                } else {
+                  console.error(res);
+                  props.dispatch(
+                    notify({
+                      kind: "warn",
+                      message: `${res.error}`
+                    })
+                  );
+                }
+                setLoading(false);
+              })
+              .catch(err => {
+                console.err(err);
                 props.dispatch(
                   notify({
                     kind: "warn",
-                    message: `${res.error}`
+                    message: `Failed saving ${props.model.label} changes. ${err.message}`
                   })
                 );
-              }
-              setLoading(false);
-            })
-            .catch(err => {
-              console.err(err);
-              props.dispatch(
-                notify({
-                  kind: "warn",
-                  message: `Failed saving ${props.model.label} changes. ${err.message}`
-                })
-              );
-              setLoading(false);
-            });
-        }}
-      >
-        {loading ? (
-          <FontAwesomeIcon icon={faSpinner} />
-        ) : (
-          <FontAwesomeIcon icon={faSave} />
-        )}
-        Save Model
-      </Button>
-      <Button onClick={duplicate} disabled={loading}>
-        {loading ? (
-          <FontAwesomeIcon icon={faSpinner} />
-        ) : (
-          <FontAwesomeIcon icon={faClone} />
-        )}
-        Duplicate Model
-      </Button>
-    </ButtonGroup>
+                setLoading(false);
+              });
+          }}
+        >
+          {loading ? (
+            <FontAwesomeIcon icon={faSpinner} />
+          ) : (
+            <FontAwesomeIcon icon={faSave} />
+          )}
+          Save Model
+        </Button>
+        <Button onClick={duplicate} disabled={loading}>
+          {loading ? (
+            <FontAwesomeIcon icon={faSpinner} />
+          ) : (
+            <FontAwesomeIcon icon={faClone} />
+          )}
+          Duplicate Model
+        </Button>
+      </ButtonGroup>
+    </CardFooter>
   );
 }

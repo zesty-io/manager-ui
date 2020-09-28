@@ -3,17 +3,30 @@
 
 .accountMenu {
   position: absolute;
-  width: 300px;
-  color: #253c63;
+  width: 350px;
+  color: @zesty-dark-blue;
   top: 0;
-  right: -332px;
-  padding: 16px;
+  right: -399px;
+  padding: 24px;
   background: #c7d4ea;
   box-shadow: 1px 1px 19px #171b26;
   border-radius: 0 4px 4px 0;
+  text-align: left;
 
   &.hide {
-    left: -332px;
+    left: -400px;
+  }
+
+  &:after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid #c3cddf;
+    left: -10px;
+    top: 23px;
   }
 
   .user {
@@ -23,6 +36,7 @@
       align-items: center;
       img {
         margin-right: 8px;
+        border-radius: 4px;
       }
     }
 
@@ -30,6 +44,10 @@
       display: flex;
       flex-direction: column;
     }
+  }
+
+  .headline {
+    font-weight: 600;
   }
   .subheadline {
     word-break: break-word;
@@ -39,10 +57,14 @@
     border-top: 1px solid darken(#c7d4ea, 5%);
     border-bottom: 1px solid darken(#c7d4ea, 5%);
     margin: 8px 0;
-    padding: 4px 0;
+    padding: 8px 0;
   }
 
   .Domains {
+    img {
+      width: 300px;
+      border-radius: 4px;
+    }
     ul {
       margin: 8px 0;
 
