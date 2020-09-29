@@ -12,6 +12,7 @@
   box-shadow: 1px 1px 19px #171b26;
   border-radius: 0 4px 4px 0;
   text-align: left;
+  word-break: break-word;
 
   &.hide {
     left: -400px;
@@ -46,30 +47,26 @@
     }
   }
 
-  .headline {
-    font-weight: 600;
-  }
-  .subheadline {
-    word-break: break-word;
+  // .subheadline {
+  //   word-break: break-word;
+  // }
+
+  .Divider {
+    margin: 16px 0;
   }
 
-  .siteSelector {
-    border-top: 1px solid darken(#c7d4ea, 5%);
-    border-bottom: 1px solid darken(#c7d4ea, 5%);
-    margin: 8px 0;
-    padding: 8px 0;
-  }
-
-  .Domains {
+  .Instance {
     img {
-      width: 300px;
       border-radius: 4px;
+      margin: 8px 0 0;
+      width: 350px;
     }
-    ul {
+
+    .Domains {
       margin: 8px 0;
 
       // Ensure domains wrap
-      word-break: break-all;
+      // word-break: break-all;
 
       li {
         margin: 8px 0;
@@ -79,5 +76,10 @@
         }
       }
     }
+  }
+
+  footer a {
+    display: flex;
+    margin: 0;
   }
 }
