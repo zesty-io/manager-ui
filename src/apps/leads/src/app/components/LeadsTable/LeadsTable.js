@@ -176,10 +176,10 @@ export default connect(state => {
           <table className={`table-auto ${styles.leadsTable}`}>
             <thead>
               <tr>
-                <th className="border p-1">Date (system)</th>
-                <th className="border p-1">Form Group</th>
-                <th className="border p-1">Email</th>
-                <th className="border p-1">Form Body</th>
+                <th>Date (system)</th>
+                <th>Form Group</th>
+                <th>Email</th>
+                <th>Form Body</th>
               </tr>
             </thead>
             <tbody>
@@ -189,12 +189,10 @@ export default connect(state => {
                     key={data.zuid}
                     onClick={() => this.openModalAndUpdateRoute(data)}
                   >
-                    <td className="border p-1">{data.dateCreated || "N/A"}</td>
-                    <td className="border p-1">{data.form || "N/A"}</td>
-                    <td className="border p-1">{data.email || "N/A"}</td>
-                    <td className="border p-1">
-                      {this.renderTableFormData(data.formData, 3)}
-                    </td>
+                    <td>{data.dateCreated || "N/A"}</td>
+                    <td>{data.form || "N/A"}</td>
+                    <td>{data.email || "N/A"}</td>
+                    <td>{this.renderTableFormData(data.formData, 3)}</td>
                   </tr>
                 );
               })}
