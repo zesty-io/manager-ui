@@ -10,7 +10,7 @@ import {
   faTimesCircle,
   faEdit,
   faDatabase,
-  faCodeBranch,
+  faCode,
   faCog,
   faExternalLinkSquareAlt
 } from "@fortawesome/free-solid-svg-icons";
@@ -180,7 +180,7 @@ export default connect(state => {
                 route.name = selectedFile.fileName;
               }
             }
-            route.icon = faCodeBranch;
+            route.icon = faCode;
             break;
           case "17":
             break;
