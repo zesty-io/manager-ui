@@ -7,13 +7,22 @@
   justify-content: space-between;
   position: relative;
   min-height: 42px;
-  padding: 8px 0 12px 0px;
+  // padding: 8px 0 12px 0px;
   z-index: 1;
-  width: calc(100vw - 160px - 26vw);
   flex-wrap: wrap;
+
+  @media only screen and (min-width: 1680px) {
+    width: calc(100vw - 160px - 300px);
+  }
+
+  @media only screen and (min-width: 2000px) {
+    padding: 0 12px 0 220px;
+    width: calc(100vw - 160px - 770px);
+  }
 
   .FileMeta {
     display: flex;
+    align-items: center;
     .FileLink {
       width: 3px;
       margin: 0;
