@@ -17,6 +17,7 @@ export function LeadExporter() {
     <div className={styles.LeadExporter}>
       <div className={cx(styles.filter)}>
         <Search
+          className={styles.Search}
           name="text-filter"
           placeholder="Search across all of your leads"
           onChange={value => {

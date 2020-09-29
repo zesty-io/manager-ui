@@ -22,7 +22,6 @@ export default connect(state => {
   React.memo(function LoadInstance(props) {
     const [error, setError] = useState("");
     useEffect(() => {
-      props.dispatch(fetchUser(props.user.ZUID));
       props
         .dispatch(fetchInstance())
         .then(res => {
@@ -34,7 +33,10 @@ export default connect(state => {
             setError("You do not have permission to access to this instance");
           }
         });
-      props.dispatch(fetchUserRole()).then(() => {
+      Promise.all([
+        props.dispatch(fetchUser(props.user.ZUID)),
+        props.dispatch(fetchUserRole())
+      ]).then(() => {
         props.dispatch(fetchProducts());
       });
       props.dispatch(fetchDomains());
