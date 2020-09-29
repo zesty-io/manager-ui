@@ -5,13 +5,21 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 8px 32px;
+  align-items: center;
+  justify-content: space-around;
+  @media only screen and (min-width: 1680px) {
+    justify-content: initial;
+  }
 
   a {
     color: @zesty-field-blue;
     text-decoration: none;
     letter-spacing: 1px;
-    padding: 1rem 0.5rem;
+
+    @media only screen and (min-width: 1680px) {
+      padding: 1rem 0.5rem;
+    }
+
     svg {
       margin-right: 8px;
     }
