@@ -168,18 +168,23 @@ export const DifferActions = React.memo(function DifferActions(props) {
 
       {props.synced ? (
         <>
-          <Button onClick={loadVersion} kind="save">
+          <Button className={styles.BtnSpace} onClick={loadVersion} kind="save">
             <i className="fas fa-history"></i>Load Version {selectedVersion}
           </Button>
           <AppLink to={`/code/file/${props.fileType}/${props.fileZUID}`}>
-            <Button>
+            <Button className={styles.BtnSpace}>
               <i className="fas fa-ban"></i> Cancel
             </Button>
           </AppLink>
         </>
       ) : (
         <>
-          <Button onClick={resolveSync} kind="alt" disabled={saving}>
+          <Button
+            className={styles.BtnSpace}
+            onClick={resolveSync}
+            kind="alt"
+            disabled={saving}
+          >
             {saving ? (
               <i className="fas fa-spinner"></i>
             ) : (
