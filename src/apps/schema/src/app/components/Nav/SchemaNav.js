@@ -35,11 +35,6 @@ export default function SchemaNav(props) {
   return (
     <nav className={cx("SchemaNav", styles.SchemaNav)}>
       <div className={styles.Actions}>
-        <Button onClick={() => history.push("/schema/new")} type="save">
-          <FontAwesomeIcon icon={faPlus} />
-          &nbsp;Create New Model
-        </Button>
-
         <Search
           className={styles.Search}
           name="filter_schema"
@@ -59,6 +54,15 @@ export default function SchemaNav(props) {
             }
           }}
         />
+
+        <Button
+          kind="secondary"
+          onClick={() => history.push("/schema/new")}
+          type="save"
+        >
+          <FontAwesomeIcon icon={faPlus} />
+          &nbsp;Create New Model
+        </Button>
       </div>
 
       <div className={styles.ModelList}>
