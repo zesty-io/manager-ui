@@ -3,8 +3,11 @@
 .DifferActions {
   align-items: center;
   display: flex;
-  // margin-left: auto;
-  padding: 0 12px;
+  padding: 0 12px 0 100px;
+
+  @media only screen and (min-width: 2000px) {
+    padding: 0 12px 0 220px;
+  }
 
   .Divider {
     font-size: 18px;
@@ -24,9 +27,5 @@
         color: @zesty-grey;
       }
     }
-  }
-
-  button {
-    margin: 0 0 0 12px;
   }
 }

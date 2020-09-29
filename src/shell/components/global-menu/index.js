@@ -13,7 +13,8 @@ import {
   faChartLine,
   faHistory,
   faCog,
-  faFileCode
+  faFileCode,
+  faCode
 } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./styles.less";
@@ -85,7 +86,7 @@ export default connect(state => {
                   to="/code"
                   title="Code Editor"
                 >
-                  <FontAwesomeIcon icon={faFileCode} />
+                  <FontAwesomeIcon icon={faCode} />
                   <span className={styles.title}>Code</span>
                 </Link>
               );
