@@ -68,7 +68,7 @@ export default function FieldSettings(props) {
                   name: formatName(val) // literal name key
                 });
               } else {
-                props.updateValue(key, val);
+                props.updateValue(val, key);
               }
             }}
           />
@@ -78,7 +78,7 @@ export default function FieldSettings(props) {
             label="Field Name (Parsley Code Reference). Can not contain spaces, uppercase or special characters."
             value={props.field.name}
             maxLength="50"
-            onChange={(val, name) => props.updateValue(name, formatName(val))}
+            onChange={(val, name) => props.updateValue(formatName(val), name)}
           />
 
           <FieldTypeBinary
@@ -89,7 +89,7 @@ export default function FieldSettings(props) {
             onValue="Yes"
             value={Number(props.field.required)}
             onChange={() =>
-              props.updateValue("required", !Boolean(props.field.required))
+              props.updateValue(!Boolean(props.field.required), "required")
             }
           />
 
@@ -102,8 +102,8 @@ export default function FieldSettings(props) {
             value={Number(props.field.settings.list)}
             onChange={() =>
               props.updateFieldSetting(
-                "list",
-                !Boolean(props.field.settings.list)
+                !Boolean(props.field.settings.list),
+                "list"
               )
             }
           />
