@@ -49,10 +49,12 @@
   }
 }
 
-@media (max-width: 2000px) {
+@media (min-width: 2000px) {
   .GlobalSubMenu {
     .GlobalActions {
-      flex-direction: column;
+      flex-wrap: initial;
+      align-content: initial;
+      flex-direction: row;
       .action {
         svg {
           width: 18px;
@@ -62,9 +64,8 @@
     }
 
     .AppVersion {
-      flex-direction: column;
       img {
-        margin-right: 0px;
+        margin-right: 8px;
         margin-bottom: 4px;
       }
     }
