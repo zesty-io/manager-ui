@@ -17,7 +17,11 @@ export class Actions extends PureComponent {
       return <Fragment />;
     }
 
-    const is_developer = this.props.userRole.name === "Developer";
+    const is_developer =
+      this.props.userRole.name === "Developer" ||
+      this.props.userRole.name === "Admin" ||
+      this.props.userRole.name === "Owner" ||
+      this.props.user.staff;
 
     const { type } = this.props.model;
     const { publishing, scheduling, siblings } = this.props.item;
