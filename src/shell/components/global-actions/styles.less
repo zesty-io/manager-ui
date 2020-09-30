@@ -21,9 +21,10 @@
     display: flex;
     align-items: center;
     margin: 8px;
+    flex-direction: column;
 
     img {
-      margin-right: 8px;
+      margin-bottom: 8px;
     }
   }
 
@@ -37,8 +38,8 @@
       margin: 0;
     }
     svg {
-      width: 24px;
-      height: 24px;
+      width: 18px;
+      height: 18px;
     }
 
     &:hover,
@@ -49,22 +50,24 @@
   }
 }
 
-@media (max-width: 2000px) {
+@media (min-width: 2000px) {
   .GlobalSubMenu {
     .GlobalActions {
-      flex-direction: column;
+      flex-wrap: initial;
+      align-content: initial;
+      flex-direction: row;
       .action {
         svg {
-          width: 18px;
-          height: 18px;
+          width: 24px;
+          height: 24px;
         }
       }
     }
 
     .AppVersion {
-      flex-direction: column;
+      flex-direction: row;
       img {
-        margin-right: 0px;
+        margin-right: 8px;
         margin-bottom: 4px;
       }
     }

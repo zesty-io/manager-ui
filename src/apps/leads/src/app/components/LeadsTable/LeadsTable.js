@@ -152,7 +152,7 @@ export default connect(state => {
       );
       const dataList = keysToDisplay.map((key, index) => {
         return (
-          <li key={index}>
+          <li className={styles.List} key={index}>
             {keysToDisplay[index]}: {data[keysToDisplay[index]]}
           </li>
         );
