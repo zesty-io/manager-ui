@@ -3,7 +3,6 @@
 .DifferActions {
   align-items: center;
   display: flex;
-  // margin-left: auto;
   padding: 0 12px;
 
   .Divider {
@@ -25,8 +24,13 @@
       }
     }
   }
-
-  button {
-    margin: 0 0 0 12px;
+  .Button {
+    margin: 0 0 0 8px;
+  }
+  .Hide {
+    display: none;
+    @media only screen and (min-width: 1400px) {
+      display: block;
+    }
   }
 }
