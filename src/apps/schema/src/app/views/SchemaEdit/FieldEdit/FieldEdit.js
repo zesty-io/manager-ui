@@ -32,7 +32,7 @@ export function FieldEdit(props) {
     <CollapsibleCard
       className={styles.Card}
       header={Header(props)}
-      open={props.isOpen}
+      open={props.field.isOpen}
     >
       <FieldSettings
         className={cx(props.field.deletedAt ? styles.Disabled : null)}
