@@ -25,7 +25,8 @@ export class SubHeader extends Component {
                 title={`${CONFIG.URL_PREVIEW_PROTOCOL}${this.props.instance.randomHashID}${CONFIG.URL_PREVIEW}${this.props.item.web.path}`}
                 href={`${CONFIG.URL_PREVIEW_PROTOCOL}${this.props.instance.randomHashID}${CONFIG.URL_PREVIEW}${this.props.item.web.path}?__version=${this.props.item.meta.version}`}
               >
-                <FontAwesomeIcon icon={faEye} /> Preview Current Version - 10
+                <FontAwesomeIcon icon={faEye} /> Preview Current Version{" "}
+                {this.props.item.meta.version}
               </Url>
 
               {this.props.item.web.path &&
