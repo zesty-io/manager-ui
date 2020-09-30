@@ -8,12 +8,11 @@ import {
   faImage,
   faAddressCard,
   faDatabase,
-  faCodeBranch,
   faChartPie,
   faChartLine,
   faHistory,
   faCog,
-  faFileCode,
+  faBullseye,
   faCode
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -125,7 +124,7 @@ export default connect(state => {
                   to="/seo"
                   title="SEO"
                 >
-                  <FontAwesomeIcon icon={faChartLine} />
+                  <FontAwesomeIcon icon={faBullseye} />
                   <span className={styles.title}>SEO</span>
                 </Link>
               );
