@@ -11,6 +11,7 @@ import {
 import { Select, Option } from "@zesty-io/core/Select";
 import { Button } from "@zesty-io/core/Button";
 import { Url } from "@zesty-io/core/Url";
+import { Divider } from "@zesty-io/core/Divider";
 
 import styles from "./styles.less";
 export default connect(state => {
@@ -22,15 +23,19 @@ export default connect(state => {
 })(function GlobalAccount(props) {
   return (
     <section
-      className={cx(styles.accountMenu, props.display ? null : styles.hide)}
+      className={cx(
+        styles.bodyText,
+        styles.accountMenu,
+        props.display ? null : styles.hide
+      )}
     >
       <header className={styles.user}>
         <h1>
-          <img
+          {/* <img
             alt={`${props.user.firstName} ${props.user.lastName} Avatar`}
             src={`https://www.gravatar.com/avatar/${props.user.emailHash}?d=mm&s=60`}
             width="60px"
-          />
+          /> */}
           <div className={styles.meta}>
             <span className={styles.headline}>
               {props.user.firstName} {props.user.lastName}
@@ -40,7 +45,9 @@ export default connect(state => {
         </h1>
       </header>
 
-      <main className={styles.siteSelector}>
+      <Divider className={styles.Divider} />
+
+      <main className={styles.Instance}>
         <Select name="instance" value={props.instance.ZUID}>
           {props.instances.map(instance => (
             <Option
@@ -53,14 +60,12 @@ export default connect(state => {
             />
           ))}
         </Select>
-      </main>
 
-      <main className={styles.Domains}>
         {props.instance.screenshotURL && (
           <img src={props.instance.screenshotURL} />
         )}
 
-        <ul className={styles.bodyText}>
+        <ul className={styles.Domains}>
           {props.instance.domains.map(domain => (
             <li key={domain.domain}>
               <Url href={`http://${domain.domain}`}>
@@ -73,15 +78,19 @@ export default connect(state => {
         </ul>
       </main>
 
-      <Url
-        href={`${CONFIG.URL_ACCOUNTS}/logout`}
-        className={cx(styles.link, styles.logout)}
-      >
-        <Button kind="alt">
-          <FontAwesomeIcon icon={faSignOutAlt} />
-          Logout
-        </Button>
-      </Url>
+      <Divider className={styles.Divider} />
+
+      <footer>
+        <Url
+          href={`${CONFIG.URL_ACCOUNTS}/logout`}
+          className={cx(styles.link, styles.logout)}
+        >
+          <Button kind="alt">
+            <FontAwesomeIcon icon={faSignOutAlt} />
+            Logout
+          </Button>
+        </Url>
+      </footer>
     </section>
   );
 });
