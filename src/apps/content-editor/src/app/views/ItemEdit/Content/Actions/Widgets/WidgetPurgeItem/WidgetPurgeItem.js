@@ -26,13 +26,13 @@ export const WidgetPurgeItem = React.memo(function WidgetPurgeItem(props) {
       </CardContent>
       <CardFooter className={SharedWidgetStyles.FooterSpacing}>
         {loading ? (
-          <Button className={SharedWidgetStyles.BtnFont} disabled={loading}>
+          <Button className={SharedWidgetStyles.Button} disabled={loading}>
             <FontAwesomeIcon icon={faSpinner} />
             Refreshing Cached Item&hellip;
           </Button>
         ) : (
           <Button
-            className={SharedWidgetStyles.BtnFont}
+            className={SharedWidgetStyles.Button}
             id="RefreshCache"
             onClick={() => {
               setLoading(true);

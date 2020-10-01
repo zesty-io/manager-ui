@@ -100,7 +100,7 @@ export const QuickView = React.memo(function QuickView(props) {
         <CardFooter className={SharedWidgetStyles.FooterSpacing}>
           <ButtonGroup>
             <Button
-              className={SharedWidgetStyles.BtnFont}
+              className={SharedWidgetStyles.Button}
               id="WorkflowRequestButton"
               onClick={handleWorkflow}
             >
