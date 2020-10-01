@@ -92,7 +92,7 @@ export default connect(state => {
           />
 
           {/* NOTE: hide publishing for alpha test */}
-          {/* {(this.props.userRole.systemRole.publish ||
+          {(this.props.userRole.systemRole.publish ||
             this.props.user.staff) && (
             <ButtonGroup className={styles.Publish}>
               <Button
@@ -127,7 +127,7 @@ export default connect(state => {
                 toggleOpen={this.handleOpenSchedule}
               />
             </ButtonGroup>
-          )} */}
+          )}
 
           <Button
             kind="save"
