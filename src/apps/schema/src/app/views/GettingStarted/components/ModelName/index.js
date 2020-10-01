@@ -1,0 +1,1 @@
+export { ModelName } from "./ModelName";

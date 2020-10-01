@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, useLocation } from "react-router-dom";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -8,11 +8,13 @@ import { SchemaNav } from "./components/Nav";
 // import { Dashboard } from "./views/Dashboard";
 import { SchemaCreate } from "./views/SchemaCreate";
 import { SchemaEdit } from "./views/SchemaEdit";
+import { GettingStarted } from "./views/GettingStarted";
 
 import styles from "./main.less";
 export default connect(state => {
   return { navSchema: state.navSchema };
 })(function SchemaBuilder(props) {
+  const location = useLocation();
   return (
     <WithLoader
       condition={props.navSchema.length}
@@ -21,10 +23,13 @@ export default connect(state => {
       height="100vh"
     >
       <section className={styles.SchemaBuilder}>
-        <SchemaNav nav={props.navSchema} />
+        {location.pathname !== "/schema/start" && (
+          <SchemaNav nav={props.navSchema} />
+        )}
         <div className={styles.SchemaMain}>
           <Switch>
             <Route exact path="/schema/new" component={SchemaCreate} />
+            <Route path="/schema/start" component={GettingStarted} />
             <Route
               path="/schema/:modelZUID/field/:fieldZUID"
               component={SchemaEdit}
