@@ -13,6 +13,8 @@ export function user(
   switch (action.type) {
     case "VERIFY_SUCCESS":
     case "FETCH_LOGIN_SUCCESS":
+    case "VERIFY_2FA_SUCCESS":
+    case "POLL_2FA_SUCCESS":
       // Only update user if we don't have a user ZUID in the store
       if (!state.ZUID && action.payload.meta.userZuid) {
         return { ...state, ZUID: action.payload.meta.userZuid };
