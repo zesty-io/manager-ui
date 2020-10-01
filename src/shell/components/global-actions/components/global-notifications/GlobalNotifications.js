@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
+import useOnclickOutside from "react-cool-onclickoutside";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -20,13 +21,17 @@ export default connect(state => {
     const [open, setOpen] = useState(Boolean(props.notifications.length));
     const [showAll, setShowAll] = useState(false);
 
+    const ref = useOnclickOutside(() => {
+      setOpen(false);
+    });
+
     useEffect(() => {
       setOpen(Boolean(props.notifications.length));
 
       // On every render set timeout to hide notices
       const token = setTimeout(() => {
         setOpen(false);
-      }, 4000);
+      }, 5000);
 
       return () => {
         clearTimeout(token);
@@ -34,7 +39,7 @@ export default connect(state => {
     }, [props.notifications.length]);
 
     return (
-      <aside className={cx(styles.Notifications, props.className)}>
+      <aside ref={ref} className={cx(styles.Notifications, props.className)}>
         <span
           className={styles.action}
           title="Notifications"
