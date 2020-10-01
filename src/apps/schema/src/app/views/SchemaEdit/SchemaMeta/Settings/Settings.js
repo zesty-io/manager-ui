@@ -47,6 +47,7 @@ export default function Settings(props) {
         />
 
         <FieldTypeTextarea
+          className={styles.FieldTypeTextarea}
           name="description"
           label="Description"
           value={props.model.description}
