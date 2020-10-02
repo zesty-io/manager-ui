@@ -3,6 +3,8 @@ import cx from "classnames";
 import { connect } from "react-redux";
 import useOnclickOutside from "react-cool-onclickoutside";
 
+import { Url } from "@zesty-io/core/Url";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestion, faEye } from "@fortawesome/free-solid-svg-icons";
 
@@ -43,16 +45,21 @@ export default connect(state => {
             {openMenu && <GlobalHelpMenu />}
           </span>
         </div>
-
-        <span className={cx(styles.AppVersion)}>
-          <img
-            src="https://brand.zesty.io/zesty-io-logo.svg"
-            alt={`Zesty.io version ${CONFIG.VERSION}`}
-            width="24px"
-            height="24px"
-          />
-          <span className={styles.VersionNumber}>{CONFIG.VERSION}</span>
-        </span>
+        <Url
+          href="https://github.com/zesty-io/manager-ui"
+          title="Zesty Manager-ui Github"
+          target="_blank"
+        >
+          <span className={cx(styles.AppVersion)}>
+            <img
+              src="https://brand.zesty.io/zesty-io-logo.svg"
+              alt={`Zesty.io version ${CONFIG.VERSION}`}
+              width="24px"
+              height="24px"
+            />
+            <span className={styles.VersionNumber}>{CONFIG.VERSION}</span>
+          </span>
+        </Url>
       </div>
     );
   })
