@@ -13,7 +13,7 @@ export const DateCell = React.memo(function DateCell(props) {
         <span>
           {/* We recieve a GMT timestamp so we need to convert to the users local
           timezone in moment format string */}
-          {moment(props.value).format("MMMM Do YYYY, [at] h:mm a")}
+          {moment(props.value).format("MMMM Do YYYY")}
         </span>
       </span>
     );
