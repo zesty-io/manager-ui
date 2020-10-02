@@ -8,7 +8,7 @@ import { Search } from "@zesty-io/core/Search";
 import styles from "./styles.less";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faChevronRight, faEdit } from "@fortawesome/free-solid-svg-icons";
 
 export default React.forwardRef(function ContentSearch(props, ref) {
   const dispatch = useDispatch();
@@ -162,6 +162,10 @@ function SearchResults(props) {
                 {result.web.pathpart}
               </div>
             </div>
+            <FontAwesomeIcon
+              className={styles.faChevronRight}
+              icon={faChevronRight}
+            />
           </div>
         </li>
       ))}
