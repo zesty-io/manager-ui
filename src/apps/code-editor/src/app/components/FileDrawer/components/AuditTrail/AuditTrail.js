@@ -28,7 +28,11 @@ export default function AuditTrail(props) {
             <li key={log.ZUID} className={styles.Log}>
               {`${moment(log.createdAt).format("YYYY-MM-DD")} ${
                 log.firstName
-              } ${log.lastName}: ${log.meta.message}`}
+              } ${log.lastName}`}
+              {log.firstName === "Unknown" && log.lastName === "User"
+                ? `(${log.actionByUserZUID})`
+                : null}
+              {`: ${log.meta.message}`}
             </li>
           ))}
         </ul>
