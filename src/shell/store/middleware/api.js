@@ -39,7 +39,11 @@ export const resolveFieldOptions = store => next => action => {
       Object.keys(action.payload).forEach(ZUID => {
         const field = action.payload[ZUID];
 
-        if (field.relatedModelZUID && field.relatedFieldZUID) {
+        if (
+          field.relatedModelZUID &&
+          field.relatedFieldZUID &&
+          !field.deletedAt
+        ) {
           const state = store.getState();
 
           // Only fetch related resources if we have these reducers available
