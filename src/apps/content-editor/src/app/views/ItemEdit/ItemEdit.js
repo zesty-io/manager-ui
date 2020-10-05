@@ -306,6 +306,7 @@ class ItemEdit extends Component {
                   items={this.props.items}
                   fields={this.props.fields}
                   userRole={this.props.userRole}
+                  user={this.props.user}
                   onSave={this.onSave}
                   dispatch={this.props.dispatch}
                   saving={this.state.saving}
