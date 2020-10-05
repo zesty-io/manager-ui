@@ -7,6 +7,9 @@ import { searchItems } from "shell/store/content";
 import { Search } from "@zesty-io/core/Search";
 import styles from "./styles.less";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronRight, faEdit } from "@fortawesome/free-solid-svg-icons";
+
 export default React.forwardRef(function ContentSearch(props, ref) {
   const dispatch = useDispatch();
   const [searchResults, setSearchResults] = useState([]);
@@ -144,17 +147,25 @@ function SearchResults(props) {
           className={props.selectedIndex === index ? styles.SelectedRow : null}
         >
           <div
+            className={styles.ListItem}
             onClick={() => {
               props.onSelect(result, props.setSearchTerm);
             }}
           >
-            <div className={styles.SearchResultTitle}>
-              {result.web.metaTitle}
+            <FontAwesomeIcon icon={faEdit} />
+            <div>
+              <div className={styles.SearchResultTitle}>
+                {result.web.metaTitle}
+              </div>
+              <div className={styles.SearchResultPath}>
+                {result.web.path}
+                {result.web.pathpart}
+              </div>
             </div>
-            <div className={styles.SearchResultPath}>
-              {result.web.path}
-              {result.web.pathpart}
-            </div>
+            <FontAwesomeIcon
+              className={styles.faChevronRight}
+              icon={faChevronRight}
+            />
           </div>
         </li>
       ))}

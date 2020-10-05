@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
+import { useHistory, useLocation } from "react-router-dom";
 
 import { Select, Option } from "@zesty-io/core/Select";
 
@@ -27,6 +28,8 @@ export const LanguageSelector = connect((state, props) => {
     siblings
   };
 })(props => {
+  const location = useLocation();
+  const history = useHistory();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -40,11 +43,11 @@ export const LanguageSelector = connect((state, props) => {
     props.dispatch(selectLang(val));
 
     // If we are at a content item level then reload newly selected language item
-    const parts = window.location.hash.split("/");
+    const parts = location.pathname.split("/");
     if (parts[3]) {
       const subpath = parts.slice(0, 3);
       subpath.push(props.siblings[val]);
-      window.location = `${subpath.join("/")}`;
+      history.push(`${subpath.join("/")}`);
     }
   };
 

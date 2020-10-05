@@ -1,4 +1,5 @@
 import { request } from "utility/request";
+import { set } from "idb-keyval";
 
 export function user(
   state = {
@@ -25,12 +26,9 @@ export function user(
     case "FETCH_USER_SUCCESS":
       return { ...state, ...action.payload.data };
 
-    // case "USER_ROLES":
-    //   return { ...state, roles: action.payload };
-
-    // case "LOADED_LOCAL_USER_LANG":
-    // case "USER_SELECTED_LANG":
-    //   return { ...state, selected_lang: action.payload.lang };
+    case "LOADED_LOCAL_USER_LANG":
+    case "USER_SELECTED_LANG":
+      return { ...state, selected_lang: action.payload.lang };
 
     default:
       return state;
