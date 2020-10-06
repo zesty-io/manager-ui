@@ -18,7 +18,6 @@ export default React.memo(function AuditControls(props) {
       />
       <ButtonGroup className={styles.btnGroup}>
         <Button
-          kind="secondary"
           className={cx(styles.child, {
             [styles.selected]: props.filter === 1
           })}
@@ -33,7 +32,6 @@ export default React.memo(function AuditControls(props) {
           Today
         </Button>
         <Button
-          kind="secondary"
           className={cx(styles.child, {
             [styles.selected]: props.filter === 7
           })}
@@ -48,7 +46,6 @@ export default React.memo(function AuditControls(props) {
           Last Week
         </Button>
         <Button
-          kind="secondary"
           className={cx(styles.child, {
             [styles.selected]: props.filter === 30
           })}
