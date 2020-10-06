@@ -152,7 +152,7 @@ export default connect(state => {
   const section = location.pathname.split("/")[1];
   const links = section ? linkMap[section] : defaultLinks;
   return (
-    <section className={cx(styles.helpMenu)}>
+    <section className={styles.helpMenu}>
       <header>
         {props.instance.planID && (
           <Url target="_blank" href="mailto:support@zesty.io">
