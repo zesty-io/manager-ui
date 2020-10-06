@@ -293,6 +293,7 @@ export default connect(state => {
             />
 
             <FieldTypeTextarea
+              className={styles.FieldTypeTextarea}
               name="description"
               label="Description"
               description="A description of this model is shown to content editors. It can be helpful to provide context and explain what this model is used for."

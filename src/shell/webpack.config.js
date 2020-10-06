@@ -54,7 +54,6 @@ module.exports = {
     }),
     new MonacoWebpackPlugin({
       // available options are documented at https://github.com/Microsoft/monaco-editor-webpack-plugin#options
-      output: path.resolve(__dirname, "../../build"),
       languages: [
         // "coffee",
         "css",

@@ -6,7 +6,7 @@
   padding: 0;
 
   .NavActions {
-    padding: 0 12px 8px 12px;
+    padding: 8px;
     background-color: #5b667d;
     display: flex;
     flex-direction: column;
@@ -14,6 +14,9 @@
     .Actions {
       display: flex;
       flex-direction: column;
+      @media (min-width: 2000px) {
+        flex-direction: row;
+      }
 
       .Branch {
         margin-right: 8px;
@@ -25,7 +28,7 @@
 
       .FilterFiles {
         flex: 1;
-        margin: 8px 0;
+        margin: 0;
         input {
           flex: 1;
         }
@@ -59,7 +62,7 @@
 
   .List {
     background: #404759;
-    height: calc(100vh - 73px - 103px);
+    height: calc(100vh - 61px - 57px);
     margin: 0;
     overflow-x: hidden;
     padding: 0;
@@ -67,11 +70,15 @@
 
     .Files {
       margin-bottom: 40px;
+      i {
+        color: @zesty-orange;
+        opacity: 0.6;
+        transition: all 0.2s ease-in-out;
+        &:hover {
+          opacity: 1;
+        }
+      }
     }
-  }
-
-  .Action {
-    color: @zesty-orange;
   }
 }
 
