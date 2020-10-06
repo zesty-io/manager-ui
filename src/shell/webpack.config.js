@@ -1,10 +1,10 @@
 "use strict";
 const webpack = require("webpack");
 const path = require("path");
-const HtmlWebpackTagsPlugin = require("html-webpack-tags-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 const CleanupStatsPlugin = require("./CleanupStatsPlugin");
 
 const CONFIG = require("./app.config");
@@ -51,6 +51,68 @@ module.exports = {
         process.env.NODE_ENV !== "development"
           ? "[name].[contenthash].css"
           : "[name].css"
+    }),
+    new MonacoWebpackPlugin({
+      // available options are documented at https://github.com/Microsoft/monaco-editor-webpack-plugin#options
+      output: path.resolve(__dirname, "../../build"),
+      languages: [
+        // "coffee",
+        "css",
+        // "dockerfile",
+        "handlebars",
+        "html",
+        "javascript",
+        "json",
+        "less",
+        "markdown",
+        // "pug",
+        "scss",
+        "typescript",
+        "xml"
+        // "yaml"
+      ],
+      features: [
+        "bracketMatching",
+        "!caretOperations",
+        "!clipboard",
+        "!codeAction",
+        "!codelens",
+        "!colorDetector",
+        "comment",
+        "contextmenu",
+        "coreCommands",
+        "!cursorUndo",
+        "!dnd",
+        "find",
+        "folding",
+        "!fontZoom",
+        "format",
+        "!goToDefinitionCommands",
+        "!goToDefinitionMouse",
+        "gotoError",
+        "gotoLine",
+        "!hover",
+        "!inPlaceReplace",
+        "!inspectTokens",
+        "!iPadShowKeyboard",
+        "linesOperations",
+        "!links",
+        "multicursor",
+        "parameterHints",
+        "!quickCommand",
+        "!quickOutline",
+        "!referenceSearch",
+        "!rename",
+        "smartSelect",
+        "!snippets",
+        "suggest",
+        "toggleHighContrast",
+        "!toggleTabFocusMode",
+        "!transpose",
+        "wordHighlighter",
+        "wordOperations",
+        "wordPartOperations"
+      ]
     }),
     new CopyPlugin({
       patterns: ["public"]
