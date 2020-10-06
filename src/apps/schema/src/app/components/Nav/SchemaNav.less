@@ -11,14 +11,26 @@
     flex-direction: column;
     padding: 8px;
 
+    @media (min-width: 2000px) {
+      flex-direction: row;
+    }
+
     .Search {
       display: flex;
       flex-direction: row;
-      margin: 8px 0;
+      margin: 0;
       flex: 1;
 
       input {
         flex: 1;
+      }
+    }
+
+    .CreateModel {
+      margin: 8px 0 0 0;
+
+      @media (min-width: 2000px) {
+        margin: 0 0 0 8px;
       }
     }
 
@@ -30,7 +42,7 @@
   }
 
   .ModelList {
-    height: calc(100vh - 61px - 98px);
+    height: calc(100vh - 61px - 57px);
     margin: 0;
     overflow-y: scroll;
     overflow-x: hidden;
