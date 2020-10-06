@@ -47,7 +47,7 @@ export const FileList = React.memo(function FileList(props) {
 
   const actions = [
     {
-      icon: "fas fa-arrow-up",
+      icon: "fas fa-cloud-upload-alt",
       styles: styles.Action,
       showIcon: true,
       available: file => !file.isLive,
