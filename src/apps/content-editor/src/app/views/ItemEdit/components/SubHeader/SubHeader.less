@@ -18,9 +18,16 @@
     flex-wrap: wrap;
     flex: 1;
 
+    @media only screen and (min-width: 2000px) {
+      flex-direction: row;
+    }
+
     .Preview {
       display: flex;
       flex-direction: column;
+      @media only screen and (min-width: 2000px) {
+        flex-direction: row;
+      }
     }
 
     a {
