@@ -56,6 +56,7 @@ export default function SchemaNav(props) {
         />
 
         <Button
+          className={styles.CreateModel}
           kind="secondary"
           onClick={() => history.push("/schema/new")}
           type="save"
