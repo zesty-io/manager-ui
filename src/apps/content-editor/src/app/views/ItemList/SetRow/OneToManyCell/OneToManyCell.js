@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { Loader } from "@zesty-io/core/Loader";
 import { Tag } from "@zesty-io/core/Tag";
-import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./OneToManyCell.less";
 export class OneToManyCell extends PureComponent {
@@ -30,12 +30,12 @@ export class OneToManyCell extends PureComponent {
             styles.ErrorCell
           )}
         >
-          <Url
-            href={`/schema/${this.props.field.contentModelZUID}/field/${this.props.field.ZUID}`}
+          <AppLink
+            to={`/schema/${this.props.field.contentModelZUID}/field/${this.props.field.ZUID}`}
           >
             <FontAwesomeIcon icon={faExclamationTriangle} />
             &nbsp;Missing field configuration
-          </Url>
+          </AppLink>
         </span>
       );
     } else {

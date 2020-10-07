@@ -10,6 +10,7 @@ import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
 import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 
 import { Parent } from "./settings/Parent";
 
@@ -18,7 +19,6 @@ import { notify } from "shell/store/notifications";
 import {
   updateModel,
   saveModel,
-  createModel,
   deleteModel,
   duplicateModel
 } from "shell/store/models";
@@ -81,7 +81,9 @@ export default function SchemaMeta(props) {
                   {`/-/instant/${props.model.ZUID}.json`}
                 </Url>
               ) : (
-                <Url href="/config/settings/developer/">Instant JSON API</Url>
+                <AppLink href="/settings/instance/developer">
+                  Instant JSON API
+                </AppLink>
               )}
             </p>
           </label>

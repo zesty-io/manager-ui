@@ -3,7 +3,7 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
-import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import styles from "./RecentlyEdited.less";
@@ -25,12 +25,12 @@ export class RecentlyEdited extends React.Component {
               <ul>
                 {this.props.items.map((item, i) => (
                   <li key={i}>
-                    <Url
-                      href={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
+                    <AppLink
+                      to={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
                     >
                       {item.web.metaTitle ||
                         `Item without a Meta Title: ${item.meta.ZUID}`}
-                    </Url>
+                    </AppLink>
                   </li>
                 ))}
               </ul>

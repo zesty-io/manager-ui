@@ -4,10 +4,10 @@ import moment from "moment-timezone";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
-import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 
 // import { ContentVelocity } from "./components/ContentVelocity";
 import { PageviewTraffic } from "./components/PageviewTraffic";
@@ -173,9 +173,9 @@ export default connect(function(state, props) {
                       <h2 className={styles.columns}>
                         <div className={styles.column}>
                           Recent{" "}
-                          <Url href={`/content/${contentModelZUID}`}>
+                          <AppLink to={`/content/${contentModelZUID}`}>
                             {model && model.label}
-                          </Url>{" "}
+                          </AppLink>{" "}
                           Edits
                         </div>
                       </h2>
@@ -185,11 +185,11 @@ export default connect(function(state, props) {
                         {items.map((item, i) => {
                           return (
                             <li key={i}>
-                              <Url
-                                href={`/content/${contentModelZUID}/${item.meta.ZUID}`}
+                              <AppLink
+                                to={`/content/${contentModelZUID}/${item.meta.ZUID}`}
                               >
                                 {item.web.metaTitle}
-                              </Url>
+                              </AppLink>
                             </li>
                           );
                         })}

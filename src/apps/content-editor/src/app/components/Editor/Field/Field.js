@@ -13,7 +13,6 @@ import {
 
 // it would be nice to have a central import for all of these
 // instead of individually importing
-import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
@@ -274,10 +273,10 @@ export default connect(state => {
           <h1 style={{ color: "#e53c05" }}>
             <FontAwesomeIcon icon={faExclamationTriangle} />
             &nbsp;
-            <Url href={`/schema/${contentModelZUID}/field/${ZUID}`}>
+            <AppLink to={`/schema/${contentModelZUID}/field/${ZUID}`}>
               The <em>{label}</em> field is missing option settings. Edit the
               field to add yes/no values.
-            </Url>
+            </AppLink>
           </h1>
         );
       }
@@ -580,9 +579,9 @@ export default connect(state => {
 
     default:
       return (
-        <Url href={`/schema/${contentModelZUID}/field/${ZUID}`}>
+        <AppLink to={`/schema/${contentModelZUID}/field/${ZUID}`}>
           Failed loading {label} field. Click here to view field schema.
-        </Url>
+        </AppLink>
       );
   }
 });

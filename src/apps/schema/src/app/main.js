@@ -5,7 +5,6 @@ import { Switch, Route, useLocation } from "react-router-dom";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { SchemaNav } from "./components/Nav";
-// import { Dashboard } from "./views/Dashboard";
 import { SchemaCreate } from "./views/SchemaCreate";
 import { SchemaEdit } from "./views/SchemaEdit";
 import { GettingStarted } from "./views/GettingStarted";

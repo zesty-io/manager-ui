@@ -4,7 +4,7 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
-import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./ToggleCell.less";
 export const ToggleCell = React.memo(function ToggleCell(props) {
@@ -41,12 +41,12 @@ export const ToggleCell = React.memo(function ToggleCell(props) {
     } else {
       return (
         <span className={cx(props.className, styles.ToggleCell)}>
-          <Url
-            href={`/schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`}
+          <AppLink
+            to={`/schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`}
           >
             <FontAwesomeIcon icon={faExclamationTriangle} />
             &nbsp;Missing toggle options.
-          </Url>
+          </AppLink>
         </span>
       );
     }

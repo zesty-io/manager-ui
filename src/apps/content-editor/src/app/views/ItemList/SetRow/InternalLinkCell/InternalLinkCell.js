@@ -4,7 +4,7 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { Loader } from "@zesty-io/core/Loader";
-import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./InternalLinkCell.less";
 export class InternalLinkCell extends PureComponent {
@@ -32,8 +32,8 @@ export class InternalLinkCell extends PureComponent {
     ) {
       return (
         <span className={cx(this.props.className, styles.InternalLinkCell)}>
-          <Url
-            href={`//${CONFIG.URL_MANAGER}/content/${relatedItem.meta.contentModelZUID}/${relatedItem.meta.ZUID}`}
+          <AppLink
+            to={`/content/${relatedItem.meta.contentModelZUID}/${relatedItem.meta.ZUID}`}
           >
             <FontAwesomeIcon icon={faLink} />
             &nbsp;
@@ -51,7 +51,7 @@ export class InternalLinkCell extends PureComponent {
                 this.props.relatedItemZUID
               )}
             </span>
-          </Url>
+          </AppLink>
         </span>
       );
     } else {

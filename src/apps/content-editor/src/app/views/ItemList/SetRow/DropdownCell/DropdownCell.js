@@ -3,7 +3,7 @@ import React from "react";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./DropdownCell.less";
 export const DropdownCell = React.memo(function DropdownCell(props) {
@@ -16,12 +16,12 @@ export const DropdownCell = React.memo(function DropdownCell(props) {
   } else {
     return (
       <span className={cx(props.className, styles.DropdownCell)}>
-        <Url
-          href={`/schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`}
+        <AppLink
+          to={`/schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`}
         >
           <FontAwesomeIcon icon={faExclamationTriangle} />
           &nbsp;Missing dropdown options.
-        </Url>
+        </AppLink>
       </span>
     );
   }

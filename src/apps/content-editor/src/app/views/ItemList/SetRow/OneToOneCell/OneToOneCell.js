@@ -4,7 +4,7 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { Loader } from "@zesty-io/core/Loader";
-import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./OneToOneCell.less";
 export class OneToOneCell extends PureComponent {
@@ -12,12 +12,12 @@ export class OneToOneCell extends PureComponent {
     if (!this.props.field.relatedFieldZUID) {
       return (
         <span className={cx(this.props.className, styles.OneToOneCell)}>
-          <Url
-            href={`/schema/${this.props.field.contentModelZUID}/field/${this.props.field.ZUID}`}
+          <AppLink
+            to={`/schema/${this.props.field.contentModelZUID}/field/${this.props.field.ZUID}`}
           >
             <FontAwesomeIcon icon={faExclamationTriangle} />
             &nbsp;Missing field configuration
-          </Url>
+          </AppLink>
         </span>
       );
     }

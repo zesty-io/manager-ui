@@ -3,14 +3,14 @@ import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faTachometerAlt,
+  faHome,
   faAngleRight,
   faSpinner,
   faSave
 } from "@fortawesome/free-solid-svg-icons";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
-import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./Header.less";
 export default connect(state => {
@@ -21,11 +21,13 @@ export default connect(state => {
   return (
     <header className={styles.Header}>
       <span>
-        <Url href="/content/home">
-          <FontAwesomeIcon icon={faTachometerAlt} />
-        </Url>
+        <AppLink to="/content">
+          <FontAwesomeIcon icon={faHome} />
+        </AppLink>
         <FontAwesomeIcon icon={faAngleRight} />
-        <Url href={`/content/${props.model.ZUID}`}>{props.model.label}</Url>
+        <AppLink to={`/content/${props.model.ZUID}`}>
+          {props.model.label}
+        </AppLink>
         <FontAwesomeIcon icon={faAngleRight} />
         &nbsp;New Item
       </span>

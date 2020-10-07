@@ -13,6 +13,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./Info.less";
 export default function Info(props) {
@@ -84,10 +85,10 @@ export default function Info(props) {
                 &nbsp;{`/-/instant/${props.model.ZUID}.json`}
               </Url>
             ) : (
-              <Url href="/config/settings/developer/">
+              <AppLink to="/settings/instance/developer">
                 <FontAwesomeIcon icon={faCog} />
                 &nbsp;Activate Instant JSON API
-              </Url>
+              </AppLink>
             )}
           </li>
         </ul>
@@ -96,24 +97,24 @@ export default function Info(props) {
         <ul className={styles.LinkList}>
           {props.model.type !== "templateset" && (
             <li>
-              <Url href={`/content/${props.model.ZUID}/new`}>
+              <AppLink to={`/content/${props.model.ZUID}/new`}>
                 <FontAwesomeIcon icon={faPlus} />
                 &nbsp;Add Item
-              </Url>
+              </AppLink>
             </li>
           )}
 
           <li>
-            <Url href={`/content/${props.model.ZUID}`}>
+            <AppLink to={`/content/${props.model.ZUID}`}>
               <FontAwesomeIcon icon={faEdit} />
               &nbsp;Edit Item(s)
-            </Url>
+            </AppLink>
           </li>
           <li>
-            <Url href={`/code`}>
+            <AppLink to={`/code`}>
               <FontAwesomeIcon icon={faCode} />
               &nbsp;Edit Code
-            </Url>
+            </AppLink>
           </li>
         </ul>
       </CardFooter>

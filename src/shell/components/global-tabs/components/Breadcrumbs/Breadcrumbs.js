@@ -2,13 +2,9 @@ import React, { useMemo } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTachometerAlt,
-  faAngleRight
-} from "@fortawesome/free-solid-svg-icons";
+import { faHome, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 
 import { AppLink } from "@zesty-io/core/AppLink";
-import { Url } from "@zesty-io/core/Url";
 
 import styles from "./Breadcrumbs.less";
 const crawlParents = (nav, ZUID, crumbs, content) => {
@@ -80,9 +76,7 @@ export default connect(state => {
 
       // Add Start: Content Dashboard
       crumbs.push({
-        ZUID: "home",
-        contentModelZUID: "home",
-        label: <FontAwesomeIcon icon={faTachometerAlt} />,
+        label: <FontAwesomeIcon icon={faHome} />,
         type: "home"
       });
 
@@ -99,7 +93,9 @@ export default connect(state => {
           .reverse()
           .map((item, i) => {
             const url =
-              item.type === "item"
+              item.type === "home"
+                ? "/content"
+                : item.type === "item"
                 ? `/content/${item.contentModelZUID}/${item.ZUID}`
                 : `/content/${item.contentModelZUID}`;
 
@@ -111,7 +107,7 @@ export default connect(state => {
                     style={{ color: "#afbcd4" }}
                   />
                 )}
-                <Url href={url}>{item.label}</Url>
+                <AppLink to={url}>{item.label}</AppLink>
               </li>
             );
           })}

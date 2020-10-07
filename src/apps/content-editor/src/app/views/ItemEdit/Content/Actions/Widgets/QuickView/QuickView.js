@@ -13,6 +13,7 @@ import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
 import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 
 import { WorkflowRequest } from "../WorkflowRequest";
 import cx from "classnames";
@@ -109,16 +110,16 @@ export const QuickView = React.memo(function QuickView(props) {
             </Button>
             <ButtonGroup>
               {props.is_developer && (
-                <Url href={`/schema/${props.modelZUID}`}>
+                <AppLink to={`/schema/${props.modelZUID}`}>
                   <FontAwesomeIcon icon={faDatabase} />
                   &nbsp;Edit Schema
-                </Url>
+                </AppLink>
               )}
               {props.is_developer && (
-                <Url href="/code/">
+                <AppLink to="/code/">
                   <FontAwesomeIcon icon={faCode} />
                   &nbsp;Edit Code
-                </Url>
+                </AppLink>
               )}
             </ButtonGroup>
           </ButtonGroup>
