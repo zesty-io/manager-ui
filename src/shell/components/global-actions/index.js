@@ -45,21 +45,22 @@ export default connect(state => {
             {openMenu && <GlobalHelpMenu />}
           </span>
         </div>
-        <Url
-          href="https://github.com/zesty-io/manager-ui"
-          title="Zesty Manager-ui Github"
-          target="_blank"
-        >
-          <span className={cx(styles.AppVersion)}>
+        <div className={styles.ZestyLink}>
+          <Url
+            className={cx(styles.AppVersion)}
+            href="https://github.com/zesty-io/manager-ui"
+            title="Zesty Manager-ui Github"
+            target="_blank"
+          >
             <img
               src="https://brand.zesty.io/zesty-io-logo.svg"
               alt={`Zesty.io version ${CONFIG.VERSION}`}
               width="24px"
               height="24px"
             />
-            <span className={styles.VersionNumber}>{CONFIG.VERSION}</span>
-          </span>
-        </Url>
+          </Url>
+          <span className={styles.VersionNumber}>{CONFIG.VERSION}</span>
+        </div>
       </div>
     );
   })
