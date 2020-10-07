@@ -135,7 +135,6 @@ export default connect(state => {
             style={this.state.datePickerIsVisible ? {} : { display: "none" }}
           >
             <div className={styles.customDate}>
-              {/* <label>Start Date:</label> */}
               <FieldTypeDate
                 name="start-date"
                 label="Start Date"
@@ -145,7 +144,6 @@ export default connect(state => {
               />
             </div>
             <div className={styles.customDate}>
-              {/* <label>End Date:</label> */}
               <FieldTypeDate
                 name="end-date"
                 label="End Date"
