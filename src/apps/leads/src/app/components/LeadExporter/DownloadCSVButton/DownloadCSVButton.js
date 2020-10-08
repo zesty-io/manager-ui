@@ -68,7 +68,11 @@ export default connect(state => {
 
     render() {
       return (
-        <Button onClick={() => this.filterLeadsData()} text="Download CSV" />
+        <Button
+          onClick={() => this.filterLeadsData()}
+          text="Download CSV"
+          title="Download CSV"
+        />
       );
     }
   }
