@@ -1,7 +1,7 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
 
 .CSVImport {
-  flex-direction: column;
   .Top {
     display: flex;
     justify-content: space-between;
@@ -9,13 +9,34 @@
       padding: 16px;
       display: flex;
       flex-direction: column;
-      label {
-        padding: 8px 0;
+      p {
+        margin: 0 0 8px 3px;
       }
-      input {
-        font-size: 16px;
-        font-family: "Montserrat", "Gibson Light", Arial;
-        color: rgb(26, 32, 44);
+
+      [type="file"] {
+        height: 0;
+        overflow: hidden;
+        width: 0;
+      }
+
+      [type="file"] + label {
+        background-color: @zesty-blue;
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        justify-content: flex-start;
+        font-size: @font-size-button;
+        font-weight: @font-weight-normal;
+        font-family: @font-family-default;
+        outline: none;
+        padding: 10px 16px;
+        text-transform: uppercase;
+        transition: all 0.3s;
+        &:hover {
+          background-color: @zesty-green;
+        }
       }
       .warning {
         color: @zesty-red;
@@ -39,8 +60,10 @@
     padding: 8px;
     grid-template-columns: 1fr 1fr;
     column-gap: 16px;
-    background-color: darken(@zesty-light-blue, 3%);
+    background-color: @zesty-grey;
+    color: @zesty-white;
     box-shadow: inset 0px 0px 4px darken(@zesty-light-blue, 10%);
+    border-radius: 3px;
   }
 
   .ImportResults {
@@ -51,12 +74,15 @@
 }
 
 .wrap {
-  border-bottom: 1px solid #000;
+  border-bottom: 1px solid @zesty-grey;
   display: flex;
   flex: 1;
   align-items: center;
   min-height: 60px;
   height: 60px;
+  &:hover {
+    background-color: rgba(rgba(195, 205, 223, 0.5));
+  }
   .column {
     display: flex;
     min-width: 250px;
