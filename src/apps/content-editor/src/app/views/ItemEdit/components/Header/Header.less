@@ -2,10 +2,18 @@
 
 .Header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 8px 26px;
-  background-color: #4b5468; // @zesty-tab-blue;// #5b667d;
+  padding: 8px 32px;
+
+  grid-gap: 12px;
+  grid-auto-columns: max-content;
+  grid-auto-flow: column;
+
+  z-index: 10;
+  position: sticky;
+  top: 0;
+  background-color: #f2f7fc;
+  border-bottom: 1px solid #e8e8e8;
 
   .ItemNav {
     display: flex;

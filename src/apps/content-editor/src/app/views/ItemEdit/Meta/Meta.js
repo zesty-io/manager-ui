@@ -1,8 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
 
-import { SubHeader } from "../components/SubHeader";
-import { ItemVersioning } from "../components/SubHeader/ItemVersioning";
+import { Header } from "../components/Header";
+import { ItemVersioning } from "../components/Header/ItemVersioning";
 
 import { ItemSettings } from "./ItemSettings";
 import { DataSettings } from "./ItemSettings/DataSettings";
@@ -12,7 +12,7 @@ export class Meta extends React.PureComponent {
   render() {
     return (
       <section className={styles.MetaEdit} id="ITEM_SETTINGS">
-        <SubHeader
+        <Header
           instance={this.props.instance}
           modelZUID={this.props.modelZUID}
           item={this.props.item}
@@ -28,7 +28,7 @@ export class Meta extends React.PureComponent {
             onSave={this.props.onSave}
             dispatch={this.props.dispatch}
           />
-        </SubHeader>
+        </Header>
 
         {this.props.model && this.props.model.type === "dataset" ? (
           <DataSettings item={this.props.item} dispatch={this.props.dispatch} />

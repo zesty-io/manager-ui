@@ -18,8 +18,6 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import { PendingEditsModal } from "../../components/PendingEditsModal";
 import { LockedItem } from "../../components/LockedItem";
 
-import { Header } from "./components/Header";
-
 import { Content } from "./Content";
 import { Meta } from "./Meta";
 import { Head } from "./Head";
@@ -266,13 +264,6 @@ class ItemEdit extends Component {
         />
 
         <section>
-          <Header
-            instance={this.props.instance}
-            modelZUID={this.props.modelZUID}
-            model={this.props.model}
-            itemZUID={this.props.itemZUID}
-            item={this.props.item}
-          />
           <Switch>
             <Route
               exact

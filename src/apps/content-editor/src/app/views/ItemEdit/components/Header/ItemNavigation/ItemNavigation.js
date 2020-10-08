@@ -1,10 +1,10 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import cx from "classnames";
 
-import styles from "./ItemNavigation.less";
+import { AppLink } from "@zesty-io/core/AppLink";
 
+import styles from "./ItemNavigation.less";
 export default connect(state => {
   return {
     userRole: state.userRole
@@ -21,15 +21,15 @@ export default connect(state => {
   return (
     <ul className={styles.ItemNavigation}>
       <li data-cy="content">
-        <Link
+        <AppLink
           className={cx(
             styles.Item,
             slug === "content" ? styles.Selected : null
           )}
           to={`/content/${modelZUID}/${itemZUID}`}
         >
-          CONTENT
-        </Link>
+          Content
+        </AppLink>
       </li>
       <li
         data-cy="meta"
@@ -39,16 +39,16 @@ export default connect(state => {
             : null
         )}
       >
-        <Link
+        <AppLink
           className={cx(styles.Item, slug === "meta" ? styles.Selected : null)}
           to={`/content/${modelZUID}/${itemZUID}/meta`}
         >
-          META
-        </Link>
+          Meta
+        </AppLink>
       </li>
       {userRole.name !== "Contributor" && (
         <li>
-          <Link
+          <AppLink
             data-cy="head"
             className={cx(
               styles.Item,
@@ -56,8 +56,8 @@ export default connect(state => {
             )}
             to={`/content/${modelZUID}/${itemZUID}/head`}
           >
-            HEAD
-          </Link>
+            Head
+          </AppLink>
         </li>
       )}
     </ul>
