@@ -57,7 +57,7 @@ export default connect(state => {
               // when changing the model reset the selected field
               setSelectedField("0");
 
-              props.updateValue(name, val);
+              props.updateValue(val, name);
             }}
             options={props.models.map(m => {
               return {
@@ -73,7 +73,7 @@ export default connect(state => {
             value={selectedField}
             onChange={(val, name) => {
               setSelectedField(val);
-              props.updateValue(name, val);
+              props.updateValue(val, name);
             }}
             options={fieldOptions}
             disabled={!fieldOptions.length}

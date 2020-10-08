@@ -50,13 +50,20 @@ export default class Head extends React.Component {
           <div className={styles.Head}>
             <main className={styles.Tags}>
               <h1 className={styles.Warn}>
-                <Button kind="secondary" onClick={this.onCreate}>
+                <Button
+                  className={styles.Button}
+                  kind="secondary"
+                  onClick={this.onCreate}
+                >
                   <FontAwesomeIcon icon={faPlus} />
                   New head tag
                 </Button>
-                <FontAwesomeIcon icon={faExclamationTriangle} /> &nbsp; Head
-                tags are not versioned or published. Changes to head tags take
-                effect immediately on your live instance.
+                <FontAwesomeIcon
+                  className={styles.ExclamationTriangle}
+                  icon={faExclamationTriangle}
+                />{" "}
+                &nbsp; Head tags are not versioned or published. Changes to head
+                tags take effect immediately on your live instance.
               </h1>
               {this.props.tags.length ? (
                 this.props.tags.map((tag, index) => {
