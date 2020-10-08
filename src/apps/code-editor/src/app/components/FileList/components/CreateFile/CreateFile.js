@@ -81,17 +81,69 @@ export const CreateFile = React.memo(function CreateFile(props) {
               name="file_type"
               className={styles.FileType}
               label="File Type"
+              defaultOptText="-- choose a file type --"
               onChange={value => {
                 setType(value);
               }}
             >
-              <Option value="snippet" text="Snippet" />
-              <Option value="text/css" text="CSS File" />
-              <Option value="text/less" text="LESS File" />
-              <Option value="text/scss" text="SCSS File" />
-              <Option value="text/javascript" text="JavaScript File" />
-              <Option value="ajax-json" text="Custom File Type" />
+              <Option value="snippet" text="Snippet (html)" />
+              <Option value="text/css" text="CSS File (css)" />
+              <Option value="text/less" text="LESS File (less)" />
+              <Option value="text/scss" text="SCSS File (scss/sass)" />
+              <Option value="text/javascript" text="JavaScript File (js)" />
+              <Option
+                value="ajax-json"
+                text="Custom File Type/Endpoint (Mixed Extensions)"
+              />
             </FieldTypeDropDown>
+            {type === "snippet" && (
+              <p className={styles.description}>
+                Parsley accessible file meant to abstract common use of code, or
+                for organizing file build. Examples: slider, footer, header.
+                These can be used inside of each loops as well.
+              </p>
+            )}
+            {type === "text/css" && (
+              <p className={styles.description}>
+                A cascading stylesheet that is automatically concatenated into a
+                single css file /main.css which is auto included in the head of
+                webengine web pages. Sort Order of the concatenation can be
+                controlled. No transpiling occurs.
+              </p>
+            )}
+            {type === "text/less" && (
+              <p className={styles.description}>
+                Has access to settings &gt; variables. A cascading stylesheet
+                that is automatically concatenated into a the single /main.css.
+                Sort Order of the concatenation and transpiling can be
+                controlled.
+              </p>
+            )}
+            {type === "text/scss" && (
+              <p className={styles.description}>
+                Has access to settings &gt; variables. A cascading stylesheet
+                that is automatically concatenated into a the single /main.css.
+                Sort Order of the concatenation and transpiling can be
+                controlled.
+              </p>
+            )}
+            {type === "text/javascript" && (
+              <p className={styles.description}>
+                A javascript file that is automatically concatenated into a the
+                single /main.js file that is automatically loaded by webengine.
+                No transpiling occurs.
+              </p>
+            )}
+            {type === "ajax-json" && (
+              <p className={styles.description}>
+                Parsley accessible file for creating endpoints or custom
+                experiences. These files need to be named with a full path with
+                an extension like /my/file/path.json. The file is accessible at
+                hash-dev.preview.zesty.io/my/file/path.json. File types that can
+                be used: css, html, json, js, xml, csv, tsv, xml, yaml, md, svg,
+                rss, ics, vcf, xhtml.
+              </p>
+            )}
             <FieldTypeText
               name="file_name"
               label="File Name"
@@ -100,7 +152,11 @@ export const CreateFile = React.memo(function CreateFile(props) {
           </ModalContent>
           <ModalFooter>
             <ButtonGroup className={styles.ModalActions}>
-              <Button kind="save" onClick={handleCreateFile} disabled={loading}>
+              <Button
+                kind="save"
+                onClick={handleCreateFile}
+                disabled={type === "" || type === "0" || loading}
+              >
                 {loading ? (
                   <i className="fas fa-spinner" aria-hidden="true" />
                 ) : (
