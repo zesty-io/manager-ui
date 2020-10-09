@@ -77,7 +77,8 @@ export default connect(state => {
       // Add Start: Content Dashboard
       crumbs.push({
         label: <FontAwesomeIcon icon={faHome} />,
-        type: "home"
+        type: "home",
+        ZUID: "home"
       });
 
       // Cleanup
