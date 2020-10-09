@@ -3,13 +3,23 @@
 .Breadcrumbs {
   display: flex;
 
-  li {
-    list-style: none;
-    display: flex;
-    align-items: center;
+  .Home {
+    padding: 0 4px 0 0;
+  }
 
-    a {
-      word-break: keep-all;
+  .Crumbs {
+    display: flex;
+    flex-wrap: wrap;
+
+    li {
+      list-style: none;
+      display: flex;
+      align-items: center;
+
+      a {
+        word-break: keep-all;
+        padding: 0 4px;
+      }
     }
   }
 

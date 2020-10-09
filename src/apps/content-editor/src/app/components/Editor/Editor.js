@@ -1,5 +1,7 @@
 import React, { PureComponent } from "react";
 
+import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
+
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Field } from "./Field";
 
@@ -103,6 +105,10 @@ export default class Editor extends PureComponent {
     const { item, makeActive, model, fields, onSave } = this.props;
     return (
       <div className={styles.Fields}>
+        {this.props.item.meta.ZUID && (
+          <Breadcrumbs itemZUID={this.props.item.meta.ZUID} />
+        )}
+
         {fields.length ? (
           fields
             .filter(field => !field.deletedAt)
