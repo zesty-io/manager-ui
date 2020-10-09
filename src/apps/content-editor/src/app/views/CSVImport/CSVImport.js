@@ -2,7 +2,7 @@ import React, { Component, PureComponent } from "react";
 import { connect } from "react-redux";
 import parse from "csv-parse/lib/es5/sync";
 import chunk from "lodash/chunk";
-import { FixedSizeList } from "react-window";
+import { VariableSizeList } from "react-window";
 import cx from "classnames";
 
 import { Button } from "@zesty-io/core/Button";
@@ -23,9 +23,10 @@ class CSVImport extends Component {
     inFlight: false,
     success: [],
     failure: [],
+    cols: [],
     records: [],
     successes: 0,
-    height: document.documentElement.clientHeight - 522,
+    height: document.documentElement.clientHeight - 420,
     webMaps: {
       metaDescription: "",
       metaKeywords: null,
@@ -299,6 +300,16 @@ class CSVImport extends Component {
           this.state.failure.includes(index)
         )
       : this.state.records;
+
+    const recordsWithColumns = [
+      {
+        fields: this.state.fields,
+        cols: this.state.cols,
+        handleMap: this.handleFieldToCSVMap
+      },
+      ...records
+    ];
+
     return (
       <main className={styles.CSVImport}>
         <div className={styles.Top}>
@@ -349,28 +360,19 @@ class CSVImport extends Component {
             ) : null}
           </div>
         </div>
-        {this.state.cols && (
-          <Columns
-            handleMap={this.handleFieldToCSVMap}
-            fields={this.state.fields}
-            cols={this.state.cols}
-          />
-        )}
-        {records && (
-          <FixedSizeList
-            itemCount={records.length}
-            itemData={{
-              data: records,
-              // if import is complete, records shown are errors only
-              error: this.state.complete
-            }}
-            itemSize={61}
-            height={this.state.height}
-            width="100%"
-          >
-            {Row}
-          </FixedSizeList>
-        )}
+        <VariableSizeList
+          itemCount={recordsWithColumns.length}
+          itemData={{
+            data: recordsWithColumns,
+            // if import is complete, records shown are errors only
+            error: this.state.complete
+          }}
+          itemSize={index => (index === 0 ? 71 : 61)}
+          height={this.state.height}
+          width="100%"
+        >
+          {Row}
+        </VariableSizeList>
       </main>
     );
   }
@@ -379,9 +381,19 @@ class CSVImport extends Component {
 class Row extends PureComponent {
   render() {
     const item = this.props.data.data[this.props.index];
+    if (this.props.index === 0) {
+      return (
+        <Columns
+          style={this.props.style}
+          handleMap={item.handleMap}
+          fields={item.fields}
+          cols={item.cols}
+        />
+      );
+    }
     return (
       <span
-        style={this.props.style}
+        style={{ ...this.props.style, width: "auto" }}
         className={cx(styles.wrap, { [styles.failure]: this.props.data.error })}
       >
         {Object.keys(item).map(key => {
