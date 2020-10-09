@@ -1,19 +1,90 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
 
 .Header {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   padding: 8px 32px;
-
-  grid-gap: 12px;
-  grid-auto-columns: max-content;
-  grid-auto-flow: column;
 
   z-index: 10;
   position: sticky;
   top: 0;
   background-color: #f2f7fc;
   border-bottom: 1px solid #e8e8e8;
+
+  .Top {
+    padding: 0 0 4px;
+  }
+
+  .Split {
+    // display: flex;
+    align-items: center;
+    // justify-content: space-between;
+
+    // align-items: flex-start;
+    display: grid;
+    grid-auto-columns: 1fr auto;
+    grid-auto-flow: column;
+
+    .Left {
+      display: flex;
+      margin-right: 16px;
+    }
+    .Right {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .Links {
+    display: flex;
+    a {
+      padding: 0 6px;
+    }
+  }
+
+  // .Path {
+  //   display: flex;
+  //   flex-direction: column;
+  //   flex-wrap: wrap;
+  //   flex: 1;
+
+  //   @media only screen and (min-width: 2000px) {
+  //     flex-direction: row;
+  //   }
+
+  //   .Preview {
+  //     display: flex;
+  //     flex-direction: column;
+  //     @media only screen and (min-width: 2000px) {
+  //       flex-direction: row;
+  //     }
+  //   }
+
+  //   a {
+  //     padding: 0 4px;
+  //   }
+  // }
+
+  // .Links {
+  //   // grid-gap: 12px;
+  //   // grid-auto-columns: max-content;
+  //   // grid-auto-flow: column;
+  //   // display: grid;
+  //   // align-items: center;
+
+  //   display: flex;
+  //   align-items: center;
+  //   padding: 0 0 6px;
+
+  // }
+  // .Actions {
+  //   grid-gap: 12px;
+  //   grid-auto-columns: max-content;
+  //   grid-auto-flow: column;
+  //   display: grid;
+  //   align-items: center;
+  // }
 
   .ItemNav {
     display: flex;

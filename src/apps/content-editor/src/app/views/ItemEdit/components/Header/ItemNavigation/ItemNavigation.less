@@ -1,12 +1,16 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
 
-.ItemNavigation {
+.ItemNav {
   display: flex;
   // height: 28px;
 
-  li {
-    list-style-type: none;
+  a {
     padding: 0 4px;
+  }
+
+  .Selected {
+    border-bottom: 2px solid @zesty-orange;
   }
 
   // li {

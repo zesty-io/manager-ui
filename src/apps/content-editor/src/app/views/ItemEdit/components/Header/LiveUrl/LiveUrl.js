@@ -39,27 +39,30 @@ export class LiveUrl extends React.Component {
     //   ))}
 
     return (
-      <article className={styles.PublicLink}>
-        <Url
-          target="_blank"
-          href={isPublished && urlString}
-          className={isPublished ? styles.Published : styles.Unpublished}
-        >
-          {this.props.item.web.pathPart === "zesty_home" ? (
-            <FontAwesomeIcon icon={faHome} />
-          ) : isPublished ? (
-            <i
-              className="icon fas fa-external-link-square-alt"
-              aria-hidden="true"
-            />
-          ) : (
-            <FontAwesomeIcon icon={faUnlink} />
-          )}
-          &nbsp;
-          {/* {urlString} */}
-          Live
-        </Url>
-      </article>
+      <Url
+        target="_blank"
+        href={isPublished && urlString}
+        className={isPublished ? styles.Published : styles.Unpublished}
+      >
+        {this.props.item.web.pathPart === "zesty_home" ? (
+          <FontAwesomeIcon icon={faHome} />
+        ) : isPublished ? (
+          <i
+            className="icon fas fa-external-link-square-alt"
+            aria-hidden="true"
+          />
+        ) : (
+          <FontAwesomeIcon icon={faUnlink} />
+        )}
+        &nbsp;
+        {/* {urlString} */}
+        {this.props.item.publishing &&
+        this.props.item.publishing.isPublished ? (
+          <span>published</span>
+        ) : (
+          <span>unpublished</span>
+        )}
+      </Url>
     );
   }
 }
