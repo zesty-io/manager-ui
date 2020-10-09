@@ -17,7 +17,7 @@
   color: @zesty-grey;
   display: flex;
   font-family: "Montserrat", "Gibson Light", Arial, sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   height: 100vh;
   overflow-y: hidden;
 
@@ -26,6 +26,13 @@
 
   scrollbar-color: @zesty-grey @zesty-light-grey;
   scrollbar-width: thin;
+
+  @media (max-width: 2000px) {
+    & {
+      grid-template-columns: 60px 1fr;
+      font-size: 12px;
+    }
+  }
 
   .AppLoader {
     flex: 2;
@@ -43,12 +50,6 @@
   padding: 2rem;
 }
 
-@media (max-width: 2000px) {
-  .Shell {
-    grid-template-columns: 60px 1fr;
-    font-size: 12px;
-  }
-}
 // @media (max-width: 2000px) {
 //   .Shell {
 //     font-size: 12px;

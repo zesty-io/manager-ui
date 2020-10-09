@@ -135,8 +135,6 @@ function SearchResults(props) {
     };
   }, [wrapperRef]);
 
-  console.log(props.results);
-
   return (
     <ul
       ref={wrapperRef}

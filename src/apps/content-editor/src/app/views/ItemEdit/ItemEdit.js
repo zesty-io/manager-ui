@@ -272,6 +272,8 @@ class ItemEdit extends Component {
                 return this.props.userRole.name !== "Contributor" ? (
                   <Head
                     instance={this.props.instance}
+                    modelZUID={this.props.modelZUID}
+                    model={this.props.model}
                     itemZUID={this.props.itemZUID}
                     item={this.props.item}
                     tags={this.props.tags}

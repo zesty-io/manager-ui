@@ -1,5 +1,4 @@
 import React from "react";
-import { connect } from "react-redux";
 
 import { Header } from "../components/Header";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
@@ -11,12 +10,8 @@ import styles from "./Meta.less";
 export class Meta extends React.PureComponent {
   render() {
     return (
-      <section className={styles.MetaEdit} id="ITEM_SETTINGS">
+      <section className={styles.MetaEdit}>
         <Header
-          // instance={this.props.instance}
-          // modelZUID={this.props.modelZUID}
-          // item={this.props.item}
-
           instance={this.props.instance}
           modelZUID={this.props.modelZUID}
           model={this.props.model}

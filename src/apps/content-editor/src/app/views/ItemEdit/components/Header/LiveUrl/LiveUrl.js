@@ -22,26 +22,22 @@ export class LiveUrl extends React.Component {
         : ""
     }`;
 
-    const isPublished =
-      this.props.item.publishing && this.props.item.publishing.isPublished;
-
-    return (
-      <Url
-        target="_blank"
-        href={isPublished && urlString}
-        className={isPublished ? styles.Published : styles.Unpublished}
-      >
+    return this.props.item.publishing &&
+      this.props.item.publishing.isPublished ? (
+      <Url target="_blank" href={urlString} className={styles.Published}>
         {this.props.item.web.pathPart === "zesty_home" ? (
           <FontAwesomeIcon icon={faHome} />
-        ) : isPublished ? (
-          <FontAwesomeIcon icon={faLink} />
         ) : (
-          <FontAwesomeIcon icon={faUnlink} />
+          <FontAwesomeIcon icon={faLink} />
         )}
         &nbsp;
-        {/* {urlString} */}
-        {isPublished ? <span>Live</span> : <span>Offline</span>}
+        <span>Live</span>
       </Url>
+    ) : (
+      <span className={styles.Unpublished}>
+        <FontAwesomeIcon icon={faUnlink} />
+        &nbsp;<span>Offline</span>
+      </span>
     );
   }
 }

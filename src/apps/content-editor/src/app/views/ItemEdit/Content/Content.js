@@ -12,10 +12,6 @@ export default class Content extends Component {
     return (
       <main className={styles.Content}>
         <Header
-          // instance={this.props.instance}
-          // modelZUID={this.props.modelZUID}
-          // item={this.props.item}
-
           instance={this.props.instance}
           modelZUID={this.props.modelZUID}
           model={this.props.model}

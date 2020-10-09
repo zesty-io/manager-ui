@@ -19,8 +19,6 @@ export default connect(state => {
 }) {
   const slug = window.location.href.split("/").pop();
 
-  console.log("slug", slug);
-
   return (
     <nav className={styles.ItemNav}>
       <AppLink
