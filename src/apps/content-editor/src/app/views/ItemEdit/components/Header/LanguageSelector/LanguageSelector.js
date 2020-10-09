@@ -62,7 +62,7 @@ export const LanguageSelector = connect((state, props) => {
           loading={loading}
         >
           {props.languages.map(lang => (
-            <Option key={lang.code} text={lang.name} value={lang.code} />
+            <Option key={lang.code} text={lang.code} value={lang.code} />
           ))}
         </Select>
       ) : null}

@@ -13,8 +13,14 @@ export class Meta extends React.PureComponent {
     return (
       <section className={styles.MetaEdit} id="ITEM_SETTINGS">
         <Header
+          // instance={this.props.instance}
+          // modelZUID={this.props.modelZUID}
+          // item={this.props.item}
+
           instance={this.props.instance}
           modelZUID={this.props.modelZUID}
+          model={this.props.model}
+          itemZUID={this.props.itemZUID}
           item={this.props.item}
         >
           <ItemVersioning

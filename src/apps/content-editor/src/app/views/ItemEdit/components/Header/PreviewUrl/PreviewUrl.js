@@ -13,7 +13,7 @@ export function PreviewUrl(props) {
       href={`${CONFIG.URL_PREVIEW_PROTOCOL}${props.instance.randomHashID}${CONFIG.URL_PREVIEW}${props.item.web.path}?__version=${props.item.meta.version}`}
     >
       <FontAwesomeIcon icon={faEye} />
-      &nbsp; Preview {props.item.meta.version}
+      &nbsp;Preview {props.item.meta.version}
     </Url>
   );
 }

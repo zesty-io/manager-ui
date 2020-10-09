@@ -18,12 +18,15 @@ export default connect(state => {
   userRole
 }) {
   const slug = window.location.href.split("/").pop();
+
+  console.log("slug", slug);
+
   return (
     <nav className={styles.ItemNav}>
       <AppLink
         className={cx(
           styles.buttonText,
-          slug === "content" ? styles.Selected : null
+          slug !== "meta" && slug !== "head" ? styles.Selected : null
         )}
         to={`/content/${modelZUID}/${itemZUID}`}
       >

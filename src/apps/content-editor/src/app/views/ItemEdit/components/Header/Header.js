@@ -46,6 +46,11 @@ export class Header extends React.PureComponent {
               )}
             </div>
 
+            <LanguageSelector
+              className={styles.I18N}
+              itemZUID={this.props.itemZUID}
+            />
+
             <div className={styles.Actions}>{this.props.children}</div>
           </div>
         </div>
@@ -72,11 +77,6 @@ export class Header extends React.PureComponent {
             )}
           </div>
         </div> */}
-
-        {/* <LanguageSelector
-          className={styles.I18N}
-          itemZUID={this.props.itemZUID}
-        /> */}
       </header>
     );
   }
