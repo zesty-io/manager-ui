@@ -135,7 +135,7 @@ export function fetchNav() {
           } else {
             dispatch(
               notify({
-                message: `Failure fetching nav`,
+                message: `Failed to fetch nav`,
                 kind: "warn"
               })
             );

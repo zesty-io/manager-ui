@@ -103,7 +103,7 @@ export const fetchHeadTags = () => {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to head tags`
+              message: `Failed to fetch head tags`
             })
           );
           if (res.error) {

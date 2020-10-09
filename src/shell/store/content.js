@@ -600,7 +600,7 @@ export function fetchItemPublishings() {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to item publishings`
+              message: `Failed to fetch item publishings`
             })
           );
           if (res.error) {
