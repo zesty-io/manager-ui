@@ -1,11 +1,9 @@
 import React from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlus,
-  faExclamationTriangle
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
+import { Notice } from "@zesty-io/core/Notice";
 
 import { HeadTag } from "./HeadTag";
 import { Preview } from "./Preview";
@@ -13,6 +11,8 @@ import { Preview } from "./Preview";
 import { fetchGlobalItem } from "shell/store/content";
 import { createHeadTag } from "../../../../store/headTags";
 import { notify } from "shell/store/notifications";
+
+import { Header } from "../components/Header";
 
 import styles from "./Head.less";
 export default class Head extends React.Component {
@@ -45,50 +45,54 @@ export default class Head extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
-        <div className={styles.HeadWrap}>
-          <div className={styles.Head}>
-            <main className={styles.Tags}>
-              <h1 className={styles.Warn}>
-                <Button
-                  className={styles.Button}
-                  kind="secondary"
-                  onClick={this.onCreate}
-                >
-                  <FontAwesomeIcon icon={faPlus} />
-                  New head tag
-                </Button>
-                <FontAwesomeIcon
-                  className={styles.ExclamationTriangle}
-                  icon={faExclamationTriangle}
-                />{" "}
-                &nbsp; Head tags are not versioned or published. Changes to head
-                tags take effect immediately on your live instance.
-              </h1>
-              {this.props.tags.length ? (
-                this.props.tags.map((tag, index) => {
-                  return (
-                    <HeadTag
-                      key={index}
-                      tag={tag}
-                      dispatch={this.props.dispatch}
-                    />
-                  );
-                })
-              ) : (
-                <h3 className={styles.NoTags}>
-                  No head tags have been created for this item.
-                </h3>
-              )}
-            </main>
-            <Preview
-              instanceName={this.state.globals.site_name}
-              item={this.props.item}
-              tags={this.props.tags}
-            />
-          </div>
+      <div className={styles.ContentHead}>
+        <Header
+          instance={this.props.instance}
+          modelZUID={this.props.modelZUID}
+          model={this.props.model}
+          itemZUID={this.props.itemZUID}
+          item={this.props.item}
+        ></Header>
+
+        <div className={styles.Head}>
+          <main className={styles.Tags}>
+            <div className={styles.Warn}>
+              <Button
+                className={styles.Button}
+                kind="secondary"
+                onClick={this.onCreate}
+              >
+                <FontAwesomeIcon icon={faPlus} />
+                New head tag
+              </Button>
+              <Notice>
+                Head tags are not versioned or published. Changes to head tags
+                take effect immediately on your live instance.
+              </Notice>
+            </div>
+            {this.props.tags.length ? (
+              this.props.tags.map((tag, index) => {
+                return (
+                  <HeadTag
+                    key={index}
+                    tag={tag}
+                    dispatch={this.props.dispatch}
+                  />
+                );
+              })
+            ) : (
+              <h3 className={styles.title}>
+                No head tags have been created for this item.
+              </h3>
+            )}
+          </main>
+          <Preview
+            instanceName={this.state.globals.site_name}
+            item={this.props.item}
+            tags={this.props.tags}
+          />
         </div>
-      </React.Fragment>
+      </div>
     );
   }
 }
