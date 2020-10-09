@@ -85,7 +85,7 @@ export const ItemSettings = React.memo(
                 <a
                   id="google-link-example"
                   target="_blank"
-                  href={`${props.instance.domains[0].domain}${
+                  href={`//${props.instance.domains[0].domain}${
                     web.path ? web.path : "/"
                   }`}
                 >
