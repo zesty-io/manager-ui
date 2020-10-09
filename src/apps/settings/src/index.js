@@ -1,5 +1,5 @@
 import { hot } from "react-hot-loader/root";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Route } from "react-router-dom";
 
@@ -27,12 +27,16 @@ export default hot(
       settings: state.settings
     };
   })(function SettingsApp(props) {
+    // installed fonts may be empty array, so use a flag to know when we've fetched them
+    const [installedFonts, setInstalledFonts] = useState(false);
     useEffect(() => {
       store.dispatch(fetchSettings());
       store.dispatch(fetchStylesCategories());
       store.dispatch(fetchStylesVariables());
       store.dispatch(fetchFonts());
-      store.dispatch(fetchFontsInstalled());
+      store.dispatch(fetchFontsInstalled()).then(() => {
+        setInstalledFonts(true);
+      });
       store.dispatch(fetchHeadTags());
     }, []);
 
@@ -42,7 +46,7 @@ export default hot(
           props.settings.catInstance.length &&
           props.settings.catStyles.length &&
           props.settings.fonts.length &&
-          props.settings.fontsInstalled.length &&
+          installedFonts &&
           props.settings.instance.length &&
           props.settings.styles.length
         }
