@@ -6,7 +6,6 @@
 
   .Search {
     margin: 0;
-    background-color: @zesty-field-blue;
   }
 
   input {
@@ -24,14 +23,14 @@
   list-style: none;
   overflow: auto;
   box-shadow: 1px 1px 18px @zesty-grey;
-  border-radius: 4px 0 0 4px;
-  left: -3px;
-  top: 47px;
+  border-radius: 0 0 4px 0px;
+  left: -9px;
+  top: 48px;
 
   li {
     color: @zesty-dark-blue;
-    background: #c7d4ea;
-    border-bottom: 1px solid @zesty-black;
+    background: @zesty-field-blue;
+    border-bottom: 1px solid @zesty-grey;
     padding: 20px 4px;
 
     &:hover {
@@ -45,7 +44,7 @@
     }
     .ListItem {
       display: flex;
-      align-items: center;
+      align-items: baseline;
       svg {
         margin-right: 8px;
         font-size: 16px;

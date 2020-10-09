@@ -135,18 +135,18 @@ export default connect(state => {
             style={this.state.datePickerIsVisible ? {} : { display: "none" }}
           >
             <div className={styles.customDate}>
-              <label>Start Date:</label>
               <FieldTypeDate
                 name="start-date"
+                label="Start Date"
                 type="date"
                 value={this.props.filter.startDate}
                 onChange={this.setStartDate}
               />
             </div>
             <div className={styles.customDate}>
-              <label>End Date:</label>
               <FieldTypeDate
                 name="end-date"
+                label="End Date"
                 type="date"
                 value={this.props.filter.endDate}
                 onChange={this.setEndDate}
