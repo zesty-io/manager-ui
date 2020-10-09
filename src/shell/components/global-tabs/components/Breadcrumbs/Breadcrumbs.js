@@ -74,15 +74,6 @@ export default connect(state => {
       // recursively build bread crumb trail
       crawlParents(normalizedNav, props.itemZUID, crumbs, props.content);
 
-      // Add Start: Content Dashboard
-      // crumbs.push({
-      //   label: <FontAwesomeIcon icon={faHome} />,
-      //   type: "home"
-      // });
-
-      // Cleanup
-      // crumbs.filter(el => el).reverse();
-
       return crumbs;
     }, [props.itemZUID, props.navContent]);
 

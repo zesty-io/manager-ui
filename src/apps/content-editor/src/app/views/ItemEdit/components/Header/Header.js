@@ -3,7 +3,6 @@ import cx from "classnames";
 
 import { PreviewUrl } from "./PreviewUrl";
 import { LiveUrl } from "./LiveUrl";
-// import { PublishStatus } from "./PublishStatus";
 import { LanguageSelector } from "./LanguageSelector";
 
 import ItemNavigation from "./ItemNavigation";

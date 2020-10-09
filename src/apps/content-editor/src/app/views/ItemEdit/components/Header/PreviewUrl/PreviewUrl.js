@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { Url } from "@zesty-io/core/Url";
 
-// import styles from "./PreviewUrl.less";
 export function PreviewUrl(props) {
   return (
     <Url
