@@ -258,7 +258,9 @@ export function fetchFontsInstalled() {
       .then(res => {
         dispatch({
           type: "FETCH_FONTS_INSTALLED",
-          payload: res.data.map(item => item.attributes.href)
+          payload: res.data.filter(
+            item => item.type === "link" && item.attributes.href
+          )
         });
       })
       .catch(err => console.log(err));
