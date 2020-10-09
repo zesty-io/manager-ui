@@ -1,4 +1,5 @@
 import { request } from "utility/request";
+import { notify } from "shell/store/notifications";
 import {
   faFile,
   faListAlt,
@@ -81,74 +82,68 @@ export function fetchNav() {
         return null;
       })
       .then(granularRoles => {
-        return request(`${CONFIG.API_INSTANCE}/env/nav`)
-          .then(data => {
-            if (data.status === 400) {
-              dispatch(
-                notify({
-                  message: `Failure fetching nav: ${data.error}`,
-                  kind: "error"
-                })
-              );
-            } else if (!data || !data.data) {
-              return console.error("no data returned from fetch sets");
-            } else {
-              // enrich nav with stored closed/hidden status
-              // FIXME: this should be scoped to the instance
-              const closed = localStorage.getItem("zesty:navContent:closed");
-              const closedArr = closed ? JSON.parse(closed) : [];
-              const closedZUIDS = closedArr.map(node => node.ZUID);
+        return request(`${CONFIG.API_INSTANCE}/env/nav`).then(res => {
+          if (res.status === 200) {
+            // enrich nav with stored closed/hidden status
+            // FIXME: this should be scoped to the instance
+            const closed = localStorage.getItem("zesty:navContent:closed");
+            const closedArr = closed ? JSON.parse(closed) : [];
+            const closedZUIDS = closedArr.map(node => node.ZUID);
 
-              // FIXME: this should be scoped to the instance
-              const hidden = localStorage.getItem("zesty:navContent:hidden");
-              const hiddenArr = hidden ? JSON.parse(hidden) : [];
-              const hiddenZUIDS = hiddenArr.map(node => node.ZUID);
+            // FIXME: this should be scoped to the instance
+            const hidden = localStorage.getItem("zesty:navContent:hidden");
+            const hiddenArr = hidden ? JSON.parse(hidden) : [];
+            const hiddenZUIDS = hiddenArr.map(node => node.ZUID);
 
-              const filteredByRole = data.data.filter(el => {
-                if (granularRoles) {
-                  return granularRoles.find(zuid => zuid === el.ZUID);
-                } else {
-                  return el;
-                }
-              });
+            const filteredByRole = res.data.filter(el => {
+              if (granularRoles) {
+                return granularRoles.find(zuid => zuid === el.ZUID);
+              } else {
+                return el;
+              }
+            });
 
-              filteredByRole.forEach(node => {
-                if (closedZUIDS.includes(node.ZUID)) {
-                  node.closed = true;
-                }
-                if (hiddenZUIDS.includes(node.ZUID)) {
-                  node.hidden = true;
-                }
+            filteredByRole.forEach(node => {
+              if (closedZUIDS.includes(node.ZUID)) {
+                node.closed = true;
+              }
+              if (hiddenZUIDS.includes(node.ZUID)) {
+                node.hidden = true;
+              }
 
-                // Set path
-                if (node.type === "item") {
-                  node.path = `/content/${node.contentModelZUID}/${node.ZUID}`;
-                } else if (
-                  node.type === "external" ||
-                  node.type === "internal"
-                ) {
-                  node.path = `/content/link/${node.ZUID}`;
-                } else {
-                  node.path = `/content/${node.ZUID}`;
-                }
+              // Set path
+              if (node.type === "item") {
+                node.path = `/content/${node.contentModelZUID}/${node.ZUID}`;
+              } else if (node.type === "external" || node.type === "internal") {
+                node.path = `/content/link/${node.ZUID}`;
+              } else {
+                node.path = `/content/${node.ZUID}`;
+              }
 
-                // Set Icon
-                if (node.label.toLowerCase() === "homepage") {
-                  node.icon = ICONS["homepage"];
-                } else {
-                  node.icon = ICONS[node.type];
-                }
-              });
+              // Set Icon
+              if (node.label.toLowerCase() === "homepage") {
+                node.icon = ICONS["homepage"];
+              } else {
+                node.icon = ICONS[node.type];
+              }
+            });
 
-              dispatch({
-                type: "FETCH_CONTENT_NAV_SUCCESS",
-                raw: filteredByRole
-              });
+            dispatch({
+              type: "FETCH_CONTENT_NAV_SUCCESS",
+              raw: filteredByRole
+            });
+          } else {
+            dispatch(
+              notify({
+                message: `Failure fetching nav`,
+                kind: "warn"
+              })
+            );
+            if (res.error) {
+              throw new Error(res.error);
             }
-          })
-          .catch(() => {
-            throw new Error("Unable to load nav data");
-          });
+          }
+        });
       });
   };
 }

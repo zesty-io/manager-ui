@@ -66,13 +66,25 @@ export function fetchModels() {
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/models`,
       handler: res => {
-        return dispatch({
-          type: "FETCH_MODELS_SUCCESS",
-          payload: res.data.reduce((acc, model) => {
-            acc[model.ZUID] = model;
-            return acc;
-          }, {})
-        });
+        if (res.status === 200) {
+          return dispatch({
+            type: "FETCH_MODELS_SUCCESS",
+            payload: res.data.reduce((acc, model) => {
+              acc[model.ZUID] = model;
+              return acc;
+            }, {})
+          });
+        } else {
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `Failed to fetch models`
+            })
+          );
+          if (res.error) {
+            throw new Error(res.error);
+          }
+        }
       }
     });
   };

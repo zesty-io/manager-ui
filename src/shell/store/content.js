@@ -4,8 +4,6 @@ import cloneDeep from "lodash.clonedeep";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 
-// import { fetchNav } from "./navContent";
-
 export function content(state = {}, action) {
   const item = state[action.itemZUID];
 
@@ -593,14 +591,22 @@ export function fetchItemPublishings() {
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/items/publishings?limit=100000`,
       handler: res => {
-        if (!res || !res.data || !Array.isArray(res.data)) {
-          throw new Error("Bad response from API. Missing resource data.");
+        if (res.status === 200) {
+          dispatch({
+            type: "FETCH_ITEMS_PUBLISHING",
+            data: parsePublishState(res.data)
+          });
+        } else {
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `Failed to item publishings`
+            })
+          );
+          if (res.error) {
+            throw new Error(res.error);
+          }
         }
-
-        dispatch({
-          type: "FETCH_ITEMS_PUBLISHING",
-          data: parsePublishState(res.data)
-        });
       }
     });
   };
