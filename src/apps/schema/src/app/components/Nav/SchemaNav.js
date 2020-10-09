@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,27 +10,19 @@ import { Button } from "@zesty-io/core/Button";
 
 import styles from "./SchemaNav.less";
 export default function SchemaNav(props) {
-  let history = useHistory();
+  const history = useHistory();
+  const location = useLocation();
 
   const [nav, setNav] = useState(props.nav);
-  const [selected, setSelected] = useState(window.location.hash);
-
-  const handleHashChange = () => {
-    if (window.location.hash !== selected) {
-      setSelected(window.location.hash);
-    }
-  };
+  const [selected, setSelected] = useState(location.pathname);
 
   useEffect(() => {
     setNav(props.nav);
   }, [props.nav]);
 
   useEffect(() => {
-    window.addEventListener("hashchange", handleHashChange);
-    return () => {
-      window.removeEventListener("hashchange", handleHashChange);
-    };
-  });
+    setSelected(location.pathname);
+  }, [location.pathname]);
 
   return (
     <nav className={cx("SchemaNav", styles.SchemaNav)}>
