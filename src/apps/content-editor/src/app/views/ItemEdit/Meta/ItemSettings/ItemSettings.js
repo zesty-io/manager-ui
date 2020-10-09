@@ -81,10 +81,20 @@ export const ItemSettings = React.memo(
           <div className={styles.SearchResult}>
             <h6 className={styles.GoogleTitle}>{web.metaTitle}</h6>
             <div className={styles.GoogleLink}>
-              <a id="google-link-example" href="javascript:void(0)">
-                {`${props.instance.live_domain ||
-                  props.instance.preview_domain}${web.path ? web.path : ""}`}
-              </a>
+              {props.instance.domains.length ? (
+                <a
+                  id="google-link-example"
+                  target="_blank"
+                  href={`${props.instance.domains[0].domain}${
+                    web.path ? web.path : "/"
+                  }`}
+                >
+                  {`${props.instance.domains[0].domain}${
+                    web.path ? web.path : "/"
+                  }`}
+                </a>
+              ) : null}
+
               <span className={styles.Icon} />
             </div>
             <p className={styles.GoogleDesc}>
