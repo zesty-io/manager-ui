@@ -8,7 +8,11 @@ import { Search } from "@zesty-io/core/Search";
 import styles from "./styles.less";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronRight, faEdit } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronRight,
+  faEdit,
+  faExclamationTriangle
+} from "@fortawesome/free-solid-svg-icons";
 
 export default React.forwardRef(function ContentSearch(props, ref) {
   const dispatch = useDispatch();
@@ -106,6 +110,7 @@ export default React.forwardRef(function ContentSearch(props, ref) {
           selectedIndex={selectedIndex}
           refs={refs}
           onSelect={props.onSelect}
+          languages={props.languages}
         />
       )}
     </div>
@@ -129,6 +134,8 @@ function SearchResults(props) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [wrapperRef]);
+
+  console.log(props.results);
 
   return (
     <ul
@@ -155,7 +162,21 @@ function SearchResults(props) {
             <FontAwesomeIcon icon={faEdit} />
             <div>
               <div className={styles.SearchResultTitle}>
-                {result.web.metaTitle}
+                [
+                {props.languages
+                  ? props.languages[result.meta.langID - 1].code
+                  : "en-US"}
+                ]&nbsp;
+                {!result.web.pathPart ? (
+                  result.web.metaTitle || result.web.metaLinkText
+                ) : result.web.metaTitle ? (
+                  result.web.metaTitle
+                ) : (
+                  <span>
+                    <FontAwesomeIcon icon={faExclamationTriangle} /> Missing
+                    Meta Title
+                  </span>
+                )}
               </div>
               <div className={styles.SearchResultPath}>
                 {result.web.path}
