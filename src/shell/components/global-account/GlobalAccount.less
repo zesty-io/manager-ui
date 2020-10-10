@@ -1,22 +1,44 @@
 @import "~@zesty-io/core/colors.less";
-.GlobalAccount {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  // font-size: 2.8rem;
-  border-bottom: 1px solid darken(@globalMenuBkgColor, 5%);
-  border-right: 1px solid darken(@globalMenuBkgColor, 5%);
-  width: 99%;
-  height: 60px;
+@import "~@zesty-io/core/typography.less";
 
-  &:hover {
-    cursor: pointer;
+.GlobalAccount {
+  // justify-content: center;
+
+  align-items: center;
+  padding: 0 0 0 12px;
+  border-left: 1px solid #626b82;
+  border-bottom: 4px solid #4b5468;
+  background: #4b5468;
+
+  color: @zesty-white;
+
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: 18px;
+
+  .Actions {
+    display: grid;
+    grid-auto-flow: column;
+    grid-gap: 12px;
+  }
+  .InstanceLink {
+    svg {
+      margin-right: 8px;
+    }
+
+    a {
+      color: @white;
+      text-decoration: none;
+      text-shadow: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  .AccountMenu {
+    .Avatar {
+      border-radius: 50%;
+      margin-right: 32px;
+    }
   }
 }
-
-// @media (max-width: 2000px) {
-//   .GlobalAccount {
-//     font-size: 28px;
-//   }
-// }

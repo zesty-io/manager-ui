@@ -1,20 +1,31 @@
 @import "~@zesty-io/core/colors.less";
+
 .GlobalMenu {
-  border-top: 1px solid lighten(@globalMenuBkgColor, 5%);
-  border-bottom: 1px solid darken(@globalMenuBkgColor, 5%);
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  padding: 8px 32px;
+  border-top: 1px solid #212636;
+  border-bottom: 1px solid #212636;
+
+  display: grid;
+  grid-gap: 12px;
+
+  padding: 8px 0;
+  margin: 42px 0;
+
+  width: max-content;
 
   a {
     color: @zesty-field-blue;
     text-decoration: none;
     letter-spacing: 1px;
-    padding: 1rem 0.5rem;
+    padding: 8px;
+    border-left: 2px solid @globalMenuBkgColor;
+
     svg {
       margin-right: 8px;
     }
+  }
+
+  .current {
+    border-left: 2px solid @zesty-orange;
   }
 
   .control,
