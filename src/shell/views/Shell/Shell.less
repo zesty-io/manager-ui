@@ -19,7 +19,7 @@
   font-family: "Montserrat", "Gibson Light", Arial, sans-serif;
   font-size: 14px;
   height: 100vh;
-  overflow-y: hidden;
+  overflow: hidden;
 
   display: grid;
   grid-template-columns: 180px 1fr;
@@ -36,11 +36,24 @@
 
   .AppLoader {
     flex: 2;
-    z-index: 1;
-    overflow: hidden;
+    // z-index: 1;
+    // overflow: hidden;
+
+    // experimental shadow effect
+    background-color: #171b26;
+    // box-shadow: 0px 0px 25px #0c0f15;
+    // position: relative;
+    // z-index: 30;
 
     .SubApp {
       height: calc(100vh - 54px);
+
+      // experimental shadow effect
+      border-radius: 10px 0 0 0;
+      overflow: hidden;
+      box-shadow: 0px 0px 25px #0b0d13;
+      position: relative;
+      z-index: 30;
     }
   }
 }
