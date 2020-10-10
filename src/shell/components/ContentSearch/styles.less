@@ -18,19 +18,17 @@
   z-index: 110;
   max-height: 590px;
   min-width: 850px;
-  border-left: 1px solid @globalMenuBkgColor;
-  border-right: 1px solid @globalMenuBkgColor;
   list-style: none;
   overflow: auto;
-  box-shadow: 1px 1px 18px @zesty-grey;
-  border-radius: 0 0 4px 0px;
-  left: -9px;
-  top: 48px;
+  box-shadow: 1px 1px 18px #0000007a;
+  border-radius: 0 4px 4px 4px;
+  left: 0px;
+  top: 38px;
 
   li {
     color: @zesty-dark-blue;
     background: @zesty-field-blue;
-    border-bottom: 1px solid @zesty-grey;
+    border-bottom: 1px solid darken(@zesty-field-blue, 8%);
     padding: 20px 4px;
 
     &:hover {
@@ -51,8 +49,13 @@
       }
     }
   }
+
   li.SelectedRow {
     background-color: @zesty-light-blue;
+  }
+
+  li:last-child {
+    border-bottom: none;
   }
 }
 .SearchResultTitle {
