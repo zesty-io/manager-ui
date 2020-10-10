@@ -367,6 +367,7 @@ class CSVImport extends Component {
           </div>
         </div>
         <VariableSizeList
+          className={styles.Bottom}
           itemCount={recordsWithColumns.length}
           itemData={{
             data: recordsWithColumns,

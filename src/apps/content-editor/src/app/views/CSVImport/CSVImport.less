@@ -56,6 +56,9 @@
     display: flex;
     justify-content: space-between;
   }
+  .Bottom {
+    background-color: white;
+  }
   .Settings {
     display: grid;
     width: 800px;
@@ -77,14 +80,17 @@
 }
 
 .wrap {
-  border-bottom: 1px solid @zesty-grey;
   display: flex;
   flex: 1;
   align-items: center;
-  min-height: 60px;
-  height: 60px;
+  height: 61px;
+  min-height: 90px;
+  border-bottom: 1px solid rgba(26, 32, 44, 0.12);
+
   &:hover {
-    background-color: rgba(rgba(195, 205, 223, 0.5));
+    box-shadow: 0px 2px 2px 0px rgba(26, 32, 44, 0.12),
+      0 -2px 2px 0 rgba(26, 32, 44, 0.12);
+    background-color: #f7f7f7;
   }
   .column {
     display: flex;
@@ -93,6 +99,10 @@
     padding: 4px 16px;
     overflow: hidden;
     text-overflow: ellipsis;
+    border-right: 1px solid rgba(26, 32, 44, 0.12);
+    height: 100%;
+    align-items: center;
+    word-break: break-word;
   }
 }
 
