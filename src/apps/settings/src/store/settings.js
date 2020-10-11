@@ -254,11 +254,13 @@ export function getHeadTags() {
 
 export function fetchFontsInstalled() {
   return dispatch => {
-    request(`${CONFIG.API_INSTANCE}/web/headtags`)
+    return request(`${CONFIG.API_INSTANCE}/web/headtags`)
       .then(res => {
-        dispatch({
+        return dispatch({
           type: "FETCH_FONTS_INSTALLED",
-          payload: res.data.map(item => item.attributes.href)
+          payload: res.data.filter(
+            item => item.type === "link" && item.attributes.href
+          )
         });
       })
       .catch(err => console.log(err));
