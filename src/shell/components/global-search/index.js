@@ -6,7 +6,8 @@ import ContentSearch from "shell/components/ContentSearch";
 
 export default connect(state => {
   return {
-    platform: state.platform
+    platform: state.platform,
+    languages: state.languages
   };
 })(function GlobalSearch(props) {
   const searchRef = useRef();
@@ -44,6 +45,7 @@ export default connect(state => {
           `/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`
         );
       }}
+      languages={props.languages}
     />
   );
 });

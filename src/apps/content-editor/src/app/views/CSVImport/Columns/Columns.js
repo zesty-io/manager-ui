@@ -12,6 +12,7 @@ export class Columns extends PureComponent {
           {this.props.cols.map(col => {
             return (
               <div key={col} className={styles.column}>
+                <span className={cx(styles.Cell)}>{col.toUpperCase()}</span>
                 <Select
                   name={col}
                   onSelect={value => {
@@ -28,7 +29,6 @@ export class Columns extends PureComponent {
                     />
                   ))}
                 </Select>
-                <span className={cx(styles.Cell)}>{col.toUpperCase()}</span>
               </div>
             );
           })}

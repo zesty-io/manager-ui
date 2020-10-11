@@ -40,11 +40,11 @@ export class SetActions extends Component {
               onChange={this.props.onFilter}
             />
 
-            {/* <LanguageSelector
+            <LanguageSelector
               className={styles.I18N}
               itemZUID={this.props.itemZUID}
               onSelect={this.props.runAllFilters}
-            /> */}
+            />
 
             <Select
               className={cx(styles.Action, styles.Select)}

@@ -74,44 +74,42 @@ export default connect(state => {
       // recursively build bread crumb trail
       crawlParents(normalizedNav, props.itemZUID, crumbs, props.content);
 
-      // Add Start: Content Dashboard
-      crumbs.push({
-        label: <FontAwesomeIcon icon={faHome} />,
-        type: "home"
-      });
-
-      // Cleanup
-      // crumbs.filter(el => el).reverse();
-
       return crumbs;
     }, [props.itemZUID, props.navContent]);
 
     return (
-      <ol className={styles.Breadcrumbs}>
-        {trail
-          .filter(el => el)
-          .reverse()
-          .map((item, i) => {
-            const url =
-              item.type === "home"
-                ? "/content"
-                : item.type === "item"
-                ? `/content/${item.contentModelZUID}/${item.ZUID}`
-                : `/content/${item.contentModelZUID}`;
+      <div className={styles.Breadcrumbs}>
+        <span className={styles.Home}>
+          <AppLink to="/">
+            <FontAwesomeIcon icon={faHome} />
+          </AppLink>
+        </span>
 
-            return (
-              <li key={item.ZUID} className={styles.crumb}>
-                {i !== 0 && (
+        <ol className={styles.Crumbs}>
+          {trail
+            .filter(el => el)
+            .reverse()
+            .map((item, i) => {
+              return (
+                <li key={item.ZUID} className={styles.crumb}>
                   <FontAwesomeIcon
                     icon={faAngleRight}
                     style={{ color: "#afbcd4" }}
                   />
-                )}
-                <AppLink to={url}>{item.label}</AppLink>
-              </li>
-            );
-          })}
-      </ol>
+                  <AppLink
+                    to={
+                      item.type === "item"
+                        ? `/content/${item.contentModelZUID}/${item.ZUID}`
+                        : `/content/${item.contentModelZUID}`
+                    }
+                  >
+                    {item.label}
+                  </AppLink>
+                </li>
+              );
+            })}
+        </ol>
+      </div>
     );
   })
 );

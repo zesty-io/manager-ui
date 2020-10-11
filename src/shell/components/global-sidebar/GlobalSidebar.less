@@ -1,22 +1,25 @@
 @import "~@zesty-io/core/colors.less";
 .GlobalSidebar {
-  // border-right: 1px solid #2d3644;
-  flex-basis: 160px;
+  box-shadow: 0px 0px 3px @globalMenuBkgColor;
   position: relative;
   display: flex;
   z-index: 2;
 
-  box-shadow: 0px 0px 3px @globalMenuBkgColor;
-
   .topMenu {
     background-color: @globalMenuBkgColor;
     color: @zesty-field-blue;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     z-index: 2;
     overflow-x: hidden;
-    flex: 1;
+    display: grid;
+    align-items: flex-start;
+    grid-auto-flow: row;
+    grid-auto-rows: 1fr 195px;
+    padding: 8px 10px;
+
+    @media (min-width: 2000px) {
+      grid-auto-rows: 1fr 120px;
+      padding: 8px 29px;
+    }
   }
   .subMenu {
     position: absolute;

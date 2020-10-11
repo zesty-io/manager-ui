@@ -8,7 +8,6 @@
 
   display: flex;
   flex-direction: column;
-  align-items: center;
 
   .GlobalActions {
     display: flex;
@@ -53,24 +52,17 @@
   }
 }
 
-@media (min-width: 2000px) {
+@media (min-width: 2001px) {
   .GlobalSubMenu {
     .GlobalActions {
       flex-wrap: initial;
       align-content: initial;
       flex-direction: row;
-      .action {
-        svg {
-          width: 24px;
-          height: 24px;
-        }
-      }
     }
     .ZestyLink {
       display: flex;
       align-items: center;
       align-self: flex-start;
-      padding-left: 40px;
     }
 
     .AppVersion {

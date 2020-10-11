@@ -1,28 +1,52 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
 
 .Header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 26px;
-  background-color: #4b5468; // @zesty-tab-blue;// #5b667d;
+  flex-direction: column;
+  padding: 16px 32px;
 
-  .ItemNav {
-    display: flex;
-    flex-direction: column;
-    .Path {
-      margin: 0 0 8px 0;
-      & > a:first-child {
-        margin-left: 0px;
-      }
+  z-index: 10;
+  position: sticky;
+  top: 0;
+  background-color: #f2f7fc;
+  border-bottom: 1px solid #e8e8e8;
+
+  .Split {
+    align-items: center;
+    display: grid;
+    grid-auto-columns: 1fr auto;
+    grid-auto-flow: row;
+    grid-gap: 8px;
+
+    @media screen and (min-width: 2000px) {
+      grid-auto-flow: column;
     }
-    .PreviewUrl {
-      color: @zesty-grey;
+
+    .Left {
+      display: flex;
+      margin-right: 16px;
+    }
+    .Right {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
     }
   }
 
+  .Links {
+    display: grid;
+    grid-auto-flow: column;
+    grid-gap: 8px;
+    margin-right: 8px;
+  }
+  .Actions {
+    display: flex;
+  }
+
   .I18N {
-    min-width: 250px;
+    margin-right: 8px;
+    min-width: 100px;
     z-index: 30;
   }
 }

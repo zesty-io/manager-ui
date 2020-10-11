@@ -91,9 +91,8 @@ export default connect(state => {
             itemZUID={this.props.itemZUID}
           />
 
-          {/* NOTE: hide publishing for alpha test */}
-          {(this.props.userRole.systemRole.publish ||
-            this.props.user.staff) && (
+          {/* NOTE: hiding publishing for alpha test users */}
+          {this.props.user.staff && (
             <ButtonGroup className={styles.Publish}>
               <Button
                 id="PublishButton"
@@ -141,7 +140,7 @@ export default connect(state => {
               <FontAwesomeIcon icon={faSave} />
             )}
             Save
-            <span className={styles.HideVersion}>&nbsp; New Version&nbsp;</span>
+            <span className={styles.HideVersion}>&nbsp;Version&nbsp;</span>
             <small>({this.props.platform.isMac ? "CMD" : "CTRL"} + S)</small>
           </Button>
         </ButtonGroup>

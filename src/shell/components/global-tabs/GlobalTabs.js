@@ -11,11 +11,11 @@ import {
   faEdit,
   faDatabase,
   faCode,
-  faCog,
-  faExternalLinkSquareAlt
+  faCog
 } from "@fortawesome/free-solid-svg-icons";
 
 import GlobalSearch from "shell/components/global-search";
+import GlobalAccount from "shell/components/global-account";
 
 import styles from "./GlobalTabs.less";
 
@@ -58,7 +58,8 @@ export default connect(state => {
     fields: state.fields,
     models: state.models,
     content: state.content,
-    files: state.files
+    files: state.files,
+    user: state.user
   };
 })(
   React.memo(function GlobalTabs(props) {
@@ -266,17 +267,7 @@ export default connect(state => {
           </ol>
         </nav>
 
-        <h1 className={cx(styles.bodyText, styles.InstanceName)}>
-          <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
-          &nbsp;
-          {props.domains && props.domains[0] && props.domains[0].domain ? (
-            <a href={`https://${props.domains[0].domain}`} target="_blank">
-              {props.instanceName}
-            </a>
-          ) : (
-            props.instanceName
-          )}
-        </h1>
+        <GlobalAccount />
       </section>
     );
   })

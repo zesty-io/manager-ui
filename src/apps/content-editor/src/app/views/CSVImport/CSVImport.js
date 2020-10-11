@@ -8,6 +8,8 @@ import cx from "classnames";
 import { Button } from "@zesty-io/core/Button";
 import { Columns } from "./Columns";
 import { CsvSettings } from "./CsvSettings";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUpload } from "@fortawesome/free-solid-svg-icons";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
@@ -313,8 +315,8 @@ class CSVImport extends Component {
     return (
       <main className={styles.CSVImport}>
         <div className={styles.Top}>
-          <span className={styles.File}>
-            <label htmlFor="csv">Choose a CSV file to import:</label>
+          <form className={styles.File}>
+            <p> Choose a CSV file to import:</p>
             <input
               type="file"
               id="csv"
@@ -322,8 +324,12 @@ class CSVImport extends Component {
               accept=".csv"
               onChange={this.handleFile}
             />
+            <label htmlFor="csv">
+              <FontAwesomeIcon icon={faUpload} />
+              Choose a CSV File{" "}
+            </label>
             <span className={styles.warning}>{this.state.warn}</span>
-          </span>
+          </form>
           <span className={styles.save}>
             <Button
               kind="save"
@@ -361,6 +367,7 @@ class CSVImport extends Component {
           </div>
         </div>
         <VariableSizeList
+          className={styles.Bottom}
           itemCount={recordsWithColumns.length}
           itemData={{
             data: recordsWithColumns,

@@ -5,29 +5,29 @@
   position: absolute;
   width: 350px;
   color: @zesty-dark-blue;
-  top: 0;
-  right: -399px;
+  top: 54px;
+  right: 0;
   padding: 24px;
   background: #c7d4ea;
   box-shadow: 1px 1px 19px #171b26;
-  border-radius: 0 4px 4px 0;
+  border-radius: 4px 0 4px 4px;
   text-align: left;
   word-break: break-word;
 
   &.hide {
-    left: -400px;
+    right: -420px;
   }
 
   &:after {
     content: "";
     position: absolute;
+    right: 41px;
+    top: -20px;
     width: 0;
     height: 0;
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-    border-right: 10px solid #c3cddf;
-    left: -10px;
-    top: 23px;
+    display: inline-block;
+    border: 10px solid transparent;
+    border-bottom-color: #c3cddf;
   }
 
   .user {

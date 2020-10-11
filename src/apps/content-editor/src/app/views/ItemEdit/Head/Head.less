@@ -1,35 +1,27 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
 
-.Actions {
-  & > * {
-    margin: 0 0 0 8px !important;
-  }
-}
-
-.HeadWrap {
-  height: calc(100vh - 61px - 44px);
-  overflow-y: scroll;
+.ContentHead {
+  height: calc(100vh - 54px);
+  overflow: scroll;
 
   .Head {
-    clear: both;
+    display: flex;
+    flex-direction: column-reverse;
+
+    @media screen and (min-width: 2000px) {
+      flex-direction: row;
+    }
 
     .Tags {
-      margin: 0 16px;
-      float: left;
-      width: 60%;
+      min-width: 800px;
 
-      article:first-child {
-        margin-top: 0;
-      }
-
-      .EditTags {
-        margin: 0;
+      h3 {
+        margin: 38px;
+        text-align: center;
       }
     }
-    .NoTags {
-      text-align: center;
-      font-size: 2rem;
-      padding: 16px;
+    .Preview {
     }
   }
 }
@@ -41,11 +33,6 @@
 
   button {
     margin-right: 8px;
-  }
-  .Button {
     min-width: 160px;
-  }
-  .ExclamationTriangle {
-    margin-right: 8px;
   }
 }

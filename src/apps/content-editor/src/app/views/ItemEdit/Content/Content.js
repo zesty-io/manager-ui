@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 
 import { Editor } from "../../../components/Editor";
-import { SubHeader } from "../components/SubHeader";
-import { ItemVersioning } from "../components/SubHeader/ItemVersioning";
+import { Header } from "../components/Header";
+import { ItemVersioning } from "../components/Header/ItemVersioning";
 
 import { Actions } from "./Actions";
 
@@ -11,9 +11,11 @@ export default class Content extends Component {
   render() {
     return (
       <main className={styles.Content}>
-        <SubHeader
+        <Header
           instance={this.props.instance}
           modelZUID={this.props.modelZUID}
+          model={this.props.model}
+          itemZUID={this.props.itemZUID}
           item={this.props.item}
         >
           <ItemVersioning
@@ -27,7 +29,7 @@ export default class Content extends Component {
             onSave={this.props.onSave}
             dispatch={this.props.dispatch}
           />
-        </SubHeader>
+        </Header>
 
         <div className={styles.MainEditor}>
           <div className={styles.Editor}>
