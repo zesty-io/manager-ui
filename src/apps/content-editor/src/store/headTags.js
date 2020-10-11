@@ -1,20 +1,18 @@
 import { request } from "utility/request";
+import { notify } from "shell/store/notifications";
 
 export function headTags(state = [], action) {
   switch (action.type) {
     case "FETCH_HEADTAGS_SUCCESS":
       return { ...state, ...action.data };
-      break;
 
     case "ADD_HEADTAG":
       return { ...state, [action.tag.ZUID]: action.tag };
-      break;
 
     case "DELETE_HEADTAG":
       let removedTag = { ...state };
       delete removedTag[action.id];
       return removedTag;
-      break;
 
     case "UPDATE_TAG_SORT":
       return {
@@ -24,7 +22,6 @@ export function headTags(state = [], action) {
           sort: action.sort
         }
       };
-      break;
 
     case "UPDATE_TAG_TYPE":
       return {
@@ -35,7 +32,6 @@ export function headTags(state = [], action) {
           attributes: [...state[action.id].attributes, ...action.attributes]
         }
       };
-      break;
 
     case "ADD_TAG_ATTRIBUTE":
       return {
@@ -45,7 +41,6 @@ export function headTags(state = [], action) {
           attributes: [...state[action.id].attributes, action.attr]
         }
       };
-      break;
 
     case "DELETE_TAG_ATTRIBUTE":
       const attrs = [...state[action.id].attributes];
@@ -58,7 +53,6 @@ export function headTags(state = [], action) {
           attributes: attrs
         }
       };
-      break;
 
     case "UPDATE_TAG_ATTRIBUTE":
       let tags = {
@@ -72,7 +66,6 @@ export function headTags(state = [], action) {
       tags[action.id].attributes[action.index] = action.attr;
 
       return tags;
-      break;
 
     default:
       return state;
@@ -96,17 +89,27 @@ export const fetchHeadTags = () => {
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/web/headtags`,
       handler: res => {
-        dispatch({
-          type: "FETCH_HEADTAGS_SUCCESS",
-          data: res.data.reduce((acc, tag) => {
-            acc[tag.ZUID] = tag;
-            acc[tag.ZUID].attributes = transformAttributes(tag.attributes);
+        if (res.status === 200) {
+          dispatch({
+            type: "FETCH_HEADTAGS_SUCCESS",
+            data: res.data.reduce((acc, tag) => {
+              acc[tag.ZUID] = tag;
+              acc[tag.ZUID].attributes = transformAttributes(tag.attributes);
 
-            return acc;
-          }, {})
-        });
-
-        return res;
+              return acc;
+            }, {})
+          });
+        } else {
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `Failed to fetch head tags`
+            })
+          );
+          if (res.error) {
+            throw new Error(res.error);
+          }
+        }
       }
     });
   };
