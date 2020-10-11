@@ -1,7 +1,7 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
 
 .CSVImport {
-  flex-direction: column;
   .Top {
     display: flex;
     justify-content: space-between;
@@ -9,13 +9,37 @@
       padding: 16px;
       display: flex;
       flex-direction: column;
-      label {
-        padding: 8px 0;
+      p {
+        margin: 0 0 8px 3px;
       }
-      input {
-        font-size: 16px;
-        font-family: "Montserrat", "Gibson Light", Arial;
-        color: rgb(26, 32, 44);
+
+      [type="file"] {
+        height: 0;
+        overflow: hidden;
+        width: 0;
+      }
+
+      [type="file"] + label {
+        background-color: @zesty-blue;
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        justify-content: flex-start;
+        font-size: @font-size-button;
+        font-weight: @font-weight-normal;
+        font-family: @font-family-default;
+        outline: none;
+        padding: 10px 16px;
+        text-transform: uppercase;
+        transition: all 0.3s;
+        &:hover {
+          background-color: @zesty-green;
+        }
+        svg {
+          margin-right: 8px;
+        }
       }
       .warning {
         color: @zesty-red;
@@ -32,6 +56,9 @@
     display: flex;
     justify-content: space-between;
   }
+  .Bottom {
+    background-color: white;
+  }
   .Settings {
     display: grid;
     width: 800px;
@@ -39,8 +66,10 @@
     padding: 8px;
     grid-template-columns: 1fr 1fr;
     column-gap: 16px;
-    background-color: darken(@zesty-light-blue, 3%);
+    background-color: @zesty-grey;
+    color: @zesty-white;
     box-shadow: inset 0px 0px 4px darken(@zesty-light-blue, 10%);
+    border-radius: 3px;
   }
 
   .ImportResults {
@@ -51,18 +80,28 @@
 }
 
 .wrap {
-  border-bottom: 1px solid #000;
   display: flex;
   flex: 1;
   align-items: center;
-  min-height: 60px;
-  height: 60px;
+  min-height: 90px;
+  border-bottom: 1px solid rgba(26, 32, 44, 0.12);
+
+  &:hover {
+    box-shadow: 0px 2px 2px 0px rgba(26, 32, 44, 0.12),
+      0 -2px 2px 0 rgba(26, 32, 44, 0.12);
+    background-color: #f7f7f7;
+  }
   .column {
     display: flex;
     min-width: 250px;
+    max-width: 250px;
     padding: 4px 16px;
     overflow: hidden;
     text-overflow: ellipsis;
+    border-right: 1px solid rgba(26, 32, 44, 0.12);
+    height: 100%;
+    align-items: center;
+    word-break: break-word;
   }
 }
 
