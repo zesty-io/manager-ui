@@ -1,67 +1,56 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
 
 import { Button } from "@zesty-io/core/Button";
 import { Search } from "@zesty-io/core/Search";
 import { Notice } from "@zesty-io/core/Notice";
 import { notify } from "shell/store/notifications";
 
-import {
-  getHeadTags,
-  updateSiteFont,
-  deleteSiteFont
-} from "../../../store/settings";
+import { updateSiteFont, deleteSiteFont } from "../../../store/settings";
 
 import styles from "./Fonts.less";
-export default function Installed() {
+export default connect(state => {
+  return {
+    fontsInstalled: state.settings.fontsInstalled
+  };
+})(function Installed(props) {
   const [defaultFonts, setDefaultFonts] = useState([]);
   const [fonts, setFonts] = useState([]);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    let isSubscribed = true;
+    const arrFonts = props.fontsInstalled.map(tag => {
+      const url = tag.attributes.href;
+      return {
+        ZUID: tag.ZUID,
+        href: tag.attributes.href,
+        font: url
+          .split("=")[1]
+          .split(":")[0]
+          .replace("+", " "),
+        variants: url.split("=")[1].split(":")[1]
+          ? url
+              .split("=")[1]
+              .split(":")[1]
+              .split(",")
+              .map(variant => ({ label: variant, value: "1" }))
+          : []
+      };
+    });
 
-    getHeadTags()
-      .then(tags => {
-        if (isSubscribed) {
-          const arrFonts = tags.map(tag => {
-            const url = tag.attributes.href;
-            return {
-              ZUID: tag.ZUID,
-              href: tag.attributes.href,
-              font: url
-                .split("=")[1]
-                .split(":")[0]
-                .replace("+", " "),
-              variants: url.split("=")[1].split(":")[1]
-                ? url
-                    .split("=")[1]
-                    .split(":")[1]
-                    .split(",")
-                    .map(variant => ({ label: variant, value: "1" }))
-                : []
-            };
-          });
+    setFonts(arrFonts);
+    setDefaultFonts(arrFonts);
 
-          setFonts(arrFonts);
-          setDefaultFonts(arrFonts);
+    props.fontsInstalled.forEach(tag => {
+      const style = document.createElement("style");
+      const att = document.createAttribute("id");
+      att.value = "googlefont";
+      style.setAttributeNode(att);
+      const css = `@import url('${tag.attributes.href}');`;
+      style.append(css);
 
-          tags.forEach(tag => {
-            const style = document.createElement("style");
-            const att = document.createAttribute("id");
-            att.value = "googlefont";
-            style.setAttributeNode(att);
-            const css = `@import url('${tag.attributes.href}');`;
-            style.append(css);
-
-            document.head.appendChild(style);
-          });
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      });
-
-    return () => (isSubscribed = false);
+      document.head.appendChild(style);
+    });
   }, []);
 
   function parseVariant(variant) {
@@ -233,4 +222,4 @@ export default function Installed() {
       {renderFontsList()}
     </div>
   );
-}
+});
