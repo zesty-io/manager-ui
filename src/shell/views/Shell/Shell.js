@@ -109,7 +109,7 @@ export default connect(state => {
                   }
                 })}
 
-                <Route exact path="/" component={Welcome} />
+                <Route exact path="/" component={ContentApp} />
                 <Route path="*" component={Missing} />
               </Switch>
             </Sentry.ErrorBoundary>
