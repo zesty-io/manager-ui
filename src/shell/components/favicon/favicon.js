@@ -171,7 +171,7 @@ export default connect(state => {
         </ModalContent>
         <ModalFooter>
           <ButtonGroup>
-            <Button kind="save">
+            <Button kind="save" className={styles.Button}>
               <FontAwesomeIcon icon={faUpload} />
               Save
             </Button>
