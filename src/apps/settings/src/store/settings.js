@@ -81,7 +81,7 @@ export function settings(
       ] = action.payload;
       return {
         ...state,
-        intance: arrInstances
+        instance: arrInstances
       };
 
     default:
