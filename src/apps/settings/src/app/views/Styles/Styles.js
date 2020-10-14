@@ -29,23 +29,18 @@ export default connect(state => {
       ? props.match.params.category
       : 4;
 
-    if (props.styles.length) {
-      new Promise(done => {
-        done(props.styles.filter(item => item.category == category));
-      }).then(arr => {
-        let newState = {};
-        arr.forEach(field => {
-          if (field.type === "font_picker") {
-            newState[field.referenceName] = "Select";
-          } else {
-            newState[field.referenceName] = field.value;
-          }
-        });
-        setFields(arr);
-        setState(newState);
-        fontsOptions(props.fontsInstalled);
-      });
-    }
+    const arr = props.styles.filter(item => item.category == category);
+    let newState = {};
+    arr.forEach(field => {
+      if (field.type === "font_picker") {
+        newState[field.referenceName] = "Select";
+      } else {
+        newState[field.referenceName] = field.value;
+      }
+    });
+    setFields(arr);
+    setState(newState);
+    fontsOptions(props.fontsInstalled);
   }, [props.styles, props.fontsInstalled, props.match]);
 
   function fontsOptions(arr) {
@@ -59,20 +54,19 @@ export default connect(state => {
       document.head.appendChild(style);
     });
     setFonts(
-      arr
-        .filter(url => url)
-        .map(url => {
-          const fontVariants = url.split("=")[1];
-          const font = fontVariants.split(":")[0];
-          const variants = fontVariants.split(":")[1].split(",");
-          for (let i = 0; i < variants.length; i++) {
-            return {
-              label: font.replace("+", " "),
-              family: font.replace("+", " "),
-              weight: variants[i]
-            };
-          }
-        })
+      arr.map(headTag => {
+        const url = headTag.attributes.href;
+        const fontVariants = url.split("=")[1];
+        const font = fontVariants.split(":")[0];
+        const variants = fontVariants.split(":")[1].split(",");
+        for (let i = 0; i < variants.length; i++) {
+          return {
+            label: font.replace("+", " "),
+            family: font.replace("+", " "),
+            weight: variants[i]
+          };
+        }
+      })
     );
   }
 
@@ -270,7 +264,7 @@ export default connect(state => {
     return (
       <>
         {fields.map(field => (
-          <div className={styles.variableContainer}>
+          <div key={field.ZUID} className={styles.variableContainer}>
             <div className={styles.variable}>{renderField(field)}</div>
             <div className={styles.reference}>@{field.referenceName}</div>
           </div>

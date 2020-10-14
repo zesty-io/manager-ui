@@ -29,6 +29,11 @@
     margin: 0;
     overflow-y: auto;
 
+    /* Hide actions span since we cannot reorder/close navs */
+    article li > span {
+      display: none;
+    }
+
     article li a {
       text-transform: capitalize;
     }

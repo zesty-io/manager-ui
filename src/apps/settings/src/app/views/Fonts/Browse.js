@@ -7,7 +7,7 @@ import { Search } from "@zesty-io/core/Search";
 import { Notice } from "@zesty-io/core/Notice";
 import { notify } from "shell/store/notifications";
 
-import { installSiteFont, getHeadTags } from "../../../store/settings";
+import { fetchFontsInstalled, installSiteFont } from "../../../store/settings";
 
 import styles from "./Fonts.less";
 export default connect(state => {
@@ -30,29 +30,15 @@ export default connect(state => {
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    let isSubscribed = true;
-    if (isSubscribed) {
-      setfontsArr(props.fonts);
-      setPagination({
-        ...pagination,
-        data: props.fonts.slice(pagination.start, pagination.end),
-        total: Math.ceil(props.fonts.length / 10)
-      });
-      setStyleTagsByType(props.fonts);
-      setTagsFromFontsArr();
-    }
-
-    getHeadTags().catch(err => {
-      props.dispatch(
-        notify({
-          kind: "warn",
-          message: "Failed to load instance head tags"
-        })
-      );
+    setfontsArr(props.fonts);
+    setPagination({
+      ...pagination,
+      data: props.fonts.slice(pagination.start, pagination.end),
+      total: Math.ceil(props.fonts.length / 10)
     });
-
-    return () => (isSubscribed = false);
-  }, [props]);
+    setStyleTagsByType(props.fonts);
+    setTagsFromFontsArr();
+  }, [props.fonts]);
 
   function setStyleTagsByType(fonts) {
     if (Array.isArray(fonts)) {
@@ -151,13 +137,16 @@ export default connect(state => {
           )
         );
 
-        delete variantsSelected[font];
+        setVariants({ [font]: null });
         props.dispatch(
           notify({
             kind: "success",
             message: "Font installed"
           })
         );
+      })
+      .then(() => {
+        props.dispatch(fetchFontsInstalled());
       })
       .catch(err => {
         console.log(err);
@@ -223,7 +212,7 @@ export default connect(state => {
                 <h3 className={styles.FontFamily}>{itemFont.family}</h3>
                 <ul className={styles.FontVariants}>
                   {itemFont.variants.map((item, index) => (
-                    <li key={index}>
+                    <li key={`${itemFont.family}-${index}`}>
                       <input
                         type="checkbox"
                         onChange={e => selectFontVariant(itemFont.family, e)}
@@ -260,13 +249,6 @@ export default connect(state => {
                 ? previewText
                 : "All their equipment and instruments are alive."}
             </p>
-            <Button
-              kind="save"
-              className={styles.SaveBtn}
-              onClick={() => onUpdateFont(itemFont.family)}
-            >
-              <i className="fas fa-arrow-down"></i> Install
-            </Button>
           </div>
         ))}
         {pagination.data.length === 0 && (

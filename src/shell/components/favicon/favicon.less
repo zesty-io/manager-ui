@@ -1,0 +1,38 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.Favicon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+
+  .display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    svg {
+      cursor: pointer;
+      width: 20px;
+      height: 20px;
+    }
+    img {
+      width: 30px;
+      height: 30px;
+    }
+
+    @media (min-width: 2000px) {
+      svg {
+        width: 30px;
+        height: 30px;
+      }
+      img {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  }
+  .Button {
+    margin-right: 8px;
+  }
+}

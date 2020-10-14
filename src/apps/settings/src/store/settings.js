@@ -81,7 +81,7 @@ export function settings(
       ] = action.payload;
       return {
         ...state,
-        intance: arrInstances
+        instance: arrInstances
       };
 
     default:
@@ -243,15 +243,6 @@ export function installSiteFont(font, variants) {
     });
 }
 
-export function getHeadTags() {
-  return request(`${CONFIG.API_INSTANCE}/web/headtags`)
-    .then(res => res.data)
-    .catch(err => {
-      console.log(err);
-      return err;
-    });
-}
-
 export function fetchFontsInstalled() {
   return dispatch => {
     return request(`${CONFIG.API_INSTANCE}/web/headtags`)
@@ -259,7 +250,11 @@ export function fetchFontsInstalled() {
         return dispatch({
           type: "FETCH_FONTS_INSTALLED",
           payload: res.data.filter(
-            item => item.type === "link" && item.attributes.href
+            item =>
+              item.type === "link" &&
+              item.attributes.href &&
+              item.attributes.href.indexOf("https://fonts.googleapis.com/") ===
+                0
           )
         });
       })
