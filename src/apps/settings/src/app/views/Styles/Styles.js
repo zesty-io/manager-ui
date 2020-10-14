@@ -195,9 +195,9 @@ export default connect(state => {
                 onSelect={(value, name) => setValue(name, value)}
                 className={[styles.selectFont]}
                 // if default value is a font-family stack with ',' then show "Select"
-                value={field.value.includes(",") ? "Select" : field.value}
+                value={field.value.includes(",") ? "inherit" : field.value}
               >
-                <Option value="Select" text="Select" />
+                <Option value="inherit" text="Select" />
                 {fonts.map((option, index) => (
                   <Option
                     key={index}
@@ -210,9 +210,9 @@ export default connect(state => {
                 <span
                   style={{
                     fontSize: "1.4rem",
-                    fontFamily: parseFamily(field.value),
-                    fontStyle: parseStyle(field.value),
-                    fontWeight: parseWeight(field.value)
+                    fontFamily: parseFamily(state[field.referenceName]),
+                    fontStyle: parseStyle(state[field.referenceName]),
+                    fontWeight: parseWeight(state[field.referenceName])
                   }}
                 >
                   This is a text example
@@ -260,31 +260,28 @@ export default connect(state => {
     }
   }
 
-  if (state) {
-    return (
-      <>
-        {fields.map(field => (
-          <div key={field.ZUID} className={styles.variableContainer}>
-            <div className={styles.variable}>{renderField(field)}</div>
-            <div className={styles.reference}>@{field.referenceName}</div>
-          </div>
-        ))}
-        <Button
-          id="SaveSettings"
-          kind="save"
-          className={styles.SaveBtn}
-          onClick={sendData}
-          disabled={loading}
-        >
-          {loading ? (
-            <i className="fas fa-spinner"></i>
-          ) : (
-            <i className="fas fa-save"></i>
-          )}
-          Save Settings
-        </Button>
-      </>
-    );
-  }
-  return null;
+  return (
+    <>
+      {fields.map(field => (
+        <div key={field.ZUID} className={styles.variableContainer}>
+          <div className={styles.variable}>{renderField(field)}</div>
+          <div className={styles.reference}>@{field.referenceName}</div>
+        </div>
+      ))}
+      <Button
+        id="SaveSettings"
+        kind="save"
+        className={styles.SaveBtn}
+        onClick={sendData}
+        disabled={loading}
+      >
+        {loading ? (
+          <i className="fas fa-spinner"></i>
+        ) : (
+          <i className="fas fa-save"></i>
+        )}
+        Save Settings
+      </Button>
+    </>
+  );
 });
