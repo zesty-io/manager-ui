@@ -9,8 +9,12 @@
   position: relative;
   // z-index: 20;
 
-  width: calc(100vw - 180px);
   // overflow: hidden;
+
+  width: calc(100vw - 60px);
+  @media (min-width: 2000px) {
+    width: calc(100vw - 180px);
+  }
 
   .InstanceSearch {
     display: flex;
