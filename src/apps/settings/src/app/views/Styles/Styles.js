@@ -33,7 +33,7 @@ export default connect(state => {
     let newState = {};
     arr.forEach(field => {
       if (field.type === "font_picker") {
-        newState[field.referenceName] = "Select";
+        newState[field.referenceName] = parseFamily(field.value);
       } else {
         newState[field.referenceName] = field.value;
       }
@@ -44,12 +44,12 @@ export default connect(state => {
   }, [props.styles, props.fontsInstalled, props.match]);
 
   function fontsOptions(arr) {
-    arr.forEach(tag => {
+    arr.forEach(headTag => {
       const style = document.createElement("style");
       const att = document.createAttribute("id");
       att.value = "googlefont";
       style.setAttributeNode(att);
-      const css = `@import url('${tag}');`;
+      const css = `@import url('${headTag.attributes.href}');`;
       style.append(css);
       document.head.appendChild(style);
     });
@@ -194,7 +194,8 @@ export default connect(state => {
                 name={field.referenceName}
                 onSelect={(value, name) => setValue(name, value)}
                 className={[styles.selectFont]}
-                value="Select"
+                // if default value is a font-family stack with ',' then show "Select"
+                value={field.value.includes(",") ? "Select" : field.value}
               >
                 <Option value="Select" text="Select" />
                 {fonts.map((option, index) => (
@@ -208,10 +209,10 @@ export default connect(state => {
               <div className={styles.Preview}>
                 <span
                   style={{
-                    fontSize: "3rem",
-                    fontFamily: parseFamily(state[field.key]),
-                    fontStyle: parseStyle(state[field.key]),
-                    fontWeight: parseWeight(state[field.key])
+                    fontSize: "1.4rem",
+                    fontFamily: parseFamily(field.value),
+                    fontStyle: parseStyle(field.value),
+                    fontWeight: parseWeight(field.value)
                   }}
                 >
                   This is a text example
@@ -260,7 +261,6 @@ export default connect(state => {
   }
 
   if (state) {
-    console.log("dirtyFields", dirtyFields);
     return (
       <>
         {fields.map(field => (
