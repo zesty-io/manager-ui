@@ -16,6 +16,7 @@ function filterLeadsData(leads, filter) {
 }
 
 import styles from "./LeadsTable.less";
+
 export default connect(state => {
   return {
     filter: state.filter,
@@ -119,20 +120,20 @@ export default connect(state => {
       const dataList = keysToDisplay.map((key, index) => {
         return (
           <tr key={index}>
-            <td className="border p-1">{keysToDisplay[index]}</td>
-            <td className="border p-1">{data[keysToDisplay[index]]}</td>
+            <td>{keysToDisplay[index]}</td>
+            <td>{data[keysToDisplay[index]]}</td>
           </tr>
         );
       });
       return (
-        <table className="table-auto w-full">
-          <thead>
+        <table className={styles.TableInfo}>
+          <thead className={styles.TableHead}>
             <tr>
-              <th className="border p-1">Key</th>
-              <th className="border p-1">Value</th>
+              <th>Key</th>
+              <th>Value</th>
             </tr>
           </thead>
-          <tbody>{dataList}</tbody>
+          <tbody className={styles.TableBody}>{dataList}</tbody>
         </table>
       );
     }
@@ -163,7 +164,7 @@ export default connect(state => {
         hasMoreFields = <li>...</li>;
       }
       return (
-        <ul className="pl-5 list-disc">
+        <ul>
           {dataList}
           {hasMoreFields}
         </ul>
@@ -202,14 +203,14 @@ export default connect(state => {
             onClose={this.closeModalAndUpdateRoute}
             open={this.state.modalIsOpen}
           >
-            <ModalContent>
+            <ModalContent className={styles.ModalContent}>
               {this.state.currentLead ? (
                 <div>
-                  <p className="mb-2">
+                  <p>
                     <strong>Date Created</strong>:{" "}
                     {this.state.currentLead.dateCreated}
                   </p>
-                  <p className="mb-1">
+                  <p>
                     <strong>Lead data</strong>:
                   </p>
                   {this.renderModalFormData(this.state.currentLead.formData)}

@@ -105,7 +105,7 @@ export default class Editor extends PureComponent {
     const { item, makeActive, model, fields, onSave } = this.props;
     return (
       <div className={styles.Fields}>
-        {this.props.item.meta.ZUID && (
+        {this.props.item.meta && this.props.item.meta.ZUID && (
           <Breadcrumbs itemZUID={this.props.item.meta.ZUID} />
         )}
 

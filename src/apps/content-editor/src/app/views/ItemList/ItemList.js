@@ -1,6 +1,5 @@
 import React, { Component, PureComponent } from "react";
 import { connect } from "react-redux";
-import cx from "classnames";
 import { VariableSizeList as List } from "react-window";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -386,6 +385,10 @@ export default connect((state, props) => {
           field => field.settings && field.settings.relatedField
         );
 
+        const relatedFields = this.state.fields.filter(
+          field => field.relatedFieldZUID && field.relatedModelZUID
+        );
+
         value = value.toLowerCase();
 
         items = items.filter(item => {
@@ -436,6 +439,34 @@ export default connect((state, props) => {
             .toLowerCase();
 
           if (relatedItemsData.includes(value)) {
+            return true;
+          }
+
+          // check related fields values
+          const filteredRelatedFields = relatedFields.filter(field => {
+            const relatedZUID = item.data[field.name];
+            const relatedFieldItem = this.props.allItems[relatedZUID];
+            if (relatedFieldItem) {
+              // check item data
+              const itemData = Object.values(relatedFieldItem.data)
+                .join(" ")
+                .toLowerCase();
+              if (itemData.includes(value)) {
+                return true;
+              }
+
+              // check item web
+              const itemWeb = Object.values(relatedFieldItem.web)
+                .join(" ")
+                .toLowerCase();
+              if (itemWeb.includes(value)) {
+                return true;
+              }
+            }
+            return false;
+          });
+
+          if (filteredRelatedFields.length) {
             return true;
           }
 
