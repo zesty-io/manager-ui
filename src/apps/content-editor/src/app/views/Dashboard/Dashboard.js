@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 import cx from "classnames";
+import { useHistory } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -195,17 +196,10 @@ export default connect(function(state, props) {
                         })}
                       </ul>
                     </CardContent>
-                    <CardFooter>
-                      <Button
-                        kind="save"
-                        onClick={() =>
-                          (window.location.hash = `/content/${contentModelZUID}/new`)
-                        }
-                      >
-                        <FontAwesomeIcon icon={faPlus} />
-                        New {model && model.label}
-                      </Button>
-                    </CardFooter>
+                    <DashboardCardFooter
+                      model={model}
+                      contentModelZUID={contentModelZUID}
+                    />
                   </Card>
                 );
               })}
@@ -279,3 +273,18 @@ export default connect(function(state, props) {
     }
   }
 );
+
+function DashboardCardFooter(props) {
+  const history = useHistory();
+  return (
+    <CardFooter>
+      <Button
+        kind="save"
+        onClick={() => history.push(`/content/${props.contentModelZUID}/new`)}
+      >
+        <FontAwesomeIcon icon={faPlus} />
+        New {props.model && props.model.label}
+      </Button>
+    </CardFooter>
+  );
+}

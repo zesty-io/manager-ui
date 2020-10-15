@@ -10,7 +10,7 @@ import { ItemSettings } from "../ItemEdit/Meta/ItemSettings";
 import { DataSettings } from "../ItemEdit/Meta/ItemSettings/DataSettings";
 
 import { fetchFields } from "shell/store/fields";
-import { createItem, generateItem } from "shell/store/content";
+import { createItem, generateItem, fetchItem } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 
 import styles from "./ItemCreate.less";
@@ -145,10 +145,14 @@ export default connect((state, props) => {
               );
             }
           } else if (res.data && res.data.ZUID) {
-            // Redirect to new item after creating
-            this.props.history.push(
-              `/content/${this.props.modelZUID}/${res.data.ZUID}`
-            );
+            this.props
+              .dispatch(fetchItem(this.props.modelZUID, res.data.ZUID))
+              .then(() => {
+                // Redirect to new item after creating
+                this.props.history.push(
+                  `/content/${this.props.modelZUID}/${res.data.ZUID}`
+                );
+              });
 
             this.props.dispatch(
               notify({
