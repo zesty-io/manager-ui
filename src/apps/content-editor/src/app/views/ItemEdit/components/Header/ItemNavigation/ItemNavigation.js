@@ -23,6 +23,7 @@ export default connect(state => {
     <nav className={styles.ItemNav}>
       <AppLink
         className={cx(
+          styles.AppLink,
           styles.buttonText,
           slug !== "meta" && slug !== "head" ? styles.Selected : null
         )}
@@ -32,6 +33,7 @@ export default connect(state => {
       </AppLink>
       <AppLink
         className={cx(
+          styles.AppLink,
           styles.buttonText,
           slug === "meta" ? styles.Selected : null
         )}
@@ -42,6 +44,7 @@ export default connect(state => {
       <AppLink
         data-cy="head"
         className={cx(
+          styles.AppLink,
           styles.buttonText,
           slug === "head" ? styles.Selected : null
         )}
