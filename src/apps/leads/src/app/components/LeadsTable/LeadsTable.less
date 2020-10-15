@@ -8,6 +8,10 @@
   tbody tr td {
     padding: 8px 0;
     border: none;
+
+    ul {
+      list-style-position: inside;
+    }
   }
 
   tbody tr:hover {
@@ -19,5 +23,35 @@
   }
   .List {
     margin-bottom: 4px;
+  }
+}
+
+.ModalContent {
+  p {
+    margin-bottom: 8px;
+  }
+}
+.TableInfo {
+  text-align: left;
+
+  .TableHead {
+    th {
+      padding: 8px 0;
+    }
+  }
+
+  .TableBody {
+    tr {
+      &:hover {
+        background-color: #f7f7f7;
+      }
+      td {
+        border-bottom: 1px solid #ddd;
+        padding: 8px 0;
+        &:nth-child(2) {
+          padding-left: 8px;
+        }
+      }
+    }
   }
 }
