@@ -33,7 +33,7 @@ export default connect(state => {
     let newState = {};
     arr.forEach(field => {
       if (field.type === "font_picker") {
-        newState[field.referenceName] = "Select";
+        newState[field.referenceName] = parseFamily(field.value);
       } else {
         newState[field.referenceName] = field.value;
       }
@@ -44,12 +44,12 @@ export default connect(state => {
   }, [props.styles, props.fontsInstalled, props.match]);
 
   function fontsOptions(arr) {
-    arr.forEach(tag => {
+    arr.forEach(headTag => {
       const style = document.createElement("style");
       const att = document.createAttribute("id");
       att.value = "googlefont";
       style.setAttributeNode(att);
-      const css = `@import url('${tag}');`;
+      const css = `@import url('${headTag.attributes.href}');`;
       style.append(css);
       document.head.appendChild(style);
     });
@@ -194,9 +194,10 @@ export default connect(state => {
                 name={field.referenceName}
                 onSelect={(value, name) => setValue(name, value)}
                 className={[styles.selectFont]}
-                value="Select"
+                // if default value is a font-family stack with ',' then show "Select"
+                value={field.value.includes(",") ? "inherit" : field.value}
               >
-                <Option value="Select" text="Select" />
+                <Option value="inherit" text="Select" />
                 {fonts.map((option, index) => (
                   <Option
                     key={index}
@@ -208,10 +209,10 @@ export default connect(state => {
               <div className={styles.Preview}>
                 <span
                   style={{
-                    fontSize: "3rem",
-                    fontFamily: parseFamily(state[field.key]),
-                    fontStyle: parseStyle(state[field.key]),
-                    fontWeight: parseWeight(state[field.key])
+                    fontSize: "1.4rem",
+                    fontFamily: parseFamily(state[field.referenceName]),
+                    fontStyle: parseStyle(state[field.referenceName]),
+                    fontWeight: parseWeight(state[field.referenceName])
                   }}
                 >
                   This is a text example
@@ -259,32 +260,28 @@ export default connect(state => {
     }
   }
 
-  if (state) {
-    console.log("dirtyFields", dirtyFields);
-    return (
-      <>
-        {fields.map(field => (
-          <div key={field.ZUID} className={styles.variableContainer}>
-            <div className={styles.variable}>{renderField(field)}</div>
-            <div className={styles.reference}>@{field.referenceName}</div>
-          </div>
-        ))}
-        <Button
-          id="SaveSettings"
-          kind="save"
-          className={styles.SaveBtn}
-          onClick={sendData}
-          disabled={loading}
-        >
-          {loading ? (
-            <i className="fas fa-spinner"></i>
-          ) : (
-            <i className="fas fa-save"></i>
-          )}
-          Save Settings
-        </Button>
-      </>
-    );
-  }
-  return null;
+  return (
+    <>
+      {fields.map(field => (
+        <div key={field.ZUID} className={styles.variableContainer}>
+          <div className={styles.variable}>{renderField(field)}</div>
+          <div className={styles.reference}>@{field.referenceName}</div>
+        </div>
+      ))}
+      <Button
+        id="SaveSettings"
+        kind="save"
+        className={styles.SaveBtn}
+        onClick={sendData}
+        disabled={loading}
+      >
+        {loading ? (
+          <i className="fas fa-spinner"></i>
+        ) : (
+          <i className="fas fa-save"></i>
+        )}
+        Save Settings
+      </Button>
+    </>
+  );
 });
