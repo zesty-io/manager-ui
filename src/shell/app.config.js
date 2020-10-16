@@ -140,7 +140,16 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_GOOGLE_ANALYTICS_AUTH:
       "https://us-central1-zesty-dev.cloudfunctions.net/authenticateGoogleAnalytics",
     SERVICE_GOOGLE_ANALYTICS_READ:
-      "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews"
+      "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
+
+    URL_MANAGER: ".manager.zesty.localdev:9000",
+    URL_MANAGER_PROTOCOL: "http://",
+    URL_PREVIEW: "-dev.preview.zesty.localdev",
+    URL_PREVIEW_PROTOCOL: "https://",
+    URL_ACCOUNTS: "https://accounts.zesty.localdev:9001",
+
+    COOKIE_NAME: "DEV_APP_SID",
+    COOKIE_DOMAIN: ".zesty.localdev"
   };
 }
 

@@ -5,6 +5,7 @@
   "scripts": {
     "test": "cypress run",
     "clean": "rm -rf build/*",
+    "build-local": "npm run clean && concurrently --raw \"npm run gulp\" \"cross-env NODE_ENV=local webpack --config src/shell/webpack.config.js\"",
     "build-dev": "npm run clean && concurrently --raw \"npm run gulp\" \"cross-env NODE_ENV=development webpack --config src/shell/webpack.config.js\"",
     "build-stage": "npm run clean && concurrently --raw \"npm run gulp\" \"cross-env NODE_ENV=stage webpack --config src/shell/webpack.config.js\"",
     "build-prod": "npm run clean && concurrently --raw \"npm run gulp\" \"cross-env NODE_ENV=production webpack --config src/shell/webpack.config.js\"",
