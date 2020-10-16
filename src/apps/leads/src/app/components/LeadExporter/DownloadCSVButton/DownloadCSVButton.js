@@ -4,6 +4,9 @@ import * as moment from "moment";
 import { connect } from "react-redux";
 import { Button } from "@zesty-io/core/Button";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
+
 import { DATE_PRESETS } from "../TableDateFilter/TableDateFilter.model";
 import * as FilterService from "../../../views/Leads/LeadFilter.service";
 
@@ -68,11 +71,10 @@ export default connect(state => {
 
     render() {
       return (
-        <Button
-          onClick={() => this.filterLeadsData()}
-          text="Download CSV"
-          title="Download CSV"
-        />
+        <Button onClick={() => this.filterLeadsData()} title="Download CSV">
+          <FontAwesomeIcon icon={faDownload} />
+          Download CSV
+        </Button>
       );
     }
   }

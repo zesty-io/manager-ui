@@ -2,6 +2,9 @@ import React from "react";
 import { connect } from "react-redux";
 import { createBrowserHistory } from "history";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+
 import { Button } from "@zesty-io/core/Button";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 
@@ -172,6 +175,7 @@ export default connect(state => {
     }
 
     render() {
+      console.log(this.state.currentLead);
       return (
         <div>
           <table className={`table-auto ${styles.leadsTable}`}>
@@ -200,21 +204,30 @@ export default connect(state => {
             </tbody>
           </table>
           <Modal
+            className={styles.LeadModal}
             onClose={this.closeModalAndUpdateRoute}
             open={this.state.modalIsOpen}
           >
             <ModalContent className={styles.ModalContent}>
               {this.state.currentLead ? (
-                <div>
-                  <p>
+                <ul className={styles.LeadData}>
+                  <li>
                     <strong>Date Created</strong>:{" "}
                     {this.state.currentLead.dateCreated}
-                  </p>
-                  <p>
-                    <strong>Lead data</strong>:
-                  </p>
-                  {this.renderModalFormData(this.state.currentLead.formData)}
-                </div>
+                  </li>
+                  {this.state.currentLead &&
+                    this.state.currentLead.formData &&
+                    Object.keys(this.state.currentLead.formData).map(key => {
+                      return (
+                        <li key={key}>
+                          <span className={styles.Key}>{key}:</span>
+                          <span className={styles.Value}>
+                            {this.state.currentLead.formData[key]}
+                          </span>
+                        </li>
+                      );
+                    })}
+                </ul>
               ) : (
                 ""
               )}
@@ -225,11 +238,14 @@ export default connect(state => {
                 lead => lead.zuid === this.state.currentLead.zuid
               ) ? (
                 <Button
+                  kind="warn"
                   className={styles.btnDanger}
                   disabled={this.state.loading}
-                  text="Delete"
                   onClick={() => this.deleteLead(this.state.currentLead.zuid)}
-                />
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                  Delete
+                </Button>
               ) : (
                 <p>This lead has been deleted.</p>
               )}
