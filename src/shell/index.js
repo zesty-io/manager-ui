@@ -23,7 +23,7 @@ import Shell from "./views/Shell";
 // must be setup before starting the store
 window.CONFIG = __CONFIG__;
 
-if (CONFIG.ENV !== "development") {
+if (CONFIG.ENV !== "development" && CONFIG.ENV !== "local") {
   Sentry.init({
     dsn:
       "https://2e83c3767c484794a56832affe2d26d9@o162121.ingest.sentry.io/5441698"
