@@ -39,12 +39,12 @@ export function DropdownOptions(props) {
 
     // Notify store of new options
     props.updateFieldSetting(
-      "options",
       // convert to expected api shape
       newOptions.reduce((acc, option) => {
         acc[option.key] = option.value;
         return acc;
-      }, {})
+      }, {}),
+      "options"
     );
   };
 
