@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,7 +17,14 @@ import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./Info.less";
-export default function Info(props) {
+export default connect(state => {
+  return {
+    settings: state.settings
+  };
+})(function Info(props) {
+  const instantJSON = props.settings.instance.find(
+    setting => setting.key === "basic_content_api_enabled"
+  );
   return (
     <Card className={styles.ModelInfo}>
       <CardHeader>
@@ -75,11 +83,10 @@ export default function Info(props) {
           </li>
           <li>
             Instant API:{" "}
-            {zestyStore.getState().instance.settings
-              .basic_content_api_enabled == 1 ? (
+            {instantJSON && instantJSON.value === "1" ? (
               <Url
                 target="_blank"
-                href={`${CONFIG.URL_PREVIEW}/-/instant/${props.model.ZUID}.json`}
+                href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.model.ZUID}.json`}
               >
                 <FontAwesomeIcon icon={faBolt} />
                 &nbsp;{`/-/instant/${props.model.ZUID}.json`}
@@ -120,4 +127,4 @@ export default function Info(props) {
       </CardFooter>
     </Card>
   );
-}
+});
