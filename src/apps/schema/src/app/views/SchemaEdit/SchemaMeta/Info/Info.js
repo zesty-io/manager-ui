@@ -86,6 +86,7 @@ export default connect(state => {
             {instantJSON && instantJSON.value === "1" ? (
               <Url
                 target="_blank"
+                title="Preview JSON"
                 href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.model.ZUID}.json`}
               >
                 <FontAwesomeIcon icon={faBolt} />
