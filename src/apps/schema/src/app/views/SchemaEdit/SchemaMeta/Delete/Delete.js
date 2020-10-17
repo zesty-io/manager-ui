@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faBan } from "@fortawesome/free-solid-svg-icons";
 import {
   CollapsibleCard,
   CardContent,
@@ -77,6 +77,7 @@ function Footer(props) {
               });
           }}
         >
+          <FontAwesomeIcon icon={faTrash} />
           Delete
         </Button>
         <Button
@@ -84,6 +85,7 @@ function Footer(props) {
           kind="cancel"
           onClick={() => setIsOpen(false)}
         >
+          <FontAwesomeIcon icon={faBan} />
           Cancel
         </Button>
       </ConfirmDialog>

@@ -38,7 +38,7 @@ export default connect(state => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const [faviconZUID, setFaviconZUID] = useState("");
+  const [faviconZUID, setFaviconZUID] = useState("3-add7c55-pjo3k");
   const [faviconURL, setFaviconURL] = useState("");
 
   const [sizes] = useState([32, 128, 152, 167, 180, 192, 196]);
@@ -196,13 +196,16 @@ export default connect(state => {
           />
 
           {faviconZUID && (
-            <div>
+            <section className={styles.Sizes}>
               {sizes.map(size => (
-                <img
-                  src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${faviconZUID}/getimage/?w=${size}&h=${size}&type=fit`}
-                />
+                <figure>
+                  <img
+                    src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${faviconZUID}/getimage/?w=${size}&h=${size}&type=fit`}
+                  />
+                  <figcaption>{`${size}x${size}`}</figcaption>
+                </figure>
               ))}
-            </div>
+            </section>
           )}
           <AppLink
             className={styles.SettingsLink}
@@ -221,7 +224,7 @@ export default connect(state => {
             </Button>
             <Button kind="cancel" onClick={handleClose}>
               <FontAwesomeIcon icon={faBan} />
-              Cancel
+              Cancel (ESC)
             </Button>
           </ButtonGroup>
         </ModalFooter>

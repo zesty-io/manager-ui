@@ -1,16 +1,19 @@
 import React from "react";
 import { connect } from "react-redux";
-import { addHeadTag } from "../../../store/headTags";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+
+import { Notice } from "@zesty-io/core/Notice";
 import { Button } from "@zesty-io/core/Button";
 
 import { HeadTag } from "./HeadTag";
 import { Preview } from "./Preview";
 
-import styles from "./Head.less";
+import { addHeadTag } from "../../../store/headTags";
 
+import styles from "./Head.less";
 export default connect(state => {
-  console.log("Head::", state);
   return {
     itemZUID: state.instance.ZUID,
     tags: state.headTags,
@@ -71,12 +74,14 @@ export default connect(state => {
         <main className={styles.Tags}>
           <h1 className={styles.Warn}>
             <Button kind="secondary" onClick={onAdd} id="NewHeadtag">
-              <i className="fa fa-plus" />
-              New head tag
+              <FontAwesomeIcon icon={faPlus} />
+              Create Head Tag
             </Button>
-            <i className="fa fa-exclamation-triangle" aria-hidden="true" />
-            &nbsp; Head tags are not versioned or published. Changes to head
-            tags take effect immediately on your live instance.
+
+            <Notice>
+              Head tags are not versioned or published. Changes to head tags
+              take effect immediately on your live instance.
+            </Notice>
           </h1>
           {filteredTags.length ? (
             sortedTags.map((tag, index) => {

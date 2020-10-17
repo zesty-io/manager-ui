@@ -98,7 +98,7 @@ export default React.memo(function PendingEditsModal(props) {
             </Button>
             <Button disabled={loading} kind="cancel" onClick={handler}>
               <FontAwesomeIcon icon={faBan} />
-              Cancel
+              Cancel (ESC)
             </Button>
           </ButtonGroup>
         </ModalFooter>

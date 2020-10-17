@@ -147,7 +147,7 @@ export default connect(state => state)(function GettingStarted(props) {
           field.label === initialField.label && field.name === initialField.name
         }
         style={{ width: "720px" }}
-        labelButtonNext="Create New Field"
+        labelButtonNext="Create Field"
       >
         <FieldName
           fieldLabel={field.label}

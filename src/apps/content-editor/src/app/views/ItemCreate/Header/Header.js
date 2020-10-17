@@ -44,7 +44,7 @@ export default connect(state => {
           ) : (
             <FontAwesomeIcon icon={faSave} />
           )}
-          Create New Item&nbsp;
+          Create Item&nbsp;
           <small>({props.platform.isMac ? "CMD" : "CTRL"} + S)</small>
         </Button>
       </ButtonGroup>

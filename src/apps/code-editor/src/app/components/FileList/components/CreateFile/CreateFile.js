@@ -64,7 +64,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
         className={styles.CreateFileBtn}
         onClick={() => setOpen(true)}
         kind="secondary"
-        title="Create New File"
+        title="Create File"
       >
         <i className="fa fa-plus" aria-hidden="true" />
         <span className={styles.CreateFileBtnTxt}>Create File</span>

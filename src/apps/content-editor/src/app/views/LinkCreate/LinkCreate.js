@@ -248,7 +248,7 @@ export const LinkCreate = connect((state, props) => {
                 kind="save"
                 onClick={this.saveLink}
               >
-                Create New Link
+                Create Link
               </Button>
             </CardFooter>
           </Card>

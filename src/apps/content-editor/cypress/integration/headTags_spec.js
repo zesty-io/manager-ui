@@ -12,7 +12,7 @@ describe("Head Tags", () => {
     cy.get("[data-cy=head]").click();
   });
   it("Creates a new headtag", () => {
-    cy.contains("New head tag").click();
+    cy.contains("Create Head Tag").click();
     cy.get("[data-cy=tagCard]").should("exist");
   });
   it("Changes the tag type", () => {

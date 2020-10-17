@@ -162,7 +162,7 @@ export default connect((state, props) => {
               <i className="fas fa-save"></i> Save Order
             </Button>
             <Button kind="cancel" onClick={() => setOpen(false)}>
-              <i className="fas fa-ban"></i> Cancel
+              <i className="fas fa-ban"></i> Cancel (ESC)
             </Button>
           </ModalFooter>
         </Modal>

@@ -71,9 +71,12 @@ export default connect(state => {
 
     render() {
       return (
-        <Button onClick={() => this.filterLeadsData()} title="Download CSV">
+        <Button
+          onClick={() => this.filterLeadsData()}
+          title="Export CSV of lead data by selected filters"
+        >
           <FontAwesomeIcon icon={faDownload} />
-          Download CSV
+          Export CSV
         </Button>
       );
     }

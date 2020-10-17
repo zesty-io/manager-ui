@@ -9,6 +9,8 @@
 
   .Modal {
     max-width: 800px;
+    overflow-y: scroll;
+    max-height: 80vh;
 
     h1 {
       margin-bottom: 8px;
@@ -17,6 +19,17 @@
     .SettingsLink {
       display: block;
       margin: 16px 0;
+    }
+
+    .Sizes {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 32px 0;
+
+      figure {
+        margin: 8px;
+      }
     }
 
     .Actions {

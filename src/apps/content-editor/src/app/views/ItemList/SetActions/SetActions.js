@@ -69,8 +69,8 @@ export class SetActions extends Component {
               >
                 <FontAwesomeIcon icon={faPlus} />
                 {this.props.model
-                  ? `${this.props.model.label} Item`
-                  : "New Model Item"}
+                  ? `Create ${this.props.model.label} Item`
+                  : "Create Model Item"}
               </AppLink>
             </Button>
 

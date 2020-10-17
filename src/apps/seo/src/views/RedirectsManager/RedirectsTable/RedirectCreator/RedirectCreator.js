@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+
 import { Button } from "@zesty-io/core/Button";
 import { Input } from "@zesty-io/core/Input";
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
@@ -82,9 +85,11 @@ export default class RedirectCreator extends Component {
         <span className={styles.RedirectCreatorCell}>
           <Button
             className="save"
+            kind="save"
             onClick={this.handleCreateRedirect.bind(this)}
           >
-            <i className="fa fa-plus" aria-hidden="true"></i>Redirect
+            <FontAwesomeIcon icon={faPlus} />
+            Create Redirect
           </Button>
         </span>
       </div>
