@@ -3,8 +3,6 @@ import { connect } from "react-redux";
 import { addHeadTag } from "../../../store/headTags";
 
 import { Button } from "@zesty-io/core/Button";
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
 import { HeadTag } from "./HeadTag";
 import { Preview } from "./Preview";
