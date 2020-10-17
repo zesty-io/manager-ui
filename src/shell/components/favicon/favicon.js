@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faGlobe, faUpload } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCog,
+  faBan,
+  faGlobe,
+  faUpload
+} from "@fortawesome/free-solid-svg-icons";
 
 import { request } from "utility/request";
 
@@ -15,6 +20,7 @@ import {
 import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
+import { AppLink } from "@zesty-io/core/AppLink";
 
 import {
   fetchHeadTags,
@@ -35,6 +41,8 @@ export default connect(state => {
   const [faviconZUID, setFaviconZUID] = useState("");
   const [faviconURL, setFaviconURL] = useState("");
 
+  const [sizes] = useState([32, 128, 152, 167, 180, 192, 196]);
+
   useEffect(() => {
     props.dispatch(fetchHeadTags());
   }, []);
@@ -51,7 +59,9 @@ export default connect(state => {
     }
   }, [props.headTags]);
 
-  const onChange = zuid => {
+  const handleClose = () => setOpen(false);
+
+  const handleImage = zuid => {
     if (!zuid) {
       setFaviconZUID("");
       setFaviconURL("");
@@ -59,69 +69,85 @@ export default connect(state => {
       setLoading(true);
       request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${zuid}`).then(res => {
         const { url, id } = res.data[0];
-
-        props
-          .dispatch(
-            createHeadTag({
-              type: "link",
-              resourceZUID: props.instance.ZUID,
-              attributes: {
-                rel: "icon",
-                type: "image/png",
-                sizes: "196x196",
-                href: url
-              },
-              sort: 0
-            })
-          )
-          .then(_ => {
-            setFaviconURL(url);
-            setFaviconZUID(id);
-            setLoading(false);
-          });
-
-        // TODO make various favicon sizes and create head tags
-        // const sizes = [32, 128, 152, 167, 180, 192, 196];
-
-        // // Crop image and create head tags for all sizes
-        // Promise.all(
-        //   sizes.map(size =>
-        //     request(
-        //       `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${size}&h=${size}&type=fit`
-        //     )
-        //   )
-        // )
-        //   .then(responses => {
-        //     console.log("resized images", responses);
-
-        //     const tags = responses.map((res, i) => {
-        //       return props.dispatch(
-        //         createHeadTag({
-        //           type: "link",
-        //           resourceZUID: props.instance.ZUID,
-        //           attributes: {
-        //             rel: "icon",
-        //             type: "image/png",
-        //             sizes: `${sizes[i]}x${sizes[i]}`,
-        //             href: res.header.location
-        //           },
-        //           sort: i
-        //         })
-        //       );
-        //     });
-
-        //     Promise.all(tags).then(_ => {
-        //       setFaviconURL(url);
-        //       setFaviconZUID(id);
-        //       setLoading(false);
-        //     });
-        //   })
-        //   .catch(err => {
-        //     setLoading(false);
-        //     console.log("failed creating favicons", err);
-        //   });
+        setFaviconURL(url);
+        setFaviconZUID(id);
+        setLoading(false);
       });
     }
+  };
+
+  const handleSave = () => {
+    setLoading(true);
+
+    props
+      .dispatch(
+        createHeadTag({
+          type: "link",
+          resourceZUID: props.instance.ZUID,
+          attributes: {
+            rel: "icon",
+            type: "image/png",
+            sizes: "196x196",
+            href: faviconURL
+          },
+          sort: 0
+        })
+      )
+      .finally(_ => {
+        setLoading(false);
+      });
+
+    // TODO make various favicon sizes and create head tags
+    // const sizes = [32, 128, 152, 167, 180, 192, 196];
+
+    // // Crop image and create head tags for all sizes
+    // Promise.all(
+    //   sizes.map(size =>
+    //     request(
+    //       `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${size}&h=${size}&type=fit`
+    //     )
+    //   )
+    // )
+    //   .then(responses => {
+    //     console.log("resized images", responses);
+
+    //     const tags = responses.map((res, i) => {
+    //       return props.dispatch(
+    //         createHeadTag({
+    //           type: "link",
+    //           resourceZUID: props.instance.ZUID,
+    //           attributes: {
+    //             rel: "icon",
+    //             type: "image/png",
+    //             sizes: `${sizes[i]}x${sizes[i]}`,
+    //             href: res.header.location
+    //           },
+    //           sort: i
+    //         })
+    //       );
+    //     });
+
+    //     Promise.all(tags).then(_ => {
+    //       setFaviconURL(url);
+    //       setFaviconZUID(id);
+    //       setLoading(false);
+    //     });
+    //   })
+    //   .catch(err => {
+    //     setLoading(false);
+    //     console.log("failed creating favicons", err);
+    //   });
+
+    // if (!zuid) {
+    //   setFaviconZUID("");
+    //   setFaviconURL("");
+    // } else {
+    //   setLoading(true);
+    //   request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${zuid}`).then(res => {
+    //     const { url, id } = res.data[0];
+
+    //   });
+    // }
   };
 
   return (
@@ -132,7 +158,7 @@ export default connect(state => {
     >
       <div className={styles.display}>
         {hover ? (
-          <FontAwesomeIcon icon={faEdit} onClick={() => setOpen(!open)} />
+          <FontAwesomeIcon icon={faUpload} onClick={() => setOpen(!open)} />
         ) : faviconURL ? (
           <img src={faviconURL} width="60px" height="60px" />
         ) : (
@@ -140,9 +166,9 @@ export default connect(state => {
         )}
       </div>
 
-      <Modal open={open}>
+      <Modal open={open} className={styles.Modal}>
         <ModalHeader>
-          <h1>Edit Instance Favicon</h1>
+          <h1 className={styles.headline}>Select Instance Favicon</h1>
         </ModalHeader>
         <ModalContent>
           <FieldTypeImage
@@ -155,7 +181,7 @@ export default connect(state => {
             images={faviconZUID ? [faviconZUID] : []}
             // feed to media app
             value={faviconZUID}
-            onChange={onChange}
+            onChange={handleImage}
             resolveImage={(zuid, width, height) => {
               console.log("resolveImage", zuid, width, height);
               return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`;
@@ -168,14 +194,35 @@ export default connect(state => {
               );
             }}
           />
+
+          {faviconZUID && (
+            <div>
+              {sizes.map(size => (
+                <img
+                  src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${faviconZUID}/getimage/?w=${size}&h=${size}&type=fit`}
+                />
+              ))}
+            </div>
+          )}
+          <AppLink
+            className={styles.SettingsLink}
+            to="/settings/head"
+            onClick={handleClose}
+          >
+            <FontAwesomeIcon icon={faCog} />
+            Manage Instance Head Tags
+          </AppLink>
         </ModalContent>
         <ModalFooter>
-          <ButtonGroup>
-            <Button kind="save" className={styles.Button}>
+          <ButtonGroup className={styles.Actions}>
+            <Button kind="save" className={styles.Button} onClick={handleSave}>
               <FontAwesomeIcon icon={faUpload} />
               Save
             </Button>
-            <Button>Cancel</Button>
+            <Button kind="cancel" onClick={handleClose}>
+              <FontAwesomeIcon icon={faBan} />
+              Cancel
+            </Button>
           </ButtonGroup>
         </ModalFooter>
       </Modal>
