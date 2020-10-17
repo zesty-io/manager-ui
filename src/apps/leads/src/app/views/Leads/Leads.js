@@ -31,9 +31,7 @@ export default connect(state => state)(function Leads(props) {
         <GetStarted />
       ) : (
         <section className={styles.Leads}>
-          <header>
-            <LeadExporter />
-          </header>
+          <LeadExporter />
           <main className={styles.tableWrapper}>
             <Route component={LeadsTable} />
           </main>

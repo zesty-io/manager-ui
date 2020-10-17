@@ -43,6 +43,11 @@ export default connect(state => {
       label: "Robots.txt",
       path: "/settings/robots",
       icon: faCog
+    },
+    {
+      label: "Head Tags",
+      path: "/settings/head",
+      icon: faCog
     }
   ];
   return (
