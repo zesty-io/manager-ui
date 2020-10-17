@@ -165,7 +165,7 @@ export default class ScheduleFlyout extends Component {
                 in the <em>{this.state.userTimezone}</em> timezone.
               </p>
             </CardContent>
-            <CardFooter>
+            <CardFooter className={styles.CardFooter}>
               <Button
                 kind="secondary"
                 id="UnschedulePublishButton"
@@ -173,7 +173,7 @@ export default class ScheduleFlyout extends Component {
                 onClick={this.handleCancelPublish}
               >
                 <FontAwesomeIcon icon={faBan} />
-                &nbsp;Cancel Publishing Version&nbsp;
+                &nbsp;Unschedule Version&nbsp;
                 {this.props.item.scheduling.version}
               </Button>
               <Button kind="cancel" onClick={this.props.toggleOpen}>

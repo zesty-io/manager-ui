@@ -198,7 +198,7 @@ export default connect(state => {
           {faviconZUID && (
             <section className={styles.Sizes}>
               {sizes.map(size => (
-                <figure>
+                <figure key={size}>
                   <img
                     src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${faviconZUID}/getimage/?w=${size}&h=${size}&type=fit`}
                   />

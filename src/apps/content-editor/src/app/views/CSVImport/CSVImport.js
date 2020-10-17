@@ -5,11 +5,14 @@ import chunk from "lodash/chunk";
 import { VariableSizeList } from "react-window";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faUpload } from "@fortawesome/free-solid-svg-icons";
+
 import { Button } from "@zesty-io/core/Button";
+import { Notice } from "@zesty-io/core";
+
 import { Columns } from "./Columns";
 import { CsvSettings } from "./CsvSettings";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUpload } from "@fortawesome/free-solid-svg-icons";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
@@ -316,7 +319,6 @@ class CSVImport extends Component {
       <main className={styles.CSVImport}>
         <div className={styles.Top}>
           <form className={styles.File}>
-            <p> Choose a CSV file to import:</p>
             <input
               type="file"
               id="csv"
@@ -326,24 +328,38 @@ class CSVImport extends Component {
             />
             <label htmlFor="csv">
               <FontAwesomeIcon icon={faUpload} />
-              Choose a CSV File{" "}
+              Open CSV File
             </label>
-            <span className={styles.warning}>{this.state.warn}</span>
           </form>
-          <span className={styles.save}>
-            <Button
-              kind="save"
-              disabled={
-                this.state.complete ||
-                this.state.inFlight ||
-                !this.state.fieldMaps
-              }
-              onClick={this.handleCreateItems}
-            >
-              Create Items
-            </Button>
-          </span>
+          <Button
+            kind="save"
+            disabled={
+              this.state.complete ||
+              this.state.inFlight ||
+              !this.state.fieldMaps
+            }
+            onClick={this.handleCreateItems}
+          >
+            <FontAwesomeIcon icon={faPlus} />
+            Create Items
+          </Button>
+
+          {this.state.warn && (
+            <Notice className={styles.Notice}>{this.state.warn}</Notice>
+          )}
+
+          <div className={cx(styles.ImportResults, styles.subheadline)}>
+            {this.state.mappedMetaItems &&
+              `Imported ${this.state.successes || 0} of ${
+                this.state.mappedMetaItems.length
+              }`}
+
+            {this.state.failure.length ? (
+              <div>Errors {this.state.failure.length}</div>
+            ) : null}
+          </div>
         </div>
+
         <div className={styles.Mid}>
           {/* WebData/MetaData Mapping */}
           {this.state.cols && (
@@ -351,20 +367,8 @@ class CSVImport extends Component {
               handleMap={this.handleWebToCSVMap}
               webMaps={this.state.webMaps}
               cols={this.state.cols}
-              styles={styles.Settings}
             />
           )}
-          <div className={styles.ImportResults}>
-            {this.state.mappedMetaItems && (
-              <div>
-                Imported {this.state.successes} of{" "}
-                {this.state.mappedMetaItems.length}
-              </div>
-            )}
-            {this.state.failure.length ? (
-              <div>Errors {this.state.failure.length}</div>
-            ) : null}
-          </div>
         </div>
         <VariableSizeList
           className={styles.Bottom}
