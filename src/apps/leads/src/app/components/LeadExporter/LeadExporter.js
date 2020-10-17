@@ -14,7 +14,7 @@ export function LeadExporter() {
   const dispatch = useDispatch();
 
   return (
-    <div className={styles.LeadExporter}>
+    <header className={styles.LeadExporter}>
       <div className={cx(styles.filter)}>
         <Search
           className={styles.Search}
@@ -28,7 +28,7 @@ export function LeadExporter() {
           }}
         />
       </div>
-      <div className={styles.filter}>
+      <div className={cx(styles.filter, styles.Date)}>
         <TableDateFilter />
       </div>
       <div className={styles.filter}>
@@ -37,6 +37,6 @@ export function LeadExporter() {
       <div className={styles.filter}>
         <DownloadCSVButton />
       </div>
-    </div>
+    </header>
   );
 }

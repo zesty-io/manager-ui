@@ -2,9 +2,9 @@
 
 .LeadExporter {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
-  background-color: @zesty-grey;
-  width: 100%;
+  background-color: @zesty-tab-blue;
   padding: 16px 32px;
 
   span,
@@ -13,8 +13,11 @@
   }
 
   .filter {
-    margin: 0px 8px 0 0;
+    margin: 0px 8px 8px 0;
     min-width: 300px;
+    &.Date {
+      min-width: 150px;
+    }
 
     .Search {
       margin: 0;
