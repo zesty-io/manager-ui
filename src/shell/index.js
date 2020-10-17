@@ -127,7 +127,7 @@ const App = hot(() => (
     >
       <PrivateRoute>
         <LoadInstance>
-          <Route path="/" component={Shell} />
+          <Shell />
         </LoadInstance>
       </PrivateRoute>
     </BrowserRouter>
