@@ -6,7 +6,8 @@ import {
   faCog,
   faBan,
   faGlobe,
-  faUpload
+  faUpload,
+  faSpinner
 } from "@fortawesome/free-solid-svg-icons";
 
 import { request } from "utility/request";
