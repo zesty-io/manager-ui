@@ -1,5 +1,6 @@
+@import "~@zesty-io/core/colors.less";
+
 .ContentEditor {
-  background-color: #f2f7fc;
   display: flex;
   flex-direction: row;
   height: calc(100vh - 54px);
@@ -13,6 +14,8 @@
   .Content {
     flex: 1;
     overflow: hidden;
+    box-shadow: 0 0 15px #0b0d13;
+    z-index: 1;
 
     .ContentWrap {
       display: flex;

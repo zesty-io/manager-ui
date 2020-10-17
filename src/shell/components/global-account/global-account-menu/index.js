@@ -46,6 +46,8 @@ export default connect(state => {
       </header>
 
       <Divider className={styles.Divider} />
+      <Url href={`${CONFIG.URL_ACCOUNTS}`}>My Accounts</Url>
+      <Divider className={styles.Divider} />
 
       <main className={styles.Instance}>
         <Select name="instance" value={props.instance.ZUID}>
