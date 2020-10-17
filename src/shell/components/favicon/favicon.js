@@ -38,7 +38,7 @@ export default connect(state => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const [faviconZUID, setFaviconZUID] = useState("3-add7c55-pjo3k");
+  const [faviconZUID, setFaviconZUID] = useState("");
   const [faviconURL, setFaviconURL] = useState("");
 
   const [sizes] = useState([32, 128, 152, 167, 180, 192, 196]);
@@ -78,7 +78,6 @@ export default connect(state => {
 
   const handleSave = () => {
     setLoading(true);
-
     props
       .dispatch(
         createHeadTag({
@@ -94,6 +93,7 @@ export default connect(state => {
         })
       )
       .finally(_ => {
+        setOpen(false);
         setLoading(false);
       });
 
@@ -183,7 +183,6 @@ export default connect(state => {
             value={faviconZUID}
             onChange={handleImage}
             resolveImage={(zuid, width, height) => {
-              console.log("resolveImage", zuid, width, height);
               return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`;
             }}
             mediaBrowser={opts => {
@@ -219,8 +218,12 @@ export default connect(state => {
         <ModalFooter>
           <ButtonGroup className={styles.Actions}>
             <Button kind="save" className={styles.Button} onClick={handleSave}>
-              <FontAwesomeIcon icon={faUpload} />
-              Save
+              {loading ? (
+                <FontAwesomeIcon icon={faSpinner} />
+              ) : (
+                <FontAwesomeIcon icon={faUpload} />
+              )}
+              Save Favicon
             </Button>
             <Button kind="cancel" onClick={handleClose}>
               <FontAwesomeIcon icon={faBan} />

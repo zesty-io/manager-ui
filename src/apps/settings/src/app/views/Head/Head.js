@@ -15,18 +15,18 @@ import { addHeadTag } from "../../../store/headTags";
 import styles from "./Head.less";
 export default connect(state => {
   return {
-    itemZUID: state.instance.ZUID,
-    tags: state.headTags,
-    item: state.instance
+    instance: state.instance,
+    tags: Object.values(state.headTags)
+      .filter(tag => tag.resourceZUID === state.instance.ZUID)
+      .sort((a, b) => a.sort > b.sort)
   };
 })(function Head(props) {
   function onAdd() {
-    const idTag = Object.values(props.tags).length;
     props.dispatch(
       addHeadTag({
-        ZUID: `${props.itemZUID}-${idTag}`,
+        ZUID: `${props.instance.ZUID}-${props.tags.length}`,
         type: "meta",
-        resourceZUID: props.itemZUID,
+        resourceZUID: props.instance.ZUID,
         custom: true,
         attributes: [
           {
@@ -42,31 +42,10 @@ export default connect(state => {
             value: "true"
           }
         ],
-        sort: Object.values(props.tags).length || 0
+        sort: props.tags.length || 0
       })
     );
   }
-
-  const filteredTags = Object.values(props.tags).filter(item => {
-    if (item.attributes.some(el => el.key === "custom")) {
-      return item;
-    }
-  });
-
-  const sortedTags = filteredTags.sort(
-    (a, b) =>
-      Object.values(props.tags).indexOf(b) -
-      Object.values(props.tags).indexOf(a)
-  );
-
-  const instanceTags = Object.values(props.tags).filter(item => {
-    if (
-      !item.attributes.some(el => el.key === "custom") &&
-      item.resourceZUID === props.itemZUID
-    ) {
-      return item;
-    }
-  });
 
   return (
     <div className={styles.HeadWrap}>
@@ -83,8 +62,9 @@ export default connect(state => {
               take effect immediately on your live instance.
             </Notice>
           </h1>
-          {filteredTags.length ? (
-            sortedTags.map((tag, index) => {
+
+          {props.tags.length ? (
+            props.tags.map((tag, index) => {
               return (
                 <HeadTag key={index} tag={tag} dispatch={props.dispatch} />
               );
@@ -95,11 +75,11 @@ export default connect(state => {
             </h3>
           )}
         </main>
+
         <Preview
-          instanceName={props.item.name}
-          item={props.item}
-          instanceTags={instanceTags}
-          tags={sortedTags}
+          instanceName={props.instance.name}
+          item={props.instance}
+          instanceTags={props.tags}
         />
       </div>
     </div>
