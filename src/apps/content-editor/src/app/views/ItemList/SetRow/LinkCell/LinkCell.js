@@ -11,7 +11,11 @@ export const LinkCell = function LinkCell(props) {
     return (
       <span className={cx(props.className, styles.LinkCell)}>
         {props.value.length > 145 ? (
-          <Url href={props.value} title={props.value} target="_blank">
+          <Url
+            href={props.value}
+            title={`Open ${props.value} in a new tab`}
+            target="_blank"
+          >
             <span>
               <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
               &nbsp;
