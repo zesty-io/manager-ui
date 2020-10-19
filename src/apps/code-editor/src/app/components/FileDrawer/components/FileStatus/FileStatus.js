@@ -43,6 +43,7 @@ export default function FileStatus(props) {
                 className={styles.FileLink}
                 href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.file.contentModelZUID}.json`}
                 target="_blank"
+                title="Preview JSON"
               >
                 <i className="fas fa-bolt"></i> Instant JSON API
               </Url>

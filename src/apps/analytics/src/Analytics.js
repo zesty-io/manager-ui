@@ -149,6 +149,7 @@ export default connect(function(state) {
                   <span className={styles.encompassedBlock}>
                     <Url
                       target="_blank"
+                      title="Stage"
                       href={`${CONFIG.URL_PREVIEW_PROTOCOL}${this.props.instance.randomHashID}${CONFIG.URL_PREVIEW}`}
                     >
                       Stage
@@ -158,6 +159,7 @@ export default connect(function(state) {
                       this.props.instance.domains[0] && (
                         <Url
                           target="_blank"
+                          title="Live"
                           href={`https://${this.props.instance.domains[0].domain}`}
                         >
                           Live

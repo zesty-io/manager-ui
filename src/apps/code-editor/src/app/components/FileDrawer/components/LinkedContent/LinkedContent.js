@@ -39,7 +39,7 @@ export default function LinkedContent(props) {
                     className={styles.Link}
                     href={`${CONFIG.URL_PREVIEW_FULL}${item.web.path}`}
                     target="_blank"
-                    title="Preview item webpage"
+                    title="Preview Item Webpage"
                   >
                     <i className="fas fa-eye"></i> <em>{item.web.path}</em>
                   </Url>

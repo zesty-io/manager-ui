@@ -37,6 +37,7 @@ export default connect(state => {
           <Url
             href={`https://${props.instance.domains[0].domain}`}
             target="_blank"
+            title={props.instance.name}
           >
             {/* <FontAwesomeIcon icon={faExternalLinkSquareAlt} /> */}
             {props.instance.name}

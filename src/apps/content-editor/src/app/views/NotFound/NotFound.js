@@ -13,7 +13,12 @@ export class NotFound extends Component {
           If you expected something to be here please contact support with this
           url
         </h2>
-        <Url href={window.location.href}>{window.location.href}</Url>
+        <Url
+          title={`Provide this URL: ${window.location.href} with your bug ticket`}
+          href={window.location.href}
+        >
+          {window.location.href}
+        </Url>
       </section>
     );
   }

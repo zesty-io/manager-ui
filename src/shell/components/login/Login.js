@@ -85,7 +85,11 @@ export default connect(state => {
 
               <p className={cx(styles.bodyText, styles.message)}>
                 Your account has{" "}
-                <Url href="https://authy.com/what-is-2fa/" target="_blank">
+                <Url
+                  title="Authy Two Factor Authentication"
+                  href="https://authy.com/what-is-2fa/"
+                  target="_blank"
+                >
                   Authy Two Factor Authentication
                 </Url>{" "}
                 enabled which requires entering a one time token in order to

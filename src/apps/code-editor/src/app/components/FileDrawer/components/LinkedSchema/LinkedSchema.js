@@ -21,6 +21,7 @@ export default function LinkedSchema(props) {
             className={styles.Link}
             href="https://zesty.org/services/web-engine/introduction-to-parsley"
             target="_blank"
+            title="Learn More Parsley Syntax"
           >
             Learn More Parsley Syntax
           </Url>

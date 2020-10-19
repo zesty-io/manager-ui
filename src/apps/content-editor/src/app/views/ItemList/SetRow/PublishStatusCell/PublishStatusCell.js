@@ -40,6 +40,7 @@ export const PublishStatusCell = React.memo(function PublishStatusCell(props) {
           props.item.web.path
         }`}
         target="_blank"
+        title="Opens item preview in a new tab"
       >
         {props.item &&
         props.item.scheduling &&
