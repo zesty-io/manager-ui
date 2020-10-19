@@ -78,8 +78,8 @@ export default connect(state => {
 
     handleKeyDown = evt => {
       if (
-        ((props.platform.isMac && evt.metaKey) ||
-          (!props.platform.isMac && evt.ctrlKey)) &&
+        ((this.props.platform.isMac && evt.metaKey) ||
+          (!this.props.platform.isMac && evt.ctrlKey)) &&
         evt.key == "s"
       ) {
         evt.preventDefault();
