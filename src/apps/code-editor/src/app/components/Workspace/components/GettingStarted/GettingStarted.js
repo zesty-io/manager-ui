@@ -33,6 +33,7 @@ export function GettingStarted(props) {
               <Url
                 href="https://zesty.org/services/web-engine/introduction-to-parsley"
                 target="_blank"
+                title="Intro to Parsley"
               >
                 written documentation
               </Url>
@@ -48,6 +49,7 @@ export function GettingStarted(props) {
               <Url
                 href="https://zesty.org/services/web-engine/css-processing-flow"
                 target="_blank"
+                title="CSS & JS Processing Flow"
               >
                 preprocessing flows
               </Url>

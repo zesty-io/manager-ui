@@ -68,7 +68,10 @@ export default connect(state => {
         <ul className={styles.Domains}>
           {props.instance.domains.map(domain => (
             <li key={domain.domain}>
-              <Url href={`http://${domain.domain}`}>
+              <Url
+                title={`http://${domain.domain}`}
+                href={`http://${domain.domain}`}
+              >
                 <FontAwesomeIcon icon={faExternalLinkAlt} />
                 &nbsp;
                 {domain.domain}
@@ -82,6 +85,7 @@ export default connect(state => {
 
       <footer>
         <Url
+          title={`${CONFIG.URL_ACCOUNTS}/logout`}
           href={`${CONFIG.URL_ACCOUNTS}/logout`}
           className={cx(styles.link, styles.logout)}
         >

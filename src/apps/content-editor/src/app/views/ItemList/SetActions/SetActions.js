@@ -115,6 +115,7 @@ export class SetActions extends Component {
               <Url
                 className={styles.InstantApi}
                 target="_blank"
+                title="Instant API"
                 href={`${
                   this.props.instance.live_domain
                     ? `${this.props.instance.protocol}://${this.props.instance.live_domain}`

@@ -178,7 +178,7 @@ export default connect(state => {
             <ul className={styles.helpBox}>
               {links.map(link => (
                 <li key={link.name}>
-                  <Url target="_blank" href={link.url}>
+                  <Url title={link.url} target="_blank" href={link.url}>
                     {link.name}
                   </Url>
                 </li>
@@ -192,17 +192,29 @@ export default connect(state => {
           <CardContent>
             <ul className={styles.helpBox}>
               <li>
-                <Url target="_blank" href="https://instances-api.zesty.org/">
+                <Url
+                  title="Instances API"
+                  target="_blank"
+                  href="https://instances-api.zesty.org/"
+                >
                   Instances API
                 </Url>
               </li>
               <li>
-                <Url target="_blank" href="https://accounts-api.zesty.org/">
+                <Url
+                  title="Accounts API"
+                  target="_blank"
+                  href="https://accounts-api.zesty.org/"
+                >
                   Accounts API
                 </Url>
               </li>
               <li>
-                <Url target="_blank" href="https://auth-api.zesty.org/">
+                <Url
+                  title="Auth API"
+                  target="_blank"
+                  href="https://auth-api.zesty.org/"
+                >
                   Auth API
                 </Url>
               </li>
@@ -216,6 +228,7 @@ export default connect(state => {
             <ul className={styles.helpBox}>
               <li>
                 <Url
+                  title="SDK"
                   target="_blank"
                   href="https://github.com/zesty-io/node-sdk"
                 >
@@ -223,12 +236,17 @@ export default connect(state => {
                 </Url>
               </li>
               <li>
-                <Url target="_blank" href="https://github.com/zesty-io/cli">
+                <Url
+                  title="CLI"
+                  target="_blank"
+                  href="https://github.com/zesty-io/cli"
+                >
                   CLI
                 </Url>
               </li>
               <li>
                 <Url
+                  title="Report a Bug"
                   target="_blank"
                   href="https://github.com/zesty-io/manager-ui/issues/new?assignees=&labels=&template=bug_report.md&title="
                 >

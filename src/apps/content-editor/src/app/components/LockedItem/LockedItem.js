@@ -35,7 +35,9 @@ export const LockedItem = ({
           <Divider />
           <p>
             You can contact {userFirstName} via
-            <Url href={`mailto:${userEmail}`}>{userEmail}</Url>
+            <Url title="Email" href={`mailto:${userEmail}`}>
+              {userEmail}
+            </Url>
           </p>
           <Divider />
           <p>

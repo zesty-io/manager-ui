@@ -77,6 +77,7 @@ export const QuickView = React.memo(function QuickView(props) {
                 <strong>API:</strong>&nbsp;
                 <Url
                   target="_blank"
+                  title="Live Preview"
                   href={`${
                     props.live_domain
                       ? `${props.protocol}://${props.live_domain}`

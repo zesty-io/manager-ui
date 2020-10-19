@@ -196,7 +196,11 @@ export default connect(state => {
 
             <div className={cx(styles.IframeWrapper, styles.Row)}>
               <h2>
-                <Url href={this.state.robotsUrl} target="_blank">
+                <Url
+                  href={this.state.robotsUrl}
+                  target="_blank"
+                  title={this.state.robotsUrl}
+                >
                   {this.state.robotsUrl}
                 </Url>
               </h2>

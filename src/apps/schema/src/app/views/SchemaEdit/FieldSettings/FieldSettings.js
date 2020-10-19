@@ -203,7 +203,11 @@ export const FIELD_TYPES = [
       <React.Fragment>
         <p>
           Markdown fields provide an editor that allows using{" "}
-          <Url target="_blank" href="https://github.github.com/gfm/">
+          <Url
+            title="Github Flavored Markdown"
+            target="_blank"
+            href="https://github.github.com/gfm/"
+          >
             Github Flavored Markdown
           </Url>{" "}
           syntax for styling and structuring of content. This field type is also

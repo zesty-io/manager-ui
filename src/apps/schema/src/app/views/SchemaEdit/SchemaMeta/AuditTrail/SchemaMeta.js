@@ -76,6 +76,7 @@ export default function SchemaMeta(props) {
                 .basic_content_api_enabled == 1 ? (
                 <Url
                   target="_blank"
+                  title="Preview JSON"
                   href={`${CONFIG.URL_PREVIEW}/-/instant/${props.model.ZUID}.json`}
                 >
                   {`/-/instant/${props.model.ZUID}.json`}

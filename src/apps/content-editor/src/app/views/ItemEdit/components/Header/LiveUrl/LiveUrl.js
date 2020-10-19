@@ -24,7 +24,12 @@ export class LiveUrl extends React.Component {
 
     return this.props.item.publishing &&
       this.props.item.publishing.isPublished ? (
-      <Url target="_blank" href={urlString} className={styles.Published}>
+      <Url
+        target="_blank"
+        title="Live Published"
+        href={urlString}
+        className={styles.Published}
+      >
         {this.props.item.web.pathPart === "zesty_home" ? (
           <FontAwesomeIcon icon={faHome} />
         ) : (
