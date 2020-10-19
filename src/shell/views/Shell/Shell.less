@@ -13,13 +13,13 @@
 }
 
 .Shell {
-  background-color: @mainViewBkgColor;
+  background-color: #f2f7fc;
   color: @zesty-grey;
   display: flex;
   font-family: "Montserrat", "Gibson Light", Arial, sans-serif;
   font-size: 14px;
   height: 100vh;
-  overflow-y: hidden;
+  overflow: hidden;
 
   display: grid;
   grid-template-columns: 170px 1fr;
@@ -36,11 +36,29 @@
 
   .AppLoader {
     flex: 2;
-    z-index: 1;
-    overflow: hidden;
+    background-color: #171b26;
 
     .SubApp {
       height: calc(100vh - 54px);
+      background-color: #f2f7fc;
+
+      // shadow effect
+      border-radius: 10px 0 0 0;
+      overflow: hidden;
+      box-shadow: 0px 0px 25px #0b0d13;
+      position: relative;
+      z-index: 30;
+
+      width: calc(100vw - 60px);
+      @media (min-width: 2000px) {
+        width: calc(100vw - 180px);
+      }
+    }
+  }
+  h2 {
+    font-size: 12px;
+    @media only screen and (min-width: 2000px) {
+      font-size: 16px;
     }
   }
 }

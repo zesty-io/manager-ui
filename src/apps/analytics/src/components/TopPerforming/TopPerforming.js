@@ -2,6 +2,8 @@ import React from "react";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { WithLoader } from "@zesty-io/core/WithLoader";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowCircleUp } from "@fortawesome/free-solid-svg-icons";
 
 export class TopPerforming extends React.PureComponent {
   state = {
@@ -82,7 +84,7 @@ export class TopPerforming extends React.PureComponent {
       <Card>
         <CardHeader>
           <h2>
-            <span className="fa fa-arrow-circle-o-up" /> Top Performing Content
+            <FontAwesomeIcon icon={faArrowCircleUp} /> Top Performing Content
           </h2>
         </CardHeader>
         <CardContent>

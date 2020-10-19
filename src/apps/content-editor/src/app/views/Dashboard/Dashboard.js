@@ -279,11 +279,11 @@ function DashboardCardFooter(props) {
   return (
     <CardFooter>
       <Button
-        kind="save"
+        kind="secondary"
         onClick={() => history.push(`/content/${props.contentModelZUID}/new`)}
       >
         <FontAwesomeIcon icon={faPlus} />
-        New {props.model && props.model.label}
+        Create {props.model && props.model.label}
       </Button>
     </CardFooter>
   );

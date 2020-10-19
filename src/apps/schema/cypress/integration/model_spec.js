@@ -11,7 +11,7 @@ describe("Schema", () => {
     cy.get('input[name="label"]').type(SCHEMA_NAME);
 
     cy.get('button[kind="save"]')
-      .contains("Create New Model")
+      .contains("Create Model")
       .click();
 
     cy.get(".FieldAdd", { timeout: 10000 }).should("exist");

@@ -5,8 +5,8 @@ export const Preview = props => (
   <aside className={styles.TagPreviewWrap}>
     {/* {`<!-- Global head tags are inserted before local tags --> \n`} */}
     <pre className={styles.TagPreview}>
-      <p className={styles.Tag}>{`<head>`}</p>
-      <p>
+      <div className={styles.Tag}>{`<head>`}</div>
+      <div>
         {props.item &&
           props.item.web &&
           `  <!-- Auto-generated Head Tags -->
@@ -34,18 +34,19 @@ export const Preview = props => (
               )
               .join("\n")}
         </p>
-      </p>
+      </div>
       {`  <!-- Custom Item Head Tags -->\n`}
-      {props.tags
-        .map(
-          tag =>
-            `  <${tag.type} ${tag.attributes
-              .map(attr => `${attr.key}="${attr.value}"`)
-              .join(" ")} />`
-        )
-        .join("\n")}
+      {props.tags &&
+        props.tags
+          .map(
+            tag =>
+              `  <${tag.type} ${tag.attributes
+                .map(attr => `${attr.key}="${attr.value}"`)
+                .join(" ")} />`
+          )
+          .join("\n")}
 
-      <p className={styles.Tag}>{`</head>`}</p>
+      <div className={styles.Tag}>{`</head>`}</div>
     </pre>
   </aside>
 );

@@ -47,7 +47,7 @@
         justify-content: center;
         height: 100vh;
         width: 100vw;
-        z-index: 30;
+        z-index: 100;
         top: 0;
     }
     #modal {

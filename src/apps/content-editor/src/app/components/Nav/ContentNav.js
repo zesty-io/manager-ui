@@ -58,7 +58,7 @@ export function ContentNav(props) {
           onSelect={handleCreateSelect}
           value="0"
         >
-          <Option value="0" text="— Create New Item —" />
+          <Option value="0" text="— Create Item —" />
           <Option value="link" text="Internal/External Link" />
           {Object.keys(props.models)
             .filter(modelZUID => {

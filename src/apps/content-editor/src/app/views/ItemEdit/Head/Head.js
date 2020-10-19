@@ -63,7 +63,7 @@ export default class Head extends React.Component {
                 onClick={this.onCreate}
               >
                 <FontAwesomeIcon icon={faPlus} />
-                New head tag
+                Create Head Tag
               </Button>
               <Notice>
                 Head tags are not versioned or published. Changes to head tags

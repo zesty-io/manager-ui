@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
 
@@ -10,6 +10,7 @@ import { SchemaMeta } from "./SchemaMeta";
 
 import { Dropzone } from "./Dropzone";
 import { Draggable } from "./Draggable";
+import { NotFound } from "shell/components/NotFound";
 
 import { notify } from "shell/store/notifications";
 import { fetchFields, saveField } from "shell/store/fields";
@@ -21,7 +22,7 @@ export default connect((state, props) => {
   return {
     fieldZUID,
     modelZUID,
-    model: state.models[modelZUID] || {},
+    model: state.models[modelZUID],
     fields: Object.keys(state.fields)
       .map(key => state.fields[key])
       .filter(field => field.contentModelZUID === modelZUID)
@@ -33,22 +34,24 @@ export default connect((state, props) => {
 
   // Load schema fields to edit when the schema changes
   useEffect(() => {
-    setLoading(false);
-    props
-      .dispatch(fetchFields(props.modelZUID))
-      .then(() => {
-        setLoading(true);
-      })
-      .catch(err => {
-        console.error("fetchFields()", err);
-        props.dispatch(
-          notify({
-            kind: "warn",
-            message: `There was an error loading the schema fields. ${err.message}`
-          })
-        );
-        setLoading(true);
-      });
+    if (props.model) {
+      setLoading(false);
+      props
+        .dispatch(fetchFields(props.modelZUID))
+        .then(() => {
+          setLoading(true);
+        })
+        .catch(err => {
+          console.error("fetchFields()", err);
+          props.dispatch(
+            notify({
+              kind: "warn",
+              message: `There was an error loading the schema fields. ${err.message}`
+            })
+          );
+          setLoading(true);
+        });
+    }
   }, [props.modelZUID]);
 
   const updateFieldSort = children => {
@@ -99,6 +102,12 @@ export default connect((state, props) => {
         console.error(err);
       });
   };
+
+  if (!props.model) {
+    return (
+      <NotFound message={`Schema Model ZUID "${props.modelZUID}" not found`} />
+    );
+  }
 
   return (
     <WithLoader

@@ -11,7 +11,6 @@ import {
 import { Select, Option } from "@zesty-io/core/Select";
 import { Button } from "@zesty-io/core/Button";
 import { Url } from "@zesty-io/core/Url";
-import { Divider } from "@zesty-io/core/Divider";
 
 import styles from "./styles.less";
 export default connect(state => {
@@ -43,11 +42,15 @@ export default connect(state => {
             <span className={styles.subheadline}>{props.user.email}</span>
           </div>
         </h1>
+
+        <Url href={`${CONFIG.URL_ACCOUNTS}`}>My Accounts</Url>
       </header>
 
-      <Divider className={styles.Divider} />
-
       <main className={styles.Instance}>
+        {props.instance.screenshotURL && (
+          <img src={props.instance.screenshotURL} />
+        )}
+
         <Select name="instance" value={props.instance.ZUID}>
           {props.instances.map(instance => (
             <Option
@@ -60,10 +63,6 @@ export default connect(state => {
             />
           ))}
         </Select>
-
-        {props.instance.screenshotURL && (
-          <img src={props.instance.screenshotURL} />
-        )}
 
         <ul className={styles.Domains}>
           {props.instance.domains.map(domain => (
@@ -80,8 +79,6 @@ export default connect(state => {
           ))}
         </ul>
       </main>
-
-      <Divider className={styles.Divider} />
 
       <footer>
         <Url

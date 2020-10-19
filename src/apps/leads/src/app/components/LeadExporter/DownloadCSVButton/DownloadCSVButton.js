@@ -4,6 +4,9 @@ import * as moment from "moment";
 import { connect } from "react-redux";
 import { Button } from "@zesty-io/core/Button";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
+
 import { DATE_PRESETS } from "../TableDateFilter/TableDateFilter.model";
 import * as FilterService from "../../../views/Leads/LeadFilter.service";
 
@@ -70,9 +73,11 @@ export default connect(state => {
       return (
         <Button
           onClick={() => this.filterLeadsData()}
-          text="Download CSV"
-          title="Download CSV"
-        />
+          title="Export CSV of lead data by selected filters"
+        >
+          <FontAwesomeIcon icon={faDownload} />
+          Export CSV
+        </Button>
       );
     }
   }

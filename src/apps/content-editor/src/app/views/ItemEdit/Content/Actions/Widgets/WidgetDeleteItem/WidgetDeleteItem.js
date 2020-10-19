@@ -3,7 +3,12 @@ import cx from "classnames";
 import { useHistory } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBan,
+  faSpinner,
+  faTrash,
+  faTrashAlt
+} from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 import {
   CollapsibleCard,
@@ -12,7 +17,6 @@ import {
 } from "@zesty-io/core/CollapsibleCard";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
-import { notify } from "shell/store/notifications";
 import { deleteItem } from "shell/store/content";
 
 export const WidgetDeleteItem = React.memo(function WidgetDeleteItem(props) {
@@ -78,6 +82,7 @@ export const WidgetDeleteItem = React.memo(function WidgetDeleteItem(props) {
               });
           }}
         >
+          <FontAwesomeIcon icon={faTrash} />
           Delete
         </Button>
         <Button
@@ -85,6 +90,7 @@ export const WidgetDeleteItem = React.memo(function WidgetDeleteItem(props) {
           kind="cancel"
           onClick={() => setConfirmOpen(false)}
         >
+          <FontAwesomeIcon icon={faBan} />
           Cancel
         </Button>
       </ConfirmDialog>

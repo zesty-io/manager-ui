@@ -432,7 +432,7 @@ export default connect(state => {
             }}
           >
             <FontAwesomeIcon icon={faPlus} />
-            Create New Model
+            Create Model
           </Button>
         </CardFooter>
       </Card>

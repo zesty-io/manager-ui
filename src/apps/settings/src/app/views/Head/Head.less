@@ -7,16 +7,15 @@
 }
 
 .HeadWrap {
-  height: calc(100vh - 64px - 9px - 68px);
-  overflow-y: scroll;
-
+  margin: -50px -25px -10px;
   .Head {
     clear: both;
 
     .Tags {
-      margin: 0 16px;
       float: left;
-      width: calc(100vw - 33vw - 15vw - 64px);
+      width: 40vw;
+      height: calc(100vh - 54px);
+      overflow-y: scroll;
 
       article:first-child {
         margin-top: 0;
@@ -38,7 +37,9 @@
   display: flex;
   align-items: center;
   margin: 16px;
+
   button {
     margin-right: 8px;
+    min-width: 190px;
   }
 }

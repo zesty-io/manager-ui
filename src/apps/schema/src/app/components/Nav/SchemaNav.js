@@ -54,7 +54,7 @@ export default function SchemaNav(props) {
           type="save"
         >
           <FontAwesomeIcon icon={faPlus} />
-          &nbsp;Create New Model
+          &nbsp;Create Model
         </Button>
       </div>
 

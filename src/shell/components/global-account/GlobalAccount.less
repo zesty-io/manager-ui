@@ -2,16 +2,12 @@
 @import "~@zesty-io/core/typography.less";
 
 .GlobalAccount {
-  // justify-content: center;
-
   align-items: center;
   padding: 0 0 0 12px;
-  border-left: 1px solid #626b82;
-  border-bottom: 4px solid #4b5468;
-  background: #4b5468;
-
+  border-bottom: 4px solid #4c5568;
+  background: #4c5568;
+  box-shadow: 0 0 25px #000000;
   color: @zesty-white;
-
   display: grid;
   grid-auto-flow: column;
   grid-gap: 18px;
@@ -38,6 +34,7 @@
   .AccountMenu {
     .Avatar {
       border-radius: 50%;
+      border: 2px solid @zesty-tab-blue;
       margin-right: 32px;
     }
   }

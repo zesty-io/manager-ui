@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { Select, Option, Input } from "@zesty-io/core";
 
+import styles from "./CsvSettings.less";
 export const CsvSettings = props => {
   return (
-    <section className={props.styles}>
-      <article>
+    <section className={styles.CsvSettings}>
+      <article className={styles.Setting}>
         <label>Meta Description</label>
         <Select
           name={"metaDescription"}
@@ -17,7 +18,7 @@ export const CsvSettings = props => {
           ))}
         </Select>
       </article>
-      <article>
+      <article className={styles.Setting}>
         <label>Meta Keywords</label>
         <Select name="metaKeywords" onSelect={props.handleMap} value="none">
           <Option text="none" value="none" />
@@ -26,7 +27,7 @@ export const CsvSettings = props => {
           ))}
         </Select>
       </article>
-      <article>
+      <article className={styles.Setting}>
         <label>Meta Link Text</label>
         <Select name="metaLinkText" onSelect={props.handleMap} value="none">
           <Option text="none" value="none" />
@@ -35,7 +36,7 @@ export const CsvSettings = props => {
           ))}
         </Select>
       </article>
-      <article>
+      <article className={styles.Setting}>
         <label>Meta Title</label>
         <Select name="metaTitle" onSelect={props.handleMap} value="none">
           <Option text="none" value="none" />
@@ -44,7 +45,7 @@ export const CsvSettings = props => {
           ))}
         </Select>
       </article>
-      <article>
+      <article className={styles.Setting}>
         <label>Parent ZUID</label>
         <Select name="parentZUID" onSelect={props.handleMap} value="none">
           <Option text="none" value="none" />
@@ -53,7 +54,7 @@ export const CsvSettings = props => {
           ))}
         </Select>
       </article>
-      <article>
+      <article className={styles.Setting}>
         <label>Path Part</label>
         <Select name="pathPart" onSelect={props.handleMap} value="none">
           <Option text="none" value="none" />
@@ -62,8 +63,10 @@ export const CsvSettings = props => {
           ))}
         </Select>
       </article>
-      <CanonicalTag name="canonicalTagMode" onChange={props.handleMap} />
-      <article>
+      <article className={styles.Setting}>
+        <CanonicalTag name="canonicalTagMode" onChange={props.handleMap} />
+      </article>
+      <article className={styles.Setting}>
         <label>Sitemap Priority</label>
         <Select
           name="sitemapPriority"
