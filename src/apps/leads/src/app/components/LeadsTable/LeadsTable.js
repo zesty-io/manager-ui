@@ -21,12 +21,7 @@ function filterLeadsData(leads, filter) {
 import styles from "./LeadsTable.less";
 
 export default connect(state => {
-  const leads = filterLeadsData(state.leads, state.filter).sort(
-    // sort by createdAt DESC
-    (lead1, lead2) => {
-      return +new Date(lead2.createdAt) - +new Date(lead1.createdAt);
-    }
-  );
+  const leads = filterLeadsData(state.leads, state.filter);
   return {
     filter: state.filter,
     leads
