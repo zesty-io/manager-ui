@@ -15,7 +15,6 @@ function filterLeadsData(leads, filter) {
   let filteredLeads = FilterService.filterByFormGroup(leads, filter);
   filteredLeads = FilterService.filterByDate(filteredLeads, filter);
   filteredLeads = FilterService.filterByFuzzyText(filteredLeads, filter);
-  console.log(filteredLeads);
   return filteredLeads;
 }
 
