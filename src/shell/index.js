@@ -15,6 +15,7 @@ import { notify } from "shell/store/notifications";
 import { store, injectReducer } from "shell/store";
 import { navContent } from "../apps/content-editor/src/store/navContent";
 
+import AppError from "shell/components/AppError";
 import PrivateRoute from "./components/private-route";
 import LoadInstance from "./components/load-instance";
 import Shell from "./views/Shell";
@@ -116,21 +117,23 @@ try {
 
 const App = hot(() => (
   <Provider store={store}>
-    <BrowserRouter
-      getUserConfirmation={(message, callback) => {
-        if (message === "confirm") {
-          window.openNavigationModal(callback);
-        } else {
-          callback(true);
-        }
-      }}
-    >
-      <PrivateRoute>
-        <LoadInstance>
-          <Shell />
-        </LoadInstance>
-      </PrivateRoute>
-    </BrowserRouter>
+    <Sentry.ErrorBoundary fallback={() => <AppError />}>
+      <BrowserRouter
+        getUserConfirmation={(message, callback) => {
+          if (message === "confirm") {
+            window.openNavigationModal(callback);
+          } else {
+            callback(true);
+          }
+        }}
+      >
+        <PrivateRoute>
+          <LoadInstance>
+            <Shell />
+          </LoadInstance>
+        </PrivateRoute>
+      </BrowserRouter>
+    </Sentry.ErrorBoundary>
   </Provider>
 ));
 
