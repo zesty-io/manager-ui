@@ -38,7 +38,7 @@ export const WidgetPurgeItem = React.memo(function WidgetPurgeItem(props) {
               setLoading(true);
 
               return request(
-                `${CONFIG.service.sites}/content/sets/${props.modelZUID}/items/${props.itemZUID}/purge`
+                `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${props.itemZUID}`
               )
                 .then(() => {
                   setLoading(false);
