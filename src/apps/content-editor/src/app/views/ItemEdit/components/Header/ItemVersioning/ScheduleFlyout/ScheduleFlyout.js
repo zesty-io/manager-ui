@@ -211,6 +211,7 @@ export default class ScheduleFlyout extends Component {
             </CardContent>
             <CardFooter className={styles.CardFooter}>
               <Button
+                className={styles.SchedulePublishButton}
                 kind="save"
                 id="SchedulePublishButton"
                 onClick={this.handleSchedulePublish}
