@@ -162,6 +162,7 @@ export default connect(state => {
       case "color":
         return (
           <FieldTypeColor
+            className={styles.FieldTypeColorButton}
             key={field.ZUID}
             value={state[field.referenceName]}
             description={field.description}
