@@ -84,7 +84,7 @@ function openLivePreview(instanceZUID, instanceHash, content) {
   const previewDomain = `${CONFIG.URL_PREVIEW_PROTOCOL}${instanceHash}${CONFIG.URL_PREVIEW}`;
 
   const preview = window.open(
-    origin + "/livePreview.html",
+    origin + "/active-preview/",
     "Active Preview",
     "height=850, width=1400, location=0, menubar=0, status=0, titlebar=0, toolbar=0"
   );

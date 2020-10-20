@@ -12,7 +12,7 @@ const CONFIG = require("./app.config");
 module.exports = {
   entry: {
     main: path.resolve(__dirname, "./index.js"),
-    livePreview: path.resolve(__dirname, "../apps/live-preview/index.js")
+    activePreview: path.resolve(__dirname, "../apps/live-preview/index.js")
   },
   output: {
     filename:
@@ -124,9 +124,9 @@ module.exports = {
     }),
 
     new HtmlWebpackPlugin({
-      chunks: ["livePreview"],
+      chunks: ["activePreview"],
       template: "src/apps/live-preview/index.html",
-      filename: "livePreview.html"
+      filename: "active-preview/index.html"
     }),
 
     new webpack.DefinePlugin({
