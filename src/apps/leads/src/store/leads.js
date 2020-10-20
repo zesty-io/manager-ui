@@ -20,9 +20,16 @@ export function fetchLeads() {
   return dispatch => {
     return request(`${CONFIG.API_INSTANCE}/env/leads`)
       .then(res => {
+        const sortedLeads = res.data.sort(
+          // sort by createdAt DESC
+          (lead1, lead2) => {
+            return +new Date(lead2.createdAt) - +new Date(lead1.createdAt);
+          }
+        );
+
         dispatch({
           type: "FETCH_LEADS_SUCCESS",
-          payload: res.data
+          payload: sortedLeads
         });
       })
       .catch(err => {

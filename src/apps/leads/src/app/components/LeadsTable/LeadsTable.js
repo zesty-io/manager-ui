@@ -21,10 +21,10 @@ function filterLeadsData(leads, filter) {
 import styles from "./LeadsTable.less";
 
 export default connect(state => {
+  const leads = filterLeadsData(state.leads, state.filter);
   return {
     filter: state.filter,
-    leads: filterLeadsData(state.leads, state.filter),
-    loading: false
+    leads
   };
 })(
   class LeadsTable extends React.Component {
@@ -36,7 +36,6 @@ export default connect(state => {
       this.props = props;
       this.state = {
         currentLead: null, // The current lead being displayed in the modal
-        leads: props.leads, // The full list of leads being displayed in the table
         loading: false, // Whether a request is being processed
         modalIsOpen: false // Whether the modal is open (TRUE) or not (FALSE)
       };
@@ -67,7 +66,7 @@ export default connect(state => {
       if (currentLeadZuid) {
         // Remove any slashes from the query string
         currentLeadZuid = currentLeadZuid.replace(/\//, "");
-        const currentLead = this.state.leads.find(
+        const currentLead = this.props.leads.find(
           lead => lead.zuid === currentLeadZuid
         );
         if (currentLead) {
@@ -175,7 +174,6 @@ export default connect(state => {
     }
 
     render() {
-      console.log(this.state.currentLead);
       return (
         <div>
           <table className={`table-auto ${styles.leadsTable}`}>
@@ -191,7 +189,7 @@ export default connect(state => {
               {this.props.leads.map(data => {
                 return (
                   <tr
-                    key={data.zuid}
+                    key={`${data.zuid}-${data.dateCreated}`}
                     onClick={() => this.openModalAndUpdateRoute(data)}
                   >
                     <td>{data.dateCreated || "N/A"}</td>
