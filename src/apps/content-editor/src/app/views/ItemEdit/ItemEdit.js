@@ -44,8 +44,8 @@ class ItemEdit extends Component {
 
     if (this.props.item) {
       this.onLoad(this.props.modelZUID, this.props.itemZUID);
-      window.addEventListener("keydown", this.handleSave);
     }
+    window.addEventListener("keydown", this.handleSave);
   }
   componentWillUnmount() {
     this._isMounted = false;
@@ -55,9 +55,8 @@ class ItemEdit extends Component {
       if (this.state.lock.userZUID === this.props.user.user_zuid) {
         this.props.dispatch(unlock(this.state.itemZUID));
       }
-
-      window.removeEventListener("keydown", this.handleSave);
     }
+    window.removeEventListener("keydown", this.handleSave);
   }
   componentDidUpdate() {
     if (
@@ -93,7 +92,7 @@ class ItemEdit extends Component {
       evt.key == "s"
     ) {
       evt.preventDefault();
-      if (this.props.item.dirty) {
+      if (this.props.item && this.props.item.dirty) {
         this.onSave();
       }
     }
