@@ -88,7 +88,8 @@ class CSVImport extends Component {
 
   parseCSV = csv => {
     const records = parse(csv, {
-      skip_empty_lines: true
+      skip_empty_lines: true,
+      skip_lines_with_empty_values: true
     });
 
     // build an array of object to reference data across columns
