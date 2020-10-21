@@ -14,7 +14,7 @@ describe("Actions in content editor", () => {
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     cy.get("input[type=text]")
       .first()
-      .type("{selectall}{backspace}test" + timestamp, { force: true });
+      .type("{selectall}{backspace}test" + timestamp);
     cy.get("#SaveItemButton").click();
     cy.contains("missing data in required field 1", { timeout: 5000 }).should(
       "exist"
@@ -27,7 +27,7 @@ describe("Actions in content editor", () => {
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     cy.get("input[type=text]")
       .first()
-      .type("{selectall}{backspace}test" + timestamp, { force: true });
+      .type("{selectall}{backspace}test" + timestamp);
     cy.get("#SaveItemButton").click();
   });
   it("Saves homepage item metadata", () => {
