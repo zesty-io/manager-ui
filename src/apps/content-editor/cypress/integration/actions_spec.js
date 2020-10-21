@@ -2,12 +2,36 @@ describe("Actions in content editor", () => {
   before(() => {
     //initial login to set the cookie
     cy.login();
-    cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
+    cy.visit("/");
   });
 
   const timestamp = Date.now();
 
+  it("not save when missing required Field", () => {
+    // TODO: update field ZUID to be correct synced ZUID when prod syncs down
+    cy.visit("/schema/6-556370-8sh47g/field/12-f09cdae7b3-zmw28n");
+    cy.contains("Reactivate").click();
+    cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
+    cy.get("input[type=text]")
+      .first()
+      .type("{selectall}{backspace}test" + timestamp);
+    cy.get("#SaveItemButton").click();
+    cy.contains("missing data in required field 1", { timeout: 5000 }).should(
+      "exist"
+    );
+  });
+  it("save when missing required deactivated field", () => {
+    // TODO: update field ZUID to be correct synced ZUID when prod syncs down
+    cy.visit("/schema/6-556370-8sh47g/field/12-f09cdae7b3-zmw28n");
+    cy.contains("Deactivate").click();
+    cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
+    cy.get("input[type=text]")
+      .first()
+      .type("{selectall}{backspace}test" + timestamp);
+    cy.get("#SaveItemButton").click();
+  });
   it("Saves homepage item metadata", () => {
+    cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     // go to Meta Tab
     cy.get("[data-cy=meta]").click();
     cy.get("textarea")
