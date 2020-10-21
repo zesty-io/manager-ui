@@ -18,6 +18,7 @@ describe("Actions in content editor", () => {
       .first()
       .should("have.value", "This is an item meta description");
     cy.get("#SaveItemButton").click();
+    // Should save even with a required, deactivated field
     cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
   });
 
@@ -75,7 +76,6 @@ describe("Actions in content editor", () => {
       .click()
       .type(timestamp);
     cy.get("#CreateItemSaveButton").click();
-
     cy.contains("Created new ", { timeout: 5000 }).should("exist");
   });
 
