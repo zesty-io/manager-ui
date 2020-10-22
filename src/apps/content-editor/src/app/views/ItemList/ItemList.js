@@ -296,7 +296,6 @@ export default connect((state, props) => {
     };
 
     runAllFilters = () => {
-      console.log("runAllFilters");
       const {
         filterTerm,
         sortedBy,
