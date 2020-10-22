@@ -24,16 +24,8 @@ export default connect()(function SetRow(props) {
 
   const item = props.allItems[props.itemZUID];
 
-  const selectRow = (name, value) => {
-    if (name && typeof value != "undefined") {
-      // props.onChange(props.itemZUID, name, value);
-    } else {
-      if (props.itemZUID.slice(0, 3) === "new") {
-        history.push(`/content/${props.modelZUID}/new`);
-      } else {
-        history.push(`/content/${props.modelZUID}/${props.itemZUID}`);
-      }
-    }
+  const selectRow = () => {
+    history.push(`/content/${props.modelZUID}/${props.itemZUID}`);
   };
 
   return (
@@ -209,30 +201,3 @@ export default connect()(function SetRow(props) {
     </article>
   );
 });
-
-// export class SetRow extends Component {
-
-//   selectRow = (name, value) => {
-//     if (name && typeof value != "undefined") {
-//       // props.onChange(props.itemZUID, name, value);
-//     } else {
-//       if (props.itemZUID.slice(0, 3) === "new") {
-//         window.location = `/content/${props.modelZUID}/new`;
-//       } else {
-//         window.location = `/content/${props.modelZUID}/${props.itemZUID}`;
-//       }
-//     }
-//   };
-
-//   componentDidMount() {
-//     // TODO: Replace individual row lookup with instance level publishing records
-//     // const item = props.allItems[props.itemZUID];
-//     // if (item && !item.publishing) {
-//     //   props.loadItemPublishData(props.modelZUID, props.itemZUID);
-//     // }
-//   }
-
-//   render() {
-
-//   }
-// }
