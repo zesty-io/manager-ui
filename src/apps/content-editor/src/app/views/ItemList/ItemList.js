@@ -58,7 +58,6 @@ export default connect((state, props) => {
     list = React.createRef();
 
     state = {
-      modelZUID: this.props.modelZUID,
       saving: false,
       loading: false,
       // Keep internal item state for handling table filters performantly
@@ -297,6 +296,7 @@ export default connect((state, props) => {
     };
 
     runAllFilters = () => {
+      console.log("runAllFilters");
       const {
         filterTerm,
         sortedBy,
