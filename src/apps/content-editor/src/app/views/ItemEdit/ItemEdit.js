@@ -21,6 +21,7 @@ import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
 import { Meta } from "./Meta";
 import { Head } from "./Head";
+import { NotFound } from "shell/components/NotFound";
 
 class ItemEdit extends Component {
   _isMounted = false;
@@ -40,17 +41,21 @@ class ItemEdit extends Component {
 
   componentDidMount() {
     this._isMounted = true;
-    this.onLoad(this.props.modelZUID, this.props.itemZUID);
+
+    if (this.props.item) {
+      this.onLoad(this.props.modelZUID, this.props.itemZUID);
+    }
     window.addEventListener("keydown", this.handleSave);
   }
   componentWillUnmount() {
     this._isMounted = false;
 
-    // release lock when unmounting
-    if (this.state.lock.userZUID === this.props.user.user_zuid) {
-      this.props.dispatch(unlock(this.state.itemZUID));
+    if (this.props.item) {
+      // release lock when unmounting
+      if (this.state.lock.userZUID === this.props.user.user_zuid) {
+        this.props.dispatch(unlock(this.state.itemZUID));
+      }
     }
-
     window.removeEventListener("keydown", this.handleSave);
   }
   componentDidUpdate() {
@@ -87,7 +92,7 @@ class ItemEdit extends Component {
       evt.key == "s"
     ) {
       evt.preventDefault();
-      if (this.props.item.dirty) {
+      if (this.props.item && this.props.item.dirty) {
         this.onSave();
       }
     }
@@ -228,6 +233,11 @@ class ItemEdit extends Component {
   };
 
   render() {
+    if (!this.props.item) {
+      return (
+        <NotFound message={`Content "${this.props.itemZUID}" not found`} />
+      );
+    }
     return (
       <WithLoader
         condition={!this.state.loading && Object.keys(this.props.item).length}
@@ -336,8 +346,8 @@ class ItemEdit extends Component {
 export default connect((state, props) => {
   const { modelZUID, itemZUID } = props.match.params;
 
-  const item = state.content[itemZUID] || {};
-  const model = state.models[modelZUID] || {};
+  const item = state.content[itemZUID];
+  const model = state.models[modelZUID];
   const fields = Object.keys(state.fields)
     .filter(fieldZUID => state.fields[fieldZUID].contentModelZUID === modelZUID)
     .map(fieldZUID => state.fields[fieldZUID])

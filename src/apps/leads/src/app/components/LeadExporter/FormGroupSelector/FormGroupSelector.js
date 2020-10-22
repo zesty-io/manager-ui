@@ -37,7 +37,7 @@ export default connect(state => {
       });
     }
 
-    onGroupFilterChange = (name, value, datatype) => {
+    onGroupFilterChange = value => {
       this.props.dispatch(setFilterFormGroup(value));
     };
 

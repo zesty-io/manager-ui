@@ -13,6 +13,15 @@ import {
 } from "../../../../store/filter";
 
 import styles from "./TableDateFilter.less";
+
+const datePresets = [
+  // Skipping "All" since it's the default
+  { value: DATE_PRESETS.THIRTY, text: "30 Days" },
+  { value: DATE_PRESETS.SIXTY, text: "60 Days" },
+  { value: DATE_PRESETS.NINETY, text: "90 Days" },
+  { value: DATE_PRESETS.CUSTOM, text: "Custom" }
+];
+
 export default connect(state => {
   return {
     filter: state.filter
@@ -22,19 +31,8 @@ export default connect(state => {
     state = {
       endDate: this.props.endDate,
       startDate: this.props.startDate,
-      datePresets: [
-        // Skipping "All" since it's the default
-        { value: DATE_PRESETS.SIXTY, text: "60 Days" },
-        { value: DATE_PRESETS.THIRTY, text: "30 Days" },
-        { value: DATE_PRESETS.NINETY, text: "90 Days" },
-        { value: DATE_PRESETS.CUSTOM, text: "Custom" }
-      ],
       datePickerIsVisible: false
     };
-
-    constructor(props) {
-      super(props);
-    }
 
     /**
      * Sets the Leads "End Date" filter
@@ -127,7 +125,7 @@ export default connect(state => {
             label="Date Range"
             name="form-group-filter"
             onChange={this.onDateRangeChange}
-            options={this.state.datePresets}
+            options={datePresets}
             value={DATE_PRESETS.ALL}
           />
           <div

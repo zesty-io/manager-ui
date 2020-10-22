@@ -123,7 +123,7 @@ export default connect(state => {
               <div className={styles.ScrollContainer}>
                 <ul>
                   {this.state.users.map(user => (
-                    <li key={user.ZUID}>
+                    <li className={styles.Checkboxes} key={user.ZUID}>
                       <input
                         type="checkbox"
                         onClick={this.handleSelectUser}
@@ -140,7 +140,7 @@ export default connect(state => {
             <div className={styles.ScrollContainer}>
               <ul>
                 {this.state.fields.map(field => (
-                  <li key={field.ZUID}>
+                  <li className={styles.Checkboxes} key={field.ZUID}>
                     <input
                       type="checkbox"
                       onClick={this.handleSelectField}
@@ -152,6 +152,7 @@ export default connect(state => {
               </ul>
             </div>
             <Textarea
+              className={styles.TextArea}
               name="message"
               placeholder="Workflow request message"
               value={this.state.message}
@@ -165,6 +166,7 @@ export default connect(state => {
           <CardFooter>
             <ButtonGroup>
               <Button
+                className={styles.Button}
                 onClick={this.handleSend}
                 id="WorkflowRequestSendButton"
                 disabled={this.state.sending}

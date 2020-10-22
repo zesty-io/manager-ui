@@ -409,7 +409,7 @@ export function createItem(modelZUID, itemZUID) {
 
     // Check required fields are not empty
     const missingRequired = fields.filter(field => {
-      if (field.required) {
+      if (!field.deletedAt && field.required) {
         if (!item.data[field.name] && item.data[field.name] != 0) {
           return true;
         }

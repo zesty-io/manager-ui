@@ -13,6 +13,7 @@ import { SetRow } from "./SetRow";
 
 import { DragScroll } from "../../components/DragScroll";
 import { PendingEditsModal } from "../../components/PendingEditsModal";
+import { NotFound } from "shell/components/NotFound";
 
 import {
   fetchItem,
@@ -26,6 +27,7 @@ import { notify } from "shell/store/notifications";
 import { findFields, findItems } from "./findUtils";
 
 import styles from "./ItemList.less";
+
 export default connect((state, props) => {
   const { modelZUID } = props.match.params;
   const model = state.models[modelZUID];
@@ -81,15 +83,17 @@ export default connect((state, props) => {
     componentDidMount() {
       this._isMounted = true;
 
-      // Render rows we have available right away
-      this.updateRows();
+      if (this.props.model) {
+        // Render rows we have available right away
+        this.updateRows();
 
-      // apply filters
-      if (this.props.filters[this.props.modelZUID]) {
-        this.runAllFilters();
+        // apply filters
+        if (this.props.filters[this.props.modelZUID]) {
+          this.runAllFilters();
+        }
+        // Hit API to check for new rows
+        this.load(this.props.modelZUID);
       }
-      // Hit API to check for new rows
-      this.load(this.props.modelZUID);
     }
 
     componentWillUnmount() {
@@ -661,6 +665,11 @@ export default connect((state, props) => {
     };
 
     render() {
+      if (!this.props.model) {
+        return (
+          <NotFound message={`Model "${this.props.modelZUID}" not found`} />
+        );
+      }
       return (
         <main className={styles.ItemList}>
           <SetActions
