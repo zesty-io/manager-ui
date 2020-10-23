@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import moment from "moment-timezone";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,32 +10,23 @@ import {
   faExclamationTriangle
 } from "@fortawesome/free-solid-svg-icons";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
 import { Button } from "@zesty-io/core/Button";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
 import { publish, unpublish } from "shell/store/content";
-import { notify } from "shell/store/notifications";
 
 const DISPLAY_FORMAT = "MMMM Do YYYY, [at] h:mm a";
 const UTC_FORMAT = "YYYY-MM-DD HH:mm:ss";
 
-/**
-Important Notes!!!
-
-FieldTypeDate uses react-flatpickr (i.e. Flatpickr) which emits selected dates
-as date objects in ISO (i.e. UTC) format. 1 We convert emited date objects
-into the local time without timezone information.
-
-Moments are stateful with regards to timezone, utc, etc... so we always create
-a new moment from a date string in order to avoid confusion.
-**/
 import styles from "./ScheduleFlyout.less";
+
 export default class ScheduleFlyout extends Component {
   componentDidMount() {
     const userTimezone = moment.tz.guess();
     this.setState({
+      modalIsOpen: false,
       scheduling: false,
       userTimezone: userTimezone,
       selectedTimezone: userTimezone,
@@ -68,6 +59,18 @@ export default class ScheduleFlyout extends Component {
           scheduling: false
         });
       });
+  };
+
+  openModal = () => {
+    this.setState({
+      modalIsOpen: true
+    });
+  };
+
+  closeModal = () => {
+    this.setState({
+      modalIsOpen: false
+    });
   };
 
   handleSchedulePublish = () => {
@@ -128,13 +131,11 @@ export default class ScheduleFlyout extends Component {
     return (
       this.props.isOpen &&
       (this.props.item.scheduling && this.props.item.scheduling.isScheduled ? (
-        <section className={styles.Flyout}>
-          <Card className={styles.Card}>
-            <CardHeader>
-              <FontAwesomeIcon icon={faCalendar} />
-              &nbsp;Scheduled Publishing
-            </CardHeader>
-            <CardContent>
+        <section className={styles.ScheduleFlyout}>
+          <Modal className={styles.Modal}>
+            <FontAwesomeIcon icon={faCalendar} />
+            &nbsp;Scheduled Publishing
+            <ModalContent>
               <p className={styles.Warn}>
                 <FontAwesomeIcon icon={faExclamationTriangle} />
                 <strong>
@@ -164,8 +165,8 @@ export default class ScheduleFlyout extends Component {
                 </em>{" "}
                 in the <em>{this.state.userTimezone}</em> timezone.
               </p>
-            </CardContent>
-            <CardFooter className={styles.CardFooter}>
+            </ModalContent>
+            <ModalFooter className={styles.ModalFooter}>
               <Button
                 kind="secondary"
                 id="UnschedulePublishButton"
@@ -180,14 +181,14 @@ export default class ScheduleFlyout extends Component {
                 <FontAwesomeIcon icon={faTimesCircle} />
                 &nbsp;Close
               </Button>
-            </CardFooter>
-          </Card>
+            </ModalFooter>
+          </Modal>
         </section>
       ) : (
-        <section className={styles.Flyout}>
-          <Card className={styles.Card}>
-            <CardHeader>Schedule Publishing</CardHeader>
-            <CardContent>
+        <section className={styles.ScheduleFlyout}>
+          <Modal className={styles.Modal}>
+            <h1>Schedule Publishing</h1>
+            <ModalContent>
               <div className={styles.row}>
                 <FieldTypeDropDown
                   label="Timezone where this will be published"
@@ -208,8 +209,8 @@ export default class ScheduleFlyout extends Component {
                   onChange={this.handleChangePublish}
                 />
               </div>
-            </CardContent>
-            <CardFooter className={styles.CardFooter}>
+            </ModalContent>
+            <ModalFooter className={styles.ModalFooter}>
               <Button
                 className={styles.SchedulePublishButton}
                 kind="save"
@@ -227,8 +228,8 @@ export default class ScheduleFlyout extends Component {
               >
                 <FontAwesomeIcon icon={faTimesCircle} /> Close
               </Button>
-            </CardFooter>
-          </Card>
+            </ModalFooter>
+          </Modal>
         </section>
       ))
     );
