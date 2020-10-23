@@ -29,6 +29,8 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-prod.cloudfunctions.net/googleAnalyticsGetPageViews",
 
+    LEGACY_SITES_SERVICE: "https://svc.zesty.io/sites-service",
+
     URL_MANAGER: ".manager.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
     URL_PREVIEW: "-dev.preview.zesty.io",
@@ -63,6 +65,8 @@ if (process.env.NODE_ENV === "production") {
       "https://us-central1-zesty-stage.cloudfunctions.net/authenticateGoogleAnalytics",
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-stage.cloudfunctions.net/googleAnalyticsGetPageViews",
+
+    LEGACY_SITES_SERVICE: "https://svc-stage.zesty.io/sites-service",
 
     URL_MANAGER: ".manager.stage.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
@@ -104,6 +108,8 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
 
+    // LEGACY_SITES_SERVICE: "http://svc.zesty.localdev:3018/sites-service",
+
     URL_MANAGER: ".manager.dev.zesty.io:8080",
     URL_MANAGER_PROTOCOL: "http://",
     URL_PREVIEW: "-dev.preview.dev.zesty.io",
@@ -141,6 +147,8 @@ if (process.env.NODE_ENV === "production") {
       "https://us-central1-zesty-dev.cloudfunctions.net/authenticateGoogleAnalytics",
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
+
+    LEGACY_SITES_SERVICE: "http://svc.zesty.localdev:3018/sites-service",
 
     URL_MANAGER: ".manager.zesty.localdev:9000",
     URL_MANAGER_PROTOCOL: "http://",
