@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useDispatch } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import debounce from "lodash.debounce";
 import cx from "classnames";
 
@@ -116,14 +116,17 @@ export default React.forwardRef(function ContentSearch(props, ref) {
           selectedIndex={selectedIndex}
           refs={refs}
           onSelect={props.onSelect}
-          languages={props.languages}
         />
       )}
     </div>
   );
 });
 
-function SearchResults(props) {
+const SearchResults = connect(state => {
+  return {
+    languages: state.languages
+  };
+})(props => {
   const wrapperRef = useRef(null);
   // clear search results if user clicks outside of results
   useEffect(() => {
@@ -198,4 +201,4 @@ function SearchResults(props) {
       ))}
     </ul>
   );
-}
+});

@@ -45,7 +45,6 @@ export default connect(state => {
           `/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`
         );
       }}
-      languages={props.languages}
     />
   );
 });
