@@ -26,7 +26,6 @@ export default class ScheduleFlyout extends Component {
   componentDidMount() {
     const userTimezone = moment.tz.guess();
     this.setState({
-      modalIsOpen: false,
       scheduling: false,
       userTimezone: userTimezone,
       selectedTimezone: userTimezone,
@@ -59,18 +58,6 @@ export default class ScheduleFlyout extends Component {
           scheduling: false
         });
       });
-  };
-
-  openModal = () => {
-    this.setState({
-      modalIsOpen: true
-    });
-  };
-
-  closeModal = () => {
-    this.setState({
-      modalIsOpen: false
-    });
   };
 
   handleSchedulePublish = () => {
@@ -132,6 +119,7 @@ export default class ScheduleFlyout extends Component {
       this.props.isOpen &&
       (this.props.item.scheduling && this.props.item.scheduling.isScheduled ? (
         <section className={styles.ScheduleFlyout}>
+          TEST
           <Modal className={styles.Modal}>
             <FontAwesomeIcon icon={faCalendar} />
             &nbsp;Scheduled Publishing
