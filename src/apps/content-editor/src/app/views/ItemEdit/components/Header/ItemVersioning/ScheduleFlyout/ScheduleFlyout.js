@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import moment from "moment-timezone";
-import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -223,7 +222,7 @@ export default class ScheduleFlyout extends Component {
     return (
       this.props.isOpen && (
         <section>
-          <Modal type="global" open={open}>
+          <Modal type="global" open={true} onClose={this.props.toggleOpen}>
             {this.props.item.scheduling &&
             this.props.item.scheduling.isScheduled
               ? this.renderIsScheduled()

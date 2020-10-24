@@ -45,7 +45,7 @@ export default connect(state => {
         });
     };
 
-    handleOpenSchedule = () => {
+    toggleScheduleModal = () => {
       this.setState({
         ScheduleFlyout: !this.state.ScheduleFlyout
       });
@@ -115,7 +115,7 @@ export default connect(state => {
               `}
                 kind={this.state.ScheduleFlyout ? "tertiary" : "secondary"}
                 disabled={schedulingDisabled || false}
-                onClick={this.handleOpenSchedule}
+                onClick={this.toggleScheduleModal}
               >
                 <FontAwesomeIcon icon={faCalendar} />
               </Button>
@@ -123,7 +123,7 @@ export default connect(state => {
                 isOpen={this.state.ScheduleFlyout}
                 item={this.props.item}
                 dispatch={this.props.dispatch}
-                toggleOpen={this.handleOpenSchedule}
+                toggleOpen={this.toggleScheduleModal}
               />
             </ButtonGroup>
           )}
