@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faBan } from "@fortawesome/free-solid-svg-icons";
@@ -41,6 +42,8 @@ function Header() {
 
 function Footer(props) {
   const [isOpen, setIsOpen] = useState(false);
+  const history = useHistory();
+
   return (
     <React.Fragment>
       <CardFooter>
@@ -61,7 +64,7 @@ function Footer(props) {
             props
               .dispatch(deleteModel(props.model.ZUID))
               .then(() => {
-                setIsOpen(false);
+                history.push("/schema");
               })
               .catch(err => {
                 console.error(err);
