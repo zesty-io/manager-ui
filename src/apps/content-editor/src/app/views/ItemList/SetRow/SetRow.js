@@ -25,7 +25,11 @@ export default connect()(function SetRow(props) {
   const item = props.allItems[props.itemZUID];
 
   const selectRow = () => {
-    history.push(`/content/${props.modelZUID}/${props.itemZUID}`);
+    if (props.itemZUID.slice(0, 3) === "new") {
+      history.push(`/content/${props.modelZUID}/new`);
+    } else {
+      history.push(`/content/${props.modelZUID}/${props.itemZUID}`);
+    }
   };
 
   return (
