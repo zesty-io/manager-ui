@@ -14,7 +14,8 @@ const ICONS = {
   external: faExternalLinkSquareAlt,
   internal: faLink,
   item: faFile,
-  homepage: faHome
+  homepage: faHome,
+  socialfeed: faDatabase
 };
 
 const sortNav = (a, b) => {
