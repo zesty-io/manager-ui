@@ -161,7 +161,11 @@ export default class ScheduleFlyout extends Component {
             &nbsp;Unschedule Version&nbsp;
             {this.props.item.scheduling.version}
           </Button>
-          <Button kind="cancel" onClick={this.props.toggleOpen}>
+          <Button
+            className={styles.Close}
+            kind="cancel"
+            onClick={this.props.toggleOpen}
+          >
             <FontAwesomeIcon icon={faTimesCircle} />
             &nbsp;Close
           </Button>
@@ -172,9 +176,9 @@ export default class ScheduleFlyout extends Component {
   renderIsNotScheduled() {
     return (
       <>
-        <h1>Schedule Publishing</h1>
+        <h3>Schedule Publishing</h3>
         <ModalContent>
-          <div className={styles.row}>
+          <div className={styles.Row}>
             <FieldTypeDropDown
               label="Timezone where this will be published"
               name="selectedTimezone"
@@ -183,7 +187,7 @@ export default class ScheduleFlyout extends Component {
               options={this.state.timezones}
             />
           </div>
-          <div className={styles.row}>
+          <div className={styles.Row}>
             <FieldTypeDate
               type="date"
               name="publish"
@@ -197,7 +201,6 @@ export default class ScheduleFlyout extends Component {
         </ModalContent>
         <ModalFooter className={styles.ModalFooter}>
           <Button
-            className={styles.SchedulePublishButton}
             kind="save"
             id="SchedulePublishButton"
             onClick={this.handleSchedulePublish}
@@ -207,6 +210,7 @@ export default class ScheduleFlyout extends Component {
             Version {this.props.item.meta.version}
           </Button>
           <Button
+            className={styles.Close}
             kind="cancel"
             id="SchedulePublishClose"
             onClick={this.props.toggleOpen}
@@ -222,7 +226,12 @@ export default class ScheduleFlyout extends Component {
     return (
       this.props.isOpen && (
         <section>
-          <Modal type="global" open={true} onClose={this.props.toggleOpen}>
+          <Modal
+            className={styles.Modal}
+            type="global"
+            open={true}
+            onClose={this.props.toggleOpen}
+          >
             {this.props.item.scheduling &&
             this.props.item.scheduling.isScheduled
               ? this.renderIsScheduled()

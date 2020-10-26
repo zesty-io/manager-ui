@@ -1,9 +1,17 @@
 @import "~@zesty-io/core/colors.less";
 
-.SchedulePublishModal {
+.Modal {
+  .Row {
+    margin: 8px 0;
+  }
+  .Warn {
+    color: @zesty-orange;
+  }
+
   .ModalFooter {
-    button {
-      margin-bottom: 8px;
+    display: flex;
+    .Close {
+      margin-left: 8px;
     }
   }
 }

@@ -95,6 +95,7 @@ export default connect(state => {
           {this.props.user.staff && (
             <ButtonGroup className={styles.Publish}>
               <Button
+                className={styles.PublishButton}
                 id="PublishButton"
                 kind="secondary"
                 disabled={publishingDisabled || false}
@@ -106,7 +107,7 @@ export default connect(state => {
               </Button>
               <Button
                 id="PublishScheduleButton"
-                className={`${styles.clock} ${
+                className={`${styles.ClockButton} ${
                   this.props.item.scheduling &&
                   this.props.item.scheduling.isScheduled
                     ? styles.Scheduled
