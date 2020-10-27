@@ -18,6 +18,7 @@ import { NotFound } from "shell/components/NotFound";
 import {
   fetchItem,
   fetchItems,
+  crawlFetchItems,
   searchItems,
   saveItem
 } from "shell/store/content";
@@ -26,6 +27,8 @@ import { notify } from "shell/store/notifications";
 import { findFields, findItems } from "./findUtils";
 
 import styles from "./ItemList.less";
+
+const PAGE_SIZE = 100;
 
 export default connect((state, props) => {
   const { modelZUID } = props.match.params;
@@ -65,6 +68,7 @@ export default connect((state, props) => {
     state = {
       saving: false,
       loading: false,
+      loadingSecondary: false,
       // Keep internal item state for handling table filters performantly
       // avoiding recalculations on component updates
       items: [],
@@ -168,8 +172,10 @@ export default connect((state, props) => {
         this.props.modelZUID,
         this.props.selectedLang.ID
       );
+      const itemCount = items.length;
+
       items.unshift(fields);
-      this.setState({ items, fields }, () => {
+      this.setState({ items, fields, itemCount }, () => {
         if (
           this.state.sortedBy ||
           this.state.filterTerm ||
@@ -180,56 +186,69 @@ export default connect((state, props) => {
       });
     };
 
+    runFilters = () => {
+      const { filterTerm, sortedBy, status, colType } = this.state;
+      if (filterTerm) {
+        this.onFilter(filterTerm);
+      } else if (status) {
+        this.onStatus(status);
+      } else if (sortedBy) {
+        this.onSort(sortedBy, colType);
+      }
+    };
+
     load = modelZUID => {
       this.setState({
-        loading: true
+        loading: true,
+        loadingSecondary: true
       });
 
       return Promise.all([
         this.props.dispatch(fetchFields(modelZUID)),
-        this.props.dispatch(fetchItems(modelZUID))
+        this.props.dispatch(
+          fetchItems(modelZUID, { limit: PAGE_SIZE, page: 1 })
+        )
       ])
         .then(() => {
           if (this._isMounted) {
             this.updateRows();
-            this.setState(
-              {
-                loading: false
-              },
-              () => {
-                const { filterTerm, sortedBy, status, colType } = this.state;
-                if (filterTerm) {
-                  this.onFilter(filterTerm);
-                } else if (status) {
-                  this.onStatus(status);
-                } else if (sortedBy) {
-                  this.onSort(sortedBy, colType);
-                }
-              }
-            );
+            this.setState({ loading: false });
+            this.loadSecondaryPages(modelZUID);
           }
         })
         .catch(err => {
           console.error("ItemList:load:error", err);
           if (this._isMounted) {
-            this.setState(
-              {
-                loading: false
-              },
-              () => {
-                const { filterTerm, sortedBy, status, colType } = this.state;
-                if (filterTerm) {
-                  this.onFilter(filterTerm);
-                } else if (status) {
-                  this.onStatus(status);
-                } else if (sortedBy) {
-                  this.onSort(sortedBy, colType);
-                }
-              }
-            );
+            this.setState({ loading: false, loadingSecondary: false });
           }
           throw err;
         });
+    };
+
+    loadSecondaryPages = modelZUID => {
+      this.props
+        .dispatch(
+          crawlFetchItems(modelZUID, {
+            limit: PAGE_SIZE,
+            page: 2,
+            afterEach: () => {
+              this.updateItemCount();
+            }
+          })
+        )
+        .then(() => {
+          this.updateRows();
+          this.setState({ loadingSecondary: false });
+        });
+    };
+
+    updateItemCount = () => {
+      let items = findItems(
+        this.props.allItems,
+        this.props.modelZUID,
+        this.props.selectedLang.ID
+      );
+      this.setState({ itemCount: items.length });
     };
 
     loadItem = (modelZUID, itemZUID) => {
@@ -315,15 +334,7 @@ export default connect((state, props) => {
       if (filterTerm || sortedBy || status) {
         this.setState(
           { filterTerm, sortedBy, status, colType, reverseSort },
-          () => {
-            if (filterTerm) {
-              this.onFilter(filterTerm);
-            } else if (status) {
-              this.onStatus(status);
-            } else if (sortedBy) {
-              this.onSort(sortedBy, colType);
-            }
-          }
+          this.runFilters
         );
       }
     };
@@ -633,8 +644,8 @@ export default connect((state, props) => {
             model={this.props.model}
             isDirty={this.props.dirtyItems.length}
             saving={this.state.saving}
-            loading={this.state.loading}
-            itemCount={this.state.items.length - 1}
+            loading={this.state.loadingSecondary}
+            itemCount={this.state.itemCount}
             onSaveAll={this.saveItems}
             onFilter={this.onFilter}
             onStatus={this.onStatus}

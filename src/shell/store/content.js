@@ -1,5 +1,6 @@
 import moment from "moment-timezone";
 import cloneDeep from "lodash.clonedeep";
+import omit from "lodash/omit";
 
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
@@ -261,25 +262,30 @@ export function searchItems(itemZUID) {
   };
 }
 
-export function fetchItems(modelZUID) {
+export function fetchItems(modelZUID, options = {}) {
   if (!modelZUID) {
     console.error("content:fetchItems() Missing modelZUID");
     console.trace();
     return () => {};
   }
 
-  return (dispatch, getState) => {
+  options.limit = options.limit || 100;
+  options.page = options.page || 1;
+
+  return dispatch => {
     // TODO load items for selected lang
     // const state = getState();
     // const lang = state.user.selected_lang || "en-US";
 
+    const params = new URLSearchParams(options).toString();
+
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items`,
+      uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items?${params}`,
       handler: res => {
         if (res.status === 400) {
           console.error("fetchItems():response", res);
-          dispatch(
+          return dispatch(
             notify({
               kind: "warn",
               message: res.error
@@ -307,6 +313,23 @@ export function fetchItems(modelZUID) {
         return res;
       }
     });
+  };
+}
+
+export function crawlFetchItems(modelZUID, options = { limit: 5000 }) {
+  return async dispatch => {
+    let totalItems = options.limit;
+    options.page = options.page || 1;
+    while (totalItems === options.limit) {
+      const res = await dispatch(
+        fetchItems(modelZUID, omit(options, "afterEach"))
+      );
+      options.page++;
+      totalItems = res._meta.totalResults;
+      if (typeof options.afterEach === "function") {
+        options.afterEach();
+      }
+    }
   };
 }
 

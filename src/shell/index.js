@@ -54,7 +54,7 @@ window.growl = notify;
 const instanceZUID = store.getState().instance.ZUID;
 window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZUID}${window.CONFIG.API_INSTANCE}`;
 
-const loadLocalStorageData = true;
+const loadLocalStorageData = false;
 // Load Local Storage Data
 if (loadLocalStorageData) {
   try {
