@@ -11,6 +11,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
+import { Notice } from "@zesty-io/core/Notice";
 import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
 import { Button } from "@zesty-io/core/Button";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
