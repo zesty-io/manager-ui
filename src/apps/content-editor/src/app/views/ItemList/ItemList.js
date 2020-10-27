@@ -707,6 +707,7 @@ export default connect((state, props) => {
                       fields: this.state.fields,
                       allFields: this.props.allFields,
                       onChange: this.onChange,
+                      loadItem: this.loadItem,
                       searchItem: this.searchItem,
                       sortedBy: this.state.sortedBy,
                       onSort: this.onSort,
