@@ -227,6 +227,10 @@ export default connect((state, props) => {
         });
     };
 
+    loadItem = (modelZUID, itemZUID) => {
+      return this.props.dispatch(fetchItem(modelZUID, itemZUID));
+    };
+
     searchItem = itemZUID => {
       return this.props.dispatch(searchItems(itemZUID));
     };
