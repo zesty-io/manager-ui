@@ -316,23 +316,6 @@ export function fetchItems(modelZUID, options = {}) {
   };
 }
 
-export function crawlFetchItems(modelZUID, options = { limit: 5000 }) {
-  return async dispatch => {
-    let totalItems = options.limit;
-    options.page = options.page || 1;
-    while (totalItems === options.limit) {
-      const res = await dispatch(
-        fetchItems(modelZUID, omit(options, "afterEach"))
-      );
-      options.page++;
-      totalItems = res._meta.totalResults;
-      if (typeof options.afterEach === "function") {
-        options.afterEach();
-      }
-    }
-  };
-}
-
 // NOTE has major performance issues on large sites. Will most likely remove this code
 // export function fetchAllItems() {
 //   return (dispatch, getState) => {

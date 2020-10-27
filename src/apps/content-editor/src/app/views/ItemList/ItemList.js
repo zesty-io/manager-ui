@@ -18,7 +18,6 @@ import { NotFound } from "shell/components/NotFound";
 import {
   fetchItem,
   fetchItems,
-  crawlFetchItems,
   searchItems,
   saveItem
 } from "shell/store/content";
@@ -225,21 +224,24 @@ export default connect((state, props) => {
         });
     };
 
-    loadSecondaryPages = modelZUID => {
-      this.props
-        .dispatch(
-          crawlFetchItems(modelZUID, {
-            limit: PAGE_SIZE,
-            page: 2,
-            afterEach: () => {
-              this.updateItemCount();
-            }
-          })
-        )
-        .then(() => {
-          this.updateRows();
-          this.setState({ loadingSecondary: false });
-        });
+    loadSecondaryPages = async modelZUID => {
+      await this.crawlFetchItems(modelZUID);
+      this.updateRows();
+      this.setState({ loadingSecondary: false });
+    };
+
+    crawlFetchItems = async modelZUID => {
+      const limit = PAGE_SIZE;
+      let page = 2;
+      let totalItems = limit;
+      while (totalItems === limit && this._isMounted) {
+        const res = await this.props.dispatch(
+          fetchItems(modelZUID, { limit, page })
+        );
+        page++;
+        totalItems = res._meta.totalResults;
+        this.updateItemCount();
+      }
     };
 
     updateItemCount = () => {
