@@ -740,6 +740,7 @@ class RowRender extends PureComponent {
       fields,
       allFields,
       onChange,
+      loadItem,
       searchItem,
       sortedBy,
       reverseSort
@@ -774,6 +775,7 @@ class RowRender extends PureComponent {
           allFields={allFields}
           // Functions
           onChange={onChange}
+          loadItem={loadItem}
           searchItem={searchItem}
         />
       );
