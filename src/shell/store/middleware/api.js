@@ -27,6 +27,8 @@ export const fetchResource = store => next => action => {
             throw err;
           }
         });
+    } else {
+      console.log("duplicate request: ", action.uri);
     }
   } else {
     return next(action);
