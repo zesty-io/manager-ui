@@ -138,13 +138,13 @@ export default class ScheduleFlyout extends Component {
               <FontAwesomeIcon icon={faCalendar} />
               &nbsp;Scheduled Publishing
               <ModalContent>
-                <p className={styles.Notice}>
+                <Notice>
                   <FontAwesomeIcon icon={faExclamationTriangle} />
                   <strong>
                     New versions can not be published while there is a version
                     scheduled.
                   </strong>
-                </p>
+                </Notice>
                 <p>
                   Version {this.props.item.scheduling.version} is scheduled to
                   publish on{" "}
