@@ -122,13 +122,6 @@ export default class ScheduleFlyout extends Component {
     });
   };
 
-  renderIsScheduled() {
-    return <></>;
-  }
-  renderIsNotScheduled() {
-    return <></>;
-  }
-
   render() {
     return (
       this.props.isOpen && (
@@ -144,7 +137,7 @@ export default class ScheduleFlyout extends Component {
               <FontAwesomeIcon icon={faCalendar} />
               &nbsp;Scheduled Publishing
               <ModalContent>
-                <p className={styles.Warn}>
+                <p className={styles.Notice}>
                   <FontAwesomeIcon icon={faExclamationTriangle} />
                   <strong>
                     New versions can not be published while there is a version
