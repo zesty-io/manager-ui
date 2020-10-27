@@ -135,17 +135,16 @@ export default class ScheduleFlyout extends Component {
           {this.props.item.scheduling &&
           this.props.item.scheduling.isScheduled ? (
             <section>
-              <FontAwesomeIcon icon={faCalendar} />
-              &nbsp;Scheduled Publishing
+              <h3 className={styles.Row}>
+                <FontAwesomeIcon icon={faCalendar} />
+                &nbsp;Scheduled Publishing
+              </h3>
               <ModalContent>
-                <Notice>
-                  <FontAwesomeIcon icon={faExclamationTriangle} />
-                  <strong>
-                    New versions can not be published while there is a version
-                    scheduled.
-                  </strong>
+                <Notice className={styles.Notice}>
+                  New versions can not be published while there is a version
+                  scheduled.
                 </Notice>
-                <p>
+                <p className={styles.Row}>
                   Version {this.props.item.scheduling.version} is scheduled to
                   publish on{" "}
                   <em>
@@ -180,12 +179,12 @@ export default class ScheduleFlyout extends Component {
                   {this.props.item.scheduling.version}
                 </Button>
                 <Button
-                  className={styles.Close}
+                  className={styles.Cancel}
                   kind="cancel"
                   onClick={this.props.toggleOpen}
                 >
                   <FontAwesomeIcon icon={faTimesCircle} />
-                  &nbsp;Close
+                  &nbsp;Cancel (ESC)
                 </Button>
               </ModalFooter>
             </section>
@@ -225,12 +224,12 @@ export default class ScheduleFlyout extends Component {
                   Version {this.props.item.meta.version}
                 </Button>
                 <Button
-                  className={styles.Close}
+                  className={styles.Cancel}
                   kind="cancel"
                   id="SchedulePublishClose"
                   onClick={this.props.toggleOpen}
                 >
-                  <FontAwesomeIcon icon={faTimesCircle} /> Close
+                  <FontAwesomeIcon icon={faTimesCircle} /> Cancel (ESC)
                 </Button>
               </ModalFooter>
             </section>
