@@ -15,7 +15,12 @@ import { DragScroll } from "../../components/DragScroll";
 import { PendingEditsModal } from "../../components/PendingEditsModal";
 import { NotFound } from "shell/components/NotFound";
 
-import { fetchItems, searchItems, saveItem } from "shell/store/content";
+import {
+  fetchItem,
+  fetchItems,
+  searchItems,
+  saveItem
+} from "shell/store/content";
 import { fetchFields } from "shell/store/fields";
 import { notify } from "shell/store/notifications";
 import { findFields, findItems } from "./findUtils";
