@@ -638,7 +638,7 @@ export function unlock(itemZUID) {
 }
 
 export function lock(itemZUID) {
-  return (dispatch, getState) => {
+  return getState => {
     const user = getState().user;
     if (user) {
       return request(`${CONFIG.SERVICE_REDIS_GATEWAY}/door/lock`, {
@@ -646,10 +646,10 @@ export function lock(itemZUID) {
         credentials: "omit",
         json: true,
         body: {
-          firstName: user.first_name,
-          lastName: user.last_name,
+          firstName: user.firstName,
+          lastName: user.lastName,
           email: user.email,
-          userZUID: user.user_zuid,
+          userZUID: user.ZUID,
           path: itemZUID
         }
       });
