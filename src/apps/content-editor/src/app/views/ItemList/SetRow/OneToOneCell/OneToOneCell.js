@@ -8,6 +8,15 @@ import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./OneToOneCell.less";
 export class OneToOneCell extends PureComponent {
+  componentDidMount() {
+    const relatedItemZUID = this.props.value;
+    if (relatedItemZUID) {
+      const relatedItem = this.props.allItems[relatedItemZUID];
+      if (!relatedItem || !relatedItem.data) {
+        this.props.loadItem(this.props.field.relatedModelZUID, relatedItemZUID);
+      }
+    }
+  }
   render() {
     if (!this.props.field.relatedFieldZUID) {
       return (
@@ -29,10 +38,6 @@ export class OneToOneCell extends PureComponent {
 
     const relatedItem = this.props.allItems[relatedItemZUID];
     if (!relatedItem || !relatedItem.data) {
-      this.props.loadItem(
-        this.props.field.settings.relatedModel,
-        relatedItemZUID
-      );
       return (
         <span className={cx(this.props.className, styles.OneToOneCell)}>
           <Loader />
