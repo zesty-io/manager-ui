@@ -19,8 +19,7 @@ import {
   fetchItem,
   fetchItems,
   searchItems,
-  saveItem,
-  fetchItemPublishing
+  saveItem
 } from "shell/store/content";
 import { fetchFields } from "shell/store/fields";
 import { notify } from "shell/store/notifications";
@@ -64,7 +63,6 @@ export default connect((state, props) => {
     list = React.createRef();
 
     state = {
-      modelZUID: this.props.modelZUID,
       saving: false,
       loading: false,
       // Keep internal item state for handling table filters performantly
@@ -126,7 +124,7 @@ export default connect((state, props) => {
       }
 
       // Handle changing item list views
-      if (this.props.modelZUID !== this.state.modelZUID) {
+      if (prevProps.modelZUID !== this.props.modelZUID) {
         this.updateRows();
         // Clear previous model and load any new model rows we have available
 
@@ -184,8 +182,7 @@ export default connect((state, props) => {
 
     load = modelZUID => {
       this.setState({
-        loading: true,
-        modelZUID
+        loading: true
       });
 
       return Promise.all([
@@ -237,10 +234,6 @@ export default connect((state, props) => {
 
     loadItem = (modelZUID, itemZUID) => {
       return this.props.dispatch(fetchItem(modelZUID, itemZUID));
-    };
-
-    loadItemPublishData = (modelZUID, itemZUID) => {
-      this.props.dispatch(fetchItemPublishing(modelZUID, itemZUID));
     };
 
     searchItem = itemZUID => {
@@ -361,6 +354,51 @@ export default connect((state, props) => {
         }
       );
     };
+
+    filterByStatus = (items, status) => {
+      switch (status) {
+        case "scheduled":
+          return items.filter(
+            item => item.scheduling && item.scheduling.isScheduled
+          );
+        case "published":
+          return items.filter(
+            item =>
+              item.publishing &&
+              item.publishing.isPublished &&
+              (!item.scheduling || !item.scheduling.isScheduled)
+          );
+        case "unpublished":
+          return items.filter(
+            item =>
+              (!item.publishing || !item.publishing.isPublished) &&
+              (!item.scheduling || !item.scheduling.isScheduled)
+          );
+        case "all":
+        default:
+          return items;
+      }
+    };
+
+    sortItems = (items, { reverse, col, type }) => {
+      items.sort((a, b) => {
+        if (type === "date" || type === "datetime") {
+          const dateA = new Date(a.data[col]);
+          const dateB = new Date(b.data[col]);
+          return reverse ? dateA - dateB : dateB - dateA;
+        }
+        if (type === "number" || type === "sort") {
+          const numA = Number(a.data[col]);
+          const numB = Number(b.data[col]);
+          return reverse ? numA - numB : numB - numA;
+        }
+        // else we assume the type is string
+        const aStr = String(a.data[col]);
+        const bStr = String(b.data[col]);
+        return reverse ? aStr.localeCompare(bStr) : bStr.localeCompare(aStr);
+      });
+    };
+
     /*
     -=onFilter, onStatus and onSort=-
     each of these functions needs to respect
@@ -479,31 +517,7 @@ export default connect((state, props) => {
       }
 
       // handle status if applied
-      if (this.state.status && this.state.status !== "all") {
-        const status = this.state.status;
-        switch (status) {
-          case "scheduled":
-            items = items.filter(
-              item => item.scheduling && item.scheduling.isScheduled
-            );
-            break;
-          case "published":
-            items = items.filter(
-              item =>
-                item.publishing &&
-                item.publishing.isPublished &&
-                (!item.scheduling || !item.scheduling.isScheduled)
-            );
-            break;
-          case "unpublished":
-            items = items.filter(
-              item =>
-                (!item.publishing || !item.publishing.isPublished) &&
-                (!item.scheduling || !item.scheduling.isScheduled)
-            );
-            break;
-        }
-      }
+      items = this.filterByStatus(items, this.state.status);
 
       // handle sort order if it is applied
       if (this.state.sortedBy && this.state.fields.length) {
@@ -513,22 +527,7 @@ export default connect((state, props) => {
         const type = this.state.fields.find(
           field => field.name === this.state.sortedBy
         ).datatype;
-        items.sort((a, b) => {
-          if (type === "date" || type === "datetime") {
-            const dateA = new Date(a.data[col]);
-            const dateB = new Date(b.data[col]);
-            return reverse ? dateA - dateB : dateB - dateA;
-          }
-          if (type === "number" || type === "sort") {
-            const numA = Number(a.data[col]);
-            const numB = Number(b.data[col]);
-            return reverse ? numA - numB : numB - numA;
-          }
-          // else we assume the type is string
-          const aStr = String(a.data[col]);
-          const bStr = String(b.data[col]);
-          return reverse ? aStr.localeCompare(bStr) : bStr.localeCompare(aStr);
-        });
+        this.sortItems(items, { reverse, col, type });
       }
 
       items.unshift(this.state.fields);
@@ -551,12 +550,12 @@ export default connect((state, props) => {
       );
     };
 
-    onStatus = value => {
+    onStatus = status => {
       // if there is a filter term in place
       // run the onFilter which will also
       // handle the status filter
       if (this.state.filterTerm || this.state.sortedBy) {
-        return this.setState({ status: value }, () =>
+        return this.setState({ status }, () =>
           this.onFilter(this.state.filterTerm)
         );
       }
@@ -567,28 +566,7 @@ export default connect((state, props) => {
         this.props.selectedLang.ID
       );
 
-      switch (value) {
-        case "scheduled":
-          items = items.filter(
-            item => item.scheduling && item.scheduling.isScheduled
-          );
-          break;
-        case "published":
-          items = items.filter(
-            item =>
-              item.publishing &&
-              item.publishing.isPublished &&
-              (!item.scheduling || !item.scheduling.isScheduled)
-          );
-          break;
-        case "unpublished":
-          items = items.filter(
-            item =>
-              (!item.publishing || !item.publishing.isPublished) &&
-              (!item.scheduling || !item.scheduling.isScheduled)
-          );
-          break;
-      }
+      items = this.filterByStatus(items, status);
 
       items.unshift(this.state.fields);
 
@@ -602,7 +580,7 @@ export default connect((state, props) => {
       this.setState(
         {
           items,
-          status: value
+          status
         },
         () => {
           this.persistFilters();
@@ -620,32 +598,9 @@ export default connect((state, props) => {
           : this.state.reverseSort;
       // sort the items in state by the column value
       if (col) {
-        sortedItems.sort((a, b) => {
-          if (type === "date" || type === "datetime") {
-            const dateA = new Date(a.data[col]);
-            const dateB = new Date(b.data[col]);
-            return reverse ? dateA - dateB : dateB - dateA;
-          }
-          if (type === "number" || type === "sort") {
-            const numA = Number(a.data[col]);
-            const numB = Number(b.data[col]);
-            return reverse ? numA - numB : numB - numA;
-          }
-          // else we assume the type is string
-          const aStr = String(a.data[col]);
-          const bStr = String(b.data[col]);
-          return reverse ? aStr.localeCompare(bStr) : bStr.localeCompare(aStr);
-        });
+        this.sortItems(sortedItems, { reverse, col, type });
       } else {
-        sortedItems.sort((a, b) => {
-          if (a.meta.createdAt < b.meta.createdAt) {
-            return 1;
-          }
-          if (a.meta.createdAt > b.meta.createdAt) {
-            return -1;
-          }
-          return 0;
-        });
+        sortedItems.sort((a, b) => b.meta.createdAt - a.meta.createdAt);
       }
 
       // add cols back to items array
@@ -761,8 +716,7 @@ export default connect((state, props) => {
                       searchItem: this.searchItem,
                       sortedBy: this.state.sortedBy,
                       onSort: this.onSort,
-                      reverseSort: this.state.reverseSort,
-                      loadItemPublishData: this.loadItemPublishData
+                      reverseSort: this.state.reverseSort
                     }}
                     height={this.state.height}
                     width={this.state.width}
@@ -794,7 +748,6 @@ class RowRender extends PureComponent {
       onChange,
       loadItem,
       searchItem,
-      loadItemPublishData,
       sortedBy,
       reverseSort
     } = this.props.data;
@@ -830,7 +783,6 @@ class RowRender extends PureComponent {
           onChange={onChange}
           loadItem={loadItem}
           searchItem={searchItem}
-          loadItemPublishData={loadItemPublishData}
         />
       );
     }
