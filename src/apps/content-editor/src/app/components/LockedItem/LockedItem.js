@@ -28,8 +28,8 @@ export const LockedItem = ({
         </CardHeader>
         <CardContent className={styles.Center}>
           <p>
-            The item '{itemName}' is being edited by {userFirstName}{" "}
-            {userLastName} since{" "}
+            The item <strong>{itemName}</strong> is being edited by{" "}
+            {userFirstName} {userLastName} since{" "}
             {moment.unix(timestamp).format("MMMM Do YYYY, [at] h:mm a")}
           </p>
 
