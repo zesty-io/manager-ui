@@ -32,14 +32,14 @@ export const LockedItem = ({
             {userLastName} since{" "}
             {moment.unix(timestamp).format("MMMM Do YYYY, [at] h:mm a")}
           </p>
-          <Divider />
+
           <p>
             You can contact {userFirstName} via
             <Url title="Email" href={`mailto:${userEmail}`}>
               {userEmail}
             </Url>
           </p>
-          <Divider />
+
           <p>
             To ignore this warning and possibly overwrite {userFirstName}'s
             changes you may unlock this content
@@ -48,7 +48,11 @@ export const LockedItem = ({
         <CardFooter className={styles.Footer}>
           <span className={styles.alignRight}>
             <ButtonGroup>
-              <Button kind="cancel" onClick={goBack}>
+              <Button
+                className={styles.ButtonBack}
+                kind="cancel"
+                onClick={goBack}
+              >
                 Go Back
               </Button>
               <Button kind="save" onClick={handleUnlock}>
