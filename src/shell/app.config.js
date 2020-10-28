@@ -66,7 +66,7 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-stage.cloudfunctions.net/googleAnalyticsGetPageViews",
 
-    LEGACY_SITES_SERVICE: "https://svc-stage.zesty.io/sites-service",
+    LEGACY_SITES_SERVICE: "https://stage-svc.zesty.io/sites-service",
 
     URL_MANAGER: ".manager.stage.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
