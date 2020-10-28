@@ -82,13 +82,16 @@ export const LinkCreate = connect((state, props) => {
         saving: true
       });
 
-      return request(`${CONFIG.service.manager}/ajax/process_link.ajax.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-        },
-        body
-      })
+      return request(
+        `${CONFIG.LEGACY_SITES_SERVICE}/ajax/process_link.ajax.php`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+          },
+          body
+        }
+      )
         .then(res => {
           this.setState({ saving: false });
           if (res.error) {
