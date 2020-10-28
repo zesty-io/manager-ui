@@ -196,51 +196,59 @@ export default connect((state, props) => {
       }
     };
 
-    load = modelZUID => {
+    load = async modelZUID => {
       this.setState({
         loading: true,
         loadingSecondary: true
       });
 
-      return Promise.all([
-        this.props.dispatch(fetchFields(modelZUID)),
-        this.props.dispatch(
-          fetchItems(modelZUID, { limit: PAGE_SIZE, page: 1 })
-        )
-      ])
-        .then(() => {
-          if (this._isMounted) {
+      try {
+        const [, itemsRes] = await Promise.all([
+          this.props.dispatch(fetchFields(modelZUID)),
+          this.props.dispatch(
+            fetchItems(modelZUID, { limit: PAGE_SIZE, page: 1 })
+          )
+        ]);
+        if (this._isMounted) {
+          // render 1st page of results
+          this.updateRows();
+          this.setState({ loading: false });
+
+          if (itemsRes._meta.totalResults === PAGE_SIZE) {
+            // load page 2 until last page
+            await this.crawlFetchItems(modelZUID);
+            // re-render after all pages fetched
             this.updateRows();
-            this.setState({ loading: false });
-            this.loadSecondaryPages(modelZUID);
           }
-        })
-        .catch(err => {
-          console.error("ItemList:load:error", err);
-          if (this._isMounted) {
-            this.setState({ loading: false, loadingSecondary: false });
-          }
-          throw err;
-        });
+          this.setState({ loadingSecondary: false });
+        }
+      } catch (err) {
+        console.error("ItemList:load:error", err);
+        if (this._isMounted) {
+          this.setState({ loading: false, loadingSecondary: false });
+        }
+      }
     };
 
-    loadSecondaryPages = async modelZUID => {
-      await this.crawlFetchItems(modelZUID);
-      this.updateRows();
-      this.setState({ loadingSecondary: false });
-    };
-
+    // crawl page 2 until the end of valid pages
+    // after each successful page fetch, update item count for display
+    // end crawling if component unmounts
+    // end crawling on modelZUID change
+    // end crawling on error
     crawlFetchItems = async modelZUID => {
       const limit = PAGE_SIZE;
       let page = 2;
       let totalItems = limit;
       while (totalItems === limit && this._isMounted) {
+        if (modelZUID !== this.props.modelZUID) break;
         const res = await this.props.dispatch(
           fetchItems(modelZUID, { limit, page })
         );
         page++;
         totalItems = res._meta.totalResults;
-        this.updateItemCount();
+        if (this._isMounted) {
+          this.updateItemCount();
+        }
       }
     };
 
