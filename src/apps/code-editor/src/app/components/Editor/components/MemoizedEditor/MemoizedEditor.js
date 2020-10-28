@@ -4,7 +4,7 @@ import MonacoEditor from "react-monaco-editor";
 import { resolveMonacoLang, updateFileCode } from "../../../../../store/files";
 
 import { ParsleyTokens } from "./parsley-tokens";
-import { ParsleyTheme } from "./parsley-tokens";
+import { ParsleyTheme } from "./parsley-theme";
 
 /**
  * We memoize this component because we need to short circuit the redux->react->component update cycle
@@ -19,9 +19,9 @@ export const MemoizedEditor = React.memo(function MemoizedEditor(props) {
       language={resolveMonacoLang(props.fileName)}
       options={{
         selectOnLineNumbers: true,
-        wordWrap: "on"
+        wordWrap: "on",
       }}
-      onChange={newValue => {
+      onChange={(newValue) => {
         props.dispatch(updateFileCode(props.fileZUID, props.status, newValue));
       }}
       editorDidMount={(editor, monaco) => {
@@ -42,10 +42,10 @@ export const MemoizedEditor = React.memo(function MemoizedEditor(props) {
 
         // Register Parsley syntax and theme
         monaco.languages.register({
-          id: "parsley"
+          id: "parsley",
         });
         monaco.languages.setMonarchTokensProvider("parsley", {
-          tokenizer: ParsleyTokens
+          tokenizer: ParsleyTokens,
         });
 
         /**
@@ -74,10 +74,10 @@ export const MemoizedEditor = React.memo(function MemoizedEditor(props) {
         monaco.editor.defineTheme("parsleyDark", {
           base: "vs-dark", // can also be vs-dark or hc-black
           inherit: true, // can also be false to completely replace the builtin rules
-          rules: ParsleyTheme
+          rules: ParsleyTheme,
         });
         editor.updateOptions({
-          theme: "parsleyDark"
+          theme: "parsleyDark",
         });
       }}
     />

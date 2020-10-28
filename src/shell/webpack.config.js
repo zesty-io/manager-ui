@@ -12,7 +12,7 @@ const CONFIG = require("./app.config");
 module.exports = {
   entry: {
     main: path.resolve(__dirname, "./index.js"),
-    livePreview: path.resolve(__dirname, "../apps/live-preview/index.js")
+    livePreview: path.resolve(__dirname, "../apps/live-preview/index.js"),
   },
   output: {
     filename:
@@ -20,7 +20,7 @@ module.exports = {
         ? "[name].[contenthash].js"
         : "[name].js",
     path: path.resolve(__dirname, "../../build/"),
-    publicPath: "/"
+    publicPath: "/",
   },
   devServer: {
     host: "0.0.0.0",
@@ -28,7 +28,7 @@ module.exports = {
     contentBase: path.resolve(__dirname, "../../build"),
     hot: true,
     disableHostCheck: true,
-    historyApiFallback: true
+    historyApiFallback: true,
   },
   devtool:
     process.env.NODE_ENV !== "development"
@@ -41,8 +41,11 @@ module.exports = {
       "react-dom": "@hot-loader/react-dom",
       shell: path.resolve(__dirname, "../shell"),
       utility: path.resolve(__dirname, "../utility"),
-      apps: path.resolve(__dirname, "../apps")
-    }
+      apps: path.resolve(__dirname, "../apps"),
+    },
+    // fallback: {
+    //   "stream": require.resolve("stream-browserify")
+    // }
   },
   plugins: [
     new MiniCssExtractPlugin({
@@ -50,7 +53,7 @@ module.exports = {
       filename:
         process.env.NODE_ENV !== "development"
           ? "[name].[contenthash].css"
-          : "[name].css"
+          : "[name].css",
     }),
     new MonacoWebpackPlugin({
       // available options are documented at https://github.com/Microsoft/monaco-editor-webpack-plugin#options
@@ -67,7 +70,7 @@ module.exports = {
         // "pug",
         "scss",
         "typescript",
-        "xml"
+        "xml",
         // "yaml"
       ],
       features: [
@@ -110,29 +113,29 @@ module.exports = {
         "!transpose",
         "wordHighlighter",
         "wordOperations",
-        "wordPartOperations"
-      ]
+        "wordPartOperations",
+      ],
     }),
     new CopyPlugin({
-      patterns: ["public"]
+      patterns: ["public"],
     }),
     new HtmlWebpackPlugin({
       inject: false,
       chunks: ["main"],
       template: "src/index.html",
-      filename: "index.html"
+      filename: "index.html",
     }),
 
     new HtmlWebpackPlugin({
       chunks: ["livePreview"],
       template: "src/apps/live-preview/index.html",
-      filename: "livePreview.html"
+      filename: "livePreview.html",
     }),
 
     new webpack.DefinePlugin({
-      __CONFIG__: JSON.stringify(CONFIG)
+      __CONFIG__: JSON.stringify(CONFIG),
     }),
-    new CleanupStatsPlugin()
+    new CleanupStatsPlugin(),
   ],
   optimization: {
     splitChunks: {
@@ -140,10 +143,10 @@ module.exports = {
         commons: {
           test: /[\\/]node_modules[\\/]/,
           name: "vendors",
-          chunks: "all"
-        }
-      }
-    }
+          chunks: "all",
+        },
+      },
+    },
   },
   module: {
     rules: [
@@ -153,39 +156,41 @@ module.exports = {
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
-              hmr: process.env.NODE_ENV === "development"
-            }
+              hmr: process.env.NODE_ENV === "development",
+            },
           },
           {
             loader: "css-loader",
             options: {
               modules: {
-                localIdentName: "[local]--[hash:base64:5]"
-              }
-            }
+                localIdentName: "[local]--[contenthash:base64:5]",
+              },
+            },
           },
           {
-            loader: "less-loader"
-          }
-        ]
+            loader: "less-loader",
+          },
+        ],
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"]
+        use: ["style-loader", "css-loader"],
       },
       {
         test: /\.js$/,
         exclude: /(node_modules)/,
-        loader: "babel-loader",
-        query: {
-          presets: ["@babel/preset-env", "@babel/preset-react"],
-          plugins: [
-            ["@babel/plugin-proposal-class-properties", { loose: false }],
-            "@babel/plugin-transform-runtime", // https://babeljs.io/docs/en/babel-plugin-transform-runtime
-            "react-hot-loader/babel"
-          ]
-        }
-      }
-    ]
-  }
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-env", "@babel/preset-react"],
+            plugins: [
+              ["@babel/plugin-proposal-class-properties", { loose: false }],
+              "@babel/plugin-transform-runtime", // https://babeljs.io/docs/en/babel-plugin-transform-runtime
+              "react-hot-loader/babel",
+            ],
+          },
+        },
+      },
+    ],
+  },
 };
