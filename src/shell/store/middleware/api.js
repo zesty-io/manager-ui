@@ -67,7 +67,6 @@ export const resolveFieldOptions = store => next => action => {
             );
 
             if (!itemsExist) {
-              console.log("related model zuid: ", field.relatedModelZUID);
               store.dispatch(fetchItems(field.relatedModelZUID));
             }
 
