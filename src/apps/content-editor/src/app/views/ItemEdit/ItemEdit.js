@@ -42,19 +42,15 @@ class ItemEdit extends Component {
   componentDidMount() {
     this._isMounted = true;
 
-    if (this.props.item) {
-      this.onLoad(this.props.modelZUID, this.props.itemZUID);
-    }
+    this.onLoad(this.props.modelZUID, this.props.itemZUID);
     window.addEventListener("keydown", this.handleSave);
   }
   componentWillUnmount() {
     this._isMounted = false;
 
-    if (this.props.item) {
-      // release lock when unmounting
-      if (this.state.lock.userZUID === this.props.user.user_zuid) {
-        this.props.dispatch(unlock(this.state.itemZUID));
-      }
+    // release lock when unmounting
+    if (this.state.lock.userZUID === this.props.user.user_zuid) {
+      this.props.dispatch(unlock(this.state.itemZUID));
     }
     window.removeEventListener("keydown", this.handleSave);
   }
@@ -233,11 +229,6 @@ class ItemEdit extends Component {
   };
 
   render() {
-    if (!this.props.item) {
-      return (
-        <NotFound message={`Content "${this.props.itemZUID}" not found`} />
-      );
-    }
     return (
       <WithLoader
         condition={!this.state.loading && Object.keys(this.props.item).length}
@@ -265,7 +256,7 @@ class ItemEdit extends Component {
           )}
 
         <PendingEditsModal
-          show={Boolean(this.props.item.dirty)}
+          show={this.props.item && Boolean(this.props.item.dirty)}
           title="Unsaved Changes"
           message="You have unsaved changes that will be lost if you leave this page."
           loading={this.state.saving}
