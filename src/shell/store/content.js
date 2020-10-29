@@ -1,6 +1,5 @@
 import moment from "moment-timezone";
 import cloneDeep from "lodash.clonedeep";
-import omit from "lodash/omit";
 
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
