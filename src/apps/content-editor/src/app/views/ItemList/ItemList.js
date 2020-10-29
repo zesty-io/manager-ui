@@ -27,7 +27,7 @@ import { findFields, findItems } from "./findUtils";
 
 import styles from "./ItemList.less";
 
-const PAGE_SIZE = 100;
+const PAGE_SIZE = 5000;
 
 export default connect((state, props) => {
   const { modelZUID } = props.match.params;
