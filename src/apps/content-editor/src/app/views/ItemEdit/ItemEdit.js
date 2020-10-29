@@ -21,7 +21,6 @@ import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
 import { Meta } from "./Meta";
 import { Head } from "./Head";
-import { NotFound } from "shell/components/NotFound";
 
 class ItemEdit extends Component {
   _isMounted = false;
