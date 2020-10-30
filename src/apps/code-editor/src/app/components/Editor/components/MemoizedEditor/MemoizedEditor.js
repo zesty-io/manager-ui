@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import MonacoEditor from "react-monaco-editor";
+import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 
 import { resolveMonacoLang, updateFileCode } from "../../../../../store/files";
 
@@ -12,11 +13,28 @@ import { ParsleyTheme } from "./parsley-tokens";
  * But we still want to broadcast store updates `onChange`
  */
 export const MemoizedEditor = React.memo(function MemoizedEditor(props) {
+  const ref = useRef();
+  const language = resolveMonacoLang(props.fileName);
+
+  // use one model per filename and setModel when filename changes
+  // this achieves a per-filename undo stack
+  useEffect(() => {
+    const filenameURI = monaco.Uri.from({
+      scheme: "file",
+      path: `${props.fileName}`
+    });
+    const model =
+      monaco.editor.getModel(filenameURI) ||
+      monaco.editor.createModel(props.code, language, filenameURI);
+
+    ref.current.editor.setModel(model);
+  }, [props.fileName]);
+
   return (
     <MonacoEditor
+      ref={ref}
       theme="vs-dark"
-      value={props.code || ""}
-      language={resolveMonacoLang(props.fileName)}
+      language={language}
       options={{
         selectOnLineNumbers: true,
         wordWrap: "on"
