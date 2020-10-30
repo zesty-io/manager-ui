@@ -159,7 +159,11 @@ export default connect(state => {
     >
       <div className={styles.display}>
         {hover ? (
-          <FontAwesomeIcon icon={faUpload} onClick={() => setOpen(!open)} />
+          <FontAwesomeIcon
+            title="Select Instance Favicon"
+            icon={faUpload}
+            onClick={() => setOpen(!open)}
+          />
         ) : faviconURL ? (
           <img src={faviconURL} width="60px" height="60px" />
         ) : (
