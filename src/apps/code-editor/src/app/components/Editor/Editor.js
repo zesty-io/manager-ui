@@ -30,6 +30,7 @@ export const Editor = React.memo(function Editor(props) {
           code={props.code}
           fileName={props.fileName}
           fileZUID={props.fileZUID}
+          contentModelZUID={props.contentModelZUID}
           fields={props.fields}
           status={props.status}
           lineNumber={props.lineNumber}

@@ -598,6 +598,7 @@ export function resolveMonacoLang(fileName) {
     case "html":
       // Because we allow parsley in custom html files
       language = "handlebars";
+      // language = "parsley";
       break;
     case "json":
       language = "json";
