@@ -17,7 +17,7 @@ export const MemoizedEditor = React.memo(function MemoizedEditor(props) {
   const language = resolveMonacoLang(props.fileName);
 
   // use one model per filename and setModel when filename changes
-  // this achieves a per-filename stack
+  // this achieves a per-filename undo stack
   useEffect(() => {
     const filenameURI = monaco.Uri.from({
       scheme: "file",
