@@ -200,6 +200,7 @@ export default connect(state => {
         }
       })}
       <Button
+        className={styles.ButtonSave}
         id="saveSettings"
         kind="save"
         onClick={saveFields}
