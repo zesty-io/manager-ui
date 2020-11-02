@@ -18,7 +18,9 @@
   },
   "author": "Zesty.io<developers@zesty.io>",
   "contributors": [
-    "Stuart Runyan<stuart@zesty.io>"
+    "Stuart Runyan<stuart@zesty.io>",
+    "Joshua Hanson<joshua.hanson@zesty.io>",
+    "David Naimi<david.naimi@zesty.io>"
   ],
   "license": "UNLICENSED",
   "dependencies": {
