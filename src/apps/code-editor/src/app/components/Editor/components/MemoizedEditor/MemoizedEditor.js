@@ -4,7 +4,7 @@ import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { useStore } from "react-redux";
 import { resolveMonacoLang, updateFileCode } from "../../../../../store/files";
 
-import { ParsleyTokens } from "./parsley-tokens";
+import { tokenizer, languageConf } from "./parsley-tokens";
 import { ParsleyTheme } from "./parsley-theme";
 
 /**
@@ -65,23 +65,25 @@ export const MemoizedEditor = React.memo(
           }
 
           // Register Parsley syntax and theme
-          // monaco.languages.register({
-          //   id: "parsley"
-          // });
+          monaco.languages.register({
+            id: "parsley"
+          });
 
-          // monaco.languages.setMonarchTokensProvider("parsley", {
-          //   tokenizer: ParsleyTokens
-          // });
+          monaco.languages.setMonarchTokensProvider("parsley", {
+            tokenizer
+          });
 
-          // monaco.editor.defineTheme("parsleyDark", {
-          //   base: "vs-dark", // can also be vs-dark or hc-black
-          //   inherit: true, // can also be false to completely replace the builtin rules
-          //   rules: ParsleyTheme
-          // });
+          monaco.languages.setLanguageConfiguration("parsley", languageConf);
 
-          // editor.updateOptions({
-          //   theme: "parsleyDark"
-          // });
+          monaco.editor.defineTheme("parsleyDark", {
+            base: "vs-dark", // can also be vs-dark or hc-black
+            inherit: true, // can also be false to completely replace the builtin rules
+            rules: ParsleyTheme
+          });
+
+          editor.updateOptions({
+            theme: "parsleyDark"
+          });
 
           /**
            * Language registration happens once on mount.
@@ -103,8 +105,6 @@ export const MemoizedEditor = React.memo(
                 field =>
                   field.contentModelZUID === query.get("contentModelZUID")
               );
-
-              console.log("completionItems", modelFields);
 
               return {
                 suggestions: modelFields.map(field => {
