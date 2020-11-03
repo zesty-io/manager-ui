@@ -92,7 +92,7 @@ export const MemoizedEditor = React.memo(
            * 1) the current files contentModelZUID
            * 2) the latest fields loaded into the stoer
            */
-          monaco.languages.registerCompletionItemProvider("handlebars", {
+          monaco.languages.registerCompletionItemProvider("parsley", {
             triggerCharacters: ["."],
             provideCompletionItems: model => {
               // Pull the contentModelZUID attached to the specific file model
