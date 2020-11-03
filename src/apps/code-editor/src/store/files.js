@@ -618,8 +618,8 @@ export function resolveMonacoLang(fileName) {
       break;
 
     default:
-      language = "handlebars";
-      // language = "parsley";
+      // language = "handlebars";
+      language = "parsley";
       break;
   }
 
