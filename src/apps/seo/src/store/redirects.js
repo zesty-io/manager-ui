@@ -5,7 +5,7 @@ export function redirects(state = {}, action) {
 
     case "REDIRECT_REMOVE_SUCCESS":
       return Object.keys(state)
-        .filter(path => state[path].zuid !== action.zuid)
+        .filter(path => state[path].ZUID !== action.zuid)
         .reduce((acc, path) => {
           acc[path] = { ...state[path] };
           return acc;
