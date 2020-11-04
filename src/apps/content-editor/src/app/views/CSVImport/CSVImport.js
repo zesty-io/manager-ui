@@ -31,7 +31,7 @@ class CSVImport extends Component {
     cols: [],
     records: [],
     successes: 0,
-    height: document.documentElement.clientHeight - 420,
+    height: document.documentElement.clientHeight - 335,
     webMaps: {
       metaDescription: "",
       metaKeywords: null,
