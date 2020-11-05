@@ -267,7 +267,7 @@ export default connect(state => {
           </ol>
         </nav>
 
-        <GlobalAccount />
+        {/* <GlobalAccount /> */}
       </section>
     );
   })

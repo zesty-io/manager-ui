@@ -13,52 +13,58 @@
 }
 
 .Shell {
-  background-color: #f2f7fc;
-  color: @zesty-grey;
-  display: flex;
-  font-family: "Montserrat", "Gibson Light", Arial, sans-serif;
-  font-size: 14px;
-  height: 100vh;
-  overflow: hidden;
+  //   background-color: #f2f7fc;
+  //   color: @zesty-grey;
+  //   // display: flex;
+  //   font-family: "Montserrat", "Gibson Light", Arial, sans-serif;
+  //   font-size: 14px;
+  //   height: 100vh;
+  //   overflow: hidden;
 
   display: grid;
-  grid-template-columns: 170px 1fr;
+  grid-template-columns: [sidebar-start] 170px [sidebar-end] [main-start] 1fr [main-end];
 
-  scrollbar-color: @zesty-grey @zesty-light-grey;
-  scrollbar-width: thin;
+  //   scrollbar-color: @zesty-grey @zesty-light-grey;
+  //   scrollbar-width: thin;
 
-  @media (max-width: 2000px) {
-    & {
-      grid-template-columns: 60px 1fr;
-      font-size: 12px;
-    }
+  //   @media (max-width: 2000px) {
+  //     & {
+  //       grid-template-columns: 60px 1fr;
+  //       font-size: 12px;
+  //     }
+  //   }
+
+  .GlobalSidebar {
+    grid-column: sidebar-start / sidebar-end;
+    grid-row: 1 / -1;
   }
 
   .AppLoader {
-    flex: 2;
-    background-color: #171b26;
+    grid-column: main-start / main-end;
+    //     flex: 2;
+    //     background-color: #171b26;
 
-    .SubApp {
-      height: calc(100vh - 54px);
-      background-color: #f2f7fc;
+    //     .SubApp {
+    //       height: calc(100vh - 54px);
+    //       background-color: #f2f7fc;
 
-      // shadow effect
-      border-radius: 10px 0 0 0;
-      overflow: hidden;
-      box-shadow: 0px 0px 25px #0b0d13;
-      position: relative;
-      z-index: 30;
+    //       // shadow effect
+    //       border-radius: 10px 0 0 0;
+    //       overflow: hidden;
+    //       box-shadow: 0px 0px 25px #0b0d13;
+    //       position: relative;
+    //       z-index: 30;
 
-      width: calc(100vw - 60px);
-      @media (min-width: 2000px) {
-        width: calc(100vw - 170px);
-      }
-    }
-  }
-  h2 {
-    font-size: 12px;
-    @media only screen and (min-width: 2000px) {
-      font-size: 16px;
-    }
+    //       // width: calc(100vw - 60px);
+    //       // @media (min-width: 2000px) {
+    //       //   width: calc(100vw - 170px);
+    //       // }
+    //     }
+    //   }
+    //   h2 {
+    //     font-size: 12px;
+    //     @media only screen and (min-width: 2000px) {
+    //       font-size: 16px;
+    //     }
   }
 }
