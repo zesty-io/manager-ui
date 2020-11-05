@@ -17,13 +17,13 @@ export class SetColumns extends PureComponent {
       <header className={styles.TableHeader} style={this.props.style}>
         <span className={styles.wrap}>
           <span
+            title="The color of the icon indicates the items publish status. Green = published. Orange = scheduled. Grey = unpublished."
             id="ListColumns"
             className={cx(styles.Cell, styles.PublishedHeader)}
           >
             <FontAwesomeIcon
               icon={faQuestionCircle}
               aria-label="Item publish status"
-              title="The color of the icon indicates the items publish status. Green = published. Orange = scheduled. Grey = unpublished."
             />
           </span>
           {this.props.fields ? (
