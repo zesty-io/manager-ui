@@ -118,8 +118,9 @@ export default connect((state, props) => {
       ) {
         // First item is always the column row
         if (this.state.items.length === 2) {
-          // redirect to the single entry in content clippings
-          window.location.hash = `/content/${this.props.modelZUID}/${this.state.items[1].meta.ZUID}`;
+          // redirect to the single entry
+          // TODO: when converting to functional component add useHistory so we can history.push here
+          // history.push(`/content/${this.props.modelZUID}/${this.state.items[1].meta.ZUID}`);
         }
       }
 
