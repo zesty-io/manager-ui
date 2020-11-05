@@ -2,8 +2,9 @@ import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { tokenizer, languageConf } from "./parsley-tokens";
 import { ParsleyTheme } from "./parsley-theme";
 
+// register parsley language, tokenizer, theme and completions
+// we do this in a separate step before react render so that it only happens once
 export function MonacoSetup(store) {
-  // Register Parsley syntax and theme
   monaco.languages.register({
     id: "parsley"
   });
@@ -21,11 +22,9 @@ export function MonacoSetup(store) {
   });
 
   /**
-   * Language registration happens once on mount.
-   * Due to this we have to maintain references in the closure
-   * to the two items need to map the appropriate fields to the current file
-   * 1) the current files contentModelZUID
-   * 2) the latest fields loaded into the stoer
+   * Completion function is registered once at startup but needs dynamic access to:
+   * 1) the current file's contentModelZUID (set via model in the MemoizedEditor)
+   * 2) the latest fields loaded into the store
    */
   monaco.languages.registerCompletionItemProvider("parsley", {
     triggerCharacters: ["."],
