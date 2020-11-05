@@ -1,24 +1,22 @@
 @import "~@zesty-io/core/colors.less";
 
-// // Default App Scrollbar styles
-// &::-webkit-scrollbar {
-//   width: 8px;
-//   height: 8px;
-// }
-// &::-webkit-scrollbar-track-piece {
-//   background-color: @zesty-light-grey;
-// }
-// &::-webkit-scrollbar-thumb {
-//   background-color: @zesty-grey;
-// }
+// Default App Scrollbar styles
+&::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+&::-webkit-scrollbar-track-piece {
+  background-color: @zesty-light-grey;
+}
+&::-webkit-scrollbar-thumb {
+  background-color: @zesty-grey;
+}
 
 .Shell {
   background-color: #f2f7fc;
   color: @zesty-grey;
   font-family: "Montserrat", "Gibson Light", Arial, sans-serif;
   font-size: 14px;
-  //   height: 100vh;
-  //   overflow: hidden;
   scrollbar-color: @zesty-grey @zesty-light-grey;
   scrollbar-width: thin;
 
@@ -26,7 +24,7 @@
   grid-template-columns: [sidebar-start] 170px [sidebar-end main-start] 1fr [main-end];
 
   @media (max-width: 2000px) {
-    grid-template-columns: [sidebar-small-start] 60px [sidebar-small-end main-small-start] 1fr [main-small-end];
+    grid-template-columns: [sidebar-small-start] minmax(min-content, 60px) [sidebar-small-end main-small-start] 1fr [main-small-end];
     font-size: 12px;
   }
 
@@ -41,30 +39,29 @@
 
   .AppLoader {
     grid-column: main-small-start / main-small-end;
-    //     flex: 2;
-    //     background-color: #171b26;
+    background-color: #171b26;
 
-    //     .SubApp {
-    //       height: calc(100vh - 54px);
-    //       background-color: #f2f7fc;
+    .SubApp {
+      // height: calc(100vh - 54px);
+      background-color: #f2f7fc;
 
-    //       // shadow effect
-    //       border-radius: 10px 0 0 0;
-    //       overflow: hidden;
-    //       box-shadow: 0px 0px 25px #0b0d13;
-    //       position: relative;
-    //       z-index: 30;
+      // shadow effect
+      border-radius: 10px 0 0 0;
+      overflow: hidden;
+      box-shadow: 0px 0px 25px #0b0d13;
+      position: relative;
+      z-index: 30;
 
-    //       // width: calc(100vw - 60px);
-    //       // @media (min-width: 2000px) {
-    //       //   width: calc(100vw - 170px);
-    //       // }
-    //     }
-    //   }
-    //   h2 {
-    //     font-size: 12px;
-    //     @media only screen and (min-width: 2000px) {
-    //       font-size: 16px;
-    //     }
+      // width: calc(100vw - 60px);
+      // @media (min-width: 2000px) {
+      //   width: calc(100vw - 170px);
+      // }
+    }
+  }
+  h2 {
+    font-size: 12px;
+    @media only screen and (min-width: 2000px) {
+      font-size: 16px;
+    }
   }
 }
