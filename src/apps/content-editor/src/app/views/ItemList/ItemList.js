@@ -27,6 +27,8 @@ import { findFields, findItems } from "./findUtils";
 
 import styles from "./ItemList.less";
 
+const PAGE_SIZE = 5000;
+
 export default connect((state, props) => {
   const { modelZUID } = props.match.params;
   const model = state.models[modelZUID];
@@ -65,6 +67,7 @@ export default connect((state, props) => {
     state = {
       saving: false,
       loading: false,
+      loadingSecondary: false,
       // Keep internal item state for handling table filters performantly
       // avoiding recalculations on component updates
       items: [],
@@ -168,8 +171,10 @@ export default connect((state, props) => {
         this.props.modelZUID,
         this.props.selectedLang.ID
       );
+      const itemCount = items.length;
+
       items.unshift(fields);
-      this.setState({ items, fields }, () => {
+      this.setState({ items, fields, itemCount }, () => {
         if (
           this.state.sortedBy ||
           this.state.filterTerm ||
@@ -180,56 +185,80 @@ export default connect((state, props) => {
       });
     };
 
-    load = modelZUID => {
+    runFilters = () => {
+      const { filterTerm, sortedBy, status, colType } = this.state;
+      if (filterTerm) {
+        this.onFilter(filterTerm);
+      } else if (status) {
+        this.onStatus(status);
+      } else if (sortedBy) {
+        this.onSort(sortedBy, colType);
+      }
+    };
+
+    load = async modelZUID => {
       this.setState({
-        loading: true
+        loading: true,
+        loadingSecondary: true
       });
 
-      return Promise.all([
-        this.props.dispatch(fetchFields(modelZUID)),
-        this.props.dispatch(fetchItems(modelZUID))
-      ])
-        .then(() => {
-          if (this._isMounted) {
+      try {
+        const [, itemsRes] = await Promise.all([
+          this.props.dispatch(fetchFields(modelZUID)),
+          this.props.dispatch(
+            fetchItems(modelZUID, { limit: PAGE_SIZE, page: 1 })
+          )
+        ]);
+        if (this._isMounted) {
+          // render 1st page of results
+          this.updateRows();
+          this.setState({ loading: false });
+
+          if (itemsRes._meta.totalResults === PAGE_SIZE) {
+            // load page 2 until last page
+            await this.crawlFetchItems(modelZUID);
+            // re-render after all pages fetched
             this.updateRows();
-            this.setState(
-              {
-                loading: false
-              },
-              () => {
-                const { filterTerm, sortedBy, status, colType } = this.state;
-                if (filterTerm) {
-                  this.onFilter(filterTerm);
-                } else if (status) {
-                  this.onStatus(status);
-                } else if (sortedBy) {
-                  this.onSort(sortedBy, colType);
-                }
-              }
-            );
           }
-        })
-        .catch(err => {
-          console.error("ItemList:load:error", err);
-          if (this._isMounted) {
-            this.setState(
-              {
-                loading: false
-              },
-              () => {
-                const { filterTerm, sortedBy, status, colType } = this.state;
-                if (filterTerm) {
-                  this.onFilter(filterTerm);
-                } else if (status) {
-                  this.onStatus(status);
-                } else if (sortedBy) {
-                  this.onSort(sortedBy, colType);
-                }
-              }
-            );
-          }
-          throw err;
-        });
+          this.setState({ loadingSecondary: false });
+        }
+      } catch (err) {
+        console.error("ItemList:load:error", err);
+        if (this._isMounted) {
+          this.setState({ loading: false, loadingSecondary: false });
+        }
+      }
+    };
+
+    // crawl page 2 until the end of valid pages
+    // after each successful page fetch, update item count for display
+    // end crawling if component unmounts
+    // end crawling on modelZUID change
+    // end crawling on error
+    crawlFetchItems = async modelZUID => {
+      const limit = PAGE_SIZE;
+      let page = 2;
+      let totalItems = limit;
+      while (totalItems === limit && this._isMounted) {
+        if (modelZUID !== this.props.modelZUID) break;
+        const res = await this.props.dispatch(
+          fetchItems(modelZUID, { limit, page })
+        );
+        page++;
+        totalItems = res._meta.totalResults;
+        if (this._isMounted) {
+          this.updateItemCount();
+        }
+      }
+    };
+
+    updateItemCount = () => {
+      let items = findItems(
+        this.props.allItems,
+        this.props.modelZUID,
+        this.props.selectedLang.ID
+      );
+      this.setState({ itemCount: items.length });
     };
 
     loadItem = (modelZUID, itemZUID) => {
@@ -315,15 +344,7 @@ export default connect((state, props) => {
       if (filterTerm || sortedBy || status) {
         this.setState(
           { filterTerm, sortedBy, status, colType, reverseSort },
-          () => {
-            if (filterTerm) {
-              this.onFilter(filterTerm);
-            } else if (status) {
-              this.onStatus(status);
-            } else if (sortedBy) {
-              this.onSort(sortedBy, colType);
-            }
-          }
+          this.runFilters
         );
       }
     };
@@ -633,8 +654,8 @@ export default connect((state, props) => {
             model={this.props.model}
             isDirty={this.props.dirtyItems.length}
             saving={this.state.saving}
-            loading={this.state.loading}
-            itemCount={this.state.items.length - 1}
+            loading={this.state.loadingSecondary}
+            itemCount={this.state.itemCount}
             onSaveAll={this.saveItems}
             onFilter={this.onFilter}
             onStatus={this.onStatus}

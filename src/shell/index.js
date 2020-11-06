@@ -20,6 +20,8 @@ import PrivateRoute from "./components/private-route";
 import LoadInstance from "./components/load-instance";
 import Shell from "./views/Shell";
 
+import { MonacoSetup } from "../apps/code-editor/src/app/components/Editor/components/MemoizedEditor/MonacoSetup";
+
 // interploated by webpack at build time
 // must be setup before starting the store
 window.CONFIG = __CONFIG__;
@@ -117,6 +119,8 @@ if (loadLocalStorageData) {
     console.error("IndexedDB:get:error", err);
   }
 }
+
+MonacoSetup(store);
 
 const App = hot(() => (
   <Provider store={store}>

@@ -258,7 +258,7 @@ class LinkEdit extends Component {
               {this.state.type === "internal" && <h2>Internal Link</h2>}
               {this.state.type === "external" && <h2>External Link</h2>}
             </CardHeader>
-            <CardContent>
+            <CardContent className={styles.CardContent}>
               <FieldTypeInternalLink
                 className={styles.Row}
                 name="parent_zuid"

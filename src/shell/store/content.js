@@ -261,21 +261,26 @@ export function searchItems(itemZUID) {
   };
 }
 
-export function fetchItems(modelZUID) {
+export function fetchItems(modelZUID, options = {}) {
   if (!modelZUID) {
     console.error("content:fetchItems() Missing modelZUID");
     console.trace();
     return () => {};
   }
 
-  return (dispatch, getState) => {
+  options.limit = options.limit || 100;
+  options.page = options.page || 1;
+
+  return dispatch => {
     // TODO load items for selected lang
     // const state = getState();
     // const lang = state.user.selected_lang || "en-US";
 
+    const params = new URLSearchParams(options).toString();
+
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items`,
+      uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items?${params}`,
       handler: res => {
         if (res.status === 400) {
           console.error("fetchItems():response", res);
@@ -285,6 +290,7 @@ export function fetchItems(modelZUID) {
               message: res.error
             })
           );
+          throw res;
         }
 
         dispatch({
