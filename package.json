@@ -10,8 +10,9 @@
     "build-stage": "npm run clean && concurrently --raw \"npm run gulp\" \"cross-env NODE_ENV=stage webpack --config src/shell/webpack.config.js\"",
     "build-prod": "npm run clean && concurrently --raw \"npm run gulp\" \"cross-env NODE_ENV=production webpack --config src/shell/webpack.config.js\"",
     "gulp": "cd src/apps/media; ./node_modules/.bin/gulp",
-    "serve": "cross-env serve build/ -l 9000 --single",
-    "start": "npm run clean && concurrently --raw \"npm run gulp\" \"cross-env NODE_ENV=development webpack-dev-server --display=minimal --progress --config src/shell/webpack.config.js\"",
+    "serve:webpack": "webpack-dev-server --display=minimal --progress --config src/shell/webpack.config.js",
+    "serve:static": "serve build/ -l 9000 --single",
+    "start": "npm run clean && npm run gulp && npm run serve:webpack",
     "release:stage": "zutil deploy stage .",
     "release:prod": "npm test && zutil deploy prod .",
     "cleanup": "echo 'All done'."
