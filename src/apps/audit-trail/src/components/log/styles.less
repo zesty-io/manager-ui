@@ -2,12 +2,13 @@
 @import "~@zesty-io/core/typography.less";
 
 .auditLog {
-  background: @zesty-white;
+  background-color: @zesty-field-blue;
   border: 1px @zesty-gray;
   border-radius: 5px;
   display: flex;
   margin: 16px 0;
   align-items: center;
+  box-shadow: 1px 1px 4px #5b667d;
 
   .action {
     align-items: center;
@@ -53,14 +54,14 @@
       }
     }
     .meta {
-      color: #959db4;
+      color: @zesty-gray;
       flex: 1;
       .emailLink {
-        color: @zesty-light-gray;
+        color: @zesty-gray;
         text-decoration: none;
         &:hover {
-          color: @zesty-gray;
-          border-bottom: 1px solid @zesty-gray;
+          color: @zesty-blue;
+          border-bottom: 1px solid @zesty-blue;
         }
       }
     }
