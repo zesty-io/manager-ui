@@ -20,9 +20,10 @@
   "contributors": [
     "Stuart Runyan<stuart@zesty.io>",
     "Joshua Hanson<joshua.hanson@zesty.io>",
-    "David Naimi<david.naimi@zesty.io>"
+    "David Naimi<david.naimi@zesty.io>",
+    "Andy Fleming <andy@zesty.io>",
+    "Grant Glidewell <grant@zesty.io>"
   ],
-  "license": "UNLICENSED",
   "dependencies": {
     "@aeaton/react-prosemirror": "0.21.1",
     "@aeaton/react-prosemirror-config-default": "0.11.0",
