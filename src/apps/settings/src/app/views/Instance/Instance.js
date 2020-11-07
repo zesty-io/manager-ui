@@ -47,10 +47,10 @@ const TooltipStyle = `
         `;
 
 import styles from "./SettingsStyles.less";
-export default connect(state => {
+export default connect((state) => {
   return {
     catInstance: state.settings.catInstance,
-    instance: state.settings.instance
+    instance: state.settings.instance,
   };
 })(function Settings(props) {
   const [loading, setLoading] = useState(false);
@@ -63,7 +63,7 @@ export default connect(state => {
       : "general";
 
     const matchingFields = props.instance.filter(
-      item => item.category === category
+      (item) => item.category === category
     );
 
     setFields(matchingFields);
@@ -93,37 +93,37 @@ export default connect(state => {
   function saveFields() {
     setLoading(true);
 
-    const requests = fields.map(field => {
+    const requests = fields.map((field) => {
       return props.dispatch(
         updateSettings(field.ZUID, {
           ...field,
-          value: fieldValues[field.ZUID].toString()
+          value: fieldValues[field.ZUID].toString(),
         })
       );
     });
 
     Promise.all(requests)
-      .then(responses => {
+      .then((responses) => {
         setLoading(false);
         props.dispatch(
           notify({
             kind: "success",
-            message: "Data has been updated"
+            message: "Data has been updated",
           })
         );
       })
-      .catch(err => {
+      .catch((err) => {
         props.dispatch(
           notify({
             kind: "warn",
-            message: err.message
+            message: err.message,
           })
         );
       });
   }
   return (
     <>
-      {fields.map(field => {
+      {fields.map((field) => {
         switch (field.dataType) {
           case "checkbox":
             if (field.key === "site_protocol") {
@@ -200,6 +200,7 @@ export default connect(state => {
         }
       })}
       <Button
+        className={styles.ButtonSave}
         id="saveSettings"
         kind="save"
         onClick={saveFields}

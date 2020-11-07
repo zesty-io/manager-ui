@@ -7,7 +7,7 @@ import {
   faBan,
   faGlobe,
   faUpload,
-  faSpinner
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { request } from "utility/request";
@@ -16,7 +16,7 @@ import {
   Modal,
   ModalContent,
   ModalFooter,
-  ModalHeader
+  ModalHeader,
 } from "@zesty-io/core/Modal";
 import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
@@ -25,14 +25,14 @@ import { AppLink } from "@zesty-io/core/AppLink";
 
 import {
   fetchHeadTags,
-  createHeadTag
+  createHeadTag,
 } from "../../../apps/content-editor/src/store/headTags";
 
 import styles from "./favicon.less";
-export default connect(state => {
+export default connect((state) => {
   return {
     instance: state.instance,
-    headTags: state.headTags
+    headTags: state.headTags,
   };
 })(function favicon(props) {
   const [hover, setHover] = useState(false);
@@ -49,26 +49,26 @@ export default connect(state => {
   }, []);
 
   useEffect(() => {
-    const tag = Object.values(props.headTags).find(tag =>
+    const tag = Object.values(props.headTags).find((tag) =>
       tag.attributes.find(
-        attr => attr.key === "sizes" && attr.value === "196x196"
+        (attr) => attr.key === "sizes" && attr.value === "196x196"
       )
     );
     if (tag) {
-      const attr = tag.attributes.find(attr => attr.key === "href");
+      const attr = tag.attributes.find((attr) => attr.key === "href");
       setFaviconURL(attr.value);
     }
   }, [props.headTags]);
 
   const handleClose = () => setOpen(false);
 
-  const handleImage = zuid => {
+  const handleImage = (zuid) => {
     if (!zuid) {
       setFaviconZUID("");
       setFaviconURL("");
     } else {
       setLoading(true);
-      request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${zuid}`).then(res => {
+      request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${zuid}`).then((res) => {
         const { url, id } = res.data[0];
         setFaviconURL(url);
         setFaviconZUID(id);
@@ -88,12 +88,12 @@ export default connect(state => {
             rel: "icon",
             type: "image/png",
             sizes: "196x196",
-            href: faviconURL
+            href: faviconURL,
           },
-          sort: 0
+          sort: 0,
         })
       )
-      .finally(_ => {
+      .finally((_) => {
         setOpen(false);
         setLoading(false);
       });
@@ -159,7 +159,11 @@ export default connect(state => {
     >
       <div className={styles.display}>
         {hover ? (
-          <FontAwesomeIcon icon={faUpload} onClick={() => setOpen(!open)} />
+          <FontAwesomeIcon
+            title="Select Instance Favicon"
+            icon={faUpload}
+            onClick={() => setOpen(!open)}
+          />
         ) : faviconURL ? (
           <img src={faviconURL} width="60px" height="60px" />
         ) : (
@@ -186,7 +190,7 @@ export default connect(state => {
             resolveImage={(zuid, width, height) => {
               return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`;
             }}
-            mediaBrowser={opts => {
+            mediaBrowser={(opts) => {
               riot.mount(
                 document.querySelector("#modalMount"),
                 "media-app-modal",
@@ -197,7 +201,7 @@ export default connect(state => {
 
           {faviconZUID && (
             <section className={styles.Sizes}>
-              {sizes.map(size => (
+              {sizes.map((size) => (
                 <figure key={size}>
                   <img
                     src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${faviconZUID}/getimage/?w=${size}&h=${size}&type=fit`}

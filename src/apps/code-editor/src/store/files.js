@@ -16,7 +16,7 @@ export function files(state = [], action) {
 
       // Create "live" file map
       let liveFiles = action.payload.files
-        .filter(file => file.status === "live")
+        .filter((file) => file.status === "live")
         .reduce((acc, el) => {
           acc[el.ZUID] = el;
           return acc;
@@ -24,14 +24,14 @@ export function files(state = [], action) {
 
       // Remove "live" files. They should not be edited directly.
       let remoteFiles = action.payload.files.filter(
-        file => file.status !== "live"
+        (file) => file.status !== "live"
       );
 
       // Determine which remote files we do not have in our local store
       let remoteNotInLocal = remoteFiles
-        .filter(remote => {
+        .filter((remote) => {
           let localFileExists = state.find(
-            local =>
+            (local) =>
               local.ZUID === remote.ZUID && local.status === remote.status
           );
           if (localFileExists) {
@@ -40,16 +40,17 @@ export function files(state = [], action) {
             return true;
           }
         })
-        .map(file => {
+        .map((file) => {
           file.synced = true;
           file.isLive = typeof file.isLive !== "undefined" ? file.isLive : true;
           return file;
         });
 
       // Determine which local files have changes and should not be replaced by their remote version
-      let localFiles = state.map(local => {
+      let localFiles = state.map((local) => {
         let remoteFile = remoteFiles.find(
-          remote => remote.ZUID === local.ZUID && remote.status === local.status
+          (remote) =>
+            remote.ZUID === local.ZUID && remote.status === local.status
         );
 
         if (remoteFile) {
@@ -82,7 +83,7 @@ export function files(state = [], action) {
       let combinedFiles = [...localFiles, ...remoteNotInLocal];
 
       // Check if other branchs are ahead of "live" and mark them as can be published
-      combinedFiles.forEach(f => {
+      combinedFiles.forEach((f) => {
         let liveFile = liveFiles[f.ZUID];
         if (liveFile && liveFile.version) {
           f.publishedVersion = liveFile.version;
@@ -108,22 +109,22 @@ export function files(state = [], action) {
     //   });
 
     case "PUBLISH_FILE_SUCCESS":
-      return state.map(file => {
+      return state.map((file) => {
         if (file.ZUID === action.payload.fileZUID) {
           return {
             ...file,
-            isLive: true
+            isLive: true,
           };
         }
         return file;
       });
 
     case "FETCH_FILE_VERSIONS_SUCCESS":
-      return state.map(file => {
+      return state.map((file) => {
         if (file.ZUID === action.payload.fileZUID) {
           return {
             ...file,
-            versions: action.payload.versions
+            versions: action.payload.versions,
           };
         }
 
@@ -131,14 +132,14 @@ export function files(state = [], action) {
       });
 
     case "SAVE_FILE_SUCCESS":
-      files = state.map(file => {
+      files = state.map((file) => {
         if (file.ZUID === action.payload.file.ZUID) {
           return {
             ...file,
             version: 1 + action.payload.file.version,
             synced: true,
             dirty: false,
-            isLive: false
+            isLive: false,
           };
         }
         return file;
@@ -146,13 +147,13 @@ export function files(state = [], action) {
 
       set(
         `${action.payload.instanceZUID}:openFiles`,
-        files.filter(file => file.open)
+        files.filter((file) => file.open)
       );
 
       return files;
 
     case "DELETE_FILE_SUCCESS":
-      files = state.filter(file => {
+      files = state.filter((file) => {
         if (file.ZUID !== action.payload.fileZUID) {
           return file;
         }
@@ -161,13 +162,13 @@ export function files(state = [], action) {
       // Make sure to udpate openFiles local storage
       set(
         `${action.payload.instanceZUID}:openFiles`,
-        files.filter(file => file.open)
+        files.filter((file) => file.open)
       );
 
       return files;
 
     case "UPDATE_FILE_CODE":
-      files = state.map(file => {
+      files = state.map((file) => {
         if (
           file.ZUID === action.payload.ZUID &&
           file.status === action.payload.status
@@ -176,7 +177,7 @@ export function files(state = [], action) {
             ...file,
             code: action.payload.code,
             dirty: true,
-            synced: true
+            synced: true,
           };
         }
 
@@ -185,20 +186,20 @@ export function files(state = [], action) {
 
       set(
         `${action.payload.instanceZUID}:openFiles`,
-        files.filter(file => file.open)
+        files.filter((file) => file.open)
       );
 
       return files;
 
     case "FILE_OPEN":
-      files = state.map(file => {
+      files = state.map((file) => {
         if (
           file.status === action.payload.env &&
           file.ZUID === action.payload.fileZUID
         ) {
           return {
             ...file,
-            open: action.payload.open
+            open: action.payload.open,
           };
         } else {
           return file;
@@ -207,7 +208,7 @@ export function files(state = [], action) {
 
       set(
         `${action.payload.instanceZUID}:openFiles`,
-        files.filter(file => file.open)
+        files.filter((file) => file.open)
       );
 
       return files;
@@ -225,40 +226,40 @@ export function fileOpen(fileZUID, env, open) {
         fileZUID,
         env,
         open,
-        instanceZUID: getState().instance.ZUID
-      }
+        instanceZUID: getState().instance.ZUID,
+      },
     });
   };
 }
 
 export function fetchFiles(type) {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/web/${type}`)
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           dispatch({
             type: "FETCH_FILES_SUCCESS",
             payload: {
-              files: res.data
-            }
+              files: res.data,
+            },
           });
         } else {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to load instance ${type}. ${res.status} | ${res.error}`
+              message: `Failed to load instance ${type}. ${res.status} | ${res.error}`,
             })
           );
         }
 
         return res;
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         dispatch(
           notify({
             kind: "warn",
-            message: err.message
+            message: err.message,
           })
         );
       });
@@ -273,20 +274,20 @@ export function updateFileCode(ZUID, status, code) {
         ZUID,
         status,
         code,
-        instanceZUID: getState().instance.ZUID
-      }
+        instanceZUID: getState().instance.ZUID,
+      },
     });
   };
 }
 
 export function fetchFile(fileZUID, fileType, options = { forceSync: false }) {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/web/${fileType}/${fileZUID}`).then(
-      res => {
+      (res) => {
         if (res.status === 200) {
           dispatch(
             notify({
-              message: `Loaded ${res.data.fileName} version ${res.data.version}`
+              message: `Loaded ${res.data.fileName} version ${res.data.version}`,
             })
           );
 
@@ -296,9 +297,9 @@ export function fetchFile(fileZUID, fileType, options = { forceSync: false }) {
             // we can send it down the same reducer which
             // determines local synced state files. Avoiding code duplication.
             payload: {
-              files: [res.data]
+              files: [res.data],
             },
-            options
+            options,
           });
         }
 
@@ -306,7 +307,7 @@ export function fetchFile(fileZUID, fileType, options = { forceSync: false }) {
           dispatch(
             notify({
               kind: "warn",
-              message: `File could not be found. ${fileZUID}`
+              message: `File could not be found. ${fileZUID}`,
             })
           );
         }
@@ -315,7 +316,7 @@ export function fetchFile(fileZUID, fileType, options = { forceSync: false }) {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to load file. ${res.status} | ${res.error}`
+              message: `Failed to load file. ${res.status} | ${res.error}`,
             })
           );
         }
@@ -327,11 +328,11 @@ export function fetchFile(fileZUID, fileType, options = { forceSync: false }) {
 }
 
 export function fetchFileVersions(fileZUID, fileType) {
-  return dispatch => {
+  return (dispatch) => {
     return request(
       `${CONFIG.API_INSTANCE}/web/${fileType}/${fileZUID}/versions/`
     )
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           // Larger version decending
           res.data.sort((a, b) => {
@@ -342,24 +343,24 @@ export function fetchFileVersions(fileZUID, fileType) {
             type: "FETCH_FILE_VERSIONS_SUCCESS",
             payload: {
               fileZUID,
-              versions: res.data
-            }
+              versions: res.data,
+            },
           });
         } else {
           dispatch(
             notify({
               kind: "warn",
-              message: `Unable to load file versions. ${res.status}`
+              message: `Unable to load file versions. ${res.status}`,
             })
           );
         }
         return res;
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         notify({
           kind: "warn",
-          message: "API error loading file versions"
+          message: "API error loading file versions",
         });
       });
   };
@@ -367,16 +368,16 @@ export function fetchFileVersions(fileZUID, fileType) {
 
 export function createFile(name, type, code = "") {
   const pathPart = resolvePathPart(type);
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/web/${pathPart}`, {
       json: true,
       body: {
         filename: name,
         code,
-        type
-      }
+        type,
+      },
     })
-      .then(res => {
+      .then((res) => {
         // HACK passing through to invoking function so it can redirect to new file
         res.pathPart = pathPart;
 
@@ -384,31 +385,31 @@ export function createFile(name, type, code = "") {
           dispatch(
             notify({
               kind: "success",
-              message: `Created new file ${name}`
+              message: `Created new file ${name}`,
             })
           );
 
           // File will be fetched when redirected to after creation
           dispatch({
-            type: "CREATE_FILE_SUCCESS"
+            type: "CREATE_FILE_SUCCESS",
           });
         } else {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to create file ${name}. ${res.error}`
+              message: `Failed to create file ${name}. ${res.error}`,
             })
           );
         }
 
         return res;
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         dispatch(
           notify({
             kind: "warn",
-            message: `Failed to create file ${name}. ${err}`
+            message: `Failed to create file ${name}. ${err}`,
           })
         );
       });
@@ -426,20 +427,20 @@ export function saveFile(ZUID, status) {
     return request(`${CONFIG.API_INSTANCE}/web/${pathPart}/${ZUID}`, {
       method: "PUT",
       json: true,
-      body: file
+      body: file,
     })
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           dispatch(
             notify({
               kind: "success",
-              message: `Saved ${file.fileName}`
+              message: `Saved ${file.fileName}`,
             })
           );
 
           dispatch({
             type: "SAVE_FILE_SUCCESS",
-            payload: { file, instanceZUID: getState().instance.ZUID }
+            payload: { file, instanceZUID: getState().instance.ZUID },
           });
 
           // re-render ActivePreview on code file save
@@ -451,19 +452,19 @@ export function saveFile(ZUID, status) {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to save file. ${res.status} | ${res.error}`
+              message: `Failed to save file. ${res.status} | ${res.error}`,
             })
           );
         }
 
         return res.data;
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         dispatch(
           notify({
             kind: "warn",
-            message: err.message
+            message: err.message,
           })
         );
       });
@@ -497,41 +498,41 @@ export function publishFile(fileZUID, fileStatus) {
     return request(
       `${CONFIG.API_INSTANCE}/web/${pathPart}/${fileZUID}/versions/${latestVersion}?purge_cache=true`,
       {
-        method: "POST"
+        method: "POST",
       }
     )
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           dispatch(
             notify({
               kind: "success",
-              message: `Published ${file.fileName} version ${latestVersion}`
+              message: `Published ${file.fileName} version ${latestVersion}`,
             })
           );
 
           dispatch({
             type: "PUBLISH_FILE_SUCCESS",
             payload: {
-              fileZUID
-            }
+              fileZUID,
+            },
           });
         } else {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to publish file. ${res.status} | ${res.error}`
+              message: `Failed to publish file. ${res.status} | ${res.error}`,
             })
           );
         }
 
         return res;
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         dispatch(
           notify({
             kind: "warn",
-            message: err.message
+            message: err.message,
           })
         );
       });
@@ -545,34 +546,34 @@ export function deleteFile(fileZUID, fileStatus) {
 
     return request(`${CONFIG.API_INSTANCE}/web/${pathPart}/${fileZUID}`, {
       method: "DELETE",
-      json: true
+      json: true,
     })
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           dispatch({
             type: "DELETE_FILE_SUCCESS",
             payload: {
               fileZUID,
-              instanceZUID: getState().instance.ZUID
-            }
+              instanceZUID: getState().instance.ZUID,
+            },
           });
         } else {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to delete file ${file.fileName}. ${res.error}`
+              message: `Failed to delete file ${file.fileName}. ${res.error}`,
             })
           );
         }
 
         return res;
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         dispatch(
           notify({
             kind: "warn",
-            message: `API error occured trying to delete file. ${file.fileName}`
+            message: `API error occured trying to delete file. ${file.fileName}`,
           })
         );
       });
@@ -597,7 +598,8 @@ export function resolveMonacoLang(fileName) {
       break;
     case "html":
       // Because we allow parsley in custom html files
-      language = "handlebars";
+      // language = "handlebars";
+      language = "parsley";
       break;
     case "json":
       language = "json";
@@ -617,8 +619,8 @@ export function resolveMonacoLang(fileName) {
       break;
 
     default:
-      language = "handlebars";
-      // language = "parsley";
+      // language = "handlebars";
+      language = "parsley";
       break;
   }
 
@@ -653,14 +655,14 @@ export function resolvePathPart(type) {
 
 function resolveFile(dispatch, files, fileZUID, fileStatus) {
   let file = files.find(
-    file => file.ZUID === fileZUID && file.status === fileStatus
+    (file) => file.ZUID === fileZUID && file.status === fileStatus
   );
 
   if (!file) {
     dispatch(
       notify({
         kind: "warn",
-        message: "We were not able to find the file you are trying to save."
+        message: "We were not able to find the file you are trying to save.",
       })
     );
   }

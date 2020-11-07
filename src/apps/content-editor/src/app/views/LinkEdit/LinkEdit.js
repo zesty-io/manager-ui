@@ -28,7 +28,7 @@ class LinkEdit extends Component {
       rel: false,
       internalLinkOptions: [],
       linkZUID: this.props.linkZUID,
-      loading: false
+      loading: false,
     };
   }
 
@@ -51,34 +51,37 @@ class LinkEdit extends Component {
         rel: false,
         internalLinkOptions: [],
         linkZUID: this.props.linkZUID,
-        loading: false
+        loading: false,
       });
       this.fetchLink(this.props.linkZUID);
     }
   }
 
-  fetchLink = linkZUID => {
+  fetchLink = (linkZUID) => {
     this.setState({
-      loading: true
+      loading: true,
     });
 
-    return request(`${CONFIG.service.manager}/ajax/content_call.ajax.php`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-      },
-      body: `hash[0]=content&hash[1]=${linkZUID}`
-    })
-      .then(res => {
+    return request(
+      `${CONFIG.LEGACY_SITES_SERVICE}/ajax/content_call.ajax.php`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        },
+        body: `hash[0]=content&hash[1]=${linkZUID}`,
+      }
+    )
+      .then((res) => {
         if (this.__mounted) {
           this.setState({
-            loading: false
+            loading: false,
           });
 
           if (res.error) {
             notify({
               message: `Failure loading link: ${res.message}`,
-              kind: "error"
+              kind: "error",
             });
           } else {
             // 0 indicates a top level menu link, nothing to resolve
@@ -94,9 +97,9 @@ class LinkEdit extends Component {
                     ...this.state.internalLinkOptions,
                     {
                       value: parent.meta.ZUID,
-                      text: parent.web.path
-                    }
-                  ]
+                      text: parent.web.path,
+                    },
+                  ],
                 });
               }
             }
@@ -112,9 +115,9 @@ class LinkEdit extends Component {
                     ...this.state.internalLinkOptions,
                     {
                       value: link.meta.ZUID,
-                      text: link.web.path
-                    }
-                  ]
+                      text: link.web.path,
+                    },
+                  ],
                 });
               }
             }
@@ -127,19 +130,19 @@ class LinkEdit extends Component {
               seo_link_title: res.znode.seo_link_title,
               target: res.znode.target == null ? false : true,
               rel: res.znode.rel == null ? false : true,
-              [res.znode.type]: res.znode.path_part
+              [res.znode.type]: res.znode.path_part,
             });
           }
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         notify({
           message: "There was an issue loading this link",
-          kind: "error"
+          kind: "error",
         });
         this.setState({
-          loading: false
+          loading: false,
         });
       });
   };
@@ -156,66 +159,69 @@ class LinkEdit extends Component {
       target: this.state.target ? "_blank" : null,
       rel: this.state.rel ? "nofollow" : null,
       // send internal or external key with that value from store
-      [this.state.type]: this.state[this.state.type]
+      [this.state.type]: this.state[this.state.type],
     };
 
     // Convert to urlencoded
     const body = Object.keys(params)
       .map(
-        key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
+        (key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
       )
       .join("&");
 
-    return request(`${CONFIG.service.manager}/ajax/process_link.ajax.php`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-      },
-      body
-    })
-      .then(res => {
+    return request(
+      `${CONFIG.LEGACY_SITES_SERVICE}/ajax/process_link.ajax.php`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        },
+        body,
+      }
+    )
+      .then((res) => {
         if (res.error) {
           notify({
             message: `Failure creating link: ${res.message}`,
-            kind: "error"
+            kind: "error",
           });
         } else {
           this.setState({ saving: false });
           notify({ message: "Saved link", kind: "save" });
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         this.setState({ saving: false });
         notify({ message: "Error saving link", kind: "error" });
       });
   };
 
-  search = zuid => {
+  search = (zuid) => {
     return request(`${CONFIG.service.instance_api}/search/items?q=${zuid}`)
-      .then(res => {
+      .then((res) => {
         if (res.status !== 200) {
           notify({
             message: "Error fetching API",
-            kind: "error"
+            kind: "error",
           });
           throw res;
         }
 
         const searchResults = res.data
-          .filter(item => item.web.path)
-          .map(item => {
+          .filter((item) => item.web.path)
+          .map((item) => {
             return {
               value: item.meta.ZUID,
-              text: item.web.path
+              text: item.web.path,
             };
           });
 
         const dedupeOptions = [
           ...this.state.internalLinkOptions,
-          ...searchResults
+          ...searchResults,
         ].reduce((acc, el) => {
-          if (!acc.find(opt => opt.value === el.value)) {
+          if (!acc.find((opt) => opt.value === el.value)) {
             acc.push(el);
           }
 
@@ -223,23 +229,23 @@ class LinkEdit extends Component {
         }, []);
 
         this.setState({
-          internalLinkOptions: dedupeOptions
+          internalLinkOptions: dedupeOptions,
         });
 
         return res;
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         notify({
           message: "Failed loading API",
-          kind: "error"
+          kind: "error",
         });
       });
   };
 
   onChange = (name, value) => {
     this.setState({
-      [name]: value
+      [name]: value,
     });
   };
 
@@ -252,14 +258,14 @@ class LinkEdit extends Component {
               {this.state.type === "internal" && <h2>Internal Link</h2>}
               {this.state.type === "external" && <h2>External Link</h2>}
             </CardHeader>
-            <CardContent>
+            <CardContent className={styles.CardContent}>
               <FieldTypeInternalLink
                 className={styles.Row}
                 name="parent_zuid"
                 label="Select a parent for your link"
                 value={this.state.parent_zuid}
                 options={this.state.internalLinkOptions.filter(
-                  op => op.value !== this.state.internal
+                  (op) => op.value !== this.state.internal
                 )}
                 onChange={this.onChange}
                 onSearch={this.search}
@@ -297,7 +303,7 @@ class LinkEdit extends Component {
                   type="checkbox"
                   name="target"
                   checked={this.state.target}
-                  onClick={evt => {
+                  onClick={(evt) => {
                     this.onChange("target", evt.target.checked);
                   }}
                 />
@@ -308,7 +314,7 @@ class LinkEdit extends Component {
                   type="checkbox"
                   name="rel"
                   checked={this.state.rel}
-                  onClick={evt => {
+                  onClick={(evt) => {
                     this.onChange("rel", evt.target.checked);
                   }}
                 />
@@ -334,6 +340,6 @@ class LinkEdit extends Component {
 export default connect((state, props) => {
   return {
     linkZUID: props.match.params.linkZUID,
-    items: state.contentModelItems
+    items: state.contentModelItems,
   };
 })(LinkEdit);

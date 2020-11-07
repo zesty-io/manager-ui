@@ -29,8 +29,8 @@ export function content(state = {}, action) {
             ...state,
             [action.itemZUID]: {
               ...state[action.itemZUID],
-              ...action.data
-            }
+              ...action.data,
+            },
           };
         } else {
           return state;
@@ -43,7 +43,7 @@ export function content(state = {}, action) {
     case "LOAD_ITEM_VERSION":
       return {
         ...state,
-        [action.itemZUID]: { ...state[action.itemZUID], ...action.data }
+        [action.itemZUID]: { ...state[action.itemZUID], ...action.data },
       };
 
     case "FETCH_ITEMS_SUCCESS":
@@ -51,7 +51,7 @@ export function content(state = {}, action) {
     case "LOADED_LOCAL_ITEMS":
       if (action.data) {
         let items = { ...state };
-        Object.keys(action.data).forEach(itemZUID => {
+        Object.keys(action.data).forEach((itemZUID) => {
           // Ensure all items include meta, web & data
           if (
             action.data[itemZUID] &&
@@ -66,7 +66,7 @@ export function content(state = {}, action) {
                 // Keep derived publishing/scheduling state when updating items
                 ...items[itemZUID],
                 ...action.data[itemZUID],
-                dirty: false
+                dirty: false,
               };
             }
           }
@@ -80,12 +80,12 @@ export function content(state = {}, action) {
     case "FETCH_ITEMS_PUBLISHING":
       let newState = { ...state };
 
-      Object.keys(action.data).forEach(itemZUID => {
+      Object.keys(action.data).forEach((itemZUID) => {
         // Update publishings for items we have on hand
         if (newState[itemZUID]) {
           newState[itemZUID] = {
             ...newState[itemZUID],
-            ...action.data[itemZUID]
+            ...action.data[itemZUID],
           };
         } else {
           // Otherwise we store an empty record so when the item is eventually loaded
@@ -95,7 +95,7 @@ export function content(state = {}, action) {
             data: {},
             meta: {},
             web: {},
-            ...action.data[itemZUID]
+            ...action.data[itemZUID],
           };
         }
       });
@@ -115,10 +115,10 @@ export function content(state = {}, action) {
             ...item,
             web: {
               ...item.web,
-              [action.key]: action.value
+              [action.key]: action.value,
             },
-            dirty: true
-          }
+            dirty: true,
+          },
         };
       }
       return state;
@@ -131,10 +131,10 @@ export function content(state = {}, action) {
             ...item,
             data: {
               ...item.data,
-              [action.key]: action.value
+              [action.key]: action.value,
             },
-            dirty: true
-          }
+            dirty: true,
+          },
         };
       }
       return state;
@@ -147,10 +147,10 @@ export function content(state = {}, action) {
             ...item,
             meta: {
               ...item.meta,
-              [action.key]: action.value
+              [action.key]: action.value,
             },
-            dirty: true
-          }
+            dirty: true,
+          },
         };
       }
       return state;
@@ -161,8 +161,8 @@ export function content(state = {}, action) {
           ...state,
           [action.itemZUID]: {
             ...item,
-            dirty: true
-          }
+            dirty: true,
+          },
         };
       }
       return state;
@@ -192,22 +192,20 @@ export function generateItem(modelZUID) {
       dirty: false,
       data: {},
       web: {
-        canonicalTagMode: 1
+        canonicalTagMode: 1,
       },
       meta: {
         ZUID: itemZUID,
         contentModelZUID: modelZUID,
         createdByUserZUID: state.user.user_zuid,
-        createdAt: moment()
-          .utc()
-          .format("YYYY-MM-DDTHH:MM:SSZ")
-      }
+        createdAt: moment().utc().format("YYYY-MM-DDTHH:MM:SSZ"),
+      },
     };
 
     dispatch({
       type: "GENERATE_NEW_ITEM",
       itemZUID: itemZUID,
-      data: item
+      data: item,
     });
 
     return item;
@@ -217,32 +215,32 @@ export function generateItem(modelZUID) {
 // API call actions
 
 export function fetchItem(modelZUID, itemZUID) {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}`,
-      handler: res => {
+      handler: (res) => {
         if (!res || !res.data) {
           throw new Error("Bad response from API. Missing resource data.");
         }
         dispatch({
           type: "FETCH_ITEM_SUCCESS",
           data: { ...res.data, dirty: false },
-          itemZUID
+          itemZUID,
         });
 
         return res;
-      }
+      },
     });
   };
 }
 
 export function searchItems(itemZUID) {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/search/items?q=${itemZUID}`,
-      handler: res => {
+      handler: (res) => {
         if (!res || !Array.isArray(res.data)) {
           throw new Error("Bad response from API. Missing resource data.");
         }
@@ -252,45 +250,51 @@ export function searchItems(itemZUID) {
           data: res.data.reduce((acc, item) => {
             acc[item.meta.ZUID] = item;
             return acc;
-          }, {})
+          }, {}),
         });
 
         return res;
-      }
+      },
     });
   };
 }
 
-export function fetchItems(modelZUID) {
+export function fetchItems(modelZUID, options = {}) {
   if (!modelZUID) {
     console.error("content:fetchItems() Missing modelZUID");
     console.trace();
     return () => {};
   }
 
-  return (dispatch, getState) => {
+  options.limit = options.limit || 100;
+  options.page = options.page || 1;
+
+  return (dispatch) => {
     // TODO load items for selected lang
     // const state = getState();
     // const lang = state.user.selected_lang || "en-US";
 
+    const params = new URLSearchParams(options).toString();
+
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items`,
-      handler: res => {
+      uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items?${params}`,
+      handler: (res) => {
         if (res.status === 400) {
           console.error("fetchItems():response", res);
           dispatch(
             notify({
               kind: "warn",
-              message: res.error
+              message: res.error,
             })
           );
+          throw res;
         }
 
         dispatch({
           type: "FETCH_ITEMS_SUCCESS",
           data: res.data
-            .filter(item => {
+            .filter((item) => {
               if (item.meta && item.web && item.data) {
                 return true;
               } else {
@@ -301,11 +305,11 @@ export function fetchItems(modelZUID) {
             .reduce((acc, item) => {
               acc[item.meta.ZUID] = item;
               return acc;
-            }, {})
+            }, {}),
         });
 
         return res;
-      }
+      },
     });
   };
 }
@@ -334,23 +338,23 @@ export function saveItem(itemZUID, action = "") {
     const item = state.content[itemZUID];
     const fields = Object.keys(state.fields)
       .filter(
-        fieldZUID =>
+        (fieldZUID) =>
           state.fields[fieldZUID].contentModelZUID ===
           item.meta.contentModelZUID
       )
-      .map(fieldZUID => state.fields[fieldZUID]);
+      .map((fieldZUID) => state.fields[fieldZUID]);
 
     // Check required fields are not empty strings or null valuess
     // Some falsey values are allowed. e.g. false, 0
     const missingRequired = fields.filter(
-      field =>
+      (field) =>
         field.required &&
         (item.data[field.name] === "" || item.data[field.name] === null)
     );
     if (missingRequired.length) {
       return Promise.resolve({
         err: "MISSING_REQUIRED",
-        missingRequired
+        missingRequired,
       });
     }
 
@@ -366,13 +370,13 @@ export function saveItem(itemZUID, action = "") {
         body: {
           data: item.data,
           meta: item.meta,
-          web: item.web
-        }
+          web: item.web,
+        },
       }
-    ).then(res => {
+    ).then((res) => {
       dispatch({
         type: "UNMARK_ITEMS_DIRTY",
-        items: [itemZUID]
+        items: [itemZUID],
       });
 
       dispatch(fetchItem(item.meta.contentModelZUID, itemZUID)).then(() => {
@@ -393,9 +397,9 @@ export function createItem(modelZUID, itemZUID) {
 
     const fields = Object.keys(state.fields)
       .filter(
-        fieldZUID => state.fields[fieldZUID].contentModelZUID === modelZUID
+        (fieldZUID) => state.fields[fieldZUID].contentModelZUID === modelZUID
       )
-      .map(fieldZUID => state.fields[fieldZUID]);
+      .map((fieldZUID) => state.fields[fieldZUID]);
 
     // Temp ZUID for store lookups
     delete item.meta.ZUID;
@@ -408,7 +412,7 @@ export function createItem(modelZUID, itemZUID) {
     }
 
     // Check required fields are not empty
-    const missingRequired = fields.filter(field => {
+    const missingRequired = fields.filter((field) => {
       if (!field.deletedAt && field.required) {
         if (!item.data[field.name] && item.data[field.name] != 0) {
           return true;
@@ -419,7 +423,7 @@ export function createItem(modelZUID, itemZUID) {
     if (missingRequired.length) {
       return Promise.resolve({
         err: "MISSING_REQUIRED",
-        missingRequired
+        missingRequired,
       });
     }
 
@@ -433,13 +437,13 @@ export function createItem(modelZUID, itemZUID) {
       body: {
         data: item.data,
         web: item.web,
-        meta: item.meta
-      }
-    }).then(res => {
+        meta: item.meta,
+      },
+    }).then((res) => {
       if (!res.error) {
         dispatch({
           type: "REMOVE_ITEM",
-          itemZUID
+          itemZUID,
         });
         // dispatch(fetchNav());
       }
@@ -449,29 +453,29 @@ export function createItem(modelZUID, itemZUID) {
 }
 
 export function deleteItem(modelZUID, itemZUID) {
-  return dispatch => {
+  return (dispatch) => {
     return request(
       `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}`,
       {
-        method: "DELETE"
+        method: "DELETE",
       }
-    ).then(res => {
+    ).then((res) => {
       if (res.status >= 400) {
         dispatch(
           notify({
             message: `Failure deleting item: ${res.statusText}`,
-            kind: "error"
+            kind: "error",
           })
         );
       } else {
         dispatch({
           type: "REMOVE_ITEM",
-          itemZUID
+          itemZUID,
         });
         dispatch(
           notify({
             message: `Successfully deleted item`,
-            kind: "save"
+            kind: "save",
           })
         );
 
@@ -498,8 +502,8 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
         // publishAt: "now", //default
         // unpublishAt: "never", //default
         // ...data
-        version_num: data.version
-      }
+        version_num: data.version,
+      },
     })
       .then(() => {
         const message = data.publishAt
@@ -509,7 +513,7 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
         return dispatch(
           notify({
             message,
-            kind: "save"
+            kind: "save",
           })
         );
       })
@@ -523,7 +527,7 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
         return dispatch(
           notify({
             message,
-            kind: "error"
+            kind: "error",
           })
         );
       });
@@ -531,14 +535,14 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
 }
 
 export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
-  return dispatch => {
+  return (dispatch) => {
     return request(
       `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings/${publishZUID}`,
       {
-        method: "DELETE"
+        method: "DELETE",
       }
     )
-      .then(res => {
+      .then((res) => {
         if (res.error) {
           throw res.error;
         }
@@ -548,21 +552,21 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
         return dispatch(
           notify({
             message,
-            kind: "save"
+            kind: "save",
           })
         );
       })
       .then(() => {
         return dispatch(fetchItemPublishing(modelZUID, itemZUID));
       })
-      .catch(err => {
+      .catch((err) => {
         const message = options.version
           ? `Error Unscheduling Version ${options.version}`
           : `Error Unpublishing Item ${itemZUID}`;
         return dispatch(
           notify({
             message,
-            kind: "error"
+            kind: "error",
           })
         );
       });
@@ -570,47 +574,47 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
 }
 
 export function fetchItemPublishing(modelZUID, itemZUID) {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`,
-      handler: res => {
+      handler: (res) => {
         if (!res || !res.data || !Array.isArray(res.data)) {
           throw new Error("Bad response from API. Missing resource data.");
         }
 
         dispatch({
           type: "FETCH_ITEMS_PUBLISHING",
-          data: parsePublishState(res.data)
+          data: parsePublishState(res.data),
         });
-      }
+      },
     });
   };
 }
 
 export function fetchItemPublishings() {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/items/publishings?limit=100000`,
-      handler: res => {
+      handler: (res) => {
         if (res.status === 200) {
           dispatch({
             type: "FETCH_ITEMS_PUBLISHING",
-            data: parsePublishState(res.data)
+            data: parsePublishState(res.data),
           });
         } else {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to fetch item publishings`
+              message: `Failed to fetch item publishings`,
             })
           );
           if (res.error) {
             throw new Error(res.error);
           }
         }
-      }
+      },
     });
   };
 }
@@ -620,7 +624,7 @@ export function checkLock(itemZUID) {
     return request(
       `${CONFIG.SERVICE_REDIS_GATEWAY}/door/knock?path=${itemZUID}`,
       {
-        credentials: "omit"
+        credentials: "omit",
       }
     );
   };
@@ -631,14 +635,14 @@ export function unlock(itemZUID) {
     return request(
       `${CONFIG.SERVICE_REDIS_GATEWAY}/door/unlock?path=${itemZUID}`,
       {
-        credentials: "omit"
+        credentials: "omit",
       }
     );
   };
 }
 
 export function lock(itemZUID) {
-  return getState => {
+  return (getState) => {
     const user = getState().user;
     if (user) {
       return request(`${CONFIG.SERVICE_REDIS_GATEWAY}/door/lock`, {
@@ -650,8 +654,8 @@ export function lock(itemZUID) {
           lastName: user.lastName,
           email: user.email,
           userZUID: user.ZUID,
-          path: itemZUID
-        }
+          path: itemZUID,
+        },
       });
     }
   };
@@ -672,12 +676,12 @@ export function lock(itemZUID) {
 function parsePublishState(records) {
   let publishStates = {};
 
-  records.forEach(record => {
+  records.forEach((record) => {
     // 1) Ensure we have a record setup with shape
     if (!publishStates[record.itemZUID]) {
       publishStates[record.itemZUID] = {
         publishing: {},
-        scheduling: {}
+        scheduling: {},
       };
     }
 
@@ -816,11 +820,11 @@ export function fetchGlobalItem() {
 
     const state = getState();
     const clippingsModelZUID = Object.keys(state.models).find(
-      modelZUID => state.models[modelZUID].name === "clippings"
+      (modelZUID) => state.models[modelZUID].name === "clippings"
     );
 
     if (clippingsModelZUID) {
-      const clippingsItemZUID = Object.keys(state.content).find(itemZUID => {
+      const clippingsItemZUID = Object.keys(state.content).find((itemZUID) => {
         return (
           state.content[itemZUID] &&
           state.content[itemZUID].meta.contentModelZUID === clippingsModelZUID

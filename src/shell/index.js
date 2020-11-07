@@ -20,6 +20,8 @@ import PrivateRoute from "./components/private-route";
 import LoadInstance from "./components/load-instance";
 import Shell from "./views/Shell";
 
+import { MonacoSetup } from "../apps/code-editor/src/app/components/Editor/components/MemoizedEditor/MonacoSetup";
+
 // interploated by webpack at build time
 // must be setup before starting the store
 window.CONFIG = __CONFIG__;
@@ -27,7 +29,7 @@ window.CONFIG = __CONFIG__;
 if (CONFIG.ENV !== "development" && CONFIG.ENV !== "local") {
   Sentry.init({
     dsn:
-      "https://2e83c3767c484794a56832affe2d26d9@o162121.ingest.sentry.io/5441698"
+      "https://2e83c3767c484794a56832affe2d26d9@o162121.ingest.sentry.io/5441698",
   });
 }
 
@@ -63,13 +65,13 @@ if (loadLocalStorageData) {
       get(`${instanceZUID}:navContent`),
       get(`${instanceZUID}:models`),
       get(`${instanceZUID}:fields`),
-      get(`${instanceZUID}:content`)
-    ]).then(results => {
+      get(`${instanceZUID}:content`),
+    ]).then((results) => {
       const [lang, nav, models, fields, content] = results;
 
       store.dispatch({
         type: "LOADED_LOCAL_USER_LANG",
-        payload: { lang }
+        payload: { lang },
       });
 
       // FIXME: This is broken because on initial nav fetch we modify
@@ -82,17 +84,17 @@ if (loadLocalStorageData) {
 
       store.dispatch({
         type: "LOADED_LOCAL_MODELS",
-        payload: models
+        payload: models,
       });
 
       store.dispatch({
         type: "LOADED_LOCAL_FIELDS",
-        payload: fields
+        payload: fields,
       });
 
       store.dispatch({
         type: "LOADED_LOCAL_ITEMS",
-        data: content
+        data: content,
       });
 
       // if (Array.isArray(itemZUIDs)) {
@@ -117,6 +119,8 @@ if (loadLocalStorageData) {
     console.error("IndexedDB:get:error", err);
   }
 }
+
+MonacoSetup(store);
 
 const App = hot(() => (
   <Provider store={store}>

@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === "production") {
 
     // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
     service: {
-      media_resolver: ""
+      media_resolver: "",
     },
 
     SERVICE_MEDIA_STORAGE: "https://svc.zesty.io/media-storage-service",
@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === "production") {
     COOKIE_NAME: "APP_SID",
     COOKIE_DOMAIN: ".zesty.io",
 
-    GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
+    GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk",
   };
 } else if (process.env.NODE_ENV === "stage") {
   CONFIG = {
@@ -66,7 +66,7 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-stage.cloudfunctions.net/googleAnalyticsGetPageViews",
 
-    LEGACY_SITES_SERVICE: "https://svc-stage.zesty.io/sites-service",
+    LEGACY_SITES_SERVICE: "https://stage-svc.zesty.io/sites-service",
 
     URL_MANAGER: ".manager.stage.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
@@ -77,7 +77,7 @@ if (process.env.NODE_ENV === "production") {
     COOKIE_NAME: "STAGE_APP_SID",
     COOKIE_DOMAIN: ".zesty.io",
 
-    GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
+    GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk",
   };
 } else if (process.env.NODE_ENV === "development") {
   CONFIG = {
@@ -97,7 +97,7 @@ if (process.env.NODE_ENV === "production") {
 
     // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
     service: {
-      media_resolver: ""
+      media_resolver: "",
     },
 
     SERVICE_MEDIA_STORAGE: "https://media-storage.api.dev.zesty.io",
@@ -118,7 +118,7 @@ if (process.env.NODE_ENV === "production") {
     URL_ACCOUNTS: "https://accounts.dev.zesty.io:9001",
 
     COOKIE_NAME: "DEV_APP_SID",
-    COOKIE_DOMAIN: ".zesty.io"
+    COOKIE_DOMAIN: ".zesty.io",
   };
 } else {
   CONFIG = {
@@ -138,7 +138,7 @@ if (process.env.NODE_ENV === "production") {
 
     // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
     service: {
-      media_resolver: "http://svc.zesty.localdev:3007/media-resolver-service"
+      media_resolver: "http://svc.zesty.localdev:3007/media-resolver-service",
     },
 
     SERVICE_MEDIA_STORAGE:
@@ -158,7 +158,7 @@ if (process.env.NODE_ENV === "production") {
     URL_ACCOUNTS: "https://accounts.zesty.localdev:9001",
 
     COOKIE_NAME: "DEV_APP_SID",
-    COOKIE_DOMAIN: ".zesty.localdev"
+    COOKIE_DOMAIN: ".zesty.localdev",
   };
 }
 

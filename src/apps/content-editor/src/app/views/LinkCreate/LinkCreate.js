@@ -54,7 +54,7 @@ export const LinkCreate = connect((state, props) => {
         target: "",
         rel: "",
 
-        internalLinkOptions: []
+        internalLinkOptions: [],
       };
     }
 
@@ -68,7 +68,7 @@ export const LinkCreate = connect((state, props) => {
         target: this.state.target,
         rel: this.state.rel,
         // send internal or external key with that value from store
-        [this.state.type]: this.state[this.state.type]
+        [this.state.type]: this.state[this.state.type],
       };
       let data = "";
       // build up a text string for the request body
@@ -79,58 +79,61 @@ export const LinkCreate = connect((state, props) => {
       const body = data.substr(0, data.length - 1);
 
       this.setState({
-        saving: true
+        saving: true,
       });
 
-      return request(`${CONFIG.service.manager}/ajax/process_link.ajax.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-        },
-        body
-      })
-        .then(res => {
+      return request(
+        `${CONFIG.LEGACY_SITES_SERVICE}/ajax/process_link.ajax.php`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+          },
+          body,
+        }
+      )
+        .then((res) => {
           this.setState({ saving: false });
           if (res.error) {
             notify({
               message: `Failure creating link: ${res.message}`,
-              kind: "error"
+              kind: "error",
             });
           } else {
             // this is a successful save
             // message and redirect to new item here
             notify({
               message: "Successfully created link",
-              kind: "save"
+              kind: "save",
             });
 
             window.location.hash = `#!/content/link/${res.current_znode_id}`;
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
           this.setState({ saving: false });
         });
     };
 
-    handleSearch = term => {
+    handleSearch = (term) => {
       return request(`${CONFIG.service.instance_api}/search/items?q=${term}`)
-        .then(res => {
+        .then((res) => {
           if (res.status === 200) {
             const searchResults = res.data
-              .filter(item => item.web.path)
-              .map(item => {
+              .filter((item) => item.web.path)
+              .map((item) => {
                 return {
                   value: item.meta.ZUID,
-                  text: item.web.path
+                  text: item.web.path,
                 };
               });
 
             const dedupeOptions = [
               ...this.state.internalLinkOptions,
-              ...searchResults
+              ...searchResults,
             ].reduce((acc, el) => {
-              if (!acc.find(opt => opt.value === el.value)) {
+              if (!acc.find((opt) => opt.value === el.value)) {
                 acc.push(el);
               }
 
@@ -138,23 +141,23 @@ export const LinkCreate = connect((state, props) => {
             }, []);
 
             this.setState({
-              internalLinkOptions: dedupeOptions
+              internalLinkOptions: dedupeOptions,
             });
           } else {
             return notify({
               message: `Failure searching: ${res.error}`,
-              kind: "error"
+              kind: "error",
             });
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("LinkCreate:handleSearch", err);
         });
     };
 
     onChange = (name, value) => {
       this.setState({
-        [name]: value
+        [name]: value,
       });
     };
 
@@ -223,7 +226,7 @@ export const LinkCreate = connect((state, props) => {
                   type="checkbox"
                   name="target"
                   checked={this.state.target}
-                  onClick={evt => {
+                  onClick={(evt) => {
                     this.onChange("target", evt.target.checked);
                   }}
                 />
@@ -234,7 +237,7 @@ export const LinkCreate = connect((state, props) => {
                   type="checkbox"
                   name="rel"
                   checked={this.state.rel}
-                  onClick={evt => {
+                  onClick={(evt) => {
                     this.onChange("rel", evt.target.checked);
                   }}
                 />

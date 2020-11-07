@@ -36,9 +36,7 @@ export const PublishStatusCell = React.memo(function PublishStatusCell(props) {
     return (
       <Url
         className={cx(styles.PublishStatusCell)}
-        href={`${zestyStore.getState().instance.preview_domain}${
-          props.item.web.path
-        }`}
+        href={`${CONFIG.URL_PREVIEW_PROTOCOL}${props.instance.randomHashID}${CONFIG.URL_PREVIEW}${props.item.web.path}`}
         target="_blank"
         title="Opens item preview in a new tab"
       >

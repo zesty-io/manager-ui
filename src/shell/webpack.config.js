@@ -61,7 +61,7 @@ module.exports = {
         // "coffee",
         "css",
         // "dockerfile",
-        "handlebars",
+        // "handlebars",
         "html",
         "javascript",
         "json",

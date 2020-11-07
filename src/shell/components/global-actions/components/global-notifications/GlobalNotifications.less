@@ -4,9 +4,11 @@
   background-color: @zesty-field-blue;
   position: fixed;
   z-index: 100;
-  bottom: 120px;
+
   color: @zesty-dark-blue;
   border-radius: 4px;
+  left: 62px;
+  bottom: 113px;
 
   ul {
     list-style-type: none;
@@ -32,8 +34,9 @@
   .caret {
     color: @zesty-field-blue;
     position: absolute;
-    bottom: -11px;
-    left: 5px;
+
+    left: -13px;
+    bottom: 11px;
   }
 }
 
@@ -41,15 +44,13 @@
   display: none;
 }
 
-@media (max-width: 2000px) {
+@media (min-width: 2000px) {
   .notices {
-    left: 62px;
-    bottom: 113px;
+    bottom: 120px;
 
     .caret {
-      left: -13px;
-      bottom: 11px;
-      transform: rotate(90deg);
+      bottom: -11px;
+      left: 13px;
     }
   }
 }

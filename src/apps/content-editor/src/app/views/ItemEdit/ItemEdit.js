@@ -10,7 +10,7 @@ import {
   fetchItemPublishing,
   checkLock,
   lock,
-  unlock
+  unlock,
 } from "shell/store/content";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -21,7 +21,6 @@ import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
 import { Meta } from "./Meta";
 import { Head } from "./Head";
-import { NotFound } from "shell/components/NotFound";
 
 class ItemEdit extends Component {
   _isMounted = false;
@@ -36,25 +35,21 @@ class ItemEdit extends Component {
     lock: {},
     checkingLock: false,
     loading: true,
-    saving: false
+    saving: false,
   };
 
   componentDidMount() {
     this._isMounted = true;
 
-    if (this.props.item) {
-      this.onLoad(this.props.modelZUID, this.props.itemZUID);
-    }
+    this.onLoad(this.props.modelZUID, this.props.itemZUID);
     window.addEventListener("keydown", this.handleSave);
   }
   componentWillUnmount() {
     this._isMounted = false;
 
-    if (this.props.item) {
-      // release lock when unmounting
-      if (this.state.lock.userZUID === this.props.user.user_zuid) {
-        this.props.dispatch(unlock(this.state.itemZUID));
-      }
+    // release lock when unmounting
+    if (this.state.lock.userZUID === this.props.user.user_zuid) {
+      this.props.dispatch(unlock(this.state.itemZUID));
     }
     window.removeEventListener("keydown", this.handleSave);
   }
@@ -79,12 +74,12 @@ class ItemEdit extends Component {
     });
     this.setState({
       lock: {
-        userZUID: this.props.user.user_zuid
-      }
+        userZUID: this.props.user.user_zuid,
+      },
     });
   };
 
-  handleSave = evt => {
+  handleSave = (evt) => {
     // NOTE: this is likely OS dependant
     if (
       ((this.props.platform.isMac && evt.metaKey) ||
@@ -103,27 +98,27 @@ class ItemEdit extends Component {
       loading: true,
       checkingLock: true,
       itemZUID,
-      modelZUID
+      modelZUID,
     });
 
     this.props
       .dispatch(checkLock(itemZUID))
-      .then(res => {
+      .then((res) => {
         // If no one has a lock then give lock to current user
         if (!res.userZUID) {
           this.props.dispatch(lock(itemZUID));
           this.setState({
             checkingLock: false,
             lock: {
-              userZUID: this.props.user.user_zuid
-            }
+              userZUID: this.props.user.user_zuid,
+            },
           });
         } else {
           // Capture lock information locally to make
           // locking/unlocking decisions
           this.setState({
             checkingLock: false,
-            lock: res
+            lock: res,
           });
         }
       })
@@ -132,28 +127,28 @@ class ItemEdit extends Component {
         this.setState({
           checkingLock: false,
           lock: {
-            userZUID: this.props.user.user_zuid
-          }
+            userZUID: this.props.user.user_zuid,
+          },
         });
       });
 
     Promise.all([
       this.props.dispatch(fetchFields(modelZUID)),
       this.props.dispatch(fetchItem(modelZUID, itemZUID)),
-      this.props.dispatch(fetchItemPublishing(modelZUID, itemZUID))
+      this.props.dispatch(fetchItemPublishing(modelZUID, itemZUID)),
     ])
       .then(() => {
         if (this._isMounted) {
           this.setState({
-            loading: false
+            loading: false,
           });
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("ItemEdit:load:error", err);
         if (this._isMounted) {
           this.setState({
-            loading: false
+            loading: false,
           });
         }
         throw err;
@@ -162,36 +157,36 @@ class ItemEdit extends Component {
 
   onSave = () => {
     this.setState({
-      saving: true
+      saving: true,
     });
 
     // Continue promise chain
     return this.props
       .dispatch(saveItem(this.props.itemZUID))
-      .then(res => {
+      .then((res) => {
         if (this._isMounted) {
           this.setState({
-            saving: false
+            saving: false,
           });
         }
         if (res.err === "MISSING_REQUIRED") {
           // scroll to required field
           this.setState({
-            makeActive: res.missingRequired[0].ZUID
+            makeActive: res.missingRequired[0].ZUID,
           });
           return this.props.dispatch(
             notify({
               message: `You are missing data in ${res.missingRequired.map(
-                f => f.label + " "
+                (f) => f.label + " "
               )}`,
-              kind: "error"
+              kind: "error",
             })
           );
         } else if (res.status === 400) {
           this.props.dispatch(
             notify({
               message: `Failed to save new version: ${res.error}`,
-              kind: "error"
+              kind: "error",
             })
           );
         } else {
@@ -202,7 +197,7 @@ class ItemEdit extends Component {
                   ? this.props.item.web.metaLinkText
                   : ""
               } version`,
-              kind: "save"
+              kind: "save",
             })
           );
         }
@@ -210,13 +205,13 @@ class ItemEdit extends Component {
       .catch(() => {
         if (this._isMounted) {
           this.setState({
-            saving: false
+            saving: false,
           });
         }
         // we need to set the item to dirty again because the save failed
         this.props.dispatch({
           type: "MARK_ITEM_DIRTY",
-          itemZUID: this.props.itemZUID
+          itemZUID: this.props.itemZUID,
         });
       });
   };
@@ -224,7 +219,7 @@ class ItemEdit extends Component {
   onDiscard = () => {
     this.props.dispatch({
       type: "UNMARK_ITEMS_DIRTY",
-      items: [this.props.itemZUID]
+      items: [this.props.itemZUID],
     });
     // Keep promise chain
     return this.props.dispatch(
@@ -233,11 +228,6 @@ class ItemEdit extends Component {
   };
 
   render() {
-    if (!this.props.item) {
-      return (
-        <NotFound message={`Content "${this.props.itemZUID}" not found`} />
-      );
-    }
     return (
       <WithLoader
         condition={!this.state.loading && Object.keys(this.props.item).length}
@@ -265,7 +255,7 @@ class ItemEdit extends Component {
           )}
 
         <PendingEditsModal
-          show={Boolean(this.props.item.dirty)}
+          show={this.props.item && Boolean(this.props.item.dirty)}
           title="Unsaved Changes"
           message="You have unsaved changes that will be lost if you leave this page."
           loading={this.state.saving}
@@ -299,7 +289,7 @@ class ItemEdit extends Component {
             <Route
               exact
               path="/content/:modelZUID/:itemZUID/meta"
-              render={props => (
+              render={(props) => (
                 <Meta
                   instance={this.props.instance}
                   modelZUID={this.props.modelZUID}
@@ -319,7 +309,7 @@ class ItemEdit extends Component {
             <Route
               exact
               path="/content/:modelZUID/:itemZUID"
-              render={props => (
+              render={(props) => (
                 <Content
                   instance={this.props.instance}
                   modelZUID={this.props.modelZUID}
@@ -349,8 +339,10 @@ export default connect((state, props) => {
   const item = state.content[itemZUID];
   const model = state.models[modelZUID];
   const fields = Object.keys(state.fields)
-    .filter(fieldZUID => state.fields[fieldZUID].contentModelZUID === modelZUID)
-    .map(fieldZUID => state.fields[fieldZUID])
+    .filter(
+      (fieldZUID) => state.fields[fieldZUID].contentModelZUID === modelZUID
+    )
+    .map((fieldZUID) => state.fields[fieldZUID])
     .sort((a, b) => a.sort - b.sort);
 
   const tags = Object.keys(state.headTags)
@@ -377,6 +369,6 @@ export default connect((state, props) => {
     logs: state.logs, // TODO filter logs to those for this item,
     instanceZUID: state.instance.ZUID,
     instance: state.instance,
-    items: state.content
+    items: state.content,
   };
 })(ItemEdit);
