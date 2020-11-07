@@ -1,11 +1,13 @@
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 
+/**
+ * Unique instance id from URL
+ */
 const ZUID = window.location.host.split(".")[0];
 
 export function instance(
   state = {
-    hash: "",
     ZUID: ZUID,
     settings: {
       seo: {}
@@ -69,6 +71,7 @@ export function fetchDomains() {
       .catch(err => {
         dispatch(
           notify({
+            kind: "warn",
             message: "Failed to load domains"
           })
         );
