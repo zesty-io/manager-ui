@@ -1,14 +1,12 @@
 {
   "name": "app-shell",
   "version": "1.0.0",
-  "description": "Zesty.io site management application shell",
+  "description": "Root application shell to coordinate all manager experiences",
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=development ../../node_modules/.bin/webpack --display=errors-only --progress --watch",
     "build": "cross-env ../../node_modules/.bin/webpack --display=errors-only --progress -p"
   },
-  "author": "Stuart Runyan<stuart@zesty.io>",
-  "license": "UNLICENSED",
   "devDependencies": {
     "cross-env": "^7.0.2"
   }

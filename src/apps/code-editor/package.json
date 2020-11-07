@@ -1,7 +1,7 @@
 {
   "name": "code-editor",
   "version": "1.0.0",
-  "description": "",
+  "description": "Application for managing code on an instance",
   "main": "src/index.js",
   "scripts": {
     "test": "cross-env ../../../node_modules/.bin/cypress run",
@@ -9,16 +9,6 @@
     "start": "cross-env ../../../node_modules/.bin/webpack --display=minimal --progress --watch",
     "build": "cross-env ../../../node_modules/.bin/webpack --display=errors-only --progress -p"
   },
-  "author": "Zesty.io Developers <developers@zesty.io>",
-  "contirubtors": [
-    "Stuart Runyan <stuart@zesty.io>"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/zesty-io/sites.git",
-    "directory": "site-manager-app/manager/app-code"
-  },
-  "license": "All Rights Reserved",
   "devDependencies": {
     "cross-env": "^7.0.2"
   }
