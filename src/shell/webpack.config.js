@@ -16,9 +16,7 @@ module.exports = {
   },
   output: {
     filename:
-      process.env.NODE_ENV !== "development"
-        ? "[name].[contenthash].js"
-        : "[name].js",
+      process.env.NODE_ENV !== "development" ? "[name].[hash].js" : "[name].js",
     path: path.resolve(__dirname, "../../build/"),
     publicPath: "/"
   },
@@ -49,7 +47,7 @@ module.exports = {
       ignoreOrder: true,
       filename:
         process.env.NODE_ENV !== "development"
-          ? "[name].[contenthash].css"
+          ? "[name].[hash].css"
           : "[name].css"
     }),
     new MonacoWebpackPlugin({

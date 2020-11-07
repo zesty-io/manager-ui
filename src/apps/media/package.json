@@ -1,21 +1,13 @@
 {
   "name": "media",
   "version": "1.0.0",
-  "description": "",
+  "description": "Application for managing assets uploaded to an instance",
   "main": "src/index.js",
   "scripts": {
     "test": "cypress run",
     "start": "concurrently \"cross-env ../../../node_modules/.bin/webpack --display=errors-only --progress --watch\" \"gulp\"",
     "prebuild": "npm --silent install",
     "build": "concurrently \"cross-env ../../../node_modules/.bin/webpack --display=errors-only --progress -p\" \"gulp\""
-  },
-  "author": "",
-  "license": "UNLICENSED",
-  "jest": {
-    "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
-      "\\.(css|less)$": "identity-obj-proxy"
-    }
   },
   "dependencies": {
     "concurrently": "^5.2.0",
