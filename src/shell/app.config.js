@@ -1,7 +1,6 @@
 const pjson = require("./package.json");
-let CONFIG = {};
-if (process.env.NODE_ENV === "production") {
-  CONFIG = {
+module.exports = {
+  production: {
     VERSION: pjson.version,
     ENV: "production",
 
@@ -41,9 +40,8 @@ if (process.env.NODE_ENV === "production") {
     COOKIE_DOMAIN: ".zesty.io",
 
     GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
-  };
-} else if (process.env.NODE_ENV === "stage") {
-  CONFIG = {
+  },
+  stage: {
     VERSION: pjson.version,
     ENV: "stage",
 
@@ -78,9 +76,8 @@ if (process.env.NODE_ENV === "production") {
     COOKIE_DOMAIN: ".zesty.io",
 
     GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
-  };
-} else if (process.env.NODE_ENV === "development") {
-  CONFIG = {
+  },
+  development: {
     VERSION: pjson.version,
     ENV: "development",
 
@@ -119,9 +116,8 @@ if (process.env.NODE_ENV === "production") {
 
     COOKIE_NAME: "DEV_APP_SID",
     COOKIE_DOMAIN: ".zesty.io"
-  };
-} else {
-  CONFIG = {
+  },
+  local: {
     VERSION: pjson.version,
     ENV: "local",
 
@@ -159,7 +155,5 @@ if (process.env.NODE_ENV === "production") {
 
     COOKIE_NAME: "DEV_APP_SID",
     COOKIE_DOMAIN: ".zesty.localdev"
-  };
-}
-
-module.exports = CONFIG;
+  }
+};
