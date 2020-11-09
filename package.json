@@ -25,7 +25,8 @@
     "Joshua Hanson<joshua.hanson@zesty.io>",
     "David Naimi<david.naimi@zesty.io>",
     "Andy Fleming <andy@zesty.io>",
-    "Grant Glidewell <grant@zesty.io>"
+    "Grant Glidewell <grant@zesty.io>",
+    "Mukesh Kastala <mukesh.kastala@zesty.io>"
   ],
   "dependencies": {
     "@aeaton/react-prosemirror": "0.21.1",
