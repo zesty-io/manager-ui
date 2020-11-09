@@ -4,7 +4,9 @@
   <small style="color:#666;">The Cloud CMS for Marketers + Developers</small>
 </div>
 
-**Web browser support**: Chrome / Firefox / Edge / Safari (latest)
+You have found the code base which powers the Zesty.io instance manager.
+
+**[Start by creating a free instance](https://start.zesty.io/)**
 
 # Architecture
 
@@ -33,6 +35,8 @@ A redux store is used to manage state across all of the potential sub-apps. The 
 ## Requirements
 
 - Node.js version 12 LTS
+- Web browser: Chrome / Firefox / Edge / Safari (latest)
+
 
 ## Modify your hosts file
 
