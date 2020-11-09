@@ -1,5 +1,6 @@
 <div style="text-align:center;">
   <img title="Logo for Zesty.io" width="300px" height="72px" src="https://brand.zesty.io/zesty-io-logo-horizontal.png" />
+  
   <small style="color:#666;">The Cloud CMS for Marketers + Developers</small>
 </div>
 
