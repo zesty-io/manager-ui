@@ -1,49 +1,52 @@
-# Instance Manager Application
+## Instance Manager Application
 
 > The Cloud CMS for Marketers + Developers
 
-## Architecture
+# Architecture
 
-The manager-ui has been architected following closesly [Google's PRPL strategy](https://developers.google.com/web/fundamentals/performance/prpl-pattern/). Every sub application has it's own bundle build. Application bundles are then pre cached dynamically by the app shell based upon the users settings.
+The manager-ui has been architected following the [PRPL strategy](https://developers.google.com/web/fundamentals/performance/prpl-pattern/) described by [Houssein Djirdeh](https://twitter.com/hdjirdeh) at Google. Every sub application has it's own bundle build. Application bundles are then pre cached dynamically by the app shell based upon the users settings.
 
-Our long term vision is to add more Progressive Web App features over time.
+![Diagram showing Zesty.io instance manager architecture](https://jvsr216n.media.zestyio.com/manager-ui-architecture.png)
 
-![manager-ui-arcitecture](https://jvsr216n.media.zestyio.com/manager-ui-architecture.png)
-
-### Dependencies
+## Dependencies
 
 **TL;DR: Install all dependencies at the project root**
 
-In order to avoid the confusion of sub-bundles specificying different versions that are actually included with our vendor bundle we've lifted all dependencies to the repo root. By lifiting all dependencies to the top level `package.json` we have a single location to manage dependency versions.
+In order to avoid the confusion of sub-app bundles specificying different versions that are actually included with the vendor bundle all dependencies have been lifted to the repo root. By lifiting all dependencies to the top level `package.json` we have a single location to manage dependency versions.
 
-This means all sub dependency declarations are resolved, per npm default behaviour of traversing up the project until it finds a `node_modules`, at the root `node_modules` directory.
+This means all sub dependency declarations are resolved, per npm default behaviour, by traversing up the project until it finds tehe `node_modules` directory at the root.
 
-### Bundling
+## Bundling
 
-We use Webpack as our bundler of choice. There is a [single webpack config in the app shell](https://github.com/zesty-io/manager-ui/blob/master/src/shell/webpack.config.js) which, using lazy routes, separates the sub-apps into individual bundles.
+Webpack is used as the bundler of choice. There is a [single webpack config in the app shell](https://github.com/zesty-io/manager-ui/blob/master/src/shell/webpack.config.js) which, using lazy routes, separates the sub-apps into individual bundles.
 
-## Development
+## State Management
 
-### Requirements
+A redux store is used to manage state across all of the potential sub-apps. The shell setups a global store which is then shared to sub-apps that can dynamically inject reducers if needed.
+
+# Development
+
+## Requirements
 
 - Node.js version 12 LTS
 
-### Modify your host machine DNS
+## Modify your hosts file
 
-When running this code base on your host machine to develop you will need to modify your hosts file, e.g. linux: `/etc/hosts`, to point the DNS at your instances unique URL. With an entry like this.
+Every instance has a Zesty Universal ID (ZUID) which uniquely identifies itself to the API. When running the instance manager on your host machine you will need to point the unique instance URL to your host machines localhost by editing your hosts file. This is necessary as network requests to remote resources will fail a Cross-Origin Resource Sharing (CORS) request otherwise. This will then route through your localhost hitting the Webpack dev server and then make network requests to remote services as the expected referrer.
+
+**NOTE: Running the instance manager locally still connects to remote PRODUCTION resources. Meaning any actions you take will be done against your live instance.**
+
+_e.g. linux: `/etc/hosts`_
 
 ```
 127.0.0.1 <YOUR_UNIQUE_INSTANCE_ZUID>.manager.zesty.io
 ```
 
-**NOTE: Running the instance manager like this will still be hitting remote PRODUCTION resources. Meaning any actions you take will be done against your live instance.**
-
-This is necessary as network requests to remote resources will fail a Cross-Origin Resource Sharing (CORS) request otherwise. Once you have spoofed the DNS you can then load the URL `<YOUR_UNIQUE_INSTANCE_ZUID>.manager.zesty.io:8080` in your browser. This will then route through your localhost hitting the Webpack dev server but make network requests to remote services as the expected referrer.
-
-### Start the application
+## Start the application
 
 1. Install dependencies: `npm install`
 2. Start webpack: `npm run serve:webpack -- --env.NODE_ENV=production`
+3. Load the app in your browser: `<YOUR_UNIQUE_INSTANCE_ZUID>.manager.zesty.io:8080`
 
 ---
 
