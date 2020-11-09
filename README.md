@@ -24,15 +24,26 @@ We use Webpack as our bundler of choice. There is a [single webpack config in th
 
 ## Development
 
-When running this code base on your host machine to develop you will need to modify your host machines `/etc/hosts` file to point the DNS at your instances unique URL. With entry like this.
+### Requirements
+
+- Node.js version 12 LTS
+
+### Modify your host machine DNS
+
+When running this code base on your host machine to develop you will need to modify your hosts file, e.g. linux: `/etc/hosts`, to point the DNS at your instances unique URL. With an entry like this.
 
 ```
 127.0.0.1 <YOUR_UNIQUE_INSTANCE_ZUID>.manager.zesty.io
 ```
 
+**NOTE: Running the instance manager like this will still be hitting remote PRODUCTION resources. Meaning any actions you take will be done against your live instance.**
+
 This is necessary as network requests to remote resources will fail a Cross-Origin Resource Sharing (CORS) request otherwise. Once you have spoofed the DNS you can then load the URL `<YOUR_UNIQUE_INSTANCE_ZUID>.manager.zesty.io:8080` in your browser. This will then route through your localhost hitting the Webpack dev server but make network requests to remote services as the expected referrer.
 
-**NOTE: Running the instance manager like this will still be hitting remote PRODUCTION resources. Meaning any actions you take will be done against your live instance.**
+### Start the application
+
+1. Install dependencies: `npm install`
+2. Start webpack: `npm run serve:webpack -- --env.NODE_ENV=production`
 
 ---
 

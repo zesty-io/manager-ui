@@ -20,7 +20,7 @@
     "babel-preset-react": "6.24.1",
     "babel-preset-stage-2": "6.24.1",
     "cross-env": "7.0.2",
-    "gulp": "3.8.11",
+    "gulp": "4.0.0",
     "gulp-babel": "6.1.2",
     "gulp-cached": "1.1.0",
     "gulp-concat": "2.5.2",
