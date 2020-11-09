@@ -1,6 +1,6 @@
-## Instance Manager Application
-
 > The Cloud CMS for Marketers + Developers
+
+**Web browser support**: Chrome / Firefox / Edge / Safari (latest)
 
 # Architecture
 
