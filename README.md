@@ -1,12 +1,14 @@
 <div style="text-align:center;">
-  <img title="Logo for Zesty.io" width="300px" height="72px" src="https://brand.zesty.io/zesty-io-logo-horizontal.png" />
-  
-  <small style="color:#666;">The Cloud CMS for Marketers + Developers</small>
+  <img title="Logo for Zesty.io" width="300px" height="72px" src="https://brand.zesty.io/zesty-io-logo-horizontal.png" />  
 </div>
 
-You have found the code base which powers the Zesty.io instance manager.
+> The Cloud CMS for Marketers + Developers
 
 **[Start by creating a free instance](https://start.zesty.io/)**
+
+
+You have found the code base which powers the Zesty.io instance manager. While this code base can be run locally it is only recommended to do so for developing. If you would like to learn more about Zesty.io visit our [documentation at zesty.org](https://zesty.org/)
+
 
 # Architecture
 
