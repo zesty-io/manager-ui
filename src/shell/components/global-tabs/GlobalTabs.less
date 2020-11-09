@@ -9,7 +9,7 @@
   position: relative;
   width: calc(100vw - 60px);
   @media (min-width: 2000px) {
-    width: calc(100vw - 180px);
+    width: calc(100vw - 170px);
   }
 
   .InstanceSearch {
@@ -32,28 +32,10 @@
     flex-direction: column;
     overflow-x: auto;
 
-    ol {
-      display: flex;
-      li {
-        list-style: none;
-        a {
-          text-shadow: none;
-          word-break: keep-all;
-        }
-
-        &.active {
-          background-color: lighten(@globalMenuBkgColor, 5%);
-          border-left: 2px solid @zesty-orange;
-
-          a {
-            color: @white;
-          }
-        }
-      }
-    }
     .Links {
       flex: 1;
       overflow-x: auto;
+      display: flex;
 
       &::-webkit-scrollbar {
         width: 4px;
@@ -71,9 +53,36 @@
         display: flex;
         border-left: 1px solid #212636;
         border-right: 1px solid #0d1016;
-
         padding: 0 8px;
         flex-shrink: 0;
+        transition: all 0.3s ease;
+
+        &:hover {
+          border-left: 1px solid @zesty-orange;
+        }
+
+        //Active tab
+        &.active {
+          background-color: lighten(@globalMenuBkgColor, 5%);
+          border-left: 2px solid @zesty-orange;
+          a {
+            color: @white;
+          }
+        }
+        // Close tab button
+        &:first-child {
+          border-right: none;
+          .Close {
+            visibility: visible;
+          }
+        }
+        &:hover,
+        &:active,
+        &:focus {
+          .Close {
+            visibility: visible;
+          }
+        }
         a {
           padding: 12px 6px;
           display: inline-block;
@@ -81,6 +90,8 @@
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;
+          text-shadow: none;
+          word-break: keep-all;
 
           svg {
             margin-right: 2px;
@@ -89,20 +100,6 @@
         .Close {
           cursor: pointer;
           visibility: hidden;
-        }
-      }
-      li:first-child {
-        border-left: none;
-        border-right: none;
-        .Close {
-          visibility: visible;
-        }
-      }
-      li:hover,
-      li:active,
-      li:focus {
-        .Close {
-          visibility: visible;
         }
       }
     }

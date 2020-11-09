@@ -45,7 +45,7 @@ export default connect(state => {
         });
     };
 
-    handleOpenSchedule = () => {
+    toggleScheduleModal = () => {
       this.setState({
         ScheduleFlyout: !this.state.ScheduleFlyout
       });
@@ -95,6 +95,7 @@ export default connect(state => {
           {this.props.user.staff && (
             <ButtonGroup className={styles.Publish}>
               <Button
+                className={styles.PublishButton}
                 id="PublishButton"
                 kind="secondary"
                 disabled={publishingDisabled || false}
@@ -106,7 +107,7 @@ export default connect(state => {
               </Button>
               <Button
                 id="PublishScheduleButton"
-                className={`${styles.clock} ${
+                className={`${styles.ClockButton} ${
                   this.props.item.scheduling &&
                   this.props.item.scheduling.isScheduled
                     ? styles.Scheduled
@@ -115,7 +116,7 @@ export default connect(state => {
               `}
                 kind={this.state.ScheduleFlyout ? "tertiary" : "secondary"}
                 disabled={schedulingDisabled || false}
-                onClick={this.handleOpenSchedule}
+                onClick={this.toggleScheduleModal}
               >
                 <FontAwesomeIcon icon={faCalendar} />
               </Button>
@@ -123,7 +124,7 @@ export default connect(state => {
                 isOpen={this.state.ScheduleFlyout}
                 item={this.props.item}
                 dispatch={this.props.dispatch}
-                toggleOpen={this.handleOpenSchedule}
+                toggleOpen={this.toggleScheduleModal}
               />
             </ButtonGroup>
           )}

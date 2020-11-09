@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import moment from "moment-timezone";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,28 +10,27 @@ import {
   faExclamationTriangle
 } from "@fortawesome/free-solid-svg-icons";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
+import { Notice } from "@zesty-io/core/Notice";
 import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
 import { Button } from "@zesty-io/core/Button";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
 import { publish, unpublish } from "shell/store/content";
-import { notify } from "shell/store/notifications";
 
 const DISPLAY_FORMAT = "MMMM Do YYYY, [at] h:mm a";
 const UTC_FORMAT = "YYYY-MM-DD HH:mm:ss";
 
+import styles from "./ScheduleFlyout.less";
+
 /**
 Important Notes!!!
-
 FieldTypeDate uses react-flatpickr (i.e. Flatpickr) which emits selected dates
 as date objects in ISO (i.e. UTC) format. 1 We convert emited date objects
 into the local time without timezone information.
-
 Moments are stateful with regards to timezone, utc, etc... so we always create
 a new moment from a date string in order to avoid confusion.
 **/
-import styles from "./ScheduleFlyout.less";
 export default class ScheduleFlyout extends Component {
   componentDidMount() {
     const userTimezone = moment.tz.guess();
@@ -126,110 +125,117 @@ export default class ScheduleFlyout extends Component {
 
   render() {
     return (
-      this.props.isOpen &&
-      (this.props.item.scheduling && this.props.item.scheduling.isScheduled ? (
-        <section className={styles.Flyout}>
-          <Card className={styles.Card}>
-            <CardHeader>
-              <FontAwesomeIcon icon={faCalendar} />
-              &nbsp;Scheduled Publishing
-            </CardHeader>
-            <CardContent>
-              <p className={styles.Warn}>
-                <FontAwesomeIcon icon={faExclamationTriangle} />
-                <strong>
+      this.props.isOpen && (
+        <Modal
+          className={styles.Modal}
+          type="global"
+          open={true}
+          onClose={this.props.toggleOpen}
+        >
+          {this.props.item.scheduling &&
+          this.props.item.scheduling.isScheduled ? (
+            <section>
+              <h3 className={styles.Row}>
+                <FontAwesomeIcon icon={faCalendar} />
+                &nbsp;Scheduled Publishing
+              </h3>
+              <ModalContent>
+                <Notice className={styles.Notice}>
                   New versions can not be published while there is a version
                   scheduled.
-                </strong>
-              </p>
-              <p>
-                Version {this.props.item.scheduling.version} is scheduled to
-                publish on{" "}
-                <em>
-                  {/*
-                  publishAt from API is in UTC.
+                </Notice>
+                <p className={styles.Row}>
+                  Version {this.props.item.scheduling.version} is scheduled to
+                  publish on{" "}
+                  <em>
+                    {/*
+            publishAt from API is in UTC.
 
-                  Order of moment > utc > local > format is important
-                  Since the API returns a UTC timestamp we need it in UTC
-                  before setting it to the users timezone and formatting.
+            Order of moment > utc > local > format is important
+            Since the API returns a UTC timestamp we need it in UTC
+            before setting it to the users timezone and formatting.
 
-                  We can not display it in the selected timezone when it was created because
-                  that information is not persisted to the API so we always display it after
-                  the fact in the users current timezone
-                */}
-                  {moment
-                    .utc(this.props.item.scheduling.publishAt)
-                    .tz(this.state.userTimezone)
-                    .format(DISPLAY_FORMAT)}
-                </em>{" "}
-                in the <em>{this.state.userTimezone}</em> timezone.
-              </p>
-            </CardContent>
-            <CardFooter className={styles.CardFooter}>
-              <Button
-                kind="secondary"
-                id="UnschedulePublishButton"
-                disabled={this.state.scheduling}
-                onClick={this.handleCancelPublish}
-              >
-                <FontAwesomeIcon icon={faBan} />
-                &nbsp;Unschedule Version&nbsp;
-                {this.props.item.scheduling.version}
-              </Button>
-              <Button kind="cancel" onClick={this.props.toggleOpen}>
-                <FontAwesomeIcon icon={faTimesCircle} />
-                &nbsp;Close
-              </Button>
-            </CardFooter>
-          </Card>
-        </section>
-      ) : (
-        <section className={styles.Flyout}>
-          <Card className={styles.Card}>
-            <CardHeader>Schedule Publishing</CardHeader>
-            <CardContent>
-              <div className={styles.row}>
-                <FieldTypeDropDown
-                  label="Timezone where this will be published"
-                  name="selectedTimezone"
-                  onChange={this.handleChangeTimezone}
-                  value={this.state.selectedTimezone}
-                  options={this.state.timezones}
-                />
-              </div>
-              <div className={styles.row}>
-                <FieldTypeDate
-                  type="date"
-                  name="publish"
-                  label="Publish date and time"
-                  future={true}
-                  value={this.state.selectedTime}
-                  datatype={"datetime"}
-                  onChange={this.handleChangePublish}
-                />
-              </div>
-            </CardContent>
-            <CardFooter className={styles.CardFooter}>
-              <Button
-                kind="save"
-                id="SchedulePublishButton"
-                onClick={this.handleSchedulePublish}
-                disabled={this.state.scheduling}
-              >
-                <FontAwesomeIcon icon={faCalendarPlus} /> Schedule Publishing
-                Version {this.props.item.meta.version}
-              </Button>
-              <Button
-                kind="cancel"
-                id="SchedulePublishClose"
-                onClick={this.props.toggleOpen}
-              >
-                <FontAwesomeIcon icon={faTimesCircle} /> Close
-              </Button>
-            </CardFooter>
-          </Card>
-        </section>
-      ))
+            We can not display it in the selected timezone when it was created because
+            that information is not persisted to the API so we always display it after
+            the fact in the users current timezone
+          */}
+                    {moment
+                      .utc(this.props.item.scheduling.publishAt)
+                      .tz(this.state.userTimezone)
+                      .format(DISPLAY_FORMAT)}
+                  </em>{" "}
+                  in the <em>{this.state.userTimezone}</em> timezone.
+                </p>
+              </ModalContent>
+              <ModalFooter className={styles.ModalFooter}>
+                <Button
+                  kind="secondary"
+                  id="UnschedulePublishButton"
+                  disabled={this.state.scheduling}
+                  onClick={this.handleCancelPublish}
+                >
+                  <FontAwesomeIcon icon={faBan} />
+                  &nbsp;Unschedule Version&nbsp;
+                  {this.props.item.scheduling.version}
+                </Button>
+                <Button
+                  className={styles.Cancel}
+                  kind="cancel"
+                  onClick={this.props.toggleOpen}
+                >
+                  <FontAwesomeIcon icon={faTimesCircle} />
+                  &nbsp;Cancel (ESC)
+                </Button>
+              </ModalFooter>
+            </section>
+          ) : (
+            <section>
+              <h3>Schedule Publishing</h3>
+              <ModalContent>
+                <div className={styles.Row}>
+                  <FieldTypeDropDown
+                    label="Timezone where this will be published"
+                    name="selectedTimezone"
+                    onChange={this.handleChangeTimezone}
+                    value={this.state.selectedTimezone}
+                    options={this.state.timezones}
+                  />
+                </div>
+                <div className={styles.Row}>
+                  <FieldTypeDate
+                    type="date"
+                    name="publish"
+                    label="Publish date and time"
+                    future={true}
+                    value={this.state.selectedTime}
+                    datatype={"datetime"}
+                    onChange={this.handleChangePublish}
+                  />
+                </div>
+              </ModalContent>
+              <ModalFooter className={styles.ModalFooter}>
+                <Button
+                  kind="save"
+                  id="SchedulePublishButton"
+                  onClick={this.handleSchedulePublish}
+                  disabled={this.state.scheduling}
+                >
+                  <FontAwesomeIcon icon={faCalendarPlus} /> Schedule Publishing
+                  Version {this.props.item.meta.version}
+                </Button>
+                <Button
+                  className={styles.Cancel}
+                  kind="cancel"
+                  id="SchedulePublishClose"
+                  onClick={this.props.toggleOpen}
+                >
+                  <FontAwesomeIcon icon={faTimesCircle} /> Cancel (ESC)
+                </Button>
+              </ModalFooter>
+            </section>
+          )}
+        </Modal>
+      )
     );
   }
 }

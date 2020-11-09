@@ -62,13 +62,16 @@ class LinkEdit extends Component {
       loading: true
     });
 
-    return request(`${CONFIG.service.manager}/ajax/content_call.ajax.php`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-      },
-      body: `hash[0]=content&hash[1]=${linkZUID}`
-    })
+    return request(
+      `${CONFIG.LEGACY_SITES_SERVICE}/ajax/content_call.ajax.php`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+        },
+        body: `hash[0]=content&hash[1]=${linkZUID}`
+      }
+    )
       .then(res => {
         if (this.__mounted) {
           this.setState({
@@ -166,13 +169,16 @@ class LinkEdit extends Component {
       )
       .join("&");
 
-    return request(`${CONFIG.service.manager}/ajax/process_link.ajax.php`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-      },
-      body
-    })
+    return request(
+      `${CONFIG.LEGACY_SITES_SERVICE}/ajax/process_link.ajax.php`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+        },
+        body
+      }
+    )
       .then(res => {
         if (res.error) {
           notify({
@@ -252,7 +258,7 @@ class LinkEdit extends Component {
               {this.state.type === "internal" && <h2>Internal Link</h2>}
               {this.state.type === "external" && <h2>External Link</h2>}
             </CardHeader>
-            <CardContent>
+            <CardContent className={styles.CardContent}>
               <FieldTypeInternalLink
                 className={styles.Row}
                 name="parent_zuid"

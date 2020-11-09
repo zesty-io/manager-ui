@@ -22,6 +22,7 @@ export default connect(state => {
   return (
     <nav className={styles.ItemNav}>
       <AppLink
+        data-cy="content"
         className={cx(
           styles.AppLink,
           styles.buttonText,
@@ -32,6 +33,7 @@ export default connect(state => {
         Content
       </AppLink>
       <AppLink
+        data-cy="meta"
         className={cx(
           styles.AppLink,
           styles.buttonText,

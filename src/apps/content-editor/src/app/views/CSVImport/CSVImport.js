@@ -31,7 +31,7 @@ class CSVImport extends Component {
     cols: [],
     records: [],
     successes: 0,
-    height: document.documentElement.clientHeight - 420,
+    height: document.documentElement.clientHeight - 335,
     webMaps: {
       metaDescription: "",
       metaKeywords: null,
@@ -88,7 +88,8 @@ class CSVImport extends Component {
 
   parseCSV = csv => {
     const records = parse(csv, {
-      skip_empty_lines: true
+      skip_empty_lines: true,
+      skip_lines_with_empty_values: true
     });
 
     // build an array of object to reference data across columns

@@ -261,21 +261,26 @@ export function searchItems(itemZUID) {
   };
 }
 
-export function fetchItems(modelZUID) {
+export function fetchItems(modelZUID, options = {}) {
   if (!modelZUID) {
     console.error("content:fetchItems() Missing modelZUID");
     console.trace();
     return () => {};
   }
 
-  return (dispatch, getState) => {
+  options.limit = options.limit || 100;
+  options.page = options.page || 1;
+
+  return dispatch => {
     // TODO load items for selected lang
     // const state = getState();
     // const lang = state.user.selected_lang || "en-US";
 
+    const params = new URLSearchParams(options).toString();
+
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items`,
+      uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items?${params}`,
       handler: res => {
         if (res.status === 400) {
           console.error("fetchItems():response", res);
@@ -285,6 +290,7 @@ export function fetchItems(modelZUID) {
               message: res.error
             })
           );
+          throw res;
         }
 
         dispatch({
@@ -409,7 +415,7 @@ export function createItem(modelZUID, itemZUID) {
 
     // Check required fields are not empty
     const missingRequired = fields.filter(field => {
-      if (field.required) {
+      if (!field.deletedAt && field.required) {
         if (!item.data[field.name] && item.data[field.name] != 0) {
           return true;
         }
@@ -485,19 +491,22 @@ export function deleteItem(modelZUID, itemZUID) {
 }
 
 export function publish(modelZUID, itemZUID, data, meta = {}) {
-  return dispatch => {
-    return request(
-      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`,
-      {
-        method: "POST",
-        json: true,
-        body: {
-          publishAt: "now", //default
-          unpublishAt: "never", //default
-          ...data
-        }
+  return (dispatch, getState) => {
+    const instance = getState().instance;
+
+    // `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`
+    const url = `${CONFIG.LEGACY_SITES_SERVICE}/${instance.ZUID}/content/items/${itemZUID}/publish-schedule`;
+
+    return request(url, {
+      method: "POST",
+      json: true,
+      body: {
+        // publishAt: "now", //default
+        // unpublishAt: "never", //default
+        // ...data
+        version_num: data.version
       }
-    )
+    })
       .then(() => {
         const message = data.publishAt
           ? `Scheduled version ${data.version} to publish on ${meta.localTime} in the ${meta.localTimezone} timezone`
@@ -635,7 +644,7 @@ export function unlock(itemZUID) {
 }
 
 export function lock(itemZUID) {
-  return (dispatch, getState) => {
+  return getState => {
     const user = getState().user;
     if (user) {
       return request(`${CONFIG.SERVICE_REDIS_GATEWAY}/door/lock`, {
@@ -643,10 +652,10 @@ export function lock(itemZUID) {
         credentials: "omit",
         json: true,
         body: {
-          firstName: user.first_name,
-          lastName: user.last_name,
+          firstName: user.firstName,
+          lastName: user.lastName,
           email: user.email,
-          userZUID: user.user_zuid,
+          userZUID: user.ZUID,
           path: itemZUID
         }
       });
@@ -750,8 +759,8 @@ function parsePublishState(records) {
       <---------------------------------->
 
       ^nowGMT (scheduled)
-      ^nowGMT (published)
-      ^nowGMT (unpublished)
+                  ^nowGMT (published)
+                              ^nowGMT (unpublished)
 
       If `publishAt` is set but unpublishAt is not you only need to determine if `nowGMT` is after `publishAt`. a.k.a is it live
       If both `publishAt` and `unpublishAt` are set you need determine all 3 states.

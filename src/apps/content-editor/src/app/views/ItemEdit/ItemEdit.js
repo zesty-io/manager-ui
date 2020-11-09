@@ -40,6 +40,7 @@ class ItemEdit extends Component {
 
   componentDidMount() {
     this._isMounted = true;
+
     this.onLoad(this.props.modelZUID, this.props.itemZUID);
     window.addEventListener("keydown", this.handleSave);
   }
@@ -50,7 +51,6 @@ class ItemEdit extends Component {
     if (this.state.lock.userZUID === this.props.user.user_zuid) {
       this.props.dispatch(unlock(this.state.itemZUID));
     }
-
     window.removeEventListener("keydown", this.handleSave);
   }
   componentDidUpdate() {
@@ -87,7 +87,7 @@ class ItemEdit extends Component {
       evt.key == "s"
     ) {
       evt.preventDefault();
-      if (this.props.item.dirty) {
+      if (this.props.item && this.props.item.dirty) {
         this.onSave();
       }
     }
@@ -255,7 +255,7 @@ class ItemEdit extends Component {
           )}
 
         <PendingEditsModal
-          show={Boolean(this.props.item.dirty)}
+          show={this.props.item && Boolean(this.props.item.dirty)}
           title="Unsaved Changes"
           message="You have unsaved changes that will be lost if you leave this page."
           loading={this.state.saving}
@@ -336,8 +336,8 @@ class ItemEdit extends Component {
 export default connect((state, props) => {
   const { modelZUID, itemZUID } = props.match.params;
 
-  const item = state.content[itemZUID] || {};
-  const model = state.models[modelZUID] || {};
+  const item = state.content[itemZUID];
+  const model = state.models[modelZUID];
   const fields = Object.keys(state.fields)
     .filter(fieldZUID => state.fields[fieldZUID].contentModelZUID === modelZUID)
     .map(fieldZUID => state.fields[fieldZUID])

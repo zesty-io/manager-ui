@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useDispatch } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import debounce from "lodash.debounce";
 import cx from "classnames";
 
@@ -16,19 +16,20 @@ import {
 
 export default React.forwardRef(function ContentSearch(props, ref) {
   const dispatch = useDispatch();
+  const [skipSearch, setSkipSearch] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
   useEffect(() => {
-    if (searchTerm !== "" && searchTerm.charAt(0) !== "/") {
+    if (searchTerm !== "" && !skipSearch) {
       debouncedSearch(searchTerm);
     } else {
       // search term "" will cancel any inflight searches
       setSearchResults([]);
       debouncedSearch.cancel();
     }
-  }, [searchTerm]);
+  }, [searchTerm, skipSearch]);
 
   const refs = searchResults.map(() => React.createRef());
 
@@ -47,6 +48,8 @@ export default React.forwardRef(function ContentSearch(props, ref) {
 
   function handleChange(term) {
     setSearchTerm(term);
+    // reset skip after user input
+    setSkipSearch(false);
   }
 
   function clearSearch() {
@@ -86,6 +89,8 @@ export default React.forwardRef(function ContentSearch(props, ref) {
         clearSearch();
       }
       const item = searchResults[selectedIndex];
+      // skip search on user select
+      setSkipSearch(true);
       props.onSelect(item, setSearchTerm);
     }
   }
@@ -107,17 +112,21 @@ export default React.forwardRef(function ContentSearch(props, ref) {
           clearSearchOnClickOutside={props.clearSearchOnClickOutside}
           clearSearchOnSelect={props.clearSearchOnSelect}
           setSearchTerm={setSearchTerm}
+          setSkipSearch={setSkipSearch}
           selectedIndex={selectedIndex}
           refs={refs}
           onSelect={props.onSelect}
-          languages={props.languages}
         />
       )}
     </div>
   );
 });
 
-function SearchResults(props) {
+const SearchResults = connect(state => {
+  return {
+    languages: state.languages
+  };
+})(props => {
   const wrapperRef = useRef(null);
   // clear search results if user clicks outside of results
   useEffect(() => {
@@ -154,6 +163,8 @@ function SearchResults(props) {
           <div
             className={styles.ListItem}
             onClick={() => {
+              // skip search on user select
+              props.setSkipSearch(true);
               props.onSelect(result, props.setSearchTerm);
             }}
           >
@@ -161,7 +172,7 @@ function SearchResults(props) {
             <div>
               <div className={styles.SearchResultTitle}>
                 [
-                {props.languages
+                {props.languages.length
                   ? props.languages[result.meta.langID - 1].code
                   : "en-US"}
                 ]&nbsp;
@@ -190,4 +201,4 @@ function SearchResults(props) {
       ))}
     </ul>
   );
-}
+});

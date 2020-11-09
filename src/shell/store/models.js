@@ -1,5 +1,3 @@
-import { useHistory } from "react-router-dom";
-
 import { formatName } from "utility/formatName";
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
@@ -221,16 +219,6 @@ export function deleteModel(modelZUID) {
   return dispatch => {
     return request(`${CONFIG.API_INSTANCE}/content/models/${modelZUID}`, {
       method: "DELETE"
-    }).then(res => {
-      // Re-fetch models
-      dispatch(fetchModels()).then(() => {
-        let history = useHistory();
-
-        // redirect
-        history.push("/schema/");
-      });
-
-      return res;
-    });
+    }).then(() => dispatch(fetchModels()));
   };
 }

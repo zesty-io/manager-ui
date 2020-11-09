@@ -31,7 +31,7 @@ export default connect(state => {
 
       // Initial app load check
       checkSession();
-    }, []);
+    }, [props.dispatch]);
 
     return (
       <WithLoader

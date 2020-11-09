@@ -1,21 +1,13 @@
 {
   "name": "settings",
   "version": "1.0.0",
-  "description": "",
+  "description": "Application for managing instance settings",
   "main": "./src/index.js",
   "scripts": {
     "test": "cross-env ../../../node_modules/.bin/cypress run",
     "test:open": "cross-env ../../../node_modules/.bin/cypress open",
     "start": "cross-env ../../../node_modules/.bin/webpack --display=minimal --progress --watch",
     "build": "cross-env ../../../node_modules/.bin/webpack --display=errors-only --progress -p"
-  },
-  "author": "",
-  "license": "UNLICENSED",
-  "jest": {
-    "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
-      "\\.(css|less)$": "identity-obj-proxy"
-    }
   },
   "devDependencies": {
     "cross-env": "^7.0.2"

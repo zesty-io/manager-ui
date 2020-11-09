@@ -35,13 +35,16 @@ class ReorderNav extends Component {
       .map(item => item.ZUID)
       .join("|");
     const bodyString = `ordered_znodes=${saveOrderNodes}`;
-    request(`${CONFIG.service.manager}/ajax/content_update_sort.ajax.php`, {
-      body: bodyString,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+    request(
+      `${CONFIG.LEGACY_SITES_SERVICE}/ajax/content_update_sort.ajax.php`,
+      {
+        body: bodyString,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+        }
       }
-    })
+    )
       .then(() => {
         this.props.dispatch(
           notify({ message: "Changes have been saved", kind: "save" })

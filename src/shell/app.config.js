@@ -1,7 +1,6 @@
 const pjson = require("./package.json");
-let CONFIG = {};
-if (process.env.NODE_ENV === "production") {
-  CONFIG = {
+module.exports = {
+  production: {
     VERSION: pjson.version,
     ENV: "production",
 
@@ -29,6 +28,8 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-prod.cloudfunctions.net/googleAnalyticsGetPageViews",
 
+    LEGACY_SITES_SERVICE: "https://svc.zesty.io/sites-service",
+
     URL_MANAGER: ".manager.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
     URL_PREVIEW: "-dev.preview.zesty.io",
@@ -39,9 +40,8 @@ if (process.env.NODE_ENV === "production") {
     COOKIE_DOMAIN: ".zesty.io",
 
     GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
-  };
-} else if (process.env.NODE_ENV === "stage") {
-  CONFIG = {
+  },
+  stage: {
     VERSION: pjson.version,
     ENV: "stage",
 
@@ -64,6 +64,8 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-stage.cloudfunctions.net/googleAnalyticsGetPageViews",
 
+    LEGACY_SITES_SERVICE: "https://stage-svc.zesty.io/sites-service",
+
     URL_MANAGER: ".manager.stage.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
     URL_PREVIEW: "-dev.preview.stage.zesty.io",
@@ -74,9 +76,8 @@ if (process.env.NODE_ENV === "production") {
     COOKIE_DOMAIN: ".zesty.io",
 
     GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
-  };
-} else if (process.env.NODE_ENV === "development") {
-  CONFIG = {
+  },
+  development: {
     VERSION: pjson.version,
     ENV: "development",
 
@@ -104,6 +105,9 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
 
+    // We are not running the legacy cluster in dev so the sites-service is unavailable in that project
+    // LEGACY_SITES_SERVICE: "http://svc.zesty.localdev:3018/sites-service",
+
     URL_MANAGER: ".manager.dev.zesty.io:8080",
     URL_MANAGER_PROTOCOL: "http://",
     URL_PREVIEW: "-dev.preview.dev.zesty.io",
@@ -112,9 +116,8 @@ if (process.env.NODE_ENV === "production") {
 
     COOKIE_NAME: "DEV_APP_SID",
     COOKIE_DOMAIN: ".zesty.io"
-  };
-} else {
-  CONFIG = {
+  },
+  local: {
     VERSION: pjson.version,
     ENV: "local",
 
@@ -142,6 +145,8 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
 
+    LEGACY_SITES_SERVICE: "http://svc.zesty.localdev:3018/sites-service",
+
     URL_MANAGER: ".manager.zesty.localdev:9000",
     URL_MANAGER_PROTOCOL: "http://",
     URL_PREVIEW: "-dev.preview.zesty.localdev",
@@ -150,7 +155,5 @@ if (process.env.NODE_ENV === "production") {
 
     COOKIE_NAME: "DEV_APP_SID",
     COOKIE_DOMAIN: ".zesty.localdev"
-  };
-}
-
-module.exports = CONFIG;
+  }
+};
