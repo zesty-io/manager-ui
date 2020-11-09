@@ -7,7 +7,8 @@ import {
   faBan,
   faGlobe,
   faUpload,
-  faSpinner
+  faSpinner,
+  faFileImage
 } from "@fortawesome/free-solid-svg-icons";
 
 import { request } from "utility/request";
@@ -161,7 +162,7 @@ export default connect(state => {
         {hover ? (
           <FontAwesomeIcon
             title="Select Instance Favicon"
-            icon={faUpload}
+            icon={faFileImage}
             onClick={() => setOpen(!open)}
           />
         ) : faviconURL ? (
@@ -226,7 +227,7 @@ export default connect(state => {
               {loading ? (
                 <FontAwesomeIcon icon={faSpinner} />
               ) : (
-                <FontAwesomeIcon icon={faUpload} />
+                <FontAwesomeIcon icon={faFileImage} />
               )}
               Save Favicon
             </Button>
