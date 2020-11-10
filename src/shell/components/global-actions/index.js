@@ -12,7 +12,6 @@ import GlobalHelpMenu from "shell/components/GlobalHelpMenu";
 import { GlobalNotifications } from "./components/global-notifications";
 
 import styles from "./styles.less";
-import CONFIG from "../../app.config";
 export default connect(state => {
   return {
     instance: state.instance,
