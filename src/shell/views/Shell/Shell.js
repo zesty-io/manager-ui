@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import * as Sentry from "@sentry/react";
 
@@ -109,7 +109,7 @@ export default connect(state => {
                   }
                 })}
 
-                <Route exact path="/" component={ContentApp} />
+                <Redirect exact from="/" to="/content" />
                 <Route path="*" component={Missing} />
               </Switch>
             </Sentry.ErrorBoundary>
