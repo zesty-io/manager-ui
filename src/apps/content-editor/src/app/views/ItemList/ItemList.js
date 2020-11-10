@@ -554,7 +554,13 @@ export default connect((state, props) => {
     const { sortedBy, colType, reverseSort } = filter;
     // deals only with in state items, safe for filters
 
-    let sortedItems = [...items.slice(1)];
+    const newFields = findFields(props.allFields, props.modelZUID);
+    let sortedItems = findItems(
+      props.allItems,
+      props.modelZUID,
+      props.selectedLang.ID
+    );
+
     // sort the items in state by the column value
     if (sortedBy) {
       sortItems(sortedItems, {
@@ -568,6 +574,7 @@ export default connect((state, props) => {
 
     sortedItems.unshift(newFields);
     setItems(sortedItems);
+    setFields(newFields);
   }
 
   function resetListScroll() {
