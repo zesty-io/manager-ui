@@ -2,11 +2,17 @@
 @import "~@zesty-io/core/typography.less";
 
 .Head {
-  display: grid;
-  grid-template-rows: minmax(400px, 500px) 1fr;
+  display: flex;
+  flex-direction: column-reverse;
 
+  // When more space is available show in side-by-side columns
   @media screen and (min-width: 2000px) {
+    display: grid;
     grid-template-columns: minmax(400px, 1fr) 1fr;
+    .Tags {
+      height: calc(100vh - 54px);
+      overflow-y: scroll;
+    }
   }
 
   .Notice {
@@ -18,10 +24,5 @@
       margin-right: 8px;
       min-width: 190px;
     }
-  }
-
-  .Tags {
-    height: calc(100vh - 54px);
-    overflow-y: scroll;
   }
 }
