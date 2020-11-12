@@ -34,7 +34,9 @@ export function headTags(state = [], action) {
         [action.id]: {
           ...state[action.id],
           type: action.value,
-          attributes: [...state[action.id].attributes, ...action.attributes]
+
+          // When changing types change with new type attributes
+          attributes: [...action.attributes]
         }
       };
 

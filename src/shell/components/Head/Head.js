@@ -14,8 +14,31 @@ import { fetchHeadTags, addHeadTag } from "shell/store/headTags";
 
 import styles from "./Head.less";
 export default connect((state, props) => {
+  let item;
+  if (props.resourceZUID) {
+    // TODO: model level tags. Currently not supported by API
+    if (props.resourceZUID.charAt(0) === "6") {
+    }
+
+    // item level tags
+    if (props.resourceZUID.charAt(0) === "7") {
+      item = state.content[props.resourceZUID];
+    }
+    // instance level tags
+    if (props.resourceZUID.charAt(0) === "8") {
+      item = state.instance;
+    }
+  }
+
+  const domain =
+    Array.isArray(state.instance.domains) && state.instance.domains[0]
+      ? state.instance.domains[0].domain
+      : "";
+
   return {
-    instance: state.instance,
+    item,
+    domain,
+    instanceName: state.instance.name,
     tags: Object.values(state.headTags)
       .filter(tag => tag.resourceZUID === props.resourceZUID)
       .sort((a, b) => a.sort > b.sort)
@@ -39,8 +62,8 @@ export default connect((state, props) => {
           </Button>
 
           <Notice>
-            Head tags are not versioned or published. Changes to head tags take
-            effect immediately on your live instance.
+            Head tags are not versioned or published. Saved changes to head tags
+            take effect immediately on your live instance.
           </Notice>
         </h1>
 
@@ -56,9 +79,10 @@ export default connect((state, props) => {
       </main>
 
       <Preview
-        item={props.instance}
-        instanceName={props.instance.name}
-        instanceTags={props.tags}
+        item={props.item}
+        instanceName={props.instanceName}
+        domain={props.domain}
+        tags={props.tags}
       />
     </div>
   );
