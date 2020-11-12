@@ -1,0 +1,27 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.Head {
+  display: grid;
+  grid-template-rows: minmax(400px, 500px) 1fr;
+
+  @media screen and (min-width: 2000px) {
+    grid-template-columns: minmax(400px, 1fr) 1fr;
+  }
+
+  .Notice {
+    display: flex;
+    align-items: center;
+    margin: 16px;
+
+    button {
+      margin-right: 8px;
+      min-width: 190px;
+    }
+  }
+
+  .Tags {
+    height: calc(100vh - 54px);
+    overflow-y: scroll;
+  }
+}

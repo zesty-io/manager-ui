@@ -9,6 +9,11 @@ export function headTags(state = [], action) {
     case "ADD_HEADTAG":
       return { ...state, [action.tag.ZUID]: action.tag };
 
+    case "REPLACE_HEADTAG":
+      console.log("action", action);
+      delete state[action.oldZUID];
+      return { ...state, [action.tag.ZUID]: action.tag };
+
     case "DELETE_HEADTAG":
       let removedTag = { ...state };
       delete removedTag[action.id];
@@ -89,7 +94,7 @@ export const fetchHeadTags = () => {
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/web/headtags`,
       handler: res => {
-        if (res.status === 200) {
+        if (res.status === 200 && Array.isArray(res.data)) {
           dispatch({
             type: "FETCH_HEADTAGS_SUCCESS",
             data: res.data.reduce((acc, tag) => {
@@ -115,14 +120,35 @@ export const fetchHeadTags = () => {
   };
 };
 
-/*
-"type": "script",
-"attributes": {
-  "key":"value"
-},
-"resourceZUID": "{{headtag_resource_zuid}}",
-"sortOrder": 1
-*/
+export const addHeadTag = (resourceZUID, sort = 0) => {
+  return dispatch => {
+    dispatch({
+      type: "ADD_HEADTAG",
+      tag: {
+        ZUID: `${sort}:${resourceZUID}`,
+        resourceZUID: resourceZUID,
+        type: "meta",
+        custom: true,
+        attributes: [
+          {
+            key: "content",
+            value: ""
+          },
+          {
+            key: "name",
+            value: ""
+          },
+          {
+            key: "custom",
+            value: "true"
+          }
+        ],
+        sort: sort
+      }
+    });
+  };
+};
+
 export const createHeadTag = tag => {
   return dispatch => {
     return request(`${CONFIG.API_INSTANCE}/web/headtags`, {
@@ -213,23 +239,23 @@ export const updateTagType = (id, value) => {
   return dispatch => {
     const attributes = [];
 
-    // if (value === "meta") {
-    //   attributes.push({ key: "name", value: "" });
-    //   attributes.push({ key: "content", value: "" });
-    // }
-    // if (value === "script") {
-    //   attributes.push({ key: "rel", value: "preload" });
-    //   attributes.push({ key: "as", value: "script" });
-    //   attributes.push({ key: "type", value: "text/javascript" });
-    //   attributes.push({ key: "src", value: "" });
-    // }
-    // if (value === "link") {
-    //   attributes.push({ key: "rel", value: "preload" });
-    //   attributes.push({ key: "as", value: "style" });
-    //   attributes.push({ key: "type", value: "text/css" });
-    //   attributes.push({ key: "media", value: "screen" });
-    //   attributes.push({ key: "href", value: "" });
-    // }
+    if (value === "meta") {
+      attributes.push({ key: "name", value: "" });
+      attributes.push({ key: "content", value: "" });
+    }
+    if (value === "script") {
+      attributes.push({ key: "rel", value: "preload" });
+      attributes.push({ key: "as", value: "script" });
+      attributes.push({ key: "type", value: "text/javascript" });
+      attributes.push({ key: "src", value: "" });
+    }
+    if (value === "link") {
+      attributes.push({ key: "rel", value: "preload" });
+      attributes.push({ key: "as", value: "style" });
+      attributes.push({ key: "type", value: "text/css" });
+      attributes.push({ key: "media", value: "screen" });
+      attributes.push({ key: "href", value: "" });
+    }
 
     return dispatch({
       type: "UPDATE_TAG_TYPE",

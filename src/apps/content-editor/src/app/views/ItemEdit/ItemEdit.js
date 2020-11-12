@@ -20,7 +20,8 @@ import { LockedItem } from "../../components/LockedItem";
 
 import { Content } from "./Content";
 import { Meta } from "./Meta";
-import { Head } from "./Head";
+// import { Head } from "./Head";
+import { ItemHead } from "./ItemHead";
 
 class ItemEdit extends Component {
   _isMounted = false;
@@ -270,7 +271,7 @@ class ItemEdit extends Component {
               path="/content/:modelZUID/:itemZUID/head"
               render={({ match }) => {
                 return this.props.userRole.name !== "Contributor" ? (
-                  <Head
+                  <ItemHead
                     instance={this.props.instance}
                     modelZUID={this.props.modelZUID}
                     model={this.props.model}
