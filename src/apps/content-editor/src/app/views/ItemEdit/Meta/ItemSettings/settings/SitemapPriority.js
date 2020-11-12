@@ -1,16 +1,22 @@
 import React from "react";
 
 import { Select, Option } from "@zesty-io/core/Select";
+import { FieldLabel } from "@zesty-io/core/FieldLabel";
 import { Infotip } from "@zesty-io/core/Infotip";
 
 import styles from "./SitemapPriority.less";
 export const SitemapPriority = React.memo(function SitemapPriority(props) {
   return (
     <article className={styles.SitemapPriority} data-cy="sitemapPriority">
-      <label>
-        <Infotip title="Sitemap priority helps search engines understand how often they should crawl pages on your site." />
-        &nbsp;Sitemap Priority
-      </label>
+      <FieldLabel
+        name="sitemapPriority"
+        label={
+          <label>
+            <Infotip title="Sitemap priority helps search engines understand how often they should crawl pages on your site." />
+            &nbsp;Sitemap Priority
+          </label>
+        }
+      />
       <Select
         name="sitemapPriority"
         value={props.sitemapPriority || "-1.0"}
