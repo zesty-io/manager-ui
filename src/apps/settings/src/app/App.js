@@ -43,7 +43,6 @@ export default connect(state => ({
   return (
     <WithLoader
       condition={
-        // Object.keys(props.settings).length
         props.settings.catInstance.length &&
         props.settings.catStyles.length &&
         props.settings.fonts.length &&
@@ -67,27 +66,30 @@ export default connect(state => ({
                   component={Styles}
                 />
                 <Redirect from="/settings/styles" to="/settings/styles/1" />
+                <Route
+                  path="/settings/instance/:category"
+                  component={Instance}
+                />
 
                 <Route path="/settings/fonts/browse" component={Browse} />
                 <Route path="/settings/fonts/installed" component={Installed} />
                 <Redirect from="/settings/fonts" to="/settings/fonts/browse" />
 
+                <Route path="/settings/robots" component={Robots} />
                 <Route
                   path="/settings/head"
-                  render={() => <Head resourceZUID={props.instance.ZUID} />}
+                  render={() => (
+                    <div className={styles.InstanceHeadTags}>
+                      <Head resourceZUID={props.instance.ZUID} />
+                    </div>
+                  )}
                 />
 
-                <Route
-                  path="/settings/instance/:category"
-                  component={Instance}
-                />
+                <Redirect from="/settings" to="/settings/instance/general" />
                 <Redirect
                   from="/settings/instance"
                   to="/settings/instance/general"
                 />
-                <Route path="/settings/robots" component={Robots} />
-
-                <Redirect from="/settings" to="/settings/instance/general" />
               </Switch>
             </main>
           </div>
