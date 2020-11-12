@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 
@@ -25,19 +25,12 @@ export default connect(state => ({
   instance: state.instance,
   settings: state.settings
 }))(function SettingsApp(props) {
-  // installed fonts may be empty array, so use a flag to know when we've fetched them
-  const [installedFonts, setInstalledFonts] = useState(false);
-
   useEffect(() => {
-    console.log("SettingsApp:useEffect");
-
     props.dispatch(fetchSettings());
     props.dispatch(fetchStylesCategories());
     props.dispatch(fetchStylesVariables());
     props.dispatch(fetchFonts());
-    props.dispatch(fetchFontsInstalled()).finally(() => {
-      setInstalledFonts(true);
-    });
+    props.dispatch(fetchFontsInstalled());
   }, []);
 
   return (
@@ -45,10 +38,7 @@ export default connect(state => ({
       condition={
         props.settings.catInstance.length &&
         props.settings.catStyles.length &&
-        props.settings.fonts.length &&
-        installedFonts &&
-        props.settings.instance.length &&
-        props.settings.styles.length
+        props.settings.catFonts.length
       }
       message="Starting Settings"
       width="100vw"
