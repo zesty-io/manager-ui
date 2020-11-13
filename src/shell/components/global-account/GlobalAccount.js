@@ -1,73 +1,71 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEye,
-  faBell,
-  faExternalLinkSquareAlt,
-  faQuestion
-} from "@fortawesome/free-solid-svg-icons";
-import { Url } from "@zesty-io/core/Url";
+import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 
-import GlobalAccountMenu from "./global-account-menu";
+import { Url } from "@zesty-io/core/Url";
 
 import styles from "./GlobalAccount.less";
 export default connect(state => {
   return {
-    instance: state.instance,
-    instances: state.instances,
     user: state.user
   };
 })(function GlobalAccount(props) {
-  const [openMenu, setOpenMenu] = useState(false);
-  const [token, setToken] = useState(false);
+  const [open, setOpen] = useState(false);
+  const ref = useRef();
+
+  useEffect(() => {
+    const handleGlobalClick = evt => {
+      if (ref && ref.current.contains(evt.target)) {
+        setOpen(true);
+      } else {
+        setOpen(false);
+      }
+    };
+
+    window.addEventListener("click", handleGlobalClick);
+
+    return () => window.removeEventListener("click", handleGlobalClick);
+  }, [ref]);
 
   return (
-    <div className={styles.GlobalAccount}>
-      {/* <div className={styles.Actions}>
-        <FontAwesomeIcon icon={faEye} />
-        <FontAwesomeIcon icon={faBell} />
-        <FontAwesomeIcon icon={faQuestion} />
-      </div> */}
-
-      <div className={styles.InstanceLink}>
-        {props.instance.domains.length ? (
-          <Url
-            href={`https://${props.instance.domains[0].domain}`}
-            target="_blank"
-            title={props.instance.name}
-          >
-            {/* <FontAwesomeIcon icon={faExternalLinkSquareAlt} /> */}
-            {props.instance.name}
-          </Url>
-        ) : (
-          props.instance.name
-        )}
-      </div>
-
-      <div
-        className={styles.AccountMenu}
-        onMouseEnter={() => {
-          if (token) {
-            clearTimeout(token);
-          }
-          setOpenMenu(true);
+    <section className={styles.GlobalAccount} ref={ref}>
+      <img
+        className={styles.Avatar}
+        alt={`${props.user.firstName} ${props.user.lastName} Avatar`}
+        src={`https://www.gravatar.com/avatar/${props.user.emailHash}?d=mm&s=40`}
+        height="30px"
+        width="30px"
+        onClick={evt => {
+          // evt.stopPropagation();
+          setOpen(!open);
         }}
-        onMouseLeave={() => {
-          setToken(setTimeout(() => setOpenMenu(false), 500));
-        }}
+      />
+
+      <menu
+        className={cx(styles.bodyText, styles.Menu, open ? null : styles.hide)}
       >
-        <img
-          className={styles.Avatar}
-          alt={`${props.user.firstName} ${props.user.lastName} Avatar`}
-          src={`https://www.gravatar.com/avatar/${props.user.emailHash}?d=mm&s=40`}
-          height="40px"
-          width="40px"
-        />
-        <GlobalAccountMenu display={openMenu} />
-      </div>
-    </div>
+        <li>ZUID: {props.user.ZUID}</li>
+        <li>
+          {props.user.firstName} {props.user.lastName}
+        </li>
+        <li>{props.user.email} </li>
+        <li>
+          <Url href={`${CONFIG.URL_ACCOUNTS}`}>My Accounts</Url>
+        </li>
+        <li>
+          <Url
+            title={`${CONFIG.URL_ACCOUNTS}/logout`}
+            href={`${CONFIG.URL_ACCOUNTS}/logout`}
+            className={cx(styles.link, styles.logout)}
+          >
+            <FontAwesomeIcon icon={faSignOutAlt} />
+            Logout
+          </Url>
+        </li>
+      </menu>
+    </section>
   );
 });
