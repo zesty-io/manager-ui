@@ -26,11 +26,11 @@ export default connect(state => {
     return (
       <div className={styles.GlobalSubMenu}>
         <div className={styles.GlobalActions}>
-          {/* <LivePreview
+          <LivePreview
             instanceHash={props.instance.randomHashID}
             instanceZUID={props.instance.ZUID}
             content={props.content}
-          /> */}
+          />
 
           <GlobalNotifications className={styles.action} />
 

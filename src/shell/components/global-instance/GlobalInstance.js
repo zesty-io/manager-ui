@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faEye,
   faCaretDown,
   faExternalLinkAlt
 } from "@fortawesome/free-solid-svg-icons";
@@ -39,16 +38,6 @@ export default connect(state => {
   return (
     <section className={cx(styles.bodyText, styles.GlobalInstance)} ref={ref}>
       <menu className={styles.Actions}>
-        {/* <FontAwesomeIcon icon={faBell} /> */}
-
-        <Url
-          href={CONFIG.URL_PREVIEW_FULL}
-          target="_blank"
-          title="Instance preview"
-        >
-          <FontAwesomeIcon icon={faEye} />
-        </Url>
-
         {props.instance.domains.length && (
           <Url
             href={`https://${props.instance.domains[0].domain}`}
