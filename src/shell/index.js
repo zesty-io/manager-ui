@@ -50,7 +50,7 @@ window.riot = riot;
 // Media riot app depends on these references
 // FIXME: this needs to get refactored out
 window.request = request;
-window.growl = notify;
+window.growl = notice => store.dispatch(notify(notice));
 
 // Update urls in config to include the current instance zuid
 const instanceZUID = store.getState().instance.ZUID;
