@@ -75,8 +75,7 @@ export function createRedirect(redirect) {
           dispatch({
             type: "REDIRECT_CREATE_SUCCESS",
             redirect: {
-              ...redirect,
-              zuid: json.new_redirect_zuid,
+              ...json.data,
               created: true
             }
           });
