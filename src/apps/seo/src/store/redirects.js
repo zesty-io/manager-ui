@@ -1,3 +1,4 @@
+import { notify } from "shell/store/notifications";
 export function redirects(state = {}, action) {
   switch (action.type) {
     case "REDIRECTS_FETCH_SUCCESS":
@@ -82,17 +83,21 @@ export function createRedirect(redirect) {
           });
         } else {
           // Notify user of all errors
-          dispatch({
-            type: "REDIRECT_CREATE_ERROR",
-            err: json.error
-          });
+          dispatch(
+            notify({
+              kind: "error",
+              message: "Failed to create SEO redirect"
+            })
+          );
         }
       })
       .catch(err => {
-        dispatch({
-          type: "REDIRECT_CREATE_ERROR",
-          err
-        });
+        dispatch(
+          notify({
+            kind: "error",
+            message: "Failed to create SEO redirect"
+          })
+        );
       });
   };
 }
@@ -112,17 +117,21 @@ export function removeRedirect(zuid) {
             zuid
           });
         } else {
-          dispatch({
-            type: "REDIRECT_REMOVE_ERROR",
-            err: json.error
-          });
+          dispatch(
+            notify({
+              kind: "error",
+              message: "Failed to remove SEO redirect"
+            })
+          );
         }
       })
       .catch(err => {
-        dispatch({
-          type: "REDIRECT_REMOVE_ERROR",
-          err
-        });
+        dispatch(
+          notify({
+            kind: "error",
+            message: "Failed to remove SEO redirect"
+          })
+        );
       });
   };
 }
