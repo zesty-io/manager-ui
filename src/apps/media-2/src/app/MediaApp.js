@@ -3,11 +3,12 @@ import { connect } from "react-redux";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFolder } from "@fortawesome/free-solid-svg-icons";
+import { faFolder, faFolderOpen } from "@fortawesome/free-solid-svg-icons";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { Button } from "@zesty-io/core/Button";
 
 import styles from "./MediaApp.less";
+
 export default connect(state => {
   return {};
 })(function MediaApp(props) {
@@ -19,25 +20,27 @@ export default connect(state => {
         width="100vw"
       >
         <nav className={styles.Nav}>
-          <form
-            className={styles.searchForm}
-            action=""
-            style={{ margin: "auto", maxWidth: 300 }}
-          >
-            <input type="text" placeholder="Search.." name="search2" />
-            <button type="submit">
-              <i className="fa fa-search" />
-            </button>
-          </form>
+          <div className={styles.TopNav}>
+            <form
+              className={styles.searchForm}
+              action=""
+              style={{ margin: "auto", maxWidth: 300 }}
+            >
+              <input type="text" placeholder="Search.." name="search2" />
+              <button type="submit">
+                <i className="fa fa-search" />
+              </button>
+            </form>
 
-          <Button kind="secondary">+ Create Group</Button>
+            <Button kind="secondary">+ Create Group</Button>
+          </div>
 
           <article className="Parent">
             <ul>
               <h1 className={styles.NavTitle}>Company Title</h1>
               <li className={cx(styles.item, styles.depth1)}>
                 <a href="#">
-                  <FontAwesomeIcon icon={faFolder} />
+                  <FontAwesomeIcon icon={faFolderOpen} />
                   <span>Group 1</span>
                 </a>
               </li>
@@ -56,6 +59,8 @@ export default connect(state => {
             </ul>
           </article>
         </nav>
+
+        {/* Main section right */}
         <section className={styles.Workspace}>Images</section>
       </WithLoader>
     </main>
