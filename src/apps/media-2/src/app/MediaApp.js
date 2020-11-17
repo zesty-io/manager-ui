@@ -4,6 +4,7 @@ import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faCog,
   faEdit,
   faExclamationCircle,
   faFolder,
@@ -14,6 +15,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { Button } from "@zesty-io/core/Button";
+import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 
 import styles from "./MediaApp.less";
 
@@ -34,7 +36,11 @@ export default connect(state => {
               action=""
               style={{ margin: "auto", maxWidth: 300 }}
             >
-              <input type="text" placeholder="Search.." name="search2" />
+              <input
+                type="text"
+                placeholder="Search Your Files"
+                name="search2"
+              />
               <button type="submit">
                 <i className="fa fa-search" />
               </button>
@@ -93,10 +99,283 @@ export default connect(state => {
 
               <Button kind="default">
                 <FontAwesomeIcon icon={faVideo} />
-                {/* <span>Tutorial</span> */}
+                <span>Tutorial</span>
               </Button>
             </div>
           </div>
+
+          <section className={styles.GridContainer}>
+            <Card className={styles.Card}>
+              <CardContent>
+                <div class="image">
+                  <img
+                    src="http://www.fillmurray.com/300/200"
+                    alt="FillMurray"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent>
+                <div class="image">
+                  <img
+                    src="http://www.fillmurray.com/284/196"
+                    alt="FillMurray"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent>
+                <div class="image">
+                  <img
+                    src="http://placekitten.com/g/200/300"
+                    alt="FillMurray"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent>
+                <div class="image">
+                  <img
+                    src="http://www.fillmurray.com/g/155/300"
+                    alt="FillMurray"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent>
+                <div class="image">
+                  <img
+                    src="http://www.fillmurray.com/g/155/300"
+                    alt="FillMurray"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent>
+                <div class="image">
+                  <img
+                    src="http://www.fillmurray.com/g/155/300"
+                    alt="FillMurray"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent>
+                <div class="image">
+                  <img
+                    src="http://www.fillmurray.com/g/155/300"
+                    alt="FillMurray"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent>
+                <div class="image">
+                  <img
+                    src="http://www.fillmurray.com/g/155/300"
+                    alt="FillMurray"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent>
+                <div class="image">
+                  <img
+                    src="http://www.fillmurray.com/g/155/300"
+                    alt="FillMurray"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent>
+                <div class="image">
+                  <img
+                    src="http://www.fillmurray.com/g/155/300"
+                    alt="FillMurray"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent>
+                <div class="image">
+                  <img
+                    src="http://www.fillmurray.com/g/155/300"
+                    alt="FillMurray"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent>
+                <div class="image">
+                  <img
+                    src="http://www.fillmurray.com/g/155/300"
+                    alt="FillMurray"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent>
+                <div class="image">
+                  <img
+                    src="http://www.fillmurray.com/g/155/300"
+                    alt="FillMurray"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent>
+                <div class="image">
+                  <img
+                    src="http://www.fillmurray.com/g/155/300"
+                    alt="FillMurray"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent>
+                <div class="image">
+                  <img
+                    src="http://www.fillmurray.com/g/155/300"
+                    alt="FillMurray"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+          </section>
         </section>
       </WithLoader>
     </main>
