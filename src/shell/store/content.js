@@ -522,16 +522,17 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
       .then(() => {
         return dispatch(fetchItemPublishing(modelZUID, itemZUID));
       })
-      .catch(() => {
+      .catch(err => {
         const message = data.publishAt
           ? `Error scheduling version ${data.version}`
           : `Error publishing version ${data.version}`;
-        return dispatch(
+        dispatch(
           notify({
             message,
             kind: "error"
           })
         );
+        throw err;
       });
   };
 }
