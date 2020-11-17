@@ -96,8 +96,11 @@ export default connect(state => {
             itemZUID={this.props.itemZUID}
           />
 
-          {/* NOTE: hiding publishing for alpha test users */}
-          {this.props.user.staff && (
+          {(this.props.userRole.name === "Publisher" ||
+            this.props.userRole.name === "Developer" ||
+            this.props.userRole.name === "Admin" ||
+            this.props.userRole.name === "Owner" ||
+            this.props.user.staff) && (
             <ButtonGroup className={styles.Publish}>
               <Button
                 className={styles.PublishButton}

@@ -32,15 +32,20 @@ export default connect(state => {
             content={props.content}
           />
 
-          <GlobalNotifications className={styles.action} />
+          <span className={styles.GlobalAction}>
+            <GlobalNotifications className={styles.GlobalActionIcon} />
+          </span>
 
           <span
             ref={ref}
             onClick={() => setOpenMenu(!openMenu)}
-            className={styles.action}
+            className={styles.GlobalAction}
             title="Help"
           >
-            <FontAwesomeIcon icon={faQuestion} />
+            <FontAwesomeIcon
+              icon={faQuestion}
+              className={styles.GlobalActionIcon}
+            />
             {openMenu && <GlobalHelpMenu />}
           </span>
         </div>
@@ -67,12 +72,13 @@ export default connect(state => {
 
 function LivePreview(props) {
   return (
-    <span className={styles.action} title="Live Preview">
+    <span className={styles.GlobalAction} title="Live Preview">
       <FontAwesomeIcon
         onClick={() =>
           openLivePreview(props.instanceZUID, props.instanceHash, props.content)
         }
         icon={faEye}
+        className={styles.GlobalActionIcon}
       />
     </span>
   );

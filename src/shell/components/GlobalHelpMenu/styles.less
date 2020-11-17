@@ -1,15 +1,13 @@
 @import "~@zesty-io/core/colors.less";
 @import "~@zesty-io/core/typography.less";
 
-@width: 52rem;
-
 .helpModules {
   display: flex;
 }
 
 .helpMenu {
   position: fixed;
-  width: @width;
+  width: 52rem;
   bottom: 85px;
   left: 60px;
   padding: 24px;
@@ -22,6 +20,7 @@
     bottom: 83px;
     left: 170px;
   }
+
   //triangle pointing to question icon
   &:after {
     content: "";
@@ -34,9 +33,11 @@
     left: -10px;
     bottom: 0;
   }
+
   .Button {
     margin-right: 8px;
   }
+
   header {
     display: flex;
   }
@@ -44,11 +45,7 @@
 
 .helpModule {
   flex: 1;
-  box-shadow: 1px 1px 5px #171b26;
-
-  .title {
-    color: @zesty-dark-blue;
-  }
+  box-shadow: 0 1px 2px #171b26;
 
   &.primary {
     flex: 2;
@@ -57,20 +54,6 @@
 
   .helpBox {
     text-align: left;
-
-    li {
-      list-style: none;
-      padding-left: 8px;
-      text-indent: -16px;
-      line-height: 24px;
-      margin-bottom: 8px;
-      &:before {
-        content: "○";
-        width: 16px;
-        height: 16px;
-        color: @zesty-light-gray;
-        margin-right: 8px;
-      }
-    }
+    margin-left: 8px;
   }
 }

@@ -60,7 +60,9 @@ export default connect(state => {
       </menu>
 
       <main className={cx(styles.Instance, open ? null : styles.hide)}>
-        <p className={styles.bodyText}>ZUID: {props.instance.ZUID}</p>
+        <p className={cx(styles.bodyText, styles.zuid)}>
+          ZUID: {props.instance.ZUID}
+        </p>
 
         <Select name="instance" value={props.instance.ZUID}>
           {props.instances.map(instance => (

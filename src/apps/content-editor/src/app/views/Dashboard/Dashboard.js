@@ -128,36 +128,6 @@ export default connect(function(state, props) {
     render() {
       return (
         <section className={styles.Dashboard}>
-          <div className={styles.topBar}>
-            <div className={styles.columns}>
-              <div className={styles.column}>
-                <span className={styles.instanceName}>
-                  Content Instance Dashboard
-                </span>
-              </div>
-
-              {/* <div className={`${styles.column} ${styles.isAlignedRight}`}>
-                <div className={styles.webEngineLinks}>
-                  Web Engine URLs
-                  <span className={styles.encompassedBlock}>
-                    <Url
-                      target="_blank"
-                      href={this.props.instance.preview_domain}
-                    >
-                      Stage
-                    </Url>
-
-                    <Url
-                      target="_blank"
-                      href={`https://${this.props.instance.live_domain}`}
-                    >
-                      Live
-                    </Url>
-                  </span>
-                </div>
-              </div> */}
-            </div>
-          </div>
           <div className={styles.container}>
             <div className={styles.columns}>
               {this.state.favoriteModels.map((arr, i) => {

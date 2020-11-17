@@ -10,7 +10,8 @@ import { Url } from "@zesty-io/core/Url";
 import styles from "./GlobalAccount.less";
 export default connect(state => {
   return {
-    user: state.user
+    user: state.user,
+    userRole: state.userRole
   };
 })(function GlobalAccount(props) {
   const [open, setOpen] = useState(false);
@@ -47,12 +48,15 @@ export default connect(state => {
       <menu
         className={cx(styles.bodyText, styles.Menu, open ? null : styles.hide)}
       >
-        <li>ZUID: {props.user.ZUID}</li>
         <li>
           {props.user.firstName} {props.user.lastName}
         </li>
-        <li>{props.user.email} </li>
-        <li>
+        <li className={styles.email}>{props.user.email} </li>
+
+        <li className={styles.zuid}>ZUID: {props.user.ZUID}</li>
+        <li className={styles.role}>Instance: {props.userRole.name}</li>
+
+        <li className={styles.accounts}>
           <Url href={`${CONFIG.URL_ACCOUNTS}`}>My Accounts</Url>
         </li>
         <li>
