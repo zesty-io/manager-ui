@@ -2,7 +2,10 @@ import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFolder } from "@fortawesome/free-solid-svg-icons";
 import { WithLoader } from "@zesty-io/core/WithLoader";
+import { Button } from "@zesty-io/core/Button";
 
 import styles from "./MediaApp.less";
 export default connect(state => {
@@ -16,21 +19,37 @@ export default connect(state => {
         width="100vw"
       >
         <nav className={styles.Nav}>
+          <form
+            className={styles.searchForm}
+            action=""
+            style={{ margin: "auto", maxWidth: 300 }}
+          >
+            <input type="text" placeholder="Search.." name="search2" />
+            <button type="submit">
+              <i className="fa fa-search" />
+            </button>
+          </form>
+
+          <Button kind="secondary">+ Create Group</Button>
+
           <article className="Parent">
             <ul>
               <h1 className={styles.NavTitle}>Company Title</h1>
               <li className={cx(styles.item, styles.depth1)}>
                 <a href="#">
+                  <FontAwesomeIcon icon={faFolder} />
                   <span>Group 1</span>
                 </a>
               </li>
               <li className={cx(styles.item, styles.depth2)}>
                 <a href="#">
+                  <FontAwesomeIcon icon={faFolder} />
                   <span>Group 2</span>
                 </a>
               </li>
               <li className={cx(styles.item, styles.depth3)}>
                 <a href="#">
+                  <FontAwesomeIcon icon={faFolder} />
                   <span>Group 3</span>
                 </a>
               </li>

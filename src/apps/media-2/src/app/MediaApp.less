@@ -19,6 +19,12 @@
       font-size: 24px;
       text-align: center;
     }
+    ul {
+      line-height: 1.33;
+      letter-spacing: 1px;
+      list-style: none;
+      margin-left: 8px;
+    }
     .item {
       padding-left: 8px;
       &:hover {
@@ -38,6 +44,10 @@
         align-items: center;
         font-weight: 500;
         border: 1px solid #1b202c;
+        margin-right: 8px;
+        svg {
+          margin-right: 8px;
+        }
       }
     }
     .depth1 {
@@ -45,7 +55,7 @@
       border-left: 2px solid #1a202c;
 
       //Is active
-      border-left: 1px solid orange;
+      border-left: 2px solid orange;
     }
     .depth2 {
       background-color: lighten(#1a202c, 5%);
