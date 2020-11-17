@@ -3,7 +3,15 @@ import { connect } from "react-redux";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFolder, faFolderOpen } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEdit,
+  faExclamationCircle,
+  faFolder,
+  faFolderOpen,
+  faPlus,
+  faUpload,
+  faVideo
+} from "@fortawesome/free-solid-svg-icons";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { Button } from "@zesty-io/core/Button";
 
@@ -32,7 +40,10 @@ export default connect(state => {
               </button>
             </form>
 
-            <Button kind="secondary">+ Create Group</Button>
+            <Button kind="secondary">
+              <FontAwesomeIcon icon={faPlus} />
+              <span>Create Group</span>
+            </Button>
           </div>
 
           <article className="Parent">
@@ -61,7 +72,32 @@ export default connect(state => {
         </nav>
 
         {/* Main section right */}
-        <section className={styles.Workspace}>Images</section>
+        <section className={styles.Workspace}>
+          <div className={styles.TopMainHouse}>
+            <div className={styles.TopMainLeft}>
+              <Button kind="secondary">
+                <FontAwesomeIcon icon={faUpload} />
+                <span>Group Name</span>
+              </Button>
+              <Button kind="secondary"> Upload</Button>
+            </div>
+            <div className={styles.TopMainRight}>
+              <Button kind="cancel">
+                <FontAwesomeIcon icon={faEdit} />
+                <span>Edit</span>
+              </Button>
+              <Button kind="warn">
+                <FontAwesomeIcon icon={faExclamationCircle} />
+                <span>Delete</span>
+              </Button>
+
+              <Button kind="default">
+                <FontAwesomeIcon icon={faVideo} />
+                {/* <span>Tutorial</span> */}
+              </Button>
+            </div>
+          </div>
+        </section>
       </WithLoader>
     </main>
   );
