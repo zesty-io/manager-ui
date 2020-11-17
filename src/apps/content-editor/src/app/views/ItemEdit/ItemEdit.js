@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Switch, Route, Redirect } from "react-router-dom";
 
 import { notify } from "shell/store/notifications";
+import { fetchAuditTrailDrafting } from "shell/store/logs";
 import { fetchFields } from "shell/store/fields";
 import {
   fetchItem,
@@ -202,6 +203,8 @@ class ItemEdit extends Component {
             })
           );
         }
+        // fetch new draft history
+        this.props.dispatch(fetchAuditTrailDrafting(this.props.itemZUID));
       })
       .catch(() => {
         if (this._isMounted) {
