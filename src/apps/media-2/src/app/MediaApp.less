@@ -1,0 +1,25 @@
+.MediaApp {
+  display: flex;
+  flex-direction: row;
+  height: calc(100vh - 54px);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(300px, 20vw) 1fr;
+
+  @media (min-width: 2000px) {
+    grid-template-columns: minmax(15vw, 20vw) 1fr;
+  }
+
+  .Nav {
+    background-color: #404759;
+    word-break: break-word;
+  }
+  .Workspace {
+    background: #1e1e1e;
+    height: calc(100vh - 54px);
+    overflow: hidden;
+
+    box-shadow: 0 0 15px #0b0d13;
+    z-index: 1;
+  }
+}
