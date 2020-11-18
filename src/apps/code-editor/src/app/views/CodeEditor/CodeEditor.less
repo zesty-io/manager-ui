@@ -1,19 +1,8 @@
 .CodeEditor {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: minmax(200px, 20vw) 1fr;
   height: calc(100vh - 54px);
   overflow: hidden;
-
-  // Typography
-  font-family: "Montserrat", "Gibson Light", Arial, sans-serif;
-  font-weight: 400;
-  line-height: 24px;
-  display: grid;
-  grid-template-columns: minmax(300px, 20vw) 1fr;
-
-  @media (min-width: 2000px) {
-    grid-template-columns: minmax(15vw, 20vw) 1fr;
-  }
 
   .Nav {
     background-color: #404759;
