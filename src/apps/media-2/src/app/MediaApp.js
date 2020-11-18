@@ -116,14 +116,13 @@ export default connect(state => {
                   <FontAwesomeIcon icon={faCheck} />
                 </button>
               </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button className={styles.FooterButton}>
-                    <FontAwesomeIcon icon={faCog} />
-                    {/* <span>Tutorial</span> */}
-                    <p>Polestar_2_006.jpg</p>
-                  </button>
-                </div>
+              <CardFooter className={styles.CardFooter}>
+                <button className={styles.FooterButton}>
+                  <FontAwesomeIcon className={styles.Cog} icon={faCog} />
+                  <h1 className={styles.Preview}>
+                    Polestar_2_006.jpgPolestar_2_006.jpgtext-overflow: ellipsis;
+                  </h1>
+                </button>
               </CardFooter>
             </Card>
             <Card className={styles.Card}>
