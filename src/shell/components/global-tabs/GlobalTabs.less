@@ -1,117 +1,124 @@
 @import "~@zesty-io/core/colors.less";
 @import "~@zesty-io/core/typography.less";
 
-.GlobalTabs {
-  background-color: @globalMenuBkgColor;
-  box-shadow: 0px 0px 3px @globalMenuBkgColor;
-  display: flex;
-  height: 54px;
-  position: relative;
-  width: calc(100vw - 60px);
-  @media (min-width: 2000px) {
-    width: calc(100vw - 170px);
-  }
-
-  .InstanceSearch {
-    display: flex;
-    align-items: center;
-    padding: 0 8px;
-    //width for spacing on left and right
-    width: calc(20vw - 16px);
-  }
-
-  .GlobalSearch {
-    min-width: 380px;
-    max-width: 420px;
-    padding: 6px 16px;
-  }
-
-  .QuickLinks {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    overflow-x: auto;
-
+@media (max-width: 2000px) {
+  .GlobalTopBar {
     .Links {
-      flex: 1;
-      overflow-x: auto;
-      display: flex;
-
-      &::-webkit-scrollbar {
-        width: 4px;
-        height: 4px;
-      }
-      &::-webkit-scrollbar-track-piece {
-        background-color: lighten(#171b26, 10%);
-      }
-      &::-webkit-scrollbar-thumb {
-        background-color: lighten(#171b26, 5%);
-      }
-
       li {
-        align-items: center;
-        display: flex;
-        border-left: 1px solid #212636;
-        border-right: 1px solid #0d1016;
-        padding: 0 8px;
-        flex-shrink: 0;
-        transition: all 0.3s ease;
-
-        &:hover {
-          border-left: 1px solid @zesty-orange;
-        }
-
-        //Active tab
-        &.active {
-          background-color: lighten(@globalMenuBkgColor, 5%);
-          border-left: 2px solid @zesty-orange;
-          a {
-            color: @white;
-          }
-        }
-        // Close tab button
-        &:first-child {
-          border-right: none;
-          .Close {
-            visibility: visible;
-          }
-        }
-        &:hover,
-        &:active,
-        &:focus {
-          .Close {
-            visibility: visible;
-          }
-        }
         a {
-          padding: 12px 6px;
-          display: inline-block;
-          max-width: 300px;
-          text-overflow: ellipsis;
-          overflow: hidden;
-          white-space: nowrap;
-          text-shadow: none;
-          word-break: keep-all;
-
-          svg {
-            margin-right: 2px;
-          }
-        }
-        .Close {
-          cursor: pointer;
-          visibility: hidden;
+          padding: 6px 12px 6px 8px;
         }
       }
     }
   }
 }
 
-@media (max-width: 2000px) {
-  .GlobalTabs {
-    .Links {
-      li {
-        a {
-          padding: 6px 12px 6px 8px;
+.GlobalTopBar {
+  background-color: @globalMenuBkgColor;
+  box-shadow: 0px 0px 3px @globalMenuBkgColor;
+  height: 54px;
+  display: grid;
+  grid-template-columns: minmax(200px, 20vw) 1fr;
+
+  .InstanceSearch {
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+  }
+
+  .InstanceTabs {
+    display: grid;
+    grid-template-columns: 1fr fit-content(350px) 70px;
+
+    .CloseAll {
+      margin: 8px 8px 0 0;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .QuickLinks {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      overflow-x: auto;
+
+      .Links {
+        flex: 1;
+        overflow-x: auto;
+        display: flex;
+
+        &::-webkit-scrollbar {
+          width: 4px;
+          height: 4px;
+        }
+        &::-webkit-scrollbar-track-piece {
+          background-color: lighten(#171b26, 10%);
+        }
+        &::-webkit-scrollbar-thumb {
+          background-color: lighten(#171b26, 5%);
+        }
+        &::-webkit-scrollbar-thumb:hover {
+          background-color: @zesty-orange;
+        }
+
+        li {
+          align-items: center;
+          display: flex;
+          // border-bottom: 3px solid #212636;
+          border-right: 1px solid #0d1016;
+          padding: 0 8px;
+          flex-shrink: 0;
+          transition: all 0.3s ease;
+
+          &:hover {
+            // border-bottom: 3px solid @zesty-orange;
+          }
+
+          //Active tab
+          &.active {
+            background-color: lighten(@globalMenuBkgColor, 5%);
+            // border-bottom: 3px solid @zesty-orange;
+            a {
+              color: @zesty-white;
+            }
+          }
+          // Close tab button
+          &:first-child {
+            border-right: none;
+            .Close {
+              visibility: visible;
+            }
+          }
+          &:hover,
+          &:active,
+          &:focus {
+            .Close {
+              visibility: visible;
+            }
+          }
+          a {
+            padding: 12px 6px;
+            display: inline-block;
+            max-width: 300px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            text-shadow: none;
+            word-break: keep-all;
+
+            &:hover,
+            &:focus {
+              color: lighten(@zesty-blue, 15%);
+            }
+
+            svg {
+              margin-right: 2px;
+            }
+          }
+          .Close {
+            cursor: pointer;
+            visibility: hidden;
+          }
         }
       }
     }
