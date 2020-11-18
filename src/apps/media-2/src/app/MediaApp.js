@@ -120,7 +120,7 @@ export default connect(state => {
                 <button className={styles.FooterButton}>
                   <FontAwesomeIcon className={styles.Cog} icon={faCog} />
                   <h1 className={styles.Preview}>
-                    Polestar_2_006.jpgPolestar_2_006.jpgtext-overflow: ellipsis;
+                    Polestar_2_006.jpgPolestar_2_006.jpg
                   </h1>
                 </button>
               </CardFooter>
@@ -231,7 +231,7 @@ export default connect(state => {
           </section>
         </section>
 
-        {/* MODAL LAYOUT */}
+        {/* MODAL LAYOUT place here for now */}
         <Modal
           className={styles.Modal}
           type="global"
