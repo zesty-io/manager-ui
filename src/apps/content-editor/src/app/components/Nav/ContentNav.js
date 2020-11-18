@@ -11,7 +11,6 @@ import {
 import { ReorderNav } from "../ReorderNav";
 import { Nav } from "@zesty-io/core/Nav";
 import { Button } from "@zesty-io/core/Button";
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Select, Option } from "@zesty-io/core/Select";
 
 import { collapseNavItem, hideNavItem } from "../../../store/navContent";
@@ -30,8 +29,8 @@ export function ContentNav(props) {
     setSelected(location.pathname);
   }, [location]);
 
-  const collapseNode = path => {
-    dispatch(collapseNavItem(path));
+  const collapseNode = nodeProps => {
+    dispatch(collapseNavItem(nodeProps.path));
   };
 
   const handleCreateSelect = ZUID => {
@@ -43,8 +42,8 @@ export function ContentNav(props) {
   const actions = [
     {
       icon: "fas fa-eye-slash",
-      onClick: path => {
-        dispatch(hideNavItem(path));
+      onClick: nodeProps => {
+        dispatch(hideNavItem(nodeProps.path));
       }
     }
   ];
