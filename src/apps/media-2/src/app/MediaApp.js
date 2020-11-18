@@ -151,8 +151,8 @@ export default connect(state => {
             <Card className={styles.Card}>
               <CardContent className={styles.CardContent}>
                 <img
-                  src="http://www.fillmurray.com/g/155/300"
-                  alt="FillMurray"
+                  src="https://images.pexels.com/photos/5700172/pexels-photo-5700172.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
+                  alt="human"
                 />
               </CardContent>
               <CardFooter>
@@ -166,20 +166,10 @@ export default connect(state => {
             </Card>
             <Card className={styles.Card}>
               <CardContent>
-                <img src="https://placekitten.com/200/286" alt="FillMurray" />
-              </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faVideo} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
-              </CardFooter>
-            </Card>
-            <Card className={styles.Card}>
-              <CardContent className={styles.CardContent}>
-                <img src="http://www.fillmurray.com/284/196" alt="FillMurray" />
+                <img
+                  src="https://images.pexels.com/photos/5706422/pexels-photo-5706422.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
+                  alt="dog"
+                />
               </CardContent>
               <CardFooter>
                 <div className={styles.FooterContent}>
@@ -193,7 +183,23 @@ export default connect(state => {
             <Card className={styles.Card}>
               <CardContent className={styles.CardContent}>
                 <img
-                  src="http://www.fillmurray.com/g/155/300"
+                  src="https://images.pexels.com/photos/5625007/pexels-photo-5625007.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
+                  alt="FillMurray"
+                />
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent className={styles.CardContent}>
+                <img
+                  src="https://images.pexels.com/photos/5425708/pexels-photo-5425708.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
                   alt="FillMurray"
                 />
               </CardContent>
