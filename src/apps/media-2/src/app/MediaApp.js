@@ -5,6 +5,7 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
+  faClipboard,
   faCog,
   faEdit,
   faExclamationCircle,
@@ -14,6 +15,8 @@ import {
   faUpload,
   faVideo
 } from "@fortawesome/free-solid-svg-icons";
+
+import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { Button } from "@zesty-io/core/Button";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
@@ -52,7 +55,7 @@ export default connect(state => {
               <span>Create Group</span>
             </Button>
           </div>
-
+          {/* PULLING FROM DESIGN-SYSTEM NODE */}
           <article className="Parent">
             <ul>
               <h1 className={styles.NavTitle}>Company Title</h1>
@@ -80,15 +83,15 @@ export default connect(state => {
 
         {/* Main section right */}
         <section className={styles.Workspace}>
-          <div className={styles.TopMainHouse}>
-            <div className={styles.TopMainLeft}>
+          <div className={styles.WorkspaceHeader}>
+            <div className={styles.WorkspaceLeft}>
               <Button kind="secondary">
                 <FontAwesomeIcon icon={faUpload} />
                 <span>Group Name</span>
               </Button>
               <Button kind="secondary"> Upload</Button>
             </div>
-            <div className={styles.TopMainRight}>
+            <div className={styles.WorkspaceRight}>
               <Button kind="cancel">
                 <FontAwesomeIcon icon={faEdit} />
                 <span>Edit</span>
@@ -105,7 +108,7 @@ export default connect(state => {
             </div>
           </div>
 
-          <section className={styles.GridContainer}>
+          <section className={styles.WorkspaceGrid}>
             <Card className={styles.Card}>
               <CardContent className={styles.CardContent}>
                 <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
@@ -115,9 +118,10 @@ export default connect(state => {
               </CardContent>
               <CardFooter>
                 <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faVideo} />
-                    <span>Tutorial</span>
+                  <button className={styles.FooterButton}>
+                    <FontAwesomeIcon icon={faCog} />
+                    {/* <span>Tutorial</span> */}
+                    <p>Polestar_2_006.jpg</p>
                   </button>
                 </div>
               </CardFooter>
@@ -129,7 +133,7 @@ export default connect(state => {
               <CardFooter>
                 <div className={styles.FooterContent}>
                   <button>
-                    <FontAwesomeIcon icon={faVideo} />
+                    <FontAwesomeIcon icon={faCog} />
                     <span>Tutorial</span>
                   </button>
                 </div>
@@ -142,7 +146,7 @@ export default connect(state => {
               <CardFooter>
                 <div className={styles.FooterContent}>
                   <button>
-                    <FontAwesomeIcon icon={faVideo} />
+                    <FontAwesomeIcon icon={faCog} />
                     <span>Tutorial</span>
                   </button>
                 </div>
@@ -158,7 +162,7 @@ export default connect(state => {
               <CardFooter>
                 <div className={styles.FooterContent}>
                   <button>
-                    <FontAwesomeIcon icon={faVideo} />
+                    <FontAwesomeIcon icon={faCog} />
                     <span>Tutorial</span>
                   </button>
                 </div>
@@ -174,7 +178,7 @@ export default connect(state => {
               <CardFooter>
                 <div className={styles.FooterContent}>
                   <button>
-                    <FontAwesomeIcon icon={faVideo} />
+                    <FontAwesomeIcon icon={faCog} />
                     <span>Tutorial</span>
                   </button>
                 </div>
@@ -190,7 +194,7 @@ export default connect(state => {
               <CardFooter>
                 <div className={styles.FooterContent}>
                   <button>
-                    <FontAwesomeIcon icon={faVideo} />
+                    <FontAwesomeIcon icon={faCog} />
                     <span>Tutorial</span>
                   </button>
                 </div>
@@ -206,7 +210,7 @@ export default connect(state => {
               <CardFooter>
                 <div className={styles.FooterContent}>
                   <button>
-                    <FontAwesomeIcon icon={faVideo} />
+                    <FontAwesomeIcon icon={faCog} />
                     <span>Tutorial</span>
                   </button>
                 </div>
@@ -219,7 +223,7 @@ export default connect(state => {
               <CardFooter>
                 <div className={styles.FooterContent}>
                   <button>
-                    <FontAwesomeIcon icon={faVideo} />
+                    <FontAwesomeIcon icon={faCog} />
                     <span>Tutorial</span>
                   </button>
                 </div>
@@ -227,6 +231,57 @@ export default connect(state => {
             </Card>
           </section>
         </section>
+
+        {/* MODAL LAYOUT */}
+        <Modal
+          className={styles.Modal}
+          type="global"
+          // set to true for testing
+          open={false}
+        >
+          <ModalContent>
+            <Card>
+              <CardHeader>
+                <h3>Title: Image Name </h3>
+              </CardHeader>
+              <CardContent className={styles.CardContent}>
+                <div className="content-house">
+                  <p>Uploaded: 11/20/2020 8:30 000Z</p>
+                  <p>Title: 11/20/2020 8:30 000Z</p>
+                  <p>Filename: 11/20/2020 8:30 000Z</p>
+                  <button>
+                    {/* <FontAwesomeIcon icon={faClipboard} /> */}
+                    <span>Copy</span>
+                    <img
+                      className={styles.Clippy}
+                      src="/ui/images/clippy.svg"
+                      width="13"
+                      alt="Copy to clipboard"
+                    ></img>
+                  </button>
+                  <span>
+                    https://8xbq19z1.media.zestyio.com/coffee-coffee-cup-porcelain-coffee-beans-144253.jpeg
+                  </span>
+                </div>
+                <div className="img-house">
+                  <img
+                    src="https://images.pexels.com/photos/5425708/pexels-photo-5425708.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
+                    alt="FillMurray"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter className={styles.CardFooter}>
+                <Button kind="save">
+                  <span>Save (CTR + S)</span>
+                </Button>
+                <Button kind="warn">
+                  <FontAwesomeIcon icon={faExclamationCircle} />
+                  <span>Delete</span>
+                </Button>
+              </CardFooter>
+            </Card>
+          </ModalContent>
+        </Modal>
       </WithLoader>
     </main>
   );
