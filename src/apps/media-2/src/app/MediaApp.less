@@ -79,6 +79,7 @@
   .Workspace {
     height: calc(100vh - 54px);
     overflow: hidden;
+    overflow-y: auto;
 
     box-shadow: 0 0 15px #0b0d13;
     z-index: 1;
@@ -101,8 +102,39 @@
       display: flex;
       flex-wrap: wrap;
 
+      // Using auto-fill and auto-fit
+      // display: grid;
+      // grid-template-rows: auto;
+      // grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      // gap: 16px;
+      // justify-content: center;
+
       .Card {
-        width: min-content;
+        width: fit-content;
+        img {
+          width: 100%;
+          height: 167px;
+        }
+
+        .CardContent {
+          position: relative;
+
+          .Check {
+            position: absolute;
+            content: "";
+            width: 16px;
+            height: 16px;
+            top: 0;
+            right: 0;
+            background: transparent;
+            opacity: 0;
+          }
+          &:hover {
+            .Check {
+              opacity: 1;
+            }
+          }
+        }
       }
     }
   }

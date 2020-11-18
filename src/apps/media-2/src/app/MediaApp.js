@@ -4,6 +4,7 @@ import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faCheck,
   faCog,
   faEdit,
   faExclamationCircle,
@@ -106,13 +107,53 @@ export default connect(state => {
 
           <section className={styles.GridContainer}>
             <Card className={styles.Card}>
-              <CardContent>
-                <div class="image">
-                  <img
-                    src="http://www.fillmurray.com/300/200"
-                    alt="FillMurray"
-                  />
+              <CardContent className={styles.CardContent}>
+                <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
+                <button className={styles.Check}>
+                  <FontAwesomeIcon icon={faCheck} />
+                </button>
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
                 </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent className={styles.CardContent}>
+                <img src="http://www.fillmurray.com/284/196" alt="FillMurray" />
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent className={styles.CardContent}>
+                <img src="https://placekitten.com/200/286" alt="FillMurray" />
+              </CardContent>
+              <CardFooter>
+                <div className={styles.FooterContent}>
+                  <button>
+                    <FontAwesomeIcon icon={faVideo} />
+                    <span>Tutorial</span>
+                  </button>
+                </div>
+              </CardFooter>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent className={styles.CardContent}>
+                <img
+                  src="http://www.fillmurray.com/g/155/300"
+                  alt="FillMurray"
+                />
               </CardContent>
               <CardFooter>
                 <div className={styles.FooterContent}>
@@ -125,12 +166,7 @@ export default connect(state => {
             </Card>
             <Card className={styles.Card}>
               <CardContent>
-                <div class="image">
-                  <img
-                    src="http://www.fillmurray.com/284/196"
-                    alt="FillMurray"
-                  />
-                </div>
+                <img src="https://placekitten.com/200/286" alt="FillMurray" />
               </CardContent>
               <CardFooter>
                 <div className={styles.FooterContent}>
@@ -142,13 +178,8 @@ export default connect(state => {
               </CardFooter>
             </Card>
             <Card className={styles.Card}>
-              <CardContent>
-                <div class="image">
-                  <img
-                    src="http://placekitten.com/g/200/300"
-                    alt="FillMurray"
-                  />
-                </div>
+              <CardContent className={styles.CardContent}>
+                <img src="http://www.fillmurray.com/284/196" alt="FillMurray" />
               </CardContent>
               <CardFooter>
                 <div className={styles.FooterContent}>
@@ -160,13 +191,11 @@ export default connect(state => {
               </CardFooter>
             </Card>
             <Card className={styles.Card}>
-              <CardContent>
-                <div class="image">
-                  <img
-                    src="http://www.fillmurray.com/g/155/300"
-                    alt="FillMurray"
-                  />
-                </div>
+              <CardContent className={styles.CardContent}>
+                <img
+                  src="http://www.fillmurray.com/g/155/300"
+                  alt="FillMurray"
+                />
               </CardContent>
               <CardFooter>
                 <div className={styles.FooterContent}>
@@ -178,193 +207,8 @@ export default connect(state => {
               </CardFooter>
             </Card>
             <Card className={styles.Card}>
-              <CardContent>
-                <div class="image">
-                  <img
-                    src="http://www.fillmurray.com/g/155/300"
-                    alt="FillMurray"
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faVideo} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
-              </CardFooter>
-            </Card>
-            <Card className={styles.Card}>
-              <CardContent>
-                <div class="image">
-                  <img
-                    src="http://www.fillmurray.com/g/155/300"
-                    alt="FillMurray"
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faVideo} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
-              </CardFooter>
-            </Card>
-            <Card className={styles.Card}>
-              <CardContent>
-                <div class="image">
-                  <img
-                    src="http://www.fillmurray.com/g/155/300"
-                    alt="FillMurray"
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faVideo} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
-              </CardFooter>
-            </Card>
-            <Card className={styles.Card}>
-              <CardContent>
-                <div class="image">
-                  <img
-                    src="http://www.fillmurray.com/g/155/300"
-                    alt="FillMurray"
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faVideo} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
-              </CardFooter>
-            </Card>
-            <Card className={styles.Card}>
-              <CardContent>
-                <div class="image">
-                  <img
-                    src="http://www.fillmurray.com/g/155/300"
-                    alt="FillMurray"
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faVideo} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
-              </CardFooter>
-            </Card>
-            <Card className={styles.Card}>
-              <CardContent>
-                <div class="image">
-                  <img
-                    src="http://www.fillmurray.com/g/155/300"
-                    alt="FillMurray"
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faVideo} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
-              </CardFooter>
-            </Card>
-            <Card className={styles.Card}>
-              <CardContent>
-                <div class="image">
-                  <img
-                    src="http://www.fillmurray.com/g/155/300"
-                    alt="FillMurray"
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faVideo} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
-              </CardFooter>
-            </Card>
-            <Card className={styles.Card}>
-              <CardContent>
-                <div class="image">
-                  <img
-                    src="http://www.fillmurray.com/g/155/300"
-                    alt="FillMurray"
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faVideo} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
-              </CardFooter>
-            </Card>
-            <Card className={styles.Card}>
-              <CardContent>
-                <div class="image">
-                  <img
-                    src="http://www.fillmurray.com/g/155/300"
-                    alt="FillMurray"
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faVideo} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
-              </CardFooter>
-            </Card>
-            <Card className={styles.Card}>
-              <CardContent>
-                <div class="image">
-                  <img
-                    src="http://www.fillmurray.com/g/155/300"
-                    alt="FillMurray"
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faVideo} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
-              </CardFooter>
-            </Card>
-            <Card className={styles.Card}>
-              <CardContent>
-                <div class="image">
-                  <img
-                    src="http://www.fillmurray.com/g/155/300"
-                    alt="FillMurray"
-                  />
-                </div>
+              <CardContent className={styles.CardContent}>
+                <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
               </CardContent>
               <CardFooter>
                 <div className={styles.FooterContent}>
