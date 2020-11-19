@@ -37,6 +37,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@fortawesome/react-fontawesome": "0.1.9",
     "@hot-loader/react-dom": "^16.13.0",
+    "@reduxjs/toolkit": "^1.4.0",
     "@sentry/react": "^5.24.2",
     "@tinymce/tinymce-react": "3.5.0",
     "@zesty-io/core": "1.0.0-alpha.24",

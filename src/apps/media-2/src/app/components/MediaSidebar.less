@@ -1,0 +1,65 @@
+.Nav {
+  background-color: #404759;
+  word-break: break-word;
+
+  .TopNav {
+    padding: 8px;
+  }
+
+  .NavTitle {
+    color: #c3cddf;
+    font-size: 24px;
+    text-align: center;
+  }
+  ul {
+    line-height: 1.33;
+    letter-spacing: 1px;
+    list-style: none;
+    margin-left: 8px;
+  }
+  .item {
+    padding-left: 8px;
+    &:hover {
+      background-color: #485471;
+
+      .hide {
+        visibility: visible;
+      }
+    }
+    a {
+      text-decoration: none;
+      color: #c3cddf;
+      display: flex;
+      justify-content: flex-end;
+      flex: 1;
+      padding: 8px 16px;
+      align-items: center;
+      font-weight: 500;
+      border: 1px solid #1b202c;
+      margin-right: 8px;
+      svg {
+        margin-right: 8px;
+      }
+    }
+  }
+  // Pulled from NODE design-systems
+  .depth1 {
+    background-color: #1a202c;
+    border-left: 2px solid #1a202c;
+
+    //Is active
+    border-left: 2px solid orange;
+  }
+  .depth2 {
+    background-color: lighten(#1a202c, 5%);
+    border-left: 2px solid lighten(#1a202c, 5%);
+  }
+  .depth3 {
+    background-color: lighten(#1a202c, 10%);
+    border-left: 2px solid lighten(#1a202c, 10%);
+  }
+  .depth4 {
+    background-color: lighten(#1a202c, 15%);
+    border-left: 2px solid lighten(#1a202c, 15%);
+  }
+}

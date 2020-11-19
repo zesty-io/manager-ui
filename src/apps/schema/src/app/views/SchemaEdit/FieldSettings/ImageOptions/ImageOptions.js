@@ -9,8 +9,7 @@ import { fetchMediaBins, fetchMediaGroups } from "shell/store/media";
 import styles from "./ImageOptions.less";
 export default connect(state => {
   return {
-    mediaBins: state.mediaBins,
-    mediaGroups: state.mediaGroups
+    media: state.media
   };
 })(function ImageOptions(props) {
   const [groups, setGroups] = useState([]);
@@ -20,19 +19,19 @@ export default connect(state => {
   }, []); // fire once to load initial bins
 
   useEffect(() => {
-    props.mediaBins.forEach(bin => props.dispatch(fetchMediaGroups(bin.id)));
-  }, [props.mediaBins.length]); // fetch all groups
+    props.media.bins.forEach(bin => props.dispatch(fetchMediaGroups(bin.id)));
+  }, [props.media.bins.length]); // fetch all groups
 
   useEffect(() => {
     setGroups(
-      props.mediaGroups.map(group => {
+      props.media.groups.map(group => {
         return {
           value: group.id,
           text: group.name
         };
       })
     );
-  }, [props.mediaGroups.length]);
+  }, [props.media.groups.length]);
 
   return (
     <div className={styles.FieldSettings}>

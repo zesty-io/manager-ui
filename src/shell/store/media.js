@@ -1,28 +1,29 @@
-export function mediaBins(state = [], action) {
-  switch (action.type) {
-    case "FETCH_BINS_SUCCESS":
-      return [...state, ...action.payload];
-    default:
-      return state;
-  }
-}
-export function mediaGroups(state = [], action) {
-  switch (action.type) {
-    case "FETCH_GROUPS_SUCCESS":
-      // Dedupe groups
-      return [...state, ...action.payload].reduce((acc, group) => {
-        let exists = acc.find(el => el.id === group.id);
-        if (!exists) {
-          acc.push(group);
+import { createSlice } from "@reduxjs/toolkit";
+
+const mediaSlice = createSlice({
+  name: "media",
+  initialState: {
+    bins: [],
+    groups: [],
+    files: []
+  },
+  reducers: {
+    fetchBinsSuccess(state, action) {
+      state.bins.push(...action.payload);
+    },
+    fetchGroupsSuccess(state, action) {
+      action.payload.forEach(group => {
+        if (!state.groups.find(val => val.id === group.id)) {
+          state.groups.push(group);
         }
-
-        return acc;
-      }, []);
-
-    default:
-      return state;
+      });
+    }
   }
-}
+});
+
+export default mediaSlice.reducer;
+
+export const { fetchBinsSuccess, fetchGroupsSuccess } = mediaSlice.actions;
 
 export function fetchMediaBins() {
   return (dispatch, getState) => {
@@ -32,25 +33,18 @@ export function fetchMediaBins() {
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/site/${instanceID}/bins`,
       handler: res => {
-        dispatch({
-          type: "FETCH_BINS_SUCCESS",
-          payload: res.data
-        });
+        dispatch(fetchBinsSuccess(res.data));
       }
     });
   };
 }
-
 export function fetchMediaGroups(binZUID) {
   return dispatch => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/bin/${binZUID}/groups`,
       handler: res => {
-        dispatch({
-          type: "FETCH_GROUPS_SUCCESS",
-          payload: res.data
-        });
+        dispatch(fetchGroupsSuccess(res.data));
       }
     });
   };
