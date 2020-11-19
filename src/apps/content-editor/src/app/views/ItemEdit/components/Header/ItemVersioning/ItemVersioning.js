@@ -14,6 +14,7 @@ import { ScheduleFlyout } from "./ScheduleFlyout";
 import { VersionSelector } from "./VersionSelector";
 
 import { publish } from "shell/store/content";
+import { fetchAuditTrailPublish } from "shell/store/logs";
 
 import styles from "./ItemVersioning.less";
 export default connect(state => {
@@ -38,6 +39,10 @@ export default connect(state => {
             version: this.props.item.meta.version
           })
         )
+        // fetch new publish history
+        .then(() => {
+          this.props.dispatch(fetchAuditTrailPublish(this.props.itemZUID));
+        })
         .finally(() => {
           this.setState({
             publishing: false

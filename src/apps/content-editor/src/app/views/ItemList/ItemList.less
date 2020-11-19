@@ -1,28 +1,10 @@
 @import "~@zesty-io/core/colors.less";
 .ItemList {
-  // min-width: 100%;
   background-color: #fff;
-  // background: transparent;
-  // @supports (display: grid) {
-  //   grid-column: span 2;
-  // }
 
   .TableWrap {
     // Parents height minus total height of actions container
-    height: calc(100vh - 82px - 52px);
-
-    @media screen and (max-width: 2000px) {
-      height: calc(100vh - 54px - 52px);
-    }
-
-    // div::-webkit-scrollbar {
-    //   width: 15px;
-    //   height: 15px;
-    // }
-    // div::-webkit-scrollbar-thumb {
-    //   width: 15px;
-    //   height: 15px;
-    // }
+    height: calc(100vh - 54px - 52px);
   }
   .Display {
     font-size: 32px;
@@ -43,6 +25,7 @@
       line-height: 42px;
       margin-bottom: 16px;
     }
+
     text-align: center;
     margin: auto 0;
     font-weight: 300;

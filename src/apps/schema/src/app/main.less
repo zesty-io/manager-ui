@@ -1,17 +1,13 @@
-// @import "~@zesty-io/core/typography.less";
-
 .SchemaBuilder {
-  display: flex;
-
+  display: grid;
+  grid-template-columns: minmax(200px, 20vw) 1fr;
   height: calc(100vh - 54px);
   overflow: hidden;
 
   .SchemaMain {
-    flex: 3;
+    box-shadow: 0 0 15px #0b0d13;
     height: calc(100vh - 54px);
     overflow-y: scroll;
-
-    box-shadow: 0 0 15px #0b0d13;
     z-index: 1;
   }
 }

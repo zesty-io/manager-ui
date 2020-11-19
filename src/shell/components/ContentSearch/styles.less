@@ -25,16 +25,23 @@
   left: 0px;
   top: 38px;
 
+  .Start,
+  .NoResults {
+    font-weight: bold;
+  }
+
   li {
+    cursor: pointer;
     color: @zesty-dark-blue;
     background: @zesty-field-blue;
     border-bottom: 1px solid darken(@zesty-field-blue, 8%);
-    padding: 20px 4px;
+    padding: 16px 12px;
 
+    &.SelectedRow,
     &:hover {
       background-color: @white;
       svg {
-        color: @zesty-orange;
+        color: @zesty-blue;
       }
       .faChevronRight {
         display: block;
@@ -48,10 +55,6 @@
         font-size: 16px;
       }
     }
-  }
-
-  li.SelectedRow {
-    background-color: @zesty-light-blue;
   }
 
   li:last-child {

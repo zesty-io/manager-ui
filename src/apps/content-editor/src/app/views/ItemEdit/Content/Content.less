@@ -1,21 +1,19 @@
 .Content {
-  display: flex;
   height: calc(100vh - 54px);
   overflow: auto;
-  flex-direction: column;
 
   .MainEditor {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(400px, auto) minmax(200px, 15vw);
+    margin: 16px 32px;
+    grid-gap: 32px;
 
     .Editor {
       flex: 2;
       padding: 0;
     }
     .Actions {
-      flex: 0;
-      min-width: 25vw;
       position: relative;
-      padding-right: 16px;
       background: #f2f7fc;
     }
   }

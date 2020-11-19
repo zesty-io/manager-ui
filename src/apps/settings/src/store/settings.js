@@ -27,7 +27,7 @@ export function settings(
     instance: [],
 
     catStyles: [],
-    styles: {}
+    styles: []
   },
   action
 ) {

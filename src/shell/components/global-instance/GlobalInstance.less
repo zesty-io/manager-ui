@@ -1,15 +1,14 @@
 @import "~@zesty-io/core/colors.less";
 @import "~@zesty-io/core/typography.less";
 .GlobalInstance {
-  position: relative;
-
   align-items: center;
-  padding: 0 0 0 12px;
   box-shadow: -25px 0px 25px #12151b;
   color: @zesty-white;
   display: grid;
   grid-auto-flow: column;
   grid-gap: 18px;
+  padding: 0 0 0 12px;
+  position: relative;
 
   .Actions {
     display: grid;
@@ -18,11 +17,6 @@
   }
 
   .Actions {
-    // display: flex;
-    // grid-gap: 8px;
-
-    .InstanceLink {
-    }
     .InstanceOpen {
       color: darken(@zesty-white, 10%);
       cursor: pointer;
