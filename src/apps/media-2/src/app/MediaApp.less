@@ -154,7 +154,10 @@
         position: relative;
         &.CardContentTop {
           padding: 8px;
+          display: flex;
+          align-items: center;
         }
+
         .Check {
           position: absolute;
           top: 0;
@@ -227,19 +230,22 @@
 
   // Modal WIP
   .Modal {
-    .CardContent {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
+    .CardContentModal {
+      display: grid;
+      grid-template-columns: 1fr 500px;
+      gap: 16px;
+      justify-content: center;
 
-      img {
+      .ModalImage {
         width: 100%;
       }
+
       .Clippy {
         width: 16px;
         height: 16px;
       }
     }
+
     .CardFooter {
       display: flex;
       justify-content: space-between;

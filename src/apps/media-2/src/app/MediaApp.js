@@ -20,6 +20,9 @@ import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { Button } from "@zesty-io/core/Button";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import { FieldLabel } from "@zesty-io/core/FieldLabel";
+import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { Infotip } from "@zesty-io/core/Infotip";
 
 import styles from "./MediaApp.less";
 
@@ -458,38 +461,73 @@ export default connect(state => {
           className={styles.Modal}
           type="global"
           // set to true for testing
-          open={false}
+          open={true}
         >
           <ModalContent>
             <Card>
               <CardHeader>
-                <h3>Title: Image Name </h3>
+                <h3>ZUID: 3-a7ebb47-5yf2t</h3>
+
+                <h3>
+                  Uploaded: <span>2020-07-30T22:27:19.000Z</span>
+                </h3>
               </CardHeader>
-              <CardContent className={styles.CardContent}>
-                <div className="content-house">
-                  <p>Uploaded: 11/20/2020 8:30 000Z</p>
-                  <p>Title: 11/20/2020 8:30 000Z</p>
-                  <p>Filename: 11/20/2020 8:30 000Z</p>
-                  <button>
-                    {/* <FontAwesomeIcon icon={faClipboard} /> */}
-                    <span>Copy</span>
-                    <img
-                      className={styles.Clippy}
-                      src="/ui/images/clippy.svg"
-                      width="13"
-                      alt="Copy to clipboard"
-                    ></img>
-                  </button>
-                  <span>
-                    https://8xbq19z1.media.zestyio.com/coffee-coffee-cup-porcelain-coffee-beans-144253.jpeg
-                  </span>
-                </div>
-                <div className="img-house">
-                  <img
-                    src="https://images.pexels.com/photos/5425708/pexels-photo-5425708.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-                    alt="FillMurray"
+              <CardContent
+                className={cx(styles.CardContent, styles.CardContentModal)}
+              >
+                <div className={styles.ModalLabels}>
+                  <FieldTypeText
+                    name="title"
+                    label={
+                      <label>
+                        <Infotip title="Edit image title" />
+                        &nbsp;Title
+                      </label>
+                    }
+                    placeholder={"Image Title"}
                   />
+                  <FieldTypeText
+                    name="filename"
+                    label={
+                      <label>
+                        <Infotip title="Edit filename " />
+                        &nbsp;Filename
+                      </label>
+                    }
+                    placeholder={"Image Filename"}
+                  />
+                  <FieldLabel
+                    name="copylink"
+                    label={
+                      <label>
+                        <Infotip title="Copy URL" />
+                        &nbsp;Copy
+                      </label>
+                    }
+                  />
+                  <label className="field">
+                    <button
+                      className="btn copy"
+                      type="button"
+                      data-clipboard-target="#copy"
+                      title="Click to copy"
+                    >
+                      <span>COPY&nbsp;</span>
+                      <img
+                        className={styles.Clippy}
+                        src="/ui/images/clippy.svg"
+                        width="13"
+                        alt="Copy to clipboard"
+                      ></img>
+                    </button>
+                    <input id="copy" type="text" defaultValue="VALUE" />
+                  </label>
                 </div>
+                <img
+                  className={styles.ModalImage}
+                  src="https://images.pexels.com/photos/5425708/pexels-photo-5425708.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
+                  alt="FillMurray"
+                />
               </CardContent>
               <CardFooter className={styles.CardFooter}>
                 <Button kind="save">
