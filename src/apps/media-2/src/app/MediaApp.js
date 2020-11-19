@@ -107,7 +107,57 @@ export default connect(state => {
               </Button>
             </div>
           </div>
-
+          {/*  SELECTED CHECKBOX TOP */}
+          <aside className={styles.MediaSelected}>
+            <Card className={styles.Card}>
+              <CardContent className={styles.CardContent}>
+                <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
+                <button className={styles.Check}>
+                  <FontAwesomeIcon icon={faCheck} />
+                </button>
+              </CardContent>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent className={styles.CardContent}>
+                <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
+                <button className={styles.Check}>
+                  <FontAwesomeIcon icon={faCheck} />
+                </button>
+              </CardContent>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent className={styles.CardContent}>
+                <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
+                <button className={styles.Check}>
+                  <FontAwesomeIcon icon={faCheck} />
+                </button>
+              </CardContent>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent className={styles.CardContent}>
+                <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
+                <button className={styles.Check}>
+                  <FontAwesomeIcon icon={faCheck} />
+                </button>
+              </CardContent>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent className={styles.CardContent}>
+                <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
+                <button className={styles.Check}>
+                  <FontAwesomeIcon icon={faCheck} />
+                </button>
+              </CardContent>
+            </Card>
+            <Card className={styles.Card}>
+              <CardContent className={styles.CardContent}>
+                <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
+                <button className={styles.Check}>
+                  <FontAwesomeIcon icon={faCheck} />
+                </button>
+              </CardContent>
+            </Card>
+          </aside>
           <section className={styles.WorkspaceGrid}>
             <Card className={styles.Card}>
               <CardContent className={styles.CardContent}>
@@ -129,26 +179,26 @@ export default connect(state => {
               <CardContent className={styles.CardContent}>
                 <img src="http://www.fillmurray.com/284/196" alt="FillMurray" />
               </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faCog} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
+              <CardFooter className={styles.CardFooter}>
+                <button className={styles.FooterButton}>
+                  <FontAwesomeIcon className={styles.Cog} icon={faCog} />
+                  <h1 className={styles.Preview}>
+                    Polestar_2_006.jpgPolestar_2_006.jpg
+                  </h1>
+                </button>
               </CardFooter>
             </Card>
             <Card className={styles.Card}>
               <CardContent className={styles.CardContent}>
                 <img src="https://placekitten.com/200/286" alt="FillMurray" />
               </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faCog} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
+              <CardFooter className={styles.CardFooter}>
+                <button className={styles.FooterButton}>
+                  <FontAwesomeIcon className={styles.Cog} icon={faCog} />
+                  <h1 className={styles.Preview}>
+                    Polestar_2_006.jpgPolestar_2_006.jpg
+                  </h1>
+                </button>
               </CardFooter>
             </Card>
             <Card className={styles.Card}>
@@ -158,13 +208,13 @@ export default connect(state => {
                   alt="human"
                 />
               </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faCog} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
+              <CardFooter className={styles.CardFooter}>
+                <button className={styles.FooterButton}>
+                  <FontAwesomeIcon className={styles.Cog} icon={faCog} />
+                  <h1 className={styles.Preview}>
+                    Polestar_2_006.jpgPolestar_2_006.jpg
+                  </h1>
+                </button>
               </CardFooter>
             </Card>
             <Card className={styles.Card}>
@@ -174,13 +224,13 @@ export default connect(state => {
                   alt="dog"
                 />
               </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faCog} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
+              <CardFooter className={styles.CardFooter}>
+                <button className={styles.FooterButton}>
+                  <FontAwesomeIcon className={styles.Cog} icon={faCog} />
+                  <h1 className={styles.Preview}>
+                    Polestar_2_006.jpgPolestar_2_006.jpg
+                  </h1>
+                </button>
               </CardFooter>
             </Card>
             <Card className={styles.Card}>
@@ -190,13 +240,13 @@ export default connect(state => {
                   alt="FillMurray"
                 />
               </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faCog} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
+              <CardFooter className={styles.CardFooter}>
+                <button className={styles.FooterButton}>
+                  <FontAwesomeIcon className={styles.Cog} icon={faCog} />
+                  <h1 className={styles.Preview}>
+                    Polestar_2_006.jpgPolestar_2_006.jpg
+                  </h1>
+                </button>
               </CardFooter>
             </Card>
             <Card className={styles.Card}>
@@ -206,26 +256,26 @@ export default connect(state => {
                   alt="FillMurray"
                 />
               </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faCog} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
+              <CardFooter className={styles.CardFooter}>
+                <button className={styles.FooterButton}>
+                  <FontAwesomeIcon className={styles.Cog} icon={faCog} />
+                  <h1 className={styles.Preview}>
+                    Polestar_2_006.jpgPolestar_2_006.jpg
+                  </h1>
+                </button>
               </CardFooter>
             </Card>
             <Card className={styles.Card}>
               <CardContent className={styles.CardContent}>
                 <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
               </CardContent>
-              <CardFooter>
-                <div className={styles.FooterContent}>
-                  <button>
-                    <FontAwesomeIcon icon={faCog} />
-                    <span>Tutorial</span>
-                  </button>
-                </div>
+              <CardFooter className={styles.CardFooter}>
+                <button className={styles.FooterButton}>
+                  <FontAwesomeIcon className={styles.Cog} icon={faCog} />
+                  <h1 className={styles.Preview}>
+                    Polestar_2_006.jpgPolestar_2_006.jpg
+                  </h1>
+                </button>
               </CardFooter>
             </Card>
           </section>
