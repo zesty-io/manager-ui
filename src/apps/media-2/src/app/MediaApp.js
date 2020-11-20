@@ -475,8 +475,9 @@ export default connect(state => {
               <CardContent
                 className={cx(styles.CardContent, styles.CardContentModal)}
               >
-                <div className={styles.ModalLabels}>
+                <div>
                   <FieldTypeText
+                    className={styles.ModalLabels}
                     name="title"
                     label={
                       <label>
@@ -487,6 +488,7 @@ export default connect(state => {
                     placeholder={"Image Title"}
                   />
                   <FieldTypeText
+                    className={styles.ModalLabels}
                     name="filename"
                     label={
                       <label>
@@ -497,6 +499,7 @@ export default connect(state => {
                     placeholder={"Image Filename"}
                   />
                   <FieldLabel
+                    className={styles.ModalLabels}
                     name="copylink"
                     label={
                       <label>
