@@ -1,17 +1,17 @@
-import React from "react";
-import cx from "classnames";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFolder,
-  faFolderOpen,
-  faPlus
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
+import { Nav } from "@zesty-io/core/Nav";
 import { Button } from "@zesty-io/core/Button";
 
 import styles from "./MediaSidebar.less";
 
-export function MediaSidebar() {
+export function MediaSidebar(props) {
+  const [selected, setSelected] = useState(location.pathname);
+  useEffect(() => {
+    setSelected(location.pathname);
+  }, [location.pathname]);
   return (
     <nav className={styles.Nav}>
       <div className={styles.TopNav}>
@@ -31,30 +31,7 @@ export function MediaSidebar() {
           <span>Create Group</span>
         </Button>
       </div>
-      {/* PULLING FROM DESIGN-SYSTEM NODE */}
-      <article className="Parent">
-        {/* <h1 className={styles.NavTitle}>Company Title</h1> */}
-        <ul>
-          <li className={cx(styles.item, styles.depth1)}>
-            <a href="#">
-              <FontAwesomeIcon icon={faFolderOpen} />
-              <span>Group 1</span>
-            </a>
-          </li>
-          <li className={cx(styles.item, styles.depth2)}>
-            <a href="#">
-              <FontAwesomeIcon icon={faFolder} />
-              <span>Group 2</span>
-            </a>
-          </li>
-          <li className={cx(styles.item, styles.depth3)}>
-            <a href="#">
-              <FontAwesomeIcon icon={faFolder} />
-              <span>Group 3</span>
-            </a>
-          </li>
-        </ul>
-      </article>
+      <Nav tree={props.nav} selected={selected} />
     </nav>
   );
 }
