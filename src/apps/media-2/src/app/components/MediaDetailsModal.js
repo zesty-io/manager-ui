@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import { Modal, ModalContent } from "@zesty-io/core/Modal";
+import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
 import { FieldLabel } from "@zesty-io/core/FieldLabel";
@@ -21,17 +21,27 @@ export function MediaDetailsModal() {
     >
       <ModalContent>
         <Card>
-          <CardHeader>
-            <h3>ZUID: 3-a7ebb47-5yf2t</h3>
-
-            <h3>
-              Uploaded: <span>2020-07-30T22:27:19.000Z</span>
-            </h3>
-          </CardHeader>
           <CardContent
             className={cx(styles.CardContent, styles.CardContentModal)}
           >
             <div>
+              <FieldLabel
+                className={styles.ModalLabels}
+                name="copylink"
+                label={
+                  <label>
+                    <Infotip title="Copy URL" />
+                    &nbsp;Copy
+                  </label>
+                }
+              />
+              <label className={styles.CopyLabel}>
+                <Button kind="secondary">
+                  <FontAwesomeIcon icon={faCopy} />
+                  <span>Copy</span>
+                </Button>
+                <input id="copy" type="text" defaultValue="VALUE" />
+              </label>
               <FieldTypeText
                 className={styles.ModalLabels}
                 name="title"
@@ -65,24 +75,11 @@ export function MediaDetailsModal() {
                 }
                 placeholder={"Alt Attribute"}
               />
+              <h3>ZUID: 3-a7ebb47-5yf2t</h3>
 
-              <FieldLabel
-                className={styles.ModalLabels}
-                name="copylink"
-                label={
-                  <label>
-                    <Infotip title="Copy URL" />
-                    &nbsp;Copy
-                  </label>
-                }
-              />
-              <label className={styles.CopyLabel}>
-                <Button kind="secondary">
-                  <FontAwesomeIcon icon={faCopy} />
-                  <span>Copy</span>
-                </Button>
-                <input id="copy" type="text" defaultValue="VALUE" />
-              </label>
+              <h3>
+                Uploaded: <span>2020-07-30T22:27:19.000Z</span>
+              </h3>
             </div>
             <img
               className={styles.ModalImage}
@@ -90,7 +87,7 @@ export function MediaDetailsModal() {
               alt="FillMurray"
             />
           </CardContent>
-          <CardFooter className={styles.CardFooter}>
+          <ModalFooter className={styles.ModalFooter}>
             <Button kind="save">
               <span>Save (CTR + S)</span>
             </Button>
@@ -98,7 +95,7 @@ export function MediaDetailsModal() {
               <FontAwesomeIcon icon={faExclamationCircle} />
               <span>Delete</span>
             </Button>
-          </CardFooter>
+          </ModalFooter>
         </Card>
       </ModalContent>
     </Modal>

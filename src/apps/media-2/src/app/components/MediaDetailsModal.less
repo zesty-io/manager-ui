@@ -1,7 +1,7 @@
 .Modal {
   .CardContentModal {
     display: grid;
-    grid-template-columns: 1fr 500px;
+    grid-template-columns: 1fr minmax(300px, 500px);
     gap: 16px;
     justify-content: center;
 
@@ -9,7 +9,13 @@
       padding-bottom: 8px;
     }
     .ModalImage {
+      // display: block;
+      // width: auto;
+      // margin: 0 auto;
       width: 100%;
+      height: 60vh;
+      max-height: 100%;
+      // object-fit: contain;
     }
 
     .CopyLabel {
@@ -24,9 +30,10 @@
     }
   }
 
-  .CardFooter {
+  .ModalFooter {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 16px;
   }
 }

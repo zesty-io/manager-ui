@@ -265,7 +265,7 @@ export function MediaWorkspace(props) {
       </aside>
       {/* IMAGE GALLERY SECTION */}
       <section className={styles.WorkspaceGrid}>
-        {props.files.map(file => {
+        {/* {props.files.map(file => {
           return (
             <Card className={styles.Card}>
               <CardContent className={styles.CardContent}>
@@ -282,7 +282,7 @@ export function MediaWorkspace(props) {
               </CardFooter>
             </Card>
           );
-        })}
+        })} */}
       </section>
     </section>
   );
