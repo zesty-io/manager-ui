@@ -15,12 +15,14 @@
 .Shell {
   background-color: #f2f7fc;
   color: @zesty-grey;
-  display: flex;
+
+  // typography
   font-family: "Montserrat", "Gibson Light", Arial, sans-serif;
-  font-size: 14px;
+  font-size: 12px;
+
+  // Layout
   height: 100vh;
   overflow: hidden;
-
   display: grid;
   grid-template-columns: 60px 1fr;
 
@@ -30,7 +32,7 @@
   @media (min-width: 2000px) {
     & {
       grid-template-columns: 170px 1fr;
-      font-size: 12px;
+      font-size: 14px;
     }
   }
 

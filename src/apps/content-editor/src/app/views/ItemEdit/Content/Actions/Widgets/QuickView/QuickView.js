@@ -35,11 +35,11 @@ export const QuickView = React.memo(function QuickView(props) {
       <Card className={styles.QuickView}>
         <CardHeader>
           <section className={styles.StatusHeader}>
-            <article>
+            <div>
               <FontAwesomeIcon icon={faCodeBranch} />
               &nbsp;Item Status
-            </article>
-            <article
+            </div>
+            <div
               className={
                 isPublished
                   ? styles.Published
@@ -53,7 +53,7 @@ export const QuickView = React.memo(function QuickView(props) {
                 : isScheduled
                 ? "Scheduled"
                 : "Unpublished"}
-            </article>
+            </div>
           </section>
         </CardHeader>
         <CardContent
