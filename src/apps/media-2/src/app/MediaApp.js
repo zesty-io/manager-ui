@@ -7,7 +7,7 @@ import { MediaSidebar } from "./components/MediaSidebar";
 import { MediaWorkspace } from "./components/MediaWorkspace";
 import { MediaDetailsModal } from "./components/MediaDetailsModal";
 
-import { fetchMediaBins } from "shell/store/media";
+import { fetchMediaBins, fetchMediaGroups } from "shell/store/media";
 
 import styles from "./MediaApp.less";
 
