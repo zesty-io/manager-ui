@@ -5,8 +5,12 @@ import {
   faCog,
   faEdit,
   faUpload,
+  faExclamationCircle,
   faVideo
 } from "@fortawesome/free-solid-svg-icons";
+import cx from "classnames";
+import { Button } from "@zesty-io/core/Button";
+import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 
 import styles from "./MediaWorkspace.less";
 

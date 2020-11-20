@@ -1,10 +1,13 @@
 import React from "react";
 import cx from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFolder,
   faFolderOpen,
   faPlus
 } from "@fortawesome/free-solid-svg-icons";
+
+import { Button } from "@zesty-io/core/Button";
 
 import styles from "./MediaSidebar.less";
 
