@@ -20,6 +20,7 @@ import { mediaBins, mediaGroups } from "./media";
 import { logs } from "./logs";
 import { notifications } from "./notifications";
 import { platform } from "./platform";
+import { headTags } from "./headTags";
 import ui from "./ui";
 
 const actionLogger = createLogger({
@@ -48,6 +49,7 @@ function createReducer(asyncReducers) {
     logs,
     notifications,
     platform,
+    headTags,
     ui
   };
 

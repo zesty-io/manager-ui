@@ -195,7 +195,7 @@ export default connect(state => {
                 onSelect={(value, name) => setValue(name, value)}
                 className={[styles.selectFont]}
                 // if default value is a font-family stack with ',' then show "Select"
-                value={field.value.includes(",") ? "inherit" : field.value}
+                value={(field.value !== null && field.value.includes(",")) ? "inherit" : field.value}
               >
                 <Option value="inherit" text="Select" />
                 {fonts.map((option, index) => (

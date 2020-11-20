@@ -56,7 +56,7 @@ export function request(url, opts = {}) {
       // if (res.status === 404) {}
 
       // if (res.status === 410) {
-      //   // growl(`Your two factor authentication has expired. 410`, "red-growl");
+      //   // notify({message: `Your two factor authentication has expired. 410`});
       // }
 
       // if (res.status === 422) {}

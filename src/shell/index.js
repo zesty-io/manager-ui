@@ -28,6 +28,7 @@ window.CONFIG = __CONFIG__;
 
 if (CONFIG.ENV !== "development" && CONFIG.ENV !== "local") {
   Sentry.init({
+    environment: CONFIG.ENV,
     dsn:
       "https://2e83c3767c484794a56832affe2d26d9@o162121.ingest.sentry.io/5441698"
   });
@@ -50,7 +51,7 @@ window.riot = riot;
 // Media riot app depends on these references
 // FIXME: this needs to get refactored out
 window.request = request;
-window.growl = notify;
+window.growl = notice => store.dispatch(notify(notice));
 
 // Update urls in config to include the current instance zuid
 const instanceZUID = store.getState().instance.ZUID;

@@ -23,10 +23,7 @@ import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { AppLink } from "@zesty-io/core/AppLink";
 
-import {
-  fetchHeadTags,
-  createHeadTag
-} from "../../../apps/content-editor/src/store/headTags";
+import { fetchHeadTags, createHeadTag } from "shell/store/headTags";
 
 import styles from "./favicon.less";
 export default connect(state => {

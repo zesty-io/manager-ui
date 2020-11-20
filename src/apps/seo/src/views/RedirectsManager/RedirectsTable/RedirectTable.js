@@ -57,7 +57,6 @@ export default class RedirectTable extends React.Component {
     if (filter) {
       order = order.filter(key => {
         const redirect = this.props.redirects[key];
-        console.log(redirect);
         if (
           redirect.path.indexOf(filter) !== -1 ||
           String(redirect.code).indexOf(filter) !== -1 ||

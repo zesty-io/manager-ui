@@ -5,15 +5,13 @@ import { notify } from "shell/store/notifications";
 import {
   saveHeadTag,
   deleteHeadTag,
-  createHeadTag
-} from "../../../../store/headTags";
-import {
+  createHeadTag,
   addTagAttribute,
   deleteTagAttribute,
   updateTagAttribute,
   updateTagSort,
   updateTagType
-} from "../../../../store/headTags";
+} from "shell/store/headTags";
 
 import { Button } from "@zesty-io/core/Button";
 import { Card, CardContent, CardFooter, CardHeader } from "@zesty-io/core/Card";

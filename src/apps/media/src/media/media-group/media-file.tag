@@ -126,13 +126,13 @@
 
             xhr.upload.addEventListener('abort', (err) => {
                 console.error('Abort: ', err)
-                growl('File upload aborted')
+                growl({kind: "warn", message: 'File upload aborted'})
                 opts.file.failed = true
             })
 
             xhr.upload.addEventListener('error', (err) => {
                 console.error('Error: ', err)
-                growl('File upload failed', 'red-growl')
+                growl({kind: "warn", message: 'File upload failed'})
                 opts.file.failed = true
             })
 
@@ -150,7 +150,7 @@
                     const json = JSON.parse(xhr.responseText)
 
                     if (/200|201/.test(json.code)) {
-                        growl(`Uploaded ${opts.file.filename}`)
+                        growl({kind: "save", message: `Uploaded ${opts.file.filename}`})
 
                         // Added new values returned by server
                         // to this file instance
@@ -158,7 +158,7 @@
 
                     } else {
                         opts.file.failed = true
-                        growl(json.message, 'red-growl')
+                        growl({kind: "warn", message: json.message})
                     }
 
                     opts.file.progress = 0

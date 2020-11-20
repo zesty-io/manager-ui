@@ -14,6 +14,7 @@ import { ScheduleFlyout } from "./ScheduleFlyout";
 import { VersionSelector } from "./VersionSelector";
 
 import { publish } from "shell/store/content";
+import { fetchAuditTrailPublish } from "shell/store/logs";
 
 import styles from "./ItemVersioning.less";
 export default connect(state => {
@@ -38,6 +39,10 @@ export default connect(state => {
             version: this.props.item.meta.version
           })
         )
+        // fetch new publish history
+        .then(() => {
+          this.props.dispatch(fetchAuditTrailPublish(this.props.itemZUID));
+        })
         .finally(() => {
           this.setState({
             publishing: false
@@ -91,8 +96,11 @@ export default connect(state => {
             itemZUID={this.props.itemZUID}
           />
 
-          {/* NOTE: hiding publishing for alpha test users */}
-          {this.props.user.staff && (
+          {(this.props.userRole.name === "Publisher" ||
+            this.props.userRole.name === "Developer" ||
+            this.props.userRole.name === "Admin" ||
+            this.props.userRole.name === "Owner" ||
+            this.props.user.staff) && (
             <ButtonGroup className={styles.Publish}>
               <Button
                 className={styles.PublishButton}

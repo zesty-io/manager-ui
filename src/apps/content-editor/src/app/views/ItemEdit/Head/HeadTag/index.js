@@ -1,1 +1,0 @@
-export { HeadTag } from "./HeadTag";

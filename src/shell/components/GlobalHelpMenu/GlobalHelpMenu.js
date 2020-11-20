@@ -173,11 +173,11 @@ export default connect(state => {
 
       <div className={styles.helpModules}>
         <Card className={cx(styles.helpModule, styles.primary)}>
-          <CardHeader className={styles.title}>zesty.org</CardHeader>
+          <CardHeader className={styles.subheadline}>zesty.org</CardHeader>
           <CardContent>
             <ul className={styles.helpBox}>
               {links.map(link => (
-                <li key={link.name}>
+                <li key={link.name} className={styles.bodyText}>
                   <Url title={link.url} target="_blank" href={link.url}>
                     {link.name}
                   </Url>
@@ -188,10 +188,10 @@ export default connect(state => {
         </Card>
 
         <Card className={styles.helpModule}>
-          <CardHeader className={styles.title}>APIs</CardHeader>
+          <CardHeader className={styles.subheadline}>APIs</CardHeader>
           <CardContent>
             <ul className={styles.helpBox}>
-              <li>
+              <li className={styles.bodyText}>
                 <Url
                   title="Instances API"
                   target="_blank"
@@ -200,7 +200,7 @@ export default connect(state => {
                   Instances API
                 </Url>
               </li>
-              <li>
+              <li className={styles.bodyText}>
                 <Url
                   title="Accounts API"
                   target="_blank"
@@ -209,7 +209,7 @@ export default connect(state => {
                   Accounts API
                 </Url>
               </li>
-              <li>
+              <li className={styles.bodyText}>
                 <Url
                   title="Auth API"
                   target="_blank"
@@ -223,10 +223,10 @@ export default connect(state => {
         </Card>
 
         <Card className={styles.helpModule}>
-          <CardHeader className={styles.title}>github</CardHeader>
+          <CardHeader className={styles.subheadline}>github</CardHeader>
           <CardContent>
             <ul className={styles.helpBox}>
-              <li>
+              <li className={styles.bodyText}>
                 <Url
                   title="SDK"
                   target="_blank"
@@ -235,7 +235,7 @@ export default connect(state => {
                   SDK
                 </Url>
               </li>
-              <li>
+              <li className={styles.bodyText}>
                 <Url
                   title="CLI"
                   target="_blank"
@@ -244,7 +244,7 @@ export default connect(state => {
                   CLI
                 </Url>
               </li>
-              <li>
+              <li className={styles.bodyText}>
                 <Url
                   title="Report a Bug"
                   target="_blank"
