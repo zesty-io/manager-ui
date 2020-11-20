@@ -1,19 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-
 import { WithLoader } from "@zesty-io/core/WithLoader";
-
 import { MediaSidebar } from "./components/MediaSidebar";
 import { MediaWorkspace } from "./components/MediaWorkspace";
 import { MediaDetailsModal } from "./components/MediaDetailsModal";
-
 import {
   fetchMediaBins,
   fetchMediaGroups,
   fetchBinFiles,
   fetchGroupFiles
 } from "shell/store/media";
-
 import styles from "./MediaApp.less";
 
 export default connect((state, props) => {
@@ -34,20 +30,25 @@ export default connect((state, props) => {
     media: state.media
   };
 })(function MediaApp(props) {
+  const [fileDetails, setFileDetails] = useState();
+  // always fetch all bins
   useEffect(() => {
     props.dispatch(fetchMediaBins());
   }, []);
 
+  // fetch groups when we bins change
   useEffect(() => {
     props.media.bins.forEach(bin => props.dispatch(fetchMediaGroups(bin.id)));
   }, [props.media.bins.length]);
 
+  // fetch group files when navigating to group
   useEffect(() => {
     if (props.match.params.groupID) {
       props.dispatch(fetchGroupFiles(props.match.params.groupID));
     }
   }, [props.match.params.groupID]);
 
+  // fetch bin files when navigating to bin
   useEffect(() => {
     if (props.match.params.binID) {
       props.dispatch(fetchBinFiles(props.match.params.binID));
@@ -62,8 +63,13 @@ export default connect((state, props) => {
         width="100vw"
       >
         <MediaSidebar nav={props.media.nav} />
-        <MediaWorkspace files={props.files} />
-        <MediaDetailsModal />
+        <MediaWorkspace files={props.files} setFileDetails={setFileDetails} />
+        {fileDetails && (
+          <MediaDetailsModal
+            file={fileDetails}
+            onClose={() => setFileDetails()}
+          />
+        )}
       </WithLoader>
     </main>
   );

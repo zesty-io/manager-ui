@@ -276,7 +276,11 @@ export function MediaWorkspace(props) {
               </CardContent>
               <CardFooter className={styles.CardFooter}>
                 <button className={styles.FooterButton}>
-                  <FontAwesomeIcon className={styles.Cog} icon={faCog} />
+                  <FontAwesomeIcon
+                    onClick={() => props.setFileDetails(file)}
+                    className={styles.Cog}
+                    icon={faCog}
+                  />
                   <h1 className={styles.Preview}>{file.filename}</h1>
                 </button>
               </CardFooter>
