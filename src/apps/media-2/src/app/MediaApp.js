@@ -26,6 +26,8 @@ export default connect((state, props) => {
     files = state.media.files.filter(
       file => file.group_id === props.match.params.binID
     );
+  } else {
+    files = [];
   }
   return {
     files,
