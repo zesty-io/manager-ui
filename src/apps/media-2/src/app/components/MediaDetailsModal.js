@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import { faCopy, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import { Modal, ModalContent } from "@zesty-io/core/Modal";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
@@ -37,7 +37,7 @@ export function MediaDetailsModal() {
                 name="title"
                 label={
                   <label>
-                    <Infotip title="Edit image title" />
+                    <Infotip title="Edit Image Title" />
                     &nbsp;Title
                   </label>
                 }
@@ -48,12 +48,24 @@ export function MediaDetailsModal() {
                 name="filename"
                 label={
                   <label>
-                    <Infotip title="Edit filename " />
+                    <Infotip title="Edit Filename " />
                     &nbsp;Filename
                   </label>
                 }
                 placeholder={"Image Filename"}
               />
+              <FieldTypeText
+                className={styles.ModalLabels}
+                name="alt"
+                label={
+                  <label>
+                    <Infotip title="Edit Alt Attribute " />
+                    &nbsp;Alt Attribute
+                  </label>
+                }
+                placeholder={"Alt Attribute"}
+              />
+
               <FieldLabel
                 className={styles.ModalLabels}
                 name="copylink"
@@ -64,21 +76,11 @@ export function MediaDetailsModal() {
                   </label>
                 }
               />
-              <label className="field">
-                <button
-                  className="btn copy"
-                  type="button"
-                  data-clipboard-target="#copy"
-                  title="Click to copy"
-                >
-                  <span>COPY&nbsp;</span>
-                  <img
-                    className={styles.Clippy}
-                    src="/ui/images/clippy.svg"
-                    width="13"
-                    alt="Copy to clipboard"
-                  ></img>
-                </button>
+              <label className={styles.CopyLabel}>
+                <Button kind="secondary">
+                  <FontAwesomeIcon icon={faCopy} />
+                  <span>Copy</span>
+                </Button>
                 <input id="copy" type="text" defaultValue="VALUE" />
               </label>
             </div>
