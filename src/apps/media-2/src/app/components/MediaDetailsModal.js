@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
@@ -11,13 +11,14 @@ import { Infotip } from "@zesty-io/core/Infotip";
 
 import styles from "./MediaDetailsModal.less";
 
-export function MediaDetailsModal() {
+export function MediaDetailsModal(props) {
   return (
     <Modal
       className={styles.Modal}
       type="global"
       // set to true for testing
       open={true}
+      onClose={() => props.onClose()}
     >
       <ModalContent>
         <Card>
@@ -45,6 +46,7 @@ export function MediaDetailsModal() {
               <FieldTypeText
                 className={styles.ModalLabels}
                 name="title"
+                value={props.file.title}
                 label={
                   <label>
                     <Infotip title="Edit Image Title" />
@@ -56,6 +58,7 @@ export function MediaDetailsModal() {
               <FieldTypeText
                 className={styles.ModalLabels}
                 name="filename"
+                value={props.file.filename}
                 label={
                   <label>
                     <Infotip title="Edit Filename " />
@@ -75,16 +78,16 @@ export function MediaDetailsModal() {
                 }
                 placeholder={"Alt Attribute"}
               />
-              <h3>ZUID: 3-a7ebb47-5yf2t</h3>
+              <h3>ZUID: {props.file.id}</h3>
 
               <h3>
-                Uploaded: <span>2020-07-30T22:27:19.000Z</span>
+                Updated: <span>{props.file.updated_at}</span>
               </h3>
             </div>
             <img
               className={styles.ModalImage}
-              src="https://images.pexels.com/photos/5425708/pexels-photo-5425708.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-              alt="FillMurray"
+              src={props.file.url}
+              alt={props.file.title}
             />
           </CardContent>
           <ModalFooter className={styles.ModalFooter}>
