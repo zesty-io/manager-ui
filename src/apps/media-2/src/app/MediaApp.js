@@ -65,7 +65,7 @@ export default connect((state, props) => {
         width="100vw"
       >
         <MediaSidebar nav={props.media.nav} />
-        <div className="work">
+        <div className={styles.WorkspaceContainer}>
           <MediaWorkspace files={props.files} setFileDetails={setFileDetails} />
           <MediaSelected />
         </div>
