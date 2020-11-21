@@ -6,6 +6,7 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import { MediaSidebar } from "./components/MediaSidebar";
 import { MediaWorkspace } from "./components/MediaWorkspace";
 import { MediaDetailsModal } from "./components/MediaDetailsModal";
+import { MediaSelected } from "./components/MediaSelected";
 
 import {
   fetchMediaBins,
@@ -62,7 +63,10 @@ export default connect((state, props) => {
         width="100vw"
       >
         <MediaSidebar nav={props.media.nav} />
-        <MediaWorkspace files={props.files} />
+        <div className="work">
+          <MediaWorkspace files={props.files} />
+          <MediaSelected />
+        </div>
         <MediaDetailsModal />
       </WithLoader>
     </main>
