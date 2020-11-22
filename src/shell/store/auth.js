@@ -85,7 +85,6 @@ export function verifyTwoFactor(token) {
         return json;
       })
       .catch(err => {
-        // console.error("VERIFY 2FA ERR", err);
         dispatch({
           type: "VERIFY_2FA_ERROR",
           payload: { auth: false },

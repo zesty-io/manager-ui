@@ -23,9 +23,12 @@ const OFFLINE_URL = "/offline";
 const PRECACHE_URLS = [
   ".",
   OFFLINE_URL,
+
+  // TODO: These need CORs headers so the service worker can fetch
   // "https://brand.zesty.io/zesty-io-logo.svg",
   // "https://brand.zesty.io/zesty-io-logo-vertical.svg",
   // "https://brand.zesty.io/zesty-io-logo-vertical-dark.svg",
+
   "https://fonts.googleapis.com/css?family=Montserrat:200,400,500,500i"
 ];
 
