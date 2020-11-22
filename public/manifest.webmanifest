@@ -1,0 +1,44 @@
+{
+  "short_name": "Zesty.io",
+  "name": "Zesty.io: Instance Manager",
+  "description": "Manage the content of your Zesty.io instance",
+  "icons": [
+    {
+      "src": "https://brand.zesty.io/zesty-io-logo.svg",
+      "sizes": "48x48 72x72 96x96 144x144 168x168 192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": "/?source=pwa",
+  "background_color": "#f2f7fc",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "scope": "/",
+  "theme_color": "#171b26",
+  "shortcuts": [
+    {
+      "name": "Content Editor",
+      "short_name": "Content",
+      "description": "Edit and publish the content on your instance",
+      "url": "/content?source=pwa",
+      "icons": [
+        {
+          "src": "https://brand.zesty.io/zesty-io-logo.svg",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Media Editor",
+      "short_name": "Media",
+      "description": "Upload and edit the media on your instance",
+      "url": "/media?source=pwa",
+      "icons": [
+        {
+          "src": "https://brand.zesty.io/zesty-io-logo.svg",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
