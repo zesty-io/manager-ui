@@ -180,7 +180,7 @@ export default connect(state => {
             tooltip="Because favicons are used in multiple settings we will create multiple sizes of the image you select to fit each use case."
             // limit={1}
             // values field displays
-            images={faviconZUID ? [faviconZUID] : []}
+            images={faviconZUID ? [faviconZUID] : [faviconURL]}
             // feed to media app
             value={faviconZUID}
             onChange={handleImage}
