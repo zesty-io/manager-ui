@@ -59,7 +59,6 @@ export function verify() {
         return json;
       })
       .catch(err => {
-        console.error("VERIFY ERR", err);
         dispatch({
           type: "VERIFY_ERROR",
           payload: { auth: false },
