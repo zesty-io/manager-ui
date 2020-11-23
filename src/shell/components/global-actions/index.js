@@ -26,7 +26,7 @@ export default connect(state => {
     return (
       <div className={styles.GlobalSubMenu}>
         <div className={styles.GlobalActions}>
-          <LivePreview
+          <ActivePreview
             instanceHash={props.instance.randomHashID}
             instanceZUID={props.instance.ZUID}
             content={props.content}
@@ -70,12 +70,16 @@ export default connect(state => {
   })
 );
 
-function LivePreview(props) {
+function ActivePreview(props) {
   return (
     <span className={styles.GlobalAction} title="Live Preview">
       <FontAwesomeIcon
         onClick={() =>
-          openLivePreview(props.instanceZUID, props.instanceHash, props.content)
+          openActivePreview(
+            props.instanceZUID,
+            props.instanceHash,
+            props.content
+          )
         }
         icon={faEye}
         className={styles.GlobalActionIcon}
@@ -84,7 +88,7 @@ function LivePreview(props) {
   );
 }
 
-function openLivePreview(instanceZUID, instanceHash, content) {
+function openActivePreview(instanceZUID, instanceHash, content) {
   const origin = `${CONFIG.URL_MANAGER_PROTOCOL}${instanceZUID}${CONFIG.URL_MANAGER}`;
   const previewDomain = `${CONFIG.URL_PREVIEW_PROTOCOL}${instanceHash}${CONFIG.URL_PREVIEW}`;
 
