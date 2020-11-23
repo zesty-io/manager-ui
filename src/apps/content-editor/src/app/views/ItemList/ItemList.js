@@ -75,8 +75,8 @@ export default connect((state, props) => {
 
   // saving, loading states
   const [saving, setSaving] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [loadingSecondary, setLoadingSecondary] = useState(false);
+  const [loadingFirstPage, setLoadingFirstPage] = useState(false);
+  const [loadingSecondaryPages, setLoadingSecondaryPages] = useState(false);
 
   const [items, setItems] = useState([]);
   const [itemCount, setItemCount] = useState(0);
@@ -133,7 +133,6 @@ export default connect((state, props) => {
     }
   }, [filter]);
 
-  // HACK: runFilters after waiting for new props
   useEffect(() => {
     if (_isMounted.current && shouldRunFilters) {
       runFilters();
@@ -141,7 +140,6 @@ export default connect((state, props) => {
     }
   }, [shouldRunFilters]);
 
-  // HACK: updateItemCount after waiting for new props
   useEffect(() => {
     if (_isMounted.current && shouldUpdateItemCount) {
       updateItemCount();
@@ -180,8 +178,8 @@ export default connect((state, props) => {
   }
 
   async function load(modelZUID) {
-    setLoading(true);
-    setLoadingSecondary(true);
+    setLoadingFirstPage(true);
+    setLoadingSecondaryPages(true);
 
     try {
       const [, itemsRes] = await Promise.all([
@@ -190,24 +188,26 @@ export default connect((state, props) => {
       ]);
       if (_isMounted.current) {
         // render 1st page of results
-        // HACK: runFilters after waiting for new props
+        // HACK: runFilters next render cycle with fresh props/state
+        // running directly would use stale props/state
         setShouldRunFilters(true);
-        setLoading(false);
+        setLoadingFirstPage(false);
 
         if (itemsRes._meta.totalResults === PAGE_SIZE) {
           // load page 2 until last page
           await crawlFetchItems(modelZUID);
           // re-render after all pages fetched
-          // HACK: runFilters after waiting for new props
+          // HACK: runFilters next render cycle with fresh props/state
+          // running directly would use stale props/state
           setShouldRunFilters(true);
         }
-        setLoadingSecondary(false);
+        setLoadingSecondaryPages(false);
       }
     } catch (err) {
       console.error("ItemList:load:error", err);
       if (_isMounted.current) {
-        setLoading(false);
-        setLoadingSecondary(false);
+        setLoadingFirstPage(false);
+        setLoadingSecondaryPages(false);
       }
     }
   }
@@ -227,7 +227,8 @@ export default connect((state, props) => {
       page++;
       totalItems = res._meta.totalResults;
       if (_isMounted.current) {
-        // HACK: updateItemCount after waiting for new props
+        // HACK: updateItemCount next render cycle with fresh props/state
+        // running directly would use stale props/state
         setShouldUpdateItemCount(true);
       }
     }
@@ -595,7 +596,7 @@ export default connect((state, props) => {
         model={props.model}
         isDirty={props.dirtyItems.length}
         saving={saving}
-        loading={loadingSecondary}
+        loading={loadingSecondaryPages}
         itemCount={itemCount}
         onSaveAll={saveItems}
         onFilter={onFilter}
@@ -608,7 +609,7 @@ export default connect((state, props) => {
         instance={props.instance}
       />
 
-      {!loading && items.length === 1 ? (
+      {!loadingFirstPage && items.length === 1 ? (
         filter.status !== "all" || filter.filterTerm ? (
           <div className={styles.TableWrap}>
             <SetColumns fields={fields} />
@@ -633,14 +634,14 @@ export default connect((state, props) => {
         <div className={styles.TableWrap} ref={table}>
           <WithLoader
             message={`Loading ${props.model && props.model.label}`}
-            condition={(fields.length && items.length > 1) || !loading}
+            condition={(fields.length && items.length > 1) || !loadingFirstPage}
             height="80vh"
           >
             <PendingEditsModal
               show={Boolean(props.dirtyItems.length)}
               title="Unsaved Changes"
               message="You have unsaved changes that will be lost if you leave this page."
-              saving={saving || loading}
+              saving={saving || loadingFirstPage}
               onSave={saveItems}
               onDiscard={() => {
                 props.dispatch({
