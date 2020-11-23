@@ -22,7 +22,9 @@ export function MediaWorkspace(props) {
           return (
             <Card className={styles.Card}>
               <CardContent className={styles.CardContent}>
-                <img src={file.url} alt={file.title} />
+                <div className={styles.Checkered}>
+                  <img src={file.url} alt={file.title} />
+                </div>
                 <button className={styles.Check}>
                   <FontAwesomeIcon icon={faCheck} />
                 </button>

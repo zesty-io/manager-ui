@@ -1,22 +1,19 @@
 .Modal {
   width: fit-content;
+
   .CardContentModal {
     display: grid;
-    grid-template-columns: 1fr minmax(300px, 500px);
+    grid-template-columns: minmax(200px, 500px) minmax(350px, 1fr);
     gap: 16px;
     justify-content: center;
+    align-items: center;
 
     .ModalLabels {
       padding-bottom: 8px;
     }
     .ModalImage {
-      // display: block;
-      // width: auto;
-      // margin: 0 auto;
       width: 100%;
-      height: 60vh;
-      max-height: 100%;
-      // object-fit: contain;
+      height: auto;
     }
 
     .CopyLabel {

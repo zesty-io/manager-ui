@@ -19,7 +19,12 @@ export function MediaSelected() {
         <aside className={styles.MediaSelected}>
           <Card className={cx(styles.Card, styles.CardTop)}>
             <CardContent className={styles.CardContent}>
-              <img src="https://placekitten.com/200/286" alt="cat" />
+              <div className={styles.Checkered}>
+                <img
+                  src="https://img.favpng.com/24/4/6/golden-ratio-face-mathematics-facial-png-favpng-20zD4c1W5ZUnVb4Ve9XGgkHSG.jpg"
+                  alt="Transparent Image"
+                />
+              </div>
               <button className={styles.Check}>
                 <FontAwesomeIcon icon={faCheck} />
               </button>
@@ -30,7 +35,10 @@ export function MediaSelected() {
             <CardContent
               className={cx(styles.CardContent, styles.CardContentTop)}
             >
-              <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
+              <div className={styles.Checkered}>
+                <img src="http://www.fillmurray.com/300/200" alt="Image" />
+              </div>
+
               <button className={styles.Check}>
                 <FontAwesomeIcon icon={faCheck} />
               </button>
