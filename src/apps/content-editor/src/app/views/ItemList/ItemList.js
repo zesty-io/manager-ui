@@ -75,8 +75,8 @@ export default connect((state, props) => {
 
   // saving, loading states
   const [saving, setSaving] = useState(false);
-  const [loadingFirstPage, setLoadingFirstPage] = useState(false);
-  const [loadingSecondaryPages, setLoadingSecondaryPages] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(false);
+  const [backgroundLoading, setBackgroundLoading] = useState(false);
 
   const [items, setItems] = useState([]);
   const [itemCount, setItemCount] = useState(0);
@@ -87,6 +87,11 @@ export default connect((state, props) => {
       : DEFAULT_FILTER
   );
 
+  // Used to runFilters/updateItemCount on *next* render
+  // we use these since otherwise executing those functions directly
+  // would lead to stale props/state. executing on *next* render
+  // guarantees latest props/state
+  // e.g. setShouldRunFilters(true) -> *next render* -> runFilters()
   const [shouldRunFilters, setShouldRunFilters] = useState(false);
   const [shouldUpdateItemCount, setShouldUpdateItemCount] = useState(false);
 
@@ -178,8 +183,8 @@ export default connect((state, props) => {
   }
 
   async function load(modelZUID) {
-    setLoadingFirstPage(true);
-    setLoadingSecondaryPages(true);
+    setInitialLoading(true);
+    setBackgroundLoading(true);
 
     try {
       const [, itemsRes] = await Promise.all([
@@ -188,26 +193,22 @@ export default connect((state, props) => {
       ]);
       if (_isMounted.current) {
         // render 1st page of results
-        // HACK: runFilters next render cycle with fresh props/state
-        // running directly would use stale props/state
         setShouldRunFilters(true);
-        setLoadingFirstPage(false);
+        setInitialLoading(false);
 
         if (itemsRes._meta.totalResults === PAGE_SIZE) {
           // load page 2 until last page
           await crawlFetchItems(modelZUID);
           // re-render after all pages fetched
-          // HACK: runFilters next render cycle with fresh props/state
-          // running directly would use stale props/state
           setShouldRunFilters(true);
         }
-        setLoadingSecondaryPages(false);
+        setBackgroundLoading(false);
       }
     } catch (err) {
       console.error("ItemList:load:error", err);
       if (_isMounted.current) {
-        setLoadingFirstPage(false);
-        setLoadingSecondaryPages(false);
+        setInitialLoading(false);
+        setBackgroundLoading(false);
       }
     }
   }
@@ -227,8 +228,6 @@ export default connect((state, props) => {
       page++;
       totalItems = res._meta.totalResults;
       if (_isMounted.current) {
-        // HACK: updateItemCount next render cycle with fresh props/state
-        // running directly would use stale props/state
         setShouldUpdateItemCount(true);
       }
     }
@@ -596,7 +595,7 @@ export default connect((state, props) => {
         model={props.model}
         isDirty={props.dirtyItems.length}
         saving={saving}
-        loading={loadingSecondaryPages}
+        loading={backgroundLoading}
         itemCount={itemCount}
         onSaveAll={saveItems}
         onFilter={onFilter}
@@ -609,7 +608,7 @@ export default connect((state, props) => {
         instance={props.instance}
       />
 
-      {!loadingFirstPage && items.length === 1 ? (
+      {!initialLoading && items.length === 1 ? (
         filter.status !== "all" || filter.filterTerm ? (
           <div className={styles.TableWrap}>
             <SetColumns fields={fields} />
@@ -634,14 +633,14 @@ export default connect((state, props) => {
         <div className={styles.TableWrap} ref={table}>
           <WithLoader
             message={`Loading ${props.model && props.model.label}`}
-            condition={(fields.length && items.length > 1) || !loadingFirstPage}
+            condition={(fields.length && items.length > 1) || !initialLoading}
             height="80vh"
           >
             <PendingEditsModal
               show={Boolean(props.dirtyItems.length)}
               title="Unsaved Changes"
               message="You have unsaved changes that will be lost if you leave this page."
-              saving={saving || loadingFirstPage}
+              saving={saving || initialLoading}
               onSave={saveItems}
               onDiscard={() => {
                 props.dispatch({
