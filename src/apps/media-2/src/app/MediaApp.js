@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { MediaSidebar } from "./components/MediaSidebar";
 import { MediaWorkspace } from "./components/MediaWorkspace";
+import { MediaHeader } from "./components/MediaHeader";
 import { MediaDetailsModal } from "./components/MediaDetailsModal";
 import { MediaSelected } from "./components/MediaSelected";
 
@@ -66,6 +67,7 @@ export default connect((state, props) => {
       >
         <MediaSidebar nav={props.media.nav} />
         <div className={styles.WorkspaceContainer}>
+          <MediaHeader />
           <MediaWorkspace files={props.files} setFileDetails={setFileDetails} />
           <MediaSelected />
         </div>
