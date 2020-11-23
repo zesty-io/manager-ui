@@ -27,7 +27,7 @@ module.exports = env => {
     mode: env.NODE_ENV !== "development" ? "production" : "development",
     entry: {
       main: path.resolve(__dirname, "./index.js"),
-      activePreview: path.resolve(__dirname, "../apps/live-preview/index.js")
+      activePreview: path.resolve(__dirname, "../apps/active-preview/index.js")
     },
     output: {
       filename:
@@ -126,8 +126,8 @@ module.exports = env => {
 
       new HtmlWebpackPlugin({
         chunks: ["activePreview"],
-        template: "src/apps/live-preview/index.html",
-        filename: "active-preview/index.html"
+        template: "src/apps/active-preview/index.html",
+        filename: "activePreview.html"
       }),
 
       // Inject app config into bundle based on env
