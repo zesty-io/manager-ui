@@ -74,7 +74,11 @@ export default connect(state => {
       >
         <ModalContent>
           <div>
-            <img src="/zesty-z-logo.png" alt="Zesty.io Logo" width="40px" />
+            <img
+              src="https://brand.zesty.io/zesty-io-logo.svg"
+              alt="Zesty.io Logo"
+              width="40px"
+            />
           </div>
 
           {twoFactor ? (
