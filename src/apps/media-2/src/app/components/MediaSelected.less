@@ -1,3 +1,21 @@
+.LoadSelected {
+  position: relative;
+  padding: 16px;
+
+  &::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 16px solid transparent;
+    border-bottom: 16px solid transparent;
+    border-right: 16px solid #c3cddf;
+    left: 9px;
+    bottom: 64px;
+    transform: rotate(90deg);
+  }
+}
+
 .MediaSelected {
   display: flex;
   overflow-x: auto;
@@ -6,6 +24,24 @@
 
   //fit grid images in container
   width: calc(80vw - 60px);
+
+  .CardContent {
+    position: relative;
+  }
+  .Check {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    background: #74be24;
+    color: #efefef;
+    width: 24px;
+    height: 24px;
+    margin: 1px;
+  }
+  &.Selected {
+    background: #74be24;
+  }
 }
 
 .CardTop {
