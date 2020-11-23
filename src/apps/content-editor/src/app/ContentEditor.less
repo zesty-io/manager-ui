@@ -1,16 +1,14 @@
 @import "~@zesty-io/core/colors.less";
 
 .ContentEditor {
-  display: flex;
-  flex-direction: row;
   height: calc(100vh - 54px);
+  display: grid;
+  grid-template-columns: minmax(200px, 20vw) 1fr;
 
   .Nav {
     background: #4c5568;
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 20vw;
   }
+
   .Content {
     flex: 1;
     overflow: hidden;
