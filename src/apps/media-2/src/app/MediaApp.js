@@ -8,8 +8,8 @@ import { MediaDetailsModal } from "./components/MediaDetailsModal";
 import { MediaSelected } from "./components/MediaSelected";
 
 import {
-  fetchMediaBins,
-  fetchMediaGroups,
+  fetchAllMediaBins,
+  fetchAllGroups,
   fetchBinFiles,
   fetchGroupFiles
 } from "shell/store/media";
@@ -36,12 +36,14 @@ export default connect((state, props) => {
   const [fileDetails, setFileDetails] = useState();
   // always fetch all bins
   useEffect(() => {
-    props.dispatch(fetchMediaBins());
+    props.dispatch(fetchAllMediaBins());
   }, []);
 
   // fetch groups when we bins change
   useEffect(() => {
-    props.media.bins.forEach(bin => props.dispatch(fetchMediaGroups(bin.id)));
+    if (props.media.bins.length) {
+      props.dispatch(fetchAllGroups());
+    }
   }, [props.media.bins.length]);
 
   // fetch group files when navigating to group
