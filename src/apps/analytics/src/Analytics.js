@@ -130,46 +130,6 @@ export default connect(function(state) {
       );
       return (
         <section className={styles.Dashboard}>
-          <div className={styles.topBar}>
-            <div className={styles.columns}>
-              <div className={styles.column}>
-                <span className={styles.instanceName}>
-                  Content Instance Dashboard
-                </span>
-              </div>
-              <div className={`${styles.column} ${styles.isAlignedCentered}`}>
-                <strong>{this.props.instanceName}</strong>{" "}
-                <span className={styles.muted}>
-                  [{this.props.instanceZUID}]
-                </span>
-              </div>
-              <div className={`${styles.column} ${styles.isAlignedRight}`}>
-                <div className={styles.webEngineLinks}>
-                  Web Engine URLs
-                  <span className={styles.encompassedBlock}>
-                    <Url
-                      target="_blank"
-                      title="Stage"
-                      href={`${CONFIG.URL_PREVIEW_PROTOCOL}${this.props.instance.randomHashID}${CONFIG.URL_PREVIEW}`}
-                    >
-                      Stage
-                    </Url>
-
-                    {this.props.instance.domains &&
-                      this.props.instance.domains[0] && (
-                        <Url
-                          target="_blank"
-                          title="Live"
-                          href={`https://${this.props.instance.domains[0].domain}`}
-                        >
-                          Live
-                        </Url>
-                      )}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
           <div className={styles.container}>
             <div
               className={cx(

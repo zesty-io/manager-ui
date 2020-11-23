@@ -1,0 +1,28 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.Head {
+  display: flex;
+  flex-direction: column-reverse;
+
+  // When more space is available show in side-by-side columns
+  @media screen and (min-width: 2000px) {
+    display: grid;
+    grid-template-columns: minmax(400px, 1fr) 1fr;
+    .Tags {
+      height: calc(100vh - 54px);
+      overflow-y: scroll;
+    }
+  }
+
+  .Notice {
+    display: flex;
+    align-items: center;
+    margin: 16px;
+
+    button {
+      margin-right: 8px;
+      min-width: 190px;
+    }
+  }
+}

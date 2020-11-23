@@ -90,7 +90,10 @@
                 if (!isSelf && !isChild.length) {
                     zesty.trigger('media:group:save', {...child, group_id: this.dir.id})
                 } else {
-                    growl('You can not nest a parent group to a child group', 'red-growl')
+                    growl({
+                        kind: 'warn', 
+                        message: 'You can not nest a parent group to a child group'
+                    })
                 }
 
             }

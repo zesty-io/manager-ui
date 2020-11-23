@@ -6,7 +6,8 @@
   overflow: hidden;
 
   .AppWrap {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(200px, 20vw) 1fr;
 
     .OverflowWrap {
       height: calc(100vh - 54px);
@@ -17,7 +18,7 @@
       z-index: 1;
 
       .Content {
-        padding: 50px 25px 10px;
+        padding: 16px;
 
         > article,
         > label {
@@ -27,6 +28,10 @@
           &:first-child {
             margin-top: 16px;
           }
+        }
+
+        .InstanceHeadTags {
+          margin: -16px; // counter act the outer wrapper padding
         }
       }
     }

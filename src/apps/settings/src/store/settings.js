@@ -27,7 +27,7 @@ export function settings(
     instance: [],
 
     catStyles: [],
-    styles: {}
+    styles: []
   },
   action
 ) {
@@ -258,7 +258,9 @@ export function fetchFontsInstalled() {
           )
         });
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.error(err);
+      });
   };
 }
 
@@ -277,7 +279,7 @@ export function updateSiteFont(zuid, href) {
   })
     .then(res => res.data)
     .catch(err => {
-      console.log(err);
+      console.error(err);
       return err;
     });
 }
@@ -288,7 +290,7 @@ export function deleteSiteFont(zuid) {
   })
     .then(res => res.data)
     .catch(err => {
-      console.log(err);
+      console.error(err);
       return err;
     });
 }

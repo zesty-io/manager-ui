@@ -80,9 +80,9 @@ export default class RedirectImportTable extends React.Component {
           createRedirect({
             path: redirect.path,
             query_string: redirect.query_string,
-            target_type: redirect.target_type,
+            targetType: redirect.target_type,
             target: redirect.target_zuid || redirect.target,
-            code: redirect.code
+            code: +redirect.code
           })
         );
       }

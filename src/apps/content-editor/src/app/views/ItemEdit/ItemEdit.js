@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Switch, Route, Redirect } from "react-router-dom";
 
 import { notify } from "shell/store/notifications";
+import { fetchAuditTrailDrafting } from "shell/store/logs";
 import { fetchFields } from "shell/store/fields";
 import {
   fetchItem,
@@ -20,7 +21,8 @@ import { LockedItem } from "../../components/LockedItem";
 
 import { Content } from "./Content";
 import { Meta } from "./Meta";
-import { Head } from "./Head";
+// import { Head } from "./Head";
+import { ItemHead } from "./ItemHead";
 
 class ItemEdit extends Component {
   _isMounted = false;
@@ -201,6 +203,8 @@ class ItemEdit extends Component {
             })
           );
         }
+        // fetch new draft history
+        this.props.dispatch(fetchAuditTrailDrafting(this.props.itemZUID));
       })
       .catch(() => {
         if (this._isMounted) {
@@ -270,7 +274,7 @@ class ItemEdit extends Component {
               path="/content/:modelZUID/:itemZUID/head"
               render={({ match }) => {
                 return this.props.userRole.name !== "Contributor" ? (
-                  <Head
+                  <ItemHead
                     instance={this.props.instance}
                     modelZUID={this.props.modelZUID}
                     model={this.props.model}

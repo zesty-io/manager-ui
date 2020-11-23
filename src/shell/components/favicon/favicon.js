@@ -23,10 +23,7 @@ import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { AppLink } from "@zesty-io/core/AppLink";
 
-import {
-  fetchHeadTags,
-  createHeadTag
-} from "../../../apps/content-editor/src/store/headTags";
+import { fetchHeadTags, createHeadTag } from "shell/store/headTags";
 
 import styles from "./favicon.less";
 export default connect(state => {
@@ -183,7 +180,7 @@ export default connect(state => {
             tooltip="Because favicons are used in multiple settings we will create multiple sizes of the image you select to fit each use case."
             // limit={1}
             // values field displays
-            images={faviconZUID ? [faviconZUID] : []}
+            images={faviconZUID ? [faviconZUID] : [faviconURL]}
             // feed to media app
             value={faviconZUID}
             onChange={handleImage}
