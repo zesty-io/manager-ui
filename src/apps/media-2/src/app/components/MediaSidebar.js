@@ -15,11 +15,7 @@ export function MediaSidebar(props) {
   return (
     <nav className={styles.Nav}>
       <div className={styles.TopNav}>
-        <form
-          className={styles.searchForm}
-          action=""
-          style={{ margin: "auto", maxWidth: 300 }}
-        >
+        <form className={styles.SearchForm} action="">
           <input type="text" placeholder="Search Your Files" name="search2" />
           <button type="submit">
             <i className="fa fa-search" />
