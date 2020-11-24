@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 
 import { Select, Option } from "@zesty-io/core/Select";
@@ -6,6 +6,14 @@ import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
 import { Input } from "@zesty-io/core/Input";
 import { Url } from "@zesty-io/core/Url";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCheck,
+  faCopy,
+  faExternalLinkAlt,
+  faSync
+} from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./Preview.less";
 import "./device.min.css";
@@ -16,37 +24,118 @@ export function Preview(props) {
     throw new Error("Invalid host for active preview");
   }
 
+  const ref = useRef();
+
   const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState(true);
   const [domain, setDomain] = useState(props.domain);
   const [device, setDevice] = useState("fullscreen");
   const [route, setRoute] = useState(props.route || "/");
-  const [refresh, setRefesh] = useState(Date.now());
-  // const [template, setTemplate] = useState("NoTemplate");
+  const [refresh, setRefresh] = useState(Date.now());
+  const [copied, setCopied] = useState(false);
 
   // Listen for messages
-  useEffect(() => {});
+  useEffect(() => {
+    function receiveMessage(evt) {
+      // Prevent malicious communication to this window
+      if (evt.origin !== window.location.origin) {
+        return;
+      }
 
-  // measure screen
-  useLayoutEffect(() => {});
+      console.log("Message: ", evt);
+
+      switch (evt.data.type) {
+        case "FORCE_RERENDER":
+          setRefresh(Date.now());
+          break;
+
+        // Not sure what this did?
+        // case "UPDATED_CONTENT_ITEM":
+        // if (evt.data.itemZUID === this.state.itemZUID) {
+        //   this.setState({
+        //     refresh: Date.now()
+        //   });
+        // }
+        // break;
+
+        case "RENDER_CONTENT_ITEM":
+          if (evt.data.route) {
+            setRoute(evt.data.route);
+          } else {
+            // respond back to message that route was missing
+          }
+          break;
+
+        default:
+          console.log("Unknown message", evt);
+      }
+    }
+
+    window.addEventListener("message", receiveMessage);
+    return () => window.removeEventListener("message", receiveMessage);
+  }, []);
 
   // fetch domain
   useEffect(() => {
     const token = Cookies.get(CONFIG.COOKIE_NAME);
+
+    if (!token) {
+      setAuthenticated(false);
+      return;
+    }
+
     fetch(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-      .then(res => res.json())
+      .then(res =>
+        res.json().then(json => {
+          return {
+            ...json,
+            // pass along status code to determine
+            // if request was unauthenticated
+            status: res.status
+          };
+        })
+      )
       .then(json => {
-        setDomain(
-          `${CONFIG.URL_PREVIEW_PROTOCOL}${json.data.randomHashID}${CONFIG.URL_PREVIEW}`
-        );
+        console.log(json);
+
+        if (json.status === 200) {
+          setDomain(
+            `${CONFIG.URL_PREVIEW_PROTOCOL}${json.data.randomHashID}${CONFIG.URL_PREVIEW}`
+          );
+        } else {
+          if (json.status === 401) {
+            setAuthenticated(false);
+          }
+          setDomain("");
+        }
+
         setLoading(false);
       });
-    // .finally(() => setLoading(false));
   }, []);
 
+  const handleCopy = evt => {
+    ref.current.focus();
+    ref.current.select();
+    const result = document.execCommand("copy");
+    ref.current.blur();
+
+    if (result !== "unsuccessful") {
+      // this is gross, but we dont have another way to notify
+      // the user of copy status
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  /**
+   * This functional component is provided to the selected template function
+   * It needs to be setup inside the `Preview` component so it can
+   * have lexical scope access to it's state
+   */
   const iFrame = () => (
     <div
       style={{
@@ -79,37 +168,61 @@ export function Preview(props) {
           <figcaption>Active Preview</figcaption>
         </figure>
 
-        <Select
-          name="device"
-          className={styles.Devices}
-          value="fullscreen"
-          onSelect={val => setDevice(val)}
-        >
-          <Option value="fullscreen" text="Fullscreen" />
+        <div className={styles.Controls}>
+          <Select
+            name="device"
+            className={styles.Devices}
+            value="fullscreen"
+            onSelect={val => setDevice(val)}
+          >
+            <Option value="fullscreen" text="Fullscreen" />
 
-          {/* 
-          Generate available options from templates, 
-          except the initial "No Template" template 
-          */}
-          {Object.keys(templates)
-            .slice(1)
-            .map((template, index) => (
-              <Option
-                key={index}
-                value={template}
-                html={templates[template].option}
-              />
-            ))}
-        </Select>
+            {/* 
+            Generate available options from templates, 
+            except the initial "No Template" template 
+            */}
+            {Object.keys(templates)
+              .slice(1)
+              .map((template, index) => (
+                <Option
+                  key={index}
+                  value={template}
+                  html={templates[template].option}
+                />
+              ))}
+          </Select>
 
-        <ButtonGroup className={styles.UrlActions}>
-          <Button>Copy</Button>
-          <Button>Refresh</Button>
-          <Button>Open</Button>
-          <Input className={styles.Route} value={`${domain}${route}`} />
-        </ButtonGroup>
+          <Input
+            ref={ref}
+            className={styles.Route}
+            value={`${domain}${route}`}
+          />
+
+          <ButtonGroup className={styles.UrlActions}>
+            {copied ? (
+              <Button onClick={handleCopy} disabled>
+                <FontAwesomeIcon icon={faCheck} />
+                Copied
+              </Button>
+            ) : (
+              <Button onClick={handleCopy}>
+                <FontAwesomeIcon icon={faCopy} />
+                Copy
+              </Button>
+            )}
+
+            <Button onClick={() => setRefresh(Date.now())}>
+              <FontAwesomeIcon icon={faSync} />
+              Refresh
+            </Button>
+            <Url href={domain} target="_blank">
+              <FontAwesomeIcon icon={faExternalLinkAlt} />
+              &nbsp;Open
+            </Url>
+          </ButtonGroup>
+        </div>
       </header>
-      <main>
+      <main className={styles.Preview}>
         {!loading && domain && route ? (
           device === "fullscreen" ? (
             <iframe
@@ -127,7 +240,9 @@ export function Preview(props) {
         ) : (
           <div className={styles.NoDomain}>
             <h1 className={styles.headline}>
-              Disconnected from preview domain
+              {!authenticated
+                ? "Your session is not active. Please login to Zesty.io"
+                : "Disconnected from preview domain"}
             </h1>
           </div>
         )}
@@ -145,6 +260,13 @@ const templates = {
       </div>
     )
   },
+
+  /**
+   * To add a new template
+   * 1) copy existing template
+   * 2) alter markup to match mobile device
+   * 3) change object key and name references to new model
+   */
   Iphone5: {
     option: `<span>iPhone 5 <small>320x568px</small></span>`,
     template: props => {
@@ -179,6 +301,29 @@ const templates = {
       </div>
     )
   },
+  IphoneX: {
+    option: `<span>iPhone X<small></small></span>`,
+    template: props => (
+      <div className="marvel-device iphone-x">
+        <div className="notch">
+          <div className="camera"></div>
+          <div className="speaker"></div>
+        </div>
+        <div className="top-bar"></div>
+        <div className="sleep"></div>
+        <div className="bottom-bar"></div>
+        <div className="volume"></div>
+        <div className="overflow">
+          <div className="shadow shadow--tr"></div>
+          <div className="shadow shadow--tl"></div>
+          <div className="shadow shadow--br"></div>
+          <div className="shadow shadow--bl"></div>
+        </div>
+        <div className="inner-shadow"></div>
+        <div className="screen">{props.iFrame()}</div>
+      </div>
+    )
+  },
   Note8: {
     option: `<span>Note 8<small></small></span>`,
     template: props => (
@@ -193,18 +338,10 @@ const templates = {
         <div className="sleep"></div>
         <div className="volume"></div>
         <div className="camera"></div>
-        <div className="screen">${props.iFrame()}</div>
+        <div className="screen">{props.iFrame()}</div>
       </div>
     )
   }
-  // Iphone8: () => (),
-  // IphoneX: () => (),
-  // Iphone5: () => (),
-  // Iphone5: () => (),
-  // Iphone5: () => (),
-  // Iphone5: () => (),
-  // Iphone5: () => (),
-  // Iphone5: () => (),
   // Iphone5: () => (),
   // Iphone5: () => (),
   // Iphone5: () => (),
