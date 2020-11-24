@@ -71,10 +71,8 @@ export const {
   fetchGroupFilesSuccess
 } = mediaSlice.actions;
 
-function fetchMediaBins() {
-  return (dispatch, getState) => {
-    const instanceID = getState().instance.ID;
-
+function fetchMediaBins(instanceID) {
+  return dispatch => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/site/${instanceID}/bins`,
@@ -91,10 +89,8 @@ function fetchMediaBins() {
   };
 }
 
-function fetchMediaEcoBins() {
-  return (dispatch, getState) => {
-    const ecoID = getState().instance.ecoID;
-
+function fetchMediaEcoBins(ecoID) {
+  return dispatch => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/eco/${ecoID}/bins`,
@@ -115,12 +111,16 @@ function fetchMediaEcoBins() {
 }
 
 export function fetchAllMediaBins() {
-  return dispatch => {
-    return Promise.all([
-      dispatch(fetchMediaBins()),
-      dispatch(fetchMediaEcoBins())
-    ]).then(([bins, ecoBins]) => {
-      return dispatch(fetchBinsSuccess([...bins, ...ecoBins]));
+  return (dispatch, getState) => {
+    const instanceID = getState().instance.ID;
+    const ecoID = getState().instance.ecoID;
+    const promises = [dispatch(fetchMediaBins(instanceID))];
+    if (ecoID) {
+      promises.push(dispatch(fetchMediaEcoBins(ecoID)));
+    }
+    return Promise.all(promises).then(([bins, ecoBins]) => {
+      const allBins = ecoBins ? [...bins, ...ecoBins] : bins;
+      return dispatch(fetchBinsSuccess(allBins));
     });
   };
 }
@@ -135,7 +135,7 @@ function fetchMediaGroups(binZUID) {
           return res.data;
         } else {
           dispatch(
-            notify({ message: "Failed loading media bins", kind: "error" })
+            notify({ message: "Failed loading bin groups", kind: "error" })
           );
         }
       }
@@ -164,7 +164,7 @@ export function fetchBinFiles(binZUID) {
           dispatch(fetchBinFilesSuccess(res.data));
         } else {
           dispatch(
-            notify({ message: "Failed loading media bins", kind: "error" })
+            notify({ message: "Failed loading bin files", kind: "error" })
           );
         }
       }
@@ -182,7 +182,7 @@ export function fetchGroupFiles(groupZUID) {
           dispatch(fetchGroupFilesSuccess(res.data[0].files));
         } else {
           dispatch(
-            notify({ message: "Failed loading media bins", kind: "error" })
+            notify({ message: "Failed loading group files", kind: "error" })
           );
         }
       }
