@@ -84,11 +84,13 @@ export function MediaDetailsModal(props) {
                 Updated: <span>{props.file.updated_at}</span>
               </h3>
             </div>
-            <img
-              className={styles.ModalImage}
-              src={props.file.url}
-              alt={props.file.title}
-            />
+            <div className={styles.Checkered}>
+              <img
+                className={styles.ModalImage}
+                src={props.file.url}
+                alt={props.file.title}
+              />
+            </div>
           </CardContent>
           <ModalFooter className={styles.ModalFooter}>
             <Button kind="save">

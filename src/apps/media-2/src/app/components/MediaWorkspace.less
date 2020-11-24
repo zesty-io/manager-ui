@@ -16,6 +16,7 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    box-shadow: 0 7px 30px -10px rgba(150, 170, 180, 0.5);
 
     img {
       width: 100%;
@@ -44,12 +45,7 @@
         white;
       background-repeat: repeat, repeat;
       background-position: 0px 0, 5px 5px;
-      transform-origin: 0 0 0;
-      background-origin: padding-box, padding-box;
-      background-clip: border-box, border-box;
       background-size: 10px 10px, 10px 10px;
-      transition: none;
-      transform: scaleX(1) scaleY(1) scaleZ(1);
     }
 
     &.CardTop {
@@ -83,13 +79,15 @@
         height: 24px;
         margin: 1px;
       }
+      &:hover {
+        .Check {
+          opacity: 1;
+        }
+      }
 
       // Checkbox Selected
-      &.Selected {
+      &.hasSelected {
         background: #74be24;
-      }
-      // Checkbox Show
-      &:hover {
         .Check {
           opacity: 1;
         }
@@ -126,10 +124,6 @@
   }
 
   .WorkspaceGrid {
-    //Legacy Layout Flex
-    // display: flex;
-    // flex-wrap: wrap;
-
     //Dynamic /helps center the whole grid
     // grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 
