@@ -22,7 +22,7 @@ export function MediaSidebar(props) {
           </button>
         </form>
 
-        <Button kind="secondary">
+        <Button kind="secondary" className={styles.CreateGroup}>
           <FontAwesomeIcon icon={faPlus} />
           <span>Create Group</span>
         </Button>
