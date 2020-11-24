@@ -27,7 +27,9 @@ export function MediaSelected(props) {
                   <CardContent
                     className={cx(styles.CardContent, styles.CardContentTop)}
                   >
-                    <img src={file.url} alt={file.title} />
+                    <div className={styles.Checkered}>
+                      <img src={file.url} alt={file.title} />
+                    </div>
                     <button className={styles.Check}>
                       <FontAwesomeIcon icon={faCheck} />
                     </button>
