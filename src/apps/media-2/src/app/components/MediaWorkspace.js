@@ -1,26 +1,27 @@
 import React from "react";
+import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCheck,
-  faCog,
-  faEdit,
-  faUpload,
-  faExclamationCircle,
-  faVideo
-} from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCog } from "@fortawesome/free-solid-svg-icons";
 
-import { Button } from "@zesty-io/core/Button";
 import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
 
 import styles from "./MediaWorkspace.less";
 
 export function MediaWorkspace(props) {
   return (
-    <main className={styles.Workspace}>
+    <main
+      className={cx({
+        [styles.Workspace]: true,
+        [styles.hasSelected]: props.selected.length
+      })}
+    >
       <section className={styles.WorkspaceGrid}>
         {props.files.map(file => {
           return (
-            <Card className={styles.Card}>
+            <Card
+              className={styles.Card}
+              onClick={() => props.toggleSelected(file)}
+            >
               <CardContent className={styles.CardContent}>
                 <div className={styles.Checkered}>
                   <img src={file.url} alt={file.title} />

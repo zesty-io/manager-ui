@@ -1,11 +1,15 @@
 .Workspace {
-  // height minus header minus selected strip
-  height: calc(100vh - 54px - 290px);
+  height: calc(100vh - 54px);
   overflow: hidden;
   overflow-y: auto;
 
   box-shadow: 0 0 15px #0b0d13;
   z-index: 1;
+
+  &.hasSelected {
+    // height minus header minus selected strip
+    height: calc(100vh - 54px - 289px);
+  }
 
   .Card {
     width: 100%;

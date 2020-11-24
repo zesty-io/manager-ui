@@ -34,6 +34,21 @@ export default connect((state, props) => {
   };
 })(function MediaApp(props) {
   const [fileDetails, setFileDetails] = useState();
+  const [selected, setSelected] = useState([]);
+
+  function toggleSelected(file) {
+    const fileIndex = selected.findIndex(
+      selectedFile => selectedFile.id === file.id
+    );
+    if (fileIndex !== -1) {
+      const newSelected = [...selected];
+      newSelected.splice(fileIndex, 1);
+      setSelected(newSelected);
+    } else {
+      setSelected([...selected, file]);
+    }
+  }
+
   // always fetch all bins
   useEffect(() => {
     props.dispatch(fetchAllMediaBins());
@@ -70,8 +85,13 @@ export default connect((state, props) => {
         <MediaSidebar nav={props.media.nav} />
         <div className={styles.WorkspaceContainer}>
           <MediaHeader />
-          <MediaWorkspace files={props.files} setFileDetails={setFileDetails} />
-          <MediaSelected />
+          <MediaWorkspace
+            files={props.files}
+            setFileDetails={setFileDetails}
+            selected={selected}
+            toggleSelected={toggleSelected}
+          />
+          <MediaSelected selected={selected} toggleSelected={toggleSelected} />
         </div>
         {fileDetails && (
           <MediaDetailsModal
