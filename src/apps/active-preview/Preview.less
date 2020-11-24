@@ -15,43 +15,44 @@ body {
 .ActivePreview {
   .TopBar {
     background-color: @zesty-light-gray;
+    border-bottom: 2px solid #888888;
     display: flex;
     background: linear-gradient(#ebebeb, #d5d5d5);
-    padding: 8px 16px;
+    padding: 4px 16px;
     height: 40px;
 
     .Logo {
       display: flex;
       align-items: center;
-      font-weight: bold;
     }
 
-    .Controls {
+    .Display {
       align-items: center;
       display: flex;
       justify-content: center;
       flex: 1;
-
       .Devices {
         margin: 0 16px;
         min-width: 200px;
       }
 
-      .Route {
-        min-width: 400px;
-      }
-
-      .UrlActions {
-        button {
-          margin: 0 4px;
-          min-width: 110px;
+      .Url {
+        display: flex;
+        .Route {
+          min-width: 400px;
         }
+      }
+    }
+
+    .Controls {
+      button {
+        margin-left: 8px;
       }
     }
   }
 
   .Preview {
-    height: calc(100vh - 59px);
+    height: calc(100vh - 53px);
 
     .center {
       display: flex;

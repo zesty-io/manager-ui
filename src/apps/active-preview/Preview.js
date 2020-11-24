@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import Cookies from "js-cookie";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
@@ -12,8 +11,13 @@ import {
   faCheck,
   faCopy,
   faExternalLinkAlt,
-  faSync
+  faSync,
+  faEllipsisV
 } from "@fortawesome/free-solid-svg-icons";
+
+import { Meta } from "./components/Meta";
+
+import api from "./api";
 
 import styles from "./Preview.less";
 import "./device.min.css";
@@ -28,11 +32,12 @@ export function Preview(props) {
 
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(true);
-  const [domain, setDomain] = useState(props.domain);
-  const [device, setDevice] = useState("fullscreen");
-  const [route, setRoute] = useState(props.route || "/");
-  const [refresh, setRefresh] = useState(Date.now());
+  const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [domain, setDomain] = useState(props.domain);
+  const [route, setRoute] = useState(props.route || "/");
+  const [device, setDevice] = useState("fullscreen");
+  const [refresh, setRefresh] = useState(Date.now());
 
   // Listen for messages
   useEffect(() => {
@@ -44,30 +49,8 @@ export function Preview(props) {
 
       console.log("Message: ", evt);
 
-      switch (evt.data.type) {
-        case "FORCE_RERENDER":
-          setRefresh(Date.now());
-          break;
-
-        // Not sure what this did?
-        // case "UPDATED_CONTENT_ITEM":
-        // if (evt.data.itemZUID === this.state.itemZUID) {
-        //   this.setState({
-        //     refresh: Date.now()
-        //   });
-        // }
-        // break;
-
-        case "RENDER_CONTENT_ITEM":
-          if (evt.data.route) {
-            setRoute(evt.data.route);
-          } else {
-            // respond back to message that route was missing
-          }
-          break;
-
-        default:
-          console.log("Unknown message", evt);
+      if (evt.data.source === "zesty" && evt.data.route) {
+        setRoute(evt.data.route);
       }
     }
 
@@ -77,47 +60,36 @@ export function Preview(props) {
 
   // fetch domain
   useEffect(() => {
-    const token = Cookies.get(CONFIG.COOKIE_NAME);
-
-    if (!token) {
-      setAuthenticated(false);
-      return;
-    }
-
-    fetch(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(res =>
-        res.json().then(json => {
-          return {
-            ...json,
-            // pass along status code to determine
-            // if request was unauthenticated
-            status: res.status
-          };
-        })
-      )
+    api(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`)
       .then(json => {
-        console.log(json);
-
-        if (json.status === 200) {
-          setDomain(
-            `${CONFIG.URL_PREVIEW_PROTOCOL}${json.data.randomHashID}${CONFIG.URL_PREVIEW}`
-          );
-        } else {
-          if (json.status === 401) {
-            setAuthenticated(false);
-          }
+        setDomain(
+          `${CONFIG.URL_PREVIEW_PROTOCOL}${json.data.randomHashID}${CONFIG.URL_PREVIEW}`
+        );
+      })
+      .catch(err => {
+        if (err.message === "unauthenticated") {
+          setAuthenticated(false);
           setDomain("");
         }
-
-        setLoading(false);
-      });
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  const handleCopy = evt => {
+  const fetchItem = ZUID => {
+    return api(ZUID)
+      .then(json => {
+        setItem(json.data);
+      })
+      .catch(err => {
+        if (err.message === "unauthenticated") {
+          setAuthenticated(false);
+          setItem({});
+        }
+      })
+      .finally(() => setLoading(false));
+  };
+
+  const handleCopy = () => {
     ref.current.focus();
     ref.current.select();
     const result = document.execCommand("copy");
@@ -168,14 +140,33 @@ export function Preview(props) {
           <figcaption>Active Preview</figcaption>
         </figure>
 
-        <div className={styles.Controls}>
+        <div className={styles.Display}>
+          <div className={styles.Url}>
+            {copied ? (
+              <Button onClick={handleCopy} kind="save">
+                <FontAwesomeIcon icon={faCheck} />
+              </Button>
+            ) : (
+              <Button onClick={handleCopy}>
+                <FontAwesomeIcon
+                  icon={faCopy}
+                  title="Copy current preview url to clipboarda"
+                />
+              </Button>
+            )}
+            <Input
+              ref={ref}
+              className={styles.Route}
+              value={`${domain}${route}`}
+            />
+          </div>
           <Select
             name="device"
             className={styles.Devices}
             value="fullscreen"
             onSelect={val => setDevice(val)}
           >
-            <Option value="fullscreen" text="Fullscreen" />
+            <Option value="fullscreen" text="Desktop" />
 
             {/* 
             Generate available options from templates, 
@@ -191,36 +182,31 @@ export function Preview(props) {
                 />
               ))}
           </Select>
-
-          <Input
-            ref={ref}
-            className={styles.Route}
-            value={`${domain}${route}`}
-          />
-
-          <ButtonGroup className={styles.UrlActions}>
-            {copied ? (
-              <Button onClick={handleCopy} disabled>
-                <FontAwesomeIcon icon={faCheck} />
-                Copied
-              </Button>
-            ) : (
-              <Button onClick={handleCopy}>
-                <FontAwesomeIcon icon={faCopy} />
-                Copy
-              </Button>
-            )}
-
-            <Button onClick={() => setRefresh(Date.now())}>
-              <FontAwesomeIcon icon={faSync} />
-              Refresh
-            </Button>
-            <Url href={domain} target="_blank">
-              <FontAwesomeIcon icon={faExternalLinkAlt} />
-              &nbsp;Open
-            </Url>
-          </ButtonGroup>
         </div>
+
+        <ButtonGroup className={styles.Controls}>
+          <Url
+            href={domain}
+            target="_blank"
+            title="Open preview link in standard browser window"
+          >
+            <FontAwesomeIcon icon={faExternalLinkAlt} />
+            &nbsp;Open
+          </Url>
+          <Button
+            onClick={() => setRefresh(Date.now())}
+            title="Reload current url in active preview"
+          >
+            <FontAwesomeIcon icon={faSync} />
+          </Button>
+          <Button
+            onClick={() => setOpen(!open)}
+            title="Additional menu options"
+          >
+            <FontAwesomeIcon icon={faEllipsisV} />
+          </Button>
+        </ButtonGroup>
+        <Meta open={open} route={route} instanceZUID={ZUID} />
       </header>
       <main className={styles.Preview}>
         {!loading && domain && route ? (

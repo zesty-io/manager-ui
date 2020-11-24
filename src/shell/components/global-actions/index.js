@@ -72,7 +72,7 @@ export default connect(state => {
 
 function ActivePreview(props) {
   return (
-    <span className={styles.GlobalAction} title="Live Preview">
+    <span className={styles.GlobalAction} title="Active Preview">
       <FontAwesomeIcon
         onClick={() =>
           openActivePreview(
@@ -90,7 +90,6 @@ function ActivePreview(props) {
 
 function openActivePreview(instanceZUID, instanceHash, content) {
   const origin = `${CONFIG.URL_MANAGER_PROTOCOL}${instanceZUID}${CONFIG.URL_MANAGER}`;
-  const previewDomain = `${CONFIG.URL_PREVIEW_PROTOCOL}${instanceHash}${CONFIG.URL_PREVIEW}`;
 
   const preview = window.open(
     origin + "/active-preview/",
@@ -98,71 +97,50 @@ function openActivePreview(instanceZUID, instanceHash, content) {
     "height=850, width=1400, location=0, menubar=0, status=0, titlebar=0, toolbar=0"
   );
 
-  zesty.on("UPDATED_CONTENT_ITEM", function(itemZUID) {
-    preview.postMessage(
-      {
-        type: "UPDATED_CONTENT_ITEM",
-        itemZUID
-      },
-      origin
-    );
-  });
+  const closeActivePreview = () => preview.close();
 
-  zesty.on("FORCE_PREVIEW_RERENDER", function(itemZUID) {
-    preview.postMessage(
-      {
-        type: "FORCE_RERENDER"
-      },
-      origin
-    );
-  });
+  const routeActivePreview = itemZUID => {
+    if (!itemZUID) {
+      // Check if current location has a routable item
+      const parts = window.location.pathname.split("/");
+      itemZUID = parts.find(part => part.slice(0, 1) === "7-");
+    }
 
-  const activePreviewRoute = setActivePreviewRoute.bind(
-    null,
-    preview,
-    previewDomain,
-    origin,
-    content
-  );
-
-  // Setup initial preview
-  preview.addEventListener("load", activePreviewRoute);
-  preview.addEventListener("beforeunload", function(evt) {
-    zesty.off("UPDATED_CONTENT_ITEM");
-    zesty.off("FORCE_PREVIEW_RERENDER");
-    zesty.off("locationChange");
-    window.removeEventListener("beforeunload", closeActivePreview, false);
-  });
-
-  zesty.on("locationChange", activePreviewRoute);
-  window.addEventListener(
-    "beforeunload",
-    closeActivePreview.bind(null, preview)
-  );
-}
-
-function closeActivePreview(preview) {
-  preview.close();
-}
-
-function setActivePreviewRoute(preview, previewDomain, origin, content) {
-  if (window.location.pathname.slice(0, 9) === "/content/") {
-    const data = {
-      type: "RENDER_CONTENT_ITEM",
-      domain: previewDomain
-    };
-    const parts = window.location.pathname.split("/");
-    const itemZUID = parts.pop();
-
-    // Resolve the current items path
-    if (itemZUID.slice(0, 1) === "7") {
+    if (itemZUID && content[itemZUID]) {
       const item = content[itemZUID];
 
-      if (item && item.web && item.web.path) {
-        data.route = item.web.path;
-        data.itemZUID = item.meta.ZUID;
+      if (item.web.path) {
+        preview.postMessage(
+          {
+            source: "zesty",
+            route: item.web.path
+          },
+          origin
+        );
       }
-      preview.postMessage(data, origin);
     }
-  }
+  };
+
+  /**
+   * This is the key to "active" preview
+   * as a user navigates around the manager app
+   * we check if the view they are on contains a routable ZUID
+   */
+  zesty.on("locationChange", routeActivePreview);
+  zesty.on("UPDATED_CONTENT_ITEM", itemZUID => routeActivePreview(itemZUID));
+  zesty.on("FORCE_PREVIEW_RERENDER", itemZUID => routeActivePreview(itemZUID));
+
+  // If instance manager is closed then close active preview
+  window.addEventListener("beforeunload", closeActivePreview);
+
+  // Send initial route on open
+  preview.addEventListener("load", routeActivePreview);
+
+  // if active preview is closed detach event listeners to avoid memory leak
+  preview.addEventListener("beforeunload", function(evt) {
+    zesty.off("locationChange");
+    zesty.off("UPDATED_CONTENT_ITEM");
+    zesty.off("FORCE_PREVIEW_RERENDER");
+    window.removeEventListener("beforeunload", closeActivePreview);
+  });
 }
