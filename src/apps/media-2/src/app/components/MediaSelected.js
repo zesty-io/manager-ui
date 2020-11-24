@@ -71,7 +71,10 @@ export function MediaSelected() {
             <CardContent
               className={cx(styles.CardContent, styles.CardContentTop)}
             >
-              <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
+              <img
+                src="https://svc.zesty.io/media-resolver-service/resolve/3-a7ebb39-bmam2/getimage/?w=200&h=200&type=fit"
+                alt="FillMurray"
+              />
               <button className={styles.Check}>
                 <FontAwesomeIcon icon={faCheck} />
               </button>
