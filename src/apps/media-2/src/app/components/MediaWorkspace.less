@@ -12,6 +12,18 @@
     height: calc(100vh - 54px - 56px - 233px);
   }
 
+  .WorkspaceGrid {
+    //Dynamic /helps center the whole grid
+    // grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+    display: grid;
+    //STATIC
+    grid-template-columns: repeat(auto-fit, 200px);
+    gap: 16px;
+    padding: 16px;
+    justify-items: center;
+  }
+
   .Card {
     width: 100%;
     display: flex;
@@ -130,17 +142,5 @@
         padding: 0 0.5rem;
       }
     }
-  }
-
-  .WorkspaceGrid {
-    //Dynamic /helps center the whole grid
-    // grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-
-    display: grid;
-    //STATIC
-    grid-template-columns: repeat(auto-fit, 200px);
-    gap: 16px;
-    padding: 16px;
-    justify-items: center;
   }
 }

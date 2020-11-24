@@ -1,3 +1,13 @@
+//drawer triangle animation
+@keyframes spin {
+  0% {
+    transform: rotate(90deg);
+  }
+  100% {
+    transform: rotate(-90deg);
+  }
+}
+
 .LoadSelected {
   position: relative;
   padding: 16px;
@@ -7,12 +17,14 @@
     position: absolute;
     width: 0;
     height: 0;
-    border-top: 16px solid transparent;
-    border-bottom: 16px solid transparent;
-    border-right: 16px solid #c3cddf;
-    left: 9px;
-    bottom: 64px;
-    transform: rotate(90deg);
+    border-top: 24px solid transparent;
+    border-bottom: 24px solid transparent;
+    border-right: 24px solid #c3cddf;
+    right: 65px;
+    bottom: 10px;
+    transition: 0.25s ease-in-out;
+    transform: rotate(-90deg);
+    animation: spin 1s;
   }
 }
 
@@ -35,6 +47,7 @@
     width: 24px;
     height: 24px;
     margin: 1px;
+    border: none;
   }
   &.Selected {
     background: #74be24;
