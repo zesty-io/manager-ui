@@ -74,13 +74,7 @@ function ActivePreview(props) {
   return (
     <span className={styles.GlobalAction} title="Active Preview">
       <FontAwesomeIcon
-        onClick={() =>
-          openActivePreview(
-            props.instanceZUID,
-            props.instanceHash,
-            props.content
-          )
-        }
+        onClick={() => openActivePreview(props.instanceZUID, props.content)}
         icon={faEye}
         className={styles.GlobalActionIcon}
       />
@@ -88,7 +82,7 @@ function ActivePreview(props) {
   );
 }
 
-function openActivePreview(instanceZUID, instanceHash, content) {
+function openActivePreview(instanceZUID, content) {
   const origin = `${CONFIG.URL_MANAGER_PROTOCOL}${instanceZUID}${CONFIG.URL_MANAGER}`;
 
   const preview = window.open(
@@ -102,10 +96,10 @@ function openActivePreview(instanceZUID, instanceHash, content) {
   const routeActivePreview = itemZUID => {
     console.log("routeActivePreview", itemZUID);
 
-    if (!itemZUID) {
+    if (itemZUID.slice(0, 2) !== "7-") {
       // Check if current location has a routable item
       const parts = window.location.pathname.split("/");
-      itemZUID = parts.find(part => part.slice(0, 1) === "7-");
+      itemZUID = parts.find(part => part.slice(0, 2) === "7-");
     }
 
     console.log("routeActivePreview:itemZUID", itemZUID);
@@ -132,7 +126,7 @@ function openActivePreview(instanceZUID, instanceHash, content) {
    * as a user navigates around the manager app
    * we check if the view they are on contains a routable ZUID
    */
-  zesty.on("locationChange", routeActivePreview);
+  zesty.on("locationChange", () => routeActivePreview());
   zesty.on("UPDATED_CONTENT_ITEM", itemZUID => routeActivePreview(itemZUID));
   zesty.on("FORCE_PREVIEW_RERENDER", itemZUID => routeActivePreview(itemZUID));
 

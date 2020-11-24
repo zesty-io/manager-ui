@@ -49,8 +49,8 @@ export function Preview(props) {
         return;
       }
 
-      if (msg.source === "zesty" && msg.route) {
-        setRoute(msg.route);
+      if (msg.data.source === "zesty" && msg.data.route) {
+        setRoute(msg.data.route);
       }
     }
 
