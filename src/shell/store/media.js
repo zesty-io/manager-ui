@@ -13,14 +13,10 @@ const mediaSlice = createSlice({
   },
   reducers: {
     fetchBinsSuccess(state, action) {
-      state.bins.push(...action.payload);
+      state.bins = action.payload;
     },
     fetchGroupsSuccess(state, action) {
-      action.payload.forEach(group => {
-        if (!state.groups.find(val => val.id === group.id)) {
-          state.groups.push(group);
-        }
-      });
+      state.groups = action.payload;
       state.nav = createNav(state.bins, state.groups);
     },
     fetchBinFilesSuccess(state, action) {
@@ -75,7 +71,7 @@ export const {
   fetchGroupFilesSuccess
 } = mediaSlice.actions;
 
-export function fetchMediaBins() {
+function fetchMediaBins() {
   return (dispatch, getState) => {
     const instanceID = getState().instance.ID;
 
@@ -84,7 +80,7 @@ export function fetchMediaBins() {
       uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/site/${instanceID}/bins`,
       handler: res => {
         if (res.status === 200) {
-          dispatch(fetchBinsSuccess(res.data));
+          return res.data;
         } else {
           dispatch(
             notify({ message: "Failed loading media bins", kind: "error" })
@@ -94,20 +90,66 @@ export function fetchMediaBins() {
     });
   };
 }
-export function fetchMediaGroups(binZUID) {
+
+function fetchMediaEcoBins() {
+  return (dispatch, getState) => {
+    const ecoID = getState().instance.ecoID;
+
+    return dispatch({
+      type: "FETCH_RESOURCE",
+      uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/eco/${ecoID}/bins`,
+      handler: res => {
+        if (res.status === 200) {
+          return res.data;
+        } else {
+          dispatch(
+            notify({
+              message: "Failed loading media ecosystem bins",
+              kind: "error"
+            })
+          );
+        }
+      }
+    });
+  };
+}
+
+export function fetchAllMediaBins() {
+  return dispatch => {
+    return Promise.all([
+      dispatch(fetchMediaBins()),
+      dispatch(fetchMediaEcoBins())
+    ]).then(([bins, ecoBins]) => {
+      return dispatch(fetchBinsSuccess([...bins, ...ecoBins]));
+    });
+  };
+}
+
+function fetchMediaGroups(binZUID) {
   return dispatch => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/bin/${binZUID}/groups`,
       handler: res => {
         if (res.status === 200) {
-          dispatch(fetchGroupsSuccess(res.data));
+          return res.data;
         } else {
           dispatch(
             notify({ message: "Failed loading media bins", kind: "error" })
           );
         }
       }
+    });
+  };
+}
+
+export function fetchAllGroups() {
+  return (dispatch, getState) => {
+    const bins = getState().media.bins;
+    return Promise.all(
+      bins.map(bin => dispatch(fetchMediaGroups(bin.id)))
+    ).then(groups => {
+      return dispatch(fetchGroupsSuccess(groups.flat()));
     });
   };
 }

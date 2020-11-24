@@ -8,8 +8,8 @@ import { MediaDetailsModal } from "./components/MediaDetailsModal";
 import { MediaSelected } from "./components/MediaSelected";
 
 import {
-  fetchMediaBins,
-  fetchMediaGroups,
+  fetchAllMediaBins,
+  fetchAllGroups,
   fetchBinFiles,
   fetchGroupFiles
 } from "shell/store/media";
@@ -34,14 +34,31 @@ export default connect((state, props) => {
   };
 })(function MediaApp(props) {
   const [fileDetails, setFileDetails] = useState();
+  const [selected, setSelected] = useState([]);
+
+  function toggleSelected(file) {
+    const fileIndex = selected.findIndex(
+      selectedFile => selectedFile.id === file.id
+    );
+    if (fileIndex !== -1) {
+      const newSelected = [...selected];
+      newSelected.splice(fileIndex, 1);
+      setSelected(newSelected);
+    } else {
+      setSelected([...selected, file]);
+    }
+  }
+
   // always fetch all bins
   useEffect(() => {
-    props.dispatch(fetchMediaBins());
+    props.dispatch(fetchAllMediaBins());
   }, []);
 
   // fetch groups when we bins change
   useEffect(() => {
-    props.media.bins.forEach(bin => props.dispatch(fetchMediaGroups(bin.id)));
+    if (props.media.bins.length) {
+      props.dispatch(fetchAllGroups());
+    }
   }, [props.media.bins.length]);
 
   // fetch group files when navigating to group
@@ -68,8 +85,13 @@ export default connect((state, props) => {
         <MediaSidebar nav={props.media.nav} />
         <div className={styles.WorkspaceContainer}>
           <MediaHeader />
-          <MediaWorkspace files={props.files} setFileDetails={setFileDetails} />
-          <MediaSelected />
+          <MediaWorkspace
+            files={props.files}
+            setFileDetails={setFileDetails}
+            selected={selected}
+            toggleSelected={toggleSelected}
+          />
+          <MediaSelected selected={selected} toggleSelected={toggleSelected} />
         </div>
         {fileDetails && (
           <MediaDetailsModal
