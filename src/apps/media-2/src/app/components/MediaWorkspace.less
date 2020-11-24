@@ -5,6 +5,7 @@
 
   box-shadow: 0 0 15px #0b0d13;
   z-index: 1;
+  transition: 0.25s ease-in-out;
 
   &.hasSelected {
     // height minus header minus selected strip
@@ -18,8 +19,10 @@
     justify-content: flex-end;
     box-shadow: 0 7px 30px -10px rgba(150, 170, 180, 0.5);
 
+    // Checkbox Selected
     &.selected {
-      // Checkbox Selected
+      box-shadow: 0px 0px 6px #15181d;
+
       .CardContent .Check {
         background: #74be24;
         opacity: 1;
@@ -86,6 +89,9 @@
         width: 24px;
         height: 24px;
         margin: 1px;
+        border: none;
+        border-radius: 2px;
+        transition: 0.25s ease-in-out;
       }
 
       // Checkbox Show
@@ -116,11 +122,12 @@
         padding: 8px;
       }
       .Preview {
-        text-overflow: ellipsis;
         overflow: hidden;
-        display: flex;
         flex: 1;
-        word-break: break-word;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: middle;
+        padding: 0 0.5rem;
       }
     }
   }
