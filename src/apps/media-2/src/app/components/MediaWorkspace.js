@@ -19,7 +19,12 @@ export function MediaWorkspace(props) {
         {props.files.map(file => {
           return (
             <Card
-              className={styles.Card}
+              className={cx({
+                [styles.Card]: true,
+                [styles.selected]: props.selected.find(
+                  selectedFile => selectedFile.id === file.id
+                )
+              })}
               onClick={() => props.toggleSelected(file)}
             >
               <CardContent className={styles.CardContent}>

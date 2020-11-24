@@ -1,5 +1,5 @@
 .Workspace {
-  height: calc(100vh - 54px);
+  height: calc(100vh - 54px - 56px);
   overflow: hidden;
   overflow-y: auto;
 
@@ -8,7 +8,7 @@
 
   &.hasSelected {
     // height minus header minus selected strip
-    height: calc(100vh - 54px - 289px);
+    height: calc(100vh - 54px - 56px - 233px);
   }
 
   .Card {
@@ -17,6 +17,14 @@
     flex-direction: column;
     justify-content: flex-end;
     box-shadow: 0 7px 30px -10px rgba(150, 170, 180, 0.5);
+
+    &.selected {
+      // Checkbox Selected
+      .CardContent .Check {
+        background: #74be24;
+        opacity: 1;
+      }
+    }
 
     img {
       width: 100%;
@@ -79,15 +87,9 @@
         height: 24px;
         margin: 1px;
       }
-      &:hover {
-        .Check {
-          opacity: 1;
-        }
-      }
 
-      // Checkbox Selected
-      &.hasSelected {
-        background: #74be24;
+      // Checkbox Show
+      &:hover {
         .Check {
           opacity: 1;
         }
