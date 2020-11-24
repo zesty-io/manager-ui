@@ -14,17 +14,15 @@ export function Meta(props) {
   });
 
   useEffect(() => {
-    setLoading(true);
+    const URL = `${CONFIG.API_INSTANCE_PROTOCOL}${props.instanceZUID}${CONFIG.API_INSTANCE}`;
 
-    api(
-      `${CONFIG.API_INSTANCE_PROTOCOL}${props.instanceZUID}${CONFIG.API_INSTANCE}/search/items?q=${props.route}`
-    ).then(json => {
+    setLoading(true);
+    api(`${URL}/search/items?q=${props.route}&limit=1`).then(json => {
       const item = json.data.find(
         item => item.web && item.web.path === props.route
       );
       if (item) {
         setItem(item);
-        console.log("search item", item);
       }
       setLoading(false);
     });
@@ -32,17 +30,27 @@ export function Meta(props) {
 
   return (
     <Modal open={props.open} className={styles.Meta}>
-      <ModalHeader>
-        <h1 className={styles.title}>Currently Viewed Item</h1>
+      <ModalHeader className={styles.ModalHeader}>
+        <h1 className={styles.title}>{props.route}</h1>
+        <p>Viewing meta data for the item at this route</p>
+        {/* <Url href={{CONFIG}/content/${props.item.meta.contentModelZUID}/${props.item.meta.ZUID}}>Edit Item</Url> */}
       </ModalHeader>
       <ModalContent>
         <WithLoader condition={!loading} message="Loading related item">
-          <ul>
+          <ul className={styles.Item}>
             <h2>Meta</h2>
             <ul>
               {Object.keys(item.meta).map((prop, index) => (
                 <li key={index}>
                   {prop}: {item.meta[prop]}
+                </li>
+              ))}
+            </ul>
+            <h2>Web</h2>
+            <ul>
+              {Object.keys(item.web).map((prop, index) => (
+                <li key={index}>
+                  {prop}: {item.web[prop]}
                 </li>
               ))}
             </ul>

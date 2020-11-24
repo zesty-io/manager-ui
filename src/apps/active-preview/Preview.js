@@ -41,16 +41,16 @@ export function Preview(props) {
 
   // Listen for messages
   useEffect(() => {
-    function receiveMessage(evt) {
+    function receiveMessage(msg) {
+      console.log("Message: ", msg);
+
       // Prevent malicious communication to this window
-      if (evt.origin !== window.location.origin) {
+      if (msg.origin !== window.location.origin) {
         return;
       }
 
-      console.log("Message: ", evt);
-
-      if (evt.data.source === "zesty" && evt.data.route) {
-        setRoute(evt.data.route);
+      if (msg.source === "zesty" && msg.route) {
+        setRoute(msg.route);
       }
     }
 
@@ -74,20 +74,6 @@ export function Preview(props) {
       })
       .finally(() => setLoading(false));
   }, []);
-
-  const fetchItem = ZUID => {
-    return api(ZUID)
-      .then(json => {
-        setItem(json.data);
-      })
-      .catch(err => {
-        if (err.message === "unauthenticated") {
-          setAuthenticated(false);
-          setItem({});
-        }
-      })
-      .finally(() => setLoading(false));
-  };
 
   const handleCopy = () => {
     ref.current.focus();

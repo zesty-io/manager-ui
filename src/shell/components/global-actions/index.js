@@ -100,14 +100,20 @@ function openActivePreview(instanceZUID, instanceHash, content) {
   const closeActivePreview = () => preview.close();
 
   const routeActivePreview = itemZUID => {
+    console.log("routeActivePreview", itemZUID);
+
     if (!itemZUID) {
       // Check if current location has a routable item
       const parts = window.location.pathname.split("/");
       itemZUID = parts.find(part => part.slice(0, 1) === "7-");
     }
 
+    console.log("routeActivePreview:itemZUID", itemZUID);
+
     if (itemZUID && content[itemZUID]) {
       const item = content[itemZUID];
+
+      console.log("routeActivePreview:item", item);
 
       if (item.web.path) {
         preview.postMessage(
