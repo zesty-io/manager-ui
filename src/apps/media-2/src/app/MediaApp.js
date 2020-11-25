@@ -17,18 +17,29 @@ import styles from "./MediaApp.less";
 
 export default connect((state, props) => {
   let files;
+  let currentGroup;
+  let currentBin;
   if (props.match.params.groupID) {
     files = state.media.files.filter(
       file => file.group_id === props.match.params.groupID
     );
+    currentGroup = state.media.groups.find(
+      group => group.id === props.match.params.groupID
+    );
+    currentBin = state.media.bins.find(bin => bin.id === currentGroup.bin_id);
   } else if (props.match.params.binID) {
     files = state.media.files.filter(
       file => file.group_id === props.match.params.binID
+    );
+    currentBin = state.media.bins.find(
+      bin => bin.id === props.match.params.binID
     );
   } else {
     files = [];
   }
   return {
+    currentGroup,
+    currentBin,
     files,
     media: state.media
   };
@@ -84,7 +95,10 @@ export default connect((state, props) => {
       >
         <MediaSidebar nav={props.media.nav} />
         <div className={styles.WorkspaceContainer}>
-          <MediaHeader />
+          <MediaHeader
+            currentBin={props.currentBin}
+            currentGroup={props.currentGroup}
+          />
           <MediaWorkspace
             files={props.files}
             setFileDetails={setFileDetails}
