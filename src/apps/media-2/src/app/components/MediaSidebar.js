@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-import { Modal, ModalContent } from "@zesty-io/core/Modal";
+import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
+import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Nav } from "@zesty-io/core/Nav";
 import { Button } from "@zesty-io/core/Button";
 
@@ -34,7 +35,6 @@ export function MediaSidebar(props) {
           <FontAwesomeIcon icon={faPlus} />
           <span>Create Group</span>
         </Button>
-        {/* Modal for Create Group */}
         <Modal
           className={styles.Modal}
           type="global"
