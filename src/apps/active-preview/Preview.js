@@ -50,7 +50,13 @@ export function Preview(props) {
       }
 
       if (msg.data.source === "zesty" && msg.data.route) {
-        setRoute(msg.data.route);
+        if (msg.data.route === route) {
+          // when content is saved the route doesn't change so
+          // we force a refresh
+          setRefresh(Date.now());
+        } else {
+          setRoute(msg.data.route);
+        }
       }
     }
 
