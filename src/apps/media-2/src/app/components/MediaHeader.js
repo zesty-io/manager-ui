@@ -1,8 +1,10 @@
 import React, { useRef } from "react";
 import { useDispatch } from "react-redux";
+import { Modal, ModalContent } from "@zesty-io/core/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUpload,
+  faPlus,
   faEdit,
   faExclamationCircle,
   faVideo
@@ -47,6 +49,24 @@ export function MediaHeader(props) {
           <FontAwesomeIcon icon={faEdit} />
           <span>Edit</span>
         </Button>
+        {/* Modal for edit  */}
+        <Modal
+          className={styles.Modal}
+          type="global"
+          // set to true for testing
+          open={true}
+          onClose={() => props.onClose()}
+        >
+          <ModalContent>
+            <form className={styles.SearchForm} action="">
+              <input type="text" placeholder="Rename Group" name="search2" />
+              <button type="submit">
+                <FontAwesomeIcon icon={faPlus} />
+              </button>
+            </form>
+          </ModalContent>
+        </Modal>
+
         <Button kind="warn" onClick={props.showDeleteGroupModal}>
           <FontAwesomeIcon icon={faExclamationCircle} />
           <span>Delete</span>
