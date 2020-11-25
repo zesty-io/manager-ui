@@ -28,7 +28,6 @@ export function MediaHeader(props) {
   }
 
   function handleEditGroup() {}
-  function handleDeleteGroup() {}
 
   return (
     <header className={styles.WorkspaceHeader}>
@@ -48,7 +47,7 @@ export function MediaHeader(props) {
           <FontAwesomeIcon icon={faEdit} />
           <span>Edit</span>
         </Button>
-        <Button kind="warn" onClick={handleDeleteGroup}>
+        <Button kind="warn" onClick={props.showDeleteGroupModal}>
           <FontAwesomeIcon icon={faExclamationCircle} />
           <span>Delete</span>
         </Button>

@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { notify } from "shell/store/notifications";
-
 import { faFolder } from "@fortawesome/free-solid-svg-icons";
+import { request } from "utility/request";
+import { notify } from "shell/store/notifications";
 
 const mediaSlice = createSlice({
   name: "media",
@@ -32,6 +32,11 @@ const mediaSlice = createSlice({
           state.files.push(file);
         }
       });
+    },
+    deleteMediaGroupSuccess(state, action) {
+      state.bins = state.bins.filter(el => el.id !== action.payload.id);
+      state.groups = state.groups.filter(el => el.id !== action.payload.id);
+      state.nav = createNav(state.bins, state.groups);
     }
   }
 });
@@ -68,7 +73,8 @@ export const {
   fetchBinsSuccess,
   fetchGroupsSuccess,
   fetchBinFilesSuccess,
-  fetchGroupFilesSuccess
+  fetchGroupFilesSuccess,
+  deleteMediaGroupSuccess
 } = mediaSlice.actions;
 
 function fetchMediaBins(instanceID) {
@@ -200,28 +206,42 @@ export function uploadFile(file, bin, group) {
     }
     data.append("user_id", getState().user.ZUID);
 
-    let request = new XMLHttpRequest();
-    request.open(
+    let req = new XMLHttpRequest();
+    req.open(
       "POST",
       `${CONFIG.SERVICE_MEDIA_STORAGE}/upload/${bin.storage_driver}/${bin.storage_name}`
     );
 
     // upload progress event
-    request.upload.addEventListener("progress", function(e) {
+    req.upload.addEventListener("progress", function(e) {
       // upload progress as percentage
       let percent_completed = (e.loaded / e.total) * 100;
       console.log(percent_completed);
     });
 
-    request.addEventListener("load", function(e) {
+    req.addEventListener("load", function(e) {
       // HTTP status message (200, 404 etc)
-      console.log(request.status);
-      if (request.status === 200) {
-        console.log(request.response);
+      console.log(req.status);
+      if (req.status === 200) {
+        console.log(req.response);
         // request.response.data[0]
       }
     });
 
-    request.send(data);
+    req.send(data);
+  };
+}
+
+export function deleteMediaGroup(group) {
+  return dispatch => {
+    return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/group/${group.id}`, {
+      method: "DELETE"
+    }).then(res => {
+      dispatch(
+        notify({ message: `Deleted group ${group.name}`, kind: "success" })
+      );
+
+      return dispatch(deleteMediaGroupSuccess(group));
+    });
   };
 }
