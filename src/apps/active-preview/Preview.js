@@ -28,12 +28,13 @@ export function Preview(props) {
     throw new Error("Invalid host for active preview");
   }
 
-  const ref = useRef();
+  const input = useRef();
 
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(true);
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [instance, setInstance] = useState({});
   const [domain, setDomain] = useState(props.domain);
   const [route, setRoute] = useState(props.route || "/");
   const [device, setDevice] = useState("fullscreen");
@@ -42,20 +43,20 @@ export function Preview(props) {
   // Listen for messages
   useEffect(() => {
     function receiveMessage(msg) {
-      // console.log("Message: ", msg);
+      console.log("Message: ", msg);
 
       // Prevent malicious communication to this window
       if (msg.origin !== window.location.origin) {
+        console.error("Origin mismatch");
         return;
       }
 
-      if (msg.data.source === "zesty" && msg.data.route) {
-        if (msg.data.route === route) {
-          // when content is saved the route doesn't change so
-          // we force a refresh
-          setRefresh(Date.now());
-        } else {
+      if (msg.data.source === "zesty") {
+        if (msg.data.route) {
           setRoute(msg.data.route);
+        }
+        if (msg.data.refresh) {
+          setRefresh(Date.now());
         }
       }
     }
@@ -68,6 +69,7 @@ export function Preview(props) {
   useEffect(() => {
     api(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`)
       .then(json => {
+        setInstance(json.data);
         setDomain(
           `${CONFIG.URL_PREVIEW_PROTOCOL}${json.data.randomHashID}${CONFIG.URL_PREVIEW}`
         );
@@ -82,10 +84,10 @@ export function Preview(props) {
   }, []);
 
   const handleCopy = () => {
-    ref.current.focus();
-    ref.current.select();
+    input.current.focus();
+    input.current.select();
     const result = document.execCommand("copy");
-    ref.current.blur();
+    input.current.blur();
 
     if (result !== "unsuccessful") {
       // this is gross, but we dont have another way to notify
@@ -134,6 +136,12 @@ export function Preview(props) {
 
         <div className={styles.Display}>
           <div className={styles.Url}>
+            <Button
+              onClick={() => setRefresh(Date.now())}
+              title="Reload current url in active preview"
+            >
+              <FontAwesomeIcon icon={faSync} />
+            </Button>
             {copied ? (
               <Button onClick={handleCopy} kind="save">
                 <FontAwesomeIcon icon={faCheck} />
@@ -147,7 +155,7 @@ export function Preview(props) {
               </Button>
             )}
             <Input
-              ref={ref}
+              ref={input}
               className={styles.Route}
               value={`${domain}${route}`}
             />
@@ -177,20 +185,16 @@ export function Preview(props) {
         </div>
 
         <ButtonGroup className={styles.Controls}>
-          <Url
-            href={domain}
-            target="_blank"
-            title="Open preview link in standard browser window"
-          >
-            <FontAwesomeIcon icon={faExternalLinkAlt} />
-            &nbsp;Open
-          </Url>
-          <Button
-            onClick={() => setRefresh(Date.now())}
-            title="Reload current url in active preview"
-          >
-            <FontAwesomeIcon icon={faSync} />
-          </Button>
+          {instance.domain && (
+            <Url
+              href={`//${instance.domain}${route}`}
+              target="_blank"
+              title="Open live link in standard browser window"
+            >
+              <FontAwesomeIcon icon={faExternalLinkAlt} />
+              &nbsp;Live
+            </Url>
+          )}
           <Button
             onClick={() => setOpen(!open)}
             title="Additional menu options"
@@ -375,7 +379,7 @@ const templates = {
 //           refresh: Date.now()
 //         });
 //         break;
-//       case "UPDATED_CONTENT_ITEM":
+//       case "PREVIEW_ROUTE":
 //         if (evt.data.itemZUID === this.state.itemZUID) {
 //           this.setState({
 //             refresh: Date.now()

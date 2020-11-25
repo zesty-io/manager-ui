@@ -443,7 +443,7 @@ export function saveFile(ZUID, status) {
           });
 
           // re-render ActivePreview on code file save
-          zesty.trigger("FORCE_PREVIEW_RERENDER");
+          zesty.trigger("PREVIEW_REFRESH");
 
           // Re-fetch file to ensure we have latest version number
           return dispatch(fetchFile(file.ZUID, pathPart));

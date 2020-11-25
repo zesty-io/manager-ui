@@ -1,9 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
+
+/**
+ * NOTE: Preview holds a reference to a window object which
+ * we attach event listeners to as such there is some concern with
+ * react state holding on to a prior reference in the event of a render
+ * preventing GC and causing a memory leak.
+ */
+let preview;
 
 export default connect(state => {
   return {
@@ -13,48 +21,30 @@ export default connect(state => {
   const origin = window.location.origin;
   const location = useLocation();
 
-  /**
-   * NOTE: Preview holds a reference to a window object which
-   * we attach event listeners to as such there is some concern with
-   * react state holding on to a prior reference in the event of a render
-   * preventing GC and causing a memory leak.
-   */
-  const [preview, setPreview] = useState(null);
-
   function close() {
     if (preview) {
       preview.close();
     }
   }
 
-  function open() {
-    const winRef = window.open(
-      origin + "/active-preview/",
-      "Active Preview",
-      "height=850, width=1400, location=0, menubar=0, status=0, titlebar=0, toolbar=0"
-    );
+  function refresh() {
+    console.log("ActivePreview:refresh", preview);
 
-    zesty.on("UPDATED_CONTENT_ITEM", itemZUID => route(itemZUID));
-    zesty.on("FORCE_PREVIEW_RERENDER", itemZUID => route(itemZUID));
-
-    // If instance manager is closed then close active preview
-    window.addEventListener("beforeunload", close);
-
-    // Send initial route on open
-    winRef.addEventListener("load", () => route(location.pathname));
-
-    // if active preview is closed detach manager event listeners to avoid memory leak
-    winRef.addEventListener("beforeunload", () => {
-      zesty.off("UPDATED_CONTENT_ITEM");
-      zesty.off("FORCE_PREVIEW_RERENDER");
-      window.removeEventListener("beforeunload", close);
-    });
-
-    setPreview(winRef);
+    if (preview) {
+      preview.postMessage(
+        {
+          source: "zesty",
+          refresh: true
+        },
+        origin
+      );
+    }
   }
 
   // Sends message to preview window to update route
   function route(itemZUID) {
+    console.log("ActivePreview:route", itemZUID, preview);
+
     if (preview) {
       // if not a string or a string that is not a content item zuid
       // then see if location contains a routable content item
@@ -65,10 +55,10 @@ export default connect(state => {
           .find(part => part.slice(0, 2) === "7-");
       }
 
-      if (itemZUID && props.content[itemZUID]) {
+      if (itemZUID) {
         const item = props.content[itemZUID];
 
-        if (item.web.path) {
+        if (item && item.web.path) {
           preview.postMessage(
             {
               source: "zesty",
@@ -79,6 +69,43 @@ export default connect(state => {
         }
       }
     }
+  }
+
+  /**
+   * Create new preview window or bring focus back to pre-existing window
+   * Uses pubsub to listen for messages to update exsting preview
+   */
+  function open() {
+    console.log("ActivePreview:open");
+
+    if (preview) {
+      // close before opening a new window
+      preview.close();
+    }
+
+    preview = window.open(
+      origin + "/activePreview.html",
+      "Active Preview",
+      "height=850, width=1260, location=0, menubar=0, status=0, titlebar=0, toolbar=0"
+    );
+
+    zesty.on("PREVIEW_ROUTE", route);
+    zesty.on("PREVIEW_REFRESH", refresh);
+
+    // If instance manager is closed then close active preview
+    window.addEventListener("beforeunload", close);
+
+    // Send initial route on open
+    preview.addEventListener("load", () =>
+      setTimeout(route(location.pathname), 2000)
+    );
+
+    // if active preview is closed detach manager event listeners to avoid memory leak
+    preview.addEventListener("beforeunload", () => {
+      zesty.off("PREVIEW_ROUTE");
+      zesty.off("PREVIEW_REFRESH");
+      window.removeEventListener("beforeunload", close);
+    });
   }
 
   /**
