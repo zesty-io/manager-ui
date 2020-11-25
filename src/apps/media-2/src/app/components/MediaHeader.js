@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUpload,
@@ -9,9 +10,12 @@ import {
 
 import { Button } from "@zesty-io/core/Button";
 
+import { uploadFile } from "shell/store/media";
+
 import styles from "./MediaHeader.less";
 
 export function MediaHeader(props) {
+  const dispatch = useDispatch();
   const hiddenFileInput = useRef(null);
 
   function handleUploadClick() {
@@ -20,42 +24,11 @@ export function MediaHeader(props) {
 
   function handleFileInputChange(event) {
     const file = event.target.files[0];
-    uploadFile(file);
+    dispatch(uploadFile(file, props.currentBin, props.currentGroup));
   }
 
-  function uploadFile(file) {
-    let data = new FormData();
-    data.append("file", file);
-    data.append("bin_id", props.currentBin.id);
-    if (props.currentGroup) {
-      data.append("group_id", props.currentGroup.id);
-    }
-    data.append("user_id", zestyStore.getState().user.ZUID);
-
-    let request = new XMLHttpRequest();
-    request.open(
-      "POST",
-      `${CONFIG.SERVICE_MEDIA_STORAGE}/upload/${props.currentBin.storage_driver}/${props.currentBin.storage_name}`
-    );
-
-    // upload progress event
-    request.upload.addEventListener("progress", function(e) {
-      // upload progress as percentage
-      let percent_completed = (e.loaded / e.total) * 100;
-      console.log(percent_completed);
-    });
-
-    request.addEventListener("load", function(e) {
-      // HTTP status message (200, 404 etc)
-      console.log(request.status);
-      if (request.status === 200) {
-        console.log(request.response);
-        // request.response.data[0]
-      }
-    });
-
-    request.send(data);
-  }
+  function handleEditGroup() {}
+  function handleDeleteGroup() {}
 
   return (
     <header className={styles.WorkspaceHeader}>
@@ -71,11 +44,11 @@ export function MediaHeader(props) {
           onChange={handleFileInputChange}
           style={{ display: "none" }}
         />
-        <Button kind="cancel">
+        <Button kind="cancel" onClick={handleEditGroup}>
           <FontAwesomeIcon icon={faEdit} />
           <span>Edit</span>
         </Button>
-        <Button kind="warn">
+        <Button kind="warn" onClick={handleDeleteGroup}>
           <FontAwesomeIcon icon={faExclamationCircle} />
           <span>Delete</span>
         </Button>

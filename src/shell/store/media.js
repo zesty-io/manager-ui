@@ -189,3 +189,39 @@ export function fetchGroupFiles(groupZUID) {
     });
   };
 }
+
+export function uploadFile(file, bin, group) {
+  return (dispatch, getState) => {
+    let data = new FormData();
+    data.append("file", file);
+    data.append("bin_id", bin.id);
+    if (group) {
+      data.append("group_id", group.id);
+    }
+    data.append("user_id", getState().user.ZUID);
+
+    let request = new XMLHttpRequest();
+    request.open(
+      "POST",
+      `${CONFIG.SERVICE_MEDIA_STORAGE}/upload/${bin.storage_driver}/${bin.storage_name}`
+    );
+
+    // upload progress event
+    request.upload.addEventListener("progress", function(e) {
+      // upload progress as percentage
+      let percent_completed = (e.loaded / e.total) * 100;
+      console.log(percent_completed);
+    });
+
+    request.addEventListener("load", function(e) {
+      // HTTP status message (200, 404 etc)
+      console.log(request.status);
+      if (request.status === 200) {
+        console.log(request.response);
+        // request.response.data[0]
+      }
+    });
+
+    request.send(data);
+  };
+}

@@ -9,9 +9,12 @@ import styles from "./MediaSidebar.less";
 
 export function MediaSidebar(props) {
   const [selected, setSelected] = useState(location.pathname);
+
   useEffect(() => {
     setSelected(location.pathname);
   }, [location.pathname]);
+
+  function handleCreateGroup() {}
   return (
     <nav className={styles.Nav}>
       <div className={styles.TopNav}>
@@ -22,7 +25,11 @@ export function MediaSidebar(props) {
           </button>
         </form>
 
-        <Button kind="secondary" className={styles.CreateGroup}>
+        <Button
+          kind="secondary"
+          className={styles.CreateGroup}
+          onClick={handleCreateGroup}
+        >
           <FontAwesomeIcon icon={faPlus} />
           <span>Create Group</span>
         </Button>
