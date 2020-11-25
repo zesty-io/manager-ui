@@ -1,6 +1,9 @@
 import React, { useRef } from "react";
 import { useDispatch } from "react-redux";
-import { Modal, ModalContent } from "@zesty-io/core/Modal";
+import cx from "classnames";
+
+import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUpload,
@@ -34,7 +37,7 @@ export function MediaHeader(props) {
   return (
     <header className={styles.WorkspaceHeader}>
       <div className={styles.WorkspaceLeft}>
-        <h1>Group Name</h1>
+        <h1 className={cx(styles.title, styles.GroupTitle)}>Group Name</h1>
         <Button kind="secondary" onClick={handleUploadClick}>
           <FontAwesomeIcon icon={faUpload} />
           <span>Upload</span>
@@ -71,6 +74,30 @@ export function MediaHeader(props) {
           <FontAwesomeIcon icon={faExclamationCircle} />
           <span>Delete</span>
         </Button>
+
+        <Modal
+          className={styles.Modal}
+          type="global"
+          // set to true for testing
+          open={true}
+          onClose={() => props.onClose()}
+        >
+          <ModalContent>
+            <h1 className={cx(styles.title)}>
+              Do you want to delete the group: sub group? ! (This will also
+              delete all subgroups and files.)
+            </h1>
+          </ModalContent>
+          <ModalFooter className={styles.ModalFooter}>
+            <Button kind="warn" onClick={props.showDeleteGroupModal}>
+              <FontAwesomeIcon icon={faExclamationCircle} />
+              <span>Delete</span>
+            </Button>
+            <Button kind="default" onClick={props.showDeleteGroupModal}>
+              <span>Cancel</span>
+            </Button>
+          </ModalFooter>
+        </Modal>
       </div>
       <div className={styles.WorkspaceRight}>
         <Button kind="default">
