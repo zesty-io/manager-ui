@@ -96,7 +96,7 @@ function openActivePreview(instanceZUID, content) {
   const routeActivePreview = itemZUID => {
     console.log("routeActivePreview", itemZUID);
 
-    if (itemZUID.slice(0, 2) !== "7-") {
+    if (typeof itemZUID === "string" && itemZUID.slice(0, 2) !== "7-") {
       // Check if current location has a routable item
       const parts = window.location.pathname.split("/");
       itemZUID = parts.find(part => part.slice(0, 2) === "7-");
