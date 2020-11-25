@@ -78,9 +78,9 @@ export function MediaDetailsModal(props) {
                 }
                 placeholder={"Alt Attribute"}
               />
-              <h3>ZUID: {props.file.id}</h3>
+              <h3 className={styles.ModalLabels}>ZUID: {props.file.id}</h3>
 
-              <h3>
+              <h3 className={styles.ModalLabels}>
                 Updated: <span>{props.file.updated_at}</span>
               </h3>
             </div>
