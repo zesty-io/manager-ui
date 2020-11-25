@@ -42,7 +42,7 @@ export function Preview(props) {
   // Listen for messages
   useEffect(() => {
     function receiveMessage(msg) {
-      console.log("Message: ", msg);
+      // console.log("Message: ", msg);
 
       // Prevent malicious communication to this window
       if (msg.origin !== window.location.origin) {

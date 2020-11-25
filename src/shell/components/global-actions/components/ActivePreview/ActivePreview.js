@@ -55,8 +55,6 @@ export default connect(state => {
 
   // Sends message to preview window to update route
   function route(itemZUID) {
-    console.log("route", itemZUID);
-
     if (preview) {
       // if not a string or a string that is not a content item zuid
       // then see if location contains a routable content item
@@ -67,12 +65,8 @@ export default connect(state => {
           .find(part => part.slice(0, 2) === "7-");
       }
 
-      console.log("route:itemZUID", itemZUID);
-
       if (itemZUID && props.content[itemZUID]) {
         const item = props.content[itemZUID];
-
-        console.log("route:item", item);
 
         if (item.web.path) {
           preview.postMessage(
