@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
@@ -21,9 +21,9 @@ export function MediaSidebar(props) {
     <nav className={styles.Nav}>
       <div className={styles.TopNav}>
         <form className={styles.SearchForm} action="">
-          <input type="text" placeholder="Search Your Files" name="search2" />
+          <input type="text" placeholder="Search your files" name="search2" />
           <button type="submit">
-            <i className="fa fa-search" />
+            <FontAwesomeIcon icon={faSearch} />
           </button>
         </form>
 

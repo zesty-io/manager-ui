@@ -6,14 +6,17 @@
   .TopNav {
     padding: 8px;
     display: flex;
+    // align-items: center;
     flex-direction: column;
 
     @media only screen and (min-width: 2000px) {
       flex-direction: row;
+      align-items: center;
     }
     //Temporary search button styles until we pull from DS
     .SearchForm {
       display: flex;
+      flex: 1;
 
       input[type="text"] {
         flex: 1;
@@ -58,7 +61,7 @@
       margin: 8px 0 0 0;
 
       @media only screen and (min-width: 2000px) {
-        // margin: 0 0 0 8px;
+        margin: 0 0 0 4px;
       }
     }
   }
