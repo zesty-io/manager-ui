@@ -5,6 +5,7 @@ import { MediaSidebar } from "./components/MediaSidebar";
 import { MediaWorkspace } from "./components/MediaWorkspace";
 import { MediaHeader } from "./components/MediaHeader";
 import { MediaDetailsModal } from "./components/MediaDetailsModal";
+import { MediaDeleteGroupModal } from "./components/MediaDeleteGroupModal";
 import { MediaSelected } from "./components/MediaSelected";
 
 import {
@@ -26,7 +27,9 @@ export default connect((state, props) => {
     currentGroup = state.media.groups.find(
       group => group.id === props.match.params.groupID
     );
-    currentBin = state.media.bins.find(bin => bin.id === currentGroup.bin_id);
+    if (currentGroup) {
+      currentBin = state.media.bins.find(bin => bin.id === currentGroup.bin_id);
+    }
   } else if (props.match.params.binID) {
     files = state.media.files.filter(
       file => file.group_id === props.match.params.binID
@@ -45,6 +48,7 @@ export default connect((state, props) => {
   };
 })(function MediaApp(props) {
   const [fileDetails, setFileDetails] = useState();
+  const [deleteGroupModal, setDeleteGroupModal] = useState(false);
   const [selected, setSelected] = useState([]);
 
   function toggleSelected(file) {
@@ -98,6 +102,7 @@ export default connect((state, props) => {
           <MediaHeader
             currentBin={props.currentBin}
             currentGroup={props.currentGroup}
+            showDeleteGroupModal={() => setDeleteGroupModal(true)}
           />
           <MediaWorkspace
             files={props.files}
@@ -111,6 +116,12 @@ export default connect((state, props) => {
           <MediaDetailsModal
             file={fileDetails}
             onClose={() => setFileDetails()}
+          />
+        )}
+        {deleteGroupModal && (
+          <MediaDeleteGroupModal
+            onClose={() => setDeleteGroupModal(false)}
+            currentGroup={props.currentGroup}
           />
         )}
       </WithLoader>
