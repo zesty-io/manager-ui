@@ -84,7 +84,7 @@ export default connect(state => {
     }
 
     preview = window.open(
-      origin + "/activePreview.html",
+      origin + "/active-preview",
       "Active Preview",
       "height=850, width=1260, location=0, menubar=0, status=0, titlebar=0, toolbar=0"
     );
