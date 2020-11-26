@@ -1,8 +1,6 @@
 @import "~@zesty-io/core/typography.less";
 
 .MediaApp {
-  display: flex;
-  flex-direction: row;
   height: calc(100vh - 54px);
   overflow: hidden;
   display: grid;
@@ -10,6 +8,15 @@
   font-family: @font-family-default;
 
   @media (min-width: 2000px) {
-    grid-template-columns: minmax(15vw, 20vw) 1fr;
+    grid-template-columns: 20vw 1fr;
+  }
+
+  .WorkspaceContainer {
+    //Full container 100vw -  minus 20vw = MediaApp nav and 60px = globalSidebar
+    width: calc(80vw - 60px);
+
+    @media (min-width: 2000px) {
+      width: calc(80vw - 170px);
+    }
   }
 }

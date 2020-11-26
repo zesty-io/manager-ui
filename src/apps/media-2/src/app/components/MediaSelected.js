@@ -1,191 +1,45 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
-import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
+import { Card, CardContent } from "@zesty-io/core/Card";
+import { Button } from "@zesty-io/core/Button";
 import cx from "classnames";
 import styles from "./MediaSelected.less";
 
-export function MediaSelected() {
+export function MediaSelected(props) {
   return (
-    <aside className={styles.MediaSelected}>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={styles.CardContent}>
-          <img src="https://placekitten.com/200/286" alt="cat" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-      <Card className={cx(styles.Card, styles.CardTop)}>
-        <CardContent className={cx(styles.CardContent, styles.CardContentTop)}>
-          <img src="http://www.fillmurray.com/300/200" alt="FillMurray" />
-          <button className={styles.Check}>
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </CardContent>
-      </Card>
-    </aside>
+    <>
+      {props.selected.length ? (
+        <footer>
+          <div className={styles.LoadSelected}>
+            <Button kind="save">
+              <span>Load Selected</span>
+            </Button>
+          </div>
+          <aside className={styles.MediaSelected}>
+            {props.selected.map(file => {
+              return (
+                <Card
+                  className={cx(styles.Card, styles.CardTop)}
+                  onClick={() => props.toggleSelected(file)}
+                >
+                  <CardContent
+                    className={cx(styles.CardContent, styles.CardContentTop)}
+                  >
+                    <div className={styles.Checkered}>
+                      <img src={file.url} alt={file.title} />
+                    </div>
+                    <button className={styles.Check}>
+                      <FontAwesomeIcon icon={faCheck} />
+                    </button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </aside>
+        </footer>
+      ) : null}
+    </>
   );
 }

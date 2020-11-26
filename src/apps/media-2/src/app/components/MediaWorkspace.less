@@ -1,27 +1,38 @@
+//Spinner for Loading
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .Workspace {
-  // height minus header minus selected strip
-  height: calc(100vh - 54px - 204px);
+  height: calc(100vh - 54px - 56px);
   overflow: hidden;
   overflow-y: auto;
 
   box-shadow: 0 0 15px #0b0d13;
   z-index: 1;
+  transition: 0.25s ease-in-out;
 
-  .WorkspaceHeader {
-    display: flex;
-    padding: 8px;
-    background-color: #404759;
-    justify-content: space-between;
-    position: relative;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.4);
+  &.hasSelected {
+    // height minus header minus selected strip
+    height: calc(100vh - 54px - 56px - 233px);
+  }
 
-    .WorkspaceLeft,
-    .WorkspaceRight {
-      display: flex;
-      button {
-        margin: 0 8px;
-      }
-    }
+  // Main section grid layout
+  .WorkspaceGrid {
+    //Dynamic /helps center the whole grid
+    // grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+    display: grid;
+    //STATIC
+    grid-template-columns: repeat(auto-fit, 200px);
+    gap: 16px;
+    padding: 16px;
+    justify-items: center;
   }
 
   .Card {
@@ -29,6 +40,17 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    box-shadow: 0 7px 30px -10px rgba(150, 170, 180, 0.5);
+
+    // Checkbox Selected
+    &.selected {
+      box-shadow: 0px 0px 6px #15181d;
+
+      .CardContent .Check {
+        background: #74be24;
+        opacity: 1;
+      }
+    }
 
     img {
       width: 100%;
@@ -55,24 +77,91 @@
         align-items: center;
       }
 
+      .Checkered {
+        height: auto;
+        background: linear-gradient(
+            45deg,
+            rgba(0, 0, 0, 0.0980392) 25%,
+            transparent 25%,
+            transparent 75%,
+            rgba(0, 0, 0, 0.0980392) 75%,
+            rgba(0, 0, 0, 0.0980392) 0
+          ),
+          linear-gradient(
+            45deg,
+            rgba(0, 0, 0, 0.0980392) 25%,
+            transparent 25%,
+            transparent 75%,
+            rgba(0, 0, 0, 0.0980392) 75%,
+            rgba(0, 0, 0, 0.0980392) 0
+          ),
+          white;
+        background-repeat: repeat, repeat;
+        background-position: 0px 0, 5px 5px;
+        background-size: 10px 10px, 10px 10px;
+
+        //Loading Spinner
+        .Load {
+          position: relative;
+          display: inline-block;
+          width: 350px;
+          height: 350px;
+          border: 2px solid #34495e;
+          border-radius: 100%;
+          animation: spin 0.75s infinite linear;
+          &:before,
+          &::after {
+            left: -2px;
+            top: -2px;
+            display: none;
+            position: absolute;
+            content: "";
+            width: inherit;
+            height: inherit;
+            border: inherit;
+            border-radius: inherit;
+          }
+        }
+
+        .Loading {
+          display: inline-block;
+          border-color: transparent;
+          border-top-color: #f17829;
+          animation-duration: 1.2s;
+          &::before {
+            display: inline-block;
+            border-color: transparent;
+            border-top-color: #f17829;
+            animation-duration: 1.2s;
+            transform: rotate(120deg);
+          }
+          &::after {
+            display: inline-block;
+            border-color: transparent;
+            border-top-color: #f17829;
+            animation-duration: 1.2s;
+            transform: rotate(240deg);
+          }
+        }
+      }
+
+      //Checkbox Styles
       .Check {
         position: absolute;
         top: 0;
         right: 0;
-        background: transparent;
         opacity: 0;
         cursor: pointer;
         background: #5b667d;
         color: #efefef;
         width: 24px;
         height: 24px;
-        margin: 4px;
+        margin: 1px;
+        border: none;
+        border-radius: 2px;
+        transition: 0.25s ease-in-out;
       }
 
-      // Checkbox Selected
-      &.Selected {
-        background: #74be24;
-      }
       // Checkbox Show
       &:hover {
         .Check {
@@ -101,27 +190,13 @@
         padding: 8px;
       }
       .Preview {
-        text-overflow: ellipsis;
         overflow: hidden;
-        display: flex;
         flex: 1;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: middle;
+        padding: 0 0.5rem;
       }
     }
-  }
-
-  .WorkspaceGrid {
-    //Legacy Layout Flex
-    // display: flex;
-    // flex-wrap: wrap;
-
-    //Dynamic
-    // grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-
-    display: grid;
-    //STATIC
-    grid-template-columns: repeat(auto-fit, 200px);
-    gap: 16px;
-    padding: 16px;
-    justify-items: center;
   }
 }
