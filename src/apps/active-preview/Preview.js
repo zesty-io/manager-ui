@@ -52,10 +52,12 @@ export function Preview(props) {
 
       if (msg.data.source === "zesty") {
         if (msg.data.route) {
-          // pre-fetch
-          fetch(`${domain}${msg.data.route}`).finally(() =>
-            setRoute(msg.data.route)
-          );
+          setRoute(msg.data.route);
+
+          // TODO: add preview CORS support from manager to allow pre-fetch
+          // fetch(`${domain}${msg.data.route}`).finally(() =>
+          //   setRoute(msg.data.route)
+          // );
         }
         if (msg.data.refresh) {
           setRefresh(Date.now());
