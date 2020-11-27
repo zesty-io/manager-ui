@@ -213,7 +213,7 @@ export default connect((state, props) => {
 
                 <div className={styles.Meta}>
                   <Divider className={styles.Divider} />
-                  <h2 className={styles.Title}>Meta Settings</h2>
+                  <h2 className={styles.title}>Meta Settings</h2>
                   {this.props.model && this.props.model.type === "dataset" ? (
                     <DataSettings
                       item={this.props.item}

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
+import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -72,7 +73,7 @@ export default connect((state, props) => {
             return <HeadTag key={index} tag={tag} dispatch={props.dispatch} />;
           })
         ) : (
-          <h3 className={styles.NoTags}>
+          <h3 className={cx(styles.headline, styles.NoTags)}>
             No head tags have been created for this item.
           </h3>
         )}

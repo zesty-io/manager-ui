@@ -31,17 +31,22 @@ export class Meta extends React.PureComponent {
           />
         </Header>
 
-        {this.props.model && this.props.model.type === "dataset" ? (
-          <DataSettings item={this.props.item} dispatch={this.props.dispatch} />
-        ) : (
-          <ItemSettings
-            instance={this.props.instance}
-            modelZUID={this.props.modelZUID}
-            item={this.props.item}
-            content={this.props.items}
-            dispatch={this.props.dispatch}
-          />
-        )}
+        <div className={styles.MetaWrap}>
+          {this.props.model && this.props.model.type === "dataset" ? (
+            <DataSettings
+              item={this.props.item}
+              dispatch={this.props.dispatch}
+            />
+          ) : (
+            <ItemSettings
+              instance={this.props.instance}
+              modelZUID={this.props.modelZUID}
+              item={this.props.item}
+              content={this.props.items}
+              dispatch={this.props.dispatch}
+            />
+          )}
+        </div>
       </section>
     );
   }
