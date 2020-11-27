@@ -44,8 +44,6 @@ export function Preview(props) {
   // Listen for messages
   useEffect(() => {
     function receiveMessage(msg) {
-      console.log("Message: ", msg);
-
       // Prevent malicious communication to this window
       if (msg.origin !== window.location.origin) {
         console.error("Origin mismatch");
@@ -54,7 +52,10 @@ export function Preview(props) {
 
       if (msg.data.source === "zesty") {
         if (msg.data.route) {
-          setRoute(msg.data.route);
+          // pre-fetch
+          fetch(`${domain}${msg.data.route}`).finally(() =>
+            setRoute(msg.data.route)
+          );
         }
         if (msg.data.refresh) {
           setRefresh(Date.now());
@@ -64,7 +65,7 @@ export function Preview(props) {
 
     window.addEventListener("message", receiveMessage);
     return () => window.removeEventListener("message", receiveMessage);
-  }, []);
+  }, [domain]);
 
   // fetch domain
   useEffect(() => {
