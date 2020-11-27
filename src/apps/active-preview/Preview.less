@@ -6,12 +6,6 @@
   padding: 0;
 }
 
-body {
-  background-image: radial-gradient(circle, @zesty-light-gray, @zesty-gray);
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  font-size: 13.2px;
-}
-
 .ActivePreview {
   .TopBar {
     background-color: @zesty-light-gray;
@@ -27,29 +21,36 @@ body {
       margin-right: 32px;
     }
 
-    .Display {
-      align-items: center;
+    .Url {
       display: flex;
-      justify-content: center;
       flex: 1;
-      .Devices {
-        margin: 0 16px;
-        min-width: 200px;
-      }
-
-      .Url {
-        display: flex;
+      .Route {
         flex: 1;
-        .Route {
-          flex: 1;
+      }
+    }
+
+    .Device {
+      display: flex;
+      margin: 0 16px;
+      .Select {
+        min-width: 200px;
+        li {
+          small {
+            color: @zesty-gray;
+          }
         }
       }
     }
 
-    .Controls {
-      button {
-        margin-left: 16px;
-      }
+    .Live {
+      display: flex;
+      align-items: center;
+    }
+
+    .Menu {
+      display: flex;
+      align-items: center;
+      margin-left: 16px;
     }
   }
 
