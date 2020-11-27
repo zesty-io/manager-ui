@@ -10,7 +10,6 @@ export function headTags(state = [], action) {
       return { ...state, [action.tag.ZUID]: action.tag };
 
     case "REPLACE_HEADTAG":
-      console.log("action", action);
       delete state[action.oldZUID];
       return { ...state, [action.tag.ZUID]: action.tag };
 
