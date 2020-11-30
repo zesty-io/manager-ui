@@ -32,7 +32,7 @@ export function MediaWorkspace(props) {
                   <img src={file.url} alt={file.title} />
                 </div>
                 <div className={cx(styles.Load, styles.Loading)}></div>
-                <button className={styles.Check}>
+                <button className={styles.Check} aria-label="Checked">
                   <FontAwesomeIcon icon={faCheck} />
                 </button>
               </CardContent>

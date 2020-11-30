@@ -21,12 +21,13 @@ export function MediaSidebar(props) {
       <div className={styles.TopNav}>
         <form className={styles.SearchForm} action="">
           <input type="text" placeholder="Search your files" name="search2" />
-          <button type="submit">
+          <button type="submit" aria-label="Search">
             <FontAwesomeIcon icon={faSearch} />
           </button>
         </form>
 
         <Button
+          aria-label="Create Group"
           kind="secondary"
           className={styles.CreateGroup}
           onClick={() => setCreateGroupModal(true)}

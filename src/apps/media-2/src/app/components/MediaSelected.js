@@ -30,7 +30,7 @@ export function MediaSelected(props) {
                     <div className={styles.Checkered}>
                       <img src={file.url} alt={file.title} />
                     </div>
-                    <button className={styles.Check}>
+                    <button className={styles.Check} aria-label="Checked">
                       <FontAwesomeIcon icon={faCheck} />
                     </button>
                   </CardContent>

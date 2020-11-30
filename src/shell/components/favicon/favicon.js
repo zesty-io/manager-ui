@@ -162,7 +162,12 @@ export default connect(state => {
             onClick={() => setOpen(!open)}
           />
         ) : faviconURL ? (
-          <img src={faviconURL} width="60px" height="60px" />
+          <img
+            src={faviconURL}
+            width="60px"
+            height="60px"
+            alt=" Select Favicon"
+          />
         ) : (
           <FontAwesomeIcon icon={faGlobe} />
         )}
