@@ -53,13 +53,6 @@ export function MediaHeader(props) {
           <FontAwesomeIcon icon={faExclamationCircle} />
           <span>Delete</span>
         </Button>
-        {editGroupModal && (
-          <MediaEditGroupModal
-            currentGroup={props.currentGroup}
-            currentBin={props.currentBin}
-            onClose={() => setEditGroupModal(false)}
-          />
-        )}
       </div>
       <div className={styles.WorkspaceRight}>
         <Button kind="default">
@@ -67,6 +60,13 @@ export function MediaHeader(props) {
           <span>Tutorial</span>
         </Button>
       </div>
+      {editGroupModal && (
+        <MediaEditGroupModal
+          currentGroup={props.currentGroup}
+          currentBin={props.currentBin}
+          onClose={() => setEditGroupModal(false)}
+        />
+      )}
     </header>
   );
 }
