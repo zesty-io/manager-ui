@@ -6,7 +6,7 @@ import { Button } from "@zesty-io/core/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 
-import { deleteMediaGroup } from "shell/store/media";
+import { deleteGroup } from "shell/store/media";
 import styles from "./MediaDeleteGroupModal.less";
 
 export function MediaDeleteGroupModal(props) {
@@ -25,7 +25,7 @@ export function MediaDeleteGroupModal(props) {
         <Button
           kind="save"
           onClick={() =>
-            dispatch(deleteMediaGroup(props.currentGroup)).then(() => {
+            dispatch(deleteGroup(props.currentGroup)).then(() => {
               props.onClose();
               history.push(`/dam/${props.currentGroup.group_id}`);
             })

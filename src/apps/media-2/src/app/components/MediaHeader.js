@@ -34,7 +34,9 @@ export function MediaHeader(props) {
   return (
     <header className={styles.WorkspaceHeader}>
       <div className={styles.WorkspaceLeft}>
-        <h1 className={cx(styles.title, styles.GroupTitle)}>Group Name</h1>
+        <h1 className={cx(styles.title, styles.GroupTitle)}>
+          {props.currentGroup.name}
+        </h1>
         <Button kind="secondary" onClick={handleUploadClick}>
           <FontAwesomeIcon icon={faUpload} />
           <span>Upload</span>
@@ -49,10 +51,12 @@ export function MediaHeader(props) {
           <FontAwesomeIcon icon={faEdit} />
           <span>Edit</span>
         </Button>
-        <Button kind="warn" onClick={props.showDeleteGroupModal}>
-          <FontAwesomeIcon icon={faExclamationCircle} />
-          <span>Delete</span>
-        </Button>
+        {props.currentBin !== props.currentGroup && (
+          <Button kind="warn" onClick={props.showDeleteGroupModal}>
+            <FontAwesomeIcon icon={faExclamationCircle} />
+            <span>Delete</span>
+          </Button>
+        )}
       </div>
       <div className={styles.WorkspaceRight}>
         <Button kind="default">

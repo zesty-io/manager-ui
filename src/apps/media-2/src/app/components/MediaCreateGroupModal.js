@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { Modal, ModalContent } from "@zesty-io/core/Modal";
-import { createMediaGroup } from "shell/store/media";
+import { createGroup } from "shell/store/media";
 
 import styles from "./MediaCreateGroupModal.less";
 
