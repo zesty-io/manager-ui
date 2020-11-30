@@ -37,6 +37,11 @@ const mediaSlice = createSlice({
       state.groups.push(action.payload);
       state.nav = createNav(state.bins, state.groups);
     },
+    editGroupSuccess(state, action) {
+      const group = state.groups.find(val => val.id === action.payload.id);
+      group.name = action.payload.name;
+      state.nav = createNav(state.bins, state.groups);
+    },
     deleteMediaGroupSuccess(state, action) {
       state.bins = state.bins.filter(el => el.id !== action.payload.id);
       state.groups = state.groups.filter(el => el.id !== action.payload.id);
@@ -79,6 +84,7 @@ export const {
   fetchBinFilesSuccess,
   fetchGroupFilesSuccess,
   createMediaGroupSuccess,
+  editGroupSuccess,
   deleteMediaGroupSuccess
 } = mediaSlice.actions;
 
@@ -251,6 +257,17 @@ export function createMediaGroup(groupName, bin, group) {
     }).then(res => {
       dispatch(createMediaGroupSuccess(res.data[0]));
       return res;
+    });
+  };
+}
+
+export function editGroup(groupName, group) {
+  return dispatch => {
+    return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/group/${group.id}`, {
+      method: "PATCH",
+      body: { ...group, name: groupName }
+    }).then(res => {
+      dispatch(editGroupSuccess(res.data[0]));
     });
   };
 }
