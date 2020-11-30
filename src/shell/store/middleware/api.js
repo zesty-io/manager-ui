@@ -4,7 +4,7 @@ import { fetchItems } from "shell/store/content";
 import { fetchFields } from "shell/store/fields";
 
 const inflight = [];
-export const fetchResource = store => next => action => {
+export const fetchResource = store => next => (action = {}) => {
   if (action.type === "FETCH_RESOURCE") {
     // Track inflight API requests
     if (inflight.indexOf(action.uri) === -1) {
@@ -35,7 +35,7 @@ export const fetchResource = store => next => action => {
   }
 };
 
-export const resolveFieldOptions = store => next => action => {
+export const resolveFieldOptions = store => next => (action = {}) => {
   if (action.type === "FETCH_FIELDS_SUCCESS") {
     if (action.payload) {
       Object.keys(action.payload).forEach(ZUID => {
