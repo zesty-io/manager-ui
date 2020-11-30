@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Live Preview</title>
+    <title>Active Preview</title>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
@@ -13,7 +13,6 @@
       href="https://fonts.googleapis.com/css?family=Montserrat:200,400,500,500i"
     />
 
-    <!-- Supports Riot.js Media app icons -->
     <link
       rel="stylesheet"
       href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
@@ -31,7 +30,7 @@
         background-color: rgb(199, 212, 234);
         color: #5b667d;
         font-family: "Montserrat", "Gibson Light", Arial, sans-serif;
-        font-size: 16px;
+        font-size: 13.2px;
         height: 100%;
         width: 100%;
       }
@@ -52,7 +51,7 @@
       #center h1 {
         font-family: "Montserrat", "Gibson Light", Arial, sans-serif;
         font-size: 2em;
-        font-weight: 300;
+        font-weight: 400;
         text-shadow: 1px 1px 1px #d6e5ff;
       }
 
@@ -96,7 +95,20 @@
     </style>
   </head>
   <body>
-    <main id="root"></main>
+    <main id="root">
+      <div id="appBoot">
+        <div id="center">
+          <h1>Starting Active Preview</h1>
+          <div class="loader">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+          </div>
+        </div>
+      </div>
+    </main>
     <div id="modalMount"></div>
   </body>
 </html>

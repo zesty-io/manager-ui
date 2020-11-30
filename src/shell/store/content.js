@@ -382,9 +382,9 @@ export function saveItem(itemZUID, action = "") {
       });
 
       dispatch(fetchItem(item.meta.contentModelZUID, itemZUID)).then(() => {
-        // NOTE: Hack to communicate with ActivePreview that this item
-        // was updated and it needs to re-render
-        zesty.trigger("UPDATED_CONTENT_ITEM", itemZUID);
+        // NOTE: Communicate with ActivePreview that this item
+        // was updated and it needs to refreshed
+        zesty.trigger("PREVIEW_REFRESH");
       });
       return res;
     });

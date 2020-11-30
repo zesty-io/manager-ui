@@ -8,7 +8,6 @@
 
 You have found the code base which powers the Zesty.io instance manager. While this code base can be run locally it is only recommended to do so for developing. If you would like to learn more about Zesty.io visit our [documentation at zesty.org](https://zesty.org/)
 
-
 # Architecture
 
 The manager-ui has been architected following the [PRPL strategy](https://developers.google.com/web/fundamentals/performance/prpl-pattern/) described by [Houssein Djirdeh](https://twitter.com/hdjirdeh) at Google. Every sub application has it's own bundle build. Application bundles are then pre cached dynamically by the app shell based upon the users settings.
@@ -37,7 +36,6 @@ A redux store is used to manage state across all of the potential sub-apps. The 
 
 - Node.js version 12 LTS
 - Web browser: Chrome / Firefox / Edge / Safari (latest)
-
 
 ## Modify your hosts file
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import * as Sentry from "@sentry/react";
@@ -30,9 +30,6 @@ export default connect(state => {
   };
 })(
   React.memo(function Shell(props) {
-    useEffect(() => {
-      zesty.trigger("locationChange");
-    }, [props.location]);
     return (
       <section className={styles.Shell}>
         <GlobalSidebar />

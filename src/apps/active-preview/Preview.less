@@ -1,0 +1,96 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.ActivePreview {
+  .TopBar {
+    background-color: @zesty-light-gray;
+    border-bottom: 2px solid #888888;
+    display: flex;
+    background: linear-gradient(#ebebeb, #d5d5d5);
+    padding: 4px 16px;
+    height: 40px;
+
+    .Logo {
+      display: flex;
+      align-items: center;
+      margin-right: 32px;
+    }
+
+    .Url {
+      display: flex;
+      flex: 1;
+      .Route {
+        flex: 1;
+      }
+    }
+
+    .Device {
+      display: flex;
+      margin: 0 16px;
+      .Select {
+        min-width: 200px;
+        li {
+          small {
+            color: @zesty-gray;
+          }
+        }
+      }
+    }
+
+    .Live {
+      display: flex;
+      align-items: center;
+    }
+
+    .Menu {
+      display: flex;
+      align-items: center;
+      margin-left: 16px;
+    }
+  }
+
+  .Preview {
+    height: calc(100vh - 53px);
+
+    .center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .NoDomain {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+
+    iframe {
+      position: relative;
+      height: 100%;
+      width: 100%;
+
+      background-image: url("https://storage.googleapis.com/assets-zesty/loading.png");
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: 10%;
+
+      // iframe when displayed inside device css
+      &.Device {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        overflow-y: scroll;
+        background-size: 50%;
+
+        // had browser scroll bar to mimic mobile device
+        width: calc(100% + 15px);
+      }
+    }
+  }
+}
