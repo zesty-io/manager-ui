@@ -14,14 +14,14 @@ export function MediaCreateGroupModal(props) {
   const history = useHistory();
   const [groupName, setGroupName] = useState("");
 
-  function createGroup(event) {
+  function handleCreateGroup(event) {
     event.preventDefault();
     props.onClose();
-    dispatch(
-      createMediaGroup(groupName, props.currentBin, props.currentGroup)
-    ).then(res => {
-      history.push(`/dam/group/${res.data[0].id}`);
-    });
+    dispatch(createGroup(groupName, props.currentBin, props.currentGroup)).then(
+      res => {
+        history.push(`/dam/${res.data[0].id}`);
+      }
+    );
   }
 
   return (
@@ -41,7 +41,7 @@ export function MediaCreateGroupModal(props) {
             value={groupName}
             onChange={event => setGroupName(event.target.value)}
           />
-          <button onClick={createGroup}>
+          <button onClick={handleCreateGroup}>
             <FontAwesomeIcon icon={faPlus} />
           </button>
         </form>

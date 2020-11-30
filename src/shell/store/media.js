@@ -33,18 +33,23 @@ const mediaSlice = createSlice({
         }
       });
     },
-    createMediaGroupSuccess(state, action) {
+    createGroupSuccess(state, action) {
       state.groups.push(action.payload);
       state.nav = createNav(state.bins, state.groups);
     },
     editGroupSuccess(state, action) {
-      const group = state.groups.find(val => val.id === action.payload.id);
-      group.name = action.payload.name;
+      const index = state.groups.findIndex(val => val.id === action.payload.id);
+      state.groups[index] = action.payload;
       state.nav = createNav(state.bins, state.groups);
     },
-    deleteMediaGroupSuccess(state, action) {
+    deleteGroupSuccess(state, action) {
       state.bins = state.bins.filter(el => el.id !== action.payload.id);
       state.groups = state.groups.filter(el => el.id !== action.payload.id);
+      state.nav = createNav(state.bins, state.groups);
+    },
+    editBinSuccess(state, action) {
+      const index = state.bins.findIndex(val => val.id === action.payload.id);
+      state.bins[index] = action.payload;
       state.nav = createNav(state.bins, state.groups);
     }
   }
@@ -58,7 +63,7 @@ function createNav(bins, groups) {
         .map(createNavGroup(groups)),
       icon: faFolder,
       label: bin.name,
-      path: `/dam/bin/${bin.id}`
+      path: `/dam/${bin.id}`
     };
   });
 }
@@ -71,7 +76,7 @@ function createNavGroup(groups) {
         .map(createNavGroup(groups)),
       icon: faFolder,
       label: currentGroup.name,
-      path: `/dam/group/${currentGroup.id}`
+      path: `/dam/${currentGroup.id}`
     };
   };
 }
@@ -83,9 +88,10 @@ export const {
   fetchGroupsSuccess,
   fetchBinFilesSuccess,
   fetchGroupFilesSuccess,
-  createMediaGroupSuccess,
+  createGroupSuccess,
   editGroupSuccess,
-  deleteMediaGroupSuccess
+  deleteGroupSuccess,
+  editBinSuccess
 } = mediaSlice.actions;
 
 function fetchMediaBins(instanceID) {
@@ -142,7 +148,7 @@ export function fetchAllMediaBins() {
   };
 }
 
-function fetchMediaGroups(binZUID) {
+function fetchGroups(binZUID) {
   return dispatch => {
     return dispatch({
       type: "FETCH_RESOURCE",
@@ -163,11 +169,11 @@ function fetchMediaGroups(binZUID) {
 export function fetchAllGroups() {
   return (dispatch, getState) => {
     const bins = getState().media.bins;
-    return Promise.all(
-      bins.map(bin => dispatch(fetchMediaGroups(bin.id)))
-    ).then(groups => {
-      return dispatch(fetchGroupsSuccess(groups.flat()));
-    });
+    return Promise.all(bins.map(bin => dispatch(fetchGroups(bin.id)))).then(
+      groups => {
+        return dispatch(fetchGroupsSuccess(groups.flat()));
+      }
+    );
   };
 }
 
@@ -212,9 +218,7 @@ export function uploadFile(file, bin, group) {
     let data = new FormData();
     data.append("file", file);
     data.append("bin_id", bin.id);
-    if (group) {
-      data.append("group_id", group.id);
-    }
+    data.append("group_id", group.id);
     data.append("user_id", getState().user.ZUID);
 
     let req = new XMLHttpRequest();
@@ -243,20 +247,21 @@ export function uploadFile(file, bin, group) {
   };
 }
 
-export function createMediaGroup(groupName, bin, group) {
+export function createGroup(groupName, bin, group) {
   return dispatch => {
-    const body = {
-      bin_id: bin.id,
-      name: groupName
-    };
-    if (group) {
-      body.group_id = group.id;
-    }
     return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/group`, {
-      body
+      body: {
+        bin_id: bin.id,
+        group_id: group.id,
+        name: groupName
+      }
     }).then(res => {
-      dispatch(createMediaGroupSuccess(res.data[0]));
-      return res;
+      if (res.status === 200) {
+        dispatch(createGroupSuccess(res.data[0]));
+        return res;
+      } else {
+        dispatch(notify({ message: "Failed creating group", kind: "error" }));
+      }
     });
   };
 }
@@ -267,21 +272,43 @@ export function editGroup(groupName, group) {
       method: "PATCH",
       body: { ...group, name: groupName }
     }).then(res => {
-      dispatch(editGroupSuccess(res.data[0]));
+      if (res.status === 200) {
+        dispatch(editGroupSuccess(res.data[0]));
+      } else {
+        dispatch(notify({ message: "Failed editing group", kind: "error" }));
+      }
     });
   };
 }
 
-export function deleteMediaGroup(group) {
+export function deleteGroup(group) {
   return dispatch => {
     return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/group/${group.id}`, {
       method: "DELETE"
     }).then(res => {
-      dispatch(
-        notify({ message: `Deleted group ${group.name}`, kind: "success" })
-      );
+      if (res.status === 200) {
+        dispatch(deleteGroupSuccess(group));
+        dispatch(
+          notify({ message: `Deleted group ${group.name}`, kind: "success" })
+        );
+      } else {
+        dispatch(notify({ message: "Failed deleting group", kind: "error" }));
+      }
+    });
+  };
+}
 
-      return dispatch(deleteMediaGroupSuccess(group));
+export function editBin(binName, bin) {
+  return dispatch => {
+    return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/bin/${bin.id}`, {
+      method: "PATCH",
+      body: { ...bin, name: binName }
+    }).then(res => {
+      if (res.status === 200) {
+        dispatch(editBinSuccess(res.data[0]));
+      } else {
+        dispatch(notify({ message: "Failed editing bin", kind: "error" }));
+      }
     });
   };
 }

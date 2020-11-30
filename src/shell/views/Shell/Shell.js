@@ -38,8 +38,7 @@ export default connect(state => {
           <div className={styles.SubApp}>
             <Sentry.ErrorBoundary fallback={() => <AppError />}>
               <Switch>
-                <Route path="/dam/bin/:binID" component={DamApp} />
-                <Route path="/dam/group/:groupID" component={DamApp} />
+                <Route path="/dam/:groupID" component={DamApp} />
                 <Route path="/dam" component={DamApp} />
 
                 {props.products.map(product => {

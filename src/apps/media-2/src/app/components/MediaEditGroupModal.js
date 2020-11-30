@@ -4,18 +4,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { Modal, ModalContent } from "@zesty-io/core/Modal";
-import { editGroup } from "shell/store/media";
+import { editBin, editGroup } from "shell/store/media";
 
 import styles from "./MediaEditGroupModal.less";
 
 export function MediaEditGroupModal(props) {
   const dispatch = useDispatch();
-  const [groupName, setGroupName] = useState("");
+  const [name, setName] = useState(props.currentGroup.name);
 
-  function editGroupName(event) {
+  function handleEditGroup(event) {
     event.preventDefault();
     props.onClose();
-    dispatch(editGroup(groupName, props.currentGroup));
+    if (props.currentGroup === props.currentBin) {
+      dispatch(editBin(name, props.currentBin));
+    } else {
+      dispatch(editGroup(name, props.currentGroup));
+    }
   }
 
   return (
@@ -32,10 +36,10 @@ export function MediaEditGroupModal(props) {
             type="text"
             placeholder="Edit Group"
             name="group"
-            value={groupName}
-            onChange={event => setGroupName(event.target.value)}
+            value={name}
+            onChange={event => setName(event.target.value)}
           />
-          <button onClick={editGroupName}>
+          <button onClick={handleEditGroup}>
             <FontAwesomeIcon icon={faPlus} />
           </button>
         </form>

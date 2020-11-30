@@ -17,28 +17,29 @@ import {
 import styles from "./MediaApp.less";
 
 export default connect((state, props) => {
-  let files;
+  let files = [];
   let currentGroup;
   let currentBin;
   if (props.match.params.groupID) {
     files = state.media.files.filter(
       file => file.group_id === props.match.params.groupID
     );
-    currentGroup = state.media.groups.find(
+    // use bin as group
+    currentGroup = state.media.bins.find(
       group => group.id === props.match.params.groupID
     );
     if (currentGroup) {
-      currentBin = state.media.bins.find(bin => bin.id === currentGroup.bin_id);
+      currentBin = currentGroup;
+    } else {
+      currentGroup = state.media.groups.find(
+        group => group.id === props.match.params.groupID
+      );
+      if (currentGroup) {
+        currentBin = state.media.bins.find(
+          bin => bin.id === currentGroup.bin_id
+        );
+      }
     }
-  } else if (props.match.params.binID) {
-    files = state.media.files.filter(
-      file => file.group_id === props.match.params.binID
-    );
-    currentBin = state.media.bins.find(
-      bin => bin.id === props.match.params.binID
-    );
-  } else {
-    files = [];
   }
   return {
     currentGroup,
@@ -78,22 +79,19 @@ export default connect((state, props) => {
 
   // fetch group files when navigating to group
   useEffect(() => {
-    if (props.match.params.groupID) {
-      props.dispatch(fetchGroupFiles(props.match.params.groupID));
+    if (props.currentGroup) {
+      if (props.currentGroup === props.currentBin) {
+        props.dispatch(fetchBinFiles(props.currentGroup.id));
+      } else {
+        props.dispatch(fetchGroupFiles(props.currentGroup.id));
+      }
     }
-  }, [props.match.params.groupID]);
-
-  // fetch bin files when navigating to bin
-  useEffect(() => {
-    if (props.match.params.binID) {
-      props.dispatch(fetchBinFiles(props.match.params.binID));
-    }
-  }, [props.match.params.binID]);
+  }, [props.currentGroup]);
 
   return (
     <main className={styles.MediaApp}>
       <WithLoader
-        condition={true}
+        condition={props.media.bins.length}
         message="Starting Digital Asset Manager"
         width="100vw"
       >
