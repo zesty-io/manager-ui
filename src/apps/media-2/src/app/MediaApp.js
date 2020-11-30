@@ -97,7 +97,11 @@ export default connect((state, props) => {
         message="Starting Digital Asset Manager"
         width="100vw"
       >
-        <MediaSidebar nav={props.media.nav} />
+        <MediaSidebar
+          nav={props.media.nav}
+          currentGroup={props.currentGroup}
+          currentBin={props.currentBin}
+        />
         <div className={styles.WorkspaceContainer}>
           <MediaHeader
             currentBin={props.currentBin}

@@ -33,6 +33,10 @@ const mediaSlice = createSlice({
         }
       });
     },
+    createMediaGroupSuccess(state, action) {
+      state.groups.push(action.payload);
+      state.nav = createNav(state.bins, state.groups);
+    },
     deleteMediaGroupSuccess(state, action) {
       state.bins = state.bins.filter(el => el.id !== action.payload.id);
       state.groups = state.groups.filter(el => el.id !== action.payload.id);
@@ -74,6 +78,7 @@ export const {
   fetchGroupsSuccess,
   fetchBinFilesSuccess,
   fetchGroupFilesSuccess,
+  createMediaGroupSuccess,
   deleteMediaGroupSuccess
 } = mediaSlice.actions;
 
@@ -229,6 +234,24 @@ export function uploadFile(file, bin, group) {
     });
 
     req.send(data);
+  };
+}
+
+export function createMediaGroup(groupName, bin, group) {
+  return dispatch => {
+    const body = {
+      bin_id: bin.id,
+      name: groupName
+    };
+    if (group) {
+      body.group_id = group.id;
+    }
+    return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/group`, {
+      body
+    }).then(res => {
+      dispatch(createMediaGroupSuccess(res.data[0]));
+      return res;
+    });
   };
 }
 

@@ -1,15 +1,13 @@
 import React, { useRef } from "react";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cx from "classnames";
-import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import {
-  faPlus,
   faUpload,
   faEdit,
   faExclamationCircle,
   faVideo
 } from "@fortawesome/free-solid-svg-icons";
+import cx from "classnames";
 
 import { Button } from "@zesty-io/core/Button";
 
