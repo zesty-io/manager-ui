@@ -78,11 +78,17 @@ export function MediaDetailsModal(props) {
                 }
                 placeholder={"Alt Attribute"}
               />
-              <h3 className={styles.ModalLabels}>ZUID: {props.file.id}</h3>
 
-              <h3 className={styles.ModalLabels}>
-                Updated: <span>{props.file.updated_at}</span>
-              </h3>
+              <dl className={styles.DescriptionList}>
+                <dt>ZUID:</dt>
+                <dd>{props.file.id}</dd>
+                <dt> Date: </dt>
+                <dd>{props.file.updated_at}</dd>
+                <dt> Dimensions: </dt>
+                <dd> 2048 x 1536 pixels</dd>
+                <dt> File Size: </dt>
+                <dd>197.16 K</dd>
+              </dl>
             </div>
             <div className={styles.Checkered}>
               <img
