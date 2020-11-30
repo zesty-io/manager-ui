@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
+import { Button } from "@zesty-io/core/Button";
 import { Modal, ModalContent } from "@zesty-io/core/Modal";
 import { createMediaGroup } from "shell/store/media";
 
@@ -41,9 +42,10 @@ export function MediaCreateGroupModal(props) {
             value={groupName}
             onChange={event => setGroupName(event.target.value)}
           />
-          <button onClick={handleCreateGroup}>
+          <Button kind="save" onClick={handleCreateGroup}>
             <FontAwesomeIcon icon={faPlus} />
-          </button>
+            <span>Save</span>
+          </Button>
         </form>
       </ModalContent>
     </Modal>
