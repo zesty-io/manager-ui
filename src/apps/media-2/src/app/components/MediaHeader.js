@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -13,10 +13,13 @@ import { Button } from "@zesty-io/core/Button";
 
 import { uploadFile } from "shell/store/media";
 
+import { MediaEditGroupModal } from "./MediaEditGroupModal";
+
 import styles from "./MediaHeader.less";
 
 export function MediaHeader(props) {
   const dispatch = useDispatch();
+  const [editGroupModal, setEditGroupModal] = useState(false);
   const hiddenFileInput = useRef(null);
 
   function handleUploadClick() {
@@ -27,8 +30,6 @@ export function MediaHeader(props) {
     const file = event.target.files[0];
     dispatch(uploadFile(file, props.currentBin, props.currentGroup));
   }
-
-  function handleEditGroup() {}
 
   return (
     <header className={styles.WorkspaceHeader}>
@@ -44,7 +45,7 @@ export function MediaHeader(props) {
           onChange={handleFileInputChange}
           style={{ display: "none" }}
         />
-        <Button kind="cancel" onClick={handleEditGroup}>
+        <Button kind="cancel" onClick={() => setEditGroupModal(true)}>
           <FontAwesomeIcon icon={faEdit} />
           <span>Edit</span>
         </Button>
@@ -52,6 +53,13 @@ export function MediaHeader(props) {
           <FontAwesomeIcon icon={faExclamationCircle} />
           <span>Delete</span>
         </Button>
+        {editGroupModal && (
+          <MediaEditGroupModal
+            currentGroup={props.currentGroup}
+            currentBin={props.currentBin}
+            onClose={() => setEditGroupModal(false)}
+          />
+        )}
       </div>
       <div className={styles.WorkspaceRight}>
         <Button kind="default">
