@@ -12,7 +12,6 @@ import { Infotip } from "@zesty-io/core/Infotip";
 import styles from "./MediaDetailsModal.less";
 
 export function MediaDetailsModal(props) {
-  console.log("David HERE", props);
   return (
     <Modal
       className={styles.Modal}
