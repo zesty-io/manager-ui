@@ -39,7 +39,10 @@ export function MediaWorkspace(props) {
               <CardFooter className={styles.CardFooter}>
                 <button className={styles.FooterButton}>
                   <FontAwesomeIcon
-                    onClick={() => props.setFileDetails(file)}
+                    onClick={event => {
+                      event.stopPropagation();
+                      props.setFileDetails(file);
+                    }}
                     className={styles.Cog}
                     icon={faCog}
                   />

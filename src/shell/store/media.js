@@ -106,6 +106,7 @@ function fetchMediaBins(instanceID) {
           dispatch(
             notify({ message: "Failed loading media bins", kind: "error" })
           );
+          throw res;
         }
       }
     });
@@ -127,6 +128,7 @@ function fetchMediaEcoBins(ecoID) {
               kind: "error"
             })
           );
+          throw res;
         }
       }
     });
@@ -160,6 +162,7 @@ function fetchGroups(binZUID) {
           dispatch(
             notify({ message: "Failed loading bin groups", kind: "error" })
           );
+          throw res;
         }
       }
     });
@@ -189,6 +192,7 @@ export function fetchBinFiles(binZUID) {
           dispatch(
             notify({ message: "Failed loading bin files", kind: "error" })
           );
+          throw res;
         }
       }
     });
@@ -207,6 +211,7 @@ export function fetchGroupFiles(groupZUID) {
           dispatch(
             notify({ message: "Failed loading group files", kind: "error" })
           );
+          throw res;
         }
       }
     });
@@ -256,11 +261,12 @@ export function createGroup(groupName, bin, group) {
         name: groupName
       }
     }).then(res => {
-      if (res.status === 200) {
+      if (res.status === 201) {
         dispatch(createGroupSuccess(res.data[0]));
         return res;
       } else {
         dispatch(notify({ message: "Failed creating group", kind: "error" }));
+        throw res;
       }
     });
   };
@@ -276,6 +282,7 @@ export function editGroup(groupName, group) {
         dispatch(editGroupSuccess(res.data[0]));
       } else {
         dispatch(notify({ message: "Failed editing group", kind: "error" }));
+        throw res;
       }
     });
   };
@@ -293,6 +300,7 @@ export function deleteGroup(group) {
         );
       } else {
         dispatch(notify({ message: "Failed deleting group", kind: "error" }));
+        throw res;
       }
     });
   };
@@ -308,6 +316,7 @@ export function editBin(binName, bin) {
         dispatch(editBinSuccess(res.data[0]));
       } else {
         dispatch(notify({ message: "Failed editing bin", kind: "error" }));
+        throw res;
       }
     });
   };
