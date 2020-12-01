@@ -91,11 +91,13 @@ export function MediaDetailsModal(props) {
               </dl>
             </div>
             <div className={styles.Checkered}>
-              <img
-                className={styles.ModalImage}
-                src={props.file.url}
-                alt={props.file.title}
-              />
+              <a target="_blank" href={props.file.url}>
+                <img
+                  className={styles.ModalImage}
+                  src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${props.file.id}/getimage/?w=350&type=fit`}
+                  alt={props.file.title}
+                />
+              </a>
             </div>
           </CardContent>
           <ModalFooter className={styles.ModalFooter}>
