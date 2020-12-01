@@ -50,7 +50,7 @@ export default connect((state, props) => {
   };
 })(function MediaApp(props) {
   const history = useHistory();
-  const { groupID } = useParams();
+  const { groupID, fileID } = useParams();
   const [fileDetails, setFileDetails] = useState();
   const [deleteGroupModal, setDeleteGroupModal] = useState(false);
   const [selected, setSelected] = useState([]);
@@ -75,6 +75,14 @@ export default connect((state, props) => {
       history.push(`/dam/${currentBin.id}`);
     }
   }, [props.media.bins.length]);
+
+  useEffect(() => {
+    if (fileID) {
+      setFileDetails(props.media.files.find(file => file.id === fileID));
+    } else {
+      setFileDetails();
+    }
+  }, [props.media.files.length, fileID]);
 
   // always fetch all bins
   useEffect(() => {
@@ -119,16 +127,16 @@ export default connect((state, props) => {
           />
           <MediaWorkspace
             files={props.files}
-            setFileDetails={setFileDetails}
             selected={selected}
             toggleSelected={toggleSelected}
+            currentGroup={props.currentGroup}
           />
           <MediaSelected selected={selected} toggleSelected={toggleSelected} />
         </div>
         {fileDetails && (
           <MediaDetailsModal
             file={fileDetails}
-            onClose={() => setFileDetails()}
+            onClose={() => history.push(`/dam/${props.currentGroup.id}`)}
           />
         )}
         {deleteGroupModal && (
