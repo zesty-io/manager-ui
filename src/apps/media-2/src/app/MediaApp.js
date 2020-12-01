@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import { connect } from "react-redux";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { MediaSidebar } from "./components/MediaSidebar";
@@ -26,7 +27,7 @@ export default connect((state, props) => {
     );
     // use bin as group
     currentGroup = state.media.bins.find(
-      group => group.id === props.match.params.groupID
+      bin => bin.id === props.match.params.groupID
     );
     if (currentGroup) {
       currentBin = currentGroup;
@@ -48,6 +49,8 @@ export default connect((state, props) => {
     media: state.media
   };
 })(function MediaApp(props) {
+  const history = useHistory();
+  const { groupID } = useParams();
   const [fileDetails, setFileDetails] = useState();
   const [deleteGroupModal, setDeleteGroupModal] = useState(false);
   const [selected, setSelected] = useState([]);
@@ -64,6 +67,14 @@ export default connect((state, props) => {
       setSelected([...selected, file]);
     }
   }
+
+  // redirect to default bin if there is no group in URL
+  useEffect(() => {
+    if (!groupID && props.media.bins.length) {
+      const currentBin = props.media.bins.find(bin => bin.default);
+      history.push(`/dam/${currentBin.id}`);
+    }
+  }, [props.media.bins.length]);
 
   // always fetch all bins
   useEffect(() => {
