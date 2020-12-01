@@ -18,55 +18,49 @@ import {
 import styles from "./MediaApp.less";
 
 export default connect((state, props) => {
-  let files = [];
-  let currentGroup;
-  let currentBin;
-  if (props.match.params.groupID) {
-    files = state.media.files.filter(
-      file => file.group_id === props.match.params.groupID
-    );
-    // use bin as group
-    currentGroup = state.media.bins.find(
-      bin => bin.id === props.match.params.groupID
-    );
-    if (currentGroup) {
-      currentBin = currentGroup;
-    } else {
-      currentGroup = state.media.groups.find(
-        group => group.id === props.match.params.groupID
-      );
-      if (currentGroup) {
-        currentBin = state.media.bins.find(
-          bin => bin.id === currentGroup.bin_id
-        );
-      }
-    }
-  }
   return {
-    currentGroup,
-    currentBin,
-    files,
     media: state.media
   };
 })(function MediaApp(props) {
   const history = useHistory();
   const { groupID, fileID } = useParams();
+  const [currentGroup, setCurrentGroup] = useState();
+  const [currentBin, setCurrentBin] = useState();
+  const [files, setFiles] = useState([]);
   const [fileDetails, setFileDetails] = useState();
   const [deleteGroupModal, setDeleteGroupModal] = useState(false);
   const [selected, setSelected] = useState([]);
 
-  function toggleSelected(file) {
-    const fileIndex = selected.findIndex(
-      selectedFile => selectedFile.id === file.id
-    );
-    if (fileIndex !== -1) {
-      const newSelected = [...selected];
-      newSelected.splice(fileIndex, 1);
-      setSelected(newSelected);
-    } else {
-      setSelected([...selected, file]);
+  // update files
+  useEffect(() => {
+    if (groupID) {
+      setFiles(props.media.files.filter(file => file.group_id === groupID));
     }
-  }
+  }, [groupID, props.media.files.length]);
+
+  // update current group, bin
+  useEffect(() => {
+    if (groupID) {
+      let newCurrentGroup;
+      let newCurrentBin;
+      // use bin as group
+      newCurrentGroup = props.media.bins.find(bin => bin.id === groupID);
+      if (newCurrentGroup) {
+        newCurrentBin = newCurrentGroup;
+      } else {
+        newCurrentGroup = props.media.groups.find(
+          group => group.id === groupID
+        );
+        if (newCurrentGroup) {
+          newCurrentBin = props.media.bins.find(
+            bin => bin.id === newCurrentGroup.bin_id
+          );
+        }
+      }
+      setCurrentBin(newCurrentBin);
+      setCurrentGroup(newCurrentGroup);
+    }
+  }, [groupID, props.media.bins.length, props.media.groups.length]);
 
   // redirect to default bin if there is no group in URL
   useEffect(() => {
@@ -76,6 +70,7 @@ export default connect((state, props) => {
     }
   }, [props.media.bins.length]);
 
+  // open file details modal if fileID is in URL
   useEffect(() => {
     if (fileID) {
       setFileDetails(props.media.files.find(file => file.id === fileID));
@@ -98,51 +93,64 @@ export default connect((state, props) => {
 
   // fetch group files when navigating to group
   useEffect(() => {
-    if (props.currentGroup) {
-      if (props.currentGroup === props.currentBin) {
-        props.dispatch(fetchBinFiles(props.currentGroup.id));
+    if (currentGroup) {
+      if (currentGroup === currentBin) {
+        props.dispatch(fetchBinFiles(currentGroup.id));
       } else {
-        props.dispatch(fetchGroupFiles(props.currentGroup.id));
+        props.dispatch(fetchGroupFiles(currentGroup.id));
       }
     }
-  }, [props.currentGroup]);
+  }, [currentGroup]);
+
+  function toggleSelected(file) {
+    const fileIndex = selected.findIndex(
+      selectedFile => selectedFile.id === file.id
+    );
+    if (fileIndex !== -1) {
+      const newSelected = [...selected];
+      newSelected.splice(fileIndex, 1);
+      setSelected(newSelected);
+    } else {
+      setSelected([...selected, file]);
+    }
+  }
 
   return (
     <main className={styles.MediaApp}>
       <WithLoader
-        condition={props.currentGroup}
+        condition={currentGroup}
         message="Starting Digital Asset Manager"
         width="100vw"
       >
         <MediaSidebar
           nav={props.media.nav}
-          currentGroup={props.currentGroup}
-          currentBin={props.currentBin}
+          currentGroup={currentGroup}
+          currentBin={currentBin}
         />
         <div className={styles.WorkspaceContainer}>
           <MediaHeader
-            currentBin={props.currentBin}
-            currentGroup={props.currentGroup}
+            currentBin={currentBin}
+            currentGroup={currentGroup}
             showDeleteGroupModal={() => setDeleteGroupModal(true)}
           />
           <MediaWorkspace
-            files={props.files}
+            files={files}
             selected={selected}
             toggleSelected={toggleSelected}
-            currentGroup={props.currentGroup}
+            currentGroup={currentGroup}
           />
           <MediaSelected selected={selected} toggleSelected={toggleSelected} />
         </div>
         {fileDetails && (
           <MediaDetailsModal
             file={fileDetails}
-            onClose={() => history.push(`/dam/${props.currentGroup.id}`)}
+            onClose={() => history.push(`/dam/${currentGroup.id}`)}
           />
         )}
         {deleteGroupModal && (
           <MediaDeleteGroupModal
             onClose={() => setDeleteGroupModal(false)}
-            currentGroup={props.currentGroup}
+            currentGroup={currentGroup}
           />
         )}
       </WithLoader>
