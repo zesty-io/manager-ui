@@ -29,7 +29,10 @@ export function MediaWorkspace(props) {
             >
               <CardContent className={styles.CardContent}>
                 <div className={styles.Checkered}>
-                  <img src={file.url} alt={file.title} />
+                  <img
+                    src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${file.id}/getimage/?w=200&h=200&type=fit`}
+                    alt={file.title}
+                  />
                 </div>
                 <div className={cx(styles.Load, styles.Loading)}></div>
                 <button className={styles.Check} aria-label="Checked">
