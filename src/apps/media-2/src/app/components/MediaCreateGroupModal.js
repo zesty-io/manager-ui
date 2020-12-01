@@ -6,7 +6,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
 import { Modal, ModalContent } from "@zesty-io/core/Modal";
-import { createMediaGroup } from "shell/store/media";
+import { createGroup } from "shell/store/media";
 
 import styles from "./MediaCreateGroupModal.less";
 

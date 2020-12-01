@@ -91,7 +91,7 @@ export default connect((state, props) => {
   return (
     <main className={styles.MediaApp}>
       <WithLoader
-        condition={props.media.bins.length}
+        condition={props.currentGroup}
         message="Starting Digital Asset Manager"
         width="100vw"
       >
