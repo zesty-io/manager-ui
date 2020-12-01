@@ -19,19 +19,14 @@ const mediaSlice = createSlice({
       state.groups = action.payload;
       state.nav = createNav(state.bins, state.groups);
     },
-    fetchBinFilesSuccess(state, action) {
+    fetchFilesSuccess(state, action) {
+      const files = [];
       action.payload.forEach(file => {
         if (!state.files.find(val => val.id === file.id)) {
-          state.files.push(file);
+          files.push(file);
         }
       });
-    },
-    fetchGroupFilesSuccess(state, action) {
-      action.payload.forEach(file => {
-        if (!state.files.find(val => val.id === file.id)) {
-          state.files.push(file);
-        }
-      });
+      state.files = state.files.concat(files);
     },
     createGroupSuccess(state, action) {
       state.groups.push(action.payload);
@@ -86,8 +81,7 @@ export default mediaSlice.reducer;
 export const {
   fetchBinsSuccess,
   fetchGroupsSuccess,
-  fetchBinFilesSuccess,
-  fetchGroupFilesSuccess,
+  fetchFilesSuccess,
   createGroupSuccess,
   editGroupSuccess,
   deleteGroupSuccess,
@@ -187,7 +181,7 @@ export function fetchBinFiles(binZUID) {
       uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/bin/${binZUID}/files`,
       handler: res => {
         if (res.status === 200) {
-          dispatch(fetchBinFilesSuccess(res.data));
+          dispatch(fetchFilesSuccess(res.data));
         } else {
           dispatch(
             notify({ message: "Failed loading bin files", kind: "error" })
@@ -206,7 +200,7 @@ export function fetchGroupFiles(groupZUID) {
       uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/group/${groupZUID}`,
       handler: res => {
         if (res.status === 200) {
-          dispatch(fetchGroupFilesSuccess(res.data[0].files));
+          dispatch(fetchFilesSuccess(res.data[0].files));
         } else {
           dispatch(
             notify({ message: "Failed loading group files", kind: "error" })

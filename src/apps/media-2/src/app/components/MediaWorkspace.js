@@ -1,5 +1,6 @@
 import React from "react";
 import cx from "classnames";
+import { useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faCog, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 
@@ -8,6 +9,7 @@ import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
 import styles from "./MediaWorkspace.less";
 
 export function MediaWorkspace(props) {
+  const history = useHistory();
   return (
     <main
       className={cx({
@@ -19,6 +21,7 @@ export function MediaWorkspace(props) {
         {props.files.map(file => {
           return (
             <Card
+              key={file.id}
               className={cx({
                 [styles.Card]: true,
                 [styles.selected]: props.selected.find(
@@ -45,7 +48,9 @@ export function MediaWorkspace(props) {
                   <FontAwesomeIcon
                     onClick={event => {
                       event.stopPropagation();
-                      props.setFileDetails(file);
+                      history.push(
+                        `/dam/${props.currentGroup.id}/file/${file.id}`
+                      );
                     }}
                     className={styles.Cog}
                     icon={faCog}
