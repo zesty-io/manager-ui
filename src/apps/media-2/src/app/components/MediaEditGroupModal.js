@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
+import { Button } from "@zesty-io/core/Button";
 import { Modal, ModalContent } from "@zesty-io/core/Modal";
 import { editBin, editGroup } from "shell/store/media";
 
@@ -39,9 +40,10 @@ export function MediaEditGroupModal(props) {
             value={name}
             onChange={event => setName(event.target.value)}
           />
-          <button onClick={handleEditGroup}>
-            <FontAwesomeIcon icon={faPlus} />
-          </button>
+          <Button kind="save" onClick={handleEditGroup}>
+            <FontAwesomeIcon icon={faEdit} />
+            <span>Edit</span>
+          </Button>
         </form>
       </ModalContent>
     </Modal>
