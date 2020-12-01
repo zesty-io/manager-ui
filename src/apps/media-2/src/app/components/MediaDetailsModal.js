@@ -1,6 +1,10 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCopy, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCopy,
+  faExclamationCircle,
+  faFilePdf
+} from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
@@ -97,6 +101,7 @@ export function MediaDetailsModal(props) {
                   src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${props.file.id}/getimage/?w=350&type=fit`}
                   alt={props.file.title}
                 />
+                <FontAwesomeIcon className={styles.PDF} icon={faFilePdf} />
               </a>
             </div>
           </CardContent>

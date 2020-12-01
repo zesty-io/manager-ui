@@ -1,6 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 
 import { Card, CardContent } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
@@ -29,6 +29,10 @@ export function MediaSelected(props) {
                   >
                     <div className={styles.Checkered}>
                       <img src={file.url} alt={file.title} />
+                      <FontAwesomeIcon
+                        className={styles.PDF}
+                        icon={faFilePdf}
+                      />
                     </div>
                     <button className={styles.Check} aria-label="Checked">
                       <FontAwesomeIcon icon={faCheck} />

@@ -1,7 +1,7 @@
 import React from "react";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCog } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCog, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 
 import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
 
@@ -33,6 +33,7 @@ export function MediaWorkspace(props) {
                     src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${file.id}/getimage/?w=200&h=200&type=fit`}
                     alt={file.title}
                   />
+                  <FontAwesomeIcon className={styles.PDF} icon={faFilePdf} />
                 </div>
                 <div className={cx(styles.Load, styles.Loading)}></div>
                 <button className={styles.Check} aria-label="Checked">
