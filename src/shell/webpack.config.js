@@ -7,6 +7,8 @@ const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 const CleanupStatsPlugin = require("./CleanupStatsPlugin");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
+  .BundleAnalyzerPlugin;
 
 const CONFIG = require("./app.config");
 
@@ -52,6 +54,8 @@ module.exports = (env) => {
       },
     },
     plugins: [
+      // new BundleAnalyzerPlugin(),
+
       new webpack.ProvidePlugin({
         Buffer: ["buffer", "Buffer"],
       }),
