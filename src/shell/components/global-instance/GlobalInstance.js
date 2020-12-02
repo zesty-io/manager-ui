@@ -38,7 +38,7 @@ export default connect(state => {
   return (
     <section className={cx(styles.bodyText, styles.GlobalInstance)} ref={ref}>
       <menu className={styles.Actions}>
-        {props.instance.domains.length && (
+        {props.instance.domains.length ? (
           <Url
             href={`https://${props.instance.domains[0].domain}`}
             target="_blank"
@@ -46,7 +46,7 @@ export default connect(state => {
           >
             <FontAwesomeIcon icon={faExternalLinkAlt} />
           </Url>
-        )}
+        ) : null}
 
         <button
           className={cx(styles.InstanceOpen)}

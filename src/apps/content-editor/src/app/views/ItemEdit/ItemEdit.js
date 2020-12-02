@@ -234,7 +234,11 @@ class ItemEdit extends Component {
   render() {
     return (
       <WithLoader
-        condition={!this.state.loading && Object.keys(this.props.item).length}
+        condition={
+          !this.state.loading &&
+          this.props.item &&
+          Object.keys(this.props.item).length
+        }
         message={
           this.props.model && this.props.model.label
             ? `Loading ${this.props.model && this.props.model.label} Content`
