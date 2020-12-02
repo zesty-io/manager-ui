@@ -1,5 +1,6 @@
 import React, { useState, Fragment } from "react";
 import moment from "moment-timezone";
+import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -15,20 +16,23 @@ import { Button } from "@zesty-io/core/Button";
 import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
 
+import { useDomain } from "shell/hooks/use-domain";
 import { WorkflowRequest } from "../WorkflowRequest";
-import cx from "classnames";
-import styles from "./QuickView.less";
-import SharedWidgetStyles from "../SharedWidget.less";
 
+import SharedWidgetStyles from "../SharedWidget.less";
+import styles from "./QuickView.less";
 export const QuickView = React.memo(function QuickView(props) {
   const isPublished = props.publishing && props.publishing.isPublished;
   const isScheduled = props.scheduling && props.scheduling.isScheduled;
 
   const [workflowRequestOpen, setWorkFlowRequestOpen] = useState(false);
+  const domain = useDomain();
 
   const handleWorkflow = () => {
     setWorkFlowRequestOpen(!workflowRequestOpen);
   };
+
+  console.log(domain);
 
   return (
     <Fragment>
@@ -78,11 +82,9 @@ export const QuickView = React.memo(function QuickView(props) {
                 <Url
                   target="_blank"
                   title="Instant API"
-                  href={`${
-                    props.live_domain
-                      ? `${props.protocol}://${props.live_domain}`
-                      : props.preview_domain
-                  }/-/instant/${props.itemZUID}.json`}
+                  href={`${domain ? domain : props.preview_domain}/-/instant/${
+                    props.itemZUID
+                  }.json`}
                 >
                   <FontAwesomeIcon icon={faBolt} />
                   &nbsp;{`/-/instant/${props.itemZUID}.json`}
