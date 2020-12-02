@@ -1,4 +1,5 @@
 "use strict";
+
 const webpack = require("webpack");
 const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -9,7 +10,7 @@ const CleanupStatsPlugin = require("./CleanupStatsPlugin");
 
 const CONFIG = require("./app.config");
 
-module.exports = env => {
+module.exports = (env) => {
   console.log("SELECTED", env);
   console.log("CONFIG", CONFIG[env.NODE_ENV]);
 
@@ -20,20 +21,20 @@ module.exports = env => {
       contentBase: path.resolve(__dirname, "../../build"),
       hot: true,
       disableHostCheck: true,
-      historyApiFallback: true
+      historyApiFallback: true,
     },
     devtool:
       env.NODE_ENV !== "development" ? "source-map" : "cheap-module-source-map",
     mode: env.NODE_ENV !== "development" ? "production" : "development",
     entry: {
       main: path.resolve(__dirname, "./index.js"),
-      activePreview: path.resolve(__dirname, "../apps/active-preview/index.js")
+      activePreview: path.resolve(__dirname, "../apps/active-preview/index.js"),
     },
     output: {
       filename:
         env.NODE_ENV !== "development" ? "[name].[hash].js" : "[name].js",
       path: path.resolve(__dirname, "../../build/"),
-      publicPath: "/"
+      publicPath: "/",
     },
     resolve: {
       symlinks: false, // Used for development with npm link
@@ -41,14 +42,24 @@ module.exports = env => {
         "react-dom": "@hot-loader/react-dom",
         shell: path.resolve(__dirname, "../shell"),
         utility: path.resolve(__dirname, "../utility"),
-        apps: path.resolve(__dirname, "../apps")
-      }
+        apps: path.resolve(__dirname, "../apps"),
+      },
+      fallback: {
+        // csv-parse needs these to function
+        stream: require.resolve("stream-browserify"),
+        buffer: require.resolve("buffer"),
+        util: require.resolve("util/"),
+      },
     },
     plugins: [
+      new webpack.ProvidePlugin({
+        Buffer: ["buffer", "Buffer"],
+      }),
+
       new MiniCssExtractPlugin({
         ignoreOrder: true,
         filename:
-          env.NODE_ENV !== "development" ? "[name].[hash].css" : "[name].css"
+          env.NODE_ENV !== "development" ? "[name].[hash].css" : "[name].css",
       }),
 
       new MonacoWebpackPlugin({
@@ -66,7 +77,7 @@ module.exports = env => {
           // "pug",
           "scss",
           "typescript",
-          "xml"
+          "xml",
           // "yaml"
         ],
         features: [
@@ -109,33 +120,33 @@ module.exports = env => {
           "!transpose",
           "wordHighlighter",
           "wordOperations",
-          "wordPartOperations"
-        ]
+          "wordPartOperations",
+        ],
       }),
 
       new CopyPlugin({
-        patterns: ["public"]
+        patterns: ["public"],
       }),
 
       new HtmlWebpackPlugin({
         inject: false,
         chunks: ["main"],
         template: "src/index.html",
-        filename: "index.html"
+        filename: "index.html",
       }),
 
       new HtmlWebpackPlugin({
         chunks: ["activePreview"],
         template: "src/apps/active-preview/index.html",
-        filename: "activePreview.html"
+        filename: "activePreview.html",
       }),
 
       // Inject app config into bundle based on env
       new webpack.DefinePlugin({
-        __CONFIG__: JSON.stringify(CONFIG[env.NODE_ENV])
+        __CONFIG__: JSON.stringify(CONFIG[env.NODE_ENV]),
       }),
 
-      new CleanupStatsPlugin()
+      new CleanupStatsPlugin(),
     ],
     optimization: {
       splitChunks: {
@@ -143,10 +154,10 @@ module.exports = env => {
           commons: {
             test: /[\\/]node_modules[\\/]/,
             name: "vendors",
-            chunks: "all"
-          }
-        }
-      }
+            chunks: "all",
+          },
+        },
+      },
     },
     module: {
       rules: [
@@ -156,40 +167,42 @@ module.exports = env => {
             {
               loader: MiniCssExtractPlugin.loader,
               options: {
-                hmr: env.NODE_ENV === "development"
-              }
+                hmr: env.NODE_ENV === "development",
+              },
             },
             {
               loader: "css-loader",
               options: {
                 modules: {
-                  localIdentName: "[local]--[hash:base64:5]"
-                }
-              }
+                  localIdentName: "[local]--[hash:base64:5]",
+                },
+              },
             },
             {
-              loader: "less-loader"
-            }
-          ]
+              loader: "less-loader",
+            },
+          ],
         },
         {
           test: /\.css$/,
-          use: ["style-loader", "css-loader"]
+          use: ["style-loader", "css-loader"],
         },
         {
           test: /\.js$/,
           exclude: /(node_modules)/,
-          loader: "babel-loader",
-          query: {
-            presets: ["@babel/preset-env", "@babel/preset-react"],
-            plugins: [
-              ["@babel/plugin-proposal-class-properties", { loose: false }],
-              "@babel/plugin-transform-runtime", // https://babeljs.io/docs/en/babel-plugin-transform-runtime
-              "react-hot-loader/babel"
-            ]
-          }
-        }
-      ]
-    }
+          use: {
+            loader: "babel-loader",
+            options: {
+              presets: ["@babel/preset-env", "@babel/preset-react"],
+              plugins: [
+                ["@babel/plugin-proposal-class-properties", { loose: false }],
+                "@babel/plugin-transform-runtime", // https://babeljs.io/docs/en/babel-plugin-transform-runtime
+                "react-hot-loader/babel",
+              ],
+            },
+          },
+        },
+      ],
+    },
   };
 };
