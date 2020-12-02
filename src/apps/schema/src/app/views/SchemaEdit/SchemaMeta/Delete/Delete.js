@@ -6,7 +6,7 @@ import { faTrash, faBan } from "@fortawesome/free-solid-svg-icons";
 import {
   CollapsibleCard,
   CardContent,
-  CardFooter
+  CardFooter,
 } from "@zesty-io/core/CollapsibleCard";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 import { Button } from "@zesty-io/core/Button";
@@ -14,11 +14,9 @@ import { Button } from "@zesty-io/core/Button";
 import { notify } from "shell/store/notifications";
 import { deleteModel } from "shell/store/models";
 
-import styles from "./Delete.less";
-
 export default function Delete(props) {
   return (
-    <CollapsibleCard className={styles.Delete} header={Header(props)}>
+    <CollapsibleCard header={Header(props)}>
       <CardContent>
         <p>
           Deleting a model is a permanent action that can not be undone. By
@@ -66,7 +64,7 @@ function Footer(props) {
               .then(() => {
                 history.push("/schema");
               })
-              .catch(err => {
+              .catch((err) => {
                 console.error(err);
                 setIsOpen(false);
                 props.dispatch(
@@ -74,7 +72,7 @@ function Footer(props) {
                     kind: "warn",
                     message:
                       err.message ||
-                      `Failed to delete model: ${props.model.label}`
+                      `Failed to delete model: ${props.model.label}`,
                   })
                 );
               });

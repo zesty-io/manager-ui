@@ -5,17 +5,16 @@ import { GettingStarted } from "./components/GettingStarted";
 import { FileViewer } from "./components/FileViewer";
 import { NotFound } from "./components/NotFound";
 
-import styles from "./Workspace.less";
 export const Workspace = React.memo(function Workspace(props) {
   return (
-    <div className={styles.Workspace}>
+    <div>
       <Switch>
         <Route exact path="/code">
           <GettingStarted files={props.files} />
         </Route>
         <Route
           path="/code/file/:fileType/:fileZUID"
-          render={routeProps => {
+          render={(routeProps) => {
             return (
               <FileViewer
                 {...routeProps}

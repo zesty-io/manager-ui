@@ -161,14 +161,20 @@ module.exports = (env) => {
     },
     module: {
       rules: [
+        // Used by monaco
+        {
+          test: /\.ttf$/,
+          use: ["file-loader"],
+        },
+
         {
           test: /\.less$/,
           use: [
             {
               loader: MiniCssExtractPlugin.loader,
-              options: {
-                hmr: env.NODE_ENV === "development",
-              },
+              // options: {
+              //   hmr: env.NODE_ENV === "development",
+              // },
             },
             {
               loader: "css-loader",
