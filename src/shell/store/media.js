@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { faFolder } from "@fortawesome/free-solid-svg-icons";
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
+import uniqBy from "lodash/uniqBy";
 
 const mediaSlice = createSlice({
   name: "media",
@@ -115,15 +116,8 @@ function fetchMediaEcoBins(ecoID) {
       handler: res => {
         if (res.status === 200) {
           return res.data;
-        } else {
-          dispatch(
-            notify({
-              message: "Failed loading media ecosystem bins",
-              kind: "error"
-            })
-          );
-          throw res;
         }
+        //non-200 is not fatal
       }
     });
   };
@@ -138,7 +132,7 @@ export function fetchAllMediaBins() {
       promises.push(dispatch(fetchMediaEcoBins(ecoID)));
     }
     return Promise.all(promises).then(([bins, ecoBins]) => {
-      const allBins = ecoBins ? [...bins, ...ecoBins] : bins;
+      const allBins = ecoBins ? uniqBy([...bins, ...ecoBins], "id") : bins;
       return dispatch(fetchBinsSuccess(allBins));
     });
   };
