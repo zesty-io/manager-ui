@@ -104,7 +104,6 @@ export function MediaDetailsModal(props) {
                 alt={props.file.title}
               />
               <FontAwesomeIcon className={styles.PDF} icon={faFilePdf} />
-              <span className={styles.Test}> VIEW ORIGINAL IMAGE</span>
             </Url>
           </div>
           <Url target="_blank" title="Original Image" href={props.file.url}>
