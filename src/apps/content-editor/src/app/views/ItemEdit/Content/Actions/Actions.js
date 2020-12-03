@@ -41,9 +41,7 @@ export function Actions(props) {
         publishing={publishing}
         scheduling={scheduling}
         siblings={siblings}
-        live_domain={live_domain}
         preview_domain={preview_domain}
-        protocol={protocol}
         basicApi={basicApi}
         is_developer={codeAccess}
       />

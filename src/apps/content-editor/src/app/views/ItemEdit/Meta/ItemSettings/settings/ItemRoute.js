@@ -1,14 +1,15 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { connect } from "react-redux";
 import debounce from "lodash/debounce";
-import trimStart from "lodash/trimStart";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Input } from "@zesty-io/core/Input";
 import { InputIcon } from "@zesty-io/core/InputIcon";
 import { Infotip } from "@zesty-io/core/Infotip";
+import { AppLink } from "@zesty-io/core/AppLink";
 
+import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 
 import styles from "./ItemRoute.less";
@@ -24,30 +25,56 @@ export const ItemRoute = connect(state => {
 
     const validate = useCallback(
       debounce(path => {
+        if (!path) {
+          setUnique(false);
+          return;
+        }
+
         const parent = props.content[props.parentZUID];
-        // if no parent match, assume root /
-        const parentPath = parent ? parent.web.path : "/";
-        // trimStart path because search endpoint can't handle leading slash
-        const fullPath = trimStart(parentPath + path, "/");
+        const fullPath = parent ? parent.web.path + path : path;
+
         setLoading(true);
 
         return request(`${CONFIG.API_INSTANCE}/search/items?q=${fullPath}`)
           .then(res => {
             // check list of partial matches for exact path match
-            const matches = res.data.filter(
-              // result paths come with leading and trailing slashes
-              val => val.web.path === "/" + fullPath + "/"
-            );
+            const matches = res.data.filter(item => {
+              /**
+               * Exclude currently viewed item zuid, as it's currently saved path would match.
+               * Check if other results have a matching path, if so then it is already taken and
+               * can not be used.
+               * Result paths come with leading and trailing slashes
+               */
+              return (
+                item.meta.ZUID !== props.ZUID &&
+                item.web.path === "/" + fullPath + "/"
+              );
+            });
 
-            setLoading(false);
+            if (matches.length) {
+              props.dispatch(
+                notify({
+                  kind: "warn",
+                  message: (
+                    <p>
+                      URL <strong>{matches[0].web.path}</strong> is unavailable.
+                      Used by&nbsp;
+                      <AppLink
+                        to={`/content/${matches[0].meta.contentModelZUID}/${matches[0].meta.ZUID}`}
+                      >
+                        {matches[0].web.metaLinkText ||
+                          matches[0].web.metaTitle}
+                      </AppLink>
+                    </p>
+                  )
+                })
+              );
+            }
+
             setUnique(!matches.length);
           })
-          .catch(err => {
-            console.error(err);
-            setLoading(false);
-            throw err;
-          });
-      }, 1000),
+          .finally(() => setLoading(false));
+      }, 500),
       [props.parentZUID]
     );
 
