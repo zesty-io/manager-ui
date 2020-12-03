@@ -36,6 +36,7 @@
   }
 
   .Card {
+    margin: 0;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -44,14 +45,14 @@
 
     // Checkbox Selected
     &.selected {
-      box-shadow: -1px -1px 16px 0px #336edb;
+      box-shadow: 0px 0px 6px #15181d;
 
       .CardContent .Check {
-        background: #74be24;
+        background: rgba(0, 0, 0, 0.35);
         opacity: 1;
       }
     }
-
+    // Grid Image
     img {
       width: 100%;
       height: 167px;
@@ -63,6 +64,7 @@
       width: 100px;
       flex-shrink: 0;
 
+      // Preview Strip Image
       img {
         width: 100%;
         height: 100px;
@@ -163,8 +165,8 @@
         right: 0;
         opacity: 0;
         cursor: pointer;
-        background: #5b667d;
-        color: #efefef;
+        background: rgba(0, 0, 0, 0.15);
+        color: black;
         width: 24px;
         height: 24px;
         margin: 1px;
