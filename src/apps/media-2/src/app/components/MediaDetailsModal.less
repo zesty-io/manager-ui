@@ -1,13 +1,17 @@
 .Modal {
-  max-width: 75%;
+  max-width: 65%;
+  margin: 8px auto;
+  padding: 16px;
 
   @media only screen and (min-width: 2000px) {
     max-width: 50%;
+    margin: 5% auto 0;
+    padding: 32px;
   }
 
   .ModalContent {
     display: grid;
-    grid-template-columns: 500px minmax(350px, 1fr);
+    grid-template-columns: minmax(450px, 1fr) minmax(350px, 1fr);
     gap: 16px;
     justify-content: center;
     align-items: center;
