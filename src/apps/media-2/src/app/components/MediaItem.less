@@ -1,0 +1,192 @@
+//Spinner for Loading
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.Card {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  box-shadow: 0 7px 30px -10px rgba(150, 170, 180, 0.5);
+
+  // Checkbox Selected
+  &.selected {
+    box-shadow: 0px 0px 6px #15181d;
+
+    .CardContent .Check {
+      background: rgba(0, 0, 0, 0.35);
+      opacity: 1;
+    }
+  }
+  // Grid Image
+  img {
+    width: 100%;
+    height: 167px;
+    min-height: 167px;
+    object-fit: contain;
+  }
+
+  &.CardTop {
+    width: 100px;
+    flex-shrink: 0;
+
+    // Preview Strip Image
+    img {
+      width: 100%;
+      height: 100px;
+      object-fit: contain;
+    }
+  }
+
+  .CardContent {
+    position: relative;
+    &.CardContentTop {
+      padding: 8px;
+      display: flex;
+      align-items: center;
+    }
+
+    .Checkered {
+      height: auto;
+      background: linear-gradient(
+          45deg,
+          rgba(0, 0, 0, 0.0980392) 25%,
+          transparent 25%,
+          transparent 75%,
+          rgba(0, 0, 0, 0.0980392) 75%,
+          rgba(0, 0, 0, 0.0980392) 0
+        ),
+        linear-gradient(
+          45deg,
+          rgba(0, 0, 0, 0.0980392) 25%,
+          transparent 25%,
+          transparent 75%,
+          rgba(0, 0, 0, 0.0980392) 75%,
+          rgba(0, 0, 0, 0.0980392) 0
+        ),
+        white;
+      background-repeat: repeat, repeat;
+      background-position: 0px 0, 5px 5px;
+      background-size: 10px 10px, 10px 10px;
+      position: relative;
+
+      .PDF {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 48px;
+        color: black;
+      }
+
+      //Loading Spinner
+      .Load {
+        position: relative;
+        display: inline-block;
+        width: 350px;
+        height: 350px;
+        border: 2px solid #34495e;
+        border-radius: 100%;
+        animation: spin 0.75s infinite linear;
+        &:before,
+        &::after {
+          left: -2px;
+          top: -2px;
+          display: none;
+          position: absolute;
+          content: "";
+          width: inherit;
+          height: inherit;
+          border: inherit;
+          border-radius: inherit;
+        }
+      }
+
+      .Loading {
+        display: inline-block;
+        border-color: transparent;
+        border-top-color: #f17829;
+        animation-duration: 1.2s;
+        &::before {
+          display: inline-block;
+          border-color: transparent;
+          border-top-color: #f17829;
+          animation-duration: 1.2s;
+          transform: rotate(120deg);
+        }
+        &::after {
+          display: inline-block;
+          border-color: transparent;
+          border-top-color: #f17829;
+          animation-duration: 1.2s;
+          transform: rotate(240deg);
+        }
+      }
+    }
+
+    //Checkbox Styles
+    .Check {
+      position: absolute;
+      top: 0;
+      right: 0;
+      opacity: 0;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.15);
+      color: black;
+      width: 24px;
+      height: 24px;
+      margin: 1px;
+      border: none;
+      border-radius: 2px;
+      transition: 0.25s ease-in-out;
+    }
+
+    // Checkbox Show
+    &:hover {
+      .Check {
+        opacity: 1;
+      }
+    }
+  }
+  .CardFooter {
+    padding: 0;
+  }
+  .FooterButton {
+    cursor: pointer;
+    border: none;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    font-family: inherit;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .Cog {
+      background: rgba(0, 0, 0, 0.15);
+      font-size: 16px;
+      margin-right: 8px;
+      padding: 8px;
+      transition: all 0.3s;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.35);
+      }
+    }
+    .Preview {
+      overflow: hidden;
+      flex: 1;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: middle;
+      padding: 0 0.5rem;
+    }
+  }
+}
