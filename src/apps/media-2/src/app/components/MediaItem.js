@@ -42,17 +42,28 @@ export function MediaItem(props) {
       case "html":
       case "js":
       case "less":
+      case "php":
+      case "py":
+      case "rb":
+      case "sass":
+      case "scss":
+      case "sql":
+      case "xml":
+      case "yml":
         return <FontAwesomeIcon className={styles.icon} icon={faFileCode} />;
       case "aac":
       case "aiff":
       case "mid":
       case "mp3":
+      case "wav":
         return <FontAwesomeIcon className={styles.icon} icon={faFileAudio} />;
       case "pdf":
         return <FontAwesomeIcon className={styles.icon} icon={faFilePdf} />;
       case "ai":
       case "bmp":
       case "eps":
+      case "psd":
+      case "tiff":
         return <FontAwesomeIcon className={styles.icon} icon={faFileImage} />;
       case "avi":
       case "flv":
@@ -60,52 +71,24 @@ export function MediaItem(props) {
       case "mpg":
       case "m4v":
       case "mov":
+      case "qt":
         return <FontAwesomeIcon className={styles.icon} icon={faFileVideo} />;
       case "iso":
+      case "rar":
+      case "tgz":
+      case "zip":
         return <FontAwesomeIcon className={styles.icon} icon={faFileArchive} />;
       case "ots":
+      case "xls":
+      case "xlsx":
         return <FontAwesomeIcon className={styles.icon} icon={faFileExcel} />;
-      // case "ott":
-      //   return `${basePath}ott.png`;
-      // case "php":
-      //   return `${basePath}php.png`;
-      // case "ppt":
-      //   return `${basePath}ppt.png`;
-      // case "psd":
-      //   return `${basePath}psd.png`;
-      // case "py":
-      //   return `${basePath}py.png`;
-      // case "qt":
-      //   return `${basePath}qt.png`;
-      // case "rar":
-      //   return `${basePath}rar.png`;
-      // case "rb":
-      //   return `${basePath}rb.png`;
-      // case "rtf":
-      //   return `${basePath}rtf.png`;
-      // case "sass":
-      //   return `${basePath}sass.png`;
-      // case "scss":
-      //   return `${basePath}scss.png`;
-      // case "sql":
-      //   return `${basePath}sql.png`;
-      // case "tgz":
-      //   return `${basePath}tgz.png`;
-      // case "tiff":
-      //   return `${basePath}tiff.png`;
-      // case "txt":
-      //   return `${basePath}txt.png`;
-      // case "wav":
-      //   return `${basePath}wav.png`;
-      // case "xls":
-      //   return `${basePath}xls.png`;
-      // case "xlsx":
-      //   return `${basePath}xlsx.png`;
-      // case "xml":
-      //   return `${basePath}xml.png`;
-      // case "yml":
-      //   return `${basePath}yml.png`;
-      // case "zip":
+      case "ppt":
+        return (
+          <FontAwesomeIcon className={styles.icon} icon={faFilePowerpoint} />
+        );
+      case "rtf":
+        return <FontAwesomeIcon className={styles.icon} icon={faFileWord} />;
+      case "txt":
       case "exe":
       default:
         return <FontAwesomeIcon className={styles.icon} icon={faFile} />;

@@ -20,6 +20,7 @@ export function MediaWorkspace(props) {
                 selectedFile => selectedFile.id === file.id
               )}
               toggleSelected={props.toggleSelected}
+              currentGroup={props.currentGroup}
             />
           );
         })}
