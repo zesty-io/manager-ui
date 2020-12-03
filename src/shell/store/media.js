@@ -215,6 +215,7 @@ export function uploadFile(file, bin, group) {
     data.append("user_id", getState().user.ZUID);
 
     let req = new XMLHttpRequest();
+    req.withCredentials = true;
     req.open(
       "POST",
       `${CONFIG.SERVICE_MEDIA_STORAGE}/upload/${bin.storage_driver}/${bin.storage_name}`
