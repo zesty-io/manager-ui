@@ -38,7 +38,7 @@ export function useDomain() {
     }
   } else {
     // No domains are configured.
-    // Most likely an older instance before .zesty.dev domains were auto createds
+    // Most likely an older instance before .zesty.dev domains were auto created
     return null;
   }
 }

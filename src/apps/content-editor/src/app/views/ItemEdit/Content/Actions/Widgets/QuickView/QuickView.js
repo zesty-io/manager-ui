@@ -32,8 +32,6 @@ export const QuickView = React.memo(function QuickView(props) {
     setWorkFlowRequestOpen(!workflowRequestOpen);
   };
 
-  console.log(domain);
-
   return (
     <Fragment>
       <Card className={styles.QuickView}>
