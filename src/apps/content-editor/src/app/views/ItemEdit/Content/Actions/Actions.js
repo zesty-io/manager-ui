@@ -27,7 +27,7 @@ export function Actions(props) {
   const { publishing, scheduling, siblings } = props.item;
   const { listed, sort, updatedAt, version } = props.item.meta;
   const { path, metaTitle, metaLinkText } = props.item.web;
-  const { live_domain, preview_domain, protocol, basicApi } = props.instance;
+  const { preview_domain, basicApi } = props.instance;
 
   return (
     <aside className={styles.Actions}>
@@ -60,7 +60,6 @@ export function Actions(props) {
 
       {props.set.type !== "dataset" && (
         <WidgetQuickShare
-          live_domain={live_domain}
           preview_domain={preview_domain}
           path={path}
           metaLinkText={metaLinkText}
