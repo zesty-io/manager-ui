@@ -53,6 +53,6 @@ export function usePermission(action, zuid) {
       return ["Owner", "Admin", "Developer"].includes(role.systemRole.name);
 
     default:
-      false;
+      return false;
   }
 }
