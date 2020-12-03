@@ -27,12 +27,7 @@ export class Actions extends PureComponent {
     const { publishing, scheduling, siblings } = this.props.item;
     const { listed, sort, updatedAt, version } = this.props.item.meta;
     const { path, metaTitle, metaLinkText } = this.props.item.web;
-    const {
-      live_domain,
-      preview_domain,
-      protocol,
-      basicApi
-    } = this.props.instance;
+    const { preview_domain, basicApi } = this.props.instance;
 
     return (
       <aside className={styles.Actions}>
@@ -46,9 +41,7 @@ export class Actions extends PureComponent {
           publishing={publishing}
           scheduling={scheduling}
           siblings={siblings}
-          live_domain={live_domain}
           preview_domain={preview_domain}
-          protocol={protocol}
           basicApi={basicApi}
           is_developer={is_developer}
         />
@@ -67,7 +60,6 @@ export class Actions extends PureComponent {
 
         {this.props.set.type !== "dataset" && (
           <WidgetQuickShare
-            live_domain={live_domain}
             preview_domain={preview_domain}
             path={path}
             metaLinkText={metaLinkText}

@@ -57,7 +57,6 @@ export default connect(state => {
   return {
     instanceName: state.instance.name,
     instanceZUID: state.instance.ZUID,
-    domains: state.instance.domains,
     fields: state.fields,
     models: state.models,
     content: state.content,
