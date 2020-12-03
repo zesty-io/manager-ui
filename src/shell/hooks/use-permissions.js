@@ -11,15 +11,15 @@ export function usePermission(action, zuid) {
   const state = store.getState();
   const role = state.userRole;
 
-  // "With great power comes great responsibility" - Uncle Ben
+  // "With great power comes great responsibility" - Benjamin Franklin Parker
   if (state.user.staff) {
-    return state.user.staff;
+    return true;
   }
 
   // Check super
   // super users are allowed all actions across all resources
   if (role.systemRole.super) {
-    return role.systemRole.super;
+    return true;
   }
 
   // Check granular
