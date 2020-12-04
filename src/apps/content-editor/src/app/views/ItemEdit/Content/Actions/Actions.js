@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 
 import { usePermission } from "shell/hooks/use-permissions";
+import { useDomain } from "shell/hooks/use-domain";
 
 import WidgetPublishHistory from "./Widgets/WidgetPublishHistory";
 import WidgetDraftHistory from "./Widgets/WidgetDraftHistory";
@@ -21,7 +22,8 @@ export function Actions(props) {
   const canPublish = usePermission("PUBLISH");
   const canDelete = usePermission("DELETE");
   const canUpdate = usePermission("UPDATE");
-  const codeAccess = usePermission("CODE");
+
+  const domain = useDomain();
 
   const { type } = props.model;
   const { publishing, scheduling, siblings } = props.item;
@@ -43,7 +45,6 @@ export function Actions(props) {
         siblings={siblings}
         preview_domain={preview_domain}
         basicApi={basicApi}
-        is_developer={codeAccess}
       />
 
       <WidgetPublishHistory
@@ -58,10 +59,9 @@ export function Actions(props) {
         itemZUID={props.itemZUID}
       />
 
-      {props.set.type !== "dataset" && (
+      {props.set.type !== "dataset" && domain && (
         <WidgetQuickShare
-          preview_domain={preview_domain}
-          path={path}
+          url={`${domain}/${path}`}
           metaLinkText={metaLinkText}
         />
       )}

@@ -5,14 +5,8 @@ import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
-import { useDomain } from "shell/hooks/use-domain";
-
 import styles from "./WidgetQuickShare.less";
 export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
-  const domain = useDomain();
-
-  const url = domain ? domain + props.path : props.preview_domain + props.path;
-
   const handleOpen = (evt, url) => {
     window.open(
       url,
@@ -40,7 +34,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
               handleOpen(
                 evt,
                 `https://twitter.com/share?url=${encodeURIComponent(
-                  url
+                  props.url
                 )}&text=${encodeURIComponent(props.metaLinkText)}`
               )
             }
@@ -54,7 +48,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
               handleOpen(
                 evt,
                 `http://www.facebook.com/sharer.php?u=${encodeURIComponent(
-                  url
+                  props.url
                 )}&t=${encodeURIComponent(props.metaLinkText)}`
               )
             }
@@ -68,7 +62,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
               handleOpen(
                 evt,
                 `http://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(
-                  url
+                  props.url
                 )}`
               )
             }
@@ -82,7 +76,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
               handleOpen(
                 evt,
                 `http://reddit.com/submit?url=${encodeURIComponent(
-                  url
+                  props.url
                 )}&title=${encodeURIComponent(props.metaLinkText)}`
               )
             }

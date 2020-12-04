@@ -16,6 +16,7 @@ import { Button } from "@zesty-io/core/Button";
 import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
 
+import { usePermission } from "shell/hooks/use-permissions";
 import { useDomain } from "shell/hooks/use-domain";
 import { WorkflowRequest } from "../WorkflowRequest";
 
@@ -26,6 +27,7 @@ export const QuickView = React.memo(function QuickView(props) {
   const isScheduled = props.scheduling && props.scheduling.isScheduled;
 
   const [workflowRequestOpen, setWorkFlowRequestOpen] = useState(false);
+  const codeAccess = usePermission("CODE");
   const domain = useDomain();
 
   const handleWorkflow = () => {
@@ -109,20 +111,19 @@ export const QuickView = React.memo(function QuickView(props) {
               <FontAwesomeIcon icon={faEnvelope} />
               Workflow Request
             </Button>
-            <ButtonGroup>
-              {props.is_developer && (
+
+            {codeAccess && (
+              <ButtonGroup>
                 <AppLink to={`/schema/${props.modelZUID}`}>
                   <FontAwesomeIcon icon={faDatabase} />
                   &nbsp;Edit Schema
                 </AppLink>
-              )}
-              {props.is_developer && (
                 <AppLink to="/code/">
                   <FontAwesomeIcon icon={faCode} />
                   &nbsp;Edit Code
                 </AppLink>
-              )}
-            </ButtonGroup>
+              </ButtonGroup>
+            )}
           </ButtonGroup>
 
           {workflowRequestOpen && (
