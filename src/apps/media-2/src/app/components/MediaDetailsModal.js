@@ -6,14 +6,13 @@ import {
   faFilePdf,
   faLink
 } from "@fortawesome/free-solid-svg-icons";
-import cx from "classnames";
 import { Url } from "@zesty-io/core/Url";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Button } from "@zesty-io/core/Button";
 import { FieldLabel } from "@zesty-io/core/FieldLabel";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { Infotip } from "@zesty-io/core/Infotip";
-
+import { MediaImage } from "./MediaImage";
 import styles from "./MediaDetailsModal.less";
 
 export function MediaDetailsModal(props) {
@@ -98,12 +97,7 @@ export function MediaDetailsModal(props) {
               title="View Original Image"
               href={props.file.url}
             >
-              <img
-                className={styles.ModalImage}
-                src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${props.file.id}/getimage/?w=350&type=fit`}
-                alt={props.file.title}
-              />
-              <FontAwesomeIcon className={styles.PDF} icon={faFilePdf} />
+              <MediaImage file={props.file} params={"?w=350&type=fit"} />
             </Url>
           </div>
           <Url target="_blank" title="Original Image" href={props.file.url}>
