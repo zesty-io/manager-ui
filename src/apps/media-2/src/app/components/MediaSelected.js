@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faFilePdf } from "@fortawesome/free-solid-svg-icons";
-
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import cx from "classnames";
 import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
 import { Card, CardContent } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
-import cx from "classnames";
+import { MediaImage } from "./MediaImage";
 import styles from "./MediaSelected.less";
 
 export function MediaSelected(props) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   function handleSetOpen() {
     // TODO persist to user settings
@@ -90,10 +90,9 @@ export function MediaSelected(props) {
                         )}
                       >
                         <div className={styles.Checkered}>
-                          <img src={file.url} alt={file.title} />
-                          <FontAwesomeIcon
-                            className={styles.PDF}
-                            icon={faFilePdf}
+                          <MediaImage
+                            file={file}
+                            params={"?w=200&h=200&type=fit"}
                           />
                         </div>
                         <button className={styles.Check} aria-label="Checked">

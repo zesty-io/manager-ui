@@ -1,5 +1,9 @@
+@global-top-bar-height: 54px;
+@drawer-height: 262px;
+@workspace-header-height: 56px;
+
 .Workspace {
-  height: calc(100vh - 54px - 56px);
+  height: calc(100vh - @global-top-bar-height - @workspace-header-height);
   overflow: hidden;
   overflow-y: auto;
 
@@ -8,8 +12,9 @@
   transition: 0.25s ease-in-out;
 
   &.hasSelected {
-    // height minus header minus selected strip
-    height: calc(100vh - 54px - 56px - 233px);
+    height: calc(
+      100vh - @global-top-bar-height - @workspace-header-height - @drawer-height
+    );
   }
 
   // Main section grid layout

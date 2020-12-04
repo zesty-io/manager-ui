@@ -1,6 +1,6 @@
 import React from "react";
 import cx from "classnames";
-import { MediaItem } from "./MediaItem";
+import { MediaWorkspaceItem } from "./MediaWorkspaceItem";
 import styles from "./MediaWorkspace.less";
 
 export function MediaWorkspace(props) {
@@ -14,7 +14,7 @@ export function MediaWorkspace(props) {
       <section className={styles.WorkspaceGrid}>
         {props.files.map(file => {
           return (
-            <MediaItem
+            <MediaWorkspaceItem
               file={file}
               selected={props.selected.find(
                 selectedFile => selectedFile.id === file.id
