@@ -5,11 +5,13 @@ import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
+import { useDomain } from "shell/hooks/use-domain";
+
 import styles from "./WidgetQuickShare.less";
 export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
-  const url = props.live_domain
-    ? props.live_domain + props.path
-    : props.preview_domain + props.path;
+  const domain = useDomain();
+
+  const url = domain ? domain + props.path : props.preview_domain + props.path;
 
   const handleOpen = (evt, url) => {
     window.open(
@@ -34,7 +36,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
         <ButtonGroup className={styles.ShareLinks}>
           <span
             className="twitter"
-            onClick={evt =>
+            onClick={(evt) =>
               handleOpen(
                 evt,
                 `https://twitter.com/share?url=${encodeURIComponent(
@@ -48,7 +50,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
           </span>
           <span
             className="facebook"
-            onClick={evt =>
+            onClick={(evt) =>
               handleOpen(
                 evt,
                 `http://www.facebook.com/sharer.php?u=${encodeURIComponent(
@@ -62,7 +64,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
           </span>
           <span
             className="linkedin"
-            onClick={evt =>
+            onClick={(evt) =>
               handleOpen(
                 evt,
                 `http://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(
@@ -76,7 +78,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
           </span>
           <span
             className="reddit"
-            onClick={evt =>
+            onClick={(evt) =>
               handleOpen(
                 evt,
                 `http://reddit.com/submit?url=${encodeURIComponent(

@@ -5,24 +5,27 @@ import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
-  faExternalLinkAlt
+  faExternalLinkAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { Url } from "@zesty-io/core/Url";
 
+import { useDomain } from "shell/hooks/use-domain";
+
 import styles from "./GlobalInstance.less";
-export default connect(state => {
+export default connect((state) => {
   return {
     instance: state.instance,
-    instances: state.instances
+    instances: state.instances,
   };
 })(function GlobalInstance(props) {
-  const [open, setOpen] = useState(false);
   const ref = useRef();
+  const domain = useDomain();
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const handleGlobalClick = evt => {
+    const handleGlobalClick = (evt) => {
       if (ref && ref.current.contains(evt.target)) {
         setOpen(true);
       } else {
@@ -38,19 +41,15 @@ export default connect(state => {
   return (
     <section className={cx(styles.bodyText, styles.GlobalInstance)} ref={ref}>
       <menu className={styles.Actions}>
-        {props.instance.domains.length ? (
-          <Url
-            href={`https://${props.instance.domains[0].domain}`}
-            target="_blank"
-            title="Open production domain"
-          >
+        {domain ? (
+          <Url href={domain} target="_blank" title="Open production domain">
             <FontAwesomeIcon icon={faExternalLinkAlt} />
           </Url>
         ) : null}
 
         <button
           className={cx(styles.InstanceOpen)}
-          onClick={evt => {
+          onClick={(evt) => {
             // evt.stopPropagation();
             setOpen(!open);
           }}
@@ -65,7 +64,7 @@ export default connect(state => {
         </p>
 
         <Select name="instance" value={props.instance.ZUID}>
-          {props.instances.map(instance => (
+          {props.instances.map((instance) => (
             <Option
               key={instance.ZUID}
               value={instance.ZUID}
@@ -87,7 +86,7 @@ export default connect(state => {
         )}
 
         <ul className={styles.Domains}>
-          {props.instance.domains.map(domain => (
+          {props.instance.domains.map((domain) => (
             <li key={domain.domain}>
               <Url
                 title={`http://${domain.domain}`}

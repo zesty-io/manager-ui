@@ -11,7 +11,7 @@ import {
   faEdit,
   faDatabase,
   faCode,
-  faCog
+  faCog,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
@@ -29,7 +29,7 @@ function toCapitalCase(string) {
 }
 
 function parse(path) {
-  let parts = path.split("/").filter(part => part);
+  let parts = path.split("/").filter((part) => part);
   let zuid = null;
   let prefix = null;
   let contentSection = null;
@@ -53,16 +53,15 @@ function parse(path) {
   return [parts, zuid, prefix, contentSection];
 }
 
-export default connect(state => {
+export default connect((state) => {
   return {
     instanceName: state.instance.name,
     instanceZUID: state.instance.ZUID,
-    domains: state.instance.domains,
     fields: state.fields,
     models: state.models,
     content: state.content,
     files: state.files,
-    user: state.user
+    user: state.user,
   };
 })(
   React.memo(function GlobalTabs(props) {
@@ -73,7 +72,7 @@ export default connect(state => {
 
     // Load prev session routes
     useEffect(() => {
-      get(`${props.instanceZUID}:session:routes`).then(storedRoutes => {
+      get(`${props.instanceZUID}:session:routes`).then((storedRoutes) => {
         if (Array.isArray(storedRoutes) && storedRoutes.length) {
           setRoutes(storedRoutes);
 
@@ -124,7 +123,7 @@ export default connect(state => {
       }
 
       let existingIndex = newRoutes.findIndex(
-        route => route.pathname === history.location.pathname
+        (route) => route.pathname === history.location.pathname
       );
 
       if (existingIndex === -1) {
@@ -139,7 +138,7 @@ export default connect(state => {
 
       // Lookup route resource to get a friendly display name
       // Last zuid in path part is the resource being viewed
-      newRoutes.forEach(route => {
+      newRoutes.forEach((route) => {
         const [parts, zuid, prefix] = parse(route.pathname);
 
         // resolve ZUID from store to determine display information
@@ -180,7 +179,9 @@ export default connect(state => {
           case "10":
           case "11":
             if (props.files) {
-              const selectedFile = props.files.find(file => file.ZUID === zuid);
+              const selectedFile = props.files.find(
+                (file) => file.ZUID === zuid
+              );
               if (selectedFile) {
                 route.name = selectedFile.fileName;
               }
@@ -229,8 +230,8 @@ export default connect(state => {
       }
     }, [history.location]);
 
-    const removeRoute = path => {
-      const newRoutes = routes.filter(route => route.pathname !== path);
+    const removeRoute = (path) => {
+      const newRoutes = routes.filter((route) => route.pathname !== path);
 
       // store routes to local storage and reload on app start
       set(`${props.instanceZUID}:session:routes`, newRoutes);
