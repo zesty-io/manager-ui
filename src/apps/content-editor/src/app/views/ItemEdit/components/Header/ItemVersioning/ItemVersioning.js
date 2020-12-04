@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,145 +15,126 @@ import { VersionSelector } from "./VersionSelector";
 
 import { publish } from "shell/store/content";
 import { fetchAuditTrailPublish } from "shell/store/logs";
+import { usePermission } from "shell/hooks/use-permissions";
 
 import styles from "./ItemVersioning.less";
 export default connect(state => {
   return {
     platform: state.platform
   };
-})(
-  class ItemVersioning extends React.PureComponent {
-    state = {
-      ScheduleFlyout: false,
-      publishing: false
-    };
+})(function ItemVersioning(props) {
+  const canPublish = usePermission("PUBLISH");
+  const [open, setOpen] = useState(false);
+  const [publishing, setPublishing] = useState(false);
 
-    handlePublish = () => {
-      this.setState({
-        publishing: true
-      });
+  const handlePublish = () => {
+    setPublishing(true);
 
-      this.props
-        .dispatch(
-          publish(this.props.modelZUID, this.props.itemZUID, {
-            version: this.props.item.meta.version
-          })
-        )
-        // fetch new publish history
-        .then(() => {
-          this.props.dispatch(fetchAuditTrailPublish(this.props.itemZUID));
+    props
+      .dispatch(
+        publish(props.modelZUID, props.itemZUID, {
+          version: props.item.meta.version
         })
-        .finally(() => {
-          this.setState({
-            publishing: false
-          });
-        });
-    };
-
-    toggleScheduleModal = () => {
-      this.setState({
-        ScheduleFlyout: !this.state.ScheduleFlyout
+      )
+      // fetch new publish history
+      .then(() => {
+        props.dispatch(fetchAuditTrailPublish(props.itemZUID));
+      })
+      .finally(() => {
+        setPublishing(false);
       });
-    };
+  };
 
-    handlePublishDisable = () => {
-      // disable publish button if the publish request has gone off
-      // if the item is dirty and needs to be saved
-      // if the item is scheduled to be published
-      // if the version being edited has already been published
-      return (
-        this.state.publishing ||
-        this.props.item.dirty ||
-        (this.props.item.scheduling &&
-          this.props.item.scheduling.isScheduled) ||
-        (this.props.item.publishing &&
-          this.props.item.publishing.version === this.props.item.meta.version)
-      );
-    };
+  const toggleScheduleModal = () => {
+    setOpen(!open);
+  };
 
-    handleScheduleDisable = () => {
-      // disable schedule if the item is dirty and needs to be saved
-      // if the current version is already published
-      return (
-        this.props.item.dirty ||
-        (this.props.item.publishing &&
-          this.props.item.publishing.version === this.props.item.meta.version)
-      );
-    };
+  const handlePublishDisable = () => {
+    // disable publish button if the publish request has gone off
+    // if the item is dirty and needs to be saved
+    // if the item is scheduled to be published
+    // if the version being edited has already been published
+    return (
+      publishing ||
+      props.item.dirty ||
+      (props.item.scheduling && props.item.scheduling.isScheduled) ||
+      (props.item.publishing &&
+        props.item.publishing.version === props.item.meta.version)
+    );
+  };
 
-    render() {
-      let publishingDisabled = false;
-      let schedulingDisabled = false;
-      if (this.props.item && this.props.item.web && this.props.item.meta) {
-        publishingDisabled = this.handlePublishDisable();
-        schedulingDisabled = this.handleScheduleDisable();
-      }
+  const handleScheduleDisable = () => {
+    // disable schedule if the item is dirty and needs to be saved
+    // if the current version is already published
+    return (
+      props.item.dirty ||
+      (props.item.publishing &&
+        props.item.publishing.version === props.item.meta.version)
+    );
+  };
 
-      return (
-        <ButtonGroup className={styles.Actions}>
-          <VersionSelector
-            modelZUID={this.props.modelZUID}
-            itemZUID={this.props.itemZUID}
-          />
-
-          {(this.props.userRole.name === "Publisher" ||
-            this.props.userRole.name === "Developer" ||
-            this.props.userRole.name === "Admin" ||
-            this.props.userRole.name === "Owner" ||
-            this.props.user.staff) && (
-            <ButtonGroup className={styles.Publish}>
-              <Button
-                className={styles.PublishButton}
-                id="PublishButton"
-                kind="secondary"
-                disabled={publishingDisabled || false}
-                onClick={this.handlePublish}
-              >
-                <i className="fas fa-cloud-upload-alt"></i>Publish{" "}
-                <span>&nbsp;Version&nbsp;</span>
-                {this.props.item.meta.version}
-              </Button>
-              <Button
-                id="PublishScheduleButton"
-                className={`${styles.ClockButton} ${
-                  this.props.item.scheduling &&
-                  this.props.item.scheduling.isScheduled
-                    ? styles.Scheduled
-                    : ""
-                }
-              `}
-                kind={this.state.ScheduleFlyout ? "tertiary" : "secondary"}
-                disabled={schedulingDisabled || false}
-                onClick={this.toggleScheduleModal}
-              >
-                <FontAwesomeIcon icon={faCalendar} />
-              </Button>
-              <ScheduleFlyout
-                isOpen={this.state.ScheduleFlyout}
-                item={this.props.item}
-                dispatch={this.props.dispatch}
-                toggleOpen={this.toggleScheduleModal}
-              />
-            </ButtonGroup>
-          )}
-
-          <Button
-            kind="save"
-            disabled={this.props.saving || !this.props.item.dirty}
-            onClick={this.props.onSave}
-            id="SaveItemButton"
-          >
-            {this.props.saving ? (
-              <FontAwesomeIcon icon={faSpinner} />
-            ) : (
-              <FontAwesomeIcon icon={faSave} />
-            )}
-            Save
-            <span className={styles.HideVersion}>&nbsp;Version&nbsp;</span>
-            <small>({this.props.platform.isMac ? "CMD" : "CTRL"} + S)</small>
-          </Button>
-        </ButtonGroup>
-      );
-    }
+  let publishingDisabled = false;
+  let schedulingDisabled = false;
+  if (props.item && props.item.web && props.item.meta) {
+    publishingDisabled = handlePublishDisable();
+    schedulingDisabled = handleScheduleDisable();
   }
-);
+
+  return (
+    <ButtonGroup className={styles.Actions}>
+      <VersionSelector modelZUID={props.modelZUID} itemZUID={props.itemZUID} />
+
+      {canPublish && (
+        <ButtonGroup className={styles.Publish}>
+          <Button
+            className={styles.PublishButton}
+            id="PublishButton"
+            kind="secondary"
+            disabled={publishingDisabled || false}
+            onClick={handlePublish}
+          >
+            <i className="fas fa-cloud-upload-alt"></i>Publish{" "}
+            <span>&nbsp;Version&nbsp;</span>
+            {props.item.meta.version}
+          </Button>
+          <Button
+            id="PublishScheduleButton"
+            className={`${styles.ClockButton} ${
+              props.item.scheduling && props.item.scheduling.isScheduled
+                ? styles.Scheduled
+                : ""
+            }
+              `}
+            kind={open ? "tertiary" : "secondary"}
+            disabled={schedulingDisabled || false}
+            onClick={toggleScheduleModal}
+          >
+            <FontAwesomeIcon icon={faCalendar} />
+          </Button>
+          <ScheduleFlyout
+            isOpen={open}
+            item={props.item}
+            dispatch={props.dispatch}
+            toggleOpen={toggleScheduleModal}
+          />
+        </ButtonGroup>
+      )}
+
+      <Button
+        kind="save"
+        disabled={props.saving || !props.item.dirty}
+        onClick={props.onSave}
+        id="SaveItemButton"
+      >
+        {props.saving ? (
+          <FontAwesomeIcon icon={faSpinner} />
+        ) : (
+          <FontAwesomeIcon icon={faSave} />
+        )}
+        Save
+        <span className={styles.HideVersion}>&nbsp;Version&nbsp;</span>
+        <small>({props.platform.isMac ? "CMD" : "CTRL"} + S)</small>
+      </Button>
+    </ButtonGroup>
+  );
+});
