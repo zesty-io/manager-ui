@@ -112,7 +112,7 @@ export function MediaDetailsModal(props) {
         <Button kind="save">
           <span>Save (CTR + S)</span>
         </Button>
-        <Button kind="warn">
+        <Button kind="warn" onClick={props.showDeleteFileModal}>
           <FontAwesomeIcon icon={faExclamationCircle} />
           <span>Delete</span>
         </Button>

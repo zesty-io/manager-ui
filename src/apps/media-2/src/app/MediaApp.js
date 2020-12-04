@@ -7,6 +7,7 @@ import { MediaWorkspace } from "./components/MediaWorkspace";
 import { MediaHeader } from "./components/MediaHeader";
 import { MediaDetailsModal } from "./components/MediaDetailsModal";
 import { MediaDeleteGroupModal } from "./components/MediaDeleteGroupModal";
+import { MediaDeleteFileModal } from "./components/MediaDeleteFileModal";
 import { MediaSelected } from "./components/MediaSelected";
 
 import {
@@ -29,6 +30,7 @@ export default connect((state, props) => {
   const [files, setFiles] = useState([]);
   const [fileDetails, setFileDetails] = useState();
   const [deleteGroupModal, setDeleteGroupModal] = useState(false);
+  const [deleteFileModal, setDeleteFileModal] = useState(false);
   const [selected, setSelected] = useState([]);
 
   // update files
@@ -145,6 +147,14 @@ export default connect((state, props) => {
           <MediaDetailsModal
             file={fileDetails}
             onClose={() => history.push(`/dam/${currentGroup.id}`)}
+            showDeleteFileModal={() => setDeleteFileModal(true)}
+          />
+        )}
+        {deleteFileModal && (
+          <MediaDeleteFileModal
+            onClose={() => setDeleteFileModal(false)}
+            file={fileDetails}
+            currentGroup={currentGroup}
           />
         )}
         {deleteGroupModal && (

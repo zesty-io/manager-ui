@@ -21,13 +21,14 @@ const mediaSlice = createSlice({
       state.nav = createNav(state.bins, state.groups);
     },
     fetchFilesSuccess(state, action) {
+      // sort newest files first
       const files = [];
       action.payload.forEach(file => {
         if (!state.files.find(val => val.id === file.id)) {
-          files.push(file);
+          files.unshift(file);
         }
       });
-      state.files = state.files.concat(files);
+      state.files = files.concat(state.files);
     },
     createGroupSuccess(state, action) {
       state.groups.push(action.payload);
@@ -47,6 +48,9 @@ const mediaSlice = createSlice({
       const index = state.bins.findIndex(val => val.id === action.payload.id);
       state.bins[index] = action.payload;
       state.nav = createNav(state.bins, state.groups);
+    },
+    deleteFileSuccess(state, action) {
+      state.files = state.files.filter(el => el.id !== action.payload.id);
     }
   }
 });
@@ -86,7 +90,8 @@ export const {
   createGroupSuccess,
   editGroupSuccess,
   deleteGroupSuccess,
-  editBinSuccess
+  editBinSuccess,
+  deleteFileSuccess
 } = mediaSlice.actions;
 
 function fetchMediaBins(instanceID) {
@@ -208,13 +213,13 @@ export function fetchGroupFiles(groupZUID) {
 
 export function uploadFile(file, bin, group) {
   return (dispatch, getState) => {
-    let data = new FormData();
+    const data = new FormData();
     data.append("file", file);
     data.append("bin_id", bin.id);
     data.append("group_id", group.id);
     data.append("user_id", getState().user.ZUID);
 
-    let req = new XMLHttpRequest();
+    const req = new XMLHttpRequest();
     req.withCredentials = true;
     req.open(
       "POST",
@@ -224,8 +229,8 @@ export function uploadFile(file, bin, group) {
     // upload progress event
     req.upload.addEventListener("progress", function(e) {
       // upload progress as percentage
-      let percent_completed = (e.loaded / e.total) * 100;
-      console.log(percent_completed);
+      const percentCompleted = (e.loaded / e.total) * 100;
+      console.log(percentCompleted);
     });
 
     req.addEventListener("load", function(e) {
@@ -305,6 +310,24 @@ export function editBin(binName, bin) {
         dispatch(editBinSuccess(res.data[0]));
       } else {
         dispatch(notify({ message: "Failed editing bin", kind: "error" }));
+        throw res;
+      }
+    });
+  };
+}
+
+export function deleteFile(file) {
+  return dispatch => {
+    return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${file.id}`, {
+      method: "DELETE"
+    }).then(res => {
+      if (res.status === 200) {
+        dispatch(deleteFileSuccess(file));
+        dispatch(
+          notify({ message: `Deleted file ${file.filename}`, kind: "success" })
+        );
+      } else {
+        dispatch(notify({ message: "Failed deleting file", kind: "error" }));
         throw res;
       }
     });
