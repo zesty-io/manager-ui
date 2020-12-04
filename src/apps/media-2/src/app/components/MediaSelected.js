@@ -54,28 +54,27 @@ export function MediaSelected(props) {
       ) : null} */}
 
       {props.selected.length ? (
-        <Drawer
-          className={styles.Drawer}
-          position="bottom"
-          offset="37px"
-          open={open}
-        >
-          <DrawerHandle className={styles.DrawerHandle} onClick={handleSetOpen}>
-            <Button title="Open for additional file information">
-              {open ? (
-                <i className="fas fa-chevron-down"></i>
-              ) : (
-                <i className="fas fa-chevron-up"></i>
-              )}
+        <footer>
+          <div className={styles.LoadSelected}>
+            <Button kind="save">
+              <span>Load Selected</span>
             </Button>
-          </DrawerHandle>
-          <DrawerContent className={styles.DrawerContent}>
-            <footer>
-              <div className={styles.LoadSelected}>
-                <Button kind="save">
-                  <span>Load Selected</span>
-                </Button>
-              </div>
+
+            <DrawerHandle
+              className={styles.DrawerHandle}
+              onClick={handleSetOpen}
+            >
+              <Button title="View Selected Images">
+                {open ? (
+                  <i className="fas fa-chevron-down"></i>
+                ) : (
+                  <i className="fas fa-chevron-up"></i>
+                )}
+              </Button>
+            </DrawerHandle>
+          </div>
+          <Drawer className={styles.Drawer} position="bottom" open={open}>
+            <DrawerContent className={styles.DrawerContent}>
               <aside className={styles.MediaSelected}>
                 {props.selected.map(file => {
                   return (
@@ -104,9 +103,9 @@ export function MediaSelected(props) {
                   );
                 })}
               </aside>
-            </footer>
-          </DrawerContent>
-        </Drawer>
+            </DrawerContent>
+          </Drawer>
+        </footer>
       ) : null}
     </>
   );
