@@ -20,6 +20,16 @@
     .GroupTitle {
       color: white;
       padding: 0 16px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: middle;
+      max-width: 450px;
+
+      // ellipsis OFF
+      @media only screen and (min-width: 2000px) {
+        max-width: initial;
+      }
     }
 
     .ModalFooter {

@@ -107,7 +107,7 @@ export function MediaDetailsModal(props) {
             </Url>
           </div>
           <Url target="_blank" title="Original Image" href={props.file.url}>
-            <Button kind="kind">
+            <Button className={styles.OriginalButton} kind="kind">
               <FontAwesomeIcon icon={faLink} />
               <span>View Original Image</span>
             </Button>
