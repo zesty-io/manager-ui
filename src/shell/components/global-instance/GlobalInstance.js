@@ -11,6 +11,8 @@ import {
 import { Select, Option } from "@zesty-io/core/Select";
 import { Url } from "@zesty-io/core/Url";
 
+import { useDomain } from "shell/hooks/use-domain";
+
 import styles from "./GlobalInstance.less";
 export default connect(state => {
   return {
@@ -18,8 +20,9 @@ export default connect(state => {
     instances: state.instances
   };
 })(function GlobalInstance(props) {
-  const [open, setOpen] = useState(false);
   const ref = useRef();
+  const domain = useDomain();
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const handleGlobalClick = evt => {
@@ -38,12 +41,8 @@ export default connect(state => {
   return (
     <section className={cx(styles.bodyText, styles.GlobalInstance)} ref={ref}>
       <menu className={styles.Actions}>
-        {props.instance.domains.length ? (
-          <Url
-            href={`https://${props.instance.domains[0].domain}`}
-            target="_blank"
-            title="Open production domain"
-          >
+        {domain ? (
+          <Url href={domain} target="_blank" title="Open production domain">
             <FontAwesomeIcon icon={faExternalLinkAlt} />
           </Url>
         ) : null}

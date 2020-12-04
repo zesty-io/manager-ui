@@ -1,22 +1,10 @@
 import React from "react";
-import { connect } from "react-redux";
 import cx from "classnames";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./ItemNavigation.less";
-export default connect(state => {
-  return {
-    userRole: state.userRole
-  };
-})(function ItemNavigation({
-  modelZUID,
-  itemZUID,
-  item: {
-    web: { metaLinkText, metaTitle, metaDescription }
-  },
-  userRole
-}) {
+export default function ItemNavigation({ modelZUID, itemZUID }) {
   const slug = window.location.href.split("/").pop();
 
   return (
@@ -56,4 +44,4 @@ export default connect(state => {
       </AppLink>
     </nav>
   );
-});
+}

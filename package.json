@@ -73,6 +73,7 @@
     "redux": "4.0.5",
     "redux-thunk": "2.3.0",
     "regenerator-runtime": "0.13.5",
+    "reselect": "^4.0.0",
     "riot": "2.6.7",
     "showdown": "1.9.1",
     "uuid": "7.0.2"
