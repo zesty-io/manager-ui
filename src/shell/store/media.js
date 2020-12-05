@@ -57,15 +57,17 @@ const mediaSlice = createSlice({
     },
     fileUploadProgress(state, action) {
       const uploadingFile = state.files.find(
-        file => file.tempID === action.payload.uploadID
+        file => file.uploadID === action.payload.uploadID
       );
       uploadingFile.progress = action.payload.progress;
     },
     fileUploadSuccess(state, action) {
       const uploadingFile = state.files.find(
-        file => file.tempID === action.payload.tempID
+        file => file.uploadID === action.payload.uploadID
       );
-      Object.assign(uploadingFile, action.payload);
+      uploadingFile.id = action.payload.id;
+      uploadingFile.title = action.payload.title;
+      uploadingFile.url = action.payload.url;
     }
   }
 });
