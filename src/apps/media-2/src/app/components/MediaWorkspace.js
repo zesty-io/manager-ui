@@ -15,6 +15,7 @@ export function MediaWorkspace(props) {
         {props.files.map(file => {
           return (
             <MediaWorkspaceItem
+              key={file.id || file.tempID}
               file={file}
               selected={props.selected.find(
                 selectedFile => selectedFile.id === file.id

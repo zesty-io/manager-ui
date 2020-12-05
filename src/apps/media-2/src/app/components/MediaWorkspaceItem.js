@@ -11,7 +11,6 @@ export function MediaWorkspaceItem(props) {
   const history = useHistory();
   return (
     <Card
-      key={props.file.id}
       className={cx({
         [styles.Card]: true,
         [styles.selected]: props.selected

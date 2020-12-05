@@ -20,6 +20,9 @@ function fileExtension(url) {
 }
 
 export function MediaImage(props) {
+  if (props.file.url.indexOf("blob:") !== -1) {
+    return <img src={encodeURI(props.file.url)} />;
+  }
   switch (fileExtension(props.file.url)) {
     case "jpg":
     case "jpeg":

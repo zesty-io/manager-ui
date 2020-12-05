@@ -51,6 +51,21 @@ const mediaSlice = createSlice({
     },
     deleteFileSuccess(state, action) {
       state.files = state.files.filter(el => el.id !== action.payload.id);
+    },
+    fileUploadStart(state, action) {
+      state.files.unshift(action.payload);
+    },
+    fileUploadProgress(state, action) {
+      const uploadingFile = state.files.find(
+        file => file.tempID === action.payload.uploadID
+      );
+      uploadingFile.progress = action.payload.progress;
+    },
+    fileUploadSuccess(state, action) {
+      const uploadingFile = state.files.find(
+        file => file.tempID === action.payload.tempID
+      );
+      Object.assign(uploadingFile, action.payload);
     }
   }
 });
@@ -91,7 +106,10 @@ export const {
   editGroupSuccess,
   deleteGroupSuccess,
   editBinSuccess,
-  deleteFileSuccess
+  deleteFileSuccess,
+  fileUploadStart,
+  fileUploadProgress,
+  fileUploadSuccess
 } = mediaSlice.actions;
 
 function fetchMediaBins(instanceID) {
@@ -211,12 +229,13 @@ export function fetchGroupFiles(groupZUID) {
   };
 }
 
-export function uploadFile(file, bin, group) {
+export function uploadFile(file, bin) {
   return (dispatch, getState) => {
+    dispatch(fileUploadStart(file));
     const data = new FormData();
-    data.append("file", file);
-    data.append("bin_id", bin.id);
-    data.append("group_id", group.id);
+    data.append("file", file.file);
+    data.append("bin_id", file.bin_id);
+    data.append("group_id", file.group_id);
     data.append("user_id", getState().user.ZUID);
 
     const req = new XMLHttpRequest();
@@ -226,19 +245,17 @@ export function uploadFile(file, bin, group) {
       `${CONFIG.SERVICE_MEDIA_STORAGE}/upload/${bin.storage_driver}/${bin.storage_name}`
     );
 
-    // upload progress event
     req.upload.addEventListener("progress", function(e) {
-      // upload progress as percentage
-      const percentCompleted = (e.loaded / e.total) * 100;
-      console.log(percentCompleted);
+      file.progress = (e.loaded / e.total) * 100;
+      dispatch(fileUploadProgress(file));
     });
 
     req.addEventListener("load", function(e) {
-      // HTTP status message (200, 404 etc)
-      console.log(req.status);
-      if (req.status === 200) {
-        console.log(req.response);
-        // request.response.data[0]
+      if (req.status === 201) {
+        const response = JSON.parse(req.response);
+        const uploadedFile = response.data[0];
+        uploadedFile.uploadID = file.uploadID;
+        dispatch(fileUploadSuccess(uploadedFile));
       }
     });
 
