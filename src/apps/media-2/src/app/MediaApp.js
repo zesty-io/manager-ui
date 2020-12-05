@@ -38,7 +38,7 @@ export default connect((state, props) => {
     if (groupID) {
       setFiles(props.media.files.filter(file => file.group_id === groupID));
     }
-  }, [groupID, props.media.files.length]);
+  }, [groupID, props.media.files]);
 
   // update current group, bin
   useEffect(() => {

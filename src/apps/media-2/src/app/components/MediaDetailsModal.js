@@ -82,12 +82,12 @@ export function MediaDetailsModal(props) {
           <dl className={styles.DescriptionList}>
             <dt>ZUID:</dt>
             <dd>{props.file.id}</dd>
-            <dt> Date: </dt>
-            <dd>{props.file.updated_at}</dd>
-            <dt> Dimensions: </dt>
-            <dd> 2048 x 1536 pixels</dd>
-            <dt> File Size: </dt>
-            <dd>197.16 K</dd>
+            {props.file.updated_at && (
+              <>
+                <dt> Date: </dt>
+                <dd>{props.file.updated_at}</dd>
+              </>
+            )}
           </dl>
         </div>
         <div className={styles.ImageContainer}>
