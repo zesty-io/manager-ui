@@ -1,3 +1,5 @@
+@import "~@zesty-io/core/colors.less";
+
 //Spinner for Loading
 @keyframes spin {
   from {
@@ -80,49 +82,50 @@
       position: relative;
       min-height: 100%;
       text-align: center;
+    }
 
-      //Loading Spinner
-      .Load {
-        position: relative;
-        display: inline-block;
-        width: 350px;
-        height: 350px;
-        border: 2px solid #34495e;
-        border-radius: 100%;
-        animation: spin 0.75s infinite linear;
-        &:before,
-        &::after {
-          left: -2px;
-          top: -2px;
-          display: none;
-          position: absolute;
-          content: "";
-          width: inherit;
-          height: inherit;
-          border: inherit;
-          border-radius: inherit;
-        }
+    //Loading Spinner
+    .Load {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: inline-block;
+      width: 167px;
+      height: 167px;
+      border: 2px solid #34495e;
+      border-radius: 100%;
+      animation: spin 0.75s infinite linear;
+      &:before,
+      &::after {
+        left: -2px;
+        top: -2px;
+        display: none;
+        position: absolute;
+        content: "";
+        width: inherit;
+        height: inherit;
+        border: inherit;
+        border-radius: inherit;
       }
+    }
 
-      .Loading {
+    .Loading {
+      border-color: transparent;
+      border-top-color: #f17829;
+      animation-duration: 1.2s;
+      &::before {
         display: inline-block;
         border-color: transparent;
         border-top-color: #f17829;
         animation-duration: 1.2s;
-        &::before {
-          display: inline-block;
-          border-color: transparent;
-          border-top-color: #f17829;
-          animation-duration: 1.2s;
-          transform: rotate(120deg);
-        }
-        &::after {
-          display: inline-block;
-          border-color: transparent;
-          border-top-color: #f17829;
-          animation-duration: 1.2s;
-          transform: rotate(240deg);
-        }
+        transform: rotate(120deg);
+      }
+      &::after {
+        display: inline-block;
+        border-color: transparent;
+        border-top-color: #f17829;
+        animation-duration: 1.2s;
+        transform: rotate(240deg);
       }
     }
 
@@ -152,6 +155,10 @@
   }
   .CardFooter {
     padding: 0;
+  }
+  .ProgressBar {
+    background-color: @zesty-orange;
+    opacity: 0.5;
   }
   .FooterButton {
     cursor: pointer;

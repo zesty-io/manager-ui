@@ -20,13 +20,20 @@ export function MediaWorkspaceItem(props) {
       <CardContent className={styles.CardContent}>
         <div className={styles.Checkered}>
           <MediaImage file={props.file} params={"?w=200&h=200&type=fit"} />
+          <div className={cx(styles.Load, styles.Loading)}></div>
         </div>
-        <div className={cx(styles.Load, styles.Loading)}></div>
         <button className={styles.Check} aria-label="Checked">
           <FontAwesomeIcon icon={faCheck} />
         </button>
       </CardContent>
       <CardFooter className={styles.CardFooter}>
+        <div
+          className={styles.ProgressBar}
+          style={{
+            width:
+              props.file.progress != null ? `${props.file.progress}%` : "0%"
+          }}
+        ></div>
         <button className={styles.FooterButton}>
           <FontAwesomeIcon
             onClick={event => {

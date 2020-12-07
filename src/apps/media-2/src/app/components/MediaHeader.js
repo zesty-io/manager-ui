@@ -35,6 +35,7 @@ export function MediaHeader(props) {
       group_id: props.currentGroup.id,
       uploadID: uuidv4(),
       progress: 0,
+      loading: true,
       url: URL.createObjectURL(event.target.files[0])
     };
     dispatch(uploadFile(file, props.currentBin));

@@ -65,6 +65,7 @@ const mediaSlice = createSlice({
       const uploadingFile = state.files.find(
         file => file.uploadID === action.payload.uploadID
       );
+      uploadingFile.loading = false;
       uploadingFile.id = action.payload.id;
       uploadingFile.title = action.payload.title;
       uploadingFile.url = action.payload.url;
