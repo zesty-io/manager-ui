@@ -55,11 +55,7 @@ export function MediaSelected(props) {
 
       {props.selected.length ? (
         <footer>
-          <div className={styles.LoadSelected}>
-            <Button kind="save">
-              <span>Load Selected</span>
-            </Button>
-
+          <Drawer className={styles.Drawer} position="bottom" open={open}>
             <DrawerHandle
               className={styles.DrawerHandle}
               onClick={handleSetOpen}
@@ -72,8 +68,9 @@ export function MediaSelected(props) {
                 )}
               </Button>
             </DrawerHandle>
-          </div>
-          <Drawer className={styles.Drawer} position="bottom" open={open}>
+            <Button kind="save">
+              <span>Load Selected</span>
+            </Button>
             <DrawerContent className={styles.DrawerContent}>
               <aside className={styles.MediaSelected}>
                 {props.selected.map(file => {
