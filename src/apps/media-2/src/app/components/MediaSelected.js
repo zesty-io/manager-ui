@@ -20,12 +20,7 @@ export function MediaSelected(props) {
     <>
       {props.selected.length ? (
         <footer>
-          <Drawer
-            className={styles.Drawer}
-            position="bottom"
-            offset="37px"
-            open={open}
-          >
+          <Drawer className={styles.Drawer} position="bottom" open={open}>
             <DrawerHandle
               className={styles.DrawerHandle}
               onClick={handleSetOpen}
@@ -38,7 +33,7 @@ export function MediaSelected(props) {
                 )}
               </Button>
             </DrawerHandle>
-            <Button kind="save">
+            <Button className={styles.ButtonLoad} kind="save">
               <span>Load Selected</span>
             </Button>
             <DrawerContent className={styles.DrawerContent}>
