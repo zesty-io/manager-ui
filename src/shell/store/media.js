@@ -75,6 +75,12 @@ const mediaSlice = createSlice({
       uploadingFile.id = action.payload.id;
       uploadingFile.title = action.payload.title;
       uploadingFile.url = action.payload.url;
+    },
+    fileUploadError(state, action) {
+      const indexToDelete = state.files[action.payload.group_id].data.findIndex(
+        el => el.uploadID === action.payload.uploadID
+      );
+      state.files[action.payload.group_id].data.splice(indexToDelete, 1);
     }
   }
 });
@@ -119,7 +125,8 @@ export const {
   deleteFileSuccess,
   fileUploadStart,
   fileUploadProgress,
-  fileUploadSuccess
+  fileUploadSuccess,
+  fileUploadError
 } = mediaSlice.actions;
 
 function fetchMediaBins(instanceID) {
@@ -245,7 +252,10 @@ export function fetchGroupFiles(groupZUID) {
 
 export function uploadFile(file, bin) {
   return (dispatch, getState) => {
-    dispatch(fileUploadStart(file));
+    function handleError() {
+      dispatch(fileUploadError(file));
+      dispatch(notify({ message: "Failed uploading file", kind: "error" }));
+    }
     const data = new FormData();
     data.append("file", file.file);
     data.append("bin_id", file.bin_id);
@@ -270,9 +280,14 @@ export function uploadFile(file, bin) {
         const uploadedFile = response.data[0];
         uploadedFile.uploadID = file.uploadID;
         dispatch(fileUploadSuccess(uploadedFile));
+      } else {
+        handleError();
       }
     });
+    req.addEventListener("abort", handleError);
+    req.addEventListener("error", handleError);
 
+    dispatch(fileUploadStart(file));
     req.send(data);
   };
 }
