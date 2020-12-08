@@ -3,6 +3,7 @@
 @workspace-header-height: 55px;
 
 .Workspace {
+  position: relative;
   height: calc(100vh - @global-top-bar-height - @workspace-header-height);
   overflow: hidden;
   overflow-y: auto;
@@ -29,4 +30,26 @@
     padding: 16px;
     justify-items: center;
   }
+}
+.DropMessage {
+  display: none;
+  background-color: rgba(27, 32, 44, 0.95);
+  color: #efefef;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  z-index: 10;
+}
+.UploadMessage {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  line-height: 5rem;
+  font-weight: 900;
 }
