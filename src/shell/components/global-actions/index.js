@@ -60,7 +60,7 @@ export default React.memo(function GlobalActions(props) {
         <span className={styles.VersionNumber}>{CONFIG.VERSION}</span>
       </div>
       <div className={styles.Legacy}>
-        <Url href={`https://${props.hash}.manage.zesty.io/`}>
+        <Url href={`https://${props.hash}.manage.zesty.io/`} target="_blank">
           <Button>
             <FontAwesomeIcon icon={faDungeon} />
             <span className={styles.hide}>Legacy</span>
