@@ -27,7 +27,7 @@ export default connect((state, props) => {
   const { groupID, fileID } = useParams();
   const [currentGroup, setCurrentGroup] = useState();
   const [currentBin, setCurrentBin] = useState();
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState({});
   const [fileDetails, setFileDetails] = useState();
   const [deleteGroupModal, setDeleteGroupModal] = useState(false);
   const [deleteFileModal, setDeleteFileModal] = useState(false);
@@ -35,10 +35,10 @@ export default connect((state, props) => {
 
   // update files
   useEffect(() => {
-    if (groupID) {
-      setFiles(props.media.files.filter(file => file.group_id === groupID));
+    if (groupID && props.media.files[groupID]) {
+      setFiles(props.media.files[groupID]);
     }
-  }, [groupID, props.media.files]);
+  }, [props.media.files[groupID]]);
 
   // update current group, bin
   useEffect(() => {
@@ -74,12 +74,12 @@ export default connect((state, props) => {
 
   // open file details modal if fileID is in URL
   useEffect(() => {
-    if (fileID) {
-      setFileDetails(props.media.files.find(file => file.id === fileID));
+    if (fileID && files && files.data) {
+      setFileDetails(files.data.find(file => file.id === fileID));
     } else {
       setFileDetails();
     }
-  }, [props.media.files.length, fileID]);
+  }, [files, fileID]);
 
   // always fetch all bins
   useEffect(() => {

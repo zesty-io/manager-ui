@@ -9,7 +9,7 @@ const mediaSlice = createSlice({
   initialState: {
     bins: [],
     groups: [],
-    files: [],
+    files: {},
     nav: []
   },
   reducers: {
@@ -20,15 +20,17 @@ const mediaSlice = createSlice({
       state.groups = action.payload;
       state.nav = createNav(state.bins, state.groups);
     },
+    fetchFilesStart(state, action) {
+      state.files[action.payload.group] = {
+        loading: true
+      };
+    },
     fetchFilesSuccess(state, action) {
+      const files = action.payload.files;
       // sort newest files first
-      const files = [];
-      action.payload.forEach(file => {
-        if (!state.files.find(val => val.id === file.id)) {
-          files.unshift(file);
-        }
-      });
-      state.files = files.concat(state.files);
+      files.reverse();
+      state.files[action.payload.group].data = files;
+      state.files[action.payload.group].loading = false;
     },
     createGroupSuccess(state, action) {
       state.groups.push(action.payload);
@@ -50,25 +52,35 @@ const mediaSlice = createSlice({
       state.nav = createNav(state.bins, state.groups);
     },
     deleteFileSuccess(state, action) {
-      state.files = state.files.filter(el => el.id !== action.payload.id);
+      const indexToDelete = state.files[action.payload.group_id].data.findIndex(
+        el => el.id === action.payload.id
+      );
+      state.files[action.payload.group_id].data.splice(indexToDelete, 1);
     },
     fileUploadStart(state, action) {
-      state.files.unshift(action.payload);
+      state.files[action.payload.group_id].data.unshift(action.payload);
     },
     fileUploadProgress(state, action) {
-      const uploadingFile = state.files.find(
+      const uploadingFile = state.files[action.payload.group_id].data.find(
         file => file.uploadID === action.payload.uploadID
       );
+      console.log(action.payload.progress);
       uploadingFile.progress = action.payload.progress;
     },
     fileUploadSuccess(state, action) {
-      const uploadingFile = state.files.find(
+      const uploadingFile = state.files[action.payload.group_id].data.find(
         file => file.uploadID === action.payload.uploadID
       );
       uploadingFile.loading = false;
       uploadingFile.id = action.payload.id;
       uploadingFile.title = action.payload.title;
       uploadingFile.url = action.payload.url;
+    },
+    fileUploadError(state, action) {
+      const indexToDelete = state.files[action.payload.group_id].data.findIndex(
+        el => el.uploadID === action.payload.uploadID
+      );
+      state.files[action.payload.group_id].data.splice(indexToDelete, 1);
     }
   }
 });
@@ -104,6 +116,7 @@ export default mediaSlice.reducer;
 export const {
   fetchBinsSuccess,
   fetchGroupsSuccess,
+  fetchFilesStart,
   fetchFilesSuccess,
   createGroupSuccess,
   editGroupSuccess,
@@ -112,7 +125,8 @@ export const {
   deleteFileSuccess,
   fileUploadStart,
   fileUploadProgress,
-  fileUploadSuccess
+  fileUploadSuccess,
+  fileUploadError
 } = mediaSlice.actions;
 
 function fetchMediaBins(instanceID) {
@@ -196,12 +210,13 @@ export function fetchAllGroups() {
 
 export function fetchBinFiles(binZUID) {
   return dispatch => {
+    dispatch(fetchFilesStart({ group: binZUID }));
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/bin/${binZUID}/files`,
       handler: res => {
         if (res.status === 200) {
-          dispatch(fetchFilesSuccess(res.data));
+          dispatch(fetchFilesSuccess({ group: binZUID, files: res.data }));
         } else {
           dispatch(
             notify({ message: "Failed loading bin files", kind: "error" })
@@ -215,12 +230,15 @@ export function fetchBinFiles(binZUID) {
 
 export function fetchGroupFiles(groupZUID) {
   return dispatch => {
+    dispatch(fetchFilesStart({ group: groupZUID }));
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/group/${groupZUID}`,
       handler: res => {
         if (res.status === 200) {
-          dispatch(fetchFilesSuccess(res.data[0].files));
+          dispatch(
+            fetchFilesSuccess({ group: groupZUID, files: res.data[0].files })
+          );
         } else {
           dispatch(
             notify({ message: "Failed loading group files", kind: "error" })
@@ -234,7 +252,10 @@ export function fetchGroupFiles(groupZUID) {
 
 export function uploadFile(file, bin) {
   return (dispatch, getState) => {
-    dispatch(fileUploadStart(file));
+    function handleError() {
+      dispatch(fileUploadError(file));
+      dispatch(notify({ message: "Failed uploading file", kind: "error" }));
+    }
     const data = new FormData();
     data.append("file", file.file);
     data.append("bin_id", file.bin_id);
@@ -259,9 +280,14 @@ export function uploadFile(file, bin) {
         const uploadedFile = response.data[0];
         uploadedFile.uploadID = file.uploadID;
         dispatch(fileUploadSuccess(uploadedFile));
+      } else {
+        handleError();
       }
     });
+    req.addEventListener("abort", handleError);
+    req.addEventListener("error", handleError);
 
+    dispatch(fileUploadStart(file));
     req.send(data);
   };
 }
