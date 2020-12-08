@@ -27,7 +27,7 @@ export default connect((state, props) => {
   const { groupID, fileID } = useParams();
   const [currentGroup, setCurrentGroup] = useState();
   const [currentBin, setCurrentBin] = useState();
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState({});
   const [fileDetails, setFileDetails] = useState();
   const [deleteGroupModal, setDeleteGroupModal] = useState(false);
   const [deleteFileModal, setDeleteFileModal] = useState(false);
@@ -35,10 +35,11 @@ export default connect((state, props) => {
 
   // update files
   useEffect(() => {
-    if (groupID) {
-      setFiles(props.media.files.filter(file => file.group_id === groupID));
+    if (groupID && props.media.files[groupID]) {
+      console.log(groupID, props.media.files[groupID]);
+      setFiles(props.media.files[groupID]);
     }
-  }, [groupID, props.media.files]);
+  }, [props.media.files[groupID]]);
 
   // update current group, bin
   useEffect(() => {
