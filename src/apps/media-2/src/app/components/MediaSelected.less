@@ -1,6 +1,13 @@
-.LoadSelected {
-  display: flex;
-  justify-content: space-between;
+footer {
+  position: relative;
+}
+
+.Drawer {
+  position: absolute;
+  .DrawerHandle {
+    justify-content: flex-end;
+    margin-right: 16px;
+  }
 }
 
 .MediaSelected {
@@ -73,15 +80,6 @@
     transition: none;
     transform: scaleX(1) scaleY(1) scaleZ(1);
     position: relative;
-    min-height: 100%;
+    min-height: 100px;
   }
-}
-
-.Drawer {
-  //Full container 100vw -  minus 20vw = MediaApp nav and 60px = globalSidebar
-  // width: calc(80vw - 60px);
-
-  // @media (min-width: 2000px) {
-  //   width: calc(80vw - 170px);
-  // }
 }

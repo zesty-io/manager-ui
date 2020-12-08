@@ -18,44 +18,14 @@ export function MediaSelected(props) {
 
   return (
     <>
-      {/* {props.selected.length ? (
-        <footer>
-          <div className={styles.LoadSelected}>
-            <Button kind="save">
-              <span>Load Selected</span>
-            </Button>
-          </div>
-          <aside className={styles.MediaSelected}>
-            {props.selected.map(file => {
-              return (
-                <Card
-                  className={cx(styles.Card, styles.CardTop)}
-                  onClick={() => props.toggleSelected(file)}
-                >
-                  <CardContent
-                    className={cx(styles.CardContent, styles.CardContentTop)}
-                  >
-                    <div className={styles.Checkered}>
-                      <img src={file.url} alt={file.title} />
-                      <FontAwesomeIcon
-                        className={styles.PDF}
-                        icon={faFilePdf}
-                      />
-                    </div>
-                    <button className={styles.Check} aria-label="Checked">
-                      <FontAwesomeIcon icon={faCheck} />
-                    </button>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </aside>
-        </footer>
-      ) : null} */}
-
       {props.selected.length ? (
         <footer>
-          <Drawer className={styles.Drawer} position="bottom" open={open}>
+          <Drawer
+            className={styles.Drawer}
+            position="bottom"
+            offset="37px"
+            open={open}
+          >
             <DrawerHandle
               className={styles.DrawerHandle}
               onClick={handleSetOpen}
