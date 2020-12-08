@@ -36,7 +36,6 @@ export default connect((state, props) => {
   // update files
   useEffect(() => {
     if (groupID && props.media.files[groupID]) {
-      console.log(groupID, props.media.files[groupID]);
       setFiles(props.media.files[groupID]);
     }
   }, [props.media.files[groupID]]);
@@ -75,12 +74,12 @@ export default connect((state, props) => {
 
   // open file details modal if fileID is in URL
   useEffect(() => {
-    if (fileID) {
-      setFileDetails(props.media.files.find(file => file.id === fileID));
+    if (fileID && files && files.data) {
+      setFileDetails(files.data.find(file => file.id === fileID));
     } else {
       setFileDetails();
     }
-  }, [props.media.files.length, fileID]);
+  }, [files, fileID]);
 
   // always fetch all bins
   useEffect(() => {
