@@ -15,7 +15,11 @@ export function MediaWorkspaceItem(props) {
         [styles.Card]: true,
         [styles.selected]: props.selected
       })}
-      onClick={() => props.toggleSelected(props.file)}
+      onClick={() => {
+        if (!props.loading) {
+          props.toggleSelected(props.file);
+        }
+      }}
     >
       <CardContent className={styles.CardContent}>
         <div className={styles.Checkered}>
@@ -40,10 +44,12 @@ export function MediaWorkspaceItem(props) {
         <button className={styles.FooterButton}>
           <FontAwesomeIcon
             onClick={event => {
-              event.stopPropagation();
-              history.push(
-                `/dam/${props.currentGroup.id}/file/${props.file.id}`
-              );
+              if (!props.loading) {
+                event.stopPropagation();
+                history.push(
+                  `/dam/${props.currentGroup.id}/file/${props.file.id}`
+                );
+              }
             }}
             className={styles.Cog}
             icon={faCog}
