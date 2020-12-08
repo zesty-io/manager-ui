@@ -59,6 +59,7 @@ const mediaSlice = createSlice({
       const uploadingFile = state.files.find(
         file => file.uploadID === action.payload.uploadID
       );
+      console.log(action.payload.progress);
       uploadingFile.progress = action.payload.progress;
     },
     fileUploadSuccess(state, action) {
