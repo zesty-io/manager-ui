@@ -8,7 +8,8 @@ import GlobalActions from "shell/components/global-actions";
 
 export default connect(state => {
   return {
-    ui: state.ui
+    ui: state.ui,
+    instance: state.instance
   };
 })(function GlobalSidebar(props) {
   return (
@@ -16,7 +17,7 @@ export default connect(state => {
       <div className={styles.topMenu}>
         <Favicon />
         <GlobalMenu />
-        <GlobalActions />
+        <GlobalActions hash={props.instance.randomHashID} />
       </div>
     </aside>
   );
