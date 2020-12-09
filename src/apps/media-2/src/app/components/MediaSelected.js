@@ -22,7 +22,11 @@ export function MediaSelected(props) {
     <>
       {props.selected.length ? (
         <footer>
-          <Drawer className={styles.Drawer} position="bottom" open={open}>
+          <Drawer
+            className={!open ? styles.DrawerClose : styles.DrawerOpen}
+            position="bottom"
+            open={open}
+          >
             <DrawerHandle
               className={styles.DrawerHandle}
               onClick={handleSetOpen}

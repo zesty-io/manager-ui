@@ -2,11 +2,31 @@ footer {
   position: relative;
 }
 
-.Drawer {
+.DrawerClose {
   position: absolute;
+  background-color: transparent;
+
   .DrawerHandle {
     justify-content: flex-end;
-    margin-right: 16px;
+    width: calc(80vw - 100px);
+
+    @media (min-width: 2000px) {
+      width: calc(80vw - 190px);
+    }
+  }
+}
+
+.DrawerOpen {
+  position: absolute;
+  background-color: darken(#f2f7fc, 2%);
+
+  .DrawerHandle {
+    justify-content: flex-end;
+    width: calc(80vw - 100px);
+
+    @media (min-width: 2000px) {
+      width: calc(80vw - 190px);
+    }
   }
 }
 .ButtonLoad {
