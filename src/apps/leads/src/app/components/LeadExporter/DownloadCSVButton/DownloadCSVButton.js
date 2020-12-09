@@ -33,13 +33,14 @@ export default connect(state => {
       );
       leads = FilterService.filterByDate(leads, this.props.filter);
       leads = FilterService.filterByFuzzyText(leads, this.props.filter);
+      const forms = leads.map(lead => lead.formData);
       // Set the file name in this format: FORMGROUP_DATERANGE
       let filename = ``;
       if (this.props.filter.formGroup) {
         filename += `${this.props.filter.formGroup}_`;
       }
       filename += this.setFilenameDate();
-      csvDownload(leads, `${filename}.csv`);
+      csvDownload(forms, `${filename}.csv`);
     };
 
     /**
