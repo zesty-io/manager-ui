@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
-
 import { Nav } from "@zesty-io/core/Nav";
 import { Button } from "@zesty-io/core/Button";
-
+import { closeGroup } from "shell/store/media";
 import { MediaCreateGroupModal } from "./MediaCreateGroupModal";
 import styles from "./MediaSidebar.less";
 
 export function MediaSidebar(props) {
+  const dispatch = useDispatch();
   const [selected, setSelected] = useState(location.pathname);
   const [createGroupModal, setCreateGroupModal] = useState(false);
 
@@ -43,7 +44,11 @@ export function MediaSidebar(props) {
           />
         )}
       </div>
-      <Nav tree={props.nav} selected={selected} />
+      <Nav
+        tree={props.nav}
+        selected={selected}
+        collapseNode={node => dispatch(closeGroup(node.id))}
+      />
     </nav>
   );
 }
