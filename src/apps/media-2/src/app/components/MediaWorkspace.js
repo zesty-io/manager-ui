@@ -13,38 +13,39 @@ export function MediaWorkspace(props) {
   useEffect(() => {
     let counter = 0;
 
-    console.log(dropzoneRef.current);
-    console.log(dropMessageRef.current);
-    const unregisterDndEnter = DnD.enter(dropzoneRef.current, evt => {
-      console.log("dragenter");
-      counter++;
-      dropMessageRef.current.style.display = "flex";
-    });
-    const unregisterDndLeave = DnD.leave(dropzoneRef.current, evt => {
-      console.log("dragleave");
-      counter--;
-      if (counter === 0) {
-        dropMessageRef.current.style.display = "none";
-      }
-    });
-
-    const unregisterDndOver = DnD.over(dropzoneRef.current, () => {});
-    const unregisterDndDrop = DnD.drop(dropzoneRef.current, evt => {
-      console.log("drop");
-      counter = 0;
-      dropMessageRef.current.style.display = "none";
-
-      Array.from(evt.dataTransfer.files).forEach(file => {
-        console.log(file);
+    console.log("dropzone: ", dropzoneRef.current);
+    if (dropzoneRef.current) {
+      const unregisterDndEnter = DnD.enter(dropzoneRef.current, evt => {
+        console.log("dragenter");
+        counter++;
+        dropMessageRef.current.style.display = "flex";
       });
-    });
-    return () => {
-      unregisterDndEnter();
-      unregisterDndLeave();
-      unregisterDndOver();
-      unregisterDndDrop();
-    };
-  }, []);
+      const unregisterDndLeave = DnD.leave(dropzoneRef.current, evt => {
+        console.log("dragleave");
+        counter--;
+        if (counter === 0) {
+          dropMessageRef.current.style.display = "none";
+        }
+      });
+
+      const unregisterDndOver = DnD.over(dropzoneRef.current, () => {});
+      const unregisterDndDrop = DnD.drop(dropzoneRef.current, evt => {
+        console.log("drop");
+        counter = 0;
+        dropMessageRef.current.style.display = "none";
+
+        Array.from(evt.dataTransfer.files).forEach(file => {
+          console.log(file);
+        });
+      });
+      return () => {
+        unregisterDndEnter();
+        unregisterDndLeave();
+        unregisterDndOver();
+        unregisterDndDrop();
+      };
+    }
+  }, [dropzoneRef.current]);
   return (
     <WithLoader
       condition={!props.files.loading}
