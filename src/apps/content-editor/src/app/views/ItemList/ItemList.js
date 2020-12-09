@@ -136,7 +136,7 @@ export default connect((state, props) => {
       runFilters();
       persistFilters();
     }
-  }, [filter]);
+  }, [filter, props.selectedLang]);
 
   useEffect(() => {
     if (_isMounted.current && shouldRunFilters) {
@@ -600,7 +600,6 @@ export default connect((state, props) => {
         onSaveAll={saveItems}
         onFilter={onFilter}
         onStatus={onStatus}
-        runAllFilters={runFilters}
         isSorted={filter.sortedBy !== null}
         resetSort={() => onSort(null)}
         filterTerm={filter.filterTerm}
