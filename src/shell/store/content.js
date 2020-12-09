@@ -538,11 +538,16 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
 }
 
 export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
-  return dispatch => {
+  return (dispatch, getState) => {
+    const instance = getState().instance;
     return request(
-      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings/${publishZUID}`,
+      `${CONFIG.LEGACY_SITES_SERVICE}/${instance.ZUID}/content/items/${itemZUID}/publish-schedule/${publishZUID}`,
       {
-        method: "DELETE"
+        method: "PATCH",
+        json: true,
+        body: {
+          take_offline_at: moment().format("YYYY-MM-DD HH:mm:ss")
+        }
       }
     )
       .then(res => {
