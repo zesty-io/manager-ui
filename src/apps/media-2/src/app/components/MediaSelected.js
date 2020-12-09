@@ -6,6 +6,8 @@ import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
 import { Card, CardContent } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
 import { MediaImage } from "./MediaImage";
+
+import shared from "./MediaShared.less";
 import styles from "./MediaSelected.less";
 
 export function MediaSelected(props) {
@@ -50,8 +52,9 @@ export function MediaSelected(props) {
                           styles.CardContentTop
                         )}
                       >
-                        <div className={styles.Checkered}>
+                        <div className={cx(shared.Checkered, styles.Checkered)}>
                           <MediaImage
+                            className={shared.Thumbnail}
                             file={file}
                             params={"?w=200&h=200&type=fit"}
                           />

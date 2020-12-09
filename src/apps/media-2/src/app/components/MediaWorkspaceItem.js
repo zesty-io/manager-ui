@@ -6,6 +6,7 @@ import { faCheck, faCog } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { MediaImage } from "./MediaImage";
 import styles from "./MediaWorkspaceItem.less";
+import shared from "./MediaShared.less";
 
 export function MediaWorkspaceItem(props) {
   const history = useHistory();
@@ -22,7 +23,7 @@ export function MediaWorkspaceItem(props) {
       }}
     >
       <CardContent className={styles.CardContent}>
-        <div className={styles.Checkered}>
+        <div className={shared.Checkered}>
           <MediaImage file={props.file} params={"?w=200&h=200&type=fit"} />
           {props.file.loading && (
             <div className={cx(styles.Load, styles.Loading)}></div>
