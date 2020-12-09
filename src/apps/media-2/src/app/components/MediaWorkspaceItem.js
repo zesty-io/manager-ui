@@ -6,6 +6,7 @@ import { faCheck, faCog } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { MediaImage } from "./MediaImage";
 import styles from "./MediaWorkspaceItem.less";
+import shared from "./MediaShared.less";
 
 export function MediaWorkspaceItem(props) {
   const history = useHistory();
@@ -15,25 +16,41 @@ export function MediaWorkspaceItem(props) {
         [styles.Card]: true,
         [styles.selected]: props.selected
       })}
-      onClick={() => props.toggleSelected(props.file)}
+      onClick={() => {
+        if (!props.loading) {
+          props.toggleSelected(props.file);
+        }
+      }}
     >
       <CardContent className={styles.CardContent}>
-        <div className={styles.Checkered}>
+        <div className={shared.Checkered}>
           <MediaImage file={props.file} params={"?w=200&h=200&type=fit"} />
+          {props.file.loading && (
+            <div className={cx(styles.Load, styles.Loading)}></div>
+          )}
         </div>
-        <div className={cx(styles.Load, styles.Loading)}></div>
         <button className={styles.Check} aria-label="Checked">
           <FontAwesomeIcon icon={faCheck} />
         </button>
       </CardContent>
       <CardFooter className={styles.CardFooter}>
+        {props.file.loading && props.file.progress != null && (
+          <div
+            className={styles.ProgressBar}
+            style={{
+              width: `${props.file.progress}%`
+            }}
+          ></div>
+        )}
         <button className={styles.FooterButton}>
           <FontAwesomeIcon
             onClick={event => {
-              event.stopPropagation();
-              history.push(
-                `/dam/${props.currentGroup.id}/file/${props.file.id}`
-              );
+              if (!props.loading) {
+                event.stopPropagation();
+                history.push(
+                  `/dam/${props.currentGroup.id}/file/${props.file.id}`
+                );
+              }
             }}
             className={styles.Cog}
             icon={faCog}

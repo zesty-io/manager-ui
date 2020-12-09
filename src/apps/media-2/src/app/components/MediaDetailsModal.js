@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCopy,
   faExclamationCircle,
-  faFilePdf,
   faLink
 } from "@fortawesome/free-solid-svg-icons";
 import { Url } from "@zesty-io/core/Url";
@@ -13,7 +12,9 @@ import { FieldLabel } from "@zesty-io/core/FieldLabel";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { Infotip } from "@zesty-io/core/Infotip";
 import { MediaImage } from "./MediaImage";
+
 import styles from "./MediaDetailsModal.less";
+import shared from "./MediaShared.less";
 
 export function MediaDetailsModal(props) {
   return (
@@ -91,7 +92,7 @@ export function MediaDetailsModal(props) {
           </dl>
         </div>
         <div className={styles.ImageContainer}>
-          <div className={styles.Checkered}>
+          <div className={shared.Checkered}>
             <Url
               target="_blank"
               title="View Original Image"

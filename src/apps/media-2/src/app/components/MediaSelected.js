@@ -6,6 +6,8 @@ import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
 import { Card, CardContent } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
 import { MediaImage } from "./MediaImage";
+
+import shared from "./MediaShared.less";
 import styles from "./MediaSelected.less";
 
 export function MediaSelected(props) {
@@ -18,48 +20,9 @@ export function MediaSelected(props) {
 
   return (
     <>
-      {/* {props.selected.length ? (
-        <footer>
-          <div className={styles.LoadSelected}>
-            <Button kind="save">
-              <span>Load Selected</span>
-            </Button>
-          </div>
-          <aside className={styles.MediaSelected}>
-            {props.selected.map(file => {
-              return (
-                <Card
-                  className={cx(styles.Card, styles.CardTop)}
-                  onClick={() => props.toggleSelected(file)}
-                >
-                  <CardContent
-                    className={cx(styles.CardContent, styles.CardContentTop)}
-                  >
-                    <div className={styles.Checkered}>
-                      <img src={file.url} alt={file.title} />
-                      <FontAwesomeIcon
-                        className={styles.PDF}
-                        icon={faFilePdf}
-                      />
-                    </div>
-                    <button className={styles.Check} aria-label="Checked">
-                      <FontAwesomeIcon icon={faCheck} />
-                    </button>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </aside>
-        </footer>
-      ) : null} */}
-
       {props.selected.length ? (
         <footer>
-          <div className={styles.LoadSelected}>
-            <Button kind="save">
-              <span>Load Selected</span>
-            </Button>
-
+          <Drawer className={styles.Drawer} position="bottom" open={open}>
             <DrawerHandle
               className={styles.DrawerHandle}
               onClick={handleSetOpen}
@@ -72,8 +35,9 @@ export function MediaSelected(props) {
                 )}
               </Button>
             </DrawerHandle>
-          </div>
-          <Drawer className={styles.Drawer} position="bottom" open={open}>
+            <Button className={styles.ButtonLoad} kind="save">
+              <span>Load Selected</span>
+            </Button>
             <DrawerContent className={styles.DrawerContent}>
               <aside className={styles.MediaSelected}>
                 {props.selected.map(file => {
@@ -88,8 +52,9 @@ export function MediaSelected(props) {
                           styles.CardContentTop
                         )}
                       >
-                        <div className={styles.Checkered}>
+                        <div className={cx(shared.Checkered, styles.Checkered)}>
                           <MediaImage
+                            className={shared.Thumbnail}
                             file={file}
                             params={"?w=200&h=200&type=fit"}
                           />

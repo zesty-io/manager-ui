@@ -9,75 +9,159 @@ const mediaSlice = createSlice({
   initialState: {
     bins: [],
     groups: [],
-    files: [],
-    nav: []
+    files: {},
+    nav: [],
+    hiddenNav: []
   },
   reducers: {
+    // Bins
     fetchBinsSuccess(state, action) {
-      state.bins = action.payload;
+      state.bins = addNavigationStates(action.payload);
     },
+    editBinSuccess(state, action) {
+      const index = state.bins.findIndex(val => val.id === action.payload.id);
+      if (index !== -1) {
+        state.bins[index].name = action.payload.name;
+        state.nav = buildMainNav(state.bins, state.groups);
+      }
+    },
+
+    // Groups
     fetchGroupsSuccess(state, action) {
-      state.groups = action.payload;
-      state.nav = createNav(state.bins, state.groups);
-    },
-    fetchFilesSuccess(state, action) {
-      // sort newest files first
-      const files = [];
-      action.payload.forEach(file => {
-        if (!state.files.find(val => val.id === file.id)) {
-          files.unshift(file);
-        }
-      });
-      state.files = files.concat(state.files);
+      state.groups = addNavigationStates(action.payload);
+      state.nav = buildMainNav(state.bins, state.groups);
+      state.hiddenNav = buildHiddenNav(state.bins, state.groups);
     },
     createGroupSuccess(state, action) {
       state.groups.push(action.payload);
-      state.nav = createNav(state.bins, state.groups);
+      state.nav = buildMainNav(state.bins, state.groups);
     },
     editGroupSuccess(state, action) {
       const index = state.groups.findIndex(val => val.id === action.payload.id);
-      state.groups[index] = action.payload;
-      state.nav = createNav(state.bins, state.groups);
+      if (index !== -1) {
+        state.groups[index].name = action.payload.name;
+        state.nav = buildMainNav(state.bins, state.groups);
+        state.hiddenNav = buildHiddenNav(state.bins, state.groups);
+      }
     },
     deleteGroupSuccess(state, action) {
       state.bins = state.bins.filter(el => el.id !== action.payload.id);
       state.groups = state.groups.filter(el => el.id !== action.payload.id);
-      state.nav = createNav(state.bins, state.groups);
+      state.nav = buildMainNav(state.bins, state.groups);
+      state.hiddenNav = buildHiddenNav(state.bins, state.groups);
     },
-    editBinSuccess(state, action) {
-      const index = state.bins.findIndex(val => val.id === action.payload.id);
-      state.bins[index] = action.payload;
-      state.nav = createNav(state.bins, state.groups);
+    closeGroup(state, action) {
+      const item =
+        state.bins.find(val => val.id === action.payload) ||
+        state.groups.find(val => val.id === action.payload);
+      if (item) {
+        item.closed = !item.closed;
+        const selectClosed = group => group.closed;
+        const selectZUID = group => group.id;
+        const closedBins = state.bins.filter(selectClosed).map(selectZUID);
+        const closedGroups = state.groups.filter(selectClosed).map(selectZUID);
+        localStorage.setItem(
+          "zesty:navMedia:closed",
+          JSON.stringify(closedBins.concat(closedGroups))
+        );
+        state.nav = buildMainNav(state.bins, state.groups);
+        state.hiddenNav = buildHiddenNav(state.bins, state.groups);
+      }
+    },
+    hideGroup(state, action) {
+      const item =
+        state.bins.find(val => val.id === action.payload) ||
+        state.groups.find(val => val.id === action.payload);
+      if (item) {
+        item.hidden = !item.hidden;
+        const selectHidden = group => group.hidden;
+        const selectZUID = group => group.id;
+        const hiddenBins = state.bins.filter(selectHidden).map(selectZUID);
+        const hiddenGroups = state.groups.filter(selectHidden).map(selectZUID);
+        localStorage.setItem(
+          "zesty:navMedia:hidden",
+          JSON.stringify(hiddenBins.concat(hiddenGroups))
+        );
+        state.nav = buildMainNav(state.bins, state.groups);
+        state.hiddenNav = buildHiddenNav(state.bins, state.groups);
+      }
+    },
+
+    // Files
+    fetchFilesStart(state, action) {
+      state.files[action.payload.group] = {
+        loading: true
+      };
+    },
+    fetchFilesSuccess(state, action) {
+      const files = action.payload.files;
+      // sort newest files first
+      files.reverse();
+      state.files[action.payload.group].data = files;
+      state.files[action.payload.group].loading = false;
     },
     deleteFileSuccess(state, action) {
-      state.files = state.files.filter(el => el.id !== action.payload.id);
+      const indexToDelete = state.files[action.payload.group_id].data.findIndex(
+        el => el.id === action.payload.id
+      );
+      state.files[action.payload.group_id].data.splice(indexToDelete, 1);
     },
     fileUploadStart(state, action) {
-      state.files.unshift(action.payload);
+      state.files[action.payload.group_id].data.unshift(action.payload);
     },
     fileUploadProgress(state, action) {
-      const uploadingFile = state.files.find(
+      const uploadingFile = state.files[action.payload.group_id].data.find(
         file => file.uploadID === action.payload.uploadID
       );
+      console.log(action.payload.progress);
       uploadingFile.progress = action.payload.progress;
     },
     fileUploadSuccess(state, action) {
-      const uploadingFile = state.files.find(
+      const uploadingFile = state.files[action.payload.group_id].data.find(
         file => file.uploadID === action.payload.uploadID
       );
+      uploadingFile.loading = false;
       uploadingFile.id = action.payload.id;
       uploadingFile.title = action.payload.title;
       uploadingFile.url = action.payload.url;
+    },
+    fileUploadError(state, action) {
+      const indexToDelete = state.files[action.payload.group_id].data.findIndex(
+        el => el.uploadID === action.payload.uploadID
+      );
+      state.files[action.payload.group_id].data.splice(indexToDelete, 1);
     }
   }
 });
 
-function createNav(bins, groups) {
+function buildMainNav(bins, groups) {
+  const visibleBins = bins.filter(bin => !bin.hidden);
+  const visibleGroups = groups.filter(group => !group.hidden);
+  return buildNav(visibleBins, visibleGroups);
+}
+
+function buildHiddenNav(bins, groups) {
+  const selectHidden = bin => bin.hidden;
+  const hiddenBins = bins.filter(selectHidden);
+  const hiddenGroups = groups.filter(selectHidden);
+  return hiddenBins.concat(hiddenGroups).map(group => {
+    return {
+      id: group.id,
+      icon: faFolder,
+      label: group.name,
+      path: `/dam/${group.id}`
+    };
+  });
+}
+
+function buildNav(bins, groups) {
   return bins.map(bin => {
     return {
+      id: bin.id,
+      closed: bin.closed,
       children: groups
         .filter(group => group.group_id === bin.id)
-        .map(createNavGroup(groups)),
+        .map(buildNavGroup(groups)),
       icon: faFolder,
       label: bin.name,
       path: `/dam/${bin.id}`
@@ -85,12 +169,14 @@ function createNav(bins, groups) {
   });
 }
 
-function createNavGroup(groups) {
+function buildNavGroup(groups) {
   return currentGroup => {
     return {
+      id: currentGroup.id,
+      closed: currentGroup.closed,
       children: groups
         .filter(group => currentGroup.id === group.group_id)
-        .map(createNavGroup(groups)),
+        .map(buildNavGroup(groups)),
       icon: faFolder,
       label: currentGroup.name,
       path: `/dam/${currentGroup.id}`
@@ -98,20 +184,36 @@ function createNavGroup(groups) {
   };
 }
 
+function addNavigationStates(groups) {
+  const closed = localStorage.getItem("zesty:navMedia:closed");
+  const closedZUIDs = closed ? JSON.parse(closed) : [];
+  const hidden = localStorage.getItem("zesty:navMedia:hidden");
+  const hiddenZUIDs = hidden ? JSON.parse(hidden) : [];
+  groups.forEach(group => {
+    group.closed = closedZUIDs.includes(group.id);
+    group.hidden = hiddenZUIDs.includes(group.id);
+  });
+  return groups;
+}
+
 export default mediaSlice.reducer;
 
 export const {
   fetchBinsSuccess,
+  editBinSuccess,
   fetchGroupsSuccess,
-  fetchFilesSuccess,
   createGroupSuccess,
   editGroupSuccess,
   deleteGroupSuccess,
-  editBinSuccess,
+  closeGroup,
+  hideGroup,
+  fetchFilesStart,
+  fetchFilesSuccess,
   deleteFileSuccess,
   fileUploadStart,
   fileUploadProgress,
-  fileUploadSuccess
+  fileUploadSuccess,
+  fileUploadError
 } = mediaSlice.actions;
 
 function fetchMediaBins(instanceID) {
@@ -163,6 +265,22 @@ export function fetchAllMediaBins() {
   };
 }
 
+export function editBin(binName, bin) {
+  return dispatch => {
+    return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/bin/${bin.id}`, {
+      method: "PATCH",
+      body: { ...bin, name: binName }
+    }).then(res => {
+      if (res.status === 200) {
+        dispatch(editBinSuccess(res.data[0]));
+      } else {
+        dispatch(notify({ message: "Failed editing bin", kind: "error" }));
+        throw res;
+      }
+    });
+  };
+}
+
 function fetchGroups(binZUID) {
   return dispatch => {
     return dispatch({
@@ -190,78 +308,6 @@ export function fetchAllGroups() {
         return dispatch(fetchGroupsSuccess(groups.flat()));
       }
     );
-  };
-}
-
-export function fetchBinFiles(binZUID) {
-  return dispatch => {
-    return dispatch({
-      type: "FETCH_RESOURCE",
-      uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/bin/${binZUID}/files`,
-      handler: res => {
-        if (res.status === 200) {
-          dispatch(fetchFilesSuccess(res.data));
-        } else {
-          dispatch(
-            notify({ message: "Failed loading bin files", kind: "error" })
-          );
-          throw res;
-        }
-      }
-    });
-  };
-}
-
-export function fetchGroupFiles(groupZUID) {
-  return dispatch => {
-    return dispatch({
-      type: "FETCH_RESOURCE",
-      uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/group/${groupZUID}`,
-      handler: res => {
-        if (res.status === 200) {
-          dispatch(fetchFilesSuccess(res.data[0].files));
-        } else {
-          dispatch(
-            notify({ message: "Failed loading group files", kind: "error" })
-          );
-          throw res;
-        }
-      }
-    });
-  };
-}
-
-export function uploadFile(file, bin) {
-  return (dispatch, getState) => {
-    dispatch(fileUploadStart(file));
-    const data = new FormData();
-    data.append("file", file.file);
-    data.append("bin_id", file.bin_id);
-    data.append("group_id", file.group_id);
-    data.append("user_id", getState().user.ZUID);
-
-    const req = new XMLHttpRequest();
-    req.withCredentials = true;
-    req.open(
-      "POST",
-      `${CONFIG.SERVICE_MEDIA_STORAGE}/upload/${bin.storage_driver}/${bin.storage_name}`
-    );
-
-    req.upload.addEventListener("progress", function(e) {
-      file.progress = (e.loaded / e.total) * 100;
-      dispatch(fileUploadProgress(file));
-    });
-
-    req.addEventListener("load", function(e) {
-      if (req.status === 201) {
-        const response = JSON.parse(req.response);
-        const uploadedFile = response.data[0];
-        uploadedFile.uploadID = file.uploadID;
-        dispatch(fileUploadSuccess(uploadedFile));
-      }
-    });
-
-    req.send(data);
   };
 }
 
@@ -319,19 +365,87 @@ export function deleteGroup(group) {
   };
 }
 
-export function editBin(binName, bin) {
+export function fetchBinFiles(binZUID) {
   return dispatch => {
-    return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/bin/${bin.id}`, {
-      method: "PATCH",
-      body: { ...bin, name: binName }
-    }).then(res => {
-      if (res.status === 200) {
-        dispatch(editBinSuccess(res.data[0]));
-      } else {
-        dispatch(notify({ message: "Failed editing bin", kind: "error" }));
-        throw res;
+    dispatch(fetchFilesStart({ group: binZUID }));
+    return dispatch({
+      type: "FETCH_RESOURCE",
+      uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/bin/${binZUID}/files`,
+      handler: res => {
+        if (res.status === 200) {
+          dispatch(fetchFilesSuccess({ group: binZUID, files: res.data }));
+        } else {
+          dispatch(
+            notify({ message: "Failed loading bin files", kind: "error" })
+          );
+          throw res;
+        }
       }
     });
+  };
+}
+
+export function fetchGroupFiles(groupZUID) {
+  return dispatch => {
+    dispatch(fetchFilesStart({ group: groupZUID }));
+    return dispatch({
+      type: "FETCH_RESOURCE",
+      uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/group/${groupZUID}`,
+      handler: res => {
+        if (res.status === 200) {
+          dispatch(
+            fetchFilesSuccess({ group: groupZUID, files: res.data[0].files })
+          );
+        } else {
+          dispatch(
+            notify({ message: "Failed loading group files", kind: "error" })
+          );
+          throw res;
+        }
+      }
+    });
+  };
+}
+
+export function uploadFile(file, bin) {
+  return (dispatch, getState) => {
+    function handleError() {
+      dispatch(fileUploadError(file));
+      dispatch(notify({ message: "Failed uploading file", kind: "error" }));
+    }
+    const data = new FormData();
+    data.append("file", file.file);
+    data.append("bin_id", file.bin_id);
+    data.append("group_id", file.group_id);
+    data.append("user_id", getState().user.ZUID);
+
+    const req = new XMLHttpRequest();
+    req.withCredentials = true;
+    req.open(
+      "POST",
+      `${CONFIG.SERVICE_MEDIA_STORAGE}/upload/${bin.storage_driver}/${bin.storage_name}`
+    );
+
+    req.upload.addEventListener("progress", function(e) {
+      file.progress = (e.loaded / e.total) * 100;
+      dispatch(fileUploadProgress(file));
+    });
+
+    req.addEventListener("load", function(e) {
+      if (req.status === 201) {
+        const response = JSON.parse(req.response);
+        const uploadedFile = response.data[0];
+        uploadedFile.uploadID = file.uploadID;
+        dispatch(fileUploadSuccess(uploadedFile));
+      } else {
+        handleError();
+      }
+    });
+    req.addEventListener("abort", handleError);
+    req.addEventListener("error", handleError);
+
+    dispatch(fileUploadStart(file));
+    req.send(data);
   };
 }
 

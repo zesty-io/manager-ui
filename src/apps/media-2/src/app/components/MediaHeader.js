@@ -28,16 +28,19 @@ export function MediaHeader(props) {
   }
 
   function handleFileInputChange(event) {
-    const file = {
-      file: event.target.files[0],
-      filename: event.target.value.split("\\").pop(),
-      bin_id: props.currentBin.id,
-      group_id: props.currentGroup.id,
-      uploadID: uuidv4(),
-      progress: 0,
-      url: URL.createObjectURL(event.target.files[0])
-    };
-    dispatch(uploadFile(file, props.currentBin));
+    Array.from(event.target.files).forEach(file => {
+      const fileToUpload = {
+        file,
+        filename: file.name,
+        bin_id: props.currentBin.id,
+        group_id: props.currentGroup.id,
+        uploadID: uuidv4(),
+        progress: 0,
+        loading: true,
+        url: URL.createObjectURL(file)
+      };
+      dispatch(uploadFile(fileToUpload, props.currentBin));
+    });
   }
 
   return (
@@ -52,6 +55,7 @@ export function MediaHeader(props) {
         </Button>
         <input
           type="file"
+          multiple
           ref={hiddenFileInput}
           onChange={handleFileInputChange}
           style={{ display: "none" }}
