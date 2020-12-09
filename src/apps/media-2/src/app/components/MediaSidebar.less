@@ -1,3 +1,5 @@
+@import "~@zesty-io/core/colors.less";
+
 .Nav {
   overflow-y: auto;
   background-color: #404759;
@@ -122,4 +124,20 @@
     background-color: lighten(#1a202c, 15%);
     border-left: 2px solid lighten(#1a202c, 15%);
   }
+}
+
+.HiddenNav {
+  opacity: 0.5;
+  .NavTitle {
+    cursor: pointer;
+
+    &:hover,
+    &:active,
+    &:focus {
+      color: @zesty-white;
+    }
+  }
+}
+.HiddenNavClosed {
+  display: none;
 }

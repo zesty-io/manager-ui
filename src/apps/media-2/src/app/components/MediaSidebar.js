@@ -1,21 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCaretDown,
+  faCaretLeft,
+  faPlus,
+  faSearch
+} from "@fortawesome/free-solid-svg-icons";
 import { Nav } from "@zesty-io/core/Nav";
 import { Button } from "@zesty-io/core/Button";
-import { closeGroup } from "shell/store/media";
+import { closeGroup, hideGroup } from "shell/store/media";
 import { MediaCreateGroupModal } from "./MediaCreateGroupModal";
 import styles from "./MediaSidebar.less";
 
 export function MediaSidebar(props) {
   const dispatch = useDispatch();
   const [selected, setSelected] = useState(location.pathname);
+  const [hiddenOpen, setHiddenOpen] = useState(false);
   const [createGroupModal, setCreateGroupModal] = useState(false);
 
   useEffect(() => {
     setSelected(location.pathname);
   }, [location.pathname]);
+
+  const collapseNode = node => dispatch(closeGroup(node.id));
+
+  const actions = [
+    {
+      icon: "fas fa-eye-slash",
+      onClick: node => {
+        dispatch(hideGroup(node.id));
+      }
+    }
+  ];
 
   return (
     <nav className={styles.Nav}>
@@ -47,8 +64,29 @@ export function MediaSidebar(props) {
       <Nav
         tree={props.nav}
         selected={selected}
-        collapseNode={node => dispatch(closeGroup(node.id))}
+        collapseNode={collapseNode}
+        actions={actions}
       />
+      <div className={styles.HiddenNav}>
+        <h1
+          className={styles.NavTitle}
+          onClick={() => setHiddenOpen(!hiddenOpen)}
+        >
+          <span style={{ flex: 1 }}>Hidden Items</span>
+          {hiddenOpen ? (
+            <FontAwesomeIcon icon={faCaretDown} />
+          ) : (
+            <FontAwesomeIcon icon={faCaretLeft} />
+          )}
+        </h1>
+        <Nav
+          className={hiddenOpen ? "" : styles.HiddenNavClosed}
+          tree={props.hiddenNav}
+          selected={selected}
+          collapseNode={collapseNode}
+          actions={actions}
+        />
+      </div>
     </nav>
   );
 }

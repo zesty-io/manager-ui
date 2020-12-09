@@ -126,6 +126,7 @@ export default connect((state, props) => {
       >
         <MediaSidebar
           nav={props.media.nav}
+          hiddenNav={props.media.hiddenNav}
           currentGroup={currentGroup}
           currentBin={currentBin}
         />
