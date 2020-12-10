@@ -19,72 +19,56 @@ import {
 import styles from "./MediaApp.less";
 
 export default connect((state, props) => {
+  let currentGroup;
+  let currentBin;
+  // use bin as group
+  if (props.match.params.groupID) {
+    currentGroup =
+      state.media.bins.find(bin => bin.id === props.match.params.groupID) ||
+      state.media.groups.find(group => group.id === props.match.params.groupID);
+    if (currentGroup) {
+      currentBin = currentGroup.bin_id
+        ? state.media.bins.find(bin => bin.id === currentGroup.bin_id)
+        : currentGroup;
+    }
+  }
   return {
+    currentGroup,
+    currentBin,
     media: state.media
   };
 })(function MediaApp(props) {
   const history = useHistory();
-  const { groupID, fileID } = useParams();
-  const [currentGroup, setCurrentGroup] = useState();
-  const [currentBin, setCurrentBin] = useState();
-  const [files, setFiles] = useState({});
+  const params = useParams();
   const [fileDetails, setFileDetails] = useState();
   const [deleteGroupModal, setDeleteGroupModal] = useState(false);
   const [deleteFileModal, setDeleteFileModal] = useState(false);
   const [selected, setSelected] = useState([]);
 
-  // update files
-  useEffect(() => {
-    if (groupID && props.media.files[groupID]) {
-      setFiles(props.media.files[groupID]);
-    }
-  }, [props.media.files[groupID]]);
-
-  // update current group, bin
-  useEffect(() => {
-    if (groupID) {
-      let newCurrentGroup;
-      let newCurrentBin;
-      // use bin as group
-      newCurrentGroup = props.media.bins.find(bin => bin.id === groupID);
-      if (newCurrentGroup) {
-        newCurrentBin = newCurrentGroup;
-      } else {
-        newCurrentGroup = props.media.groups.find(
-          group => group.id === groupID
-        );
-        if (newCurrentGroup) {
-          newCurrentBin = props.media.bins.find(
-            bin => bin.id === newCurrentGroup.bin_id
-          );
-        }
-      }
-      setCurrentBin(newCurrentBin);
-      setCurrentGroup(newCurrentGroup);
-    }
-  }, [groupID, props.media.bins.length, props.media.groups.length]);
-
-  // redirect to default bin if there is no group in URL
-  useEffect(() => {
-    if (!groupID && props.media.bins.length) {
-      const currentBin = props.media.bins.find(bin => bin.default);
-      history.push(`/dam/${currentBin.id}`);
-    }
-  }, [props.media.bins.length]);
-
-  // open file details modal if fileID is in URL
-  useEffect(() => {
-    if (fileID && files && files.data) {
-      setFileDetails(files.data.find(file => file.id === fileID));
-    } else {
-      setFileDetails();
-    }
-  }, [files, fileID]);
-
   // always fetch all bins
   useEffect(() => {
     props.dispatch(fetchAllMediaBins());
   }, []);
+
+  // redirect to default bin if there is no group in URL
+  useEffect(() => {
+    if (!params.groupID && props.media.bins.length) {
+      const bin = props.media.bins.find(bin => bin.default);
+      history.push(`/dam/${bin.id}`);
+    }
+  }, [props.media.bins.length]);
+
+  // open file details modal if params.fileID is in URL
+  useEffect(() => {
+    if (params.fileID) {
+      const file = props.media.files.find(file => file.id === params.fileID);
+      if (file) {
+        setFileDetails(file);
+      }
+    } else {
+      setFileDetails();
+    }
+  }, [params.fileID]);
 
   // fetch groups when we bins change
   useEffect(() => {
@@ -95,14 +79,14 @@ export default connect((state, props) => {
 
   // fetch group files when navigating to group
   useEffect(() => {
-    if (currentGroup) {
-      if (currentGroup === currentBin) {
-        props.dispatch(fetchBinFiles(currentGroup.id));
+    if (props.currentGroup) {
+      if (!props.currentGroup.bin_id) {
+        props.dispatch(fetchBinFiles(props.currentGroup.id));
       } else {
-        props.dispatch(fetchGroupFiles(currentGroup.id));
+        props.dispatch(fetchGroupFiles(props.currentGroup.id));
       }
     }
-  }, [currentGroup]);
+  }, [props.currentGroup && props.currentGroup.id]);
 
   function toggleSelected(file) {
     const fileIndex = selected.findIndex(
@@ -120,34 +104,33 @@ export default connect((state, props) => {
   return (
     <main className={styles.MediaApp}>
       <WithLoader
-        condition={currentGroup}
+        condition={props.currentGroup}
         message="Starting Digital Asset Manager"
         width="100vw"
       >
         <MediaSidebar
           nav={props.media.nav}
           hiddenNav={props.media.hiddenNav}
-          currentGroup={currentGroup}
-          currentBin={currentBin}
+          currentGroup={props.currentGroup}
+          currentBin={props.currentBin}
         />
         <div className={styles.WorkspaceContainer}>
           <MediaHeader
-            currentBin={currentBin}
-            currentGroup={currentGroup}
+            currentBin={props.currentBin}
+            currentGroup={props.currentGroup}
             showDeleteGroupModal={() => setDeleteGroupModal(true)}
           />
           <MediaWorkspace
-            files={files}
             selected={selected}
             toggleSelected={toggleSelected}
-            currentGroup={currentGroup}
+            currentGroup={props.currentGroup}
           />
           <MediaSelected selected={selected} toggleSelected={toggleSelected} />
         </div>
         {fileDetails && (
           <MediaDetailsModal
             file={fileDetails}
-            onClose={() => history.push(`/dam/${currentGroup.id}`)}
+            onClose={() => history.push(`/dam/${props.currentGroup.id}`)}
             showDeleteFileModal={() => setDeleteFileModal(true)}
           />
         )}
@@ -155,13 +138,13 @@ export default connect((state, props) => {
           <MediaDeleteFileModal
             onClose={() => setDeleteFileModal(false)}
             file={fileDetails}
-            currentGroup={currentGroup}
+            currentGroup={props.currentGroup}
           />
         )}
         {deleteGroupModal && (
           <MediaDeleteGroupModal
             onClose={() => setDeleteGroupModal(false)}
-            currentGroup={currentGroup}
+            currentGroup={props.currentGroup}
           />
         )}
       </WithLoader>

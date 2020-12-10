@@ -3,13 +3,14 @@ import { faFolder } from "@fortawesome/free-solid-svg-icons";
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 import uniqBy from "lodash/uniqBy";
+import omit from "lodash/omit";
 
 const mediaSlice = createSlice({
   name: "media",
   initialState: {
     bins: [],
     groups: [],
-    files: {},
+    files: [],
     nav: [],
     hiddenNav: []
   },
@@ -89,35 +90,47 @@ const mediaSlice = createSlice({
 
     // Files
     fetchFilesStart(state, action) {
-      state.files[action.payload.group] = {
-        loading: true
-      };
+      const group =
+        state.bins.find(val => val.id === action.payload.group) ||
+        state.groups.find(val => val.id === action.payload.group);
+      if (group) {
+        group.loading = true;
+      }
     },
     fetchFilesSuccess(state, action) {
+      const group =
+        state.bins.find(val => val.id === action.payload.group) ||
+        state.groups.find(val => val.id === action.payload.group);
+      if (group) {
+        group.loading = false;
+      }
       const files = action.payload.files;
       // sort newest files first
       files.reverse();
-      state.files[action.payload.group].data = files;
-      state.files[action.payload.group].loading = false;
+      files.forEach(file => {
+        if (!state.files.some(val => val.id === file.id)) {
+          state.files.unshift(file);
+        }
+      });
     },
     deleteFileSuccess(state, action) {
-      const indexToDelete = state.files[action.payload.group_id].data.findIndex(
-        el => el.id === action.payload.id
-      );
-      state.files[action.payload.group_id].data.splice(indexToDelete, 1);
+      const index = state.files.findIndex(el => el.id === action.payload.id);
+      if (index !== -1) {
+        state.files.splice(index, 1);
+      }
     },
     fileUploadStart(state, action) {
-      state.files[action.payload.group_id].data.unshift(action.payload);
+      const file = omit(action.payload, "file");
+      state.files.unshift(file);
     },
     fileUploadProgress(state, action) {
-      const uploadingFile = state.files[action.payload.group_id].data.find(
+      const uploadingFile = state.files.find(
         file => file.uploadID === action.payload.uploadID
       );
-      console.log(action.payload.progress);
       uploadingFile.progress = action.payload.progress;
     },
     fileUploadSuccess(state, action) {
-      const uploadingFile = state.files[action.payload.group_id].data.find(
+      const uploadingFile = state.files.find(
         file => file.uploadID === action.payload.uploadID
       );
       uploadingFile.loading = false;
@@ -126,10 +139,12 @@ const mediaSlice = createSlice({
       uploadingFile.url = action.payload.url;
     },
     fileUploadError(state, action) {
-      const indexToDelete = state.files[action.payload.group_id].data.findIndex(
+      const index = state.files.findIndex(
         el => el.uploadID === action.payload.uploadID
       );
-      state.files[action.payload.group_id].data.splice(indexToDelete, 1);
+      if (index !== -1) {
+        state.files.splice(index, 1);
+      }
     }
   }
 });

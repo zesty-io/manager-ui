@@ -1,4 +1,6 @@
 import React, { useEffect, useRef } from "react";
+import { createSelector } from "reselect";
+import { useSelector } from "react-redux";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
@@ -6,7 +8,16 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import { MediaWorkspaceItem } from "./MediaWorkspaceItem";
 import styles from "./MediaWorkspace.less";
 
+const selectGroupFiles = createSelector(
+  state => state.media.files,
+  (_, currentGroup) => currentGroup,
+  (files, currentGroup) =>
+    files.filter(file => file.group_id === currentGroup.id)
+);
 export function MediaWorkspace(props) {
+  const files = useSelector(state =>
+    selectGroupFiles(state, props.currentGroup)
+  );
   const dropzoneRef = useRef();
   const dropMessageRef = useRef();
 
@@ -48,7 +59,8 @@ export function MediaWorkspace(props) {
   }, [dropzoneRef.current]);
   return (
     <WithLoader
-      condition={!props.files.loading}
+      // don't show loader if we already have files from before
+      condition={files.length || !props.currentGroup.loading}
       message="Loading Files"
       width="100%"
     >
@@ -64,12 +76,12 @@ export function MediaWorkspace(props) {
               Drop and upload!
             </h1>
           </div>
-          {props.files.data && props.files.data.length ? (
+          {files.length ? (
             <section className={styles.WorkspaceGrid}>
-              {props.files.data.map(file => {
+              {files.map(file => {
                 return (
                   <MediaWorkspaceItem
-                    key={file.id || file.tempID}
+                    key={file.id || file.uploadID}
                     file={file}
                     selected={props.selected.find(
                       selectedFile => selectedFile.id === file.id
