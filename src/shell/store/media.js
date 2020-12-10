@@ -106,7 +106,6 @@ const mediaSlice = createSlice({
       }
       const files = action.payload.files;
       // sort newest files first
-      files.reverse();
       files.forEach(file => {
         if (!state.files.some(val => val.id === file.id)) {
           state.files.unshift(file);
