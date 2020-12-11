@@ -111,8 +111,8 @@ export default connect((state, props) => {
         <MediaSidebar
           nav={props.media.nav}
           hiddenNav={props.media.hiddenNav}
-          currentGroup={props.currentGroup}
           currentBin={props.currentBin}
+          currentGroup={props.currentGroup}
         />
         <div className={styles.WorkspaceContainer}>
           <MediaHeader
@@ -123,6 +123,7 @@ export default connect((state, props) => {
           <MediaWorkspace
             selected={selected}
             toggleSelected={toggleSelected}
+            currentBin={props.currentBin}
             currentGroup={props.currentGroup}
           />
           <MediaSelected selected={selected} toggleSelected={toggleSelected} />

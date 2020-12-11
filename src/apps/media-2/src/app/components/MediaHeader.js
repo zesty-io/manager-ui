@@ -8,14 +8,9 @@ import {
   faVideo
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import { v4 as uuidv4 } from "uuid";
-
 import { Button } from "@zesty-io/core/Button";
-
 import { uploadFile } from "shell/store/media";
-
 import { MediaEditGroupModal } from "./MediaEditGroupModal";
-
 import styles from "./MediaHeader.less";
 
 export function MediaHeader(props) {
@@ -31,13 +26,8 @@ export function MediaHeader(props) {
     Array.from(event.target.files).forEach(file => {
       const fileToUpload = {
         file,
-        filename: file.name,
         bin_id: props.currentBin.id,
-        group_id: props.currentGroup.id,
-        uploadID: uuidv4(),
-        progress: 0,
-        loading: true,
-        url: URL.createObjectURL(file)
+        group_id: props.currentGroup.id
       };
       dispatch(uploadFile(fileToUpload, props.currentBin));
     });

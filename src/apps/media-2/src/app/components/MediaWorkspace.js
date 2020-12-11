@@ -1,10 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { createSelector } from "reselect";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
+import { useDropzone } from "react-dropzone";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import { WithLoader } from "@zesty-io/core/WithLoader";
+import { uploadFile } from "shell/store/media";
 import { MediaWorkspaceItem } from "./MediaWorkspaceItem";
 import styles from "./MediaWorkspace.less";
 
@@ -18,45 +20,63 @@ export function MediaWorkspace(props) {
   const files = useSelector(state =>
     selectGroupFiles(state, props.currentGroup)
   );
-  const dropzoneRef = useRef();
-  const dropMessageRef = useRef();
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    let counter = 0;
-
-    console.log("dropzone: ", dropzoneRef.current);
-    if (dropzoneRef.current) {
-      const unregisterDndEnter = DnD.enter(dropzoneRef.current, evt => {
-        console.log("dragenter");
-        counter++;
-        dropMessageRef.current.style.display = "flex";
-      });
-      const unregisterDndLeave = DnD.leave(dropzoneRef.current, evt => {
-        console.log("dragleave");
-        counter--;
-        if (counter === 0) {
-          dropMessageRef.current.style.display = "none";
-        }
-      });
-
-      const unregisterDndOver = DnD.over(dropzoneRef.current, () => {});
-      const unregisterDndDrop = DnD.drop(dropzoneRef.current, evt => {
-        console.log("drop");
-        counter = 0;
-        dropMessageRef.current.style.display = "none";
-
-        Array.from(evt.dataTransfer.files).forEach(file => {
-          console.log(file);
-        });
-      });
-      return () => {
-        unregisterDndEnter();
-        unregisterDndLeave();
-        unregisterDndOver();
-        unregisterDndDrop();
+  const onDrop = useCallback(acceptedFiles => {
+    console.log(acceptedFiles);
+    acceptedFiles.forEach(file => {
+      const fileToUpload = {
+        file,
+        bin_id: props.currentBin.id,
+        group_id: props.currentGroup.id
       };
-    }
-  }, [dropzoneRef.current]);
+      dispatch(uploadFile(fileToUpload, props.currentBin));
+    });
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    noClick: true
+  });
+  // const dropzoneRef = useRef();
+  // const dropMessageRef = useRef();
+
+  // useEffect(() => {
+  //   let counter = 0;
+
+  //   console.log("dropzone: ", dropzoneRef.current);
+  //   if (dropzoneRef.current) {
+  //     const unregisterDndEnter = DnD.enter(dropzoneRef.current, evt => {
+  //       console.log("dragenter");
+  //       counter++;
+  //       dropMessageRef.current.style.display = "flex";
+  //     });
+  //     const unregisterDndLeave = DnD.leave(dropzoneRef.current, evt => {
+  //       console.log("dragleave");
+  //       counter--;
+  //       if (counter === 0) {
+  //         dropMessageRef.current.style.display = "none";
+  //       }
+  //     });
+
+  //     const unregisterDndOver = DnD.over(dropzoneRef.current, () => {});
+  //     const unregisterDndDrop = DnD.drop(dropzoneRef.current, evt => {
+  //       console.log("drop");
+  //       counter = 0;
+  //       dropMessageRef.current.style.display = "none";
+
+  //       Array.from(evt.dataTransfer.files).forEach(file => {
+  //         console.log(file);
+  //       });
+  //     });
+  //     return () => {
+  //       unregisterDndEnter();
+  //       unregisterDndLeave();
+  //       unregisterDndOver();
+  //       unregisterDndDrop();
+  //     };
+  //   }
+  // }, [dropzoneRef.current]);
   return (
     <WithLoader
       // don't show loader if we already have files from before
@@ -64,18 +84,27 @@ export function MediaWorkspace(props) {
       message="Loading Files"
       width="100%"
     >
-      <div ref={dropzoneRef}>
+      <div
+        {...getRootProps()}
+        // ref={dropzoneRef}
+      >
+        <input {...getInputProps()} />
         <main
           className={cx(styles.Workspace, {
             [styles.hasSelected]: props.selected.length
           })}
         >
-          <div ref={dropMessageRef} className={styles.DropMessage}>
-            <h1>
-              <FontAwesomeIcon icon={faUpload} />
-              Drop and upload!
-            </h1>
-          </div>
+          {isDragActive && (
+            <div
+              // ref={dropMessageRef}
+              className={styles.DropMessage}
+            >
+              <h1>
+                <FontAwesomeIcon icon={faUpload} />
+                Drop and upload!
+              </h1>
+            </div>
+          )}
           {files.length ? (
             <section className={styles.WorkspaceGrid}>
               {files.map(file => {

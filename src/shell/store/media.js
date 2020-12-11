@@ -4,6 +4,7 @@ import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 import uniqBy from "lodash/uniqBy";
 import omit from "lodash/omit";
+import { v4 as uuidv4 } from "uuid";
 
 const mediaSlice = createSlice({
   name: "media",
@@ -427,6 +428,13 @@ export function uploadFile(file, bin) {
       dispatch(fileUploadError(file));
       dispatch(notify({ message: "Failed uploading file", kind: "error" }));
     }
+
+    file.filename = file.file.name;
+    file.uploadID = uuidv4();
+    file.progress = 0;
+    file.loading = true;
+    file.url = URL.createObjectURL(file.file);
+
     const data = new FormData();
     data.append("file", file.file);
     data.append("bin_id", file.bin_id);
