@@ -5,6 +5,7 @@ import cx from "classnames";
 import { useDropzone } from "react-dropzone";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
+import { Button } from "@zesty-io/core/Button";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { uploadFile } from "shell/store/media";
 import { MediaWorkspaceItem } from "./MediaWorkspaceItem";
@@ -33,7 +34,7 @@ export function MediaWorkspace(props) {
     });
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, open, isDragActive } = useDropzone({
     onDrop,
     noClick: true
   });
@@ -124,10 +125,10 @@ export function MediaWorkspace(props) {
             <div className={styles.UploadMessage}>
               <div>Drag and drop files here</div>
               <div>or</div>
-              <div>
+              <Button onClick={open}>
                 <FontAwesomeIcon icon={faUpload} />
                 Choose files to upload
-              </div>
+              </Button>
             </div>
           )}
         </main>
