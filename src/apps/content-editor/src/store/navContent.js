@@ -237,18 +237,14 @@ function buildHeadlessTree(nodes) {
     if (node.hidden) {
       return false;
     }
-    if (node.parentZUID) {
-      return false;
+    if (
+      node.type === "dataset" &&
+      node.label !== "Dashboard Widgets" &&
+      node.label !== "Widgets"
+    ) {
+      return true;
     } else {
-      if (
-        node.type === "dataset" &&
-        node.label !== "Dashboard Widgets" &&
-        node.label !== "Widgets"
-      ) {
-        return true;
-      } else {
-        return false;
-      }
+      return false;
     }
   });
 
