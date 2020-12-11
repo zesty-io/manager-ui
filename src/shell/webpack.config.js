@@ -184,7 +184,8 @@ module.exports = env => {
             presets: ["@babel/preset-env", "@babel/preset-react"],
             plugins: [
               ["@babel/plugin-proposal-class-properties", { loose: false }],
-              "@babel/plugin-transform-runtime", // https://babeljs.io/docs/en/babel-plugin-transform-runtime
+              "@babel/plugin-proposal-optional-chaining",
+              "@babel/plugin-transform-runtime",
               "react-hot-loader/babel"
             ]
           }
