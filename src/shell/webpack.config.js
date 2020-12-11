@@ -6,6 +6,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 const CleanupStatsPlugin = require("./CleanupStatsPlugin");
+const MomentLocalesPlugin = require("moment-locales-webpack-plugin");
 
 const CONFIG = require("./app.config");
 
@@ -45,6 +46,7 @@ module.exports = env => {
       }
     },
     plugins: [
+      new MomentLocalesPlugin(),
       new MiniCssExtractPlugin({
         ignoreOrder: true,
         filename:
