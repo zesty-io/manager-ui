@@ -23,7 +23,6 @@ export function MediaWorkspace(props) {
   const dispatch = useDispatch();
 
   const onDrop = useCallback(acceptedFiles => {
-    console.log(acceptedFiles);
     acceptedFiles.forEach(file => {
       const fileToUpload = {
         file,
