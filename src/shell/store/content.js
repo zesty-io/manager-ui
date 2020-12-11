@@ -222,6 +222,13 @@ export function fetchItem(modelZUID, itemZUID) {
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}`,
       handler: res => {
+        if (res.status === 404) {
+          dispatch({
+            type: "REMOVE_ITEM",
+            itemZUID
+          });
+          return res;
+        }
         if (!res || !res.data) {
           throw new Error("Bad response from API. Missing resource data.");
         }
