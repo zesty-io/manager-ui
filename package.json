@@ -13,6 +13,7 @@
     "release:prod": "npm test && zutil deploy prod .",
     "serve:static": "serve build/ -l 9000 --single",
     "serve:webpack": "webpack-dev-server --display=minimal --progress --config src/shell/webpack.config.js",
+    "serve:webpack:ssl": "npm run serve:webpack:ssl -- --https --cert ./etc/ssl/_.manager.dev.zesty.io.crt --key ./etc/ssl/_.manager.dev.zesty.io.key",
     "start": "npm run serve:webpack -- --env.NODE_ENV=development",
     "task:clean": "rimraf build",
     "task:gulp": "cross-env ./src/apps/media/node_modules/.bin/gulp --gulpfile=./src/apps/media/gulpfile.js",
