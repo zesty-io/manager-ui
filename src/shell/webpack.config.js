@@ -1,6 +1,8 @@
 "use strict";
-const webpack = require("webpack");
+
 const path = require("path");
+
+const webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -8,9 +10,13 @@ const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 const CleanupStatsPlugin = require("./CleanupStatsPlugin");
 const MomentLocalesPlugin = require("moment-locales-webpack-plugin");
 
+const release = require("../../etc/release");
 const CONFIG = require("./app.config");
 
-module.exports = env => {
+module.exports = async env => {
+  // Attach release info onto config to connect with bug tracking software
+  CONFIG[env.NODE_ENV].build = await release(env.NODE_ENV);
+
   console.log("SELECTED", env);
   console.log("CONFIG", CONFIG[env.NODE_ENV]);
 
