@@ -355,7 +355,7 @@ export function editGroup(groupID, newGroupProperties) {
   return (dispatch, getState) => {
     const group = getState().media.groups.find(group => group.id === groupID);
     const body = {
-      ...pick(group, ["id", "group_id", "bin_id", "name"]),
+      ...pick(group, ["id", "group_id", "name"]),
       ...newGroupProperties
     };
     return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/group/${group.id}`, {

@@ -27,8 +27,7 @@ export function ParentDraggable(props) {
       }
       if (item.type === "group") {
         props.dropGroup(item.id, {
-          group_id: props.id,
-          bin_id: props.bin_id ? props.bin_id : props.id
+          group_id: props.id
         });
       }
     },
@@ -45,6 +44,14 @@ export function ParentDraggable(props) {
       if (item.id === props.id) {
         return false;
       }
+      // target is in another bin
+      if (
+        (props.type === "group" && item.bin_id !== props.bin_id) ||
+        (props.type === "bin" && item.bin_id !== props.id)
+      ) {
+        return false;
+      }
+
       return true;
     }
   });
@@ -53,6 +60,7 @@ export function ParentDraggable(props) {
     item: {
       type: "group",
       id: props.id,
+      bin_id: props.bin_id,
       parent: props.parent,
       children: props.children
     },
