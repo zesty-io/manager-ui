@@ -1,7 +1,7 @@
 import { applyMiddleware, combineReducers, createStore } from "redux";
-import thunkMiddleware from "redux-thunk";
 import { createLogger } from "redux-logger";
 
+import thunkMiddleware from "redux-thunk";
 import { fetchResource, resolveFieldOptions } from "./middleware/api";
 import { localStorage } from "./middleware/local-storage";
 
@@ -23,10 +23,27 @@ import { platform } from "./platform";
 import { headTags } from "./headTags";
 import ui from "./ui";
 
-const actionLogger = createLogger({
-  collapsed: true,
-  diff: false
-});
+// Middleware is applied in order of array
+const middlewares = [
+  localStorage,
+  fetchResource,
+  resolveFieldOptions,
+  thunkMiddleware
+];
+
+/**
+ * Do not log actions in production
+ * Improves performance and keeps bug tracking clean
+ */
+if (window.CONFIG?.ENV !== "production") {
+  middlewares.push(
+    createLogger({
+      collapsed: true,
+      duration: true,
+      diff: false
+    })
+  );
+}
 
 function createReducer(asyncReducers) {
   let initialReducers = {
@@ -63,13 +80,7 @@ function configureStore(initialState = {}) {
   const store = createStore(
     createReducer(),
     initialState,
-    applyMiddleware(
-      localStorage,
-      fetchResource,
-      resolveFieldOptions,
-      thunkMiddleware, // lets us dispatch() functions
-      actionLogger
-    )
+    applyMiddleware(...middlewares)
   );
 
   // Keep a reference of injected reducers

@@ -1,3 +1,7 @@
+// interploated by webpack at build time
+// must be setup before starting the store
+window.CONFIG = __CONFIG__;
+
 import "react-hot-loader";
 import { hot } from "react-hot-loader/root";
 import React from "react";
@@ -22,11 +26,7 @@ import Shell from "./views/Shell";
 
 import { MonacoSetup } from "../apps/code-editor/src/app/components/Editor/components/MemoizedEditor/MonacoSetup";
 
-// interploated by webpack at build time
-// must be setup before starting the store
-window.CONFIG = __CONFIG__;
-
-if (CONFIG.ENV !== "development" && CONFIG.ENV !== "local") {
+if (["stage", "production"].includes(CONFIG.ENV)) {
   Sentry.init({
     release: CONFIG.build?.data?.gitCommit,
     environment: CONFIG.ENV,
