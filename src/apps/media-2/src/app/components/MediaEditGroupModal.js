@@ -19,7 +19,7 @@ export function MediaEditGroupModal(props) {
     if (props.currentGroup === props.currentBin) {
       dispatch(editBin(name, props.currentBin));
     } else {
-      dispatch(editGroup(name, props.currentGroup));
+      dispatch(editGroup(props.currentGroup.id, { name }));
     }
   }
 

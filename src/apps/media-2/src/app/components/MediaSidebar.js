@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
@@ -8,6 +10,7 @@ import {
   faSearch
 } from "@fortawesome/free-solid-svg-icons";
 import { Nav } from "@zesty-io/core/Nav";
+import { NavDraggable } from "./NavDraggable";
 import { Button } from "@zesty-io/core/Button";
 import { closeGroup, hideGroup } from "shell/store/media";
 import { MediaCreateGroupModal } from "./MediaCreateGroupModal";
@@ -61,12 +64,14 @@ export function MediaSidebar(props) {
           />
         )}
       </div>
-      <Nav
-        tree={props.nav}
-        selected={selected}
-        collapseNode={collapseNode}
-        actions={actions}
-      />
+      <DndProvider backend={HTML5Backend}>
+        <NavDraggable
+          tree={props.nav}
+          selected={selected}
+          collapseNode={collapseNode}
+          actions={actions}
+        />
+      </DndProvider>
       <div className={styles.HiddenNav}>
         <h1
           className={styles.NavTitle}

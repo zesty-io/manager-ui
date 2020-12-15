@@ -4,6 +4,7 @@ import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 import uniqBy from "lodash/uniqBy";
 import omit from "lodash/omit";
+import pick from "lodash/pick";
 import { v4 as uuidv4 } from "uuid";
 
 const mediaSlice = createSlice({
@@ -42,6 +43,7 @@ const mediaSlice = createSlice({
       const index = state.groups.findIndex(val => val.id === action.payload.id);
       if (index !== -1) {
         state.groups[index].name = action.payload.name;
+        state.groups[index].group_id = action.payload.group_id;
         state.nav = buildMainNav(state.bins, state.groups);
         state.hiddenNav = buildHiddenNav(state.bins, state.groups);
       }
@@ -176,25 +178,28 @@ function buildNav(bins, groups) {
       closed: bin.closed,
       children: groups
         .filter(group => group.group_id === bin.id)
-        .map(buildNavGroup(groups)),
+        .map(buildNavGroup(bin, groups)),
       icon: faFolder,
       label: bin.name,
-      path: `/dam/${bin.id}`
+      path: `/dam/${bin.id}`,
+      type: "bin"
     };
   });
 }
 
-function buildNavGroup(groups) {
+function buildNavGroup(bin, groups) {
   return currentGroup => {
     return {
       id: currentGroup.id,
+      bin_id: bin.id,
       closed: currentGroup.closed,
       children: groups
         .filter(group => currentGroup.id === group.group_id)
-        .map(buildNavGroup(groups)),
+        .map(buildNavGroup(bin, groups)),
       icon: faFolder,
       label: currentGroup.name,
-      path: `/dam/${currentGroup.id}`
+      path: `/dam/${currentGroup.id}`,
+      type: "group"
     };
   };
 }
@@ -346,11 +351,16 @@ export function createGroup(groupName, bin, group) {
   };
 }
 
-export function editGroup(groupName, group) {
-  return dispatch => {
+export function editGroup(groupID, newGroupProperties) {
+  return (dispatch, getState) => {
+    const group = getState().media.groups.find(group => group.id === groupID);
+    const body = {
+      ...pick(group, ["id", "group_id", "bin_id", "name"]),
+      ...newGroupProperties
+    };
     return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/group/${group.id}`, {
       method: "PATCH",
-      body: { ...group, name: groupName }
+      body
     }).then(res => {
       if (res.status === 200) {
         dispatch(editGroupSuccess(res.data[0]));
