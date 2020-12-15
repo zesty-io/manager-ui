@@ -70,6 +70,7 @@
     "react-router-dom": "5.1.2",
     "react-window": "1.8.5",
     "redux": "4.0.5",
+    "redux-sentry-middleware": "^0.2.2",
     "redux-thunk": "2.3.0",
     "regenerator-runtime": "0.13.5",
     "reselect": "^4.0.0",
