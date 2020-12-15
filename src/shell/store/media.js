@@ -147,6 +147,13 @@ const mediaSlice = createSlice({
       if (index !== -1) {
         state.files.splice(index, 1);
       }
+    },
+    editFileSuccess(state, action) {
+      const index = state.files.findIndex(val => val.id === action.payload.id);
+      if (index !== -1) {
+        state.files[index].filename = action.payload.filename;
+        state.files[index].group_id = action.payload.group_id;
+      }
     }
   }
 });
@@ -233,7 +240,8 @@ export const {
   fileUploadStart,
   fileUploadProgress,
   fileUploadSuccess,
-  fileUploadError
+  fileUploadError,
+  editFileSuccess
 } = mediaSlice.actions;
 
 function fetchMediaBins(instanceID) {
@@ -493,6 +501,27 @@ export function deleteFile(file) {
         );
       } else {
         dispatch(notify({ message: "Failed deleting file", kind: "error" }));
+        throw res;
+      }
+    });
+  };
+}
+
+export function editFile(fileID, fileProperties) {
+  return (dispatch, getState) => {
+    const file = getState().media.files.find(file => file.id === fileID);
+    const body = {
+      ...pick(file, ["id", "group_id", "filename"]),
+      ...fileProperties
+    };
+    return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${file.id}`, {
+      method: "PATCH",
+      body
+    }).then(res => {
+      if (res.status === 200) {
+        dispatch(editFileSuccess(res.data[0]));
+      } else {
+        dispatch(notify({ message: "Failed editing file", kind: "error" }));
         throw res;
       }
     });

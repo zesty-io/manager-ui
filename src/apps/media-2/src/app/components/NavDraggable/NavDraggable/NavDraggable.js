@@ -4,7 +4,7 @@ import cx from "classnames";
 import { ParentDraggable } from "../ParentDraggable";
 import styles from "./NavDraggable.less";
 import cloneDeep from "lodash/cloneDeep";
-import { editGroup } from "shell/store/media";
+import { editFile, editGroup } from "shell/store/media";
 
 function find(id, items) {
   for (const node of items) {
@@ -53,6 +53,10 @@ export function NavDraggable(props) {
     dispatch(editGroup(id, groupProperties));
   }, []);
 
+  const dropFile = useCallback((id, fileProperties) => {
+    dispatch(editFile(id, fileProperties));
+  }, []);
+
   useEffect(() => {
     setTree(cloneDeep(props.tree));
   }, [props.tree]);
@@ -72,6 +76,7 @@ export function NavDraggable(props) {
           highlightTarget={highlightTarget}
           find={find}
           dropGroup={dropGroup}
+          dropFile={dropFile}
           parent={null}
         />
       ))}

@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
@@ -64,14 +62,12 @@ export function MediaSidebar(props) {
           />
         )}
       </div>
-      <DndProvider backend={HTML5Backend}>
-        <NavDraggable
-          tree={props.nav}
-          selected={selected}
-          collapseNode={collapseNode}
-          actions={actions}
-        />
-      </DndProvider>
+      <NavDraggable
+        tree={props.nav}
+        selected={selected}
+        collapseNode={collapseNode}
+        actions={actions}
+      />
       <div className={styles.HiddenNav}>
         <h1
           className={styles.NavTitle}

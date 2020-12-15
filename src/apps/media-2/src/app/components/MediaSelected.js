@@ -47,6 +47,7 @@ export function MediaSelected(props) {
                 {props.selected.map(file => {
                   return (
                     <Card
+                      key={file.id}
                       className={cx(styles.Card, styles.CardTop)}
                       onClick={() => props.toggleSelected(file)}
                     >

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { connect } from "react-redux";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { MediaSidebar } from "./components/MediaSidebar";
 import { MediaWorkspace } from "./components/MediaWorkspace";
@@ -9,7 +11,6 @@ import { MediaDetailsModal } from "./components/MediaDetailsModal";
 import { MediaDeleteGroupModal } from "./components/MediaDeleteGroupModal";
 import { MediaDeleteFileModal } from "./components/MediaDeleteFileModal";
 import { MediaSelected } from "./components/MediaSelected";
-
 import {
   fetchAllMediaBins,
   fetchAllGroups,
@@ -108,46 +109,51 @@ export default connect((state, props) => {
         message="Starting Digital Asset Manager"
         width="100vw"
       >
-        <MediaSidebar
-          nav={props.media.nav}
-          hiddenNav={props.media.hiddenNav}
-          currentBin={props.currentBin}
-          currentGroup={props.currentGroup}
-        />
-        <div className={styles.WorkspaceContainer}>
-          <MediaHeader
-            currentBin={props.currentBin}
-            currentGroup={props.currentGroup}
-            showDeleteGroupModal={() => setDeleteGroupModal(true)}
-          />
-          <MediaWorkspace
-            selected={selected}
-            toggleSelected={toggleSelected}
+        <DndProvider backend={HTML5Backend}>
+          <MediaSidebar
+            nav={props.media.nav}
+            hiddenNav={props.media.hiddenNav}
             currentBin={props.currentBin}
             currentGroup={props.currentGroup}
           />
-          <MediaSelected selected={selected} toggleSelected={toggleSelected} />
-        </div>
-        {fileDetails && (
-          <MediaDetailsModal
-            file={fileDetails}
-            onClose={() => history.push(`/dam/${props.currentGroup.id}`)}
-            showDeleteFileModal={() => setDeleteFileModal(true)}
-          />
-        )}
-        {deleteFileModal && (
-          <MediaDeleteFileModal
-            onClose={() => setDeleteFileModal(false)}
-            file={fileDetails}
-            currentGroup={props.currentGroup}
-          />
-        )}
-        {deleteGroupModal && (
-          <MediaDeleteGroupModal
-            onClose={() => setDeleteGroupModal(false)}
-            currentGroup={props.currentGroup}
-          />
-        )}
+          <div className={styles.WorkspaceContainer}>
+            <MediaHeader
+              currentBin={props.currentBin}
+              currentGroup={props.currentGroup}
+              showDeleteGroupModal={() => setDeleteGroupModal(true)}
+            />
+            <MediaWorkspace
+              selected={selected}
+              toggleSelected={toggleSelected}
+              currentBin={props.currentBin}
+              currentGroup={props.currentGroup}
+            />
+            <MediaSelected
+              selected={selected}
+              toggleSelected={toggleSelected}
+            />
+          </div>
+          {fileDetails && (
+            <MediaDetailsModal
+              file={fileDetails}
+              onClose={() => history.push(`/dam/${props.currentGroup.id}`)}
+              showDeleteFileModal={() => setDeleteFileModal(true)}
+            />
+          )}
+          {deleteFileModal && (
+            <MediaDeleteFileModal
+              onClose={() => setDeleteFileModal(false)}
+              file={fileDetails}
+              currentGroup={props.currentGroup}
+            />
+          )}
+          {deleteGroupModal && (
+            <MediaDeleteGroupModal
+              onClose={() => setDeleteGroupModal(false)}
+              currentGroup={props.currentGroup}
+            />
+          )}
+        </DndProvider>
       </WithLoader>
     </main>
   );

@@ -8,7 +8,7 @@ export function ParentDraggable(props) {
   const depth = props.depth + 1 || 1;
   const ref = useRef(null);
   const [, drop] = useDrop({
-    accept: "group",
+    accept: ["group", "file"],
     hover(item, monitor) {
       if (!ref.current) {
         return;
@@ -29,27 +29,34 @@ export function ParentDraggable(props) {
         props.dropGroup(item.id, {
           group_id: props.id
         });
+      } else if (item.type === "file") {
+        props.dropFile(item.id, {
+          group_id: props.id
+        });
       }
     },
     canDrop(item) {
-      // target is parent
-      if (item.parent === props.id) {
-        return false;
-      }
-      // target is child
-      if (props.find(props.id, item.children)) {
-        return false;
-      }
-      // target is same as start
-      if (item.id === props.id) {
-        return false;
-      }
       // target is in another bin
       if (
         (props.type === "group" && item.bin_id !== props.bin_id) ||
         (props.type === "bin" && item.bin_id !== props.id)
       ) {
         return false;
+      }
+
+      if (item.type === "group") {
+        // target is parent
+        if (item.parent === props.id) {
+          return false;
+        }
+        // target is child
+        if (props.find(props.id, item.children)) {
+          return false;
+        }
+        // target is same as start
+        if (item.id === props.id) {
+          return false;
+        }
       }
 
       return true;
@@ -107,6 +114,7 @@ export function ParentDraggable(props) {
                 find={props.find}
                 highlightTarget={props.highlightTarget}
                 dropGroup={props.dropGroup}
+                dropFile={props.dropFile}
                 parent={props.id}
               />
             ))
