@@ -1,14 +1,18 @@
+// interploated by webpack at build time
+// must be setup before starting the store
+window.CONFIG = __CONFIG__;
+
 import "react-hot-loader";
 import { hot } from "react-hot-loader/root";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import { BrowserRouter, Route } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { get } from "idb-keyval";
 import riot from "riot";
 import Clipboard from "clipboard";
-import DnD from "../vendors/common/dnd";
 import * as Sentry from "@sentry/react";
+import DnD from "../vendors/common/dnd";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
@@ -21,18 +25,6 @@ import LoadInstance from "./components/load-instance";
 import Shell from "./views/Shell";
 
 import { MonacoSetup } from "../apps/code-editor/src/app/components/Editor/components/MemoizedEditor/MonacoSetup";
-
-// interploated by webpack at build time
-// must be setup before starting the store
-window.CONFIG = __CONFIG__;
-
-if (CONFIG.ENV !== "development" && CONFIG.ENV !== "local") {
-  Sentry.init({
-    environment: CONFIG.ENV,
-    dsn:
-      "https://2e83c3767c484794a56832affe2d26d9@o162121.ingest.sentry.io/5441698"
-  });
-}
 
 // needed for Breadcrumbs in Shell
 injectReducer(store, "navContent", navContent);

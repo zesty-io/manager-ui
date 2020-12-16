@@ -1,6 +1,6 @@
 {
   "name": "manager-ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Application for managing a Zesty.io content instance",
   "scripts": {
     "cleanup": "cross-env echo 'FINISHED'",
@@ -13,6 +13,7 @@
     "release:prod": "npm test && zutil deploy prod .",
     "serve:static": "serve build/ -l 9000 --single",
     "serve:webpack": "webpack-dev-server --display=minimal --progress --config src/shell/webpack.config.js",
+    "serve:webpack:ssl": "npm run serve:webpack:ssl -- --https --cert ./etc/ssl/_.manager.dev.zesty.io.crt --key ./etc/ssl/_.manager.dev.zesty.io.key",
     "start": "npm run serve:webpack -- --env.NODE_ENV=development",
     "task:clean": "rimraf build",
     "task:gulp": "cross-env ./src/apps/media/node_modules/.bin/gulp --gulpfile=./src/apps/media/gulpfile.js",
@@ -70,6 +71,7 @@
     "react-router-dom": "5.1.2",
     "react-window": "1.8.5",
     "redux": "4.0.5",
+    "redux-sentry-middleware": "^0.2.2",
     "redux-thunk": "2.3.0",
     "regenerator-runtime": "0.13.5",
     "reselect": "^4.0.0",
