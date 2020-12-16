@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import { notify } from "shell/store/notifications";
 
 export function request(url, opts = {}) {
   if (!url) {
@@ -49,7 +50,11 @@ export function request(url, opts = {}) {
 
       // User not authenticatd. Trigger login flow
       if (res.status === 401) {
-        throw { res, opts, url };
+        notify({
+          kind: "warn",
+          message: "You are not authenticated. You may need to login."
+        });
+        // throw { res, opts, url };
       }
 
       // Not Found

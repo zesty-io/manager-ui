@@ -1,7 +1,7 @@
-const pjson = require("./package.json");
+const pkg = require("../../package.json");
 module.exports = {
   production: {
-    VERSION: pjson.version,
+    VERSION: pkg.version,
     ENV: "production",
 
     API_ACCOUNTS: "https://accounts.api.zesty.io/v1",
@@ -42,7 +42,7 @@ module.exports = {
     GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
   },
   stage: {
-    VERSION: pjson.version,
+    VERSION: pkg.version,
     ENV: "stage",
 
     API_ACCOUNTS: "https://accounts.api.stage.zesty.io/v1",
@@ -78,7 +78,7 @@ module.exports = {
     GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
   },
   development: {
-    VERSION: pjson.version,
+    VERSION: pkg.version,
     ENV: "development",
 
     API_ACCOUNTS: "https://accounts.api.dev.zesty.io/v1",
@@ -118,7 +118,7 @@ module.exports = {
     COOKIE_DOMAIN: ".zesty.io"
   },
   local: {
-    VERSION: pjson.version,
+    VERSION: pkg.version,
     ENV: "local",
 
     API_ACCOUNTS: "//accounts.api.zesty.localdev:3022/v1",
