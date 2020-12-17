@@ -222,11 +222,7 @@ function buildNavTree(nodes) {
   const tree = buildTree(nodes.filter(node => !node.hidden));
 
   // filter out top level datasets
-  const nav = tree
-    .filter(node =>
-      node.type === "dataset" && !node.parentZUID ? false : true
-    )
-    .filter(node => !node.hidden);
+  const nav = tree.filter(node => node.type !== "dataset" && !node.hidden);
 
   sortCustom(nav);
   return nav;
