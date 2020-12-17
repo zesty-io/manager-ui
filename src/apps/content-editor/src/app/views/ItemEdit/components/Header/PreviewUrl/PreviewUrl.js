@@ -9,7 +9,7 @@ export function PreviewUrl(props) {
     <Url
       target="_blank"
       title={`${CONFIG.URL_PREVIEW_PROTOCOL}${props.instance.randomHashID}${CONFIG.URL_PREVIEW}${props.item.web.path}`}
-      href={`${CONFIG.URL_PREVIEW_PROTOCOL}${props.instance.randomHashID}${CONFIG.URL_PREVIEW}${props.item.web.path}?__version=${props.item.meta.version}`}
+      href={`${CONFIG.URL_PREVIEW_PROTOCOL}${props.instance.randomHashID}${CONFIG.URL_PREVIEW}${props.item.web.path}`}
     >
       <FontAwesomeIcon icon={faEye} />
       &nbsp;Preview {props.item.meta.version}
