@@ -228,6 +228,10 @@ export default connect(state => {
       const images = useMemo(() => (value || "").split(",").filter(el => el), [
         value
       ]);
+      const mediaAppProps = {};
+      if (settings && settings.group_id && settings.group_id !== "0") {
+        mediaAppProps.groupID = settings.group_id;
+      }
       return (
         <>
           <FieldTypeImage
@@ -258,6 +262,8 @@ export default connect(state => {
               className={styles.MediaAppModal}
             >
               <MediaApp
+                {...mediaAppProps}
+                limitSelected={imageModal.limit}
                 modal={true}
                 addImages={images => {
                   imageModal.callback(images);

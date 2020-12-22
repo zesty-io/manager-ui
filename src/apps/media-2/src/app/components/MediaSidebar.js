@@ -54,6 +54,7 @@ export function MediaSidebar(props) {
             currentGroup={props.currentGroup}
             currentBin={props.currentBin}
             onClose={() => setCreateGroupModal(false)}
+            setCurrentGroupID={props.setCurrentGroupID}
           />
         )}
       </div>

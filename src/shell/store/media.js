@@ -244,7 +244,7 @@ export const {
   editFileSuccess
 } = mediaSlice.actions;
 
-function fetchMediaBins(instanceID) {
+function fetchBins(instanceID) {
   return dispatch => {
     return dispatch({
       type: "FETCH_RESOURCE",
@@ -263,7 +263,7 @@ function fetchMediaBins(instanceID) {
   };
 }
 
-function fetchMediaEcoBins(ecoID) {
+function fetchEcoBins(ecoID) {
   return dispatch => {
     return dispatch({
       type: "FETCH_RESOURCE",
@@ -278,13 +278,13 @@ function fetchMediaEcoBins(ecoID) {
   };
 }
 
-export function fetchAllMediaBins() {
+export function fetchAllBins() {
   return (dispatch, getState) => {
     const instanceID = getState().instance.ID;
     const ecoID = getState().instance.ecoID;
-    const promises = [dispatch(fetchMediaBins(instanceID))];
+    const promises = [dispatch(fetchBins(instanceID))];
     if (ecoID) {
-      promises.push(dispatch(fetchMediaEcoBins(ecoID)));
+      promises.push(dispatch(fetchEcoBins(ecoID)));
     }
     return Promise.all(promises).then(([bins, ecoBins]) => {
       const allBins = ecoBins ? uniqBy([...bins, ...ecoBins], "id") : bins;

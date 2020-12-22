@@ -37,7 +37,7 @@ export function MediaWorkspaceItem(props) {
           [styles.selected]: props.selected
         })}
         onClick={() => {
-          if (!props.loading) {
+          if (props.toggleSelected && !props.file.loading) {
             props.toggleSelected(props.file);
           }
         }}
@@ -65,11 +65,9 @@ export function MediaWorkspaceItem(props) {
           <button className={styles.FooterButton}>
             <FontAwesomeIcon
               onClick={event => {
-                if (!props.loading) {
+                if (!props.file.loading) {
                   event.stopPropagation();
-                  history.push(
-                    `/dam/${props.currentGroup.id}/file/${props.file.id}`
-                  );
+                  props.showFileDetails(props.file.id);
                 }
               }}
               className={styles.Cog}

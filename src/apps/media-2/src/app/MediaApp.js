@@ -12,7 +12,7 @@ import { MediaDeleteGroupModal } from "./components/MediaDeleteGroupModal";
 import { MediaDeleteFileModal } from "./components/MediaDeleteFileModal";
 import { MediaSelected } from "./components/MediaSelected";
 import {
-  fetchAllMediaBins,
+  fetchAllBins,
   fetchAllGroups,
   fetchBinFiles,
   fetchGroupFiles
@@ -66,28 +66,37 @@ export default connect(state => {
   useEffect(() => {
     if (!currentGroupID && props.media.bins.length) {
       const bin = props.media.bins.find(bin => bin.default);
-      if (!props.modal) {
-        history.push(`/dam/${bin.id}`);
-      }
       setCurrentGroupID(bin.id);
     }
   }, [props.media.bins.length]);
 
-  // open file details modal if params.fileID is in URL
+  // update path when not in modal context and viewing file details
   useEffect(() => {
-    if (params.fileID) {
-      const file = props.media.files.find(file => file.id === params.fileID);
+    if (!props.modal) {
+      let path;
+      if (fileDetails) {
+        path = `/dam/${currentGroupID}/file/${fileDetails.id}`;
+      } else {
+        path = `/dam/${currentGroupID}`;
+      }
+      history.push(path);
+    }
+  }, [fileDetails]);
+
+  function showFileDetails(fileID) {
+    if (fileID) {
+      const file = props.media.files.find(file => file.id === fileID);
       if (file) {
         setFileDetails(file);
       }
     } else {
       setFileDetails();
     }
-  }, [params.fileID]);
+  }
 
   // fetch all bins on mount
   useEffect(() => {
-    props.dispatch(fetchAllMediaBins());
+    props.dispatch(fetchAllBins());
   }, []);
 
   // fetch groups when we get new bins
@@ -139,7 +148,7 @@ export default connect(state => {
       const newSelected = [...selected];
       newSelected.splice(fileIndex, 1);
       setSelected(newSelected);
-    } else {
+    } else if (!props.limitSelected || selected.length < props.limitSelected) {
       setSelected([...selected, file]);
     }
   }
@@ -147,6 +156,12 @@ export default connect(state => {
   // update currentGroupID on Nav path change
   function onPathChange(path) {
     setCurrentGroupID(path.split("/")[2]);
+  }
+
+  const workspaceProps = {};
+  if (props.modal) {
+    workspaceProps.toggleSelected = toggleSelected;
+    workspaceProps.selected = selected;
   }
 
   return (
@@ -157,14 +172,18 @@ export default connect(state => {
         width="100vw"
       >
         <DndProvider backend={HTML5Backend}>
-          <MediaSidebar
-            nav={props.media.nav}
-            hiddenNav={props.media.hiddenNav}
-            currentBin={currentBin}
-            currentGroup={currentGroup}
-            currentPath={currentPath}
-            onPathChange={onPathChange}
-          />
+          {// hide sidebar if we are locked to a group
+          !props.groupID && (
+            <MediaSidebar
+              nav={props.media.nav}
+              hiddenNav={props.media.hiddenNav}
+              currentBin={currentBin}
+              currentGroup={currentGroup}
+              currentPath={currentPath}
+              onPathChange={onPathChange}
+              setCurrentGroupID={setCurrentGroupID}
+            />
+          )}
           <div className={styles.WorkspaceContainer}>
             <MediaHeader
               currentBin={currentBin}
@@ -172,27 +191,33 @@ export default connect(state => {
               showDeleteGroupModal={() => setDeleteGroupModal(true)}
             />
             <MediaWorkspace
-              selected={selected}
-              toggleSelected={toggleSelected}
+              {...workspaceProps}
               currentBin={currentBin}
               currentGroup={currentGroup}
+              showFileDetails={showFileDetails}
             />
-            <MediaSelected
-              selected={selected}
-              toggleSelected={toggleSelected}
-              addImages={props.addImages}
-            />
+            {// only show selected strip in modal context
+            props.modal && (
+              <MediaSelected
+                selected={selected}
+                toggleSelected={toggleSelected}
+                addImages={props.addImages}
+              />
+            )}
           </div>
           {fileDetails && (
             <MediaDetailsModal
               file={fileDetails}
-              onClose={() => history.push(`/dam/${currentGroup.id}`)}
+              onClose={() => setFileDetails()}
               showDeleteFileModal={() => setDeleteFileModal(true)}
             />
           )}
           {deleteFileModal && (
             <MediaDeleteFileModal
-              onClose={() => setDeleteFileModal(false)}
+              onClose={() => {
+                setDeleteFileModal(false);
+                setFileDetails();
+              }}
               file={fileDetails}
               currentGroup={currentGroup}
             />
@@ -201,6 +226,7 @@ export default connect(state => {
             <MediaDeleteGroupModal
               onClose={() => setDeleteGroupModal(false)}
               currentGroup={currentGroup}
+              setCurrentGroupID={setCurrentGroupID}
             />
           )}
         </DndProvider>

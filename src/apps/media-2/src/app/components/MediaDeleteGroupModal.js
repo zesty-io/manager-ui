@@ -27,7 +27,7 @@ export function MediaDeleteGroupModal(props) {
           onClick={() =>
             dispatch(deleteGroup(props.currentGroup)).then(() => {
               props.onClose();
-              history.push(`/dam/${props.currentGroup.group_id}`);
+              props.setCurrentGroupID(props.currentGroup.group_id);
             })
           }
         >

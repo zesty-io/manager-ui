@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { FieldTypeNumber } from "@zesty-io/core/FieldTypeNumber";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
-import { fetchMediaBins, fetchMediaGroups } from "shell/store/media";
+import { fetchAllBins, fetchAllGroups } from "shell/store/media";
 
 import styles from "./ImageOptions.less";
 export default connect(state => {
@@ -15,11 +15,11 @@ export default connect(state => {
   const [groups, setGroups] = useState([]);
 
   useEffect(() => {
-    props.dispatch(fetchMediaBins());
+    props.dispatch(fetchAllBins());
   }, []); // fire once to load initial bins
 
   useEffect(() => {
-    props.media.bins.forEach(bin => props.dispatch(fetchMediaGroups(bin.id)));
+    props.dispatch(fetchAllGroups());
   }, [props.media.bins.length]); // fetch all groups
 
   useEffect(() => {

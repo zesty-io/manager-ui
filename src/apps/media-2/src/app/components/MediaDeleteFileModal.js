@@ -26,7 +26,6 @@ export function MediaDeleteFileModal(props) {
           onClick={() =>
             dispatch(deleteFile(props.file)).then(() => {
               props.onClose();
-              history.push(`/dam/${props.file.group_id}`);
             })
           }
         >

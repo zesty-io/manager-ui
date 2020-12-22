@@ -77,7 +77,7 @@ export function MediaWorkspace(props) {
         />
         <main
           className={cx(styles.Workspace, {
-            [styles.hasSelected]: props.selected.length
+            [styles.hasSelected]: props.selected && props.selected.length
           })}
         >
           {isDragActive && (
@@ -91,15 +91,22 @@ export function MediaWorkspace(props) {
           {files.length ? (
             <section className={styles.WorkspaceGrid}>
               {files.map(file => {
+                const itemProps = {};
+                if (props.selected) {
+                  itemProps.selected = props.selected.find(
+                    selectedFile => selectedFile.id === file.id
+                  );
+                }
+                if (props.toggleSelected) {
+                  itemProps.toggleSelected = props.toggleSelected;
+                }
                 return (
                   <MediaWorkspaceItem
+                    {...itemProps}
                     key={file.id || file.uploadID}
                     file={file}
-                    selected={props.selected.find(
-                      selectedFile => selectedFile.id === file.id
-                    )}
-                    toggleSelected={props.toggleSelected}
                     currentGroup={props.currentGroup}
+                    showFileDetails={props.showFileDetails}
                   />
                 );
               })}
