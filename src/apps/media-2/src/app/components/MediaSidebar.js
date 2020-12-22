@@ -16,13 +16,8 @@ import styles from "./MediaSidebar.less";
 
 export function MediaSidebar(props) {
   const dispatch = useDispatch();
-  const [selected, setSelected] = useState(location.pathname);
   const [hiddenOpen, setHiddenOpen] = useState(false);
   const [createGroupModal, setCreateGroupModal] = useState(false);
-
-  useEffect(() => {
-    setSelected(location.pathname);
-  }, [location.pathname]);
 
   const collapseNode = node => dispatch(closeGroup(node.id));
 
@@ -64,9 +59,10 @@ export function MediaSidebar(props) {
       </div>
       <NavDraggable
         tree={props.nav}
-        selected={selected}
+        selected={props.currentPath}
         collapseNode={collapseNode}
         actions={actions}
+        onPathChange={props.onPathChange}
       />
       <div className={styles.HiddenNav}>
         <h1
@@ -83,9 +79,10 @@ export function MediaSidebar(props) {
         <Nav
           className={hiddenOpen ? "" : styles.HiddenNavClosed}
           tree={props.hiddenNav}
-          selected={selected}
+          selected={props.currentPath}
           collapseNode={collapseNode}
           actions={actions}
+          onPathChange={props.onPathChange}
         />
       </div>
     </nav>

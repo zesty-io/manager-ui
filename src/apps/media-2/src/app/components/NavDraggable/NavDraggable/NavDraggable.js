@@ -78,6 +78,7 @@ export function NavDraggable(props) {
           dropGroup={dropGroup}
           dropFile={dropFile}
           parent={null}
+          onPathChange={props.onPathChange}
         />
       ))}
     </nav>

@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 
@@ -14,6 +14,8 @@ import {
 // it would be nice to have a central import for all of these
 // instead of individually importing
 import { AppLink } from "@zesty-io/core/AppLink";
+import { Modal } from "@zesty-io/core/Modal";
+import MediaApp from "../../../../../../media-2/src/app/MediaApp";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
@@ -116,6 +118,8 @@ export default connect(state => {
     onSave,
     dispatch
   } = props;
+
+  const [imageModal, setImageModal] = useState();
 
   switch (datatype) {
     case "text":
@@ -225,30 +229,44 @@ export default connect(state => {
         value
       ]);
       return (
-        <FieldTypeImage
-          images={images}
-          name={name}
-          label={label}
-          description={description}
-          tooltip={settings.tooltip}
-          required={required}
-          limit={(settings && settings.limit) || 1}
-          locked={Boolean(
-            settings && settings.group_id && settings.group_id != "0"
+        <>
+          <FieldTypeImage
+            images={images}
+            name={name}
+            label={label}
+            description={description}
+            tooltip={settings.tooltip}
+            required={required}
+            limit={(settings && settings.limit) || 1}
+            locked={Boolean(
+              settings && settings.group_id && settings.group_id != "0"
+            )}
+            onChange={onChange}
+            value={value}
+            resolveImage={(zuid, width, height) =>
+              `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
+            }
+            mediaBrowser={opts => {
+              setImageModal(opts);
+            }}
+          />
+          {imageModal && (
+            <Modal
+              open={true}
+              type="global"
+              onClose={() => setImageModal()}
+              className={styles.MediaAppModal}
+            >
+              <MediaApp
+                modal={true}
+                addImages={images => {
+                  imageModal.callback(images);
+                  setImageModal();
+                }}
+              />
+            </Modal>
           )}
-          onChange={onChange}
-          value={value}
-          resolveImage={(zuid, width, height) =>
-            `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
-          }
-          mediaBrowser={opts => {
-            riot.mount(
-              document.querySelector("#modalMount"),
-              "media-app-modal",
-              opts
-            );
-          }}
-        />
+        </>
       );
 
     case "yes_no":

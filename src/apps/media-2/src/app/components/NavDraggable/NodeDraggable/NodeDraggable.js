@@ -22,10 +22,23 @@ export function NodeDraggable(props) {
         </span>
       ) : (
         <>
-          <Link to={props.path}>
-            <FontAwesomeIcon icon={props.icon} />
-            <span>{props.label}</span>
-          </Link>
+          {props.onPathChange ? (
+            <a
+              href="#"
+              onClick={event => {
+                event.preventDefault();
+                props.onPathChange(props.path);
+              }}
+            >
+              <FontAwesomeIcon icon={props.icon} />
+              <span>{props.label}</span>
+            </a>
+          ) : (
+            <Link to={props.path}>
+              <FontAwesomeIcon icon={props.icon} />
+              <span>{props.label}</span>
+            </Link>
+          )}
 
           {/* Only linkable nodes can have actions */}
           <span className={styles.actions}>

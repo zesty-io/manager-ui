@@ -1,3 +1,6 @@
-import DamApp from "./app/MediaApp";
+import React from "react";
+import MediaApp from "./app/MediaApp";
 
-export default DamApp;
+export default function DamApp(props) {
+  return <MediaApp></MediaApp>;
+}

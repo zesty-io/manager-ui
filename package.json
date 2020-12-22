@@ -15,7 +15,7 @@
     "serve:webpack": "webpack-dev-server --display=minimal --progress --config src/shell/webpack.config.js",
     "serve:webpack:ssl": "npm run serve:webpack:ssl -- --https --cert ./etc/ssl/_.manager.dev.zesty.io.crt --key ./etc/ssl/_.manager.dev.zesty.io.key",
     "start": "npm run serve:webpack -- --env.NODE_ENV=development",
-    "start:stage": "npm run serve:webpack -- --mode=development --env.NODE_ENV=stage",
+    "start:stage": "npm run serve:webpack -- --env.NODE_ENV=stage --mode=development",
     "task:clean": "rimraf build",
     "task:gulp": "cross-env ./src/apps/media/node_modules/.bin/gulp --gulpfile=./src/apps/media/gulpfile.js",
     "task:webpack": "webpack --progress --config src/shell/webpack.config.js",

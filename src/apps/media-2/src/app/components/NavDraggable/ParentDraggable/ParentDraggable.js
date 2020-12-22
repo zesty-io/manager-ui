@@ -96,6 +96,7 @@ export function ParentDraggable(props) {
           collapseNode={props.collapseNode}
           actions={props.actions}
           parent={props.parent}
+          onPathChange={props.onPathChange}
         />
         {// if the item has children
         // render the item and then it's children
@@ -116,6 +117,7 @@ export function ParentDraggable(props) {
                 dropGroup={props.dropGroup}
                 dropFile={props.dropFile}
                 parent={props.id}
+                onPathChange={props.onPathChange}
               />
             ))
           : null}

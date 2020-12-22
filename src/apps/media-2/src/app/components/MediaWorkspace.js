@@ -63,7 +63,7 @@ export function MediaWorkspace(props) {
   return (
     <WithLoader
       // don't show loader if we already have files from before
-      condition={files.length || !props.currentGroup.loading}
+      condition={files.length || props.currentGroup.loading === false}
       message="Loading Files"
       width="100%"
     >

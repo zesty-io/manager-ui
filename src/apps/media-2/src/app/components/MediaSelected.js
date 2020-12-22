@@ -39,7 +39,11 @@ export function MediaSelected(props) {
                 )}
               </Button>
             </DrawerHandle>
-            <Button className={styles.ButtonLoad} kind="save">
+            <Button
+              className={styles.ButtonLoad}
+              kind="save"
+              onClick={() => props.addImages(props.selected)}
+            >
               <span>Load Selected</span>
             </Button>
             <DrawerContent className={styles.DrawerContent}>
