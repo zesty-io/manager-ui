@@ -26,26 +26,21 @@ export function navContent(
   switch (action.type) {
     case "FETCH_CONTENT_NAV_SUCCESS":
     case "LOADED_LOCAL_CONTENT_NAV":
+    case "UPDATE_NAV":
+      const tree = buildTree(action.raw);
+      const [hidden, headless, nav] = split(tree);
+
       return {
         ...state,
         raw: action.raw,
-        nav: buildNavTree(action.raw),
-        headless: buildHeadlessTree(action.raw),
-        hidden: buildHiddenTree(action.raw)
+        nav,
+        headless,
+        hidden
       };
 
     // TODO reload nav when language changes
     // case "LOADED_LOCAL_USER_LANG":
     // case "USER_SELECTED_LANG":
-
-    case "UPDATE_NAV":
-      return {
-        ...state,
-        raw: action.raw,
-        nav: buildNavTree(action.raw),
-        headless: buildHeadlessTree(action.raw),
-        hidden: buildHiddenTree(action.raw)
-      };
 
     default:
       return state;
@@ -218,52 +213,23 @@ function sortCustom(nav) {
   });
 }
 
-function buildNavTree(nodes) {
-  const tree = buildTree(nodes.filter(node => !node.hidden));
-
-  // filter out top level datasets
-  const nav = tree
-    .filter(node =>
-      node.type === "dataset" && !node.parentZUID ? false : true
-    )
-    .filter(node => !node.hidden);
-
-  sortCustom(nav);
-  return nav;
-}
-
-function buildHeadlessTree(nodes) {
-  const filteredNodes = nodes.filter(node => {
-    if (node.hidden) {
-      return false;
-    }
-    if (node.parentZUID) {
-      return false;
-    } else {
-      if (
-        node.type === "dataset" &&
-        node.label !== "Dashboard Widgets" &&
-        node.label !== "Widgets"
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  });
-
-  return buildTree(filteredNodes);
-}
-
-function buildHiddenTree(nodes) {
-  return buildTree(nodes.filter(node => node.hidden));
-}
-
+/**
+ * We get the nav data from the API as a linked list.
+ * We build it into a tree hash map for the Nav component
+ */
 function buildTree(nodes) {
   const tree = [];
 
+  // Convert node array to zuid:node map
   let map = nodes.reduce((acc, node) => {
+    // exclude dashboard widgets
+    if (node.label === "Dashboard Widgets") {
+      return acc;
+    }
+
     acc[node.ZUID] = { ...node };
+
+    // Setup container for children nodes
     acc[node.ZUID].children = [];
 
     return acc;
@@ -288,4 +254,58 @@ function buildTree(nodes) {
   });
 
   return tree;
+}
+
+/**
+ * The content nav is shown as 3 separate navs;
+ * 1) nav: this is the primary navigation
+ * 2) headless: any root leafs which are datasets
+ * 3) hidden: any leaf within the tree, and it's children, that was marked as hidden
+ *
+ * We need to walk the previously built tree to split it into this separate navs
+ * based up on an operation we have defined
+ *
+ * @param {*} tree
+ */
+function split(tree) {
+  let hidden = [];
+  let headless = [];
+  let nav = [];
+
+  walk(tree, (tree, leaf) => {
+    if (leaf.hidden) {
+      // remove leaf from tree
+      tree.splice(tree.indexOf(leaf), 1);
+      hidden.push(leaf);
+    } else if (!leaf.parentZUID) {
+      // no parent zuid means this is a root leaf
+      if (leaf.type === "dataset") {
+        headless.push(leaf);
+      } else {
+        nav.push(leaf);
+      }
+    }
+  });
+
+  return [hidden, headless, nav];
+}
+
+/**
+ * Walk our tree and perform a user provided operation on each leaf
+ * @param {*} tree
+ * @param {*} operate
+ */
+function walk(tree, operate) {
+  tree.forEach(leaf => {
+    // optimization: if a leaf is hidden then we do not need to
+    // continue walking this branch as all of it's children should remain hidden as well
+    if (!leaf.hidden) {
+      if (Array.isArray(leaf.children) && leaf.children.length) {
+        walk(leaf.children, operate);
+      }
+    }
+
+    // ensure we operate on every leaf on this branch
+    operate(tree, leaf);
+  });
 }
