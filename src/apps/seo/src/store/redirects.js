@@ -1,3 +1,4 @@
+import { notify } from "shell/store/notifications";
 export function redirects(state = {}, action) {
   switch (action.type) {
     case "REDIRECTS_FETCH_SUCCESS":
@@ -5,7 +6,7 @@ export function redirects(state = {}, action) {
 
     case "REDIRECT_REMOVE_SUCCESS":
       return Object.keys(state)
-        .filter(path => state[path].zuid !== action.zuid)
+        .filter(path => state[path].ZUID !== action.zuid)
         .reduce((acc, path) => {
           acc[path] = { ...state[path] };
           return acc;
@@ -75,24 +76,27 @@ export function createRedirect(redirect) {
           dispatch({
             type: "REDIRECT_CREATE_SUCCESS",
             redirect: {
-              ...redirect,
-              zuid: json.new_redirect_zuid,
+              ...json.data,
               created: true
             }
           });
         } else {
           // Notify user of all errors
-          dispatch({
-            type: "REDIRECT_CREATE_ERROR",
-            err: json.error
-          });
+          dispatch(
+            notify({
+              kind: "error",
+              message: "Failed to create SEO redirect"
+            })
+          );
         }
       })
       .catch(err => {
-        dispatch({
-          type: "REDIRECT_CREATE_ERROR",
-          err
-        });
+        dispatch(
+          notify({
+            kind: "error",
+            message: "Failed to create SEO redirect"
+          })
+        );
       });
   };
 }
@@ -112,17 +116,21 @@ export function removeRedirect(zuid) {
             zuid
           });
         } else {
-          dispatch({
-            type: "REDIRECT_REMOVE_ERROR",
-            err: json.error
-          });
+          dispatch(
+            notify({
+              kind: "error",
+              message: "Failed to remove SEO redirect"
+            })
+          );
         }
       })
       .catch(err => {
-        dispatch({
-          type: "REDIRECT_REMOVE_ERROR",
-          err
-        });
+        dispatch(
+          notify({
+            kind: "error",
+            message: "Failed to remove SEO redirect"
+          })
+        );
       });
   };
 }

@@ -337,7 +337,7 @@
                 method: 'DELETE'
             })
             .then((json) => {
-                growl(`Deleted ${group.name}`)
+                growl({message: `Deleted group ${group.name}`})
 
                 this.update({
                     currentGroup: this.getCurrentGroup(this.bins[0].id),
@@ -416,7 +416,7 @@
                 })
             })
             .then(() => {
-                growl(`Deleted ${file.filename}`)
+                growl({message: `Deleted ${file.filename}`})
                 this.update({
                     currentGroup: this.getCurrentGroup(this.currentGroup.id)
                 })

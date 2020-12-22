@@ -1,14 +1,18 @@
+// interploated by webpack at build time
+// must be setup before starting the store
+window.CONFIG = __CONFIG__;
+
 import "react-hot-loader";
 import { hot } from "react-hot-loader/root";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import { BrowserRouter, Route } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { get } from "idb-keyval";
 import riot from "riot";
 import Clipboard from "clipboard";
-import DnD from "../vendors/common/dnd";
 import * as Sentry from "@sentry/react";
+import DnD from "../vendors/common/dnd";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
@@ -20,16 +24,7 @@ import PrivateRoute from "./components/private-route";
 import LoadInstance from "./components/load-instance";
 import Shell from "./views/Shell";
 
-// interploated by webpack at build time
-// must be setup before starting the store
-window.CONFIG = __CONFIG__;
-
-if (CONFIG.ENV !== "development" && CONFIG.ENV !== "local") {
-  Sentry.init({
-    dsn:
-      "https://2e83c3767c484794a56832affe2d26d9@o162121.ingest.sentry.io/5441698"
-  });
-}
+import { MonacoSetup } from "../apps/code-editor/src/app/components/Editor/components/MemoizedEditor/MonacoSetup";
 
 // needed for Breadcrumbs in Shell
 injectReducer(store, "navContent", navContent);
@@ -48,72 +43,77 @@ window.riot = riot;
 // Media riot app depends on these references
 // FIXME: this needs to get refactored out
 window.request = request;
-window.growl = notify;
+window.growl = notice => store.dispatch(notify(notice));
 
 // Update urls in config to include the current instance zuid
 const instanceZUID = store.getState().instance.ZUID;
 window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZUID}${window.CONFIG.API_INSTANCE}`;
 
+const loadLocalStorageData = true;
 // Load Local Storage Data
-try {
-  Promise.all([
-    get(`${instanceZUID}:user:selected_lang`),
-    get(`${instanceZUID}:navContent`),
-    get(`${instanceZUID}:models`),
-    get(`${instanceZUID}:fields`),
-    get(`${instanceZUID}:content`)
-  ]).then(results => {
-    const [lang, nav, models, fields, content] = results;
+if (loadLocalStorageData) {
+  try {
+    Promise.all([
+      get(`${instanceZUID}:user:selected_lang`),
+      get(`${instanceZUID}:navContent`),
+      get(`${instanceZUID}:models`),
+      get(`${instanceZUID}:fields`),
+      get(`${instanceZUID}:content`)
+    ]).then(results => {
+      const [lang, nav, models, fields, content] = results;
 
-    store.dispatch({
-      type: "LOADED_LOCAL_USER_LANG",
-      payload: { lang }
+      store.dispatch({
+        type: "LOADED_LOCAL_USER_LANG",
+        payload: { lang }
+      });
+
+      // FIXME: This is broken because on initial nav fetch we modify
+      // the raw response before entering it into local state so when re-loading
+      // from local db it's not in the shape the redux store expects.
+      // store.dispatch({
+      //   type: "LOADED_LOCAL_CONTENT_NAV",
+      //   raw: nav
+      // });
+
+      store.dispatch({
+        type: "LOADED_LOCAL_MODELS",
+        payload: models
+      });
+
+      store.dispatch({
+        type: "LOADED_LOCAL_FIELDS",
+        payload: fields
+      });
+
+      store.dispatch({
+        type: "LOADED_LOCAL_ITEMS",
+        data: content
+      });
+
+      // if (Array.isArray(itemZUIDs)) {
+      //   const items = itemZUIDs.map(itemZUID =>
+      //     get(`${zesty.instance.ZUID}:content:${itemZUID}`)
+      //   );
+      //
+      //   Promise.all(items).then(itemsArr => {
+      //     const itemsObj = itemsArr.reduce((acc, item) => {
+      //       acc[item.meta.ZUID] = item;
+      //       return acc;
+      //     }, {});
+      //
+      //     store.dispatch({
+      //       type: "LOADED_LOCAL_ITEMS",
+      //       data: itemsObj
+      //     });
+      //   });
+      // }
     });
-
-    // FIXME: This is broken because on initial nav fetch we modify
-    // the raw response before entering it into local state so when re-loading
-    // from local db it's not in the shape the redux store expects.
-    // store.dispatch({
-    //   type: "LOADED_LOCAL_CONTENT_NAV",
-    //   raw: nav
-    // });
-
-    store.dispatch({
-      type: "LOADED_LOCAL_MODELS",
-      payload: models
-    });
-
-    store.dispatch({
-      type: "LOADED_LOCAL_FIELDS",
-      payload: fields
-    });
-
-    store.dispatch({
-      type: "LOADED_LOCAL_ITEMS",
-      data: content
-    });
-
-    // if (Array.isArray(itemZUIDs)) {
-    //   const items = itemZUIDs.map(itemZUID =>
-    //     get(`${zesty.instance.ZUID}:content:${itemZUID}`)
-    //   );
-    //
-    //   Promise.all(items).then(itemsArr => {
-    //     const itemsObj = itemsArr.reduce((acc, item) => {
-    //       acc[item.meta.ZUID] = item;
-    //       return acc;
-    //     }, {});
-    //
-    //     store.dispatch({
-    //       type: "LOADED_LOCAL_ITEMS",
-    //       data: itemsObj
-    //     });
-    //   });
-    // }
-  });
-} catch (err) {
-  console.error("IndexedDB:get:error", err);
+  } catch (err) {
+    console.error("IndexedDB:get:error", err);
+  }
 }
+
+MonacoSetup(store);
 
 const App = hot(() => (
   <Provider store={store}>

@@ -74,7 +74,11 @@ export default connect(state => {
       >
         <ModalContent>
           <div>
-            <img src="/zesty-z-logo.png" alt="Zesty.io Logo" width="40px" />
+            <img
+              src="https://brand.zesty.io/zesty-io-logo.svg"
+              alt="Zesty.io Logo"
+              width="40px"
+            />
           </div>
 
           {twoFactor ? (
@@ -116,12 +120,19 @@ export default connect(state => {
               </p>
 
               <FieldTypeText
+                tabIndex="1"
                 type="email"
                 name="email"
                 label="Email"
                 placeholder="e.g. hello@zesty.io"
+                autofocus
               />
-              <FieldTypeText type="password" name="password" label="Password" />
+              <FieldTypeText
+                type="password"
+                name="password"
+                label="Password"
+                tabIndex="2"
+              />
               <Button>
                 {loading ? (
                   <FontAwesomeIcon icon={faSpinner} />

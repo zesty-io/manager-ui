@@ -222,6 +222,13 @@ export function fetchItem(modelZUID, itemZUID) {
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}`,
       handler: res => {
+        if (res.status === 404) {
+          dispatch({
+            type: "REMOVE_ITEM",
+            itemZUID
+          });
+          return res;
+        }
         if (!res || !res.data) {
           throw new Error("Bad response from API. Missing resource data.");
         }
@@ -261,21 +268,26 @@ export function searchItems(itemZUID) {
   };
 }
 
-export function fetchItems(modelZUID) {
+export function fetchItems(modelZUID, options = {}) {
   if (!modelZUID) {
     console.error("content:fetchItems() Missing modelZUID");
     console.trace();
     return () => {};
   }
 
-  return (dispatch, getState) => {
+  options.limit = options.limit || 100;
+  options.page = options.page || 1;
+
+  return dispatch => {
     // TODO load items for selected lang
     // const state = getState();
     // const lang = state.user.selected_lang || "en-US";
 
+    const params = new URLSearchParams(options).toString();
+
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items`,
+      uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items?${params}`,
       handler: res => {
         if (res.status === 400) {
           console.error("fetchItems():response", res);
@@ -285,6 +297,7 @@ export function fetchItems(modelZUID) {
               message: res.error
             })
           );
+          throw res;
         }
 
         dispatch({
@@ -376,9 +389,9 @@ export function saveItem(itemZUID, action = "") {
       });
 
       dispatch(fetchItem(item.meta.contentModelZUID, itemZUID)).then(() => {
-        // NOTE: Hack to communicate with ActivePreview that this item
-        // was updated and it needs to re-render
-        zesty.trigger("UPDATED_CONTENT_ITEM", itemZUID);
+        // NOTE: Communicate with ActivePreview that this item
+        // was updated and it needs to refreshed
+        zesty.trigger("PREVIEW_REFRESH");
       });
       return res;
     });
@@ -513,26 +526,32 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
       .then(() => {
         return dispatch(fetchItemPublishing(modelZUID, itemZUID));
       })
-      .catch(() => {
+      .catch(err => {
         const message = data.publishAt
           ? `Error scheduling version ${data.version}`
           : `Error publishing version ${data.version}`;
-        return dispatch(
+        dispatch(
           notify({
             message,
             kind: "error"
           })
         );
+        throw err;
       });
   };
 }
 
 export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
-  return dispatch => {
+  return (dispatch, getState) => {
+    const instance = getState().instance;
     return request(
-      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings/${publishZUID}`,
+      `${CONFIG.LEGACY_SITES_SERVICE}/${instance.ZUID}/content/items/${itemZUID}/publish-schedule/${publishZUID}`,
       {
-        method: "DELETE"
+        method: "PATCH",
+        json: true,
+        body: {
+          take_offline_at: moment().format("YYYY-MM-DD HH:mm:ss")
+        }
       }
     )
       .then(res => {
@@ -635,7 +654,7 @@ export function unlock(itemZUID) {
 }
 
 export function lock(itemZUID) {
-  return (dispatch, getState) => {
+  return getState => {
     const user = getState().user;
     if (user) {
       return request(`${CONFIG.SERVICE_REDIS_GATEWAY}/door/lock`, {
@@ -643,10 +662,10 @@ export function lock(itemZUID) {
         credentials: "omit",
         json: true,
         body: {
-          firstName: user.first_name,
-          lastName: user.last_name,
+          firstName: user.firstName,
+          lastName: user.lastName,
           email: user.email,
-          userZUID: user.user_zuid,
+          userZUID: user.ZUID,
           path: itemZUID
         }
       });

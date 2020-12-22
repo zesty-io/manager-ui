@@ -14,8 +14,11 @@ import {
   faCog
 } from "@fortawesome/free-solid-svg-icons";
 
+import { Button } from "@zesty-io/core/Button";
+
 import GlobalSearch from "shell/components/global-search";
 import GlobalAccount from "shell/components/global-account";
+import GlobalInstance from "shell/components/global-instance";
 
 import styles from "./GlobalTabs.less";
 
@@ -54,7 +57,6 @@ export default connect(state => {
   return {
     instanceName: state.instance.name,
     instanceZUID: state.instance.ZUID,
-    domains: state.instance.domains,
     fields: state.fields,
     models: state.models,
     content: state.content,
@@ -123,6 +125,7 @@ export default connect(state => {
       let existingIndex = newRoutes.findIndex(
         route => route.pathname === history.location.pathname
       );
+
       if (existingIndex === -1) {
         newRoutes = [history.location, ...newRoutes];
       } else {
@@ -138,7 +141,7 @@ export default connect(state => {
       newRoutes.forEach(route => {
         const [parts, zuid, prefix] = parse(route.pathname);
 
-        // resove ZUID from store to determine display information
+        // resolve ZUID from store to determine display information
         switch (prefix) {
           case "6":
             if (props.models) {
@@ -234,40 +237,50 @@ export default connect(state => {
     };
 
     return (
-      <section className={styles.GlobalTabs}>
+      <section className={styles.GlobalTopBar}>
         <div className={styles.InstanceSearch}>
-          <GlobalSearch className={styles.GlobalSearch} />
+          <GlobalSearch />
         </div>
 
-        <nav className={styles.QuickLinks}>
-          <ol className={styles.Links}>
-            {routes.map((route, i) => (
-              <li
-                key={i}
-                className={cx(
-                  styles.Route,
-                  route.pathname === history.location.pathname
-                    ? styles.active
-                    : null
-                )}
-              >
-                <AppLink to={`${route.pathname}${route.search}`}>
-                  {route.icon && <FontAwesomeIcon icon={route.icon} />}
-                  &nbsp;
-                  {route.name ? route.name : `${route.pathname.slice(1)}`}
-                </AppLink>
-                <span
-                  className={styles.Close}
-                  onClick={() => removeRoute(route.pathname)}
+        <div className={styles.InstanceTabs}>
+          {/* NOTE: Location/Design needs work */}
+          {/* <Button
+            className={styles.CloseAll}
+            title="Close all open tabs"
+            onClick={() => setRoutes([])}
+          >
+            <FontAwesomeIcon icon={faTimesCircle} />
+          </Button> */}
+          <nav className={styles.QuickLinks}>
+            <ol className={styles.Links}>
+              {routes.map((route, i) => (
+                <li
+                  key={i}
+                  className={cx(
+                    styles.Route,
+                    route.pathname === history.location.pathname
+                      ? styles.active
+                      : null
+                  )}
                 >
-                  <FontAwesomeIcon icon={faTimesCircle} />
-                </span>
-              </li>
-            ))}
-          </ol>
-        </nav>
-
-        <GlobalAccount />
+                  <AppLink to={`${route.pathname}${route.search}`}>
+                    {route.icon && <FontAwesomeIcon icon={route.icon} />}
+                    &nbsp;
+                    {route.name ? route.name : `${route.pathname.slice(1)}`}
+                  </AppLink>
+                  <span
+                    className={styles.Close}
+                    onClick={() => removeRoute(route.pathname)}
+                  >
+                    <FontAwesomeIcon icon={faTimesCircle} />
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </nav>
+          <GlobalInstance />
+          <GlobalAccount />
+        </div>
       </section>
     );
   })

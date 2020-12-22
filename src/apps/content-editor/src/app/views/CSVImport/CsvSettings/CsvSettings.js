@@ -13,8 +13,8 @@ export const CsvSettings = props => {
           value="none"
         >
           <Option text="none" value="none" />
-          {props.cols.map(col => (
-            <Option key={col} text={col} value={col} />
+          {props.cols.map((col, index) => (
+            <Option key={index} text={col} value={col} />
           ))}
         </Select>
       </article>
@@ -22,8 +22,8 @@ export const CsvSettings = props => {
         <label>Meta Keywords</label>
         <Select name="metaKeywords" onSelect={props.handleMap} value="none">
           <Option text="none" value="none" />
-          {props.cols.map(col => (
-            <Option key={col} text={col} value={col} />
+          {props.cols.map((col, index) => (
+            <Option key={index} text={col} value={col} />
           ))}
         </Select>
       </article>
@@ -31,8 +31,8 @@ export const CsvSettings = props => {
         <label>Meta Link Text</label>
         <Select name="metaLinkText" onSelect={props.handleMap} value="none">
           <Option text="none" value="none" />
-          {props.cols.map(col => (
-            <Option key={col} text={col} value={col} />
+          {props.cols.map((col, index) => (
+            <Option key={index} text={col} value={col} />
           ))}
         </Select>
       </article>
@@ -40,8 +40,8 @@ export const CsvSettings = props => {
         <label>Meta Title</label>
         <Select name="metaTitle" onSelect={props.handleMap} value="none">
           <Option text="none" value="none" />
-          {props.cols.map(col => (
-            <Option key={col} text={col} value={col} />
+          {props.cols.map((col, index) => (
+            <Option key={index} text={col} value={col} />
           ))}
         </Select>
       </article>
@@ -49,8 +49,8 @@ export const CsvSettings = props => {
         <label>Parent ZUID</label>
         <Select name="parentZUID" onSelect={props.handleMap} value="none">
           <Option text="none" value="none" />
-          {props.cols.map(col => (
-            <Option key={col} text={col} value={col} />
+          {props.cols.map((col, index) => (
+            <Option key={index} text={col} value={col} />
           ))}
         </Select>
       </article>
@@ -58,8 +58,8 @@ export const CsvSettings = props => {
         <label>Path Part</label>
         <Select name="pathPart" onSelect={props.handleMap} value="none">
           <Option text="none" value="none" />
-          {props.cols.map(col => (
-            <Option key={col} text={col} value={col} />
+          {props.cols.map((col, index) => (
+            <Option key={index} text={col} value={col} />
           ))}
         </Select>
       </article>

@@ -16,13 +16,17 @@ import {
 
 export default React.forwardRef(function ContentSearch(props, ref) {
   const dispatch = useDispatch();
+
+  const [loading, setLoading] = useState(false);
   const [skipSearch, setSkipSearch] = useState(false);
+
   const [searchResults, setSearchResults] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
   useEffect(() => {
     if (searchTerm !== "" && !skipSearch) {
+      setLoading(true);
       debouncedSearch(searchTerm);
     } else {
       // search term "" will cancel any inflight searches
@@ -35,13 +39,15 @@ export default React.forwardRef(function ContentSearch(props, ref) {
 
   const debouncedSearch = useCallback(
     debounce(term => {
-      dispatch(searchItems(term)).then(res => {
-        let results = res.data;
-        if (props.filterResults) {
-          results = props.filterResults(results);
-        }
-        setSearchResults(results);
-      });
+      dispatch(searchItems(term))
+        .then(res => {
+          let results = res.data;
+          if (props.filterResults) {
+            results = props.filterResults(results);
+          }
+          setSearchResults(results);
+        })
+        .finally(() => setLoading(false));
     }, 500),
     []
   );
@@ -107,10 +113,12 @@ export default React.forwardRef(function ContentSearch(props, ref) {
       />
       {searchResults && (
         <SearchResults
+          loading={loading}
           results={searchResults}
           clearSearch={clearSearch}
           clearSearchOnClickOutside={props.clearSearchOnClickOutside}
           clearSearchOnSelect={props.clearSearchOnSelect}
+          searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           setSkipSearch={setSkipSearch}
           selectedIndex={selectedIndex}
@@ -147,13 +155,27 @@ const SearchResults = connect(state => {
   return (
     <ul
       ref={wrapperRef}
-      className={styles.SearchResults}
+      className={cx(styles.SearchResults)}
       onClick={() => {
         if (props.clearSearchOnSelect) {
           props.clearSearch();
         }
       }}
     >
+      {props.loading && props.searchTerm && (
+        <li className={styles.Start}>Searching for "{props.searchTerm}"</li>
+      )}
+
+      {/* {!props.searchTerm && (
+        <li className={styles.Start}>Search by content title, URL or ZUID</li>
+      )} */}
+
+      {!props.loading && props.searchTerm && !props.results.length && (
+        <li className={styles.NoResults}>
+          No matches for the term: {props.searchTerm}
+        </li>
+      )}
+
       {props.results.map((result, index) => (
         <li
           key={result.meta.ZUID}

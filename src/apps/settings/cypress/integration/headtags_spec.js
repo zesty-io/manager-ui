@@ -5,7 +5,7 @@ describe("Headtag: create a tag", () => {
   });
 
   it("Adds a new headtag", () => {
-    cy.get("#NewHeadtag").click();
+    cy.get('[data-cy="CreateHeadTag"]').click();
 
     cy.get("article")
       .first()
@@ -19,7 +19,7 @@ describe("Headtag: create a tag", () => {
   });
 
   it("Edit a headtag", () => {
-    cy.get("#NewHeadtag").click();
+    cy.get('[data-cy="CreateHeadTag"]').click();
     cy.get("#SaveItemButton").click();
     cy.contains("New head tag created", { timeout: 5000 }).should("exist");
 
@@ -37,7 +37,7 @@ describe("Headtag: create a tag", () => {
   });
 
   it("Remove a headtag", () => {
-    cy.get("#NewHeadtag").click();
+    cy.get('[data-cy="CreateHeadTag"]').click();
     cy.get("#SaveItemButton").click();
     cy.contains("New head tag created", { timeout: 5000 }).should("exist");
 

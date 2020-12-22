@@ -6,7 +6,6 @@
   display: grid;
   grid-gap: 12px;
   padding: 8px 0;
-  width: max-content;
 
   a {
     color: @zesty-field-blue;
@@ -14,9 +13,13 @@
     letter-spacing: 1px;
     padding: 8px;
     border-left: 2px solid @globalMenuBkgColor;
+    text-align: center;
 
+    .title {
+      display: none;
+    }
     svg {
-      margin-right: 8px;
+      margin-right: 0;
     }
   }
 
@@ -43,16 +46,19 @@
   }
 }
 
-@media (max-width: 2000px) {
+//application differ in min/max media queries
+//in order to get consistent visuals it's important to use the same media-query
+//in our case we are using min-width
+@media (min-width: 2000px) {
   .GlobalMenu {
     a {
-      font-size: 16px;
-      text-align: center;
+      text-align: left;
       .title {
-        display: none;
+        display: inline-block;
       }
+
       svg {
-        margin-right: 0px;
+        margin-right: 8px;
       }
     }
   }

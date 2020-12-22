@@ -1,8 +1,7 @@
-const pjson = require("./package.json");
-let CONFIG = {};
-if (process.env.NODE_ENV === "production") {
-  CONFIG = {
-    VERSION: pjson.version,
+const pkg = require("../../package.json");
+module.exports = {
+  production: {
+    VERSION: pkg.version,
     ENV: "production",
 
     API_ACCOUNTS: "https://accounts.api.zesty.io/v1",
@@ -29,6 +28,8 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-prod.cloudfunctions.net/googleAnalyticsGetPageViews",
 
+    LEGACY_SITES_SERVICE: "https://svc.zesty.io/sites-service",
+
     URL_MANAGER: ".manager.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
     URL_PREVIEW: "-dev.preview.zesty.io",
@@ -39,10 +40,9 @@ if (process.env.NODE_ENV === "production") {
     COOKIE_DOMAIN: ".zesty.io",
 
     GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
-  };
-} else if (process.env.NODE_ENV === "stage") {
-  CONFIG = {
-    VERSION: pjson.version,
+  },
+  stage: {
+    VERSION: pkg.version,
     ENV: "stage",
 
     API_ACCOUNTS: "https://accounts.api.stage.zesty.io/v1",
@@ -64,6 +64,8 @@ if (process.env.NODE_ENV === "production") {
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-stage.cloudfunctions.net/googleAnalyticsGetPageViews",
 
+    LEGACY_SITES_SERVICE: "https://stage-svc.zesty.io/sites-service",
+
     URL_MANAGER: ".manager.stage.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
     URL_PREVIEW: "-dev.preview.stage.zesty.io",
@@ -74,10 +76,9 @@ if (process.env.NODE_ENV === "production") {
     COOKIE_DOMAIN: ".zesty.io",
 
     GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
-  };
-} else if (process.env.NODE_ENV === "development") {
-  CONFIG = {
-    VERSION: pjson.version,
+  },
+  development: {
+    VERSION: pkg.version,
     ENV: "development",
 
     API_ACCOUNTS: "https://accounts.api.dev.zesty.io/v1",
@@ -112,10 +113,9 @@ if (process.env.NODE_ENV === "production") {
 
     COOKIE_NAME: "DEV_APP_SID",
     COOKIE_DOMAIN: ".zesty.io"
-  };
-} else {
-  CONFIG = {
-    VERSION: pjson.version,
+  },
+  local: {
+    VERSION: pkg.version,
     ENV: "local",
 
     API_ACCOUNTS: "//accounts.api.zesty.localdev:3022/v1",
@@ -150,7 +150,5 @@ if (process.env.NODE_ENV === "production") {
 
     COOKIE_NAME: "DEV_APP_SID",
     COOKIE_DOMAIN: ".zesty.localdev"
-  };
-}
-
-module.exports = CONFIG;
+  }
+};

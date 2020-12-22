@@ -1,5 +1,6 @@
 import React, { useState, Fragment } from "react";
 import moment from "moment-timezone";
+import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -15,16 +16,19 @@ import { Button } from "@zesty-io/core/Button";
 import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
 
+import { usePermission } from "shell/hooks/use-permissions";
+import { useDomain } from "shell/hooks/use-domain";
 import { WorkflowRequest } from "../WorkflowRequest";
-import cx from "classnames";
-import styles from "./QuickView.less";
-import SharedWidgetStyles from "../SharedWidget.less";
 
+import SharedWidgetStyles from "../SharedWidget.less";
+import styles from "./QuickView.less";
 export const QuickView = React.memo(function QuickView(props) {
   const isPublished = props.publishing && props.publishing.isPublished;
   const isScheduled = props.scheduling && props.scheduling.isScheduled;
 
   const [workflowRequestOpen, setWorkFlowRequestOpen] = useState(false);
+  const codeAccess = usePermission("CODE");
+  const domain = useDomain();
 
   const handleWorkflow = () => {
     setWorkFlowRequestOpen(!workflowRequestOpen);
@@ -35,11 +39,11 @@ export const QuickView = React.memo(function QuickView(props) {
       <Card className={styles.QuickView}>
         <CardHeader>
           <section className={styles.StatusHeader}>
-            <article>
+            <div>
               <FontAwesomeIcon icon={faCodeBranch} />
               &nbsp;Item Status
-            </article>
-            <article
+            </div>
+            <div
               className={
                 isPublished
                   ? styles.Published
@@ -53,7 +57,7 @@ export const QuickView = React.memo(function QuickView(props) {
                 : isScheduled
                 ? "Scheduled"
                 : "Unpublished"}
-            </article>
+            </div>
           </section>
         </CardHeader>
         <CardContent
@@ -77,12 +81,10 @@ export const QuickView = React.memo(function QuickView(props) {
                 <strong>API:</strong>&nbsp;
                 <Url
                   target="_blank"
-                  title="Live Preview"
-                  href={`${
-                    props.live_domain
-                      ? `${props.protocol}://${props.live_domain}`
-                      : props.preview_domain
-                  }/-/instant/${props.itemZUID}.json`}
+                  title="Instant API"
+                  href={`${domain ? domain : props.preview_domain}/-/instant/${
+                    props.itemZUID
+                  }.json`}
                 >
                   <FontAwesomeIcon icon={faBolt} />
                   &nbsp;{`/-/instant/${props.itemZUID}.json`}
@@ -109,20 +111,19 @@ export const QuickView = React.memo(function QuickView(props) {
               <FontAwesomeIcon icon={faEnvelope} />
               Workflow Request
             </Button>
-            <ButtonGroup>
-              {props.is_developer && (
+
+            {codeAccess && (
+              <ButtonGroup>
                 <AppLink to={`/schema/${props.modelZUID}`}>
                   <FontAwesomeIcon icon={faDatabase} />
                   &nbsp;Edit Schema
                 </AppLink>
-              )}
-              {props.is_developer && (
                 <AppLink to="/code/">
                   <FontAwesomeIcon icon={faCode} />
                   &nbsp;Edit Code
                 </AppLink>
-              )}
-            </ButtonGroup>
+              </ButtonGroup>
+            )}
           </ButtonGroup>
 
           {workflowRequestOpen && (

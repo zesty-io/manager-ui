@@ -15,22 +15,24 @@
 .Shell {
   background-color: #f2f7fc;
   color: @zesty-grey;
-  display: flex;
+
+  // typography
   font-family: "Montserrat", "Gibson Light", Arial, sans-serif;
-  font-size: 14px;
+  font-size: 12px;
+
+  // Layout
   height: 100vh;
   overflow: hidden;
-
   display: grid;
-  grid-template-columns: 170px 1fr;
+  grid-template-columns: 60px 1fr;
 
   scrollbar-color: @zesty-grey @zesty-light-grey;
   scrollbar-width: thin;
 
-  @media (max-width: 2000px) {
+  @media (min-width: 2000px) {
     & {
-      grid-template-columns: 60px 1fr;
-      font-size: 12px;
+      grid-template-columns: 170px 1fr;
+      font-size: 14px;
     }
   }
 
@@ -51,14 +53,8 @@
 
       width: calc(100vw - 60px);
       @media (min-width: 2000px) {
-        width: calc(100vw - 180px);
+        width: calc(100vw - 170px);
       }
-    }
-  }
-  h2 {
-    font-size: 12px;
-    @media only screen and (min-width: 2000px) {
-      font-size: 16px;
     }
   }
 }

@@ -1,6 +1,8 @@
-import React, { Component, PureComponent } from "react";
+import React, { useRef, useState, useEffect, PureComponent } from "react";
 import { connect } from "react-redux";
 import { VariableSizeList as List } from "react-window";
+import { useHistory } from "react-router-dom";
+import isEqual from "lodash/isEqual";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -19,14 +21,22 @@ import {
   fetchItem,
   fetchItems,
   searchItems,
-  saveItem,
-  fetchItemPublishing
+  saveItem
 } from "shell/store/content";
 import { fetchFields } from "shell/store/fields";
 import { notify } from "shell/store/notifications";
 import { findFields, findItems } from "./findUtils";
 
 import styles from "./ItemList.less";
+
+const PAGE_SIZE = 5000;
+const DEFAULT_FILTER = {
+  sortedBy: null,
+  reverseSort: false,
+  status: "all",
+  filterTerm: "",
+  colType: null
+};
 
 export default connect((state, props) => {
   const { modelZUID } = props.match.params;
@@ -42,8 +52,6 @@ export default connect((state, props) => {
     modelZUID,
     user: state.user,
     filters: state.listFilters,
-    sortedBy: "",
-    reverseSort: false,
     instance: state.instance,
     allItems: state.content,
     allFields: state.fields,
@@ -55,734 +63,628 @@ export default connect((state, props) => {
         state.content[item].meta.ZUID.slice(0, 3) !== "new" // Don't include new items
     )
   };
-})(
-  class ItemList extends Component {
-    _isMounted = false;
+})(function ItemList(props) {
+  const history = useHistory();
+  const _isMounted = useRef(false);
 
-    // We use this ref to determine the list dimensions
-    table = React.createRef();
-    list = React.createRef();
+  // table, list dimensions
+  const table = useRef();
+  const list = useRef();
+  const [height, setHeight] = useState(1000);
+  const [width, setWidth] = useState(1000);
 
-    state = {
-      modelZUID: this.props.modelZUID,
-      saving: false,
-      loading: false,
-      // Keep internal item state for handling table filters performantly
-      // avoiding recalculations on component updates
-      items: [],
-      fields: [],
-      height: 1000,
-      width: 1000,
-      sortedBy: null,
-      status:
-        (this.props.filters[this.props.modelZUID] &&
-          this.props.filters[this.props.modelZUID].status) ||
-        "all"
+  // saving, loading states
+  const [saving, setSaving] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(false);
+  const [backgroundLoading, setBackgroundLoading] = useState(false);
+
+  const [items, setItems] = useState([]);
+  const [itemCount, setItemCount] = useState(0);
+  const [fields, setFields] = useState([]);
+  const [filter, setFilter] = useState(
+    props.filters[props.modelZUID]
+      ? props.filters[props.modelZUID]
+      : DEFAULT_FILTER
+  );
+
+  // Used to runFilters/updateItemCount on *next* render
+  // we use these since otherwise executing those functions directly
+  // would lead to stale props/state. executing on *next* render
+  // guarantees latest props/state
+  // e.g. setShouldRunFilters(true) -> *next render* -> runFilters()
+  const [shouldRunFilters, setShouldRunFilters] = useState(false);
+  const [shouldUpdateItemCount, setShouldUpdateItemCount] = useState(false);
+
+  // track isMounted
+  useEffect(() => {
+    _isMounted.current = true;
+    return () => {
+      _isMounted.current = false;
     };
+  }, []);
 
-    componentDidMount() {
-      this._isMounted = true;
-
-      if (this.props.model) {
-        // Render rows we have available right away
-        this.updateRows();
-
-        // apply filters
-        if (this.props.filters[this.props.modelZUID]) {
-          this.runAllFilters();
-        }
-        // Hit API to check for new rows
-        this.load(this.props.modelZUID);
+  // redirect to single entry
+  useEffect(() => {
+    if (
+      props.model &&
+      (props.model.name === "clippings" || props.model.type === "templateset")
+    ) {
+      // First item is always the column row
+      if (items.length === 2) {
+        // redirect to the single entry in content clippings
+        history.push(`/content/${props.modelZUID}/${items[1].meta.ZUID}`);
       }
     }
+  }, [props.modelZUID]);
 
-    componentWillUnmount() {
-      this._isMounted = false;
-      // save filter data to store
-      this.props.dispatch({
-        type: "PERSIST_LIST_FILTERS",
-        modelZUID: this.props.modelZUID,
-        filters: {
-          filterTerm: this.state.filterTerm,
-          sortedBy: this.state.sortedBy,
-          status: this.state.status,
-          colType: this.state.colType,
-          reverseSort: this.state.reverseSort
-        }
-      });
+  // on initial and
+  // on modelZUID change
+  // update filter and load fields/items
+  useEffect(() => {
+    setFilter(
+      props.filters[props.modelZUID]
+        ? props.filters[props.modelZUID]
+        : DEFAULT_FILTER
+    );
+    load(props.modelZUID);
+  }, [props.modelZUID]);
+
+  // on filter change
+  // run and persist filters
+  useEffect(() => {
+    if (_isMounted.current) {
+      runFilters();
+      persistFilters();
     }
+  }, [filter, props.selectedLang]);
 
-    componentDidUpdate(prevProps) {
-      if (
-        this.props.model &&
-        (this.props.model.name === "clippings" ||
-          this.props.model.type === "templateset")
-      ) {
-        // First item is always the column row
-        if (this.state.items.length === 2) {
-          // redirect to the single entry in content clippings
-          window.location.hash = `/content/${this.props.modelZUID}/${this.state.items[1].meta.ZUID}`;
+  useEffect(() => {
+    if (_isMounted.current && shouldRunFilters) {
+      runFilters();
+      setShouldRunFilters(false);
+    }
+  }, [shouldRunFilters]);
+
+  useEffect(() => {
+    if (_isMounted.current && shouldUpdateItemCount) {
+      updateItemCount();
+      setShouldUpdateItemCount(false);
+    }
+  }, [shouldUpdateItemCount]);
+
+  // on items update, update itemCount
+  useEffect(() => {
+    setItemCount(Math.max(0, items.length - 1));
+  }, [items]);
+
+  // set table dimensions, re-check on props change
+  useEffect(() => {
+    if (
+      table.current &&
+      (height !== table.current.clientHeight ||
+        width !== table.current.clientWidth)
+    ) {
+      setHeight(table.current.clientHeight);
+      setWidth(table.current.clientWidth);
+    }
+  }, [props]);
+
+  function updateItemsAndFields() {
+    const newFields = findFields(props.allFields, props.modelZUID);
+    const newItems = findItems(
+      props.allItems,
+      props.modelZUID,
+      props.selectedLang.ID
+    );
+
+    newItems.unshift(newFields);
+    setFields(newFields);
+    setItems(newItems);
+  }
+
+  async function load(modelZUID) {
+    setInitialLoading(true);
+    setBackgroundLoading(true);
+
+    try {
+      const [, itemsRes] = await Promise.all([
+        props.dispatch(fetchFields(modelZUID)),
+        props.dispatch(fetchItems(modelZUID, { limit: PAGE_SIZE, page: 1 }))
+      ]);
+      if (_isMounted.current) {
+        // render 1st page of results
+        setShouldRunFilters(true);
+        setInitialLoading(false);
+
+        if (itemsRes._meta.totalResults === PAGE_SIZE) {
+          // load page 2 until last page
+          await crawlFetchItems(modelZUID);
+          // re-render after all pages fetched
+          setShouldRunFilters(true);
         }
+        setBackgroundLoading(false);
       }
-
-      // Handle changing item list views
-      if (this.props.modelZUID !== this.state.modelZUID) {
-        this.updateRows();
-        // Clear previous model and load any new model rows we have available
-
-        // Load new model from API
-        this.load(this.props.modelZUID);
-        if (this.props.filters[this.props.modelZUID]) {
-          this.runAllFilters();
-        } else {
-          this.setState({
-            filterTerm: "",
-            sortedBy: null,
-            status: "all",
-            colType: null,
-            reverseSort: false
-          });
-        }
-      }
-
-      // Update rows when they are made dirty
-      if (prevProps.dirtyItems.length !== this.props.dirtyItems.length) {
-        this.updateRows();
-      }
-
-      // Update table dimensions if they've changed
-      if (
-        this.table.current &&
-        (this.state.height !== this.table.current.clientHeight ||
-          this.state.width !== this.table.current.clientWidth)
-      ) {
-        this.setState({
-          height: this.table.current.clientHeight,
-          width: this.table.current.clientWidth
-        });
+    } catch (err) {
+      console.error("ItemList:load:error", err);
+      if (_isMounted.current) {
+        setInitialLoading(false);
+        setBackgroundLoading(false);
       }
     }
+  }
 
-    updateRows = () => {
-      let fields = findFields(this.props.allFields, this.props.modelZUID);
-      let items = findItems(
-        this.props.allItems,
-        this.props.modelZUID,
-        this.props.selectedLang.ID
-      );
-      items.unshift(fields);
-      this.setState({ items, fields }, () => {
-        if (
-          this.state.sortedBy ||
-          this.state.filterTerm ||
-          this.state.status !== "all"
-        ) {
-          this.runAllFilters();
-        }
-      });
-    };
+  // crawl page 2 until the end of valid pages
+  // after each successful page fetch, update item count for display
+  // end crawling if component unmounts
+  // end crawling on modelZUID change
+  // end crawling on error
+  async function crawlFetchItems(modelZUID) {
+    const limit = PAGE_SIZE;
+    let page = 2;
+    let totalItems = limit;
+    while (totalItems === limit && _isMounted.current) {
+      if (modelZUID !== props.modelZUID) break;
+      const res = await props.dispatch(fetchItems(modelZUID, { limit, page }));
+      page++;
+      totalItems = res._meta.totalResults;
+      if (_isMounted.current) {
+        setShouldUpdateItemCount(true);
+      }
+    }
+  }
 
-    load = modelZUID => {
-      this.setState({
-        loading: true,
-        modelZUID
-      });
+  function updateItemCount() {
+    const itemCount = findItems(
+      props.allItems,
+      props.modelZUID,
+      props.selectedLang.ID
+    ).length;
+    setItemCount(itemCount);
+  }
 
-      return Promise.all([
-        this.props.dispatch(fetchFields(modelZUID)),
-        this.props.dispatch(fetchItems(modelZUID))
-      ])
-        .then(() => {
-          if (this._isMounted) {
-            this.updateRows();
-            this.setState(
-              {
-                loading: false
-              },
-              () => {
-                const { filterTerm, sortedBy, status, colType } = this.state;
-                if (filterTerm) {
-                  this.onFilter(filterTerm);
-                } else if (status) {
-                  this.onStatus(status);
-                } else if (sortedBy) {
-                  this.onSort(sortedBy, colType);
-                }
-              }
-            );
-          }
-        })
-        .catch(err => {
-          console.error("ItemList:load:error", err);
-          if (this._isMounted) {
-            this.setState(
-              {
-                loading: false
-              },
-              () => {
-                const { filterTerm, sortedBy, status, colType } = this.state;
-                if (filterTerm) {
-                  this.onFilter(filterTerm);
-                } else if (status) {
-                  this.onStatus(status);
-                } else if (sortedBy) {
-                  this.onSort(sortedBy, colType);
-                }
-              }
-            );
-          }
-          throw err;
-        });
-    };
+  function loadItem(modelZUID, itemZUID) {
+    return props.dispatch(fetchItem(modelZUID, itemZUID));
+  }
 
-    loadItem = (modelZUID, itemZUID) => {
-      return this.props.dispatch(fetchItem(modelZUID, itemZUID));
-    };
+  function searchItem(itemZUID) {
+    return props.dispatch(searchItems(itemZUID));
+  }
 
-    loadItemPublishData = (modelZUID, itemZUID) => {
-      this.props.dispatch(fetchItemPublishing(modelZUID, itemZUID));
-    };
-
-    searchItem = itemZUID => {
-      return this.props.dispatch(searchItems(itemZUID));
-    };
-
-    saveItems = () => {
-      this.setState({
-        saving: true
-      });
-      return Promise.all(
-        this.props.dirtyItems.map(itemZUID =>
-          this.props.dispatch(saveItem(itemZUID))
-        )
-      )
-        .then(() => {
-          this.setState({
-            saving: false
-          });
-
-          this.props.dispatch(
-            notify({
-              message: `All ${this.props.model.label} changes saved`,
-              kind: "save"
-            })
-          );
-        })
-        .catch(err => {
-          this.setState({
-            saving: false
-          });
-          console.error("ItemList:saveItems:error", err);
-          this.props.dispatch(
-            notify({
-              message: `There was an issue saving these changes`,
-              kind: "warn"
-            })
-          );
-        });
-    };
-
-    // Allow for item edits in list view
-    onChange = (itemZUID, key, value) => {
-      this.props.dispatch({
-        type: "SET_ITEM_DATA",
-        itemZUID,
-        key,
-        value
-      });
-      this.setState({
-        items: this.state.items.map(item => {
-          if (item.meta && item.meta.ZUID === itemZUID) {
-            return {
-              ...item,
-              data: {
-                ...item.data,
-                [key]: value
-              },
-              dirty: true
-            };
-          }
-          return item;
-        })
-      });
-    };
-
-    getRowSize = index => {
-      return index === 0 ? 55 : 90;
-    };
-
-    runAllFilters = () => {
-      const {
-        filterTerm,
-        sortedBy,
-        status,
-        colType,
-        reverseSort
-      } = this.props.filters[this.props.modelZUID];
-      if (filterTerm || sortedBy || status) {
-        this.setState(
-          { filterTerm, sortedBy, status, colType, reverseSort },
-          () => {
-            if (filterTerm) {
-              this.onFilter(filterTerm);
-            } else if (status) {
-              this.onStatus(status);
-            } else if (sortedBy) {
-              this.onSort(sortedBy, colType);
-            }
-          }
+  function saveItems() {
+    setSaving(true);
+    return Promise.all(
+      props.dirtyItems.map(itemZUID => props.dispatch(saveItem(itemZUID)))
+    )
+      .then(() => {
+        setSaving(false);
+        props.dispatch(
+          notify({
+            message: `All ${props.model.label} changes saved`,
+            kind: "save"
+          })
         );
-      }
-    };
-
-    persistFilters = () => {
-      this.props.dispatch({
-        type: "PERSIST_LIST_FILTERS",
-        modelZUID: this.props.modelZUID,
-        filters: {
-          filterTerm: this.state.filterTerm,
-          sortedBy: this.state.sortedBy,
-          status: this.state.status,
-          colType: this.state.colType,
-          reverseSort: this.state.reverseSort
-        }
+      })
+      .catch(err => {
+        setSaving(false);
+        console.error("ItemList:saveItems:error", err);
+        props.dispatch(
+          notify({
+            message: `There was an issue saving these changes`,
+            kind: "warn"
+          })
+        );
       });
-    };
+  }
 
-    clearFilters = () => {
-      this.setState(
-        {
-          filterTerm: "",
-          status: "all"
-        },
-        () => {
-          this.persistFilters();
-          this.updateRows();
+  // Allow for item edits in list view
+  function onChange(itemZUID, key, value) {
+    props.dispatch({
+      type: "SET_ITEM_DATA",
+      itemZUID,
+      key,
+      value
+    });
+    setItems(
+      items.map(item => {
+        if (item.meta && item.meta.ZUID === itemZUID) {
+          return {
+            ...item,
+            data: {
+              ...item.data,
+              [key]: value
+            },
+            dirty: true
+          };
         }
-      );
-    };
-    /*
-    -=onFilter, onStatus and onSort=-
+        return item;
+      })
+    );
+  }
+
+  function getRowSize(index) {
+    return index === 0 ? 55 : 90;
+  }
+
+  function persistFilters() {
+    if (!isEqual(filter, props.filters[props.modelZUID])) {
+      props.dispatch({
+        type: "PERSIST_LIST_FILTERS",
+        modelZUID: props.modelZUID,
+        filters: filter
+      });
+    }
+  }
+
+  function clearFilters() {
+    setFilter(DEFAULT_FILTER);
+  }
+
+  function filterByStatus(items, status) {
+    switch (status) {
+      case "scheduled":
+        return items.filter(
+          item => item.scheduling && item.scheduling.isScheduled
+        );
+      case "published":
+        return items.filter(
+          item =>
+            item.publishing &&
+            item.publishing.isPublished &&
+            (!item.scheduling || !item.scheduling.isScheduled)
+        );
+      case "unpublished":
+        return items.filter(
+          item =>
+            (!item.publishing || !item.publishing.isPublished) &&
+            (!item.scheduling || !item.scheduling.isScheduled)
+        );
+      case "all":
+      default:
+        return items;
+    }
+  }
+
+  function sortItems(items, { reverse, col, type }) {
+    items.sort((a, b) => {
+      if (type === "date" || type === "datetime") {
+        const dateA = new Date(a.data[col]);
+        const dateB = new Date(b.data[col]);
+        return reverse ? dateA - dateB : dateB - dateA;
+      }
+      if (type === "number" || type === "sort") {
+        const numA = Number(a.data[col]);
+        const numB = Number(b.data[col]);
+        return reverse ? numA - numB : numB - numA;
+      }
+      // else we assume the type is string
+      const aStr = String(a.data[col]);
+      const bStr = String(b.data[col]);
+      return reverse ? aStr.localeCompare(bStr) : bStr.localeCompare(aStr);
+    });
+  }
+
+  function runFilters() {
+    const { filterTerm, sortedBy, status, colType } = filter;
+    if (filterTerm !== DEFAULT_FILTER.filterTerm) {
+      runTermFilter();
+    } else if (status !== DEFAULT_FILTER.status) {
+      runStatusFilter();
+    } else if (sortedBy !== DEFAULT_FILTER.sortedBy) {
+      runSort(sortedBy, colType);
+    } else {
+      updateItemsAndFields();
+    }
+  }
+
+  /*
+    -=runFilterTerm, runFilterStatus and runSort=-
     each of these functions needs to respect
     the state of one another. in achieving this
     some code is duplicated.
 
-    onFilter can perform all three actions
+    runFilterTerm can perform all three actions
     as it is dealing with all of the items in the global state.
 
-    onStatus short circuits itself if there is
-    a search term or sort in place
+    runFilterStatus 
 
-    onSort only deals with the in state items so can work
+    runSort only deals with the in state items so can work
     autonomously.
     */
-    onFilter = value => {
-      let items = findItems(
-        this.props.allItems,
-        this.props.modelZUID,
-        this.props.selectedLang.ID
-      );
+  function onFilter(value) {
+    setFilter({ ...filter, filterTerm: value.toLowerCase() });
+  }
+  function runTermFilter() {
+    const newFields = findFields(props.allFields, props.modelZUID);
+    let filteredItems = findItems(
+      props.allItems,
+      props.modelZUID,
+      props.selectedLang.ID
+    );
 
-      if (value) {
-        // Only calculate this once
-        const fields = this.state.fields.filter(
-          field => field.settings && field.settings.relatedField
-        );
+    // Only calculate this once
+    const fieldsWithRelatedFields = newFields.filter(
+      field => field.settings && field.settings.relatedField
+    );
 
-        const relatedFields = this.state.fields.filter(
-          field => field.relatedFieldZUID && field.relatedModelZUID
-        );
+    const relatedFields = newFields.filter(
+      field => field.relatedFieldZUID && field.relatedModelZUID
+    );
 
-        value = value.toLowerCase();
+    const { filterTerm } = filter;
 
-        items = items.filter(item => {
-          // first check items data
-          const itemData = Object.values(item.data)
-            .join(" ")
-            .toLowerCase();
-          if (itemData.includes(value)) {
-            return true;
-          }
+    filteredItems = filteredItems.filter(item => {
+      // first check items data
+      const itemData = Object.values(item.data)
+        .join(" ")
+        .toLowerCase();
+      if (itemData.includes(filterTerm)) {
+        return true;
+      }
 
-          // Second check item web
-          const itemWeb = Object.values(item.web)
-            .join(" ")
-            .toLowerCase();
-          if (itemWeb.includes(value)) {
-            return true;
-          }
+      // Second check item web
+      const itemWeb = Object.values(item.web)
+        .join(" ")
+        .toLowerCase();
+      if (itemWeb.includes(filterTerm)) {
+        return true;
+      }
 
-          /**
+      /**
             Third check this items relationships
             For each field that describes a relationship find the related item
             and that related items related field then build a string of those
             values that we can match the users search term against
           **/
-          const relatedItemsData = fields
-            .map(field => {
-              let data = [];
+      const relatedItemsData = fieldsWithRelatedFields
+        .map(field => {
+          let data = [];
 
-              if (item.data[field.name]) {
-                const relatedField = this.props.allFields[
-                  field.settings.relatedField
-                ];
-                data = item.data[field.name].split(",").map(relatedItemZUID => {
-                  const relatedItem = this.props.allItems[relatedItemZUID];
-                  if (relatedItem && relatedField) {
-                    return relatedItem.data[relatedField.name];
-                  } else {
-                    return "";
-                  }
-                });
+          if (item.data[field.name]) {
+            const relatedField = props.allFields[field.settings.relatedField];
+            data = item.data[field.name].split(",").map(relatedItemZUID => {
+              const relatedItem = props.allItems[relatedItemZUID];
+              if (relatedItem && relatedField) {
+                return relatedItem.data[relatedField.name];
+              } else {
+                return "";
               }
+            });
+          }
 
-              // Generate string of all related item field values
-              return data.join(" ");
-            })
+          // Generate string of all related item field values
+          return data.join(" ");
+        })
+        .join(" ")
+        .toLowerCase();
+
+      if (relatedItemsData.includes(filterTerm)) {
+        return true;
+      }
+
+      // check related fields values
+      const filteredRelatedFields = relatedFields.filter(field => {
+        const relatedZUID = item.data[field.name];
+        const relatedFieldItem = props.allItems[relatedZUID];
+        if (relatedFieldItem) {
+          // check item data
+          const itemData = Object.values(relatedFieldItem.data)
             .join(" ")
             .toLowerCase();
-
-          if (relatedItemsData.includes(value)) {
+          if (itemData.includes(filterTerm)) {
             return true;
           }
 
-          // check related fields values
-          const filteredRelatedFields = relatedFields.filter(field => {
-            const relatedZUID = item.data[field.name];
-            const relatedFieldItem = this.props.allItems[relatedZUID];
-            if (relatedFieldItem) {
-              // check item data
-              const itemData = Object.values(relatedFieldItem.data)
-                .join(" ")
-                .toLowerCase();
-              if (itemData.includes(value)) {
-                return true;
-              }
-
-              // check item web
-              const itemWeb = Object.values(relatedFieldItem.web)
-                .join(" ")
-                .toLowerCase();
-              if (itemWeb.includes(value)) {
-                return true;
-              }
-            }
-            return false;
-          });
-
-          if (filteredRelatedFields.length) {
+          // check item web
+          const itemWeb = Object.values(relatedFieldItem.web)
+            .join(" ")
+            .toLowerCase();
+          if (itemWeb.includes(filterTerm)) {
             return true;
           }
-
-          return false;
-        });
-      }
-
-      // handle status if applied
-      if (this.state.status && this.state.status !== "all") {
-        const status = this.state.status;
-        switch (status) {
-          case "scheduled":
-            items = items.filter(
-              item => item.scheduling && item.scheduling.isScheduled
-            );
-            break;
-          case "published":
-            items = items.filter(
-              item =>
-                item.publishing &&
-                item.publishing.isPublished &&
-                (!item.scheduling || !item.scheduling.isScheduled)
-            );
-            break;
-          case "unpublished":
-            items = items.filter(
-              item =>
-                (!item.publishing || !item.publishing.isPublished) &&
-                (!item.scheduling || !item.scheduling.isScheduled)
-            );
-            break;
         }
+        return false;
+      });
+
+      if (filteredRelatedFields.length) {
+        return true;
       }
 
-      // handle sort order if it is applied
-      if (this.state.sortedBy && this.state.fields.length) {
-        // maintain expected sort oder if designated by user
-        const reverse = this.state.reverseSort;
-        const col = this.state.sortedBy;
-        const type = this.state.fields.find(
-          field => field.name === this.state.sortedBy
-        ).datatype;
-        items.sort((a, b) => {
-          if (type === "date" || type === "datetime") {
-            const dateA = new Date(a.data[col]);
-            const dateB = new Date(b.data[col]);
-            return reverse ? dateA - dateB : dateB - dateA;
-          }
-          if (type === "number" || type === "sort") {
-            const numA = Number(a.data[col]);
-            const numB = Number(b.data[col]);
-            return reverse ? numA - numB : numB - numA;
-          }
-          // else we assume the type is string
-          const aStr = String(a.data[col]);
-          const bStr = String(b.data[col]);
-          return reverse ? aStr.localeCompare(bStr) : bStr.localeCompare(aStr);
-        });
-      }
+      return false;
+    });
 
-      items.unshift(this.state.fields);
+    // handle status if applied
+    filteredItems = filterByStatus(filteredItems, filter.status);
 
-      //reset the scroll position so that results are shown properly
-      if (
-        this.list.current &&
-        (this.list.current.scrollTop !== 0 || this.list.scrollX !== 0)
-      ) {
-        this.list.current.scrollTo(0, 0);
-      }
-      this.setState(
-        {
-          items,
-          filterTerm: value
-        },
-        () => {
-          this.persistFilters();
-        }
-      );
-    };
+    // handle sort order if it is applied
+    if (filter.sortedBy && newFields.length) {
+      // maintain expected sort oder if designated by user
+      sortItems(filteredItems, {
+        reverse: filter.reverseSort,
+        col: filter.sortedBy,
+        type: newFields.find(field => field.name === filter.sortedBy).datatype
+      });
+    }
 
-    onStatus = value => {
-      // if there is a filter term in place
-      // run the onFilter which will also
-      // handle the status filter
-      if (this.state.filterTerm || this.state.sortedBy) {
-        return this.setState({ status: value }, () =>
-          this.onFilter(this.state.filterTerm)
-        );
-      }
+    filteredItems.unshift(newFields);
+    setItems(filteredItems);
+    setFields(newFields);
+    resetListScroll();
+  }
 
-      let items = findItems(
-        this.props.allItems,
-        this.props.modelZUID,
-        this.props.selectedLang.ID
-      );
+  function onStatus(status) {
+    setFilter({ ...filter, status });
+  }
+  function runStatusFilter() {
+    const { status } = filter;
+    const newFields = findFields(props.allFields, props.modelZUID);
+    let filteredItems = findItems(
+      props.allItems,
+      props.modelZUID,
+      props.selectedLang.ID
+    );
+    filteredItems = filterByStatus(filteredItems, status);
 
-      switch (value) {
-        case "scheduled":
-          items = items.filter(
-            item => item.scheduling && item.scheduling.isScheduled
-          );
-          break;
-        case "published":
-          items = items.filter(
-            item =>
-              item.publishing &&
-              item.publishing.isPublished &&
-              (!item.scheduling || !item.scheduling.isScheduled)
-          );
-          break;
-        case "unpublished":
-          items = items.filter(
-            item =>
-              (!item.publishing || !item.publishing.isPublished) &&
-              (!item.scheduling || !item.scheduling.isScheduled)
-          );
-          break;
-      }
+    // handle sort order if it is applied
+    if (filter.sortedBy && newFields.length) {
+      // maintain expected sort oder if designated by user
+      sortItems(filteredItems, {
+        reverse: filter.reverseSort,
+        col: filter.sortedBy,
+        type: newFields.find(field => field.name === filter.sortedBy).datatype
+      });
+    }
 
-      items.unshift(this.state.fields);
+    filteredItems.unshift(newFields);
+    setItems(filteredItems);
+    setFields(newFields);
+    resetListScroll();
+  }
 
-      if (
-        this.list.current &&
-        (this.list.current.scrollTop !== 0 || this.list.scrollX !== 0)
-      ) {
-        this.list.current.scrollTo(0, 0);
-      }
-      // Handles "all"
-      this.setState(
-        {
-          items,
-          status: value
-        },
-        () => {
-          this.persistFilters();
-        }
-      );
-    };
+  function onSort(col, type) {
+    const reverseSort =
+      col === filter.sortedBy ? !filter.reverseSort : filter.reverseSort;
+    setFilter({
+      ...filter,
+      sortedBy: col,
+      colType: type,
+      reverseSort
+    });
+  }
+  function runSort() {
+    const { sortedBy, colType, reverseSort } = filter;
+    // deals only with in state items, safe for filters
 
-    onSort = (col, type) => {
-      // deals only with in state items, safe for filters
+    const newFields = findFields(props.allFields, props.modelZUID);
+    let sortedItems = findItems(
+      props.allItems,
+      props.modelZUID,
+      props.selectedLang.ID
+    );
 
-      let sortedItems = [...this.state.items.slice(1)];
-      let reverse =
-        col === this.state.sortedBy
-          ? !this.state.reverseSort
-          : this.state.reverseSort;
-      // sort the items in state by the column value
-      if (col) {
-        sortedItems.sort((a, b) => {
-          if (type === "date" || type === "datetime") {
-            const dateA = new Date(a.data[col]);
-            const dateB = new Date(b.data[col]);
-            return reverse ? dateA - dateB : dateB - dateA;
-          }
-          if (type === "number" || type === "sort") {
-            const numA = Number(a.data[col]);
-            const numB = Number(b.data[col]);
-            return reverse ? numA - numB : numB - numA;
-          }
-          // else we assume the type is string
-          const aStr = String(a.data[col]);
-          const bStr = String(b.data[col]);
-          return reverse ? aStr.localeCompare(bStr) : bStr.localeCompare(aStr);
-        });
-      } else {
-        sortedItems.sort((a, b) => {
-          if (a.meta.createdAt < b.meta.createdAt) {
-            return 1;
-          }
-          if (a.meta.createdAt > b.meta.createdAt) {
-            return -1;
-          }
-          return 0;
-        });
-      }
+    // sort the items in state by the column value
+    if (sortedBy) {
+      sortItems(sortedItems, {
+        reverse: reverseSort,
+        col: sortedBy,
+        type: colType
+      });
+    } else {
+      sortedItems.sort((a, b) => b.meta.createdAt - a.meta.createdAt);
+    }
 
-      // add cols back to items array
-      sortedItems.unshift(this.state.fields);
+    sortedItems.unshift(newFields);
+    setItems(sortedItems);
+    setFields(newFields);
+  }
 
-      return this.setState(
-        {
-          sortedBy: col,
-          colType: type,
-          items: sortedItems,
-          reverseSort: reverse
-        },
-        () => {
-          this.persistFilters();
-        }
-      );
-    };
-
-    render() {
-      if (!this.props.model) {
-        return (
-          <NotFound message={`Model "${this.props.modelZUID}" not found`} />
-        );
-      }
-      return (
-        <main className={styles.ItemList}>
-          <SetActions
-            user={this.props.user}
-            modelZUID={this.props.modelZUID}
-            model={this.props.model}
-            isDirty={this.props.dirtyItems.length}
-            saving={this.state.saving}
-            loading={this.state.loading}
-            itemCount={this.state.items.length - 1}
-            onSaveAll={this.saveItems}
-            onFilter={this.onFilter}
-            onStatus={this.onStatus}
-            runAllFilters={this.runAllFilters}
-            isSorted={this.state.sortedBy !== null}
-            resetSort={() => this.onSort(null)}
-            filterTerm={this.state.filterTerm}
-            status={this.state.status}
-            instance={this.props.instance}
-          />
-
-          {!this.state.loading && this.state.items.length === 1 ? (
-            this.state.status !== "all" || this.state.filterTerm ? (
-              <div className={styles.TableWrap}>
-                <SetColumns fields={this.state.fields} />
-                <div className={styles.FiltersDisplay}>
-                  <h1>{`No ${this.props.model &&
-                    this.props.model
-                      .label} items are displayed, filters are in place. `}</h1>
-                  <Button kind="secondary" onClick={this.clearFilters}>
-                    <FontAwesomeIcon icon={faTimes} />
-                    Clear Filters
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className={styles.TableWrap}>
-                <SetColumns fields={this.state.fields} />
-                <h1 className={styles.Display}>{`No ${this.props.model &&
-                  this.props.model.label} items have been created`}</h1>
-              </div>
-            )
-          ) : (
-            <div className={styles.TableWrap} ref={this.table}>
-              <WithLoader
-                message={`Loading ${this.props.model &&
-                  this.props.model.label}`}
-                condition={
-                  (this.state.fields.length && this.state.items.length > 1) ||
-                  !this.state.loading
-                }
-                height="80vh"
-              >
-                <PendingEditsModal
-                  show={Boolean(this.props.dirtyItems.length)}
-                  title="Unsaved Changes"
-                  message="You have unsaved changes that will be lost if you leave this page."
-                  saving={this.state.saving || this.state.loading}
-                  onSave={this.saveItems}
-                  onDiscard={() => {
-                    this.props.dispatch({
-                      type: "UNMARK_ITEMS_DIRTY",
-                      items: this.props.dirtyItems
-                    });
-                    return this.load(this.props.modelZUID);
-                  }}
-                />
-
-                <DragScroll
-                  height={this.state.height}
-                  width={this.state.width}
-                  childRef={this.list}
-                >
-                  <List
-                    className={"ItemList"}
-                    outerRef={this.list}
-                    overscanCount={20}
-                    itemCount={this.state.items.length}
-                    itemSize={this.getRowSize}
-                    itemData={{
-                      modelZUID: this.props.modelZUID,
-                      model: this.props.model,
-                      items: this.state.items,
-                      allItems: this.props.allItems,
-                      fields: this.state.fields,
-                      allFields: this.props.allFields,
-                      onChange: this.onChange,
-                      loadItem: this.loadItem,
-                      searchItem: this.searchItem,
-                      sortedBy: this.state.sortedBy,
-                      onSort: this.onSort,
-                      reverseSort: this.state.reverseSort,
-                      loadItemPublishData: this.loadItemPublishData
-                    }}
-                    height={this.state.height}
-                    width={this.state.width}
-                  >
-                    {RowRender}
-                  </List>
-                </DragScroll>
-              </WithLoader>
-            </div>
-          )}
-        </main>
-      );
+  function resetListScroll() {
+    if (list.current && (list.current.scrollTop !== 0 || list.scrollX !== 0)) {
+      list.current.scrollTo(0, 0);
     }
   }
-);
+
+  if (!props.model) {
+    return <NotFound message={`Model "${props.modelZUID}" not found`} />;
+  }
+
+  return (
+    <main className={styles.ItemList}>
+      <SetActions
+        user={props.user}
+        modelZUID={props.modelZUID}
+        model={props.model}
+        isDirty={props.dirtyItems.length}
+        saving={saving}
+        loading={backgroundLoading}
+        itemCount={itemCount}
+        onSaveAll={saveItems}
+        onFilter={onFilter}
+        onStatus={onStatus}
+        isSorted={filter.sortedBy !== null}
+        resetSort={() => onSort(null)}
+        filterTerm={filter.filterTerm}
+        status={filter.status}
+        instance={props.instance}
+      />
+
+      {!initialLoading && items.length === 1 ? (
+        filter.status !== "all" || filter.filterTerm ? (
+          <div className={styles.TableWrap}>
+            <SetColumns fields={fields} />
+            <div className={styles.FiltersDisplay}>
+              <h1>{`No ${props.model &&
+                props.model
+                  .label} items are displayed, filters are in place. `}</h1>
+              <Button kind="secondary" onClick={clearFilters}>
+                <FontAwesomeIcon icon={faTimes} />
+                Clear Filters
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className={styles.TableWrap}>
+            <SetColumns fields={fields} />
+            <h1 className={styles.Display}>{`No ${props.model &&
+              props.model.label} items have been created`}</h1>
+          </div>
+        )
+      ) : (
+        <div className={styles.TableWrap} ref={table}>
+          <WithLoader
+            message={`Loading ${props.model && props.model.label}`}
+            condition={(fields.length && items.length > 1) || !initialLoading}
+            height="80vh"
+          >
+            <PendingEditsModal
+              show={Boolean(props.dirtyItems.length)}
+              title="Unsaved Changes"
+              message="You have unsaved changes that will be lost if you leave this page."
+              saving={saving || initialLoading}
+              onSave={saveItems}
+              onDiscard={() => {
+                props.dispatch({
+                  type: "UNMARK_ITEMS_DIRTY",
+                  items: props.dirtyItems
+                });
+                return load(props.modelZUID);
+              }}
+            />
+
+            <DragScroll height={height} width={width} childRef={list}>
+              <List
+                className={"ItemList"}
+                outerRef={list}
+                overscanCount={20}
+                itemCount={items.length}
+                itemSize={getRowSize}
+                itemData={{
+                  modelZUID: props.modelZUID,
+                  model: props.model,
+                  items,
+                  allItems: props.allItems,
+                  fields,
+                  allFields: props.allFields,
+                  onChange,
+                  loadItem,
+                  searchItem,
+                  sortedBy: filter.sortedBy,
+                  onSort,
+                  reverseSort: filter.reverseSort
+                }}
+                height={height}
+                width={width}
+              >
+                {RowRender}
+              </List>
+            </DragScroll>
+          </WithLoader>
+        </div>
+      )}
+    </main>
+  );
+});
 
 class RowRender extends PureComponent {
-  onSort = (col, type) => {
-    this.props.data.onSort(col, type);
-  };
   render() {
     const {
       modelZUID,
@@ -794,7 +696,6 @@ class RowRender extends PureComponent {
       onChange,
       loadItem,
       searchItem,
-      loadItemPublishData,
       sortedBy,
       reverseSort
     } = this.props.data;
@@ -808,7 +709,7 @@ class RowRender extends PureComponent {
           key={this.props.index}
           fields={item}
           sortedBy={sortedBy}
-          onSort={this.onSort}
+          onSort={this.props.data.onSort}
           reverseSort={reverseSort}
         />
       );
@@ -830,7 +731,6 @@ class RowRender extends PureComponent {
           onChange={onChange}
           loadItem={loadItem}
           searchItem={searchItem}
-          loadItemPublishData={loadItemPublishData}
         />
       );
     }

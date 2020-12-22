@@ -443,7 +443,7 @@ export function saveFile(ZUID, status) {
           });
 
           // re-render ActivePreview on code file save
-          zesty.trigger("FORCE_PREVIEW_RERENDER");
+          zesty.trigger("PREVIEW_REFRESH");
 
           // Re-fetch file to ensure we have latest version number
           return dispatch(fetchFile(file.ZUID, pathPart));
@@ -597,7 +597,8 @@ export function resolveMonacoLang(fileName) {
       break;
     case "html":
       // Because we allow parsley in custom html files
-      language = "handlebars";
+      // language = "handlebars";
+      language = "parsley";
       break;
     case "json":
       language = "json";
@@ -617,8 +618,8 @@ export function resolveMonacoLang(fileName) {
       break;
 
     default:
-      language = "handlebars";
-      // language = "parsley";
+      // language = "handlebars";
+      language = "parsley";
       break;
   }
 

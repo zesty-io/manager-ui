@@ -27,12 +27,47 @@ export default connect(state => {
       };
 
       // Poll auth service every minute to ensure session is still valid
-      setInterval(checkSession, 60000);
+      const token = setInterval(checkSession, 60000);
 
       // Initial app load check
       checkSession();
-    }, []);
 
+      return () => clearInterval(token);
+    }, [props.dispatch]);
+
+    useEffect(() => {
+      const handleOffline = () => {
+        props.dispatch(
+          notify({
+            kind: "warn",
+            message: "Internet connection is off"
+          })
+        );
+      };
+
+      window.addEventListener("offline", handleOffline);
+
+      return () => {
+        window.removeEventListener("offline", handleOffline);
+      };
+    });
+
+    useEffect(() => {
+      const handleOnline = () => {
+        props.dispatch(
+          notify({
+            kind: "success",
+            message: "Internet connection is restored"
+          })
+        );
+      };
+
+      window.addEventListener("online", handleOnline);
+
+      return () => {
+        window.removeEventListener("online", handleOnline);
+      };
+    });
     return (
       <WithLoader
         condition={!props.auth.checking}

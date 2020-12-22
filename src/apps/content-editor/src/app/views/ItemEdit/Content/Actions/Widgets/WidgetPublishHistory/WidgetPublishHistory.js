@@ -49,6 +49,8 @@ export default connect(state => {
             <p>Loading Logs</p>
           ) : (
             <ul className="logs">
+              {Array.isArray(logs) && !logs.length && <p>Not published</p>}
+
               {Array.isArray(logs) &&
                 logs.map(log => {
                   const { firstName, lastName } = log;
