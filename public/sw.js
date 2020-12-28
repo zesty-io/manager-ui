@@ -14,14 +14,15 @@
 // Names of the two caches used in this version of the service worker.
 // Change to v2, etc. when you update any of the local resources, which will
 // in turn trigger the install event again.
-const PRECACHE = "precache-20201125-001";
-const RUNTIME = "runtime-20201125-001";
+const PRECACHE = "precache-20201215-003";
+const RUNTIME = "runtime-20201215-003";
 
 const OFFLINE_URL = "/offline";
 
 // A list of local resources we always want to be cached.
 const PRECACHE_URLS = [
-  ".",
+  // NOTE: do not cache index.html as that is where we unregister
+  // a service worker if needed.
   OFFLINE_URL,
 
   // TODO: These need CORs headers so the service worker can fetch

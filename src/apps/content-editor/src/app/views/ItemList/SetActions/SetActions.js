@@ -43,7 +43,6 @@ export class SetActions extends Component {
             <LanguageSelector
               className={styles.I18N}
               itemZUID={this.props.itemZUID}
-              onSelect={this.props.runAllFilters}
             />
 
             <Select

@@ -222,6 +222,13 @@ export function fetchItem(modelZUID, itemZUID) {
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}`,
       handler: res => {
+        if (res.status === 404) {
+          dispatch({
+            type: "REMOVE_ITEM",
+            itemZUID
+          });
+          return res;
+        }
         if (!res || !res.data) {
           throw new Error("Bad response from API. Missing resource data.");
         }
@@ -496,16 +503,19 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
 
     // `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`
     const url = `${CONFIG.LEGACY_SITES_SERVICE}/${instance.ZUID}/content/items/${itemZUID}/publish-schedule`;
-
+    const body = {
+      // publishAt: "now", //default
+      // unpublishAt: "never", //default
+      // ...data
+      version_num: data.version
+    };
+    if (data.publishAt) {
+      body.publish_at = data.publishAt;
+    }
     return request(url, {
       method: "POST",
       json: true,
-      body: {
-        // publishAt: "now", //default
-        // unpublishAt: "never", //default
-        // ...data
-        version_num: data.version
-      }
+      body
     })
       .then(() => {
         const message = data.publishAt

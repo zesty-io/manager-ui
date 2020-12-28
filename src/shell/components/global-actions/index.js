@@ -3,9 +3,10 @@ import cx from "classnames";
 import useOnclickOutside from "react-cool-onclickoutside";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { faDungeon, faQuestion } from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "@zesty-io/core/Url";
+import { Button } from "@zesty-io/core/Button";
 
 import GlobalHelpMenu from "shell/components/GlobalHelpMenu";
 import { GlobalNotifications } from "./components/global-notifications";
@@ -43,9 +44,8 @@ export default React.memo(function GlobalActions(props) {
           {openMenu && <GlobalHelpMenu />}
         </span>
       </div>
-      <div className={styles.ZestyLink}>
+      <div className={styles.AppVersion}>
         <Url
-          className={cx(styles.AppVersion)}
           href="https://github.com/zesty-io/manager-ui"
           title="Zesty Manager-ui Github"
           target="_blank"
@@ -58,6 +58,14 @@ export default React.memo(function GlobalActions(props) {
           />
         </Url>
         <span className={styles.VersionNumber}>{CONFIG.VERSION}</span>
+      </div>
+      <div className={styles.Legacy}>
+        <Url href={`https://${props.hash}.manage.zesty.io/`} target="_blank">
+          <Button>
+            <FontAwesomeIcon icon={faDungeon} />
+            <span className={styles.hide}>Legacy</span>
+          </Button>
+        </Url>
       </div>
     </div>
   );
