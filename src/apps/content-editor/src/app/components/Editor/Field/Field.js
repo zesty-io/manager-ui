@@ -263,7 +263,7 @@ export default connect(state => {
             >
               <MediaApp
                 {...mediaAppProps}
-                limitSelected={imageModal.limit}
+                limitSelected={imageModal.limit - images.length}
                 modal={true}
                 addImages={images => {
                   imageModal.callback(images);
