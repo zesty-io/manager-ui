@@ -66,13 +66,15 @@ export default connect(state => {
   useEffect(() => {
     if (!currentGroupID && props.media.bins.length) {
       const bin = props.media.bins.find(bin => bin.default);
-      setCurrentGroupID(bin.id);
+      if (bin) {
+        setCurrentGroupID(bin.id);
+      }
     }
   }, [props.media.bins.length]);
 
   // update path when not in modal context and viewing file details
   useEffect(() => {
-    if (!props.modal) {
+    if (currentGroupID && !props.modal) {
       let path;
       if (fileDetails) {
         path = `/dam/${currentGroupID}/file/${fileDetails.id}`;
@@ -81,7 +83,7 @@ export default connect(state => {
       }
       history.push(path);
     }
-  }, [fileDetails]);
+  }, [fileDetails, currentGroupID]);
 
   function showFileDetails(fileID) {
     if (fileID) {
