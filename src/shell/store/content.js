@@ -516,8 +516,6 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
     const item = getState().content[itemZUID];
     let title;
 
-    // console.log("publish item: ", item);
-
     if (item) {
       title = `"${item.web.metaTitle || item.web.metaLinkText}" version ${
         data.version
@@ -569,7 +567,16 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
 }
 
 export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
-  return dispatch => {
+  return (dispatch, getState) => {
+    const item = getState().content[itemZUID];
+    let title;
+
+    if (item) {
+      title = `"${item.web.metaTitle || item.web.metaLinkText}"`;
+    } else {
+      title = `item ${itemZUID}`;
+    }
+
     return request(
       `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings/${publishZUID}`,
       {
@@ -581,8 +588,8 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
           throw res.error;
         }
         const message = options.version
-          ? `Unscheduled Version ${options.version}`
-          : `Unpublished Item ${itemZUID}`;
+          ? `Unscheduled version ${options.version}`
+          : `Unpublished ${title}`;
         return dispatch(
           notify({
             message,
@@ -595,8 +602,8 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
       })
       .catch(err => {
         const message = options.version
-          ? `Error Unscheduling Version ${options.version}`
-          : `Error Unpublishing Item ${itemZUID}`;
+          ? `Error Unscheduling version ${options.version}`
+          : `Error Unpublishing ${title}`;
         return dispatch(
           notify({
             message,
