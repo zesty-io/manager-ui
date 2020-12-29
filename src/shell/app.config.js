@@ -105,9 +105,6 @@ module.exports = {
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
 
-    // We are not running the legacy cluster in dev so the sites-service is unavailable in that project
-    // LEGACY_SITES_SERVICE: "http://svc.zesty.localdev:3018/sites-service",
-
     URL_MANAGER: ".manager.dev.zesty.io:8080",
     URL_MANAGER_PROTOCOL: "http://",
     URL_PREVIEW: "-dev.preview.dev.zesty.io",
@@ -144,8 +141,6 @@ module.exports = {
       "https://us-central1-zesty-dev.cloudfunctions.net/authenticateGoogleAnalytics",
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
-
-    LEGACY_SITES_SERVICE: "http://svc.zesty.localdev:3018/sites-service",
 
     URL_MANAGER: ".manager.zesty.localdev:9000",
     URL_MANAGER_PROTOCOL: "http://",

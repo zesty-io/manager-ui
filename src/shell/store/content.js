@@ -498,25 +498,19 @@ export function deleteItem(modelZUID, itemZUID) {
 }
 
 export function publish(modelZUID, itemZUID, data, meta = {}) {
-  return (dispatch, getState) => {
-    const instance = getState().instance;
-
-    // `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`
-    const url = `${CONFIG.LEGACY_SITES_SERVICE}/${instance.ZUID}/content/items/${itemZUID}/publish-schedule`;
-    const body = {
-      // publishAt: "now", //default
-      // unpublishAt: "never", //default
-      // ...data
-      version_num: data.version
-    };
-    if (data.publishAt) {
-      body.publish_at = data.publishAt;
-    }
-    return request(url, {
-      method: "POST",
-      json: true,
-      body
-    })
+  return dispatch => {
+    return request(
+      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`,
+      {
+        method: "POST",
+        json: true,
+        body: {
+          publishAt: "now", //default
+          unpublishAt: "never", //default
+          ...data
+        }
+      }
+    )
       .then(() => {
         const message = data.publishAt
           ? `Scheduled version ${data.version} to publish on ${meta.localTime} in the ${meta.localTimezone} timezone`
@@ -775,8 +769,8 @@ function parsePublishState(records) {
       <---------------------------------->
 
       ^nowGMT (scheduled)
-                  ^nowGMT (published)
-                              ^nowGMT (unpublished)
+      ^nowGMT (published)
+      ^nowGMT (unpublished)
 
       If `publishAt` is set but unpublishAt is not you only need to determine if `nowGMT` is after `publishAt`. a.k.a is it live
       If both `publishAt` and `unpublishAt` are set you need determine all 3 states.
