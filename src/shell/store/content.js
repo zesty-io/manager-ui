@@ -77,6 +77,20 @@ export function content(state = {}, action) {
         return state;
       }
 
+    case "FETCH_ITEM_PUBLISHING":
+      if (action.payload.data[action.payload.itemZUID]) {
+        state[action.payload.itemZUID] = {
+          ...state[action.payload.itemZUID],
+          ...action.payload.data[action.payload.itemZUID]
+        };
+      } else {
+        // no publish or schedule records so remove them from the item
+        delete state[action.payload.itemZUID].publishing;
+        delete state[action.payload.itemZUID].scheduling;
+      }
+
+      return { ...state };
+
     case "FETCH_ITEMS_PUBLISHING":
       let newState = { ...state };
 
@@ -499,28 +513,33 @@ export function deleteItem(modelZUID, itemZUID) {
 
 export function publish(modelZUID, itemZUID, data, meta = {}) {
   return (dispatch, getState) => {
-    const instance = getState().instance;
+    const item = getState().content[itemZUID];
+    let title;
 
-    // `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`
-    const url = `${CONFIG.LEGACY_SITES_SERVICE}/${instance.ZUID}/content/items/${itemZUID}/publish-schedule`;
-    const body = {
-      // publishAt: "now", //default
-      // unpublishAt: "never", //default
-      // ...data
-      version_num: data.version
-    };
-    if (data.publishAt) {
-      body.publish_at = data.publishAt;
+    if (item) {
+      title = `"${item.web.metaTitle || item.web.metaLinkText}" version ${
+        data.version
+      }`;
+    } else {
+      title = `item ${itemZUID} version ${data.version}`;
     }
-    return request(url, {
-      method: "POST",
-      json: true,
-      body
-    })
+
+    return request(
+      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`,
+      {
+        method: "POST",
+        json: true,
+        body: {
+          publishAt: "now", //default
+          unpublishAt: "never", //default
+          ...data
+        }
+      }
+    )
       .then(() => {
         const message = data.publishAt
-          ? `Scheduled version ${data.version} to publish on ${meta.localTime} in the ${meta.localTimezone} timezone`
-          : `Published version ${data.version}`;
+          ? `Scheduled ${title} to publish on ${meta.localTime} in the ${meta.localTimezone} timezone`
+          : `Published ${title} now`;
 
         return dispatch(
           notify({
@@ -534,8 +553,8 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
       })
       .catch(err => {
         const message = data.publishAt
-          ? `Error scheduling version ${data.version}`
-          : `Error publishing version ${data.version}`;
+          ? `Error scheduling ${title}`
+          : `Error publishing ${title}`;
         dispatch(
           notify({
             message,
@@ -549,15 +568,19 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
 
 export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
   return (dispatch, getState) => {
-    const instance = getState().instance;
+    const item = getState().content[itemZUID];
+    let title;
+
+    if (item) {
+      title = `"${item.web.metaTitle || item.web.metaLinkText}"`;
+    } else {
+      title = `item ${itemZUID}`;
+    }
+
     return request(
-      `${CONFIG.LEGACY_SITES_SERVICE}/${instance.ZUID}/content/items/${itemZUID}/publish-schedule/${publishZUID}`,
+      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings/${publishZUID}`,
       {
-        method: "PATCH",
-        json: true,
-        body: {
-          take_offline_at: moment().format("YYYY-MM-DD HH:mm:ss")
-        }
+        method: "DELETE"
       }
     )
       .then(res => {
@@ -565,8 +588,8 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
           throw res.error;
         }
         const message = options.version
-          ? `Unscheduled Version ${options.version}`
-          : `Unpublished Item ${itemZUID}`;
+          ? `Unscheduled version ${options.version}`
+          : `Unpublished ${title}`;
         return dispatch(
           notify({
             message,
@@ -579,8 +602,8 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
       })
       .catch(err => {
         const message = options.version
-          ? `Error Unscheduling Version ${options.version}`
-          : `Error Unpublishing Item ${itemZUID}`;
+          ? `Error Unscheduling version ${options.version}`
+          : `Error Unpublishing ${title}`;
         return dispatch(
           notify({
             message,
@@ -602,8 +625,11 @@ export function fetchItemPublishing(modelZUID, itemZUID) {
         }
 
         dispatch({
-          type: "FETCH_ITEMS_PUBLISHING",
-          data: parsePublishState(res.data)
+          type: "FETCH_ITEM_PUBLISHING",
+          payload: {
+            data: parsePublishState(res.data),
+            itemZUID
+          }
         });
       }
     });
@@ -775,8 +801,8 @@ function parsePublishState(records) {
       <---------------------------------->
 
       ^nowGMT (scheduled)
-                  ^nowGMT (published)
-                              ^nowGMT (unpublished)
+      ^nowGMT (published)
+      ^nowGMT (unpublished)
 
       If `publishAt` is set but unpublishAt is not you only need to determine if `nowGMT` is after `publishAt`. a.k.a is it live
       If both `publishAt` and `unpublishAt` are set you need determine all 3 states.

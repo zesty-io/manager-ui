@@ -44,6 +44,19 @@
 
   .AppVersion {
     margin: 8px;
+    a {
+      color: inherit;
+      text-shadow: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    a:hover {
+      color: @zesty-white;
+    }
+    img {
+      margin-bottom: 4px;
+    }
   }
 
   .GlobalAction {
@@ -71,6 +84,15 @@
   }
 }
 
+@media (max-width: 2000px) {
+  .VersionNumber {
+    word-break: break-all;
+    font-size: 10px;
+    line-height: 10px;
+    display: inline-block;
+  }
+}
+
 @media (min-width: 2000px) {
   .GlobalSubMenu {
     align-items: initial;
@@ -82,15 +104,15 @@
     }
 
     .AppVersion {
-      align-items: center;
-      display: flex;
-      img {
-        margin-right: 8px;
+      a {
+        flex-direction: row;
       }
-    }
-
-    .VersionNumber {
-      margin: 0;
+      img {
+        margin: 0 8px 0 0;
+      }
+      .VersionNumber {
+        margin: 0;
+      }
     }
   }
 }
