@@ -1,5 +1,4 @@
 import React, { useRef } from "react";
-import { useHistory } from "react-router-dom";
 import cx from "classnames";
 import { useDrag } from "react-dnd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,8 +9,7 @@ import styles from "./MediaWorkspaceItem.less";
 import shared from "./MediaShared.less";
 
 export function MediaWorkspaceItem(props) {
-  const history = useHistory();
-  const ref = useRef(null);
+  const dragTarget = useRef(null);
 
   const [, drag] = useDrag({
     item: {
@@ -27,10 +25,10 @@ export function MediaWorkspaceItem(props) {
     }
   });
 
-  drag(ref);
+  drag(dragTarget);
 
   return (
-    <div ref={ref} style={{ width: "100%" }}>
+    <div ref={dragTarget} className={styles.MediaItem}>
       <Card
         className={cx({
           [styles.Card]: true,
