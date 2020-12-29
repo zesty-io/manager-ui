@@ -78,10 +78,10 @@ export function content(state = {}, action) {
       }
 
     case "FETCH_ITEM_PUBLISHING":
-      if (Object.keys(action.payload.data).length) {
+      if (action.payload.data[action.payload.itemZUID]) {
         state[action.payload.itemZUID] = {
           ...state[action.payload.itemZUID],
-          ...action.payload.data
+          ...action.payload.data[action.payload.itemZUID]
         };
       } else {
         // no publish or schedule records so remove them from the item
