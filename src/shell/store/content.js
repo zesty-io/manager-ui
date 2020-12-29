@@ -498,7 +498,20 @@ export function deleteItem(modelZUID, itemZUID) {
 }
 
 export function publish(modelZUID, itemZUID, data, meta = {}) {
-  return dispatch => {
+  return (dispatch, getState) => {
+    const item = getState().content[itemZUID];
+    let title;
+
+    // console.log("publish item: ", item);
+
+    if (item) {
+      title = `"${item.web.metaTitle || item.web.metaLinkText}" version ${
+        data.version
+      }`;
+    } else {
+      title = `item ${itemZUID} version ${data.version}`;
+    }
+
     return request(
       `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`,
       {
@@ -513,8 +526,8 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
     )
       .then(() => {
         const message = data.publishAt
-          ? `Scheduled version ${data.version} to publish on ${meta.localTime} in the ${meta.localTimezone} timezone`
-          : `Published version ${data.version}`;
+          ? `Scheduled ${title} to publish on ${meta.localTime} in the ${meta.localTimezone} timezone`
+          : `Published ${title} now`;
 
         return dispatch(
           notify({
@@ -528,8 +541,8 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
       })
       .catch(err => {
         const message = data.publishAt
-          ? `Error scheduling version ${data.version}`
-          : `Error publishing version ${data.version}`;
+          ? `Error scheduling ${title}`
+          : `Error publishing ${title}`;
         dispatch(
           notify({
             message,
