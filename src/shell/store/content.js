@@ -77,6 +77,20 @@ export function content(state = {}, action) {
         return state;
       }
 
+    case "FETCH_ITEM_PUBLISHING":
+      if (Object.keys(action.payload.data).length) {
+        state[action.payload.itemZUID] = {
+          ...state[action.payload.itemZUID],
+          ...action.payload.data
+        };
+      } else {
+        // no publish or schedule records so remove them from the item
+        delete state[action.payload.itemZUID].publishing;
+        delete state[action.payload.itemZUID].scheduling;
+      }
+
+      return { ...state };
+
     case "FETCH_ITEMS_PUBLISHING":
       let newState = { ...state };
 
@@ -604,8 +618,11 @@ export function fetchItemPublishing(modelZUID, itemZUID) {
         }
 
         dispatch({
-          type: "FETCH_ITEMS_PUBLISHING",
-          data: parsePublishState(res.data)
+          type: "FETCH_ITEM_PUBLISHING",
+          payload: {
+            data: parsePublishState(res.data),
+            itemZUID
+          }
         });
       }
     });
