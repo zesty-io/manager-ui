@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef } from "react";
 import { createSelector } from "reselect";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
@@ -6,9 +6,6 @@ import { useDrop } from "react-dnd";
 import { NativeTypes } from "react-dnd-html5-backend";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
-import { FixedSizeList } from "react-window";
-import chunk from "lodash/chunk";
-
 import { Button } from "@zesty-io/core/Button";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { uploadFile } from "shell/store/media";
@@ -23,18 +20,15 @@ const selectGroupFiles = createSelector(
 );
 
 export function MediaWorkspace(props) {
-  const dispatch = useDispatch();
-  const dropTarget = useRef();
-  const hiddenInput = useRef();
-  const workspaceGrid = useRef();
-  const [gridHeight, setGridHeight] = useState(900);
-
+  const ref = useRef();
+  const hiddenInputRef = useRef();
   const files = useSelector(state =>
     selectGroupFiles(state, props.currentGroup)
   );
+  const dispatch = useDispatch();
 
   const chooseFile = useCallback(() => {
-    hiddenInput.current.click();
+    hiddenInputRef.current.click();
   }, []);
 
   function handleFileUpload(event) {
@@ -64,22 +58,7 @@ export function MediaWorkspace(props) {
   });
   const isDragActive = canDrop && isOver;
 
-  drop(dropTarget);
-
-  let fileRows;
-  if (files.length && workspaceGrid.current) {
-    // number of gaps is filesPerRow - 1
-    const gapWidth = 16;
-    const fileWidth = 200;
-    const padding = 16;
-    const gridWidth = workspaceGrid.current.clientWidth - padding * 2;
-    const filesPerRow = Math.floor(
-      (gridWidth + gapWidth) / (fileWidth + gapWidth)
-    );
-    fileRows = chunk(files, filesPerRow);
-  } else {
-    fileRows = [];
-  }
+  drop(ref);
 
   return (
     <WithLoader
@@ -88,11 +67,11 @@ export function MediaWorkspace(props) {
       message="Loading Files"
       width="100%"
     >
-      <div ref={dropTarget}>
+      <div ref={ref}>
         <input
           type="file"
           multiple
-          ref={hiddenInput}
+          ref={hiddenInputRef}
           onChange={handleFileUpload}
           style={{ display: "none" }}
         />
@@ -110,22 +89,27 @@ export function MediaWorkspace(props) {
             </div>
           )}
           {files.length ? (
-            <section ref={workspaceGrid}>
-              <FixedSizeList
-                height={gridHeight}
-                width="100%"
-                itemCount={fileRows.length}
-                itemSize={242}
-                itemData={{
-                  data: fileRows,
-                  selected: props.selected,
-                  toggleSelected: props.toggleSelected,
-                  currentGroup: props.currentGroup,
-                  showFileDetails: props.showFileDetails
-                }}
-              >
-                {FileRow}
-              </FixedSizeList>
+            <section className={styles.WorkspaceGrid}>
+              {files.map(file => {
+                const itemProps = {};
+                if (props.selected) {
+                  itemProps.selected = props.selected.find(
+                    selectedFile => selectedFile.id === file.id
+                  );
+                }
+                if (props.toggleSelected) {
+                  itemProps.toggleSelected = props.toggleSelected;
+                }
+                return (
+                  <MediaWorkspaceItem
+                    {...itemProps}
+                    key={file.id || file.uploadID}
+                    file={file}
+                    currentGroup={props.currentGroup}
+                    showFileDetails={props.showFileDetails}
+                  />
+                );
+              })}
             </section>
           ) : (
             <div className={styles.UploadMessage}>
@@ -141,34 +125,4 @@ export function MediaWorkspace(props) {
       </div>
     </WithLoader>
   );
-}
-
-class FileRow extends React.PureComponent {
-  render() {
-    const row = this.props.data.data[this.props.index];
-    return (
-      <div style={this.props.style} className={styles.FileRow}>
-        {row.map(file => {
-          const itemProps = {};
-          if (this.props.data.selected) {
-            itemProps.selected = this.props.data.selected.find(
-              selectedFile => selectedFile.id === file.id
-            );
-          }
-          if (this.props.data.toggleSelected) {
-            itemProps.toggleSelected = this.props.data.toggleSelected;
-          }
-          return (
-            <MediaWorkspaceItem
-              {...itemProps}
-              key={file.id || file.uploadID}
-              file={file}
-              currentGroup={this.props.data.currentGroup}
-              showFileDetails={this.props.data.showFileDetails}
-            />
-          );
-        })}
-      </div>
-    );
-  }
 }
