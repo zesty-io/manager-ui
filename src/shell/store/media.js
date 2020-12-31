@@ -25,9 +25,8 @@ const mediaSlice = createSlice({
       const index = state.bins.findIndex(val => val.id === action.payload.id);
       if (index !== -1) {
         state.bins[index].name = action.payload.name;
-        const bins = current(state.bins);
-        const groups = current(state.groups);
-        state.nav = buildMainNav(bins, groups);
+        const currentState = current(state);
+        state.nav = buildMainNav(currentState.bins, currentState.groups);
       }
     },
 
@@ -35,36 +34,33 @@ const mediaSlice = createSlice({
     fetchGroupsSuccess(state, action) {
       state.groups = addNavigationStates(action.payload);
       const currentState = current(state);
-      const bins = currentState.bins;
-      const groups = currentState.groups;
-      state.nav = buildMainNav(bins, groups);
-      state.hiddenNav = buildHiddenNav(bins, groups);
+      state.nav = buildMainNav(currentState.bins, currentState.groups);
+      state.hiddenNav = buildHiddenNav(currentState.bins, currentState.groups);
     },
     createGroupSuccess(state, action) {
       state.groups.push(action.payload);
-      const bins = current(state.bins);
-      const groups = current(state.groups);
-      state.nav = buildMainNav(bins, groups);
+      const currentState = current(state);
+      state.nav = buildMainNav(currentState.bins, currentState.groups);
     },
     editGroupSuccess(state, action) {
       const index = state.groups.findIndex(val => val.id === action.payload.id);
       if (index !== -1) {
         state.groups[index].name = action.payload.name;
         state.groups[index].group_id = action.payload.group_id;
-        const bins = current(state.bins);
-        const groups = current(state.groups);
-        state.nav = buildMainNav(bins, groups);
-        state.hiddenNav = buildHiddenNav(bins, groups);
+        const currentState = current(state);
+        state.nav = buildMainNav(currentState.bins, currentState.groups);
+        state.hiddenNav = buildHiddenNav(
+          currentState.bins,
+          currentState.groups
+        );
       }
     },
     deleteGroupSuccess(state, action) {
       state.bins = state.bins.filter(el => el.id !== action.payload.id);
       state.groups = state.groups.filter(el => el.id !== action.payload.id);
       const currentState = current(state);
-      const bins = currentState.bins;
-      const groups = currentState.groups;
-      state.nav = buildMainNav(bins, groups);
-      state.hiddenNav = buildHiddenNav(bins, groups);
+      state.nav = buildMainNav(currentState.bins, currentState.groups);
+      state.hiddenNav = buildHiddenNav(currentState.bins, currentState.groups);
     },
     closeGroup(state, action) {
       const item =
@@ -80,10 +76,12 @@ const mediaSlice = createSlice({
           "zesty:navMedia:closed",
           JSON.stringify(closedBins.concat(closedGroups))
         );
-        const bins = current(state.bins);
-        const groups = current(state.groups);
-        state.nav = buildMainNav(bins, groups);
-        state.hiddenNav = buildHiddenNav(bins, groups);
+        const currentState = current(state);
+        state.nav = buildMainNav(currentState.bins, currentState.groups);
+        state.hiddenNav = buildHiddenNav(
+          currentState.bins,
+          currentState.groups
+        );
       }
     },
     hideGroup(state, action) {
@@ -100,10 +98,12 @@ const mediaSlice = createSlice({
           "zesty:navMedia:hidden",
           JSON.stringify(hiddenBins.concat(hiddenGroups))
         );
-        const bins = current(state.bins);
-        const groups = current(state.groups);
-        state.nav = buildMainNav(bins, groups);
-        state.hiddenNav = buildHiddenNav(bins, groups);
+        const currentState = current(state);
+        state.nav = buildMainNav(currentState.bins, currentState.groups);
+        state.hiddenNav = buildHiddenNav(
+          currentState.bins,
+          currentState.groups
+        );
       }
     },
 
