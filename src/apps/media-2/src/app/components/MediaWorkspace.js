@@ -19,7 +19,7 @@ const selectGroupFiles = createSelector(
     files.filter(file => file.group_id === currentGroup.id)
 );
 
-export function MediaWorkspace(props) {
+export const MediaWorkspace = React.memo(function MediaWorkspace(props) {
   const ref = useRef();
   const hiddenInputRef = useRef();
   const files = useSelector(state =>
@@ -125,4 +125,4 @@ export function MediaWorkspace(props) {
       </div>
     </WithLoader>
   );
-}
+});

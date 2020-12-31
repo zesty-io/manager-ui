@@ -1,5 +1,4 @@
-import React, { useRef } from "react";
-import { useHistory } from "react-router-dom";
+import React, { useCallback, useRef } from "react";
 import cx from "classnames";
 import { useDrag } from "react-dnd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,10 +8,10 @@ import { MediaImage } from "./MediaImage";
 import styles from "./MediaWorkspaceItem.less";
 import shared from "./MediaShared.less";
 
-export function MediaWorkspaceItem(props) {
-  const history = useHistory();
+export const MediaWorkspaceItem = React.memo(function MediaWorkspaceItem(
+  props
+) {
   const ref = useRef(null);
-
   const [, drag] = useDrag({
     item: {
       type: "file",
@@ -29,6 +28,22 @@ export function MediaWorkspaceItem(props) {
 
   drag(ref);
 
+  const toggleSelected = useCallback(() => {
+    if (props.toggleSelected && !props.file.loading) {
+      props.toggleSelected(props.file);
+    }
+  }, [props.toggleSelected, props.file]);
+
+  const showFileDetails = useCallback(
+    event => {
+      if (!props.file.loading) {
+        event.stopPropagation();
+        props.showFileDetails(props.file);
+      }
+    },
+    [props.showFileDetails, props.file]
+  );
+
   return (
     <div ref={ref} style={{ width: "100%" }}>
       <Card
@@ -36,11 +51,7 @@ export function MediaWorkspaceItem(props) {
           [styles.Card]: true,
           [styles.selected]: props.selected
         })}
-        onClick={() => {
-          if (props.toggleSelected && !props.file.loading) {
-            props.toggleSelected(props.file);
-          }
-        }}
+        onClick={toggleSelected}
       >
         <CardContent className={styles.CardContent}>
           <div className={shared.Checkered}>
@@ -64,20 +75,14 @@ export function MediaWorkspaceItem(props) {
           )}
           <button className={styles.FooterButton}>
             <FontAwesomeIcon
-              onClick={event => {
-                if (!props.file.loading) {
-                  event.stopPropagation();
-                  props.showFileDetails(props.file.id);
-                }
-              }}
+              onClick={showFileDetails}
               className={styles.Cog}
               icon={faCog}
             />
-
             <h1 className={styles.Preview}>{props.file.filename}</h1>
           </button>
         </CardFooter>
       </Card>
     </div>
   );
-}
+});

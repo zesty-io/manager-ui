@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { connect } from "react-redux";
 import { DndProvider } from "react-dnd";
@@ -47,7 +47,12 @@ export default connect(state => {
 
   // update currentPath on URL change
   useEffect(() => {
-    setCurrentPath(location.pathname);
+    // ignore the file/$ZUID
+    const path = location.pathname
+      .split("/")
+      .slice(0, 3)
+      .join("/");
+    setCurrentPath(path);
   }, [location.pathname]);
 
   // when currentGroup changes, update currentPath or URL depending on modal context
@@ -84,17 +89,6 @@ export default connect(state => {
       history.push(path);
     }
   }, [fileDetails, currentGroupID]);
-
-  function showFileDetails(fileID) {
-    if (fileID) {
-      const file = props.media.files.find(file => file.id === fileID);
-      if (file) {
-        setFileDetails(file);
-      }
-    } else {
-      setFileDetails();
-    }
-  }
 
   // fetch all bins on mount
   useEffect(() => {
@@ -156,9 +150,21 @@ export default connect(state => {
   }
 
   // update currentGroupID on Nav path change
-  function onPathChange(path) {
+  const onPathChange = useCallback(path => {
     setCurrentGroupID(path.split("/")[2]);
-  }
+  }, []);
+
+  const closeFileDetailsModal = useCallback(() => setFileDetails(), []);
+  const showDeleteFileModal = useCallback(() => setDeleteFileModal(true), []);
+  const closeDeleteFileModal = useCallback(() => {
+    setDeleteFileModal(false);
+    setFileDetails();
+  }, []);
+  const showDeleteGroupModal = useCallback(() => setDeleteGroupModal(true), []);
+  const closeDeleteGroupModal = useCallback(
+    () => setDeleteGroupModal(false),
+    []
+  );
 
   const workspaceProps = {};
   if (props.modal) {
@@ -181,7 +187,7 @@ export default connect(state => {
               hiddenNav={props.media.hiddenNav}
               currentBin={currentBin}
               currentGroup={currentGroup}
-              currentPath={currentPath}
+              selectedPath={currentPath}
               onPathChange={onPathChange}
               setCurrentGroupID={setCurrentGroupID}
             />
@@ -190,13 +196,13 @@ export default connect(state => {
             <MediaHeader
               currentBin={currentBin}
               currentGroup={currentGroup}
-              showDeleteGroupModal={() => setDeleteGroupModal(true)}
+              showDeleteGroupModal={showDeleteGroupModal}
             />
             <MediaWorkspace
               {...workspaceProps}
               currentBin={currentBin}
               currentGroup={currentGroup}
-              showFileDetails={showFileDetails}
+              showFileDetails={setFileDetails}
             />
             {// only show selected strip in modal context
             props.modal && (
@@ -210,23 +216,20 @@ export default connect(state => {
           {fileDetails && (
             <MediaDetailsModal
               file={fileDetails}
-              onClose={() => setFileDetails()}
-              showDeleteFileModal={() => setDeleteFileModal(true)}
+              onClose={closeFileDetailsModal}
+              showDeleteFileModal={showDeleteFileModal}
             />
           )}
           {deleteFileModal && (
             <MediaDeleteFileModal
-              onClose={() => {
-                setDeleteFileModal(false);
-                setFileDetails();
-              }}
+              onClose={closeDeleteFileModal}
               file={fileDetails}
               currentGroup={currentGroup}
             />
           )}
           {deleteGroupModal && (
             <MediaDeleteGroupModal
-              onClose={() => setDeleteGroupModal(false)}
+              onClose={closeDeleteGroupModal}
               currentGroup={currentGroup}
               setCurrentGroupID={setCurrentGroupID}
             />

@@ -1,9 +1,10 @@
 import React, { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
+import omit from "lodash/omit";
 import { NodeDraggable } from "../NodeDraggable";
 import styles from "./ParentDraggable.less";
 
-export function ParentDraggable(props) {
+export const ParentDraggable = React.memo(function ParentDraggable(props) {
   // track recursion depth and pass it as a prop to the node component
   const depth = props.depth + 1 || 1;
   const ref = useRef(null);
@@ -89,10 +90,10 @@ export function ParentDraggable(props) {
     <article ref={ref} className={styles.Parent} style={{ opacity }}>
       <ul className={props.isClosed ? styles.closed : ""}>
         <NodeDraggable
-          {...props}
+          {...omit(props, "selectedPath", "highlightTarget")}
           key={props.path}
+          selected={props.selectedPath.includes(props.path)}
           depth={depth}
-          selected={props.selected}
           collapseNode={props.collapseNode}
           actions={props.actions}
           parent={props.parent}
@@ -108,8 +109,8 @@ export function ParentDraggable(props) {
                 // tell child nodes to not display
                 isClosed={props.closed}
                 key={child.path}
+                selectedPath={props.selectedPath}
                 depth={depth}
-                selected={props.selected}
                 collapseNode={props.collapseNode}
                 actions={props.actions}
                 find={props.find}
@@ -124,4 +125,4 @@ export function ParentDraggable(props) {
       </ul>
     </article>
   );
-}
+});

@@ -13,7 +13,7 @@ import { uploadFile } from "shell/store/media";
 import { MediaEditGroupModal } from "./MediaEditGroupModal";
 import styles from "./MediaHeader.less";
 
-export function MediaHeader(props) {
+export const MediaHeader = React.memo(function MediaHeader(props) {
   const dispatch = useDispatch();
   const [editGroupModal, setEditGroupModal] = useState(false);
   const hiddenFileInput = useRef(null);
@@ -76,4 +76,4 @@ export function MediaHeader(props) {
       )}
     </header>
   );
-}
+});

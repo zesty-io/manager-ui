@@ -22,7 +22,7 @@ function find(id, items) {
   return false;
 }
 
-export function NavDraggable(props) {
+export const NavDraggable = React.memo(function NavDraggable(props) {
   const dispatch = useDispatch();
   const [tree, setTree] = useState(cloneDeep(props.tree));
   const [lastID, setLastID] = useState();
@@ -70,7 +70,7 @@ export function NavDraggable(props) {
         <ParentDraggable
           {...item}
           key={item.path}
-          selected={props.selected}
+          selectedPath={props.selectedPath}
           collapseNode={props.collapseNode}
           actions={props.actions}
           highlightTarget={highlightTarget}
@@ -83,4 +83,4 @@ export function NavDraggable(props) {
       ))}
     </nav>
   );
-}
+});

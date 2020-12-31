@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,21 +14,24 @@ import { closeGroup, hideGroup } from "shell/store/media";
 import { MediaCreateGroupModal } from "./MediaCreateGroupModal";
 import styles from "./MediaSidebar.less";
 
-export function MediaSidebar(props) {
+export const MediaSidebar = React.memo(function MediaSidebar(props) {
   const dispatch = useDispatch();
   const [hiddenOpen, setHiddenOpen] = useState(false);
   const [createGroupModal, setCreateGroupModal] = useState(false);
 
-  const collapseNode = node => dispatch(closeGroup(node.id));
+  const collapseNode = useCallback(id => dispatch(closeGroup(id)), []);
 
-  const actions = [
-    {
-      icon: "fas fa-eye-slash",
-      onClick: node => {
-        dispatch(hideGroup(node.id));
+  const actions = useMemo(
+    () => [
+      {
+        icon: "fas fa-eye-slash",
+        onClick: node => {
+          dispatch(hideGroup(node.id));
+        }
       }
-    }
-  ];
+    ],
+    []
+  );
 
   return (
     <nav className={styles.Nav}>
@@ -60,7 +63,7 @@ export function MediaSidebar(props) {
       </div>
       <NavDraggable
         tree={props.nav}
-        selected={props.currentPath}
+        selectedPath={props.selectedPath}
         collapseNode={collapseNode}
         actions={actions}
         onPathChange={props.onPathChange}
@@ -80,7 +83,7 @@ export function MediaSidebar(props) {
         <Nav
           className={hiddenOpen ? "" : styles.HiddenNavClosed}
           tree={props.hiddenNav}
-          selected={props.currentPath}
+          selected={props.selectedPath}
           collapseNode={collapseNode}
           actions={actions}
           onPathChange={props.onPathChange}
@@ -88,4 +91,4 @@ export function MediaSidebar(props) {
       </div>
     </nav>
   );
-}
+});

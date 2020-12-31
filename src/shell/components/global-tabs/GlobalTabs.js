@@ -14,8 +14,6 @@ import {
   faCog
 } from "@fortawesome/free-solid-svg-icons";
 
-import { Button } from "@zesty-io/core/Button";
-
 import GlobalSearch from "shell/components/global-search";
 import GlobalAccount from "shell/components/global-account";
 import GlobalInstance from "shell/components/global-instance";

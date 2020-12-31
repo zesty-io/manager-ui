@@ -16,7 +16,7 @@ import { MediaImage } from "./MediaImage";
 import styles from "./MediaDetailsModal.less";
 import shared from "./MediaShared.less";
 
-export function MediaDetailsModal(props) {
+export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
   return (
     <Modal
       className={styles.Modal}
@@ -120,4 +120,4 @@ export function MediaDetailsModal(props) {
       </ModalFooter>
     </Modal>
   );
-}
+});
