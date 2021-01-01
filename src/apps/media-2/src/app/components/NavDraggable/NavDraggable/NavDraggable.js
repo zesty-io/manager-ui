@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import cx from "classnames";
-import { ParentDraggable } from "../ParentDraggable";
+import { NodeDraggable } from "../NodeDraggable";
 import styles from "./NavDraggable.less";
 import cloneDeep from "lodash/cloneDeep";
 import { editFile, editGroup } from "shell/store/media";
@@ -24,30 +24,30 @@ function find(id, items) {
 
 export const NavDraggable = React.memo(function NavDraggable(props) {
   const dispatch = useDispatch();
-  const [tree, setTree] = useState(cloneDeep(props.tree));
-  const [lastID, setLastID] = useState();
+  // const [tree, setTree] = useState(props.tree);
+  // const [lastID, setLastID] = useState();
 
-  const highlightTarget = useCallback(
-    id => {
-      if (lastID === id) {
-        return;
-      }
-      const newTree = [...tree];
-      if (lastID) {
-        const lastNode = find(lastID, newTree);
-        if (lastNode) {
-          lastNode.highlighted = false;
-        }
-      }
-      const node = find(id, newTree);
-      if (node) {
-        node.highlighted = true;
-      }
-      setTree(newTree);
-      setLastID(id);
-    },
-    [tree, lastID]
-  );
+  // const highlightTarget = useCallback(
+  //   id => {
+  //     if (lastID === id) {
+  //       return;
+  //     }
+  //     const newTree = [...tree];
+  //     if (lastID) {
+  //       const lastNode = find(lastID, newTree);
+  //       if (lastNode) {
+  //         lastNode.highlighted = false;
+  //       }
+  //     }
+  //     const node = find(id, newTree);
+  //     if (node) {
+  //       node.highlighted = true;
+  //     }
+  //     setTree(newTree);
+  //     setLastID(id);
+  //   },
+  //   [tree, lastID]
+  // );
 
   const dropGroup = useCallback((id, groupProperties) => {
     dispatch(editGroup(id, groupProperties));
@@ -57,9 +57,9 @@ export const NavDraggable = React.memo(function NavDraggable(props) {
     dispatch(editFile(id, fileProperties));
   }, []);
 
-  useEffect(() => {
-    setTree(cloneDeep(props.tree));
-  }, [props.tree]);
+  // useEffect(() => {
+  //   setTree(props.tree);
+  // }, [props.tree]);
 
   return (
     <nav
@@ -67,13 +67,13 @@ export const NavDraggable = React.memo(function NavDraggable(props) {
       className={cx(styles.Nav, props.className)}
     >
       {tree.map(item => (
-        <ParentDraggable
+        <NodeDraggable
           {...item}
           key={item.path}
           selectedPath={props.selectedPath}
           collapseNode={props.collapseNode}
           actions={props.actions}
-          highlightTarget={highlightTarget}
+          // highlightTarget={highlightTarget}
           find={find}
           dropGroup={dropGroup}
           dropFile={dropFile}

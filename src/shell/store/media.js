@@ -76,11 +76,12 @@ const mediaSlice = createSlice({
           "zesty:navMedia:closed",
           JSON.stringify(closedBins.concat(closedGroups))
         );
-        const currentState = current(state);
-        state.nav = buildMainNav(currentState.bins, currentState.groups);
-        state.hiddenNav = buildHiddenNav(
-          currentState.bins,
-          currentState.groups
+        editNavGroup(
+          state.nav,
+          state.bins,
+          state.groups,
+          item,
+          group => (group.closed = !group.closed)
         );
       }
     },
@@ -201,9 +202,7 @@ function buildNav(bins, groups) {
     return {
       id: bin.id,
       closed: bin.closed,
-      children: bin.closed
-        ? []
-        : groups.filter(filterBinChildren).map(mapGroupToNav),
+      children: groups.filter(filterBinChildren).map(mapGroupToNav),
       label: bin.name,
       path: `/dam/${bin.id}`,
       type: "bin"
@@ -220,14 +219,36 @@ function buildNavGroup(bin, groups) {
       id: currentGroup.id,
       bin_id: bin.id,
       closed: currentGroup.closed,
-      children: currentGroup.closed
-        ? []
-        : groups.filter(filterGroupChildren).map(mapGroupToNav),
+      children: groups.filter(filterGroupChildren).map(mapGroupToNav),
       label: currentGroup.name,
       path: `/dam/${currentGroup.id}`,
       type: "group"
     };
   };
+}
+
+function editNavGroup(nav, bins, groups, group, mutate) {
+  const findGroupById = id => val => val.id === id;
+  const navPath = [group.group_id, group.id];
+  let id;
+  while (group.group_id) {
+    id = group.group_id;
+    group = bins.find(findGroupById(id)) || groups.find(findGroupById(id));
+    if (group && group.group_id) {
+      navPath.unshift(group.group_id);
+    }
+  }
+
+  let nextID = navPath.shift();
+  let node = nav.find(group => group.id === nextID);
+  while (nextID && node) {
+    nextID = navPath.shift();
+    if (nextID) {
+      node = node.children.find(group => group.id === nextID);
+    }
+  }
+
+  mutate(node);
 }
 
 function addNavigationStates(groups) {
