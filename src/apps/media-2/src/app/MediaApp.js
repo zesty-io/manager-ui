@@ -42,17 +42,19 @@ export default connect(state => {
     params.groupID || props.groupID
   );
 
-  // track path in both modal and non-modal contexts
-  const [currentPath, setCurrentPath] = useState(location.pathname);
-
-  // update currentPath on URL change
-  useEffect(() => {
-    // ignore the file/$ZUID
-    const path = location.pathname
+  // ignore the file/$ZUID
+  function trimmedPath() {
+    return location.pathname
       .split("/")
       .slice(0, 3)
       .join("/");
-    setCurrentPath(path);
+  }
+  // track path in both modal and non-modal contexts
+  const [currentPath, setCurrentPath] = useState(trimmedPath());
+
+  // update currentPath on URL change
+  useEffect(() => {
+    setCurrentPath(trimmedPath());
   }, [location.pathname]);
 
   // when currentGroup changes, update currentPath or URL depending on modal context
