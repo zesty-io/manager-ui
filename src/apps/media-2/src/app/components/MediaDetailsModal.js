@@ -1,4 +1,5 @@
 import React from "react";
+import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCopy,
@@ -92,7 +93,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
           </dl>
         </div>
         <div className={styles.ImageContainer}>
-          <div className={shared.Checkered}>
+          <div className={cx(shared.Checkered, shared.Cmodal)}>
             <Url
               target="_blank"
               title="View Original Image"
