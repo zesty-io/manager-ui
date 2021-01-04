@@ -67,7 +67,10 @@ const mediaSlice = createSlice({
         state.bins.find(val => val.id === action.payload) ||
         state.groups.find(val => val.id === action.payload);
       if (item) {
+        // update item in groups/bins
         item.closed = !item.closed;
+
+        // update item in localstorage
         const selectClosed = group => group.closed;
         const selectZUID = group => group.id;
         const closedBins = state.bins.filter(selectClosed).map(selectZUID);
@@ -76,13 +79,15 @@ const mediaSlice = createSlice({
           "zesty:navMedia:closed",
           JSON.stringify(closedBins.concat(closedGroups))
         );
-        editNavGroup(
+
+        // update group in nav
+        const navGroup = findGroupInNav(
           state.nav,
           state.bins,
           state.groups,
-          item,
-          group => (group.closed = !group.closed)
+          item
         );
+        navGroup.closed = !navGroup.closed;
       }
     },
     hideGroup(state, action) {
@@ -227,11 +232,15 @@ function buildNavGroup(bin, groups) {
   };
 }
 
-function editNavGroup(nav, bins, groups, group, mutate) {
+function findGroupInNav(nav, bins, groups, group) {
   const findGroupById = id => val => val.id === id;
-  const navPath = [group.group_id, group.id];
+  // nav group id path for crawling down from root to node
+  const navPath = [group.id];
   let id;
+
+  // build up navPath by crawling up nav tree to root
   while (group.group_id) {
+    // crawl up one level
     id = group.group_id;
     group = bins.find(findGroupById(id)) || groups.find(findGroupById(id));
     if (group && group.group_id) {
@@ -239,6 +248,7 @@ function editNavGroup(nav, bins, groups, group, mutate) {
     }
   }
 
+  //
   let nextID = navPath.shift();
   let node = nav.find(group => group.id === nextID);
   while (nextID && node) {
@@ -248,7 +258,7 @@ function editNavGroup(nav, bins, groups, group, mutate) {
     }
   }
 
-  mutate(node);
+  return node;
 }
 
 function addNavigationStates(groups) {

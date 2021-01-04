@@ -66,7 +66,7 @@ export const NavDraggable = React.memo(function NavDraggable(props) {
       id={props.id || "Navigation"}
       className={cx(styles.Nav, props.className)}
     >
-      {tree.map(item => (
+      {props.tree.map(item => (
         <NodeDraggable
           {...item}
           key={item.path}
