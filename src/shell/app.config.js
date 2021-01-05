@@ -1,7 +1,7 @@
-const pjson = require("./package.json");
+const pkg = require("../../package.json");
 module.exports = {
   production: {
-    VERSION: pjson.version,
+    VERSION: pkg.version,
     ENV: "production",
 
     API_ACCOUNTS: "https://accounts.api.zesty.io/v1",
@@ -14,12 +14,6 @@ module.exports = {
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "https://svc.zesty.io/media-manager-service",
     SERVICE_MEDIA_RESOLVER: "https://svc.zesty.io/media-resolver-service",
-
-    // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
-    service: {
-      media_resolver: ""
-    },
-
     SERVICE_MEDIA_STORAGE: "https://svc.zesty.io/media-storage-service",
     SERVICE_MEDIA_MODIFY: "https://svc.zesty.io/media-modify-service",
     SERVICE_REDIS_GATEWAY: "https://cache.zesty.io",
@@ -27,6 +21,11 @@ module.exports = {
       "https://us-central1-zesty-prod.cloudfunctions.net/authenticateGoogleAnalytics",
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-prod.cloudfunctions.net/googleAnalyticsGetPageViews",
+
+    // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
+    service: {
+      media_resolver: ""
+    },
 
     LEGACY_SITES_SERVICE: "https://svc.zesty.io/sites-service",
 
@@ -42,7 +41,7 @@ module.exports = {
     GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
   },
   stage: {
-    VERSION: pjson.version,
+    VERSION: pkg.version,
     ENV: "stage",
 
     API_ACCOUNTS: "https://accounts.api.stage.zesty.io/v1",
@@ -78,7 +77,7 @@ module.exports = {
     GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
   },
   development: {
-    VERSION: pjson.version,
+    VERSION: pkg.version,
     ENV: "development",
 
     API_ACCOUNTS: "https://accounts.api.dev.zesty.io/v1",
@@ -91,12 +90,6 @@ module.exports = {
     SERVICE_EMAIL: "https://email.zesty.io/send",
     SERVICE_MEDIA_MANAGER: "https://media-manager.api.dev.zesty.io",
     SERVICE_MEDIA_RESOLVER: "https://media-resolver.api.dev.zesty.io",
-
-    // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
-    service: {
-      media_resolver: ""
-    },
-
     SERVICE_MEDIA_STORAGE: "https://media-storage.api.dev.zesty.io",
     SERVICE_MEDIA_MODIFY: "https://media-modify.api.dev.zesty.io",
     SERVICE_REDIS_GATEWAY: "https://cache.dev.zesty.io",
@@ -105,8 +98,10 @@ module.exports = {
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
 
-    // We are not running the legacy cluster in dev so the sites-service is unavailable in that project
-    // LEGACY_SITES_SERVICE: "http://svc.zesty.localdev:3018/sites-service",
+    // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
+    service: {
+      media_resolver: ""
+    },
 
     URL_MANAGER: ".manager.dev.zesty.io:8080",
     URL_MANAGER_PROTOCOL: "http://",
@@ -118,7 +113,7 @@ module.exports = {
     COOKIE_DOMAIN: ".zesty.io"
   },
   local: {
-    VERSION: pjson.version,
+    VERSION: pkg.version,
     ENV: "local",
 
     API_ACCOUNTS: "//accounts.api.zesty.localdev:3022/v1",
@@ -131,12 +126,6 @@ module.exports = {
       "http://svc.zesty.localdev:3005/media-manager-service",
     SERVICE_MEDIA_RESOLVER:
       "http://svc.zesty.localdev:3007/media-resolver-service",
-
-    // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
-    service: {
-      media_resolver: "http://svc.zesty.localdev:3007/media-resolver-service"
-    },
-
     SERVICE_MEDIA_STORAGE:
       "http://svc.zesty.localdev:3008/media-storage-service",
     SERVICE_REDIS_GATEWAY: "http://redis-gateway.zesty.localdev:3025",
@@ -144,6 +133,11 @@ module.exports = {
       "https://us-central1-zesty-dev.cloudfunctions.net/authenticateGoogleAnalytics",
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-dev.cloudfunctions.net/googleAnalyticsGetPageViews",
+
+    // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
+    service: {
+      media_resolver: "http://svc.zesty.localdev:3007/media-resolver-service"
+    },
 
     LEGACY_SITES_SERVICE: "http://svc.zesty.localdev:3018/sites-service",
 

@@ -1,0 +1,14 @@
+[ v3_req ]
+
+# Extensions to add to a certificate request
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+
+# Be sure to include the domain name here because Common Name is not so commonly honoured by itself
+[alt_names]
+DNS.1 = zesty.io
+DNS.2 = dev.zesty.io
+DNS.3 = manager.dev.zesty.io
+DNS.4 = *.manager.dev.zesty.io

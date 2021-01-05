@@ -12,7 +12,7 @@ export default connect((state, props) => {
   const versions = state.contentVersions[props.itemZUID] || [];
 
   let latestVersionNum = 1;
-  if (Array.isArray(versions) && versions.length) {
+  if (Array.isArray(versions) && versions.length && versions[0].meta) {
     latestVersionNum = versions[0].meta.version;
   }
 
@@ -73,11 +73,11 @@ export default connect((state, props) => {
       >
         {props.versions.map(item => (
           <Option
-            key={`${item.meta.ZUID}-${item.meta.version}`}
+            key={`${item.meta?.ZUID}-${item.meta?.version}`}
             className={styles.VersionOption}
-            value={item.meta.version}
-            html={`Version ${item.meta.version} <small>${moment(
-              item.web.createdAt
+            value={item.meta?.version}
+            html={`Version ${item.meta?.version} <small>${moment(
+              item.web?.createdAt
             ).format("MMM Do YYYY, [at] h:mm a")}</small>`}
           />
         ))}
