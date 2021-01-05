@@ -73,12 +73,8 @@ export const MediaWorkspaceItem = React.memo(function MediaWorkspaceItem(
               }}
             ></div>
           )}
-          <button className={styles.FooterButton}>
-            <FontAwesomeIcon
-              onClick={showFileDetails}
-              className={styles.Cog}
-              icon={faCog}
-            />
+          <button className={styles.FooterButton} onClick={showFileDetails}>
+            <FontAwesomeIcon className={styles.Cog} icon={faCog} />
             <h1 className={styles.Preview}>{props.file.filename}</h1>
           </button>
         </CardFooter>
