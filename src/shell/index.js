@@ -2,8 +2,6 @@
 // must be setup before starting the store
 window.CONFIG = __CONFIG__;
 
-import "react-hot-loader";
-import { hot } from "react-hot-loader/root";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
@@ -115,7 +113,7 @@ if (loadLocalStorageData) {
 
 MonacoSetup(store);
 
-const App = hot(() => (
+const App = () => (
   <Provider store={store}>
     <Sentry.ErrorBoundary fallback={() => <AppError />}>
       <BrowserRouter
@@ -135,7 +133,7 @@ const App = hot(() => (
       </BrowserRouter>
     </Sentry.ErrorBoundary>
   </Provider>
-));
+);
 
 function render() {
   ReactDOM.render(<App />, document.getElementById("root"));

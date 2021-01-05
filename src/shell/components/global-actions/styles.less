@@ -43,7 +43,16 @@
   }
 
   .AppVersion {
-    margin: 8px;
+    margin: 6px;
+    .VersionNumber {
+      word-break: break-all;
+      font-family: monospace;
+
+      font-size: 10px;
+      line-height: 10px;
+      display: inline-block;
+    }
+
     a {
       color: inherit;
       text-shadow: none;
@@ -84,15 +93,6 @@
   }
 }
 
-@media (max-width: 2000px) {
-  .VersionNumber {
-    word-break: break-all;
-    font-size: 10px;
-    line-height: 10px;
-    display: inline-block;
-  }
-}
-
 @media (min-width: 2000px) {
   .GlobalSubMenu {
     align-items: initial;
@@ -112,6 +112,7 @@
       }
       .VersionNumber {
         margin: 0;
+        font-size: 14px;
       }
     }
   }
