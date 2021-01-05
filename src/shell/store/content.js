@@ -77,20 +77,6 @@ export function content(state = {}, action) {
         return state;
       }
 
-    case "FETCH_ITEM_PUBLISHING":
-      if (action.payload.data[action.payload.itemZUID]) {
-        state[action.payload.itemZUID] = {
-          ...state[action.payload.itemZUID],
-          ...action.payload.data[action.payload.itemZUID]
-        };
-      } else {
-        // no publish or schedule records so remove them from the item
-        delete state[action.payload.itemZUID].publishing;
-        delete state[action.payload.itemZUID].scheduling;
-      }
-
-      return { ...state };
-
     case "FETCH_ITEMS_PUBLISHING":
       let newState = { ...state };
 
@@ -512,18 +498,7 @@ export function deleteItem(modelZUID, itemZUID) {
 }
 
 export function publish(modelZUID, itemZUID, data, meta = {}) {
-  return (dispatch, getState) => {
-    const item = getState().content[itemZUID];
-    let title;
-
-    if (item) {
-      title = `"${item.web.metaTitle || item.web.metaLinkText}" version ${
-        data.version
-      }`;
-    } else {
-      title = `item ${itemZUID} version ${data.version}`;
-    }
-
+  return dispatch => {
     return request(
       `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`,
       {
@@ -538,8 +513,8 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
     )
       .then(() => {
         const message = data.publishAt
-          ? `Scheduled ${title} to publish on ${meta.localTime} in the ${meta.localTimezone} timezone`
-          : `Published ${title} now`;
+          ? `Scheduled version ${data.version} to publish on ${meta.localTime} in the ${meta.localTimezone} timezone`
+          : `Published version ${data.version}`;
 
         return dispatch(
           notify({
@@ -553,8 +528,8 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
       })
       .catch(err => {
         const message = data.publishAt
-          ? `Error scheduling ${title}`
-          : `Error publishing ${title}`;
+          ? `Error scheduling version ${data.version}`
+          : `Error publishing version ${data.version}`;
         dispatch(
           notify({
             message,
@@ -568,19 +543,15 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
 
 export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
   return (dispatch, getState) => {
-    const item = getState().content[itemZUID];
-    let title;
-
-    if (item) {
-      title = `"${item.web.metaTitle || item.web.metaLinkText}"`;
-    } else {
-      title = `item ${itemZUID}`;
-    }
-
+    const instance = getState().instance;
     return request(
-      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings/${publishZUID}`,
+      `${CONFIG.LEGACY_SITES_SERVICE}/${instance.ZUID}/content/items/${itemZUID}/publish-schedule/${publishZUID}`,
       {
-        method: "DELETE"
+        method: "PATCH",
+        json: true,
+        body: {
+          take_offline_at: moment().format("YYYY-MM-DD HH:mm:ss")
+        }
       }
     )
       .then(res => {
@@ -588,8 +559,8 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
           throw res.error;
         }
         const message = options.version
-          ? `Unscheduled version ${options.version}`
-          : `Unpublished ${title}`;
+          ? `Unscheduled Version ${options.version}`
+          : `Unpublished Item ${itemZUID}`;
         return dispatch(
           notify({
             message,
@@ -602,8 +573,8 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
       })
       .catch(err => {
         const message = options.version
-          ? `Error Unscheduling version ${options.version}`
-          : `Error Unpublishing ${title}`;
+          ? `Error Unscheduling Version ${options.version}`
+          : `Error Unpublishing Item ${itemZUID}`;
         return dispatch(
           notify({
             message,
@@ -625,11 +596,8 @@ export function fetchItemPublishing(modelZUID, itemZUID) {
         }
 
         dispatch({
-          type: "FETCH_ITEM_PUBLISHING",
-          payload: {
-            data: parsePublishState(res.data),
-            itemZUID
-          }
+          type: "FETCH_ITEMS_PUBLISHING",
+          data: parsePublishState(res.data)
         });
       }
     });

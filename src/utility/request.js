@@ -54,6 +54,7 @@ export function request(url, opts = {}) {
           kind: "warn",
           message: "You are not authenticated. You may need to login."
         });
+        // throw { res, opts, url };
       }
 
       // Not Found
@@ -64,11 +65,6 @@ export function request(url, opts = {}) {
       // }
 
       // if (res.status === 422) {}
-
-      if (res.status === 500) {
-        // Throw on 500 to trigger callers catch statement
-        throw new Error(`Request failure: ${res.url}`);
-      }
 
       return res.json().then(function(json) {
         return { ...json, status: res.status };
