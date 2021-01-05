@@ -101,7 +101,7 @@ export const NodeDraggableMemo = React.memo(function NodeDraggable(props) {
         className={cx(
           styles.item,
           styles[`depth${props.depth}`],
-          props.selectedPath.includes(props.path) ? styles.selected : null,
+          props.selected ? styles.selected : null,
           props.highlighted ? styles.highlighted : null
         )}
       >
@@ -167,7 +167,6 @@ export const NodeDraggableMemo = React.memo(function NodeDraggable(props) {
         {...child}
         isClosed={props.closed}
         key={child.path}
-        selectedPath={props.selectedPath}
         depth={depth}
         collapseNode={props.collapseNode}
         actions={props.actions}
@@ -181,18 +180,12 @@ export const NodeDraggableMemo = React.memo(function NodeDraggable(props) {
     );
   }
 
-  function renderChildren() {
-    return (
-      <>
-        {renderNode()}
-        {!props.closed && <ul>{props.children.map(renderChild)}</ul>}
-      </>
-    );
-  }
-
   return (
     <div ref={ref} style={{ opacity }}>
-      {props.children.length ? renderChildren() : renderNode()}
+      {renderNode()}
+      {props.children.length && !props.closed ? (
+        <ul>{props.children.map(renderChild)}</ul>
+      ) : null}
     </div>
   );
 });

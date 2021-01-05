@@ -6,13 +6,16 @@ import uniqBy from "lodash/uniqBy";
 import omit from "lodash/omit";
 import pick from "lodash/pick";
 import { v4 as uuidv4 } from "uuid";
+import { enableMapSet } from "immer";
+
+enableMapSet();
 
 const mediaSlice = createSlice({
   name: "media",
   initialState: {
     bins: [],
     groups: [],
-    files: [],
+    files: new Map(),
     nav: [],
     hiddenNav: []
   },
@@ -70,16 +73,6 @@ const mediaSlice = createSlice({
         // update item in groups/bins
         item.closed = !item.closed;
 
-        // update item in localstorage
-        const selectClosed = group => group.closed;
-        const selectZUID = group => group.id;
-        const closedBins = state.bins.filter(selectClosed).map(selectZUID);
-        const closedGroups = state.groups.filter(selectClosed).map(selectZUID);
-        localStorage.setItem(
-          "zesty:navMedia:closed",
-          JSON.stringify(closedBins.concat(closedGroups))
-        );
-
         // update group in nav
         const navGroup = findGroupInNav(
           state.nav,
@@ -90,6 +83,16 @@ const mediaSlice = createSlice({
         if (navGroup) {
           navGroup.closed = !navGroup.closed;
         }
+
+        // update item in localstorage
+        const selectClosed = group => group.closed;
+        const selectZUID = group => group.id;
+        const closedBins = state.bins.filter(selectClosed).map(selectZUID);
+        const closedGroups = state.groups.filter(selectClosed).map(selectZUID);
+        localStorage.setItem(
+          "zesty:navMedia:closed",
+          JSON.stringify(closedBins.concat(closedGroups))
+        );
       }
     },
     hideGroup(state, action) {
@@ -114,6 +117,42 @@ const mediaSlice = createSlice({
         );
       }
     },
+    selectGroup(state, action) {
+      // update item and prevItem
+      const item =
+        state.bins.find(val => val.id === action.payload.currentGroupID) ||
+        state.groups.find(val => val.id === action.payload.currentGroupID);
+      if (item) {
+        item.selected = true;
+        const navGroup = findGroupInNav(
+          state.nav,
+          state.bins,
+          state.groups,
+          item
+        );
+        if (navGroup) {
+          navGroup.selected = true;
+        }
+      }
+
+      if (action.payload.previousGroupID !== action.payload.currentGroupID) {
+        const prevItem =
+          state.bins.find(val => val.id === action.payload.previousGroupID) ||
+          state.groups.find(val => val.id === action.payload.previousGroupID);
+        if (prevItem) {
+          item.selected = false;
+          const prevNavGroup = findGroupInNav(
+            state.nav,
+            state.bins,
+            state.groups,
+            prevItem
+          );
+          if (prevNavGroup) {
+            prevNavGroup.selected = false;
+          }
+        }
+      }
+    },
 
     // Files
     fetchFilesStart(state, action) {
@@ -134,42 +173,44 @@ const mediaSlice = createSlice({
       const files = action.payload.files;
       // sort newest files first
       files.forEach(file => {
-        if (!state.files.some(val => val.id === file.id)) {
-          state.files.unshift(file);
+        if (!state.files.has(file.id)) {
+          state.files.set(file.id, file);
         }
       });
     },
     deleteFileSuccess(state, action) {
-      const index = state.files.findIndex(el => el.id === action.payload.id);
-      if (index !== -1) {
-        state.files.splice(index, 1);
+      if (state.files.has(action.payload.id)) {
+        state.files.delete(action.payload.id);
       }
     },
     fileUploadStart(state, action) {
       const file = omit(action.payload, "file");
-      state.files.unshift(file);
+      state.files.set(file.uploadID, file);
     },
     fileUploadProgress(state, action) {
-      const uploadingFile = state.files.find(
-        file => file.uploadID === action.payload.uploadID
-      );
-      uploadingFile.progress = action.payload.progress;
+      let uploadingFile = state.files.get(action.payload.uploadID);
+      if (uploadingFile) {
+        uploadingFile.progress = action.payload.progress;
+      }
     },
     fileUploadSuccess(state, action) {
-      const uploadingFile = state.files.find(
-        file => file.uploadID === action.payload.uploadID
-      );
-      uploadingFile.loading = false;
-      uploadingFile.id = action.payload.id;
-      uploadingFile.title = action.payload.title;
-      uploadingFile.url = action.payload.url;
+      let uploadingFile = state.files.get(action.payload.uploadID);
+      if (uploadingFile) {
+        // don't update draft since we delete file at the end
+        const file = current(uploadingFile);
+        file.loading = false;
+        file.id = action.payload.id;
+        file.title = action.payload.title;
+        file.url = action.payload.url;
+
+        // swap uploadID key for new id key
+        state.files.set(file.id, file);
+        state.files.delete(file.uploadID);
+      }
     },
     fileUploadError(state, action) {
-      const index = state.files.findIndex(
-        el => el.uploadID === action.payload.uploadID
-      );
-      if (index !== -1) {
-        state.files.splice(index, 1);
+      if (state.files.has(action.payload.uploadID)) {
+        state.files.delete(action.payload.uploadID);
       }
     },
     editFileSuccess(state, action) {
@@ -209,6 +250,7 @@ function buildNav(bins, groups) {
     return {
       id: bin.id,
       closed: bin.closed,
+      selected: false,
       children: groups.filter(filterBinChildren).map(mapGroupToNav),
       label: bin.name,
       path: `/dam/${bin.id}`,
@@ -226,6 +268,7 @@ function buildNavGroup(bin, groups) {
       id: currentGroup.id,
       bin_id: bin.id,
       closed: currentGroup.closed,
+      selected: false,
       children: groups.filter(filterGroupChildren).map(mapGroupToNav),
       label: currentGroup.name,
       path: `/dam/${currentGroup.id}`,
@@ -285,6 +328,7 @@ export const {
   deleteGroupSuccess,
   closeGroup,
   hideGroup,
+  selectGroup,
   fetchFilesStart,
   fetchFilesSuccess,
   deleteFileSuccess,

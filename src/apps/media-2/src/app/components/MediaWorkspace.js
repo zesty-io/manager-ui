@@ -16,7 +16,7 @@ const selectGroupFiles = createSelector(
   state => state.media.files,
   (_, currentGroup) => currentGroup,
   (files, currentGroup) =>
-    files.filter(file => file.group_id === currentGroup.id)
+    Array.from(files.values()).filter(file => file.group_id === currentGroup.id)
 );
 
 export const MediaWorkspace = React.memo(function MediaWorkspace(props) {

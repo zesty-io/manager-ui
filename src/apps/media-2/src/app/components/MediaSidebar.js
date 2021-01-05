@@ -63,7 +63,6 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
       </div>
       <NavDraggable
         tree={props.nav}
-        selectedPath={props.selectedPath}
         collapseNode={collapseNode}
         actions={actions}
         onPathChange={props.onPathChange}
@@ -83,7 +82,6 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
         <Nav
           className={hiddenOpen ? "" : styles.HiddenNavClosed}
           tree={props.hiddenNav}
-          selected={props.selectedPath}
           collapseNode={collapseNode}
           actions={actions}
           onPathChange={props.onPathChange}
