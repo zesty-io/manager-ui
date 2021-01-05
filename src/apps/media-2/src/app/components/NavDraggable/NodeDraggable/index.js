@@ -1,1 +1,1 @@
-export { NodeDraggable } from "./NodeDraggable";
+export { NodeDraggableMemo } from "./NodeDraggable";

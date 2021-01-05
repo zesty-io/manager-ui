@@ -10,7 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./NodeDraggable.less";
 
-export const NodeDraggable = React.memo(function NodeDraggable(props) {
+export const NodeDraggableMemo = React.memo(function NodeDraggable(props) {
   const depth = props.depth + 1 || 1;
   const collapseNode = useCallback(() => props.collapseNode(props.id), [
     props.id
@@ -163,7 +163,7 @@ export const NodeDraggable = React.memo(function NodeDraggable(props) {
 
   function renderChild(child) {
     return (
-      <NodeDraggable
+      <NodeDraggableMemo
         {...child}
         isClosed={props.closed}
         key={child.path}

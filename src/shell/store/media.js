@@ -87,7 +87,9 @@ const mediaSlice = createSlice({
           state.groups,
           item
         );
-        navGroup.closed = !navGroup.closed;
+        if (navGroup) {
+          navGroup.closed = !navGroup.closed;
+        }
       }
     },
     hideGroup(state, action) {
@@ -233,28 +235,27 @@ function buildNavGroup(bin, groups) {
 }
 
 function findGroupInNav(nav, bins, groups, group) {
-  const findGroupById = id => val => val.id === id;
+  let node = group;
+  let id = node.id;
   // nav group id path for crawling down from root to node
-  const navPath = [group.id];
-  let id;
+  const navPath = [id];
 
   // build up navPath by crawling up nav tree to root
-  while (group.group_id) {
+  while (id) {
     // crawl up one level
-    id = group.group_id;
-    group = bins.find(findGroupById(id)) || groups.find(findGroupById(id));
-    if (group && group.group_id) {
-      navPath.unshift(group.group_id);
+    id = node.group_id;
+    node = bins.find(val => val.id === id) || groups.find(val => val.id === id);
+    if (node) {
+      navPath.unshift(node.id);
     }
   }
 
-  //
-  let nextID = navPath.shift();
-  let node = nav.find(group => group.id === nextID);
-  while (nextID && node) {
-    nextID = navPath.shift();
-    if (nextID) {
-      node = node.children.find(group => group.id === nextID);
+  id = navPath.shift();
+  node = nav.find(val => val.id === id);
+  while (id) {
+    id = navPath.shift();
+    if (id) {
+      node = node.children.find(val => val.id === id);
     }
   }
 
