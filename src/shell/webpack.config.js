@@ -25,7 +25,6 @@ module.exports = async env => {
       host: "0.0.0.0",
       compress: true,
       contentBase: path.resolve(__dirname, "../../build"),
-      hot: true,
       disableHostCheck: true,
       historyApiFallback: true
     },
@@ -45,7 +44,6 @@ module.exports = async env => {
     resolve: {
       symlinks: false, // Used for development with npm link
       alias: {
-        "react-dom": "@hot-loader/react-dom",
         shell: path.resolve(__dirname, "../shell"),
         utility: path.resolve(__dirname, "../utility"),
         apps: path.resolve(__dirname, "../apps")
@@ -193,8 +191,7 @@ module.exports = async env => {
             plugins: [
               ["@babel/plugin-proposal-class-properties", { loose: false }],
               "@babel/plugin-proposal-optional-chaining",
-              "@babel/plugin-transform-runtime",
-              "react-hot-loader/babel"
+              "@babel/plugin-transform-runtime"
             ]
           }
         }
