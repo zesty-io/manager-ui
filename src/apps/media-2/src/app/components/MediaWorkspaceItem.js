@@ -54,12 +54,12 @@ export const MediaWorkspaceItem = React.memo(function MediaWorkspaceItem(
         onClick={toggleSelected}
       >
         <CardContent className={styles.CardContent}>
-          <div className={cx(shared.Checkered, shared.Cgrid)}>
+          <figure className={cx(shared.Checkered, shared.Cgrid)}>
             <MediaImage file={props.file} params={"?w=200&h=200&type=fit"} />
             {props.file.loading && (
               <div className={cx(styles.Load, styles.Loading)}></div>
             )}
-          </div>
+          </figure>
           <button className={styles.Check} aria-label="Checked">
             <FontAwesomeIcon icon={faCheck} />
           </button>

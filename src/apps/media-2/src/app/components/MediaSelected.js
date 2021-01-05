@@ -61,13 +61,15 @@ export function MediaSelected(props) {
                           styles.CardContentTop
                         )}
                       >
-                        <div className={cx(shared.Checkered, styles.Checkered)}>
+                        <figure
+                          className={cx(shared.Checkered, styles.Checkered)}
+                        >
                           <MediaImage
                             className={shared.Thumbnail}
                             file={file}
                             params={"?w=200&h=200&type=fit"}
                           />
-                        </div>
+                        </figure>
                         <button className={styles.Check} aria-label="Checked">
                           <FontAwesomeIcon icon={faCheck} />
                         </button>

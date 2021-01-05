@@ -93,7 +93,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
           </dl>
         </div>
         <div className={styles.ImageContainer}>
-          <div className={cx(shared.Checkered, shared.Cmodal)}>
+          <figure className={cx(shared.Checkered, shared.Cmodal)}>
             <Url
               target="_blank"
               title="View Original Image"
@@ -101,7 +101,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
             >
               <MediaImage file={props.file} params={"?w=350&type=fit"} />
             </Url>
-          </div>
+          </figure>
           <Url target="_blank" title="Original Image" href={props.file.url}>
             <Button className={styles.OriginalButton} kind="kind">
               <FontAwesomeIcon icon={faLink} />
