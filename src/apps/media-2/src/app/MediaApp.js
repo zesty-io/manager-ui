@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import usePrevious from "react-use/lib/usePrevious";
 import { useHistory, useParams } from "react-router-dom";
 import { connect } from "react-redux";
 import { DndProvider } from "react-dnd";
@@ -15,7 +16,8 @@ import {
   fetchAllBins,
   fetchAllGroups,
   fetchBinFiles,
-  fetchGroupFiles
+  fetchGroupFiles,
+  selectGroup
 } from "shell/store/media";
 import styles from "./MediaApp.less";
 
@@ -42,32 +44,39 @@ export default connect(state => {
     params.groupID || props.groupID
   );
 
+  const previousGroupID = usePrevious(currentGroupID);
+
   // ignore the file/$ZUID
-  function trimmedPath() {
-    return location.pathname
-      .split("/")
-      .slice(0, 3)
-      .join("/");
-  }
-  // track path in both modal and non-modal contexts
-  const [currentPath, setCurrentPath] = useState(trimmedPath());
+  // function trimmedPath() {
+  //   return location.pathname
+  //     .split("/")
+  //     .slice(0, 3)
+  //     .join("/");
+  // }
+  // // track path in both modal and non-modal contexts
+  // const [currentPath, setCurrentPath] = useState(trimmedPath());
 
-  // update currentPath on URL change
-  useEffect(() => {
-    setCurrentPath(trimmedPath());
-  }, [location.pathname]);
+  // // update currentPath on URL change
+  // useEffect(() => {
+  //   setCurrentPath(trimmedPath());
+  // }, [location.pathname]);
 
-  // when currentGroup changes, update currentPath or URL depending on modal context
+  // when currentGroupID changes, update currentPath or URL depending on modal context
   useEffect(() => {
-    if (currentGroupID) {
+    if (
+      currentGroupID &&
+      props.media.bins.length &&
+      props.media.groups.length
+    ) {
+      props.dispatch(selectGroup({ currentGroupID, previousGroupID }));
       const path = `/dam/${currentGroupID}`;
       if (props.modal) {
-        setCurrentPath(path);
+        // setCurrentPath(path);
       } else {
         history.push(path);
       }
     }
-  }, [currentGroupID]);
+  }, [currentGroupID, props.media.bins.length, props.media.groups.length]);
 
   // use default bin ID if we don't have currentGroupID
   useEffect(() => {
@@ -104,7 +113,6 @@ export default connect(state => {
     }
   }, [props.media.bins.length]);
 
-  // always recompute currentGroup, currentBin to get loading state
   useEffect(() => {
     let newCurrentGroup;
     let newCurrentBin;
@@ -125,7 +133,7 @@ export default connect(state => {
       setCurrentGroup(newCurrentGroup);
       setCurrentBin(newCurrentBin);
     }
-  });
+  }, [currentGroupID, props.media.bins, props.media.groups]);
 
   // fetch group files when navigating to group
   useEffect(() => {
@@ -178,7 +186,11 @@ export default connect(state => {
     <main className={styles.MediaApp}>
       <WithLoader
         condition={currentGroup}
-        message="Starting Digital Asset Manager"
+        message={
+          props.media.bins.length
+            ? "Loading Media Groups"
+            : "Loading Media Bins"
+        }
         width="100vw"
       >
         <DndProvider backend={HTML5Backend}>
@@ -189,7 +201,6 @@ export default connect(state => {
               hiddenNav={props.media.hiddenNav}
               currentBin={currentBin}
               currentGroup={currentGroup}
-              selectedPath={currentPath}
               onPathChange={onPathChange}
               setCurrentGroupID={setCurrentGroupID}
             />

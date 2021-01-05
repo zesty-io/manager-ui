@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import cx from "classnames";
-import { NodeDraggable } from "../NodeDraggable";
+import { NodeDraggableMemo } from "../NodeDraggable";
 import styles from "./NavDraggable.less";
-import cloneDeep from "lodash/cloneDeep";
+// import cloneDeep from "lodash/cloneDeep";
 import { editFile, editGroup } from "shell/store/media";
 
 function find(id, items) {
@@ -67,10 +67,10 @@ export const NavDraggable = React.memo(function NavDraggable(props) {
       className={cx(styles.Nav, props.className)}
     >
       {props.tree.map(item => (
-        <NodeDraggable
+        <NodeDraggableMemo
           {...item}
           key={item.path}
-          selectedPath={props.selectedPath}
+          // selectedPath={props.selectedPath}
           collapseNode={props.collapseNode}
           actions={props.actions}
           // highlightTarget={highlightTarget}
