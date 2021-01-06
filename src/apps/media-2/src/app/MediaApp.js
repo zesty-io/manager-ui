@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import cx from "classnames";
+import usePrevious from "react-use/lib/usePrevious";
 import { useHistory, useParams } from "react-router-dom";
 import { connect } from "react-redux";
 import { DndProvider } from "react-dnd";
@@ -16,7 +17,8 @@ import {
   fetchAllBins,
   fetchAllGroups,
   fetchBinFiles,
-  fetchGroupFiles
+  fetchGroupFiles,
+  selectGroup
 } from "shell/store/media";
 import styles from "./MediaApp.less";
 
@@ -43,32 +45,21 @@ export default connect(state => {
     params.groupID || props.groupID
   );
 
-  // ignore the file/$ZUID
-  function trimmedPath() {
-    return location.pathname
-      .split("/")
-      .slice(0, 3)
-      .join("/");
-  }
-  // track path in both modal and non-modal contexts
-  const [currentPath, setCurrentPath] = useState(trimmedPath());
+  const previousGroupID = usePrevious(currentGroupID);
 
-  // update currentPath on URL change
+  // when currentGroupID changes, update URL depending on modal context
   useEffect(() => {
-    setCurrentPath(trimmedPath());
-  }, [location.pathname]);
-
-  // when currentGroup changes, update currentPath or URL depending on modal context
-  useEffect(() => {
-    if (currentGroupID) {
-      const path = `/dam/${currentGroupID}`;
-      if (props.modal) {
-        setCurrentPath(path);
-      } else {
-        history.push(path);
+    if (
+      currentGroupID &&
+      props.media.bins.length &&
+      props.media.groups.length
+    ) {
+      props.dispatch(selectGroup({ currentGroupID, previousGroupID }));
+      if (!props.modal) {
+        history.push(`/dam/${currentGroupID}`);
       }
     }
-  }, [currentGroupID]);
+  }, [currentGroupID, props.media.bins.length, props.media.groups.length]);
 
   // use default bin ID if we don't have currentGroupID
   useEffect(() => {
@@ -105,7 +96,6 @@ export default connect(state => {
     }
   }, [props.media.bins.length]);
 
-  // always recompute currentGroup, currentBin to get loading state
   useEffect(() => {
     let newCurrentGroup;
     let newCurrentBin;
@@ -126,7 +116,7 @@ export default connect(state => {
       setCurrentGroup(newCurrentGroup);
       setCurrentBin(newCurrentBin);
     }
-  });
+  }, [currentGroupID, props.media.bins, props.media.groups]);
 
   // fetch group files when navigating to group
   useEffect(() => {

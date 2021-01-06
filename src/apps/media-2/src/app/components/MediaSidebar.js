@@ -79,9 +79,9 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
             <FontAwesomeIcon icon={faCaretLeft} />
           )}
         </h1>
-        <Nav
-          className={hiddenOpen ? "" : styles.HiddenNavClosed}
+        <NavDraggable
           tree={props.hiddenNav}
+          className={hiddenOpen ? "" : styles.HiddenNavClosed}
           collapseNode={collapseNode}
           actions={actions}
           onPathChange={props.onPathChange}

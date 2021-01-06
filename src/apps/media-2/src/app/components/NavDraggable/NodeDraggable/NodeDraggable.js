@@ -59,7 +59,7 @@ export const NodeDraggableMemo = React.memo(function NodeDraggable(props) {
           return false;
         }
         // target is child
-        if (props.find(props.id, item.children)) {
+        if (item.children && props.find(props.id, item.children)) {
           return false;
         }
         // target is same as start
@@ -78,7 +78,8 @@ export const NodeDraggableMemo = React.memo(function NodeDraggable(props) {
       id: props.id,
       bin_id: props.bin_id,
       parent: props.parent,
-      children: props.children
+      children: props.children,
+      hidden: props.hidden
     },
     collect: monitor => ({
       isDragging: monitor.isDragging()
@@ -183,7 +184,7 @@ export const NodeDraggableMemo = React.memo(function NodeDraggable(props) {
   return (
     <div ref={ref} style={{ opacity }}>
       {renderNode()}
-      {props.children.length && !props.closed ? (
+      {props.children && props.children.length && !props.closed ? (
         <ul>{props.children.map(renderChild)}</ul>
       ) : null}
     </div>
