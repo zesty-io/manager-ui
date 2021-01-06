@@ -182,7 +182,6 @@ export default connect(state => {
               hiddenNav={props.media.hiddenNav}
               currentBin={currentBin}
               currentGroup={currentGroup}
-              selectedPath={currentPath}
               onPathChange={onPathChange}
               setCurrentGroupID={setCurrentGroupID}
             />
