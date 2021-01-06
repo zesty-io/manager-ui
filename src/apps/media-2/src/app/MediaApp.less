@@ -11,12 +11,18 @@
     grid-template-columns: 20vw 1fr;
   }
 
+  &.MediaNosbar {
+    overflow: initial;
+  }
   .WorkspaceContainer {
     //Full container 100vw -  minus 20vw = MediaApp nav and 60px = globalSidebar
-    width: calc(80vw - 60px);
+    width: calc(100vw - 20vw - 60px);
 
     @media (min-width: 2000px) {
-      width: calc(80vw - 170px);
+      width: calc(100vw - 20vw - 170px);
+    }
+    &.WkspcNosbar {
+      width: 95vw;
     }
   }
 }
