@@ -74,12 +74,7 @@ const mediaSlice = createSlice({
         item.closed = !item.closed;
 
         // update group in nav
-        const navGroup = findGroupInNav(
-          state.nav,
-          state.bins,
-          state.groups,
-          item
-        );
+        const navGroup = findGroupInNav(state, item);
         if (navGroup) {
           navGroup.closed = !navGroup.closed;
         }
@@ -118,35 +113,25 @@ const mediaSlice = createSlice({
       }
     },
     selectGroup(state, action) {
-      // update item and prevItem
+      // update item to selected
       const item =
         state.bins.find(val => val.id === action.payload.currentGroupID) ||
         state.groups.find(val => val.id === action.payload.currentGroupID);
       if (item) {
         item.selected = true;
-        const navGroup = findGroupInNav(
-          state.nav,
-          state.bins,
-          state.groups,
-          item
-        );
+        const navGroup = findGroupInNav(state, item);
         if (navGroup) {
           navGroup.selected = true;
         }
       }
-
+      // update prevItem to unselected
       if (action.payload.previousGroupID !== action.payload.currentGroupID) {
         const prevItem =
           state.bins.find(val => val.id === action.payload.previousGroupID) ||
           state.groups.find(val => val.id === action.payload.previousGroupID);
         if (prevItem) {
-          item.selected = false;
-          const prevNavGroup = findGroupInNav(
-            state.nav,
-            state.bins,
-            state.groups,
-            prevItem
-          );
+          prevItem.selected = false;
+          const prevNavGroup = findGroupInNav(state, prevItem);
           if (prevNavGroup) {
             prevNavGroup.selected = false;
           }
@@ -236,6 +221,7 @@ function buildHiddenNav(bins, groups) {
   return hiddenBins.concat(hiddenGroups).map(group => {
     return {
       id: group.id,
+      selected: group.selected,
       icon: faFolder,
       label: group.name,
       path: `/dam/${group.id}`
@@ -250,7 +236,7 @@ function buildNav(bins, groups) {
     return {
       id: bin.id,
       closed: bin.closed,
-      selected: false,
+      selected: bin.selected,
       children: groups.filter(filterBinChildren).map(mapGroupToNav),
       label: bin.name,
       path: `/dam/${bin.id}`,
@@ -268,7 +254,7 @@ function buildNavGroup(bin, groups) {
       id: currentGroup.id,
       bin_id: bin.id,
       closed: currentGroup.closed,
-      selected: false,
+      selected: currentGroup.selected,
       children: groups.filter(filterGroupChildren).map(mapGroupToNav),
       label: currentGroup.name,
       path: `/dam/${currentGroup.id}`,
@@ -277,9 +263,16 @@ function buildNavGroup(bin, groups) {
   };
 }
 
-function findGroupInNav(nav, bins, groups, group) {
+function findGroupInNav(state, group) {
+  const { nav, hiddenNav, bins, groups } = state;
+  const hiddenNode = hiddenNav.find(val => val.id === id);
+  if (hiddenNode) {
+    return hiddenNode;
+  }
+
   let node = group;
-  let id = node.id;
+  let id = group.id;
+
   // nav group id path for crawling down from root to node
   const navPath = [id];
 
@@ -295,13 +288,12 @@ function findGroupInNav(nav, bins, groups, group) {
 
   id = navPath.shift();
   node = nav.find(val => val.id === id);
-  while (id) {
+  while (id && node) {
     id = navPath.shift();
     if (id) {
       node = node.children.find(val => val.id === id);
     }
   }
-
   return node;
 }
 

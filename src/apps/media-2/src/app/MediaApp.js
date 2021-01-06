@@ -46,22 +46,7 @@ export default connect(state => {
 
   const previousGroupID = usePrevious(currentGroupID);
 
-  // ignore the file/$ZUID
-  // function trimmedPath() {
-  //   return location.pathname
-  //     .split("/")
-  //     .slice(0, 3)
-  //     .join("/");
-  // }
-  // // track path in both modal and non-modal contexts
-  // const [currentPath, setCurrentPath] = useState(trimmedPath());
-
-  // // update currentPath on URL change
-  // useEffect(() => {
-  //   setCurrentPath(trimmedPath());
-  // }, [location.pathname]);
-
-  // when currentGroupID changes, update currentPath or URL depending on modal context
+  // when currentGroupID changes, update URL depending on modal context
   useEffect(() => {
     if (
       currentGroupID &&
@@ -69,11 +54,8 @@ export default connect(state => {
       props.media.groups.length
     ) {
       props.dispatch(selectGroup({ currentGroupID, previousGroupID }));
-      const path = `/dam/${currentGroupID}`;
-      if (props.modal) {
-        // setCurrentPath(path);
-      } else {
-        history.push(path);
+      if (!props.modal) {
+        history.push(`/dam/${currentGroupID}`);
       }
     }
   }, [currentGroupID, props.media.bins.length, props.media.groups.length]);
