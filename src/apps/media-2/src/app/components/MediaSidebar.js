@@ -7,7 +7,6 @@ import {
   faPlus,
   faSearch
 } from "@fortawesome/free-solid-svg-icons";
-import { Nav } from "@zesty-io/core/Nav";
 import { NavDraggable } from "./NavDraggable";
 import { Button } from "@zesty-io/core/Button";
 import { closeGroup, hideGroup } from "shell/store/media";

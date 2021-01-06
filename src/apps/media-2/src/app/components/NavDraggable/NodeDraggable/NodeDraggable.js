@@ -10,6 +10,22 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./NodeDraggable.less";
 
+function find(id, items) {
+  for (const node of items) {
+    if (node.id === id) {
+      return node;
+    }
+    if (node.children && node.children.length) {
+      const result = find(id, node.children);
+      if (result) {
+        return result;
+      }
+    }
+  }
+
+  return false;
+}
+
 export const NodeDraggableMemo = React.memo(function NodeDraggable(props) {
   const depth = props.depth + 1 || 1;
   const collapseNode = useCallback(() => props.collapseNode(props.id), [
@@ -26,9 +42,11 @@ export const NodeDraggableMemo = React.memo(function NodeDraggable(props) {
         return;
       }
       if (!monitor.canDrop()) {
+        // remove all highlighted
+        props.highlightTarget(null);
         return;
       }
-      // props.highlightTarget(props.id);
+      props.highlightTarget(props.id);
     },
     drop(item, monitor) {
       if (!monitor.isOver({ shallow: true })) {
@@ -59,7 +77,7 @@ export const NodeDraggableMemo = React.memo(function NodeDraggable(props) {
           return false;
         }
         // target is child
-        if (item.children && props.find(props.id, item.children)) {
+        if (item.children && find(props.id, item.children)) {
           return false;
         }
         // target is same as start
@@ -171,8 +189,7 @@ export const NodeDraggableMemo = React.memo(function NodeDraggable(props) {
         depth={depth}
         collapseNode={props.collapseNode}
         actions={props.actions}
-        find={props.find}
-        // highlightTarget={props.highlightTarget}
+        highlightTarget={props.highlightTarget}
         dropGroup={props.dropGroup}
         dropFile={props.dropFile}
         parent={props.id}

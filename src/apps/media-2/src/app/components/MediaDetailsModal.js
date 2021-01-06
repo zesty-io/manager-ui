@@ -112,7 +112,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
       </ModalContent>
       <ModalFooter className={styles.ModalFooter}>
         <Button kind="save">
-          <span>Save (CTR + S)</span>
+          <span>Save (CTRL + S)</span>
         </Button>
         <Button kind="warn" onClick={props.showDeleteFileModal}>
           <FontAwesomeIcon icon={faExclamationCircle} />

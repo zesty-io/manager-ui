@@ -66,9 +66,7 @@ const mediaSlice = createSlice({
       state.hiddenNav = buildHiddenNav(currentState.bins, currentState.groups);
     },
     closeGroup(state, action) {
-      const item =
-        state.bins.find(val => val.id === action.payload) ||
-        state.groups.find(val => val.id === action.payload);
+      const item = findBinOrGroupByID(state, action.payload);
       if (item) {
         // update item in groups/bins
         item.closed = !item.closed;
@@ -91,9 +89,7 @@ const mediaSlice = createSlice({
       }
     },
     hideGroup(state, action) {
-      const item =
-        state.bins.find(val => val.id === action.payload) ||
-        state.groups.find(val => val.id === action.payload);
+      const item = findBinOrGroupByID(state, action.payload);
       if (item) {
         item.hidden = !item.hidden;
         const selectHidden = group => group.hidden;
@@ -114,9 +110,7 @@ const mediaSlice = createSlice({
     },
     selectGroup(state, action) {
       // update item to selected
-      const item =
-        state.bins.find(val => val.id === action.payload.currentGroupID) ||
-        state.groups.find(val => val.id === action.payload.currentGroupID);
+      const item = findBinOrGroupByID(state, action.payload.currentGroupID);
       if (item) {
         item.selected = true;
         const navGroup = findGroupInNav(state, item);
@@ -126,9 +120,10 @@ const mediaSlice = createSlice({
       }
       // update prevItem to unselected
       if (action.payload.previousGroupID !== action.payload.currentGroupID) {
-        const prevItem =
-          state.bins.find(val => val.id === action.payload.previousGroupID) ||
-          state.groups.find(val => val.id === action.payload.previousGroupID);
+        const prevItem = findBinOrGroupByID(
+          state,
+          action.payload.previousGroupID
+        );
         if (prevItem) {
           prevItem.selected = false;
           const prevNavGroup = findGroupInNav(state, prevItem);
@@ -138,20 +133,35 @@ const mediaSlice = createSlice({
         }
       }
     },
+    highlightGroup(state, action) {
+      const item = findBinOrGroupByID(state, action.payload.id);
+      if (item) {
+        item.highlighted = true;
+        const navGroup = findGroupInNav(state, item);
+        if (navGroup) {
+          navGroup.highlighted = true;
+        }
+      }
+
+      const prevItem = findBinOrGroupByID(state, action.payload.prevID);
+      if (prevItem) {
+        prevItem.highlighted = false;
+        const prevNavGroup = findGroupInNav(state, prevItem);
+        if (prevNavGroup) {
+          prevNavGroup.highlighted = false;
+        }
+      }
+    },
 
     // Files
     fetchFilesStart(state, action) {
-      const group =
-        state.bins.find(val => val.id === action.payload.group) ||
-        state.groups.find(val => val.id === action.payload.group);
+      const group = findBinOrGroupByID(state, action.payload.group);
       if (group) {
         group.loading = true;
       }
     },
     fetchFilesSuccess(state, action) {
-      const group =
-        state.bins.find(val => val.id === action.payload.group) ||
-        state.groups.find(val => val.id === action.payload.group);
+      const group = findBinOrGroupByID(state, action.payload.group);
       if (group) {
         group.loading = false;
       }
@@ -182,7 +192,7 @@ const mediaSlice = createSlice({
       let uploadingFile = state.files.get(action.payload.uploadID);
       if (uploadingFile) {
         // don't update draft since we delete file at the end
-        const file = current(uploadingFile);
+        const file = { ...current(uploadingFile) };
         file.loading = false;
         file.id = action.payload.id;
         file.title = action.payload.title;
@@ -199,14 +209,19 @@ const mediaSlice = createSlice({
       }
     },
     editFileSuccess(state, action) {
-      const index = state.files.findIndex(val => val.id === action.payload.id);
-      if (index !== -1) {
-        state.files[index].filename = action.payload.filename;
-        state.files[index].group_id = action.payload.group_id;
+      const file = state.files.get(action.payload.id);
+      if (file) {
+        file.filename = action.payload.filename;
+        file.group_id = action.payload.group_id;
       }
     }
   }
 });
+
+function findBinOrGroupByID(state, id) {
+  const selectByID = val => val.id === id;
+  return state.bins.find(selectByID) || state.groups.find(selectByID);
+}
 
 function buildMainNav(bins, groups) {
   const visibleBins = bins.filter(bin => !bin.hidden);
@@ -222,6 +237,7 @@ function buildHiddenNav(bins, groups) {
     return {
       id: group.id,
       selected: group.selected,
+      highlighted: group.highlighted,
       icon: faFolder,
       label: group.name,
       path: `/dam/${group.id}`
@@ -237,6 +253,7 @@ function buildNav(bins, groups) {
       id: bin.id,
       closed: bin.closed,
       selected: bin.selected,
+      highlighted: bin.highlighted,
       children: groups.filter(filterBinChildren).map(mapGroupToNav),
       label: bin.name,
       path: `/dam/${bin.id}`,
@@ -255,6 +272,7 @@ function buildNavGroup(bin, groups) {
       bin_id: bin.id,
       closed: currentGroup.closed,
       selected: currentGroup.selected,
+      highlighted: currentGroup.highlighted,
       children: groups.filter(filterGroupChildren).map(mapGroupToNav),
       label: currentGroup.name,
       path: `/dam/${currentGroup.id}`,
@@ -321,6 +339,7 @@ export const {
   closeGroup,
   hideGroup,
   selectGroup,
+  highlightGroup,
   fetchFilesStart,
   fetchFilesSuccess,
   deleteFileSuccess,
@@ -596,7 +615,7 @@ export function deleteFile(file) {
 
 export function editFile(fileID, fileProperties) {
   return (dispatch, getState) => {
-    const file = getState().media.files.find(file => file.id === fileID);
+    const file = getState().media.files.get(fileID);
     const body = {
       ...pick(file, ["id", "group_id", "filename"]),
       ...fileProperties
