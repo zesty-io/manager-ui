@@ -212,6 +212,7 @@ const mediaSlice = createSlice({
       const file = state.files.get(action.payload.id);
       if (file) {
         file.filename = action.payload.filename;
+        file.title = action.payload.title;
         file.group_id = action.payload.group_id;
       }
     }

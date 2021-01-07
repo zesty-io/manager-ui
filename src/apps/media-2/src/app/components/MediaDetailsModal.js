@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -13,11 +14,20 @@ import { FieldLabel } from "@zesty-io/core/FieldLabel";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { Infotip } from "@zesty-io/core/Infotip";
 import { MediaImage } from "./MediaImage";
+import { editFile } from "shell/store/media";
 
 import styles from "./MediaDetailsModal.less";
 import shared from "./MediaShared.less";
 
 export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
+  const dispatch = useDispatch();
+  const [title, setTitle] = useState(props.file.title);
+  const [filename, setFilename] = useState(props.file.filename);
+  function saveFile() {
+    dispatch(editFile(props.file.id, { title, filename })).then(() => {
+      props.onClose();
+    });
+  }
   return (
     <Modal
       className={styles.Modal}
@@ -48,7 +58,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
           <FieldTypeText
             className={styles.ModalLabels}
             name="title"
-            value={props.file.title}
+            value={title}
             label={
               <label>
                 <Infotip title="Edit Image Title" />
@@ -56,11 +66,12 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
               </label>
             }
             placeholder={"Image Title"}
+            onChange={val => setTitle(val)}
           />
           <FieldTypeText
             className={styles.ModalLabels}
             name="filename"
-            value={props.file.filename}
+            value={filename}
             label={
               <label>
                 <Infotip title="Edit Filename " />
@@ -68,8 +79,9 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
               </label>
             }
             placeholder={"Image Filename"}
+            onChange={val => setFilename(val)}
           />
-          <FieldTypeText
+          {/* <FieldTypeText
             className={styles.ModalLabels}
             name="alt"
             label={
@@ -79,7 +91,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
               </label>
             }
             placeholder={"Alt Attribute"}
-          />
+          /> */}
 
           <dl className={styles.DescriptionList}>
             <dt>ZUID:</dt>
@@ -111,7 +123,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
         </div>
       </ModalContent>
       <ModalFooter className={styles.ModalFooter}>
-        <Button kind="save">
+        <Button kind="save" onClick={saveFile}>
           <span>Save (CTRL + S)</span>
         </Button>
         <Button kind="warn" onClick={props.showDeleteFileModal}>
