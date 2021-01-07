@@ -24,7 +24,7 @@
   height: 100vh;
   overflow: hidden;
   display: grid;
-  grid-template-columns: 60px 1fr;
+  grid-template-columns: min-content 1fr;
 
   scrollbar-color: @zesty-grey @zesty-light-grey;
   scrollbar-width: thin;
@@ -51,7 +51,6 @@
       position: relative;
       z-index: 30;
 
-      width: calc(100vw - 60px);
       @media (min-width: 2000px) {
         width: calc(100vw - 170px);
       }
