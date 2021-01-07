@@ -31,6 +31,7 @@ export function MediaImage(props) {
     case "svg":
       return (
         <img
+          loading="lazy"
           src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${props.file.id}/getimage/${props.params}`}
           alt={props.file.title}
         />

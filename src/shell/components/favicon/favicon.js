@@ -191,7 +191,7 @@ export default connect(state => {
             value={faviconZUID}
             onChange={handleImage}
             resolveImage={(zuid, width, height) => {
-              return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`;
+              `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`;
             }}
             mediaBrowser={opts => {
               riot.mount(
