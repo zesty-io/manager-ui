@@ -60,9 +60,11 @@ export const MediaWorkspaceItem = React.memo(function MediaWorkspaceItem(
               <div className={cx(styles.Load, styles.Loading)}></div>
             )}
           </figure>
-          <button className={styles.Check} aria-label="Checked">
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
+          {props.modal ? (
+            <button className={styles.Check} aria-label="Checked">
+              <FontAwesomeIcon icon={faCheck} />
+            </button>
+          ) : null}
         </CardContent>
         <CardFooter className={styles.CardFooter}>
           {props.file.loading && props.file.progress != null && (

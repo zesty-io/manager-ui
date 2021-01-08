@@ -202,6 +202,7 @@ export default connect(state => {
               currentBin={currentBin}
               currentGroup={currentGroup}
               showFileDetails={setFileDetails}
+              modal={props.modal}
             />
             {// only show selected strip in modal context
             props.modal && (

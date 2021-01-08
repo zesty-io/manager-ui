@@ -32,7 +32,6 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
     <Modal
       className={styles.Modal}
       type="global"
-      // set to true for testing
       open={true}
       onClose={() => props.onClose()}
     >
