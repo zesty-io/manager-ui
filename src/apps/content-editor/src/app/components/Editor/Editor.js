@@ -114,7 +114,11 @@ export default class Editor extends PureComponent {
             .filter(field => !field.deletedAt)
             .map(field => {
               return (
-                <div key={field.ZUID} id={field.ZUID} className={styles.Field}>
+                <div
+                  key={`${field.ZUID}-${item.meta.version}`}
+                  id={field.ZUID}
+                  className={styles.Field}
+                >
                   <Field
                     ZUID={field.ZUID}
                     contentModelZUID={field.contentModelZUID}
