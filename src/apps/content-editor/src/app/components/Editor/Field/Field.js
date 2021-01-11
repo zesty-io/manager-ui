@@ -1,4 +1,5 @@
 import React, { useMemo, useCallback, useState } from "react";
+import ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 
@@ -180,6 +181,7 @@ export default connect(state => {
       );
     case "wysiwyg_advanced":
     case "wysiwyg_basic":
+      const modal = document.getElementById("modalMount");
       return (
         <div className={styles.WYSIWYGFieldType}>
           <FieldTypeTinyMCE
@@ -202,7 +204,29 @@ export default connect(state => {
               formatpainter: "/vendors/tinymce/plugins/formatpainter/plugin.js",
               pageembed: "/vendors/tinymce/plugins/pageembed/plugin.js"
             }}
+            mediaBrowser={opts => {
+              setImageModal(opts);
+            }}
           />
+          {imageModal &&
+            ReactDOM.createPortal(
+              <Modal
+                open={true}
+                type="global"
+                onClose={() => setImageModal()}
+                className={styles.MediaAppModal}
+              >
+                <MediaApp
+                  limitSelected={imageModal.limit}
+                  modal={true}
+                  addImages={images => {
+                    imageModal.callback(images);
+                    setImageModal();
+                  }}
+                />
+              </Modal>,
+              modal
+            )}
         </div>
       );
     case "markdown":

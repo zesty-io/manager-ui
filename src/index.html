@@ -160,7 +160,8 @@
         </div>
       </div>
     </main>
-    <div id="modalMount"></div>
+    <!-- High z-index to beat the TinyMCE toolbar which has 1300-->
+    <div id="modalMount" style="position: relative; z-index: 1301;"></div>
     <%= htmlWebpackPlugin.tags.bodyTags %>
     <script src="/tags.js"></script>
   </body>
