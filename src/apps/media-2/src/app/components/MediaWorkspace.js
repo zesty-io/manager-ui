@@ -8,7 +8,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 import { WithLoader } from "@zesty-io/core/WithLoader";
+
 import { uploadFile } from "shell/store/media";
+import { MediaHeader } from "./MediaHeader";
 import { MediaWorkspaceItem } from "./MediaWorkspaceItem";
 import styles from "./MediaWorkspace.less";
 
@@ -63,67 +65,76 @@ export const MediaWorkspace = React.memo(function MediaWorkspace(props) {
   drop(ref);
 
   return (
-    <WithLoader
-      // don't show loader if we already have files from before
-      condition={files.length || props.currentGroup.loading === false}
-      message="Loading Files"
-      width="100%"
-    >
-      <div ref={ref}>
-        <input
-          type="file"
-          multiple
-          ref={hiddenInputRef}
-          onChange={handleFileUpload}
-          style={{ display: "none" }}
-        />
-        <main
-          className={cx(styles.Workspace, {
-            [styles.hasSelected]: props.selected && props.selected.length
-          })}
-        >
-          {isDragActive && (
-            <div className={styles.DropMessage}>
-              <h1>
-                <FontAwesomeIcon icon={faUpload} />
-                Drop and upload!
-              </h1>
-            </div>
-          )}
-          {files.length ? (
-            <section className={styles.WorkspaceGrid}>
-              {files.map(file => {
-                const itemProps = {};
-                if (props.selected) {
-                  itemProps.selected = props.selected.find(
-                    selectedFile => selectedFile.id === file.id
+    <>
+      <MediaHeader
+        currentBin={props.currentBin}
+        currentGroup={props.currentGroup}
+        showDeleteGroupModal={props.showDeleteGroupModal}
+        numFiles={files.length}
+      />
+      <WithLoader
+        // don't show loader if we already have files from before
+        condition={files.length || props.currentGroup.loading === false}
+        message="Loading Files"
+        width="100%"
+      >
+        <div ref={ref}>
+          <input
+            type="file"
+            multiple
+            ref={hiddenInputRef}
+            onChange={handleFileUpload}
+            style={{ display: "none" }}
+          />
+          <main
+            className={cx(styles.Workspace, {
+              [styles.hasSelected]: props.selected && props.selected.length
+            })}
+          >
+            {isDragActive && (
+              <div className={styles.DropMessage}>
+                <h1>
+                  <FontAwesomeIcon icon={faUpload} />
+                  Drop and upload!
+                </h1>
+              </div>
+            )}
+            {files.length ? (
+              <section className={styles.WorkspaceGrid}>
+                {files.map(file => {
+                  const itemProps = {};
+                  if (props.selected) {
+                    itemProps.selected = props.selected.find(
+                      selectedFile => selectedFile.id === file.id
+                    );
+                  }
+                  if (props.toggleSelected) {
+                    itemProps.toggleSelected = props.toggleSelected;
+                  }
+                  return (
+                    <MediaWorkspaceItem
+                      {...itemProps}
+                      key={file.id || file.uploadID}
+                      file={file}
+                      modal={props.modal}
+                      showFileDetails={props.showFileDetails}
+                    />
                   );
-                }
-                if (props.toggleSelected) {
-                  itemProps.toggleSelected = props.toggleSelected;
-                }
-                return (
-                  <MediaWorkspaceItem
-                    {...itemProps}
-                    key={file.id || file.uploadID}
-                    file={file}
-                    showFileDetails={props.showFileDetails}
-                  />
-                );
-              })}
-            </section>
-          ) : (
-            <div className={styles.UploadMessage}>
-              <div>Drag and drop files here</div>
-              <div>or</div>
-              <Button onClick={chooseFile}>
-                <FontAwesomeIcon icon={faUpload} />
-                Choose files to upload
-              </Button>
-            </div>
-          )}
-        </main>
-      </div>
-    </WithLoader>
+                })}
+              </section>
+            ) : (
+              <div className={styles.UploadMessage}>
+                <div>Drag and drop files here</div>
+                <div>or</div>
+                <Button onClick={chooseFile}>
+                  <FontAwesomeIcon icon={faUpload} />
+                  Choose files to upload
+                </Button>
+              </div>
+            )}
+          </main>
+        </div>
+      </WithLoader>
+    </>
   );
 });

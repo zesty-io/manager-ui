@@ -36,10 +36,15 @@ export const MediaHeader = React.memo(function MediaHeader(props) {
   return (
     <header className={styles.WorkspaceHeader}>
       <div className={styles.WorkspaceLeft}>
-        <h1 className={cx(styles.title, styles.GroupTitle)}>
-          {props.currentGroup.name}
-        </h1>
-        <Button kind="secondary" onClick={handleUploadClick}>
+        <h1 className={styles.GroupTitle}>{props.currentGroup.name}</h1>
+        {props.numFiles ? (
+          <h1 className={styles.GroupCount}>{` (${props.numFiles})`}</h1>
+        ) : null}
+        <Button
+          className={styles.PadLeft}
+          kind="secondary"
+          onClick={handleUploadClick}
+        >
           <FontAwesomeIcon icon={faUpload} />
           <span>Upload</span>
         </Button>

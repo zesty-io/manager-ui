@@ -8,7 +8,6 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { MediaSidebar } from "./components/MediaSidebar";
 import { MediaWorkspace } from "./components/MediaWorkspace";
-import { MediaHeader } from "./components/MediaHeader";
 import { MediaDetailsModal } from "./components/MediaDetailsModal";
 import { MediaDeleteGroupModal } from "./components/MediaDeleteGroupModal";
 import { MediaDeleteFileModal } from "./components/MediaDeleteFileModal";
@@ -192,16 +191,13 @@ export default connect(state => {
               props.groupID ? styles.WkspcNosbar : ""
             )}
           >
-            <MediaHeader
-              currentBin={currentBin}
-              currentGroup={currentGroup}
-              showDeleteGroupModal={showDeleteGroupModal}
-            />
             <MediaWorkspace
               {...workspaceProps}
               currentBin={currentBin}
               currentGroup={currentGroup}
               showFileDetails={setFileDetails}
+              showDeleteGroupModal={showDeleteGroupModal}
+              modal={props.modal}
             />
             {// only show selected strip in modal context
             props.modal && (
