@@ -170,7 +170,7 @@ export default connect(state => {
     >
       <WithLoader
         condition={currentGroup}
-        message="Starting Digital Asset Manager"
+        message={props.media.bins.length ? "Loading Groups" : "Loading Bins"}
         width="100vw"
       >
         <DndProvider backend={HTML5Backend}>
