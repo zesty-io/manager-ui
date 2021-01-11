@@ -1,5 +1,4 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Button } from "@zesty-io/core/Button";
@@ -11,7 +10,6 @@ import styles from "./MediaDeleteFileModal.less";
 
 export function MediaDeleteFileModal(props) {
   const dispatch = useDispatch();
-  const history = useHistory();
   return (
     <Modal
       className={styles.Modal}
@@ -25,7 +23,7 @@ export function MediaDeleteFileModal(props) {
           kind="save"
           onClick={() =>
             dispatch(deleteFile(props.file)).then(() => {
-              props.onClose();
+              props.onDelete();
             })
           }
         >

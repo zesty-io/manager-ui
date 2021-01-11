@@ -148,9 +148,12 @@ export default connect(state => {
 
   const closeFileDetailsModal = useCallback(() => setFileDetails(), []);
   const showDeleteFileModal = useCallback(() => setDeleteFileModal(true), []);
-  const closeDeleteFileModal = useCallback(() => {
+  const closeAllFileModals = useCallback(() => {
     setDeleteFileModal(false);
     setFileDetails();
+  }, []);
+  const closeDeleteFileModal = useCallback(() => {
+    setDeleteFileModal(false);
   }, []);
   const showDeleteGroupModal = useCallback(() => setDeleteGroupModal(true), []);
   const closeDeleteGroupModal = useCallback(
@@ -218,6 +221,7 @@ export default connect(state => {
           {deleteFileModal && (
             <MediaDeleteFileModal
               onClose={closeDeleteFileModal}
+              onDelete={closeAllFileModals}
               file={fileDetails}
               currentGroup={currentGroup}
             />
