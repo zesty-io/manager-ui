@@ -29,6 +29,7 @@ export function MediaImage(props) {
     case "png":
     case "gif":
     case "svg":
+    case "webp":
       return (
         <img
           loading="lazy"
