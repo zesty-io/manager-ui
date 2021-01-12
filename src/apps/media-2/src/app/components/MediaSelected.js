@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faUpload } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
 import { Card, CardContent } from "@zesty-io/core/Card";
@@ -50,6 +50,7 @@ export function MediaSelected(props) {
               kind="save"
               onClick={() => props.addImages(props.selected)}
             >
+              <FontAwesomeIcon icon={faUpload} />
               <span>Load Selected</span>
             </Button>
             <DrawerContent className={styles.DrawerContent}>

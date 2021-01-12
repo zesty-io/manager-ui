@@ -5,7 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCopy,
   faExclamationCircle,
-  faLink
+  faLink,
+  faSave
 } from "@fortawesome/free-solid-svg-icons";
 import { Url } from "@zesty-io/core/Url";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
@@ -121,7 +122,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
             <dd>{props.file.id}</dd>
             {props.file.updated_at && (
               <>
-                <dt> Date: </dt>
+                <dt> Created at: </dt>
                 <dd>{props.file.updated_at}</dd>
               </>
             )}
@@ -131,7 +132,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
           <figure className={cx(shared.Checkered, shared.Cmodal)}>
             <Url
               target="_blank"
-              title="View Original Image"
+              title="Select to download original image in new page"
               href={props.file.url}
             >
               <MediaImage file={props.file} params={"?w=350&type=fit"} />
@@ -140,13 +141,14 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
           <Url target="_blank" title="Original Image" href={props.file.url}>
             <Button className={styles.OriginalButton} kind="kind">
               <FontAwesomeIcon icon={faLink} />
-              <span>View Original Image</span>
+              <span>View Original File</span>
             </Button>
           </Url>
         </div>
       </ModalContent>
       <ModalFooter className={styles.ModalFooter}>
         <Button kind="save" onClick={saveFile} disabled={!hasDirtyFields()}>
+          <FontAwesomeIcon icon={faSave} />
           <span>Save (CTRL + S)</span>
         </Button>
         <Button kind="warn" onClick={props.showDeleteFileModal}>
