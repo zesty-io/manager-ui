@@ -4,7 +4,10 @@ import { useDispatch } from "react-redux";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Button } from "@zesty-io/core/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExclamationCircle,
+  faCheck
+} from "@fortawesome/free-solid-svg-icons";
 
 import { deleteGroup } from "shell/store/media";
 import styles from "./MediaDeleteGroupModal.less";
@@ -20,7 +23,12 @@ export function MediaDeleteGroupModal(props) {
       open={true}
       onClose={() => props.onClose()}
     >
-      <ModalContent>Are you sure you want to delete group?</ModalContent>
+      <ModalContent className={styles.subheadline}>
+        Are you sure you want to delete group DAVID ?
+      </ModalContent>
+      <ModalContent className={styles.subheadline}>
+        !(This will also delete all subgroups and files.)
+      </ModalContent>
       <ModalFooter className={styles.ModalFooter}>
         <Button
           kind="save"
@@ -31,6 +39,7 @@ export function MediaDeleteGroupModal(props) {
             })
           }
         >
+          <FontAwesomeIcon icon={faCheck} />
           <span>Yes</span>
         </Button>
         <Button kind="warn" onClick={() => props.onClose()}>

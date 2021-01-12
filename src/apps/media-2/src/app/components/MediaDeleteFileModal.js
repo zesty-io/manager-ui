@@ -3,7 +3,10 @@ import { useDispatch } from "react-redux";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Button } from "@zesty-io/core/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheck,
+  faExclamationCircle
+} from "@fortawesome/free-solid-svg-icons";
 
 import { deleteFile } from "shell/store/media";
 import styles from "./MediaDeleteFileModal.less";
@@ -17,7 +20,9 @@ export function MediaDeleteFileModal(props) {
       open={true}
       onClose={() => props.onClose()}
     >
-      <ModalContent>Are you sure you want to delete file?</ModalContent>
+      <ModalContent className={styles.subheadline}>
+        Are you sure you want to delete file?
+      </ModalContent>
       <ModalFooter className={styles.ModalFooter}>
         <Button
           kind="save"
@@ -27,6 +32,7 @@ export function MediaDeleteFileModal(props) {
             })
           }
         >
+          <FontAwesomeIcon icon={faCheck} />
           <span>Yes</span>
         </Button>
         <Button kind="warn" onClick={() => props.onClose()}>
