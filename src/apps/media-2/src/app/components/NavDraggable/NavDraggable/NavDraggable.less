@@ -1,5 +1,11 @@
 @import "~@zesty-io/core/colors.less";
 
 .Nav {
+  //100vh - globaltabs - (nav + hidden items)
+  height: calc(100vh - 54px - 128px);
+  overflow-y: scroll;
   background-color: #404759;
+  @media only screen and (min-width: 2000px) {
+    height: calc(100vh - 54px - 82px);
+  }
 }
