@@ -605,7 +605,7 @@ export function deleteFile(file) {
       if (res.status === 200) {
         dispatch(deleteFileSuccess(file));
         dispatch(
-          notify({ message: `Deleted file ${file.filename}`, kind: "success" })
+          notify({ message: `Deleted file ${file.filename}`, kind: "default" })
         );
       } else {
         dispatch(notify({ message: "Failed deleting file", kind: "error" }));
