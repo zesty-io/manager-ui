@@ -198,6 +198,13 @@ export default connect(state => {
               formatpainter: "/vendors/tinymce/plugins/formatpainter/plugin.js",
               pageembed: "/vendors/tinymce/plugins/pageembed/plugin.js"
             }}
+            mediaBrowser={opts => {
+              riot.mount(
+                document.querySelector("#modalMount"),
+                "media-app-modal",
+                opts
+              );
+            }}
           />
         </div>
       );

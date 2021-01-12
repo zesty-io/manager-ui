@@ -40,7 +40,7 @@
     "@fortawesome/react-fontawesome": "0.1.9",
     "@sentry/react": "^5.24.2",
     "@tinymce/tinymce-react": "3.5.0",
-    "@zesty-io/core": "1.0.0-alpha.24",
+    "@zesty-io/core": "1.0.0",
     "chart.js": "2.9.3",
     "classnames": "2.2.6",
     "clipboard": "2.0.6",
