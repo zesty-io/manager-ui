@@ -1,34 +1,31 @@
+@import "~@zesty-io/core/colors.less";
+
 footer {
   position: relative;
 }
 
-.DrawerClose {
-  position: absolute;
-  background-color: transparent;
-
-  .DrawerHandle {
-    justify-content: flex-end;
-    width: calc(80vw - 100px);
-
-    @media (min-width: 2000px) {
-      width: calc(80vw - 190px);
-    }
-  }
+.DrawerHandle {
+  background-color: @zesty-light-blue;
+  justify-content: space-between;
+  align-items: center;
+}
+.bodyText {
+  margin-right: 8px;
+  color: @zesty-dark-blue;
 }
 
 .DrawerOpen {
   position: absolute;
-  background-color: darken(#f2f7fc, 2%);
-
-  .DrawerHandle {
-    justify-content: flex-end;
-    width: calc(80vw - 100px);
-
-    @media (min-width: 2000px) {
-      width: calc(80vw - 190px);
-    }
-  }
+  width: 100%;
+  background-color: @zesty-light-blue;
+  border-top: 1px solid darken(@zesty-light-blue, 5%);
 }
+
+.DrawerClose {
+  position: absolute;
+  background-color: @zesty-light-blue;
+}
+
 .ButtonLoad {
   margin: 8px;
 }
@@ -37,7 +34,7 @@ footer {
   display: flex;
   overflow-x: scroll;
   flex-wrap: nowrap;
-  background-color: #404759;
+  background-color: @zesty-light-blue;
 
   .CardContent {
     position: relative;
