@@ -196,6 +196,7 @@ const mediaSlice = createSlice({
         file.loading = false;
         file.id = action.payload.id;
         file.title = action.payload.title;
+        file.filename = action.payload.filename;
         file.url = action.payload.url;
 
         // swap uploadID key for new id key
