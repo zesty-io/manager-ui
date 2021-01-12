@@ -627,6 +627,15 @@ export function editFile(fileID, fileProperties) {
     }).then(res => {
       if (res.status === 200) {
         dispatch(editFileSuccess(res.data[0]));
+        // show notification if user is editing file fields
+        if (fileProperties.title || fileProperties.filename) {
+          dispatch(
+            notify({
+              message: `Edited file ${fileProperties.filename}`,
+              kind: "success"
+            })
+          );
+        }
       } else {
         dispatch(notify({ message: "Failed editing file", kind: "error" }));
         throw res;

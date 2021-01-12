@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -21,13 +21,37 @@ import shared from "./MediaShared.less";
 
 export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
   const dispatch = useDispatch();
+  const platform = useSelector(state => state.platform);
   const [title, setTitle] = useState(props.file.title);
   const [filename, setFilename] = useState(props.file.filename);
+
   function saveFile() {
     dispatch(editFile(props.file.id, { title, filename })).then(() => {
       props.onClose();
     });
   }
+
+  function handleKeyboardShortcutSave(evt) {
+    if (
+      ((platform.isMac && evt.metaKey) || (!platform.isMac && evt.ctrlKey)) &&
+      evt.key == "s"
+    ) {
+      evt.preventDefault();
+      saveFile();
+    }
+  }
+
+  function hasDirtyFields() {
+    return props.file.title !== title || props.file.filename !== filename;
+  }
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyboardShortcutSave);
+    return () => {
+      window.removeEventListener("keydown", handleKeyboardShortcutSave);
+    };
+  });
+
   return (
     <Modal
       className={styles.Modal}
@@ -122,7 +146,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
         </div>
       </ModalContent>
       <ModalFooter className={styles.ModalFooter}>
-        <Button kind="save" onClick={saveFile}>
+        <Button kind="save" onClick={saveFile} disabled={!hasDirtyFields()}>
           <span>Save (CTRL + S)</span>
         </Button>
         <Button kind="warn" onClick={props.showDeleteFileModal}>
