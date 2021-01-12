@@ -206,6 +206,7 @@ export default connect(state => {
             props.modal && (
               <MediaSelected
                 selected={selected}
+                limitSelected={props.limitSelected}
                 toggleSelected={toggleSelected}
                 addImages={props.addImages}
               />

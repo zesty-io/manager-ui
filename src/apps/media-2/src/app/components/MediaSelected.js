@@ -38,12 +38,10 @@ export function MediaSelected(props) {
                   <i className="fas fa-chevron-up"></i>
                 )}
               </Button>
-              {open ? null : (
-                <span className={styles.bodyText}>
-                  {" "}
-                  0 / 5 Images Selected dummy data{" "}
-                </span>
-              )}
+              <span className={styles.bodyText}>
+                {props.selected.length} / {props.limitSelected} Image
+                {props.limitSelected > 1 ? "s" : ""} Selected
+              </span>
             </DrawerHandle>
             <Button
               className={styles.ButtonLoad}
