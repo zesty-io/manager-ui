@@ -115,7 +115,7 @@ export default class Editor extends PureComponent {
             .map(field => {
               return (
                 <div
-                  key={`${field.ZUID}-${item.meta.version}`}
+                  key={`${field.ZUID}`}
                   id={field.ZUID}
                   className={styles.Field}
                 >
