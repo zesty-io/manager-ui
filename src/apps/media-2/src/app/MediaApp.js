@@ -185,7 +185,6 @@ export default connect(state => {
               currentBin={currentBin}
               currentGroup={currentGroup}
               onPathChange={onPathChange}
-              setCurrentGroupID={setCurrentGroupID}
             />
           )}
           <div
