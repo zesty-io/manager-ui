@@ -28,6 +28,8 @@ export default connect(state => {
 })(function MediaApp(props) {
   const history = useHistory();
   const params = useParams();
+
+  // modal states
   const [fileDetails, setFileDetails] = useState();
   const [deleteGroupModal, setDeleteGroupModal] = useState(false);
   const [deleteFileModal, setDeleteFileModal] = useState(false);
@@ -44,9 +46,12 @@ export default connect(state => {
     params.groupID || props.groupID
   );
 
+  // track previous group id so we can unselect group
+  // when new groups are selected
   const previousGroupID = usePrevious(currentGroupID);
 
-  // when currentGroupID changes, update URL depending on modal context
+  // when currentGroupID changes, select group in redux
+  // and update URL depending on modal context
   useEffect(() => {
     if (
       currentGroupID &&

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,7 +11,6 @@ import {
 import { Url } from "@zesty-io/core/Url";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Button } from "@zesty-io/core/Button";
-import { FieldLabel } from "@zesty-io/core/FieldLabel";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { Infotip } from "@zesty-io/core/Infotip";
 import { MediaImage } from "./MediaImage";
@@ -22,13 +21,27 @@ import shared from "./MediaShared.less";
 
 export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
   const dispatch = useDispatch();
+  const urlField = useRef();
+  const copyButton = useRef();
+
+  // state for controlled fields
   const [title, setTitle] = useState(props.file.title);
   const [filename, setFilename] = useState(props.file.filename);
+
   function saveFile() {
     dispatch(editFile(props.file.id, { title, filename })).then(() => {
       props.onClose();
     });
   }
+
+  function copyURL() {
+    urlField.current.select();
+    document.execCommand("copy");
+    document.getSelection().empty();
+    urlField.current.blur();
+    copyButton.current.focus();
+  }
+
   return (
     <Modal
       className={styles.Modal}
@@ -38,22 +51,22 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
     >
       <ModalContent className={styles.ModalContent}>
         <div>
-          <FieldLabel
-            className={styles.ModalLabels}
-            name="copylink"
-            label={
-              <label>
-                <Infotip title="Copy URL" />
-                &nbsp;Copy
-              </label>
-            }
-          />
           <label className={styles.CopyLabel}>
-            <Button kind="secondary">
+            <Button
+              ref={copyButton}
+              kind="secondary"
+              className={styles.CopyButton}
+              onClick={copyURL}
+            >
               <FontAwesomeIcon icon={faCopy} />
               <span>Copy</span>
             </Button>
-            <input id="copy" type="text" defaultValue="VALUE" />
+            <input
+              ref={urlField}
+              type="text"
+              defaultValue={props.file.url}
+              readOnly
+            />
           </label>
           <FieldTypeText
             className={styles.ModalLabels}
