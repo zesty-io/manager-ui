@@ -51,6 +51,62 @@
       border-radius: 3px;
       border: solid 1px rgba(26, 32, 44, 0.12);
       margin-bottom: 8px;
+
+      input {
+        width: 100%;
+        padding: 4px;
+      }
+    }
+    .CopyButton {
+      position: relative;
+
+      &:before {
+        content: "";
+        display: none;
+        position: absolute;
+        z-index: 10;
+        top: -8px;
+        left: 42px;
+        width: 0;
+        height: 0;
+
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid rgba(0, 0, 0, 0.72);
+      }
+      &:after {
+        content: "Copy to Clipboard";
+        display: none;
+        position: absolute;
+        z-index: 10;
+        top: -44px;
+        left: -11px;
+        width: 118px;
+        height: 36px;
+
+        color: #fff;
+        font-size: 10px;
+        line-height: 36px;
+        text-align: center;
+
+        background: rgba(0, 0, 0, 0.72);
+        border-radius: 3px;
+      }
+      &:hover {
+        &:before,
+        &:after {
+          display: block;
+        }
+      }
+
+      &:active,
+      &:focus {
+        outline: none;
+
+        &:after {
+          content: "Copied!";
+        }
+      }
     }
   }
 
