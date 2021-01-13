@@ -1,22 +1,38 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faUpload,
   faCaretDown,
   faCaretLeft,
-  faPlus,
   faSearch
 } from "@fortawesome/free-solid-svg-icons";
 import { NavDraggable } from "./NavDraggable";
 import { Button } from "@zesty-io/core/Button";
+import { uploadFile } from "shell/store/media";
 import { closeGroup, hideGroup } from "shell/store/media";
-import { MediaCreateGroupModal } from "./MediaCreateGroupModal";
+
 import styles from "./MediaSidebar.less";
 
 export const MediaSidebar = React.memo(function MediaSidebar(props) {
   const dispatch = useDispatch();
   const [hiddenOpen, setHiddenOpen] = useState(false);
-  const [createGroupModal, setCreateGroupModal] = useState(false);
+  const hiddenFileInput = useRef(null);
+
+  function handleUploadClick() {
+    hiddenFileInput.current.click();
+  }
+
+  function handleFileInputChange(event) {
+    Array.from(event.target.files).forEach(file => {
+      const fileToUpload = {
+        file,
+        bin_id: props.currentBin.id,
+        group_id: props.currentGroup.id
+      };
+      dispatch(uploadFile(fileToUpload, props.currentBin));
+    });
+  }
 
   const collapseNode = useCallback(id => dispatch(closeGroup(id)), []);
 
@@ -41,24 +57,23 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
             <FontAwesomeIcon icon={faSearch} />
           </button>
         </form>
-
         <Button
-          aria-label="Create Group"
+          aria-label="Upload"
+          className={styles.PadLeft}
           kind="secondary"
-          className={styles.CreateGroup}
-          onClick={() => setCreateGroupModal(true)}
+          className={styles.Upload}
+          onClick={handleUploadClick}
         >
-          <FontAwesomeIcon icon={faPlus} />
-          <span>Create Group</span>
+          <FontAwesomeIcon icon={faUpload} />
+          <span>Upload</span>
         </Button>
-        {createGroupModal && (
-          <MediaCreateGroupModal
-            currentGroup={props.currentGroup}
-            currentBin={props.currentBin}
-            onClose={() => setCreateGroupModal(false)}
-            setCurrentGroupID={props.setCurrentGroupID}
-          />
-        )}
+        <input
+          type="file"
+          multiple
+          ref={hiddenFileInput}
+          onChange={handleFileInputChange}
+          style={{ display: "none" }}
+        />
       </div>
       <NavDraggable
         tree={props.nav}

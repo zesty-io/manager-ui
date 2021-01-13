@@ -5,33 +5,19 @@ import {
   faUpload,
   faEdit,
   faExclamationCircle,
-  faVideo
+  faVideo,
+  faPlus
 } from "@fortawesome/free-solid-svg-icons";
-import cx from "classnames";
+
 import { Button } from "@zesty-io/core/Button";
-import { uploadFile } from "shell/store/media";
+import { MediaCreateGroupModal } from "./MediaCreateGroupModal";
 import { MediaEditGroupModal } from "./MediaEditGroupModal";
 import styles from "./MediaHeader.less";
 
 export const MediaHeader = React.memo(function MediaHeader(props) {
   const dispatch = useDispatch();
+  const [createGroupModal, setCreateGroupModal] = useState(false);
   const [editGroupModal, setEditGroupModal] = useState(false);
-  const hiddenFileInput = useRef(null);
-
-  function handleUploadClick() {
-    hiddenFileInput.current.click();
-  }
-
-  function handleFileInputChange(event) {
-    Array.from(event.target.files).forEach(file => {
-      const fileToUpload = {
-        file,
-        bin_id: props.currentBin.id,
-        group_id: props.currentGroup.id
-      };
-      dispatch(uploadFile(fileToUpload, props.currentBin));
-    });
-  }
 
   return (
     <header className={styles.WorkspaceHeader}>
@@ -41,20 +27,22 @@ export const MediaHeader = React.memo(function MediaHeader(props) {
           <h1 className={styles.GroupCount}>{` (${props.numFiles})`}</h1>
         ) : null}
         <Button
-          className={styles.PadLeft}
+          aria-label="Create Group"
           kind="secondary"
-          onClick={handleUploadClick}
+          onClick={() => setCreateGroupModal(true)}
         >
-          <FontAwesomeIcon icon={faUpload} />
-          <span>Upload</span>
+          <FontAwesomeIcon icon={faPlus} />
+          <span>Create Group</span>
         </Button>
-        <input
-          type="file"
-          multiple
-          ref={hiddenFileInput}
-          onChange={handleFileInputChange}
-          style={{ display: "none" }}
-        />
+        {createGroupModal && (
+          <MediaCreateGroupModal
+            currentGroup={props.currentGroup}
+            currentBin={props.currentBin}
+            onClose={() => setCreateGroupModal(false)}
+            setCurrentGroupID={props.setCurrentGroupID}
+          />
+        )}
+
         <Button kind="cancel" onClick={() => setEditGroupModal(true)}>
           <FontAwesomeIcon icon={faEdit} />
           <span>Edit</span>

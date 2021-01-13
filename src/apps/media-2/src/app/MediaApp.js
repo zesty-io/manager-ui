@@ -201,6 +201,7 @@ export default connect(state => {
               showFileDetails={setFileDetails}
               showDeleteGroupModal={showDeleteGroupModal}
               modal={props.modal}
+              setCurrentGroupID={setCurrentGroupID}
             />
             {// only show selected strip in modal context
             props.modal && (

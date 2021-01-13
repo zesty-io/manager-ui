@@ -71,6 +71,7 @@ export const MediaWorkspace = React.memo(function MediaWorkspace(props) {
         currentGroup={props.currentGroup}
         showDeleteGroupModal={props.showDeleteGroupModal}
         numFiles={files.length}
+        setCurrentGroupID={props.setCurrentGroupID}
       />
       <WithLoader
         // don't show loader if we already have files from before
