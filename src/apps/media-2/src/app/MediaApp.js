@@ -80,7 +80,6 @@ export default connect(state => {
   }
 
   // when currentGroupID changes, select group in redux
-  // and update URL depending on modal context
   useEffect(() => {
     if (
       currentGroupID &&
@@ -88,11 +87,10 @@ export default connect(state => {
       props.media.groups.length
     ) {
       props.dispatch(selectGroup({ currentGroupID, previousGroupID }));
-      updateURL();
     }
   }, [currentGroupID, props.media.bins.length, props.media.groups.length]);
 
-  // use default bin ID if we don't have currentGroupID
+  // if no currentGroupID, set to default bin ID
   useEffect(() => {
     if (!currentGroupID && props.media.bins.length) {
       const bin = props.media.bins.find(bin => bin.default);
@@ -102,7 +100,7 @@ export default connect(state => {
     }
   }, [props.media.bins.length]);
 
-  // update path when not in modal context and viewing file details
+  // update URL when currentGroupID or currentFileID changes
   useEffect(() => {
     updateURL();
   }, [currentFileID, currentGroupID]);
