@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import cx from "classnames";
 import usePrevious from "react-use/lib/usePrevious";
 import { useHistory, useParams } from "react-router-dom";
@@ -29,20 +29,17 @@ export default connect(state => {
   const history = useHistory();
   const params = useParams();
 
+  // current file for file details modal
   const [currentFileID, setCurrentFileID] = useState(params.fileID);
   const currentFile = props.media.files.get(currentFileID);
+
   // modal states
   const [deleteGroupModal, setDeleteGroupModal] = useState(false);
   const [deleteFileModal, setDeleteFileModal] = useState(false);
 
-  // selected files for use in modal
+  // selected files for use in content modal
   const [selected, setSelected] = useState([]);
 
-  // derived state from currentGroupID and state.media
-  const [currentGroup, setCurrentGroup] = useState();
-  const [currentBin, setCurrentBin] = useState();
-
-  // track currentGroupID, defaulting to groupID in URL or passed as props
   const [currentGroupID, setCurrentGroupID] = useState(
     params.groupID || props.groupID
   );
@@ -50,6 +47,27 @@ export default connect(state => {
   // track previous group id so we can unselect group
   // when new groups are selected
   const previousGroupID = usePrevious(currentGroupID);
+
+  const currentGroup = useMemo(() => {
+    if (
+      currentGroupID &&
+      props.media.bins.length &&
+      props.media.groups.length
+    ) {
+      return (
+        props.media.bins.find(bin => bin.id === currentGroupID) ||
+        props.media.groups.find(group => group.id === currentGroupID)
+      );
+    }
+  }, [currentGroupID, props.media.bins, props.media.groups]);
+
+  const currentBin = useMemo(() => {
+    if (currentGroup) {
+      return currentGroup.bin_id
+        ? props.media.bins.find(bin => bin.id === currentGroup.bin_id)
+        : currentGroup;
+    }
+  }, [currentGroup, props.media.bins]);
 
   function updateURL() {
     if (!props.modal) {
@@ -100,28 +118,6 @@ export default connect(state => {
       props.dispatch(fetchAllGroups());
     }
   }, [props.media.bins.length]);
-
-  useEffect(() => {
-    let newCurrentGroup;
-    let newCurrentBin;
-    if (
-      currentGroupID &&
-      props.media.bins.length &&
-      props.media.groups.length
-    ) {
-      newCurrentGroup =
-        // search bins and groups
-        props.media.bins.find(bin => bin.id === currentGroupID) ||
-        props.media.groups.find(group => group.id === currentGroupID);
-      if (newCurrentGroup) {
-        newCurrentBin = newCurrentGroup.bin_id
-          ? props.media.bins.find(bin => bin.id === newCurrentGroup.bin_id)
-          : newCurrentGroup;
-      }
-      setCurrentGroup(newCurrentGroup);
-      setCurrentBin(newCurrentBin);
-    }
-  }, [currentGroupID, props.media.bins, props.media.groups]);
 
   // fetch group files when navigating to group
   useEffect(() => {
