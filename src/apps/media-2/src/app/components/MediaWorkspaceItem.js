@@ -38,7 +38,7 @@ export const MediaWorkspaceItem = React.memo(function MediaWorkspaceItem(
     event => {
       if (!props.file.loading) {
         event.stopPropagation();
-        props.showFileDetails(props.file);
+        props.setCurrentFileID(props.file.id);
       }
     },
     [props.showFileDetails, props.file]

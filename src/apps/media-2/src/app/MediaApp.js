@@ -29,8 +29,9 @@ export default connect(state => {
   const history = useHistory();
   const params = useParams();
 
+  const [currentFileID, setCurrentFileID] = useState(params.fileID);
+  const currentFile = props.media.files.get(currentFileID);
   // modal states
-  const [fileDetails, setFileDetails] = useState();
   const [deleteGroupModal, setDeleteGroupModal] = useState(false);
   const [deleteFileModal, setDeleteFileModal] = useState(false);
 
@@ -50,6 +51,16 @@ export default connect(state => {
   // when new groups are selected
   const previousGroupID = usePrevious(currentGroupID);
 
+  function updateURL() {
+    if (!props.modal) {
+      if (currentGroupID && currentFileID) {
+        history.push(`/dam/${currentGroupID}/file/${currentFileID}`);
+      } else {
+        history.push(`/dam/${currentGroupID}`);
+      }
+    }
+  }
+
   // when currentGroupID changes, select group in redux
   // and update URL depending on modal context
   useEffect(() => {
@@ -59,9 +70,7 @@ export default connect(state => {
       props.media.groups.length
     ) {
       props.dispatch(selectGroup({ currentGroupID, previousGroupID }));
-      if (!props.modal) {
-        history.push(`/dam/${currentGroupID}`);
-      }
+      updateURL();
     }
   }, [currentGroupID, props.media.bins.length, props.media.groups.length]);
 
@@ -77,16 +86,8 @@ export default connect(state => {
 
   // update path when not in modal context and viewing file details
   useEffect(() => {
-    if (currentGroupID && !props.modal) {
-      let path;
-      if (fileDetails) {
-        path = `/dam/${currentGroupID}/file/${fileDetails.id}`;
-      } else {
-        path = `/dam/${currentGroupID}`;
-      }
-      history.push(path);
-    }
-  }, [fileDetails, currentGroupID]);
+    updateURL();
+  }, [currentFileID, currentGroupID]);
 
   // fetch all bins on mount
   useEffect(() => {
@@ -151,11 +152,11 @@ export default connect(state => {
     setCurrentGroupID(path.split("/")[2]);
   }, []);
 
-  const closeFileDetailsModal = useCallback(() => setFileDetails(), []);
+  const closeFileDetailsModal = useCallback(() => setCurrentFileID(), []);
   const showDeleteFileModal = useCallback(() => setDeleteFileModal(true), []);
   const closeAllFileModals = useCallback(() => {
     setDeleteFileModal(false);
-    setFileDetails();
+    setCurrentFileID();
   }, []);
   const closeDeleteFileModal = useCallback(() => {
     setDeleteFileModal(false);
@@ -202,7 +203,7 @@ export default connect(state => {
               {...workspaceProps}
               currentBin={currentBin}
               currentGroup={currentGroup}
-              showFileDetails={setFileDetails}
+              setCurrentFileID={setCurrentFileID}
               showDeleteGroupModal={showDeleteGroupModal}
               modal={props.modal}
               setCurrentGroupID={setCurrentGroupID}
@@ -217,9 +218,9 @@ export default connect(state => {
               />
             )}
           </div>
-          {fileDetails && (
+          {currentFileID && currentFile && (
             <MediaDetailsModal
-              file={fileDetails}
+              file={currentFile}
               onClose={closeFileDetailsModal}
               showDeleteFileModal={showDeleteFileModal}
             />
@@ -228,7 +229,7 @@ export default connect(state => {
             <MediaDeleteFileModal
               onClose={closeDeleteFileModal}
               onDelete={closeAllFileModals}
-              file={fileDetails}
+              file={currentFile}
               currentGroup={currentGroup}
             />
           )}

@@ -118,7 +118,7 @@ export const MediaWorkspace = React.memo(function MediaWorkspace(props) {
                       key={file.id || file.uploadID}
                       file={file}
                       modal={props.modal}
-                      showFileDetails={props.showFileDetails}
+                      setCurrentFileID={props.setCurrentFileID}
                     />
                   );
                 })}
