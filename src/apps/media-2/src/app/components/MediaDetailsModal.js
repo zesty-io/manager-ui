@@ -16,8 +16,8 @@ import { Infotip } from "@zesty-io/core/Infotip";
 import { MediaImage } from "./MediaImage";
 import { editFile } from "shell/store/media";
 
-import styles from "./MediaDetailsModal.less";
 import shared from "./MediaShared.less";
+import styles from "./MediaDetailsModal.less";
 
 export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
   const dispatch = useDispatch();
@@ -157,7 +157,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
           </Url>
         </div>
       </ModalContent>
-      <ModalFooter className={styles.ModalFooter}>
+      <ModalFooter className={shared.ModalFooter}>
         <Button kind="save" onClick={saveFile} disabled={!hasDirtyFields()}>
           <FontAwesomeIcon icon={faSave} />
           <span>Save (CTRL + S)</span>

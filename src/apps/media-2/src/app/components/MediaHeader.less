@@ -11,11 +11,11 @@
   .WorkspaceRight {
     display: flex;
     align-items: center;
-    button {
-      margin: 0 8px;
-    }
   }
   .WorkspaceLeft {
+    & > *:not(:last-child) {
+      margin-right: 8px;
+    }
     .GroupTitle {
       color: white;
       padding-left: 16px;
