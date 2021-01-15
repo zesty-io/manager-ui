@@ -55,7 +55,7 @@ export const MediaHeader = React.memo(function MediaHeader(props) {
         )}
       </div>
       <div className={styles.WorkspaceRight}>
-        <Button kind="default">
+        <Button kind="default" aria-label="Tutorial">
           <FontAwesomeIcon icon={faVideo} />
           <span>Tutorial</span>
         </Button>
