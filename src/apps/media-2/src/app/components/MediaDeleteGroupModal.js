@@ -10,26 +10,28 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { deleteGroup } from "shell/store/media";
-import styles from "./MediaDeleteGroupModal.less";
+
+import shared from "./MediaShared.less";
+// import styles from "./MediaDeleteGroupModal.less";
 
 export function MediaDeleteGroupModal(props) {
   const dispatch = useDispatch();
   const history = useHistory();
   return (
     <Modal
-      className={styles.Modal}
+      className={shared.Modal}
       type="global"
       // set to true for testing
       open={true}
       onClose={() => props.onClose()}
     >
-      <ModalContent className={styles.subheadline}>
+      <ModalContent className={shared.subheadline}>
         Are you sure you want to delete group?
       </ModalContent>
-      <ModalContent className={styles.subheadline}>
+      <ModalContent className={shared.subheadline}>
         !(This will also delete all subgroups and files.)
       </ModalContent>
-      <ModalFooter className={styles.ModalFooter}>
+      <ModalFooter className={shared.ModalFooter}>
         <Button
           kind="save"
           onClick={() =>
@@ -40,11 +42,11 @@ export function MediaDeleteGroupModal(props) {
           }
         >
           <FontAwesomeIcon icon={faCheck} />
-          <span>Yes</span>
+          <span>Delete</span>
         </Button>
         <Button kind="warn" onClick={() => props.onClose()}>
           <FontAwesomeIcon icon={faExclamationCircle} />
-          <span>No</span>
+          <span>Cancel</span>
         </Button>
       </ModalFooter>
     </Modal>
