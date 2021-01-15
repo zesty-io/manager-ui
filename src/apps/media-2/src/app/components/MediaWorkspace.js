@@ -88,11 +88,7 @@ export const MediaWorkspace = React.memo(function MediaWorkspace(props) {
             onChange={handleFileUpload}
             style={{ display: "none" }}
           />
-          <main
-            className={cx(styles.Workspace, {
-              [styles.hasSelected]: props.selected && props.selected.length
-            })}
-          >
+          <main className={styles.Workspace}>
             {isDragActive && (
               <div className={styles.DropMessage}>
                 <h1>
