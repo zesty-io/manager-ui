@@ -13,6 +13,18 @@
 }
 
 .MediaAppModal {
-  max-width: none;
-  margin: 0;
+  width: 90%;
+  margin: 1.5% auto;
+  max-width: calc(100vw - 20vw - 60px);
+  padding: 0;
+  @media only screen and (min-width: 2000px) {
+    max-width: calc(100vw - 20vw - 170px);
+  }
+  & > button {
+    z-index: 1;
+    background-color: black;
+  }
+  // button[kind="default"] {
+  //   display: none;
+  // }
 }

@@ -1,19 +1,17 @@
 @import "~@zesty-io/core/typography.less";
 
 .MediaApp {
-  height: calc(100vh - 54px);
   overflow: hidden;
   display: grid;
   grid-template-columns: minmax(200px, 20vw) 1fr;
   font-family: @font-family-default;
 
+  &.MPSidebarActive {
+  }
   @media (min-width: 2000px) {
     grid-template-columns: 20vw 1fr;
   }
 
-  &.MediaNosbar {
-    overflow: initial;
-  }
   .WorkspaceContainer {
     //Full container 100vw -  minus 20vw = MediaApp nav and 60px = globalSidebar
     width: calc(100vw - 20vw - 60px);
@@ -21,8 +19,8 @@
     @media (min-width: 2000px) {
       width: calc(100vw - 20vw - 170px);
     }
-    &.WkspcNosbar {
-      width: 95vw;
+    &.WkspSidebarActive {
+      width: initial;
     }
   }
 }

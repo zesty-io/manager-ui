@@ -8,26 +8,34 @@ footer {
   background-color: @zesty-light-blue;
   justify-content: space-between;
   align-items: center;
+  padding-left: 8px;
 }
-.bodyText {
-  margin-right: 8px;
-  color: @zesty-dark-blue;
+.limitText {
+  color: @white;
+}
+
+.limitTextMax {
+  color: @zesty-red;
 }
 
 .DrawerOpen {
   position: absolute;
   width: 100%;
   background-color: @zesty-light-blue;
-  border-top: 1px solid darken(@zesty-light-blue, 5%);
+  border-top: 2px solid darken(@zesty-light-blue, 5%);
 }
 
 .DrawerClose {
   position: absolute;
   background-color: @zesty-light-blue;
+  border-top: 2px solid darken(@zesty-light-blue, 5%);
 }
 
 .ButtonLoad {
-  margin: 8px;
+  // margin: 8px;
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
 }
 
 .MediaSelected {

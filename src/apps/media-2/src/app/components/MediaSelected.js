@@ -32,16 +32,22 @@ export function MediaSelected(props) {
               onClick={handleSetOpen}
             >
               <Button title="View Selected Images">
+                <span
+                  className={
+                    props.selected.length !== props.limitSelected
+                      ? styles.limitText
+                      : styles.limitTextMax
+                  }
+                >
+                  {props.selected.length} / {props.limitSelected} Image
+                  {props.limitSelected > 1 ? "s" : ""} Selected
+                </span>
                 {open ? (
                   <i className="fas fa-chevron-down"></i>
                 ) : (
                   <i className="fas fa-chevron-up"></i>
                 )}
               </Button>
-              <span className={styles.bodyText}>
-                {props.selected.length} / {props.limitSelected} Image
-                {props.limitSelected > 1 ? "s" : ""} Selected
-              </span>
             </DrawerHandle>
             <Button
               className={styles.ButtonLoad}

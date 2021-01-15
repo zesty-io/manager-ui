@@ -169,12 +169,16 @@ export default connect(state => {
 
   return (
     <main
-      className={cx(styles.MediaApp, props.groupID ? styles.MediaNosbar : "")}
+      className={cx(
+        styles.MediaApp,
+        props.groupID ? styles.MPSidebarActive : ""
+      )}
     >
       <WithLoader
-        condition={currentGroup}
+        condition={currentBin}
         message={props.media.bins.length ? "Loading Groups" : "Loading Bins"}
-        width="100vw"
+        width="calc(100vw - 20vw - 60px)"
+        height="100vh"
       >
         <DndProvider backend={HTML5Backend}>
           {// hide sidebar if we are locked to a group
@@ -190,7 +194,7 @@ export default connect(state => {
           <div
             className={cx(
               styles.WorkspaceContainer,
-              props.groupID ? styles.WkspcNosbar : ""
+              !props.groupID ? styles.WkspSidebarActive : ""
             )}
           >
             <MediaWorkspace
