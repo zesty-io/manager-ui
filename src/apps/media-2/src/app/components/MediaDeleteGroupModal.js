@@ -24,7 +24,7 @@ export function MediaDeleteGroupModal(props) {
       onClose={() => props.onClose()}
     >
       <ModalContent className={styles.subheadline}>
-        Are you sure you want to delete group DAVID ?
+        Are you sure you want to delete group?
       </ModalContent>
       <ModalContent className={styles.subheadline}>
         !(This will also delete all subgroups and files.)
