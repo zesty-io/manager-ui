@@ -6,7 +6,6 @@ import { useDrop } from "react-dnd";
 import { NativeTypes } from "react-dnd-html5-backend";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
-
 import { Button } from "@zesty-io/core/Button";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 

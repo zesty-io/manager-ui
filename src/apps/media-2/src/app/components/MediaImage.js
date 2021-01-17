@@ -10,13 +10,18 @@ import {
   faFilePdf,
   faFileVideo
 } from "@fortawesome/free-solid-svg-icons";
-
-import { fileExtension } from "../FileUtils";
 import styles from "./MediaImage.less";
 
-export const MediaImage = React.forwardRef(function MediaImage(props, ref) {
+function fileExtension(url) {
+  return url
+    .split(".")
+    .pop()
+    .toLowerCase();
+}
+
+export function MediaImage(props) {
   if (props.file.url.indexOf("blob:") !== -1) {
-    return <img ref={ref} src={encodeURI(props.file.url)} />;
+    return <img src={encodeURI(props.file.url)} />;
   }
   switch (fileExtension(props.file.url)) {
     case "jpg":
@@ -25,12 +30,13 @@ export const MediaImage = React.forwardRef(function MediaImage(props, ref) {
     case "gif":
     case "svg":
     case "webp":
-      const src = `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${props.file.id}/getimage/${props.params}`;
-      const options = {
-        "data-src": props.lazy ? src : null,
-        src: props.lazy ? null : src
-      };
-      return <img {...options} ref={ref} alt={props.file.title} />;
+      return (
+        <img
+          loading="lazy"
+          src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${props.file.id}/getimage/${props.params}`}
+          alt={props.file.title}
+        />
+      );
     case "html":
     case "js":
     case "less":
@@ -42,37 +48,21 @@ export const MediaImage = React.forwardRef(function MediaImage(props, ref) {
     case "sql":
     case "xml":
     case "yml":
-      return (
-        <div ref={ref}>
-          <FontAwesomeIcon className={styles.icon} icon={faFileCode} />
-        </div>
-      );
+      return <FontAwesomeIcon className={styles.icon} icon={faFileCode} />;
     case "aac":
     case "aiff":
     case "mid":
     case "mp3":
     case "wav":
-      return (
-        <div ref={ref}>
-          <FontAwesomeIcon className={styles.icon} icon={faFileAudio} />
-        </div>
-      );
+      return <FontAwesomeIcon className={styles.icon} icon={faFileAudio} />;
     case "pdf":
-      return (
-        <div ref={ref}>
-          <FontAwesomeIcon className={styles.icon} icon={faFilePdf} />
-        </div>
-      );
+      return <FontAwesomeIcon className={styles.icon} icon={faFilePdf} />;
     case "ai":
     case "bmp":
     case "eps":
     case "psd":
     case "tiff":
-      return (
-        <div ref={ref}>
-          <FontAwesomeIcon className={styles.icon} icon={faFileImage} />
-        </div>
-      );
+      return <FontAwesomeIcon className={styles.icon} icon={faFileImage} />;
     case "avi":
     case "flv":
     case "mp4":
@@ -80,48 +70,25 @@ export const MediaImage = React.forwardRef(function MediaImage(props, ref) {
     case "m4v":
     case "mov":
     case "qt":
-      return (
-        <div ref={ref}>
-          <FontAwesomeIcon className={styles.icon} icon={faFileVideo} />
-        </div>
-      );
+      return <FontAwesomeIcon className={styles.icon} icon={faFileVideo} />;
     case "iso":
     case "rar":
     case "tgz":
     case "zip":
-      return (
-        <div ref={ref}>
-          <FontAwesomeIcon className={styles.icon} icon={faFileArchive} />
-        </div>
-      );
+      return <FontAwesomeIcon className={styles.icon} icon={faFileArchive} />;
     case "ots":
     case "xls":
     case "xlsx":
-      return (
-        <div ref={ref}>
-          <FontAwesomeIcon className={styles.icon} icon={faFileExcel} />
-        </div>
-      );
-
+      return <FontAwesomeIcon className={styles.icon} icon={faFileExcel} />;
     case "ppt":
       return (
-        <div ref={ref}>
-          <FontAwesomeIcon className={styles.icon} icon={faFilePowerpoint} />
-        </div>
+        <FontAwesomeIcon className={styles.icon} icon={faFilePowerpoint} />
       );
     case "rtf":
-      return (
-        <div ref={ref}>
-          <FontAwesomeIcon className={styles.icon} icon={faFileWord} />
-        </div>
-      );
+      return <FontAwesomeIcon className={styles.icon} icon={faFileWord} />;
     case "txt":
     case "exe":
     default:
-      return (
-        <div ref={ref}>
-          <FontAwesomeIcon className={styles.icon} icon={faFile} />
-        </div>
-      );
+      return <FontAwesomeIcon className={styles.icon} icon={faFile} />;
   }
-});
+}

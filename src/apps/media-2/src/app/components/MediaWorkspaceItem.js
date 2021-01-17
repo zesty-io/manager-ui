@@ -1,22 +1,17 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef } from "react";
 import cx from "classnames";
 import { useDrag } from "react-dnd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faCog } from "@fortawesome/free-solid-svg-icons";
-import Observer from "@researchgate/react-intersection-observer";
-
 import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
-
 import { MediaImage } from "./MediaImage";
 import styles from "./MediaWorkspaceItem.less";
 import shared from "./MediaShared.less";
-import { isImage } from "../FileUtils";
 
 export const MediaWorkspaceItem = React.memo(function MediaWorkspaceItem(
   props
 ) {
-  const [lazyLoading, setLazyLoading] = useState(true);
-  const ref = useRef();
+  const ref = useRef(null);
   const [, drag] = useDrag({
     item: {
       type: "file",
@@ -32,18 +27,6 @@ export const MediaWorkspaceItem = React.memo(function MediaWorkspaceItem(
   });
 
   drag(ref);
-
-  function handleIntersection(event) {
-    if (event.isIntersecting) {
-      const img = event.target;
-      if (img.dataset.src && !img.src && !img.onload) {
-        img.src = img.dataset.src;
-        img.onload = () => {
-          setLazyLoading(false);
-        };
-      }
-    }
-  }
 
   const toggleSelected = useCallback(() => {
     if (props.toggleSelected && !props.file.loading) {
@@ -72,16 +55,10 @@ export const MediaWorkspaceItem = React.memo(function MediaWorkspaceItem(
       >
         <CardContent className={styles.CardContent}>
           <figure className={cx(shared.Checkered, shared.Cgrid)}>
-            <Observer onChange={handleIntersection}>
-              <MediaImage
-                lazy={true}
-                file={props.file}
-                params={"?w=200&h=200&type=fit"}
-              />
-            </Observer>
-            {isImage(props.file) && (props.file.loading || lazyLoading) ? (
+            <MediaImage file={props.file} params={"?w=200&h=200&type=fit"} />
+            {props.file.loading && (
               <div className={cx(styles.Load, styles.Loading)}></div>
-            ) : null}
+            )}
           </figure>
           {props.modal ? (
             <button className={styles.Check} aria-label="Checked">
