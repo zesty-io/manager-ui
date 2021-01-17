@@ -12,6 +12,7 @@ import {
 import { Button } from "@zesty-io/core/Button";
 import { uploadFile } from "shell/store/media";
 
+import shared from "./MediaShared.less";
 import styles from "./MediaSidebar.less";
 
 import { MediaNav } from "./MediaNav";
@@ -52,7 +53,12 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
     <nav className={styles.Nav}>
       <div className={styles.TopNav}>
         <form className={styles.SearchForm} action="">
-          <input type="text" placeholder="Search your files" name="search2" />
+          <input
+            type="text"
+            className={shared.Input}
+            placeholder="Search your files"
+            name="search2"
+          />
           <button type="submit" aria-label="Search">
             <FontAwesomeIcon icon={faSearch} />
           </button>

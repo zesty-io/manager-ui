@@ -9,13 +9,15 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { deleteFile } from "shell/store/media";
+
+import shared from "./MediaShared.less";
 import styles from "./MediaDeleteFileModal.less";
 
 export function MediaDeleteFileModal(props) {
   const dispatch = useDispatch();
   return (
     <Modal
-      className={styles.Modal}
+      className={shared.Modal}
       type="global"
       open={true}
       onClose={() => props.onClose()}
@@ -23,7 +25,7 @@ export function MediaDeleteFileModal(props) {
       <ModalContent className={styles.subheadline}>
         Are you sure you want to delete file?
       </ModalContent>
-      <ModalFooter className={styles.ModalFooter}>
+      <ModalFooter className={shared.ModalFooter}>
         <Button
           kind="save"
           onClick={() =>
@@ -33,11 +35,11 @@ export function MediaDeleteFileModal(props) {
           }
         >
           <FontAwesomeIcon icon={faCheck} />
-          <span>Yes</span>
+          <span>Delete</span>
         </Button>
         <Button kind="warn" onClick={() => props.onClose()}>
           <FontAwesomeIcon icon={faExclamationCircle} />
-          <span>No</span>
+          <span>Cancel</span>
         </Button>
       </ModalFooter>
     </Modal>

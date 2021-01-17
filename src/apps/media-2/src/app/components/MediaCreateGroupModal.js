@@ -7,6 +7,7 @@ import { Button } from "@zesty-io/core/Button";
 import { Modal, ModalContent } from "@zesty-io/core/Modal";
 import { createGroup } from "shell/store/media";
 
+import shared from "./MediaShared.less";
 import styles from "./MediaCreateGroupModal.less";
 
 export function MediaCreateGroupModal(props) {
@@ -33,6 +34,7 @@ export function MediaCreateGroupModal(props) {
       <ModalContent>
         <form className={styles.SearchForm}>
           <input
+            className={shared.Input}
             autoFocus
             type="text"
             placeholder="Create Group"

@@ -27,6 +27,7 @@ export const MediaHeader = React.memo(function MediaHeader(props) {
           <h1 className={styles.GroupCount}>{` (${props.numFiles})`}</h1>
         ) : null}
         <Button
+          title="Create Group"
           aria-label="Create Group"
           kind="secondary"
           onClick={() => setCreateGroupModal(true)}
@@ -43,19 +44,28 @@ export const MediaHeader = React.memo(function MediaHeader(props) {
           />
         )}
 
-        <Button kind="cancel" onClick={() => setEditGroupModal(true)}>
+        <Button
+          kind="cancel"
+          title="Edit"
+          onClick={() => setEditGroupModal(true)}
+        >
           <FontAwesomeIcon icon={faEdit} />
           <span>Edit</span>
         </Button>
         {props.currentBin !== props.currentGroup && (
-          <Button kind="warn" onClick={props.showDeleteGroupModal}>
+          <Button
+            title="Delete Group"
+            kind="warn"
+            aria-label="Delete"
+            onClick={props.showDeleteGroupModal}
+          >
             <FontAwesomeIcon icon={faExclamationCircle} />
             <span>Delete</span>
           </Button>
         )}
       </div>
       <div className={styles.WorkspaceRight}>
-        <Button kind="default">
+        <Button title="Tutorial Video" kind="default" aria-label="Tutorial">
           <FontAwesomeIcon icon={faVideo} />
           <span>Tutorial</span>
         </Button>
