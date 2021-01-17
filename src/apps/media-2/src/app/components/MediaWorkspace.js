@@ -1,7 +1,6 @@
 import React, { useCallback, useRef } from "react";
 import { createSelector } from "reselect";
 import { useDispatch, useSelector } from "react-redux";
-import cx from "classnames";
 import { useDrop } from "react-dnd";
 import { NativeTypes } from "react-dnd-html5-backend";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

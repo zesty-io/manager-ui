@@ -49,29 +49,22 @@ export default connect(state => {
   const previousGroupID = usePrevious(currentGroupID);
 
   const currentGroup = useMemo(() => {
-    if (
-      currentGroupID &&
-      props.media.bins.length &&
-      props.media.groups.length
-    ) {
-      return (
-        props.media.bins.find(bin => bin.id === currentGroupID) ||
-        props.media.groups.find(group => group.id === currentGroupID)
-      );
+    if (currentGroupID) {
+      return props.media.groups[currentGroupID];
     }
-  }, [currentGroupID, props.media.bins, props.media.groups]);
+  }, [currentGroupID, props.media.groups]);
 
   const currentBin = useMemo(() => {
     if (currentGroup) {
       return currentGroup.bin_id
-        ? props.media.bins.find(bin => bin.id === currentGroup.bin_id)
+        ? props.media.groups[currentGroup.bin_id]
         : currentGroup;
     }
-  }, [currentGroup, props.media.bins]);
+  }, [currentGroup, props.media.groups]);
 
   function updateURL() {
-    if (!props.modal) {
-      if (currentGroupID && currentFileID) {
+    if (!props.modal && currentGroupID) {
+      if (currentFileID) {
         history.push(`/dam/${currentGroupID}/file/${currentFileID}`);
       } else {
         history.push(`/dam/${currentGroupID}`);
@@ -81,24 +74,20 @@ export default connect(state => {
 
   // when currentGroupID changes, select group in redux
   useEffect(() => {
-    if (
-      currentGroupID &&
-      props.media.bins.length &&
-      props.media.groups.length
-    ) {
+    if (currentGroupID && currentGroupID !== previousGroupID) {
       props.dispatch(selectGroup({ currentGroupID, previousGroupID }));
     }
-  }, [currentGroupID, props.media.bins.length, props.media.groups.length]);
+  }, [currentGroupID, props.media.groups]);
 
   // if no currentGroupID, set to default bin ID
   useEffect(() => {
-    if (!currentGroupID && props.media.bins.length) {
-      const bin = props.media.bins.find(bin => bin.default);
-      if (bin) {
-        setCurrentGroupID(bin.id);
+    if (!currentGroupID && props.media.groups) {
+      const binID = props.media.groups[0].children[0];
+      if (binID) {
+        setCurrentGroupID(binID);
       }
     }
-  }, [props.media.bins.length]);
+  }, [props.media.groups]);
 
   // update URL when currentGroupID or currentFileID changes
   useEffect(() => {
@@ -112,10 +101,10 @@ export default connect(state => {
 
   // fetch groups when we get new bins
   useEffect(() => {
-    if (props.media.bins.length) {
+    if (props.media.groups[0].children.length) {
       props.dispatch(fetchAllGroups());
     }
-  }, [props.media.bins.length]);
+  }, [props.media.groups[0].children.length]);
 
   // fetch group files when navigating to group
   useEffect(() => {
@@ -176,7 +165,11 @@ export default connect(state => {
     >
       <WithLoader
         condition={currentBin}
-        message={props.media.bins.length ? "Loading Groups" : "Loading Bins"}
+        message={
+          props.media.groups[0].children.length
+            ? "Loading Groups"
+            : "Loading Bins"
+        }
         width="calc(100vw - 20vw - 60px)"
         height="100vh"
       >

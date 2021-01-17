@@ -7,12 +7,14 @@ import {
   faCaretLeft,
   faSearch
 } from "@fortawesome/free-solid-svg-icons";
-import { NavDraggable } from "./NavDraggable";
+
+// import { NavDraggable } from "./NavDraggable";
 import { Button } from "@zesty-io/core/Button";
 import { uploadFile } from "shell/store/media";
-import { closeGroup, hideGroup } from "shell/store/media";
 
 import styles from "./MediaSidebar.less";
+
+import { MediaNav } from "./MediaNav";
 
 export const MediaSidebar = React.memo(function MediaSidebar(props) {
   const dispatch = useDispatch();
@@ -34,19 +36,17 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
     });
   }
 
-  const collapseNode = useCallback(id => dispatch(closeGroup(id)), []);
-
-  const actions = useMemo(
-    () => [
-      {
-        icon: "fas fa-eye-slash",
-        onClick: node => {
-          dispatch(hideGroup(node.id));
-        }
-      }
-    ],
-    []
-  );
+  // const actions = useMemo(
+  //   () => [
+  //     {
+  //       icon: "fas fa-eye-slash",
+  //       onClick: node => {
+  //         dispatch(hideGroup(node.id));
+  //       }
+  //     }
+  //   ],
+  //   []
+  // );
 
   return (
     <nav className={styles.Nav}>
@@ -75,12 +75,7 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
           style={{ display: "none" }}
         />
       </div>
-      <NavDraggable
-        tree={props.nav}
-        collapseNode={collapseNode}
-        actions={actions}
-        onPathChange={props.onPathChange}
-      />
+      <MediaNav onPathChange={props.onPathChange} />
       <div className={styles.HiddenNav}>
         <h1
           className={styles.NavTitle}
@@ -93,13 +88,13 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
             <FontAwesomeIcon icon={faCaretLeft} />
           )}
         </h1>
-        <NavDraggable
+        {/* <NavDraggable
           tree={props.hiddenNav}
           className={hiddenOpen ? "" : styles.HiddenNavClosed}
           collapseNode={collapseNode}
           actions={actions}
           onPathChange={props.onPathChange}
-        />
+        /> */}
       </div>
     </nav>
   );

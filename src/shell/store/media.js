@@ -1,5 +1,4 @@
 import { createSlice, current } from "@reduxjs/toolkit";
-import { faFolder } from "@fortawesome/free-solid-svg-icons";
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 import uniqBy from "lodash/uniqBy";
@@ -13,155 +12,150 @@ enableMapSet();
 const mediaSlice = createSlice({
   name: "media",
   initialState: {
-    bins: [],
-    groups: [],
-    files: new Map(),
-    nav: [],
-    hiddenNav: []
+    groups: {
+      0: { children: [] }
+    },
+    hiddenGroups: {
+      0: { children: [] }
+    },
+    files: new Map()
   },
   reducers: {
     // Bins
     fetchBinsSuccess(state, action) {
-      state.bins = addNavigationStates(action.payload);
+      const closed = getClosedGroups();
+      const hidden = getHiddenGroups();
+
+      action.payload.forEach(bin => {
+        bin.closed = closed.includes(bin.id);
+        bin.children = [];
+        bin.path = `/dam/${bin.id}`;
+        if (hidden.includes(bin.id)) {
+          state.hiddenGroups[bin.id] = bin;
+          state.hiddenGroups[0].children.push(bin.id);
+        } else {
+          state.groups[bin.id] = bin;
+          state.groups[0].children.push(bin.id);
+        }
+      });
     },
     editBinSuccess(state, action) {
-      const index = state.bins.findIndex(val => val.id === action.payload.id);
-      if (index !== -1) {
-        state.bins[index].name = action.payload.name;
-        const currentState = current(state);
-        state.nav = buildMainNav(currentState.bins, currentState.groups);
+      const bin = state.groups[action.payload.id];
+      if (bin) {
+        bin.name = action.payload.name;
       }
     },
 
     // Groups
     fetchGroupsSuccess(state, action) {
-      state.groups = addNavigationStates(action.payload);
-      const currentState = current(state);
-      state.nav = buildMainNav(currentState.bins, currentState.groups);
-      state.hiddenNav = buildHiddenNav(currentState.bins, currentState.groups);
+      const closed = getClosedGroups();
+      const hidden = getHiddenGroups();
+
+      action.payload.forEach(function initializeGroup(group) {
+        group.closed = closed.includes(group.id);
+        group.children = [];
+        group.path = `/dam/${group.id}`;
+        if (hidden.includes(group.id)) {
+          state.hiddenGroups[group.id] = group;
+        } else {
+          state.groups[group.id] = group;
+        }
+      });
+
+      action.payload.forEach(function addChildrenToParents(group) {
+        const parent = state.groups[group.group_id];
+        if (parent) {
+          parent.children.push(group.id);
+        }
+      });
     },
     createGroupSuccess(state, action) {
-      state.groups.push(action.payload);
-      const currentState = current(state);
-      state.nav = buildMainNav(currentState.bins, currentState.groups);
+      state.groups[action.payload.id] = action.payload;
     },
     editGroupSuccess(state, action) {
-      const index = state.groups.findIndex(val => val.id === action.payload.id);
-      if (index !== -1) {
-        state.groups[index].name = action.payload.name;
-        state.groups[index].group_id = action.payload.group_id;
-        const currentState = current(state);
-        state.nav = buildMainNav(currentState.bins, currentState.groups);
-        state.hiddenNav = buildHiddenNav(
-          currentState.bins,
-          currentState.groups
-        );
+      const group = state.groups[action.payload.id];
+      if (group) {
+        group.name = action.payload.name;
+        group.group_id = action.payload.group_id;
       }
     },
     deleteGroupSuccess(state, action) {
-      state.bins = state.bins.filter(el => el.id !== action.payload.id);
-      state.groups = state.groups.filter(el => el.id !== action.payload.id);
-      const currentState = current(state);
-      state.nav = buildMainNav(currentState.bins, currentState.groups);
-      state.hiddenNav = buildHiddenNav(currentState.bins, currentState.groups);
+      delete state.groups[action.payload.id];
     },
     closeGroup(state, action) {
-      const item = findBinOrGroupByID(state, action.payload);
-      if (item) {
+      const group = state.groups[action.payload];
+      console.log("closing group", group);
+      if (group) {
         // update item in groups/bins
-        item.closed = !item.closed;
-
-        // update group in nav
-        const navGroup = findGroupInNav(state, item);
-        if (navGroup) {
-          navGroup.closed = !navGroup.closed;
-        }
+        group.closed = !group.closed;
 
         // update item in localstorage
-        const selectClosed = group => group.closed;
-        const selectZUID = group => group.id;
-        const closedBins = state.bins.filter(selectClosed).map(selectZUID);
-        const closedGroups = state.groups.filter(selectClosed).map(selectZUID);
         localStorage.setItem(
           "zesty:navMedia:closed",
-          JSON.stringify(closedBins.concat(closedGroups))
+          JSON.stringify(
+            Object.keys(state.groups).filter(id => state.groups[id].closed)
+          )
         );
       }
     },
-    hideGroup(state, action) {
-      const item = findBinOrGroupByID(state, action.payload);
-      if (item) {
-        item.hidden = !item.hidden;
-        const selectHidden = group => group.hidden;
-        const selectZUID = group => group.id;
-        const hiddenBins = state.bins.filter(selectHidden).map(selectZUID);
-        const hiddenGroups = state.groups.filter(selectHidden).map(selectZUID);
-        localStorage.setItem(
-          "zesty:navMedia:hidden",
-          JSON.stringify(hiddenBins.concat(hiddenGroups))
-        );
-        const currentState = current(state);
-        state.nav = buildMainNav(currentState.bins, currentState.groups);
-        state.hiddenNav = buildHiddenNav(
-          currentState.bins,
-          currentState.groups
-        );
-      }
-    },
+    // hideGroup(state, action) {
+    //   const group = state.groups[action.payload];
+    //   state.hiddenGroups[action.payload] = group
+    //   if (group) {
+    //     group.hidden = !group.hidden;
+
+    //     const hiddenGroups = [];
+    //     for (let group of state.groups.values()) {
+    //       if (group.hidden) {
+    //         hiddenGroups.push(group.id);
+    //       }
+    //     }
+    //     localStorage.setItem(
+    //       "zesty:navMedia:hidden",
+    //       JSON.stringify(hiddenBins.concat(hiddenGroups))
+    //     );
+
+    //     const currentState = current(state);
+    //     state.nav = buildMainNav(currentState.bins, currentState.groups);
+    //     // state.hiddenNav = buildHiddenNav(
+    //     //   currentState.bins,
+    //     //   currentState.groups
+    //     // );
+    //   }
+    // },
     selectGroup(state, action) {
       // update item to selected
-      const item = findBinOrGroupByID(state, action.payload.currentGroupID);
-      if (item) {
-        item.selected = true;
-        const navGroup = findGroupInNav(state, item);
-        if (navGroup) {
-          navGroup.selected = true;
-        }
+      const group = state.groups[action.payload.currentGroupID];
+      if (group) {
+        group.selected = true;
       }
       // update prevItem to unselected
-      if (action.payload.previousGroupID !== action.payload.currentGroupID) {
-        const prevItem = findBinOrGroupByID(
-          state,
-          action.payload.previousGroupID
-        );
-        if (prevItem) {
-          prevItem.selected = false;
-          const prevNavGroup = findGroupInNav(state, prevItem);
-          if (prevNavGroup) {
-            prevNavGroup.selected = false;
-          }
-        }
+      const prevItem = state.groups[action.payload.previousGroupID];
+      if (prevItem) {
+        prevItem.selected = false;
       }
     },
     highlightGroup(state, action) {
-      const item = findBinOrGroupByID(state, action.payload.id);
-      if (item) {
-        item.highlighted = true;
-        const navGroup = findGroupInNav(state, item);
-        if (navGroup) {
-          navGroup.highlighted = true;
-        }
+      const group = state.groups[action.payload.id];
+      if (group) {
+        group.highlighted = true;
       }
 
-      const prevItem = findBinOrGroupByID(state, action.payload.prevID);
+      const prevItem = state.groups[action.payload.prevID];
       if (prevItem) {
         prevItem.highlighted = false;
-        const prevNavGroup = findGroupInNav(state, prevItem);
-        if (prevNavGroup) {
-          prevNavGroup.highlighted = false;
-        }
       }
     },
 
     // Files
     fetchFilesStart(state, action) {
-      const group = findBinOrGroupByID(state, action.payload.group);
+      const group = state.groups[action.payload.group];
       if (group) {
         group.loading = true;
       }
     },
     fetchFilesSuccess(state, action) {
-      const group = findBinOrGroupByID(state, action.payload.group);
+      const group = state.groups[action.payload.group];
       if (group) {
         group.loading = false;
       }
@@ -220,113 +214,13 @@ const mediaSlice = createSlice({
   }
 });
 
-function findBinOrGroupByID(state, id) {
-  const selectByID = val => val.id === id;
-  return state.bins.find(selectByID) || state.groups.find(selectByID);
-}
-
-function buildMainNav(bins, groups) {
-  const visibleBins = bins.filter(bin => !bin.hidden);
-  const visibleGroups = groups.filter(group => !group.hidden);
-  return buildNav(visibleBins, visibleGroups);
-}
-
-function buildHiddenNav(bins, groups) {
-  const selectHidden = bin => bin.hidden;
-  const hiddenBins = bins.filter(selectHidden);
-  const hiddenGroups = groups.filter(selectHidden);
-  return hiddenBins.concat(hiddenGroups).map(group => {
-    return {
-      id: group.id,
-      selected: group.selected,
-      highlighted: group.highlighted,
-      icon: faFolder,
-      label: group.name,
-      path: `/dam/${group.id}`
-    };
-  });
-}
-
-function buildNav(bins, groups) {
-  function mapBinToNav(bin) {
-    const filterBinChildren = group => group.group_id === bin.id;
-    const mapGroupToNav = buildNavGroup(bin, groups);
-    return {
-      id: bin.id,
-      closed: bin.closed,
-      selected: bin.selected,
-      highlighted: bin.highlighted,
-      children: groups.filter(filterBinChildren).map(mapGroupToNav),
-      label: bin.name,
-      path: `/dam/${bin.id}`,
-      type: "bin"
-    };
-  }
-  return bins.map(mapBinToNav);
-}
-
-function buildNavGroup(bin, groups) {
-  return function buildGroup(currentGroup) {
-    const filterGroupChildren = group => currentGroup.id === group.group_id;
-    const mapGroupToNav = buildNavGroup(bin, groups);
-    return {
-      id: currentGroup.id,
-      bin_id: bin.id,
-      closed: currentGroup.closed,
-      selected: currentGroup.selected,
-      highlighted: currentGroup.highlighted,
-      children: groups.filter(filterGroupChildren).map(mapGroupToNav),
-      label: currentGroup.name,
-      path: `/dam/${currentGroup.id}`,
-      type: "group"
-    };
-  };
-}
-
-function findGroupInNav(state, group) {
-  const { nav, hiddenNav, bins, groups } = state;
-  const hiddenNode = hiddenNav.find(val => val.id === id);
-  if (hiddenNode) {
-    return hiddenNode;
-  }
-
-  let node = group;
-  let id = group.id;
-
-  // nav group id path for crawling down from root to node
-  const navPath = [id];
-
-  // build up navPath by crawling up nav tree to root
-  while (id) {
-    // crawl up one level
-    id = node.group_id;
-    node = bins.find(val => val.id === id) || groups.find(val => val.id === id);
-    if (node) {
-      navPath.unshift(node.id);
-    }
-  }
-
-  id = navPath.shift();
-  node = nav.find(val => val.id === id);
-  while (id && node) {
-    id = navPath.shift();
-    if (id) {
-      node = node.children.find(val => val.id === id);
-    }
-  }
-  return node;
-}
-
-function addNavigationStates(groups) {
+function getClosedGroups() {
   const closed = localStorage.getItem("zesty:navMedia:closed");
-  const closedZUIDs = closed ? JSON.parse(closed) : [];
+  return closed ? JSON.parse(closed) : [];
+}
+function getHiddenGroups() {
   const hidden = localStorage.getItem("zesty:navMedia:hidden");
-  const hiddenZUIDs = hidden ? JSON.parse(hidden) : [];
-  groups.forEach(group => {
-    group.closed = closedZUIDs.includes(group.id);
-    group.hidden = hiddenZUIDs.includes(group.id);
-  });
-  return groups;
+  return hidden ? JSON.parse(hidden) : [];
 }
 
 export default mediaSlice.reducer;
@@ -366,6 +260,12 @@ function fetchBins(instanceID) {
           );
           throw res;
         }
+      },
+      error: res => {
+        dispatch(
+          notify({ message: "Failed loading media bins", kind: "error" })
+        );
+        throw res;
       }
     });
   };
@@ -438,8 +338,8 @@ function fetchGroups(binZUID) {
 
 export function fetchAllGroups() {
   return (dispatch, getState) => {
-    const bins = getState().media.bins;
-    return Promise.all(bins.map(bin => dispatch(fetchGroups(bin.id)))).then(
+    const binIDs = getState().media.groups[0].children;
+    return Promise.all(binIDs.map(id => dispatch(fetchGroups(id)))).then(
       groups => {
         return dispatch(fetchGroupsSuccess(groups.flat()));
       }
