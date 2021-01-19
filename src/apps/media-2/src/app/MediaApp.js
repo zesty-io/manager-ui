@@ -94,17 +94,12 @@ export default connect(state => {
     updateURL();
   }, [currentFileID, currentGroupID]);
 
-  // fetch all bins on mount
+  // fetch all bins/groups on mount
   useEffect(() => {
-    props.dispatch(fetchAllBins());
-  }, []);
-
-  // fetch groups when we get new bins
-  useEffect(() => {
-    if (props.media.groups[0].children.length) {
+    props.dispatch(fetchAllBins()).then(() => {
       props.dispatch(fetchAllGroups());
-    }
-  }, [props.media.groups[0].children.length]);
+    });
+  }, []);
 
   // fetch group files when navigating to group
   useEffect(() => {
