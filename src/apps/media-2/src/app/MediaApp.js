@@ -170,7 +170,7 @@ export default connect(state => {
             ? "Loading Groups"
             : "Loading Bins"
         }
-        width="calc(100vw - 20vw - 60px)"
+        width="calc(100vw - 50%)"
         height="100vh"
       >
         <DndProvider backend={HTML5Backend}>
