@@ -1,4 +1,5 @@
 @import "~@zesty-io/core/colors.less";
+@import "../MediaApp.less";
 
 .Nav {
   background-color: #404759;
@@ -211,7 +212,7 @@
 /* Multiline clamp */
 .NavRowText {
   display: -webkit-box;
-  max-width: 250px;
+  max-width: @nav-width;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
