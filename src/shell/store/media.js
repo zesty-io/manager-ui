@@ -13,16 +13,22 @@ const mediaSlice = createSlice({
   name: "media",
   initialState: {
     groups: {
-      0: { children: [] }
-    },
-    hiddenGroups: {
-      0: { children: [] }
+      // nav root
+      0: { children: [] },
+      // hidden nav root
+      1: { children: [] }
     },
     files: new Map()
   },
   reducers: {
     // Bins
     fetchBinsSuccess(state, action) {
+      state.groups = {
+        // nav root
+        0: { children: [] },
+        // hidden nav root
+        1: { children: [] }
+      };
       const closed = getClosedGroups();
       const hidden = getHiddenGroups();
 
@@ -30,11 +36,11 @@ const mediaSlice = createSlice({
         bin.closed = closed.includes(bin.id);
         bin.children = [];
         bin.path = `/dam/${bin.id}`;
-        if (hidden.includes(bin.id)) {
-          state.hiddenGroups[bin.id] = bin;
-          state.hiddenGroups[0].children.push(bin.id);
+        bin.hidden = hidden.includes(bin.id);
+        state.groups[bin.id] = bin;
+        if (bin.hidden) {
+          state.groups[1].children.push(bin.id);
         } else {
-          state.groups[bin.id] = bin;
           state.groups[0].children.push(bin.id);
         }
       });
@@ -55,10 +61,10 @@ const mediaSlice = createSlice({
         group.closed = closed.includes(group.id);
         group.children = [];
         group.path = `/dam/${group.id}`;
-        if (hidden.includes(group.id)) {
-          state.hiddenGroups[group.id] = group;
-        } else {
-          state.groups[group.id] = group;
+        group.hidden = hidden.includes(group.id);
+        state.groups[group.id] = group;
+        if (group.hidden) {
+          state.groups[1].children.push(group.id);
         }
       });
 
@@ -70,7 +76,13 @@ const mediaSlice = createSlice({
       });
     },
     createGroupSuccess(state, action) {
-      state.groups[action.payload.id] = action.payload;
+      const group = action.payload;
+      group.children = [];
+      group.path = `/dam/${group.id}`;
+      group.closed = false;
+      group.hidden = false;
+      state.groups[group.id] = group;
+      state.groups[group.group_id].children.push(group.id);
     },
     editGroupSuccess(state, action) {
       const group = state.groups[action.payload.id];
@@ -80,16 +92,20 @@ const mediaSlice = createSlice({
       }
     },
     deleteGroupSuccess(state, action) {
-      delete state.groups[action.payload.id];
+      const group = action.payload;
+      delete state.groups[group.id];
+      const index = state.groups[group.group_id].children.findIndex(
+        val => val === group.id
+      );
+      if (index !== -1) {
+        state.groups[group.group_id].children.splice(index, 1);
+      }
     },
     closeGroup(state, action) {
       const group = state.groups[action.payload];
-      console.log("closing group", group);
       if (group) {
-        // update item in groups/bins
         group.closed = !group.closed;
 
-        // update item in localstorage
         localStorage.setItem(
           "zesty:navMedia:closed",
           JSON.stringify(
@@ -98,41 +114,41 @@ const mediaSlice = createSlice({
         );
       }
     },
-    // hideGroup(state, action) {
-    //   const group = state.groups[action.payload];
-    //   state.hiddenGroups[action.payload] = group
-    //   if (group) {
-    //     group.hidden = !group.hidden;
+    hideGroup(state, action) {
+      const group = state.groups[action.payload];
+      if (group) {
+        group.hidden = !group.hidden;
+        if (!group.hidden) {
+          const index = state.groups[1].children.findIndex(
+            val => val === group.id
+          );
+          if (index !== -1) {
+            state.groups[1].children.splice(index, 1);
+          }
+        } else {
+          state.groups[1].children.push(group.id);
+        }
 
-    //     const hiddenGroups = [];
-    //     for (let group of state.groups.values()) {
-    //       if (group.hidden) {
-    //         hiddenGroups.push(group.id);
-    //       }
-    //     }
-    //     localStorage.setItem(
-    //       "zesty:navMedia:hidden",
-    //       JSON.stringify(hiddenBins.concat(hiddenGroups))
-    //     );
-
-    //     const currentState = current(state);
-    //     state.nav = buildMainNav(currentState.bins, currentState.groups);
-    //     // state.hiddenNav = buildHiddenNav(
-    //     //   currentState.bins,
-    //     //   currentState.groups
-    //     // );
-    //   }
-    // },
+        localStorage.setItem(
+          "zesty:navMedia:hidden",
+          JSON.stringify(
+            Object.keys(state.groups).filter(id => state.groups[id].hidden)
+          )
+        );
+      }
+    },
     selectGroup(state, action) {
       // update item to selected
       const group = state.groups[action.payload.currentGroupID];
       if (group) {
         group.selected = true;
       }
-      // update prevItem to unselected
-      const prevItem = state.groups[action.payload.previousGroupID];
-      if (prevItem) {
-        prevItem.selected = false;
+      if (action.payload.currentGroupID !== action.payload.previousGroupID) {
+        // update prevItem to unselected
+        const prevItem = state.groups[action.payload.previousGroupID];
+        if (prevItem) {
+          prevItem.selected = false;
+        }
       }
     },
     highlightGroup(state, action) {

@@ -1,4 +1,5 @@
 @import "~@zesty-io/core/colors.less";
+@import "../MediaApp.less";
 
 .Nav {
   background-color: #404759;
@@ -130,4 +131,89 @@
 }
 .HiddenNavClosed {
   display: none;
+}
+
+@global-top-bar-height: 54px;
+@media-sidebar-top-nav-height: 102px;
+@hidden-nav-height: 26px;
+@hidden-nav-expanded-height: 126px;
+
+@light-nav-color: lighten(@nav-border-color, 6%);
+
+.MediaNav {
+  height: calc(
+    100vh - @global-top-bar-height - @media-sidebar-top-nav-height -
+      @hidden-nav-height
+  );
+}
+
+.Nav.hiddenOpen {
+  .MediaNav {
+    height: calc(
+      100vh - @global-top-bar-height - @media-sidebar-top-nav-height -
+        @hidden-nav-expanded-height
+    );
+  }
+}
+
+.MediaHiddenNav {
+  height: 100px;
+}
+
+.NavRow {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-right: 8px;
+  color: @zesty-light-blue;
+
+  svg {
+    font-size: 1rem;
+    padding: 0;
+    margin-right: 8px;
+    opacity: 0.6;
+  }
+
+  .hide,
+  .collapse {
+    color: @zesty-gray;
+    cursor: pointer;
+    padding: 10px;
+
+    &:hover,
+    &:active,
+    &:focus {
+      color: @zesty-white;
+    }
+  }
+
+  .hide {
+    visibility: hidden;
+  }
+
+  &:hover {
+    background-color: @light-nav-color;
+    .hide {
+      visibility: visible;
+    }
+  }
+
+  &.selected {
+    border-left: 2px solid @zesty-orange;
+
+    color: @white;
+
+    svg {
+      opacity: 1;
+    }
+  }
+}
+
+/* Multiline clamp */
+.NavRowText {
+  display: -webkit-box;
+  max-width: @nav-width;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

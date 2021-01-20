@@ -1,24 +1,25 @@
 import React, { useCallback, useMemo, useState, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUpload,
   faCaretDown,
   faCaretLeft,
+  faEyeSlash,
+  faFolder,
   faSearch
 } from "@fortawesome/free-solid-svg-icons";
-
-// import { NavDraggable } from "./NavDraggable";
+import cx from "classnames";
 import { Button } from "@zesty-io/core/Button";
-import { uploadFile } from "shell/store/media";
 
+import { uploadFile, closeGroup, hideGroup } from "shell/store/media";
 import shared from "./MediaShared.less";
 import styles from "./MediaSidebar.less";
-
 import { MediaNav } from "./MediaNav";
 
 export const MediaSidebar = React.memo(function MediaSidebar(props) {
   const dispatch = useDispatch();
+  const groups = useSelector(state => state.media.groups);
   const [hiddenOpen, setHiddenOpen] = useState(false);
   const hiddenFileInput = useRef(null);
 
@@ -37,20 +38,69 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
     });
   }
 
-  // const actions = useMemo(
-  //   () => [
-  //     {
-  //       icon: "fas fa-eye-slash",
-  //       onClick: node => {
-  //         dispatch(hideGroup(node.id));
-  //       }
-  //     }
-  //   ],
-  //   []
-  // );
+  const getVisibleChildren = id => {
+    const group = groups[id];
+    if (!group.closed && group.children) {
+      return group.children
+        .filter(id => !groups[id].hidden)
+        .map(id => ({
+          id,
+          height: 30
+        }));
+    }
+  };
+
+  const getAllChildren = id => {
+    const group = groups[id];
+    if (!group.closed && group.children) {
+      return group.children.map(id => ({
+        id,
+        height: 30
+      }));
+    }
+  };
+
+  const collapseNode = useCallback(id => dispatch(closeGroup(id)), []);
+  const hideNode = useCallback(id => dispatch(hideGroup(id)), []);
+
+  const rowRenderer = ({ id, style }) => {
+    const group = groups[id];
+    delete style.width;
+    return (
+      <div
+        key={id}
+        className={cx(styles.NavRow, group.selected ? styles.selected : null)}
+        style={style}
+        onClick={() => {
+          props.onPathChange(group.path);
+        }}
+      >
+        <FontAwesomeIcon icon={faFolder} />
+        <div className={styles.NavRowText}>{group.name}</div>
+        <FontAwesomeIcon
+          className={styles.hide}
+          onClick={event => {
+            event.stopPropagation();
+            hideNode(id);
+          }}
+          icon={faEyeSlash}
+        />
+        {group.children.length ? (
+          <FontAwesomeIcon
+            className={styles.collapse}
+            onClick={event => {
+              event.stopPropagation();
+              collapseNode(id);
+            }}
+            icon={group.closed ? faCaretLeft : faCaretDown}
+          />
+        ) : null}
+      </div>
+    );
+  };
 
   return (
-    <nav className={styles.Nav}>
+    <nav className={cx(styles.Nav, hiddenOpen ? styles.hiddenOpen : null)}>
       <div className={styles.TopNav}>
         <form className={styles.SearchForm} action="">
           <input
@@ -81,7 +131,13 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
           style={{ display: "none" }}
         />
       </div>
-      <MediaNav onPathChange={props.onPathChange} />
+      <MediaNav
+        className={styles.MediaNav}
+        rootID={0}
+        getChildren={getVisibleChildren}
+        rowRenderer={rowRenderer}
+        onPathChange={props.onPathChange}
+      />
       <div className={styles.HiddenNav}>
         <h1
           className={styles.NavTitle}
@@ -94,13 +150,15 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
             <FontAwesomeIcon icon={faCaretLeft} />
           )}
         </h1>
-        {/* <NavDraggable
-          tree={props.hiddenNav}
-          className={hiddenOpen ? "" : styles.HiddenNavClosed}
-          collapseNode={collapseNode}
-          actions={actions}
-          onPathChange={props.onPathChange}
-        /> */}
+        {hiddenOpen ? (
+          <MediaNav
+            className={styles.MediaHiddenNav}
+            rootID={1}
+            getChildren={getAllChildren}
+            rowRenderer={rowRenderer}
+            onPathChange={props.onPathChange}
+          />
+        ) : null}
       </div>
     </nav>
   );

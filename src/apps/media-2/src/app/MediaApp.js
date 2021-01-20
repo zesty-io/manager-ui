@@ -74,7 +74,8 @@ export default connect(state => {
 
   // when currentGroupID changes, select group in redux
   useEffect(() => {
-    if (currentGroupID && currentGroupID !== previousGroupID) {
+    const group = props.media.groups[currentGroupID];
+    if (group && !group.selected) {
       props.dispatch(selectGroup({ currentGroupID, previousGroupID }));
     }
   }, [currentGroupID, props.media.groups]);
@@ -94,17 +95,12 @@ export default connect(state => {
     updateURL();
   }, [currentFileID, currentGroupID]);
 
-  // fetch all bins on mount
+  // fetch all bins/groups on mount
   useEffect(() => {
-    props.dispatch(fetchAllBins());
-  }, []);
-
-  // fetch groups when we get new bins
-  useEffect(() => {
-    if (props.media.groups[0].children.length) {
+    props.dispatch(fetchAllBins()).then(() => {
       props.dispatch(fetchAllGroups());
-    }
-  }, [props.media.groups[0].children.length]);
+    });
+  }, []);
 
   // fetch group files when navigating to group
   useEffect(() => {
