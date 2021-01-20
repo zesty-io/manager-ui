@@ -14,24 +14,27 @@ export default connect(state => {
 })(function ImageOptions(props) {
   const [groups, setGroups] = useState([]);
 
+  // load bins/groups on mount
   useEffect(() => {
-    props.dispatch(fetchAllBins());
-  }, []); // fire once to load initial bins
-
-  useEffect(() => {
-    props.dispatch(fetchAllGroups());
-  }, [props.media.bins.length]); // fetch all groups
+    props.dispatch(fetchAllBins()).then(() => {
+      props.dispatch(fetchAllGroups());
+    });
+  }, []);
 
   useEffect(() => {
     setGroups(
-      props.media.groups.map(group => {
-        return {
-          value: group.id,
-          text: group.name
-        };
-      })
+      Object.keys(props.media.groups)
+        // filter out root nodes
+        .filter(id => id !== "0" && id !== "1")
+        .map(id => {
+          const group = props.media.groups[id];
+          return {
+            value: group.id,
+            text: group.name
+          };
+        })
     );
-  }, [props.media.groups.length]);
+  }, [props.media.groups]);
 
   return (
     <div className={styles.FieldSettings}>
