@@ -143,10 +143,12 @@ const mediaSlice = createSlice({
       if (group) {
         group.selected = true;
       }
-      // update prevItem to unselected
-      const prevItem = state.groups[action.payload.previousGroupID];
-      if (prevItem) {
-        prevItem.selected = false;
+      if (action.payload.currentGroupID !== action.payload.previousGroupID) {
+        // update prevItem to unselected
+        const prevItem = state.groups[action.payload.previousGroupID];
+        if (prevItem) {
+          prevItem.selected = false;
+        }
       }
     },
     highlightGroup(state, action) {

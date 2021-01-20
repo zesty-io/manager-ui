@@ -74,7 +74,8 @@ export default connect(state => {
 
   // when currentGroupID changes, select group in redux
   useEffect(() => {
-    if (currentGroupID && currentGroupID !== previousGroupID) {
+    const group = props.media.groups[currentGroupID];
+    if (group && !group.selected) {
       props.dispatch(selectGroup({ currentGroupID, previousGroupID }));
     }
   }, [currentGroupID, props.media.groups]);
