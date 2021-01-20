@@ -83,7 +83,8 @@ export default connect(state => {
   // if no currentGroupID, set to default bin ID
   useEffect(() => {
     if (!currentGroupID && props.media.groups) {
-      const binID = props.media.groups[0].children[0];
+      const binID =
+        props.media.groups[0].children[0] || props.media.groups[1].children[0];
       if (binID) {
         setCurrentGroupID(binID);
       }
@@ -162,7 +163,8 @@ export default connect(state => {
       <WithLoader
         condition={currentBin}
         message={
-          props.media.groups[0].children.length
+          props.media.groups[0].children.length ||
+          props.media.groups[1].children.length
             ? "Loading Groups"
             : "Loading Bins"
         }

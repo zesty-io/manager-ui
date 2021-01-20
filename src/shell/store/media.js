@@ -125,7 +125,14 @@ const mediaSlice = createSlice({
           if (index !== -1) {
             state.groups[1].children.splice(index, 1);
           }
+          state.groups[0].children.push(group.id);
         } else {
+          const index = state.groups[0].children.findIndex(
+            val => val === group.id
+          );
+          if (index !== -1) {
+            state.groups[0].children.splice(index, 1);
+          }
           state.groups[1].children.push(group.id);
         }
 
