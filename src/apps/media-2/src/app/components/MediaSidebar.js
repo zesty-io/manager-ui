@@ -45,7 +45,7 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
         .filter(id => !groups[id].hidden)
         .map(id => ({
           id,
-          height: 30
+          height: 32
         }));
     }
   };

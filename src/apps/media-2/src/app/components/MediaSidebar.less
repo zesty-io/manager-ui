@@ -9,7 +9,6 @@
   .TopNav {
     padding: 8px;
     display: flex;
-    // align-items: center;
     flex-direction: column;
 
     @media only screen and (min-width: 2000px) {
@@ -56,7 +55,6 @@
 
   .NavTitle {
     color: #c3cddf;
-
     font-size: 14px;
     text-align: left;
     padding: 4px 12px;
@@ -64,37 +62,7 @@
     text-transform: uppercase;
     align-items: center;
   }
-  ul {
-    line-height: 1.33;
-    letter-spacing: 1px;
-    list-style: none;
-    margin-left: 8px;
-  }
-  .item {
-    padding-left: 8px;
-    &:hover {
-      background-color: #485471;
 
-      .hide {
-        visibility: visible;
-      }
-    }
-    a {
-      text-decoration: none;
-      color: #c3cddf;
-      display: flex;
-      justify-content: flex-end;
-      flex: 1;
-      padding: 8px 16px;
-      align-items: center;
-      font-weight: 500;
-      border: 1px solid #1b202c;
-      margin-right: 8px;
-      svg {
-        margin-right: 8px;
-      }
-    }
-  }
   // Pulled from NODE design-systems
   .depth1 {
     background-color: #1a202c;
@@ -164,21 +132,28 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-right: 8px;
   color: @zesty-light-blue;
+  background-color: #1a202c;
+  border-left: 2px solid #1a202c;
+  padding: 0 16px;
+  box-sizing: border-box;
+  width: 100%;
 
   svg {
-    font-size: 1rem;
-    padding: 0;
-    margin-right: 8px;
+    margin-right: 4px;
+  }
+  [data-icon="caret-down"] {
+    font-size: 16px;
     opacity: 0.6;
+  }
+  [data-icon="eye-slash"] {
+    font-size: 10px;
   }
 
   .hide,
   .collapse {
     color: @zesty-gray;
     cursor: pointer;
-    padding: 10px;
 
     &:hover,
     &:active,
@@ -200,7 +175,6 @@
 
   &.selected {
     border-left: 2px solid @zesty-orange;
-
     color: @white;
 
     svg {
@@ -216,4 +190,5 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  margin-right: auto;
 }
