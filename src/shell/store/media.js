@@ -419,7 +419,7 @@ export function deleteGroup(group) {
       if (res.status === 200) {
         dispatch(deleteGroupSuccess(group));
         dispatch(
-          notify({ message: `Deleted group ${group.name}`, kind: "success" })
+          notify({ message: `Deleted group ${group.name}`, kind: "default" })
         );
       } else {
         dispatch(notify({ message: "Failed deleting group", kind: "error" }));
