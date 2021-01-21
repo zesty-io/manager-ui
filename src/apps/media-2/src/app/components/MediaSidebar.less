@@ -113,6 +113,11 @@
     100vh - @global-top-bar-height - @media-sidebar-top-nav-height -
       @hidden-nav-height
   );
+  @media only screen and (min-width: 2000px) {
+    height: calc(
+      100vh - @global-top-bar-height - @media-sidebar-top-nav-height - -15px
+    );
+  }
 }
 .MediaNav {
   //rv-sticky-tree
@@ -210,7 +215,7 @@
     opacity: 0.6;
   }
   [data-icon="eye-slash"] {
-    font-size: 10px;
+    margin-left: 4px;
   }
 
   .hide,
@@ -254,4 +259,6 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   margin-right: auto;
+  line-height: 1.33;
+  letter-spacing: 0.32px;
 }
