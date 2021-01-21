@@ -67,7 +67,7 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
     const group = groups[id];
     delete style.width;
     return (
-      <div
+      <li
         key={id}
         className={cx(styles.NavRow, group.selected ? styles.selected : null)}
         style={style}
@@ -76,7 +76,7 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
         }}
       >
         <FontAwesomeIcon icon={faFolder} />
-        <div className={styles.NavRowText}>{group.name}</div>
+        <p className={styles.NavRowText}>{group.name}</p>
         <FontAwesomeIcon
           className={styles.hide}
           onClick={event => {
@@ -95,7 +95,7 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
             icon={group.closed ? faCaretLeft : faCaretDown}
           />
         ) : null}
-      </div>
+      </li>
     );
   };
 

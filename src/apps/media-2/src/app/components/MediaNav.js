@@ -15,7 +15,7 @@ export function MediaNav(props) {
       }}
     >
       {({ measureRef }) => (
-        <div
+        <ul
           ref={measureRef}
           className={props.className ? props.className : null}
         >
@@ -27,7 +27,7 @@ export function MediaNav(props) {
             width={navWidth}
             height={navHeight}
           />
-        </div>
+        </ul>
       )}
     </Measure>
   );
