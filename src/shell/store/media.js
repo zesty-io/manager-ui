@@ -125,7 +125,10 @@ const mediaSlice = createSlice({
           if (index !== -1) {
             state.groups[1].children.splice(index, 1);
           }
-          state.groups[0].children.push(group.id);
+          // only push bins back onto the visible nav
+          if (!group.group_id) {
+            state.groups[0].children.push(group.id);
+          }
         } else {
           const index = state.groups[0].children.findIndex(
             val => val === group.id
@@ -361,7 +364,8 @@ function fetchGroups(binZUID) {
 
 export function fetchAllGroups() {
   return (dispatch, getState) => {
-    const binIDs = getState().media.groups[0].children;
+    const groups = getState().media.groups;
+    const binIDs = groups[0].children.concat(groups[1].children);
     return Promise.all(binIDs.map(id => dispatch(fetchGroups(id)))).then(
       groups => {
         return dispatch(fetchGroupsSuccess(groups.flat()));

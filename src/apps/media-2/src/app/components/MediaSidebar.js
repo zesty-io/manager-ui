@@ -41,12 +41,15 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
   const getVisibleChildren = id => {
     const group = groups[id];
     if (!group.closed && group.children) {
-      return group.children
-        .filter(id => !groups[id].hidden)
-        .map(id => ({
-          id,
-          height: 32
-        }));
+      // filter out hidden unless we are at hidden nav root
+      const children =
+        id === 1
+          ? group.children
+          : group.children.filter(id => !groups[id].hidden);
+      return children.map(id => ({
+        id,
+        height: 30
+      }));
     }
   };
 
@@ -154,7 +157,7 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
           <MediaNav
             className={styles.MediaHiddenNav}
             rootID={1}
-            getChildren={getAllChildren}
+            getChildren={getVisibleChildren}
             rowRenderer={rowRenderer}
             onPathChange={props.onPathChange}
           />
