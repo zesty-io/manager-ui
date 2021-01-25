@@ -1,6 +1,5 @@
 .Modal {
   max-width: 65%;
-  margin: 8px auto;
   padding: 16px;
 
   @media only screen and (min-width: 2000px) {
@@ -10,6 +9,10 @@
   }
 
   .ModalContent {
+    // working modal for small screens
+    @media only screen and (max-width: 1280px) {
+      display: flex;
+    }
     display: grid;
     grid-template-columns: minmax(450px, 1fr) minmax(350px, 1fr);
     gap: 16px;
@@ -21,6 +24,7 @@
     img {
       display: block;
       margin: auto;
+      max-width: 100%;
     }
 
     .ModalLabels {
