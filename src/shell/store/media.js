@@ -396,22 +396,24 @@ export function createGroup(groupName, bin, group) {
 
 export function editGroup(groupID, newGroupProperties) {
   return (dispatch, getState) => {
-    const group = getState().media.groups.find(group => group.id === groupID);
-    const body = {
-      ...pick(group, ["id", "group_id", "name"]),
-      ...newGroupProperties
-    };
-    return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/group/${group.id}`, {
-      method: "PATCH",
-      body
-    }).then(res => {
-      if (res.status === 200) {
-        dispatch(editGroupSuccess(res.data[0]));
-      } else {
-        dispatch(notify({ message: "Failed editing group", kind: "error" }));
-        throw res;
-      }
-    });
+    const group = getState().media.groups[groupID];
+    if (group) {
+      const body = {
+        ...pick(group, ["id", "group_id", "name"]),
+        ...newGroupProperties
+      };
+      return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/group/${group.id}`, {
+        method: "PATCH",
+        body
+      }).then(res => {
+        if (res.status === 200) {
+          dispatch(editGroupSuccess(res.data[0]));
+        } else {
+          dispatch(notify({ message: "Failed editing group", kind: "error" }));
+          throw res;
+        }
+      });
+    }
   };
 }
 
