@@ -82,7 +82,10 @@ const mediaSlice = createSlice({
       group.closed = false;
       group.hidden = false;
       state.groups[group.id] = group;
-      state.groups[group.group_id].children.push(group.id);
+      const parent = state.groups[group.group_id];
+      parent.children.push(group.id);
+      // expand parent group
+      parent.closed = false;
     },
     editGroupSuccess(state, action) {
       const group = state.groups[action.payload.id];
