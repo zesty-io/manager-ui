@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useRef } from "react";
+import React, { useCallback, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -12,16 +12,33 @@ import {
 import cx from "classnames";
 import { Button } from "@zesty-io/core/Button";
 
-import { uploadFile, closeGroup, hideGroup } from "shell/store/media";
+import {
+  uploadFile,
+  closeGroup,
+  hideGroup,
+  searchFiles,
+  clearSearch
+} from "shell/store/media";
 import shared from "./MediaShared.less";
 import styles from "./MediaSidebar.less";
 import { MediaNav } from "./MediaNav";
 
 export const MediaSidebar = React.memo(function MediaSidebar(props) {
   const dispatch = useDispatch();
+
   const groups = useSelector(state => state.media.groups);
+
   const [hiddenOpen, setHiddenOpen] = useState(false);
   const hiddenFileInput = useRef(null);
+
+  function handleSearch(event) {
+    event.preventDefault();
+    if (props.searchTerm) {
+      dispatch(searchFiles(props.searchTerm));
+    } else {
+      dispatch(clearSearch());
+    }
+  }
 
   function handleUploadClick() {
     hiddenFileInput.current.click();
@@ -47,16 +64,6 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
           ? group.children
           : group.children.filter(id => !groups[id].hidden);
       return children.map(id => ({
-        id,
-        height: 30
-      }));
-    }
-  };
-
-  const getAllChildren = id => {
-    const group = groups[id];
-    if (!group.closed && group.children) {
-      return group.children.map(id => ({
         id,
         height: 30
       }));
@@ -105,12 +112,13 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
   return (
     <nav className={cx(styles.Nav, hiddenOpen ? styles.hiddenOpen : null)}>
       <div className={styles.TopNav}>
-        <form className={styles.SearchForm} action="">
+        <form className={styles.SearchForm} onSubmit={handleSearch}>
           <input
             type="text"
             className={shared.Input}
             placeholder="Search your files"
-            name="search2"
+            value={props.searchTerm}
+            onChange={event => props.setSearchTerm(event.target.value)}
           />
           <button type="submit" aria-label="Search">
             <FontAwesomeIcon icon={faSearch} />

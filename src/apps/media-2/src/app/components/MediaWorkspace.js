@@ -23,12 +23,21 @@ const selectGroupFiles = createSelector(
       .reverse()
 );
 
+const selectSearchResults = createSelector(
+  state => state.media,
+  media => media.search.files.map(id => media.files.get(id))
+);
+
 export const MediaWorkspace = React.memo(function MediaWorkspace(props) {
   const ref = useRef();
   const hiddenInputRef = useRef();
-  const files = useSelector(state =>
-    selectGroupFiles(state, props.currentGroup)
-  );
+  const search = useSelector(state => state.media.search);
+  const files = useSelector(state => {
+    if (search.term) {
+      return selectSearchResults(state);
+    }
+    return selectGroupFiles(state, props.currentGroup);
+  });
   const dispatch = useDispatch();
 
   const chooseFile = useCallback(() => {
@@ -72,10 +81,15 @@ export const MediaWorkspace = React.memo(function MediaWorkspace(props) {
         showDeleteGroupModal={props.showDeleteGroupModal}
         numFiles={files.length}
         setCurrentGroupID={props.setCurrentGroupID}
+        searchTerm={search.term}
       />
       <WithLoader
         // don't show loader if we already have files from before
-        condition={files.length || props.currentGroup.loading === false}
+        condition={
+          files.length ||
+          (search.term && !search.loading) ||
+          (!search.term && props.currentGroup.loading === false)
+        }
         message="Loading Files"
         width="100%"
       >
@@ -119,6 +133,8 @@ export const MediaWorkspace = React.memo(function MediaWorkspace(props) {
                   );
                 })}
               </section>
+            ) : search.term ? (
+              <div>No results</div>
             ) : (
               <div className={styles.UploadMessage}>
                 <div>Drag and drop files here</div>

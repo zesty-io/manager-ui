@@ -18,7 +18,12 @@ const mediaSlice = createSlice({
       // hidden nav root
       1: { children: [] }
     },
-    files: new Map()
+    files: new Map(),
+    search: {
+      term: null,
+      files: [],
+      loading: false
+    }
   },
   reducers: {
     // Bins
@@ -245,6 +250,27 @@ const mediaSlice = createSlice({
         file.title = action.payload.title;
         file.group_id = action.payload.group_id;
       }
+    },
+    searchFilesStart(state, action) {
+      state.search.term = action.payload;
+      state.search.loading = true;
+    },
+    searchFilesError(state) {
+      state.search.loading = false;
+    },
+    searchFilesSuccess(state, action) {
+      state.search.loading = false;
+      state.search.files = [];
+      action.payload.files.forEach(file => {
+        if (!state.files.has(file.id)) {
+          state.files.set(file.id, file);
+        }
+        state.search.files.push(file.id);
+      });
+    },
+    clearSearch(state) {
+      state.search.term = "";
+      state.search.files = [];
     }
   }
 });
@@ -278,7 +304,11 @@ export const {
   fileUploadProgress,
   fileUploadSuccess,
   fileUploadError,
-  editFileSuccess
+  editFileSuccess,
+  searchFilesStart,
+  searchFilesError,
+  searchFilesSuccess,
+  clearSearch
 } = mediaSlice.actions;
 
 function fetchBins(instanceID) {
@@ -578,6 +608,34 @@ export function editFile(fileID, fileProperties) {
       } else {
         dispatch(notify({ message: "Failed editing file", kind: "error" }));
         throw res;
+      }
+    });
+  };
+}
+
+export function searchFiles(term) {
+  return (dispatch, getState) => {
+    const groups = getState().media.groups;
+    const visibleBins = groups[0].children.filter(id => id.startsWith("1-"));
+    const hiddenBins = groups[1].children.filter(id => id.startsWith("1-"));
+    const queryParams = new URLSearchParams();
+    queryParams.append("bins", visibleBins.concat(hiddenBins).join());
+    queryParams.append("term", term);
+
+    dispatch(searchFilesStart(term));
+    return dispatch({
+      type: "FETCH_RESOURCE",
+      uri: `${
+        CONFIG.SERVICE_MEDIA_MANAGER
+      }/search/files?${queryParams.toString()}`,
+      handler: res => {
+        if (res.status === 200) {
+          dispatch(searchFilesSuccess({ term, files: res.data }));
+        } else {
+          dispatch(notify({ message: "Failed file search", kind: "error" }));
+          dispatch(searchFilesError());
+          throw res;
+        }
       }
     });
   };

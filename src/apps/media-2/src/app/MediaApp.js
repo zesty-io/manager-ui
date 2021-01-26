@@ -17,7 +17,8 @@ import {
   fetchAllGroups,
   fetchBinFiles,
   fetchGroupFiles,
-  selectGroup
+  selectGroup,
+  clearSearch
 } from "shell/store/media";
 import styles from "./MediaApp.less";
 
@@ -39,6 +40,9 @@ export default connect(state => {
 
   // selected files for use in content modal
   const [selected, setSelected] = useState([]);
+
+  // search term state
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [currentGroupID, setCurrentGroupID] = useState(
     params.groupID || props.groupID
@@ -63,11 +67,15 @@ export default connect(state => {
   }, [currentGroup, props.media.groups]);
 
   function updateURL() {
-    if (!props.modal && currentGroupID) {
-      if (currentFileID) {
-        history.push(`/dam/${currentGroupID}/file/${currentFileID}`);
+    if (!props.modal) {
+      if (currentGroupID) {
+        if (currentFileID) {
+          history.push(`/dam/${currentGroupID}/file/${currentFileID}`);
+        } else {
+          history.push(`/dam/${currentGroupID}`);
+        }
       } else {
-        history.push(`/dam/${currentGroupID}`);
+        history.push(`/dam`);
       }
     }
   }
@@ -130,6 +138,9 @@ export default connect(state => {
   // update currentGroupID on Nav path change
   const onPathChange = useCallback(path => {
     setCurrentGroupID(path.split("/")[2]);
+    // clear search in redux and local state
+    props.dispatch(clearSearch());
+    setSearchTerm("");
   }, []);
 
   const closeFileDetailsModal = useCallback(() => setCurrentFileID(), []);
@@ -181,6 +192,8 @@ export default connect(state => {
               currentBin={currentBin}
               currentGroup={currentGroup}
               onPathChange={onPathChange}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
             />
           )}
           <div

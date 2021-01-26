@@ -1,8 +1,6 @@
-import React, { useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faUpload,
   faEdit,
   faExclamationCircle,
   faVideo,
@@ -15,26 +13,31 @@ import { MediaEditGroupModal } from "./MediaEditGroupModal";
 import styles from "./MediaHeader.less";
 
 export const MediaHeader = React.memo(function MediaHeader(props) {
-  const dispatch = useDispatch();
   const [createGroupModal, setCreateGroupModal] = useState(false);
   const [editGroupModal, setEditGroupModal] = useState(false);
 
   return (
     <header className={styles.WorkspaceHeader}>
       <div className={styles.WorkspaceLeft}>
-        <h1 className={styles.GroupTitle}>{props.currentGroup.name}</h1>
+        <h1 className={styles.GroupTitle}>
+          {props.searchTerm
+            ? `Search Results "${props.searchTerm}"`
+            : props.currentGroup.name}
+        </h1>
         {props.numFiles ? (
           <h1 className={styles.GroupCount}>{` (${props.numFiles})`}</h1>
         ) : null}
-        <Button
-          title="Create Group"
-          aria-label="Create Group"
-          kind="secondary"
-          onClick={() => setCreateGroupModal(true)}
-        >
-          <FontAwesomeIcon icon={faPlus} />
-          <span>Create Group</span>
-        </Button>
+        {!props.searchTerm ? (
+          <Button
+            title="Create Group"
+            aria-label="Create Group"
+            kind="secondary"
+            onClick={() => setCreateGroupModal(true)}
+          >
+            <FontAwesomeIcon icon={faPlus} />
+            <span>Create Group</span>
+          </Button>
+        ) : null}
         {createGroupModal && (
           <MediaCreateGroupModal
             currentGroup={props.currentGroup}
@@ -44,15 +47,17 @@ export const MediaHeader = React.memo(function MediaHeader(props) {
           />
         )}
 
-        <Button
-          kind="cancel"
-          title="Edit"
-          onClick={() => setEditGroupModal(true)}
-        >
-          <FontAwesomeIcon icon={faEdit} />
-          <span>Edit</span>
-        </Button>
-        {props.currentBin !== props.currentGroup && (
+        {!props.searchTerm ? (
+          <Button
+            kind="cancel"
+            title="Edit"
+            onClick={() => setEditGroupModal(true)}
+          >
+            <FontAwesomeIcon icon={faEdit} />
+            <span>Edit</span>
+          </Button>
+        ) : null}
+        {!props.searchTerm && props.currentBin !== props.currentGroup ? (
           <Button
             title="Delete Group"
             kind="warn"
@@ -62,7 +67,7 @@ export const MediaHeader = React.memo(function MediaHeader(props) {
             <FontAwesomeIcon icon={faExclamationCircle} />
             <span>Delete</span>
           </Button>
-        )}
+        ) : null}
       </div>
       <div className={styles.WorkspaceRight}>
         <Button title="Tutorial Video" kind="default" aria-label="Tutorial">
