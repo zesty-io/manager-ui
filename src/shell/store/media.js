@@ -86,6 +86,12 @@ const mediaSlice = createSlice({
       parent.children.push(group.id);
       // expand parent group
       parent.closed = false;
+      localStorage.setItem(
+        "zesty:navMedia:closed",
+        JSON.stringify(
+          Object.keys(state.groups).filter(id => state.groups[id].closed)
+        )
+      );
     },
     editGroupSuccess(state, action) {
       const group = state.groups[action.payload.id];
