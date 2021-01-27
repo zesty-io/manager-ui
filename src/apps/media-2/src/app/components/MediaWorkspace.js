@@ -1,4 +1,5 @@
 import React, { useCallback, useRef } from "react";
+import cx from "classnames";
 import { createSelector } from "reselect";
 import { useDispatch, useSelector } from "react-redux";
 import { useDrop } from "react-dnd";
@@ -134,7 +135,9 @@ export const MediaWorkspace = React.memo(function MediaWorkspace(props) {
                 })}
               </section>
             ) : search.term ? (
-              <div>No results</div>
+              <div className={cx(styles.title, styles.Headline)}>
+                No results
+              </div>
             ) : (
               <div className={styles.UploadMessage}>
                 <div>Drag and drop files here</div>
