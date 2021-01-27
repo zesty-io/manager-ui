@@ -179,8 +179,6 @@ export default connect(state => {
             ? "Loading Groups"
             : "Loading Bins"
         }
-        // mediaApp grid inside Modal center "loading"
-        width="calc(100vw - 28.4vw)"
         height="100vh"
       >
         <DndProvider backend={HTML5Backend}>
