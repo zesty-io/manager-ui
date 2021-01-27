@@ -36,7 +36,7 @@ export const MediaWorkspaceItem = React.memo(function MediaWorkspaceItem(
   function handleIntersection(event) {
     if (event.isIntersecting) {
       const img = event.target;
-      if (img.dataset.src && !img.src && !img.onload) {
+      if (img.dataset.src && !img.onload) {
         setLazyLoading(true);
         img.src = img.dataset.src;
         img.onload = () => {

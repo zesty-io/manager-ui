@@ -253,6 +253,7 @@ const mediaSlice = createSlice({
     },
     searchFilesStart(state, action) {
       state.search.term = action.payload;
+      state.search.files = [];
       state.search.loading = true;
     },
     searchFilesError(state) {
@@ -618,6 +619,10 @@ export function searchFiles(term) {
     const groups = getState().media.groups;
     const visibleBins = groups[0].children.filter(id => id.startsWith("1-"));
     const hiddenBins = groups[1].children.filter(id => id.startsWith("1-"));
+    if (term.startsWith("http")) {
+      const termSplit = term.split("/");
+      term = termSplit[termSplit.length - 1];
+    }
     const queryParams = new URLSearchParams();
     queryParams.append("bins", visibleBins.concat(hiddenBins).join());
     queryParams.append("term", term);

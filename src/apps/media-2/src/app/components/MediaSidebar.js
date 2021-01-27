@@ -33,8 +33,9 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
 
   function handleSearch(event) {
     event.preventDefault();
-    if (props.searchTerm) {
-      dispatch(searchFiles(props.searchTerm));
+    const term = props.searchTerm.trim();
+    if (term) {
+      dispatch(searchFiles(term));
     } else {
       dispatch(clearSearch());
     }

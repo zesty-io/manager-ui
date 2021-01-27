@@ -28,7 +28,7 @@ export const MediaImage = React.forwardRef(function MediaImage(props, ref) {
       const src = `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${props.file.id}/getimage/${props.params}`;
       const options = {
         "data-src": props.lazy ? src : null,
-        src: props.lazy ? null : src
+        src: props.lazy ? "/images/FFFFFF-0.png" : src
       };
       return <img {...options} ref={ref} alt={props.file.title} />;
     case "html":
