@@ -172,14 +172,14 @@ export default connect(state => {
       )}
     >
       <WithLoader
-        condition={currentBin}
+        condition={false}
         message={
           props.media.groups[0].children.length ||
           props.media.groups[1].children.length
             ? "Loading Groups"
             : "Loading Bins"
         }
-        height="100vh"
+        height="calc(100vh - 54px)"
       >
         <DndProvider backend={HTML5Backend}>
           {// hide sidebar if we are locked to a group
