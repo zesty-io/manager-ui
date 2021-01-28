@@ -19,14 +19,13 @@ const selectGroupFiles = createSelector(
   state => state.media.files,
   (_, currentGroup) => currentGroup,
   (files, currentGroup) =>
-    Array.from(files.values())
-      .filter(file => file.group_id === currentGroup.id)
-      .reverse()
+    files.filter(file => file.group_id === currentGroup.id).reverse()
 );
 
 const selectSearchResults = createSelector(
   state => state.media,
-  media => media.search.files.map(id => media.files.get(id))
+  media =>
+    media.search.files.map(id => media.files.find(file => file.id === id))
 );
 
 export const MediaWorkspace = React.memo(function MediaWorkspace(props) {

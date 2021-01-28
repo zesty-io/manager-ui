@@ -32,7 +32,7 @@ export default connect(state => {
 
   // current file for file details modal
   const [currentFileID, setCurrentFileID] = useState(params.fileID);
-  const currentFile = props.media.files.get(currentFileID);
+  const currentFile = props.media.files.find(file => file.id === currentFileID);
 
   // modal states
   const [deleteGroupModal, setDeleteGroupModal] = useState(false);

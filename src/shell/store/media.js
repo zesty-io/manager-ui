@@ -18,7 +18,7 @@ const mediaSlice = createSlice({
       // hidden nav root
       1: { children: [] }
     },
-    files: new Map(),
+    files: [],
     search: {
       term: null,
       files: [],
@@ -201,50 +201,54 @@ const mediaSlice = createSlice({
       }
       const files = action.payload.files;
       // sort newest files first
-      files.forEach(file => {
-        if (!state.files.has(file.id)) {
-          state.files.set(file.id, file);
+      files.forEach(resultFile => {
+        if (state.files.findIndex(file => file.id === resultFile.id) === -1) {
+          state.files.push(resultFile);
         }
       });
     },
     deleteFileSuccess(state, action) {
-      if (state.files.has(action.payload.id)) {
-        state.files.delete(action.payload.id);
+      const fileIndex = state.files.findIndex(
+        file => file.id === action.payload.id
+      );
+      if (fileIndex !== -1) {
+        state.files.splice(fileIndex, 1);
       }
     },
     fileUploadStart(state, action) {
       const file = omit(action.payload, "file");
-      state.files.set(file.uploadID, file);
+      state.files.push(file);
     },
     fileUploadProgress(state, action) {
-      let uploadingFile = state.files.get(action.payload.uploadID);
+      const uploadingFile = state.files.find(
+        file => file.uploadID === action.payload.uploadID
+      );
       if (uploadingFile) {
         uploadingFile.progress = action.payload.progress;
       }
     },
     fileUploadSuccess(state, action) {
-      let uploadingFile = state.files.get(action.payload.uploadID);
+      const uploadingFile = state.files.find(
+        file => file.uploadID === action.payload.uploadID
+      );
       if (uploadingFile) {
-        // don't update draft since we delete file at the end
-        const file = { ...current(uploadingFile) };
-        file.loading = false;
-        file.id = action.payload.id;
-        file.title = action.payload.title;
-        file.filename = action.payload.filename;
-        file.url = action.payload.url;
-
-        // swap uploadID key for new id key
-        state.files.set(file.id, file);
-        state.files.delete(file.uploadID);
+        uploadingFile.loading = false;
+        uploadingFile.id = action.payload.id;
+        uploadingFile.title = action.payload.title;
+        uploadingFile.filename = action.payload.filename;
+        uploadingFile.url = action.payload.url;
       }
     },
     fileUploadError(state, action) {
-      if (state.files.has(action.payload.uploadID)) {
-        state.files.delete(action.payload.uploadID);
+      const fileIndex = state.files.findIndex(
+        file => file.uploadID === action.payload.uploadID
+      );
+      if (fileIndex !== -1) {
+        state.files.splice(fileIndex, 1);
       }
     },
     editFileSuccess(state, action) {
-      const file = state.files.get(action.payload.id);
+      const file = state.files.find(file => file.id === action.payload.id);
       if (file) {
         file.filename = action.payload.filename;
         file.title = action.payload.title;
@@ -262,11 +266,11 @@ const mediaSlice = createSlice({
     searchFilesSuccess(state, action) {
       state.search.loading = false;
       state.search.files = [];
-      action.payload.files.forEach(file => {
-        if (!state.files.has(file.id)) {
-          state.files.set(file.id, file);
+      action.payload.files.forEach(resultFile => {
+        if (state.files.findIndex(file => file.id === resultFile.id) === -1) {
+          state.files.push(resultFile);
         }
-        state.search.files.push(file.id);
+        state.search.files.push(resultFile.id);
       });
     },
     clearSearch(state) {
@@ -586,7 +590,7 @@ export function deleteFile(file) {
 
 export function editFile(fileID, fileProperties) {
   return (dispatch, getState) => {
-    const file = getState().media.files.get(fileID);
+    const file = getState().media.files.find(file => file.id === fileID);
     const body = {
       ...pick(file, ["id", "group_id", "filename"]),
       ...fileProperties
