@@ -12,6 +12,8 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import { notify } from "shell/store/notifications";
 
 import styles from "./Robots.less";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 export default connect(state => {
   return {
     domains: state.instance.domains,
@@ -165,7 +167,8 @@ export default connect(state => {
         >
           <div className={styles.Robots}>
             <h2 className={styles.display}>
-              <span className="pictos headingIcon">W</span> Robots.txt Editor
+              <FontAwesomeIcon icon={faEdit} />
+              Robots.txt Editor
             </h2>
 
             <div className={styles.Row}>
