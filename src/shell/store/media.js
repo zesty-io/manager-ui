@@ -619,7 +619,7 @@ export function searchFiles(term) {
     const groups = getState().media.groups;
     const visibleBins = groups[0].children.filter(id => id.startsWith("1-"));
     const hiddenBins = groups[1].children.filter(id => id.startsWith("1-"));
-    if (term.startsWith("http")) {
+    if (term.startsWith("https://") || term.startsWith("http://")) {
       const termSplit = term.split("/");
       term = termSplit[termSplit.length - 1];
     }

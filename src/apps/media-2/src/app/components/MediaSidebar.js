@@ -115,7 +115,7 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
       <div className={styles.TopNav}>
         <form className={styles.SearchForm} onSubmit={handleSearch}>
           <input
-            type="text"
+            type="search"
             className={shared.Input}
             placeholder="Search your files"
             value={props.searchTerm}
