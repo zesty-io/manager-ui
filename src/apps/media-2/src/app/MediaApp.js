@@ -172,7 +172,7 @@ export default connect(state => {
       )}
     >
       <WithLoader
-        condition={false}
+        condition={currentBin}
         message={
           props.media.groups[0].children.length ||
           props.media.groups[1].children.length
