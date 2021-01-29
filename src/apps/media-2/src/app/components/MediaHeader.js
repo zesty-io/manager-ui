@@ -53,6 +53,7 @@ export const MediaHeader = React.memo(function MediaHeader(props) {
           <Button
             kind="cancel"
             title="Edit"
+            aria-label="Edit"
             onClick={() => setEditGroupModal(true)}
           >
             <FontAwesomeIcon icon={faEdit} />
@@ -70,6 +71,7 @@ export const MediaHeader = React.memo(function MediaHeader(props) {
             <span>Delete</span>
           </Button>
         ) : null}
+        {/* hide tutorial until new video is published */}
         {/* <Button title="Tutorial Video" kind="default" aria-label="Tutorial">
           <FontAwesomeIcon icon={faVideo} />
           <span>Tutorial</span>

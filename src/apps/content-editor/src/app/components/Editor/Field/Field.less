@@ -12,6 +12,7 @@
   }
 }
 
+// Content Media Selected Modal
 .MediaAppModal {
   width: 90%;
   margin: 1.5% auto;
@@ -25,11 +26,16 @@
     z-index: 1;
     background-color: black;
   }
-
+  // Hide Tutorial in media selected view
   button[aria-label="Tutorial"] {
     display: none;
   }
+  // Prevent user from deleting selected images
   button[aria-label="Delete"] {
     display: none;
+  }
+  // Prevent "X" close btn from overlapping Edit btn
+  button[aria-label="Edit"] {
+    margin-right: 28px !important;
   }
 }
