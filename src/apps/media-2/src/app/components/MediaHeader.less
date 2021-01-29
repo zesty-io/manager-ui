@@ -13,22 +13,13 @@
     align-items: center;
   }
   .WorkspaceLeft {
-    & > *:not(:last-child) {
-      margin-right: 8px;
-    }
     .GroupTitle {
       color: white;
       padding-left: 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
       overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      vertical-align: middle;
-      max-width: 400px;
-
-      // ellipsis OFF
-      @media only screen and (min-width: 2000px) {
-        max-width: 650px;
-      }
     }
     h1 {
       font-size: 20px;
@@ -44,6 +35,13 @@
     .ModalFooter {
       display: flex;
       justify-content: space-between;
+    }
+  }
+  .WorkspaceRight {
+    min-width: max-content;
+    justify-content: flex-end;
+    & > *:not(:last-child) {
+      margin-right: 8px;
     }
   }
 }
