@@ -92,6 +92,7 @@ export const MediaWorkspace = React.memo(function MediaWorkspace(props) {
         }
         message="Loading Files"
         width="100%"
+        height="calc(100vh - 54px - 56px)"
       >
         <div ref={ref}>
           <input
