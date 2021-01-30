@@ -29,7 +29,8 @@ export function MediaDeleteGroupModal(props) {
         Are you sure you want to delete group?
       </ModalContent>
       <ModalContent className={shared.subheadline}>
-        !(This will also delete all subgroups and files.)
+        <FontAwesomeIcon icon={faExclamationCircle} /> This will also delete all
+        subgroups and files.
       </ModalContent>
       <ModalFooter className={shared.ModalFooter}>
         <Button
