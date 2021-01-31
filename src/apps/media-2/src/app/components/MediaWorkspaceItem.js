@@ -1,6 +1,5 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import cx from "classnames";
-import { useDrag } from "react-dnd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faCog } from "@fortawesome/free-solid-svg-icons";
 import Observer from "@researchgate/react-intersection-observer";
@@ -16,23 +15,6 @@ export const MediaWorkspaceItem = React.memo(function MediaWorkspaceItem(
   props
 ) {
   const [lazyLoading, setLazyLoading] = useState(false);
-  const ref = useRef();
-  const [, drag] = useDrag({
-    item: {
-      type: "file",
-      id: props.file.id,
-      bin_id: props.file.bin_id
-    },
-    canDrag() {
-      if (!props.file.id) {
-        return false;
-      }
-      return true;
-    }
-  });
-
-  drag(ref);
-
   function handleIntersection(event) {
     if (event.isIntersecting) {
       const img = event.target;
@@ -63,7 +45,7 @@ export const MediaWorkspaceItem = React.memo(function MediaWorkspaceItem(
   );
 
   return (
-    <div ref={ref} style={{ width: "100%" }}>
+    <div style={{ width: "100%" }}>
       <Card
         className={cx({
           [styles.Card]: true,

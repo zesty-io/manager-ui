@@ -265,13 +265,7 @@ const mediaSlice = createSlice({
     },
     searchFilesSuccess(state, action) {
       state.search.loading = false;
-      state.search.files = [];
-      action.payload.files.forEach(resultFile => {
-        if (state.files.findIndex(file => file.id === resultFile.id) === -1) {
-          state.files.push(resultFile);
-        }
-        state.search.files.push(resultFile.id);
-      });
+      state.search.files = action.payload.files;
     },
     clearSearch(state) {
       state.search.term = "";

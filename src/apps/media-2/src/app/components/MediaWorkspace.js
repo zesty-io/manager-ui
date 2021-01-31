@@ -22,19 +22,13 @@ const selectGroupFiles = createSelector(
     files.filter(file => file.group_id === currentGroup.id).reverse()
 );
 
-const selectSearchResults = createSelector(
-  state => state.media,
-  media =>
-    media.search.files.map(id => media.files.find(file => file.id === id))
-);
-
 export const MediaWorkspace = React.memo(function MediaWorkspace(props) {
   const ref = useRef();
   const hiddenInputRef = useRef();
   const search = useSelector(state => state.media.search);
   const files = useSelector(state => {
     if (search.term) {
-      return selectSearchResults(state);
+      return state.media.search.files;
     }
     return selectGroupFiles(state, props.currentGroup);
   });
