@@ -32,7 +32,15 @@ export default connect(state => {
 
   // current file for file details modal
   const [currentFileID, setCurrentFileID] = useState(params.fileID);
-  const currentFile = props.media.files.find(file => file.id === currentFileID);
+  const currentFile = useMemo(() => {
+    return (
+      props.media.files.find(file => file.id === currentFileID) ||
+      props.media.search.files.find(file => file.id === currentFileID)
+    );
+  }, [currentFileID, props.media.files, props.media.search.files]);
+  useEffect(() => {
+    setCurrentFileID(params.fileID);
+  }, [params.fileID]);
 
   // modal states
   const [deleteGroupModal, setDeleteGroupModal] = useState(false);
@@ -47,6 +55,9 @@ export default connect(state => {
   const [currentGroupID, setCurrentGroupID] = useState(
     params.groupID || props.groupID
   );
+  useEffect(() => {
+    setCurrentGroupID(params.groupID || props.groupID);
+  }, [params.groupID, props.groupID]);
 
   // track previous group id so we can unselect group
   // when new groups are selected
