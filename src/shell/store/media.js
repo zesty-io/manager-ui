@@ -200,9 +200,10 @@ const mediaSlice = createSlice({
         group.loading = false;
       }
       const files = action.payload.files;
+      const stateFiles = current(state.files);
       // sort newest files first
       files.forEach(resultFile => {
-        if (state.files.findIndex(file => file.id === resultFile.id) === -1) {
+        if (stateFiles.findIndex(file => file.id === resultFile.id) === -1) {
           state.files.push(resultFile);
         }
       });
