@@ -96,7 +96,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
             value={title}
             label={
               <label>
-                <Infotip title="Edit Image Title" />
+                <Infotip title="Edit title. | Use for alt text with Parsley's .getImageTitle()" />
                 &nbsp;Title
               </label>
             }
