@@ -19,14 +19,16 @@ export const MediaHeader = React.memo(function MediaHeader(props) {
   return (
     <header className={styles.WorkspaceHeader}>
       <div className={styles.WorkspaceLeft}>
+        {props.numFiles ? (
+          <h1 className={styles.GroupCount}>{` (${props.numFiles})`}</h1>
+        ) : null}
         <h1 className={styles.GroupTitle}>
           {props.searchTerm
             ? `Search Results "${props.searchTerm}"`
             : props.currentGroup.name}
         </h1>
-        {props.numFiles ? (
-          <h1 className={styles.GroupCount}>{` (${props.numFiles})`}</h1>
-        ) : null}
+      </div>
+      <div className={styles.WorkspaceRight}>
         {!props.searchTerm ? (
           <Button
             title="Create Group"
@@ -35,7 +37,7 @@ export const MediaHeader = React.memo(function MediaHeader(props) {
             onClick={() => setCreateGroupModal(true)}
           >
             <FontAwesomeIcon icon={faPlus} />
-            <span>Create Group</span>
+            <span>Create Sub Group</span>
           </Button>
         ) : null}
         {createGroupModal && (
@@ -51,6 +53,7 @@ export const MediaHeader = React.memo(function MediaHeader(props) {
           <Button
             kind="cancel"
             title="Edit"
+            aria-label="Edit"
             onClick={() => setEditGroupModal(true)}
           >
             <FontAwesomeIcon icon={faEdit} />
@@ -68,12 +71,11 @@ export const MediaHeader = React.memo(function MediaHeader(props) {
             <span>Delete</span>
           </Button>
         ) : null}
-      </div>
-      <div className={styles.WorkspaceRight}>
-        <Button title="Tutorial Video" kind="default" aria-label="Tutorial">
+        {/* hide tutorial until new video is published */}
+        {/* <Button title="Tutorial Video" kind="default" aria-label="Tutorial">
           <FontAwesomeIcon icon={faVideo} />
           <span>Tutorial</span>
-        </Button>
+        </Button> */}
       </div>
       {editGroupModal && (
         <MediaEditGroupModal

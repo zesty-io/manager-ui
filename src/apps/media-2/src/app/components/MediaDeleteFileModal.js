@@ -23,7 +23,8 @@ export function MediaDeleteFileModal(props) {
       onClose={() => props.onClose()}
     >
       <ModalContent className={styles.subheadline}>
-        Are you sure you want to delete file?
+        <FontAwesomeIcon icon={faExclamationCircle} /> Are you sure you want to
+        delete file?
       </ModalContent>
       <ModalFooter className={shared.ModalFooter}>
         <Button
