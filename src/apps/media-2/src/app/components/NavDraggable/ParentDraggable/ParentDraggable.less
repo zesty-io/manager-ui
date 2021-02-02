@@ -1,0 +1,55 @@
+@import "~@zesty-io/core/colors.less";
+
+.Parent {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+
+  &:hover {
+    background-color: lighten(@nav-border-color, 3%);
+  }
+
+  .titleIcon {
+    margin: 0 0.4rem;
+  }
+
+  .title {
+    display: flex;
+    color: @zesty-white;
+    background: darken(@nav-border-color, 14%);
+    align-items: baseline;
+    h2 {
+      flex: 1;
+      font-size: 1rem;
+      padding: 0.8rem 1rem 0.8rem 0;
+      letter-spacing: 1.5px;
+    }
+    i {
+      color: @zesty-white;
+      margin-right: 0.5rem;
+    }
+  }
+
+  ul {
+    line-height: 1.33;
+    letter-spacing: 1px;
+    list-style: none;
+    margin-left: 8px;
+
+    & > article:last-child li:last-child {
+      border-radius: 0 0 0 4px;
+    }
+
+    article:last-child {
+      margin-bottom: 8px;
+    }
+    ul article:last-child {
+      margin-bottom: 0;
+    }
+  }
+  .closed {
+    visibility: hidden;
+    max-height: 0;
+  }
+}

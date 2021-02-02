@@ -1,4 +1,5 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useState } from "react";
+import ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 
@@ -14,6 +15,8 @@ import {
 // it would be nice to have a central import for all of these
 // instead of individually importing
 import { AppLink } from "@zesty-io/core/AppLink";
+import { Modal } from "@zesty-io/core/Modal";
+import MediaApp from "../../../../../../media-2/src/app/MediaApp";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
@@ -117,6 +120,8 @@ export default connect(state => {
     dispatch
   } = props;
 
+  const [imageModal, setImageModal] = useState();
+
   switch (datatype) {
     case "text":
     case "fontawesome":
@@ -176,6 +181,7 @@ export default connect(state => {
       );
     case "wysiwyg_advanced":
     case "wysiwyg_basic":
+      const modal = document.getElementById("modalMount");
       return (
         <div className={styles.WYSIWYGFieldType}>
           <FieldTypeTinyMCE
@@ -199,13 +205,28 @@ export default connect(state => {
               pageembed: "/vendors/tinymce/plugins/pageembed/plugin.js"
             }}
             mediaBrowser={opts => {
-              riot.mount(
-                document.querySelector("#modalMount"),
-                "media-app-modal",
-                opts
-              );
+              setImageModal(opts);
             }}
           />
+          {imageModal &&
+            ReactDOM.createPortal(
+              <Modal
+                open={true}
+                type="global"
+                onClose={() => setImageModal()}
+                className={styles.MediaAppModal}
+              >
+                <MediaApp
+                  limitSelected={imageModal.limit}
+                  modal={true}
+                  addImages={images => {
+                    imageModal.callback(images);
+                    setImageModal();
+                  }}
+                />
+              </Modal>,
+              modal
+            )}
         </div>
       );
     case "markdown":
@@ -231,31 +252,51 @@ export default connect(state => {
       const images = useMemo(() => (value || "").split(",").filter(el => el), [
         value
       ]);
+      const mediaAppProps = {};
+      if (settings && settings.group_id && settings.group_id !== "0") {
+        mediaAppProps.groupID = settings.group_id;
+      }
       return (
-        <FieldTypeImage
-          images={images}
-          name={name}
-          label={label}
-          description={description}
-          tooltip={settings.tooltip}
-          required={required}
-          limit={(settings && settings.limit) || 1}
-          locked={Boolean(
-            settings && settings.group_id && settings.group_id != "0"
+        <>
+          <FieldTypeImage
+            images={images}
+            name={name}
+            label={label}
+            description={description}
+            tooltip={settings.tooltip}
+            required={required}
+            limit={(settings && settings.limit) || 1}
+            locked={Boolean(
+              settings && settings.group_id && settings.group_id != "0"
+            )}
+            onChange={onChange}
+            value={value}
+            resolveImage={(zuid, width, height) =>
+              `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
+            }
+            mediaBrowser={opts => {
+              setImageModal(opts);
+            }}
+          />
+          {imageModal && (
+            <Modal
+              open={true}
+              type="global"
+              onClose={() => setImageModal()}
+              className={styles.MediaAppModal}
+            >
+              <MediaApp
+                {...mediaAppProps}
+                limitSelected={imageModal.limit - images.length}
+                modal={true}
+                addImages={images => {
+                  imageModal.callback(images);
+                  setImageModal();
+                }}
+              />
+            </Modal>
           )}
-          onChange={onChange}
-          value={value}
-          resolveImage={(zuid, width, height) =>
-            `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
-          }
-          mediaBrowser={opts => {
-            riot.mount(
-              document.querySelector("#modalMount"),
-              "media-app-modal",
-              opts
-            );
-          }}
-        />
+        </>
       );
 
     case "yes_no":

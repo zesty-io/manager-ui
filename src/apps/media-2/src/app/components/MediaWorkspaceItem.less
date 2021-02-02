@@ -1,0 +1,147 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.Card {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  box-shadow: 0 7px 30px -10px rgba(150, 170, 180, 0.5);
+
+  // Checkbox Selected
+  &.selected {
+    box-shadow: 0px 0px 6px @zesty-light-blue;
+    //CheckBox
+    .CardContent .Check {
+      background: @zesty-blue;
+      opacity: 1;
+      color: @white;
+    }
+  }
+  // Grid Image
+  img {
+    width: 100%;
+    height: 167px;
+    min-height: 167px;
+    object-fit: contain;
+    display: block;
+  }
+
+  &.CardTop {
+    width: 100px;
+    flex-shrink: 0;
+
+    // Preview Strip Image
+    img {
+      width: 100%;
+      height: 100px;
+      object-fit: contain;
+      display: block;
+    }
+  }
+
+  .CardContent {
+    position: relative;
+    &.CardContentTop {
+      padding: 8px;
+      display: flex;
+      align-items: center;
+    }
+
+    //Loading Shimmer
+    .Load {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    .Loading {
+      animation: shimmer 5s infinite linear;
+      background: linear-gradient(
+        45deg,
+        #eff1f3 0%,
+        #e2e2e2 25%,
+        #eff1f3 50%,
+        #e2e2e2 75%,
+        #eff1f3 100%
+      );
+      background-size: 100%;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: -1000px 0;
+      }
+      100% {
+        background-position: 1000px 0;
+      }
+    }
+
+    //Checkbox Styles
+    .Check {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.15);
+      color: black;
+      width: 16px;
+      height: 16px;
+      margin: 1px;
+      border: none;
+      border-radius: 2px;
+      transition: 0.25s ease-in-out;
+    }
+
+    // Checkbox Show
+    &:hover {
+      .Check {
+        opacity: 1;
+      }
+    }
+  }
+  .CardFooter {
+    position: relative;
+    padding: 0;
+  }
+  .ProgressBar {
+    position: absolute;
+    height: 100%;
+    background-color: @zesty-orange;
+    opacity: 0.5;
+  }
+  .FooterButton {
+    cursor: pointer;
+    border: none;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    font-family: inherit;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .Cog {
+      background: rgba(0, 0, 0, 0.15);
+      font-size: 16px;
+      margin-right: 8px;
+      padding: 8px;
+      transition: all 0.3s;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.35);
+      }
+    }
+    .Preview {
+      overflow: hidden;
+      flex: 1;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: middle;
+      padding: 0 0.5rem;
+    }
+  }
+}

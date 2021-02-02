@@ -82,6 +82,7 @@ export default connect(state => {
             loading="lazy"
             width="356px"
             height="200px"
+            alt="Instance Image"
           />
         )}
 

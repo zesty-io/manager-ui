@@ -4,35 +4,37 @@ import { connect } from "react-redux";
 import { FieldTypeNumber } from "@zesty-io/core/FieldTypeNumber";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
-import { fetchMediaBins, fetchMediaGroups } from "shell/store/media";
+import { fetchAllBins, fetchAllGroups } from "shell/store/media";
 
 import styles from "./ImageOptions.less";
 export default connect(state => {
   return {
-    mediaBins: state.mediaBins,
-    mediaGroups: state.mediaGroups
+    media: state.media
   };
 })(function ImageOptions(props) {
   const [groups, setGroups] = useState([]);
 
+  // load bins/groups on mount
   useEffect(() => {
-    props.dispatch(fetchMediaBins());
-  }, []); // fire once to load initial bins
-
-  useEffect(() => {
-    props.mediaBins.forEach(bin => props.dispatch(fetchMediaGroups(bin.id)));
-  }, [props.mediaBins.length]); // fetch all groups
+    props.dispatch(fetchAllBins()).then(() => {
+      props.dispatch(fetchAllGroups());
+    });
+  }, []);
 
   useEffect(() => {
     setGroups(
-      props.mediaGroups.map(group => {
-        return {
-          value: group.id,
-          text: group.name
-        };
-      })
+      Object.keys(props.media.groups)
+        // filter out root nodes
+        .filter(id => id !== "0" && id !== "1")
+        .map(id => {
+          const group = props.media.groups[id];
+          return {
+            value: group.id,
+            text: group.name
+          };
+        })
     );
-  }, [props.mediaGroups.length]);
+  }, [props.media.groups]);
 
   return (
     <div className={styles.FieldSettings}>

@@ -1,0 +1,57 @@
+@import "~@zesty-io/core/typography.less";
+
+@global-top-bar-height: 54px;
+@drawer-height: 215px;
+@workspace-header-height: 56px;
+
+.Workspace {
+  position: relative;
+  height: calc(100vh - @global-top-bar-height - @workspace-header-height);
+  overflow: hidden;
+  overflow-y: auto;
+
+  z-index: 1;
+  transition: 0.25s ease-in-out;
+
+  // Main section grid layout
+  .WorkspaceGrid {
+    //Dynamic /helps center the whole grid
+    // grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+    //STATIC
+    grid-template-columns: repeat(auto-fit, 200px);
+    display: grid;
+    gap: 16px;
+    padding: 16px;
+    justify-items: center;
+  }
+  .Headline {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+}
+.DropMessage {
+  display: flex;
+  background-color: rgba(27, 32, 44, 0.95);
+  color: #efefef;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  z-index: 10;
+}
+.UploadMessage {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  line-height: 5rem;
+  font-weight: 900;
+  font-size: 24px;
+}

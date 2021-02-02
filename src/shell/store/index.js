@@ -18,7 +18,7 @@ import { models } from "./models";
 import { fields } from "./fields";
 import { content } from "./content";
 import { contentVersions } from "./contentVersions";
-import { mediaBins, mediaGroups } from "./media";
+import media from "./media";
 import { logs } from "./logs";
 import { notifications } from "./notifications";
 import { platform } from "./platform";
@@ -81,8 +81,7 @@ function createReducer(asyncReducers) {
     fields,
     content,
     contentVersions,
-    mediaBins,
-    mediaGroups,
+    media,
     logs,
     notifications,
     platform,

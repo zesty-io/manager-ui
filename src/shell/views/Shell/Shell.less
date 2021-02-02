@@ -51,6 +51,14 @@
       position: relative;
       z-index: 30;
 
+      /* Safari 10.1+  fix media selected modal
+      overlapped by GlobalSidebar & GlobalTopBar */
+      @media not all and (min-resolution: 0.001dpcm) {
+        @supports (-webkit-appearance: none) {
+          overflow: initial;
+        }
+      }
+
       width: calc(100vw - 60px);
       @media (min-width: 2000px) {
         width: calc(100vw - 170px);

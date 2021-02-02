@@ -119,7 +119,6 @@ export default connect((state, props) => {
     };
 
     handleSave = evt => {
-      // NOTE: this is likely OS dependant
       if (
         ((this.props.platform.isMac && evt.metaKey) ||
           (!this.props.platform.isMac && evt.ctrlKey)) &&

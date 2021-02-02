@@ -163,7 +163,12 @@ export default connect(state => {
             onClick={() => setOpen(!open)}
           />
         ) : faviconURL ? (
-          <img src={faviconURL} width="60px" height="60px" />
+          <img
+            src={faviconURL}
+            width="60px"
+            height="60px"
+            alt=" Select Favicon"
+          />
         ) : (
           <FontAwesomeIcon icon={faGlobe} />
         )}
@@ -186,7 +191,7 @@ export default connect(state => {
             value={faviconZUID}
             onChange={handleImage}
             resolveImage={(zuid, width, height) => {
-              return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`;
+              `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`;
             }}
             mediaBrowser={opts => {
               riot.mount(

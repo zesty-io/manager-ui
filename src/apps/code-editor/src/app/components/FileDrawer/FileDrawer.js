@@ -79,7 +79,7 @@ export const FileDrawer = React.memo(function FileDrawer(props) {
     <Drawer
       className={styles.Drawer}
       position="bottom"
-      offset="37px"
+      offset="50px"
       open={open}
     >
       <DrawerHandle className={styles.DrawerHandle} onClick={handleSetOpen}>

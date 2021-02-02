@@ -10,7 +10,10 @@ import Welcome from "shell/components/welcome";
 import Missing from "shell/components/missing";
 
 import ContentApp from "apps/content-editor/src";
+
 import MediaApp from "apps/media/src";
+import DamApp from "apps/media-2/src";
+
 import AuditTrailApp from "apps/audit-trail/src";
 import AnalyticsApp from "apps/analytics/src";
 import CodeApp from "apps/code-editor/src";
@@ -35,6 +38,9 @@ export default connect(state => {
           <div className={styles.SubApp}>
             <Sentry.ErrorBoundary fallback={() => <AppError />}>
               <Switch>
+                <Route path="/media/:groupID/file/:fileID" component={DamApp} />
+                <Route path="/media/:groupID" component={DamApp} />
+                <Route path="/media" component={DamApp} />
                 {props.products.map(product => {
                   switch (product) {
                     case "content":
@@ -43,14 +49,6 @@ export default connect(state => {
                           key={product}
                           path="/content"
                           component={ContentApp}
-                        />
-                      );
-                    case "media":
-                      return (
-                        <Route
-                          key={product}
-                          path="/media"
-                          component={MediaApp}
                         />
                       );
                     case "audit-trail":

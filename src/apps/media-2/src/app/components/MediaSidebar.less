@@ -1,0 +1,267 @@
+@import "~@zesty-io/core/colors.less";
+@import "../MediaApp.less";
+
+.Nav {
+  background-color: #404759;
+  word-break: break-word;
+  min-height: 100%;
+
+  .TopNav {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+
+    @media only screen and (min-width: 2000px) {
+      flex-direction: row;
+      align-items: center;
+    }
+    //Temporary search button styles until we pull from DS
+    .SearchForm {
+      display: flex;
+      flex: 1;
+
+      button {
+        align-items: center;
+        background-color: #404759;
+        border: 1px solid #404759;
+        border-radius: 0 3px 3px 0;
+        background-color: #404759;
+        box-shadow: inset 0 -2px 2px 0 rgba(26, 32, 44, 0.24),
+          inset 0 0 2px 0 rgba(26, 32, 44, 0.12);
+        color: #ffffff;
+        cursor: pointer;
+        display: flex;
+        font-weight: 500;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: 24px;
+        letter-spacing: 0.1px;
+        padding: 8px 16px 8px 16px;
+        flex-direction: row;
+        justify-content: flex-start;
+        text-transform: uppercase;
+        text-align: left;
+      }
+    }
+
+    .Upload {
+      margin: 8px 0 0 0;
+
+      @media only screen and (min-width: 2000px) {
+        margin: 0 0 0 4px;
+      }
+    }
+  }
+
+  .NavTitle {
+    color: #c3cddf;
+    font-size: 14px;
+    text-align: left;
+    padding: 4px 12px;
+    display: flex;
+    text-transform: uppercase;
+    align-items: center;
+  }
+
+  // Pulled from NODE design-systems
+  .depth1 {
+    background-color: #1a202c;
+    border-left: 2px solid #1a202c;
+
+    //Is active
+    border-left: 2px solid orange;
+  }
+  .depth2 {
+    background-color: lighten(#1a202c, 5%);
+    border-left: 2px solid lighten(#1a202c, 5%);
+  }
+  .depth3 {
+    background-color: lighten(#1a202c, 10%);
+    border-left: 2px solid lighten(#1a202c, 10%);
+  }
+  .depth4 {
+    background-color: lighten(#1a202c, 15%);
+    border-left: 2px solid lighten(#1a202c, 15%);
+  }
+}
+
+.HiddenNav {
+  opacity: 0.5;
+  .NavTitle {
+    cursor: pointer;
+
+    &:hover,
+    &:active,
+    &:focus {
+      color: @zesty-white;
+    }
+  }
+}
+.HiddenNavClosed {
+  display: none;
+}
+
+@global-top-bar-height: 54px;
+@media-sidebar-top-nav-height: 102px;
+@hidden-nav-height: 26px;
+@hidden-nav-full-height: 300px;
+@hidden-nav-expanded-height: @hidden-nav-height + @hidden-nav-full-height;
+
+@light-nav-color: lighten(@nav-border-color, 6%);
+
+.MediaNav {
+  height: calc(
+    100vh - @global-top-bar-height - @media-sidebar-top-nav-height -
+      @hidden-nav-height
+  );
+  @media only screen and (min-width: 2000px) {
+    height: calc(
+      100vh - @global-top-bar-height - @media-sidebar-top-nav-height - -15px
+    );
+  }
+}
+.MediaNav {
+  //rv-sticky-tree
+  div {
+    //rv-sticky-node-list
+    div {
+      //rv-sticky-parent-node
+      div {
+        //depth1
+        li {
+          background-color: #1a202c;
+        }
+        div {
+          //depth2
+          li {
+            background-color: lighten(#1a202c, 3%);
+            border-left-color: lighten(#1a202c, 3%);
+          }
+          div {
+            //depth3
+            li {
+              background-color: lighten(#1a202c, 6%);
+              border-left-color: lighten(#1a202c, 6%);
+            }
+            div {
+              //depth4
+              li {
+                background-color: lighten(#1a202c, 9%);
+                border-left-color: lighten(#1a202c, 9%);
+              }
+              div {
+                //depth5
+                li {
+                  background-color: lighten(#1a202c, 12%);
+                  border-left-color: lighten(#1a202c, 12%);
+                }
+                div {
+                  //depth6
+                  li {
+                    background-color: lighten(#1a202c, 15%);
+                    border-left-color: lighten(#1a202c, 15%);
+                  }
+                  div {
+                    //depth7
+                    li {
+                      background-color: lighten(#1a202c, 18%);
+                      border-left-color: lighten(#1a202c, 18%);
+                    }
+                    div {
+                      //depth8
+                      li {
+                        background-color: lighten(#1a202c, 21%);
+                        border-left-color: lighten(#1a202c, 21%);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.Nav.hiddenOpen {
+  .MediaNav {
+    height: calc(
+      100vh - @global-top-bar-height - @media-sidebar-top-nav-height -
+        @hidden-nav-expanded-height
+    );
+  }
+}
+
+.MediaHiddenNav {
+  height: @hidden-nav-full-height;
+}
+
+.NavRow {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: @zesty-light-blue;
+  background-color: #1a202c;
+  border-left: 2px solid #1a202c;
+  padding: 0 16px;
+  box-sizing: border-box;
+  width: 100%;
+
+  svg {
+    margin-right: 4px;
+  }
+  [data-icon*="caret"] {
+    height: 100%;
+    font-size: 16px;
+    opacity: 0.6;
+  }
+  [data-icon="eye-slash"] {
+    margin-left: 4px;
+  }
+
+  .hide,
+  .collapse {
+    color: @zesty-gray;
+    cursor: pointer;
+
+    &:hover,
+    &:active,
+    &:focus {
+      color: @zesty-white;
+    }
+  }
+
+  .hide {
+    visibility: hidden;
+  }
+
+  &:hover {
+    background-color: @light-nav-color;
+    .hide {
+      visibility: visible;
+    }
+  }
+
+  &.selected {
+    border-left: 2px solid @zesty-orange;
+    color: @white;
+
+    svg {
+      opacity: 1;
+    }
+  }
+}
+
+/* Multiline clamp */
+.NavRowText {
+  display: -webkit-box;
+  max-width: @nav-width;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-right: auto;
+  line-height: 1.13;
+  letter-spacing: 0.32px;
+}

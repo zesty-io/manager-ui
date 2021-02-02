@@ -7,14 +7,14 @@ import cx from "classnames";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faTimesCircle,
-  faEdit,
-  faDatabase,
   faCode,
-  faCog
+  faCog,
+  faDatabase,
+  faEdit,
+  faFile,
+  faFolder,
+  faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
-
-import { Button } from "@zesty-io/core/Button";
 
 import GlobalSearch from "shell/components/global-search";
 import GlobalAccount from "shell/components/global-account";
@@ -22,7 +22,7 @@ import GlobalInstance from "shell/components/global-instance";
 
 import styles from "./GlobalTabs.less";
 
-const ZUID_REGEX = /[a-zA-Z0-9]{1,5}-[a-zA-Z0-9]{6,10}-[a-zA-Z0-9]{6,35}/;
+const ZUID_REGEX = /[a-zA-Z0-9]{1,5}-[a-zA-Z0-9]{6,10}-[a-zA-Z0-9]{5,35}/;
 
 function toCapitalCase(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -61,7 +61,10 @@ export default connect(state => {
     models: state.models,
     content: state.content,
     files: state.files,
-    user: state.user
+    user: state.user,
+    mediaGroups: state.media.groups,
+    mediaFiles: state.media.files,
+    mediaSearchFiles: state.media.search.files
   };
 })(
   React.memo(function GlobalTabs(props) {
@@ -143,6 +146,23 @@ export default connect(state => {
 
         // resolve ZUID from store to determine display information
         switch (prefix) {
+          case "1":
+          case "2":
+            const group = props.mediaGroups[zuid];
+            if (group) {
+              route.name = group.name;
+            }
+            route.icon = faFolder;
+            break;
+          case "3":
+            const file =
+              props.mediaFiles.find(file => file.id === zuid) ||
+              props.mediaSearchFiles.find(file => file.id === zuid);
+            if (file) {
+              route.name = file.filename;
+            }
+            route.icon = faFile;
+            break;
           case "6":
             if (props.models) {
               const model = props.models[zuid];
@@ -214,7 +234,7 @@ export default connect(state => {
       // store routes to local storage and reload on app start
       set(`${props.instanceZUID}:session:routes`, newRoutes);
       setRoutes(newRoutes);
-    }, [history.location, props.models, props.content, props.files]);
+    }, [history.location, props.models, props.content, props.files, props.mediaGroups, props.mediaFiles, props.mediaSearchFiles]);
 
     // Update Breadcrumb
     useEffect(() => {

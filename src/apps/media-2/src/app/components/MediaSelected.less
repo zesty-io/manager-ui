@@ -1,0 +1,89 @@
+@import "~@zesty-io/core/colors.less";
+
+footer {
+  position: relative;
+}
+
+.DrawerHandle {
+  background-color: @zesty-light-blue;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px;
+}
+.limitText {
+  color: @white;
+}
+
+.limitTextMax {
+  color: @zesty-red;
+}
+
+.DrawerOpen {
+  position: absolute;
+  width: 100%;
+  background-color: @zesty-light-blue;
+  border-top: 2px solid darken(@zesty-light-blue, 5%);
+}
+
+.DrawerClose {
+  position: absolute;
+  background-color: @zesty-light-blue;
+  border-top: 2px solid darken(@zesty-light-blue, 5%);
+  height: 50px !important;
+}
+
+.ButtonLoad {
+  position: absolute;
+  bottom: 6px;
+  right: 16px;
+  z-index: 1;
+}
+
+.MediaSelected {
+  display: flex;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  background-color: @zesty-light-blue;
+
+  .CardContent {
+    position: relative;
+  }
+  .Check {
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+    background: @zesty-blue;
+    color: #efefef;
+    width: 16px;
+    height: 16px;
+    margin: 1px;
+    border: none;
+    border-radius: 2px;
+    transition: 0.25s ease-in-out;
+  }
+  &.Selected {
+    background: @zesty-blue;
+  }
+}
+
+.CardTop {
+  width: 100px;
+  flex-shrink: 0;
+
+  .CardContent {
+    padding: 8px;
+  }
+  img {
+    width: 100%;
+    height: 100px;
+    min-height: 100px;
+    object-fit: contain;
+    position: relative;
+    display: block;
+  }
+
+  .Checkered {
+    min-height: 100px;
+  }
+}

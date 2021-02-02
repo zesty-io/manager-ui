@@ -120,6 +120,11 @@
       }
     </style>
     <style>
+      /* Media nav sidebar custom styles */
+      .rv-sticky-node-list {
+        margin-left: 8px;
+        width: calc(100% - 8px) !important;
+      }
       /* override oxide skin height to show full modal on View Source */
       .tox .tox-dialog--width-lg {
         height: auto !important;
@@ -166,7 +171,8 @@
         </div>
       </div>
     </main>
-    <div id="modalMount"></div>
+    <!-- High z-index to beat the TinyMCE toolbar which has 1300-->
+    <div id="modalMount" style="position: relative; z-index: 1301;"></div>
     <%= htmlWebpackPlugin.tags.bodyTags %>
     <script src="/tags.js"></script>
   </body>
