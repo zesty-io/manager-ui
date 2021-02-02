@@ -40,7 +40,7 @@ const mediaSlice = createSlice({
       action.payload.forEach(bin => {
         bin.closed = closed.includes(bin.id);
         bin.children = [];
-        bin.path = `/dam/${bin.id}`;
+        bin.path = `/media/${bin.id}`;
         bin.hidden = hidden.includes(bin.id);
         state.groups[bin.id] = bin;
         if (bin.hidden) {
@@ -65,7 +65,7 @@ const mediaSlice = createSlice({
       action.payload.forEach(function initializeGroup(group) {
         group.closed = closed.includes(group.id);
         group.children = [];
-        group.path = `/dam/${group.id}`;
+        group.path = `/media/${group.id}`;
         group.hidden = hidden.includes(group.id);
         state.groups[group.id] = group;
         if (group.hidden) {
@@ -83,7 +83,7 @@ const mediaSlice = createSlice({
     createGroupSuccess(state, action) {
       const group = action.payload;
       group.children = [];
-      group.path = `/dam/${group.id}`;
+      group.path = `/media/${group.id}`;
       group.closed = false;
       group.hidden = false;
       state.groups[group.id] = group;
