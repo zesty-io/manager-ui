@@ -255,14 +255,33 @@ export default connect((state, props) => {
     return Promise.all(
       props.dirtyItems.map(itemZUID => props.dispatch(saveItem(itemZUID)))
     )
-      .then(() => {
+      .then(results => {
         setSaving(false);
-        props.dispatch(
-          notify({
-            message: `All ${props.model.label} changes saved`,
-            kind: "save"
-          })
-        );
+        let success = false;
+        // display notification for each missing required field on each item
+        results.forEach(result => {
+          if (result.err === "MISSING_REQUIRED") {
+            result.missingRequired.forEach(field => {
+              props.dispatch(
+                notify({
+                  message: `Missing required field "${field.label}" on ${field.ZUID}`,
+                  kind: "warn"
+                })
+              );
+            });
+          } else {
+            success = true;
+          }
+        });
+        // if any of the items succeeded display a success notification
+        if (success) {
+          props.dispatch(
+            notify({
+              message: `All ${props.model.label} changes saved`,
+              kind: "save"
+            })
+          );
+        }
       })
       .catch(err => {
         setSaving(false);
