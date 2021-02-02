@@ -104,7 +104,8 @@
 @global-top-bar-height: 54px;
 @media-sidebar-top-nav-height: 102px;
 @hidden-nav-height: 26px;
-@hidden-nav-expanded-height: 126px;
+@hidden-nav-full-height: 300px;
+@hidden-nav-expanded-height: @hidden-nav-height + @hidden-nav-full-height;
 
 @light-nav-color: lighten(@nav-border-color, 6%);
 
@@ -194,7 +195,7 @@
 }
 
 .MediaHiddenNav {
-  height: 100px;
+  height: @hidden-nav-full-height;
 }
 
 .NavRow {

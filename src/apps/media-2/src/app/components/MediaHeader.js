@@ -1,9 +1,9 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,
   faExclamationCircle,
-  faVideo,
   faPlus
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -13,6 +13,7 @@ import { MediaEditGroupModal } from "./MediaEditGroupModal";
 import styles from "./MediaHeader.less";
 
 export const MediaHeader = React.memo(function MediaHeader(props) {
+  const userRole = useSelector(state => state.userRole);
   const [createGroupModal, setCreateGroupModal] = useState(false);
   const [editGroupModal, setEditGroupModal] = useState(false);
 
@@ -60,7 +61,13 @@ export const MediaHeader = React.memo(function MediaHeader(props) {
             <span>Edit</span>
           </Button>
         ) : null}
-        {!props.searchTerm && props.currentBin !== props.currentGroup ? (
+        {/* hide in search context */
+
+        !props.searchTerm &&
+        /* hide for bins */
+        props.currentBin !== props.currentGroup &&
+        /* hide for Contributor */
+        userRole.name !== "Contributor" ? (
           <Button
             title="Delete Group"
             kind="warn"
