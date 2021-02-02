@@ -73,7 +73,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
       onClose={() => props.onClose()}
     >
       <ModalContent className={styles.ModalContent}>
-        <div>
+        <div className={styles.FieldsContainer}>
           <label className={styles.CopyLabel}>
             <Button
               ref={copyButton}
