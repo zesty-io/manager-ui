@@ -81,12 +81,12 @@ export default connect(state => {
     if (!props.modal) {
       if (currentGroupID) {
         if (currentFileID) {
-          history.push(`/dam/${currentGroupID}/file/${currentFileID}`);
+          history.push(`/media/${currentGroupID}/file/${currentFileID}`);
         } else {
-          history.push(`/dam/${currentGroupID}`);
+          history.push(`/media/${currentGroupID}`);
         }
       } else {
-        history.push(`/dam`);
+        history.push(`/media`);
       }
     }
   }

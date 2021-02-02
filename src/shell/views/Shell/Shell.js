@@ -38,10 +38,9 @@ export default connect(state => {
           <div className={styles.SubApp}>
             <Sentry.ErrorBoundary fallback={() => <AppError />}>
               <Switch>
-                <Route path="/dam/:groupID/file/:fileID" component={DamApp} />
-                <Route path="/dam/:groupID" component={DamApp} />
-                <Route path="/dam" component={DamApp} />
-
+                <Route path="/media/:groupID/file/:fileID" component={DamApp} />
+                <Route path="/media/:groupID" component={DamApp} />
+                <Route path="/media" component={DamApp} />
                 {props.products.map(product => {
                   switch (product) {
                     case "content":
@@ -50,14 +49,6 @@ export default connect(state => {
                           key={product}
                           path="/content"
                           component={ContentApp}
-                        />
-                      );
-                    case "media":
-                      return (
-                        <Route
-                          key={product}
-                          path="/media"
-                          component={MediaApp}
                         />
                       );
                     case "audit-trail":
