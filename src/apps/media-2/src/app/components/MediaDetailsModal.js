@@ -22,6 +22,7 @@ import styles from "./MediaDetailsModal.less";
 export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
   const dispatch = useDispatch();
   const platform = useSelector(state => state.platform);
+  const userRole = useSelector(state => state.userRole);
   const urlField = useRef();
   const copyButton = useRef();
 
@@ -162,10 +163,13 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
           <FontAwesomeIcon icon={faSave} />
           <span>Save (CTRL + S)</span>
         </Button>
-        <Button kind="warn" onClick={props.showDeleteFileModal}>
-          <FontAwesomeIcon icon={faExclamationCircle} />
-          <span>Delete</span>
-        </Button>
+        {/* hide for Contributor */
+        userRole.name !== "Contributor" ? (
+          <Button kind="warn" onClick={props.showDeleteFileModal}>
+            <FontAwesomeIcon icon={faExclamationCircle} />
+            <span>Delete</span>
+          </Button>
+        ) : null}
       </ModalFooter>
     </Modal>
   );
