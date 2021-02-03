@@ -14,6 +14,8 @@ import { notify } from "shell/store/notifications";
 import { saveVariables } from "../../../store/settings";
 
 import styles from "./Styles.less";
+import MediaStyles from "shell/components/MediaAppModal/MediaAppModal.less";
+
 export default connect(state => {
   return {
     styles: state.settings.styles,
@@ -256,7 +258,7 @@ export default connect(state => {
                 open={true}
                 type="global"
                 onClose={() => setImageModal()}
-                className={styles.MediaAppModal}
+                className={MediaStyles.MediaAppModal}
               >
                 <MediaApp
                   limitSelected={imageModal.limit - images.length}

@@ -28,6 +28,8 @@ import MediaApp from "../../../apps/media/src/app/MediaApp";
 import { fetchHeadTags, createHeadTag } from "shell/store/headTags";
 
 import styles from "./favicon.less";
+import MediaStyles from "shell/components/MediaAppModal/MediaAppModal.less";
+
 export default connect(state => {
   return {
     instance: state.instance,
@@ -206,7 +208,7 @@ export default connect(state => {
               open={true}
               type="global"
               onClose={() => setImageModal()}
-              className={styles.MediaAppModal}
+              className={MediaStyles.MediaAppModal}
             >
               <MediaApp
                 limitSelected={1}
