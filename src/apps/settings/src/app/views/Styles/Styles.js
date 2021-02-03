@@ -7,7 +7,9 @@ import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { Select, Option } from "@zesty-io/core/Select";
 import { Button } from "@zesty-io/core/Button";
+import { Modal } from "@zesty-io/core/Modal";
 
+import MediaApp from "../../../../../media/src/app/MediaApp";
 import { notify } from "shell/store/notifications";
 import { saveVariables } from "../../../store/settings";
 
@@ -23,6 +25,7 @@ export default connect(state => {
   const [dirtyFields, setDirtyFields] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fonts, setFonts] = useState([]);
+  const [imageModal, setImageModal] = useState();
 
   useEffect(() => {
     const category = props.match.params.category
@@ -226,28 +229,46 @@ export default connect(state => {
           </div>
         );
       case "image":
+        const images = (state[field.referenceName] || "")
+          .split(",")
+          .filter(el => el);
         return (
-          <FieldTypeImage
-            key={field.ZUID}
-            name={field.referenceName}
-            label={field.name}
-            description={field.description}
-            limit="1"
-            images={
-              state[field.referenceName] ? [state[field.referenceName]] : []
-            }
-            onChange={(value, name) => setValue(name, value)}
-            resolveImage={(zuid, width, height) =>
-              `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
-            }
-            mediaBrowser={opts => {
-              riot.mount(
-                document.querySelector("#modalMount"),
-                "media-app-modal",
-                opts
-              );
-            }}
-          />
+          <>
+            <FieldTypeImage
+              key={field.ZUID}
+              name={field.referenceName}
+              label={field.name}
+              description={field.description}
+              limit="1"
+              images={
+                state[field.referenceName] ? [state[field.referenceName]] : []
+              }
+              onChange={(value, name) => setValue(name, value)}
+              resolveImage={(zuid, width, height) =>
+                `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
+              }
+              mediaBrowser={opts => {
+                setImageModal(opts);
+              }}
+            />
+            {imageModal && (
+              <Modal
+                open={true}
+                type="global"
+                onClose={() => setImageModal()}
+                className={styles.MediaAppModal}
+              >
+                <MediaApp
+                  limitSelected={imageModal.limit - images.length}
+                  modal={true}
+                  addImages={images => {
+                    imageModal.callback(images);
+                    setImageModal();
+                  }}
+                />
+              </Modal>
+            )}
+          </>
         );
       default:
         return (

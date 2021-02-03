@@ -42,16 +42,6 @@ export default connect(state => {
       props.dispatch(fetchDomains());
       props.dispatch(detectPlatform());
       props.dispatch(fetchInstances());
-
-      // Promise.all([instance, products]).then(res => {
-      //   // console.log("loaded instance");
-      //   // Some legacy code refers to this global which is an observable
-      //   // FIXME: this needs to get refactored out
-      //   // window.zesty = riot.observable(store.getState());
-      //   // store.subscribe(() => {
-      //   //   window.zesty = riot.observable(store.getState());
-      //   // });
-      // });
     }, []);
 
     return (

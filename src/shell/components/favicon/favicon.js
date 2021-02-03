@@ -6,7 +6,6 @@ import {
   faCog,
   faBan,
   faGlobe,
-  faUpload,
   faSpinner,
   faFileImage
 } from "@fortawesome/free-solid-svg-icons";
@@ -24,6 +23,8 @@ import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { AppLink } from "@zesty-io/core/AppLink";
 
+import MediaApp from "../../../apps/media/src/app/MediaApp";
+
 import { fetchHeadTags, createHeadTag } from "shell/store/headTags";
 
 import styles from "./favicon.less";
@@ -39,6 +40,7 @@ export default connect(state => {
 
   const [faviconZUID, setFaviconZUID] = useState("");
   const [faviconURL, setFaviconURL] = useState("");
+  const [imageModal, setImageModal] = useState();
 
   const [sizes] = useState([32, 128, 152, 167, 180, 192, 196]);
 
@@ -149,6 +151,8 @@ export default connect(state => {
     // }
   };
 
+  const images = faviconZUID ? [faviconZUID] : faviconURL ? [faviconURL] : [];
+
   return (
     <div
       className={styles.Favicon}
@@ -186,9 +190,7 @@ export default connect(state => {
             tooltip="Because favicons are used in multiple settings we will create multiple sizes of the image you select to fit each use case."
             // limit={1}
             // values field displays
-            images={
-              faviconZUID ? [faviconZUID] : faviconURL ? [faviconURL] : []
-            }
+            images={images}
             // feed to media app
             value={faviconZUID}
             onChange={handleImage}
@@ -196,13 +198,26 @@ export default connect(state => {
               `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
             }
             mediaBrowser={opts => {
-              riot.mount(
-                document.querySelector("#modalMount"),
-                "media-app-modal",
-                opts
-              );
+              setImageModal(opts);
             }}
           />
+          {imageModal && (
+            <Modal
+              open={true}
+              type="global"
+              onClose={() => setImageModal()}
+              className={styles.MediaAppModal}
+            >
+              <MediaApp
+                limitSelected={1}
+                modal={true}
+                addImages={images => {
+                  imageModal.callback(images);
+                  setImageModal();
+                }}
+              />
+            </Modal>
+          )}
 
           {faviconZUID && (
             <section className={styles.Sizes}>

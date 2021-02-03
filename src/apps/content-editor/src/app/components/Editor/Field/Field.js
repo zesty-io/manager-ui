@@ -16,7 +16,7 @@ import {
 // instead of individually importing
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Modal } from "@zesty-io/core/Modal";
-import MediaApp from "../../../../../../media-2/src/app/MediaApp";
+import MediaApp from "../../../../../../media/src/app/MediaApp";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
