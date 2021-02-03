@@ -186,13 +186,15 @@ export default connect(state => {
             tooltip="Because favicons are used in multiple settings we will create multiple sizes of the image you select to fit each use case."
             // limit={1}
             // values field displays
-            images={faviconZUID ? [faviconZUID] : [faviconURL]}
+            images={
+              faviconZUID ? [faviconZUID] : faviconURL ? [faviconURL] : []
+            }
             // feed to media app
             value={faviconZUID}
             onChange={handleImage}
-            resolveImage={(zuid, width, height) => {
-              `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`;
-            }}
+            resolveImage={(zuid, width, height) =>
+              `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
+            }
             mediaBrowser={opts => {
               riot.mount(
                 document.querySelector("#modalMount"),
