@@ -62,27 +62,6 @@
     text-transform: uppercase;
     align-items: center;
   }
-
-  // Pulled from NODE design-systems
-  .depth1 {
-    background-color: #1a202c;
-    border-left: 2px solid #1a202c;
-
-    //Is active
-    border-left: 2px solid orange;
-  }
-  .depth2 {
-    background-color: lighten(#1a202c, 5%);
-    border-left: 2px solid lighten(#1a202c, 5%);
-  }
-  .depth3 {
-    background-color: lighten(#1a202c, 10%);
-    border-left: 2px solid lighten(#1a202c, 10%);
-  }
-  .depth4 {
-    background-color: lighten(#1a202c, 15%);
-    border-left: 2px solid lighten(#1a202c, 15%);
-  }
 }
 
 .HiddenNav {
@@ -264,4 +243,8 @@
   margin-right: auto;
   line-height: 1.13;
   letter-spacing: 0.32px;
+  font-size: 12px;
+  @media only screen and (min-width: 2000px) {
+    font-size: 14px;
+  }
 }
