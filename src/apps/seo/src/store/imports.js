@@ -123,7 +123,7 @@ export function CSVImporter(evt) {
             } else if (file.type === "text/xml") {
               const parser = new DOMParser();
               const xml = parser.parseFromString(fileReader.result, "text/xml");
-              targets = parseXML(xml);
+              targets = parseXML(xml, dispatch);
             }
 
             targets = findTargetPages(targets);
