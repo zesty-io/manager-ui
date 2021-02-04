@@ -62,7 +62,9 @@ const mediaSlice = createSlice({
       const closed = getClosedGroups();
       const hidden = getHiddenGroups();
 
-      action.payload.forEach(function initializeGroup(group) {
+      const groups = action.payload.reverse();
+
+      groups.forEach(function initializeGroup(group) {
         group.closed = closed.includes(group.id);
         group.children = [];
         group.path = `/media/${group.id}`;
@@ -73,7 +75,7 @@ const mediaSlice = createSlice({
         }
       });
 
-      action.payload.forEach(function addChildrenToParents(group) {
+      groups.forEach(function addChildrenToParents(group) {
         const parent = state.groups[group.group_id];
         if (parent) {
           parent.children.push(group.id);
