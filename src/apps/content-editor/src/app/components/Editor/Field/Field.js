@@ -35,6 +35,7 @@ import { FieldTypeOneToOne } from "@zesty-io/core/FieldTypeOneToOne";
 import { FieldTypeOneToMany } from "@zesty-io/core/FieldTypeOneToMany";
 
 import styles from "./Field.less";
+import MediaStyles from "../../../../../../media-2/src/app/MediaAppModal.less";
 
 function sortTitle(a, b) {
   const nameA = String(a.text) && String(a.text).toUpperCase(); // ignore upper and lowercase
@@ -283,7 +284,7 @@ export default connect(state => {
               open={true}
               type="global"
               onClose={() => setImageModal()}
-              className={styles.MediaAppModal}
+              className={MediaStyles.MediaAppModal}
             >
               <MediaApp
                 {...mediaAppProps}
