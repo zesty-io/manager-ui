@@ -31,6 +31,14 @@ export function MediaSelected(props) {
               className={styles.DrawerHandle}
               onClick={handleSetOpen}
             >
+              <Button
+                className={styles.ButtonLoad}
+                kind="save"
+                onClick={() => props.addImages(props.selected)}
+              >
+                <FontAwesomeIcon icon={faUpload} />
+                <span>Load Selected</span>
+              </Button>
               <Button title="View Selected Images">
                 <span
                   className={
@@ -49,14 +57,7 @@ export function MediaSelected(props) {
                 )}
               </Button>
             </DrawerHandle>
-            <Button
-              className={styles.ButtonLoad}
-              kind="save"
-              onClick={() => props.addImages(props.selected)}
-            >
-              <FontAwesomeIcon icon={faUpload} />
-              <span>Load Selected</span>
-            </Button>
+
             <DrawerContent className={styles.DrawerContent}>
               <aside className={styles.MediaSelected}>
                 {props.selected.map(file => {

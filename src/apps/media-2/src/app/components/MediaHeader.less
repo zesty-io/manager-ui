@@ -1,47 +1,35 @@
 @import "~@zesty-io/core/typography.less";
+@import "~@zesty-io/core/colors.less";
 
 .WorkspaceHeader {
-  display: flex;
-  padding: 8px;
+  align-items: center;
+  padding: 8px 32px 8px 16px;
   background-color: #404759;
-  justify-content: space-between;
   position: relative;
+  display: grid;
+  grid-template-columns: 1fr max-content;
+  column-gap: 16px;
+  height: 40px;
 
-  .WorkspaceLeft,
-  .WorkspaceRight {
-    display: flex;
-    align-items: center;
-  }
-  .WorkspaceLeft {
-    .GroupTitle {
-      color: white;
-      padding-left: 16px;
-      display: -webkit-box;
-      -webkit-line-clamp: 1;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    h1 {
-      font-size: 20px;
-      font-weight: 300;
-    }
-    .GroupCount {
-      color: white;
-    }
-    .PadLeft {
-      padding-left: 16px;
-    }
+  .Title {
+    color: @zesty-white;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 
-    .ModalFooter {
-      display: flex;
-      justify-content: space-between;
-    }
-  }
-  .WorkspaceRight {
-    min-width: max-content;
-    justify-content: flex-end;
-    & > *:not(:last-child) {
+    small {
       margin-right: 8px;
+    }
+  }
+
+  .Actions {
+    display: flex;
+
+    button {
+      margin-left: 8px;
+    }
+    button:first-child {
+      margin-left: 0px;
     }
   }
 }
