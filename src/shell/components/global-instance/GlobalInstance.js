@@ -7,7 +7,7 @@ import {
   faCaretDown,
   faExternalLinkAlt
 } from "@fortawesome/free-solid-svg-icons";
-
+import { Button } from "@zesty-io/core/Button";
 import { Select, Option } from "@zesty-io/core/Select";
 import { Url } from "@zesty-io/core/Url";
 
@@ -99,6 +99,10 @@ export default connect(state => {
               </Url>
             </li>
           ))}
+          <Button kind="warn">
+            <i className="fas fa-exclamation-circle"></i>
+            Purge
+          </Button>
         </ul>
       </main>
     </section>
