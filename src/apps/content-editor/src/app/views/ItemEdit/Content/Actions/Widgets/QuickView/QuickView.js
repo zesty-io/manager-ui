@@ -100,6 +100,10 @@ export const QuickView = React.memo(function QuickView(props) {
             )}
             <li>Viewing version {props.version}</li>
           </ul>
+
+          <p className={styles.timezone}>
+            Your timezone is <strong>{moment.tz.guess()}</strong>
+          </p>
         </CardContent>
         <CardFooter className={SharedWidgetStyles.FooterSpacing}>
           <ButtonGroup>
