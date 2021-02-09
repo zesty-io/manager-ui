@@ -1,13 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import cx from "classnames";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
-  faExternalLinkAlt
+  faExternalLinkAlt,
+  faExclamationCircle
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
+import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Select, Option } from "@zesty-io/core/Select";
 import { Url } from "@zesty-io/core/Url";
 
@@ -22,7 +24,8 @@ export default connect(state => {
 })(function GlobalInstance(props) {
   const ref = useRef();
   const domain = useDomain();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
+  const userRole = useSelector(state => state.userRole);
 
   useEffect(() => {
     const handleGlobalClick = evt => {
@@ -37,6 +40,19 @@ export default connect(state => {
 
     return () => window.removeEventListener("click", handleGlobalClick);
   }, [ref]);
+
+  function showPurgeWarning() {
+    return (
+      <div>
+        <Modal type="global" open={true} onClose={() => props.onClose()}>
+          <ModalContent className={styles.subheadline}>
+            <FontAwesomeIcon icon={faExclamationCircle} /> Are you sure you want
+            to purge could have significant performance impacts on page loading.
+          </ModalContent>
+        </Modal>
+      </div>
+    );
+  }
 
   return (
     <section className={cx(styles.bodyText, styles.GlobalInstance)} ref={ref}>
@@ -99,10 +115,13 @@ export default connect(state => {
               </Url>
             </li>
           ))}
-          <Button kind="warn">
-            <i className="fas fa-exclamation-circle"></i>
-            Purge
+          {/*  ONLY Owner and Admin can purge cache */}
+          {/* {userRole.name === "Owner" || userRole.name === "Admin" ? ( */}
+          <Button kind="warn" onClick={showPurgeWarning}>
+            <FontAwesomeIcon icon={faExclamationCircle} />
+            <span>Purge</span>
           </Button>
+          {/* ) : null} */}
         </ul>
       </main>
     </section>
