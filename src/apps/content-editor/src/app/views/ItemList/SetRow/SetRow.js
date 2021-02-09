@@ -188,7 +188,6 @@ export default connect()(function SetRow(props) {
                   value={props.data[field.name]}
                 />
               );
-              break;
 
             default:
               return (
