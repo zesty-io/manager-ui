@@ -9,6 +9,7 @@ import {
   faExclamationCircle
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
+import { Notice } from "@zesty-io/core/Notice";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Select, Option } from "@zesty-io/core/Select";
 import { Url } from "@zesty-io/core/Url";
@@ -24,7 +25,8 @@ export default connect(state => {
 })(function GlobalInstance(props) {
   const ref = useRef();
   const domain = useDomain();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(true);
   const userRole = useSelector(state => state.userRole);
 
   useEffect(() => {
@@ -42,16 +44,14 @@ export default connect(state => {
   }, [ref]);
 
   function showPurgeWarning() {
-    return (
-      <div>
-        <Modal type="global" open={true} onClose={() => props.onClose()}>
-          <ModalContent className={styles.subheadline}>
-            <FontAwesomeIcon icon={faExclamationCircle} /> Are you sure you want
-            to purge could have significant performance impacts on page loading.
-          </ModalContent>
-        </Modal>
-      </div>
-    );
+    <Modal type="local" modalOpen={true} onClose={() => setModalOpen(false)}>
+      <ModalContent className={styles.subheadline}>
+        <Notice>
+          <FontAwesomeIcon icon={faExclamationCircle} /> Are you sure you want
+          to purge could have significant performance impacts on page loading.
+        </Notice>
+      </ModalContent>
+    </Modal>;
   }
 
   return (
