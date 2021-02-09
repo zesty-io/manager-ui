@@ -129,11 +129,11 @@ export const MediaWorkspace = React.memo(function MediaWorkspace(props) {
                 })}
               </section>
             ) : search.term ? (
-              <div className={cx(styles.title, styles.Headline)}>
+              <div className={cx(styles.display, styles.Headline)}>
                 No results
               </div>
             ) : (
-              <div className={styles.UploadMessage}>
+              <div className={cx(styles.UploadMessage, styles.display)}>
                 <div>Drag and drop files here</div>
                 <div>or</div>
                 <Button onClick={chooseFile}>
