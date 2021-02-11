@@ -51,13 +51,11 @@ if (window.CONFIG?.ENV !== "production") {
 /**
  * Setup bug tracking
  */
-if (["stage", "production"].includes(window.CONFIG?.ENV)) {
-  middlewares.push(
-    createSentryMiddleware(Sentry, {
-      getUserContext: state => state.user
-    })
-  );
-}
+middlewares.push(
+  createSentryMiddleware(Sentry, {
+    getUserContext: state => state.user
+  })
+);
 
 function createReducer(asyncReducers) {
   let initialReducers = {
