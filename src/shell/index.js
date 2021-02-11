@@ -9,8 +9,9 @@ import { BrowserRouter } from "react-router-dom";
 import { get } from "idb-keyval";
 import riot from "riot";
 import Clipboard from "clipboard";
-import * as Sentry from "@sentry/react";
 import DnD from "../vendors/common/dnd";
+
+import Sentry from "utility/sentry";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
