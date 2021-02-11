@@ -96,7 +96,7 @@ export default connect(state => {
     const requests = fields.map(field => {
       const value = fieldValues[field.ZUID]
         ? fieldValues[field.ZUID].toString()
-        : "";
+        : null;
       return props.dispatch(
         updateSettings(field.ZUID, {
           ...field,
