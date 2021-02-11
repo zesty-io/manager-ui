@@ -94,10 +94,13 @@ export default connect(state => {
     setLoading(true);
 
     const requests = fields.map(field => {
+      const value = fieldValues[field.ZUID]
+        ? fieldValues[field.ZUID].toString()
+        : "";
       return props.dispatch(
         updateSettings(field.ZUID, {
           ...field,
-          value: fieldValues[field.ZUID].toString()
+          value
         })
       );
     });
