@@ -114,7 +114,7 @@ if (loadLocalStorageData) {
 
 MonacoSetup(store);
 
-const App = () => (
+const App = Sentry.withProfiler(() => (
   <Provider store={store}>
     <Sentry.ErrorBoundary fallback={() => <AppError />}>
       <BrowserRouter
@@ -134,7 +134,7 @@ const App = () => (
       </BrowserRouter>
     </Sentry.ErrorBoundary>
   </Provider>
-);
+));
 
 function render() {
   ReactDOM.render(<App />, document.getElementById("root"));
