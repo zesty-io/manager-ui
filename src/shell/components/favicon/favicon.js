@@ -246,7 +246,7 @@ export default connect(state => {
           <ButtonGroup className={styles.Actions}>
             <Button kind="save" className={styles.Button} onClick={handleSave}>
               {loading ? (
-                <FontAwesomeIcon icon={faSpinner} />
+                <FontAwesomeIcon icon={faSpinner} spin />
               ) : (
                 <FontAwesomeIcon icon={faFileImage} />
               )}

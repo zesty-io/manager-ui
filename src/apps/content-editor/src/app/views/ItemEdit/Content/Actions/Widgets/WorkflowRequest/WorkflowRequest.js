@@ -173,7 +173,7 @@ export default connect(state => {
               >
                 {this.state.sending ? (
                   <Fragment>
-                    <FontAwesomeIcon icon={faSpinner} />
+                    <FontAwesomeIcon icon={faSpinner} spin />
                     &nbsp;Sending
                   </Fragment>
                 ) : (

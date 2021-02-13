@@ -154,7 +154,7 @@ export default connect(state => {
         id="SaveItemButton"
       >
         {props.saving ? (
-          <FontAwesomeIcon icon={faSpinner} />
+          <FontAwesomeIcon icon={faSpinner} spin />
         ) : (
           <FontAwesomeIcon icon={faSave} />
         )}
