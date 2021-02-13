@@ -118,7 +118,9 @@ export default connect(state => {
             disabled={publishingDisabled || false}
             onClick={handlePublish}
           >
-            {cached ? (
+            {publishing ? (
+              <FontAwesomeIcon icon={faSpinner} spin />
+            ) : cached ? (
               <FontAwesomeIcon icon={faCheckCircle} className={styles.Cached} />
             ) : (
               <FontAwesomeIcon icon={faCloudUploadAlt} />
