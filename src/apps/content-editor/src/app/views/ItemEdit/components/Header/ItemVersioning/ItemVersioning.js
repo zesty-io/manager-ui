@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSave,
   faSpinner,
-  faCalendar
+  faCalendar,
+  faCheckCircle,
+  faCloudUploadAlt
 } from "@fortawesome/free-solid-svg-icons";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
@@ -16,6 +18,7 @@ import { VersionSelector } from "./VersionSelector";
 import { publish } from "shell/store/content";
 import { fetchAuditTrailPublish } from "shell/store/logs";
 import { usePermission } from "shell/hooks/use-permissions";
+import { useDomain } from "shell/hooks/use-domain";
 
 import styles from "./ItemVersioning.less";
 export default connect(state => {
@@ -24,8 +27,37 @@ export default connect(state => {
   };
 })(function ItemVersioning(props) {
   const canPublish = usePermission("PUBLISH");
+  const domain = useDomain();
+
   const [open, setOpen] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [cached, setCached] = useState(false);
+
+  const isPublished = () => {
+    fetch(
+      `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/head?url=${domain}${props.item.web.path}`
+    )
+      .then(res => res.json())
+      .then(json => {
+        console.log(props, json);
+
+        const isOk = json["x-status"] === 200;
+        const isBusted = Number(json.age) === 0;
+        // const isLang = json['content-language'] ===
+        const isMiss = json["x-cache"] === "MISS, MISS";
+
+        console.log("isOk", isOk);
+        console.log("isBusted", isBusted);
+        console.log("isMiss", isMiss);
+
+        if (isOk && isBusted) {
+          console.log("Published successfully");
+          setCached(true);
+        } else {
+          setCached(false);
+        }
+      });
+  };
 
   const handlePublish = () => {
     setPublishing(true);
@@ -38,6 +70,7 @@ export default connect(state => {
       )
       // fetch new publish history
       .then(() => {
+        isPublished();
         props.dispatch(fetchAuditTrailPublish(props.itemZUID));
       })
       .finally(() => {
@@ -80,6 +113,10 @@ export default connect(state => {
     schedulingDisabled = handleScheduleDisable();
   }
 
+  useEffect(() => {
+    isPublished();
+  }, [props.item]);
+
   return (
     <ButtonGroup className={styles.Actions}>
       <VersionSelector modelZUID={props.modelZUID} itemZUID={props.itemZUID} />
@@ -93,8 +130,12 @@ export default connect(state => {
             disabled={publishingDisabled || false}
             onClick={handlePublish}
           >
-            <i className="fas fa-cloud-upload-alt"></i>Publish{" "}
-            <span>&nbsp;Version&nbsp;</span>
+            {cached ? (
+              <FontAwesomeIcon icon={faCheckCircle} className={styles.Cached} />
+            ) : (
+              <FontAwesomeIcon icon={faCloudUploadAlt} />
+            )}
+            Publish <span>&nbsp;Version&nbsp;</span>
             {props.item.meta.version}
           </Button>
           <Button
