@@ -33,29 +33,17 @@ export default connect(state => {
   const [publishing, setPublishing] = useState(false);
   const [cached, setCached] = useState(false);
 
-  const isPublished = () => {
+  const checkCache = () => {
     fetch(
       `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/head?url=${domain}${props.item.web.path}`
     )
       .then(res => res.json())
       .then(json => {
-        console.log(props, json);
-
         const isOk = json["x-status"] === 200;
         const isBusted = Number(json.age) === 0;
         // const isLang = json['content-language'] ===
-        const isMiss = json["x-cache"] === "MISS, MISS";
 
-        console.log("isOk", isOk);
-        console.log("isBusted", isBusted);
-        console.log("isMiss", isMiss);
-
-        if (isOk && isBusted) {
-          console.log("Published successfully");
-          setCached(true);
-        } else {
-          setCached(false);
-        }
+        setCached(isOk && isBusted);
       });
   };
 
@@ -70,7 +58,7 @@ export default connect(state => {
       )
       // fetch new publish history
       .then(() => {
-        isPublished();
+        checkCache();
         props.dispatch(fetchAuditTrailPublish(props.itemZUID));
       })
       .finally(() => {
@@ -114,7 +102,7 @@ export default connect(state => {
   }
 
   useEffect(() => {
-    isPublished();
+    checkCache();
   }, [props.item]);
 
   return (
