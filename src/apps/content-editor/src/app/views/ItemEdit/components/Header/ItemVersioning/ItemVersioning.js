@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -100,10 +100,6 @@ export default connect(state => {
     publishingDisabled = handlePublishDisable();
     schedulingDisabled = handleScheduleDisable();
   }
-
-  useEffect(() => {
-    checkCache();
-  }, [props.item]);
 
   return (
     <ButtonGroup className={styles.Actions}>
