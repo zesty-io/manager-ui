@@ -27,7 +27,7 @@ export const WidgetPurgeItem = React.memo(function WidgetPurgeItem(props) {
       <CardFooter className={SharedWidgetStyles.FooterSpacing}>
         {loading ? (
           <Button className={SharedWidgetStyles.Button} disabled={loading}>
-            <FontAwesomeIcon icon={faSpinner} />
+            <FontAwesomeIcon icon={faSpinner} spin />
             Refreshing Cached Item&hellip;
           </Button>
         ) : (

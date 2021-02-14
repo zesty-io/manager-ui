@@ -93,7 +93,7 @@ export class SetActions extends Component {
             )}
             {this.props.loading && (
               <span className={styles.Loading}>
-                <FontAwesomeIcon icon={faSpinner} />
+                <FontAwesomeIcon icon={faSpinner} spin />
                 <span>Loading items</span>
               </span>
             )}

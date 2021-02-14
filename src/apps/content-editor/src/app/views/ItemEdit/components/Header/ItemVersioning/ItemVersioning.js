@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSave,
   faSpinner,
-  faCalendar
+  faCalendar,
+  faCheckCircle,
+  faCloudUploadAlt,
+  faMinusCircle
 } from "@fortawesome/free-solid-svg-icons";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
@@ -16,6 +19,7 @@ import { VersionSelector } from "./VersionSelector";
 import { publish } from "shell/store/content";
 import { fetchAuditTrailPublish } from "shell/store/logs";
 import { usePermission } from "shell/hooks/use-permissions";
+import { useDomain } from "shell/hooks/use-domain";
 
 import styles from "./ItemVersioning.less";
 export default connect(state => {
@@ -24,8 +28,27 @@ export default connect(state => {
   };
 })(function ItemVersioning(props) {
   const canPublish = usePermission("PUBLISH");
+  const domain = useDomain();
+
   const [open, setOpen] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [cached, setCached] = useState(false);
+
+  const checkCache = () => {
+    if (props?.props?.item?.web?.path) {
+      fetch(
+        `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/getHeaders?url=${domain}${props.item.web.path}`
+      )
+        .then(res => res.json())
+        .then(json => {
+          const isOk = json["x-status"] === 200;
+          // include 10 second gap as the URL could be experiencing significant traffic during a publish action
+          const isBusted = Number(json.age) <= 10;
+          // const isLang = json['content-language'] ===
+          setCached(isOk && isBusted);
+        });
+    }
+  };
 
   const handlePublish = () => {
     setPublishing(true);
@@ -38,6 +61,7 @@ export default connect(state => {
       )
       // fetch new publish history
       .then(() => {
+        checkCache();
         props.dispatch(fetchAuditTrailPublish(props.itemZUID));
       })
       .finally(() => {
@@ -80,6 +104,8 @@ export default connect(state => {
     schedulingDisabled = handleScheduleDisable();
   }
 
+  useEffect(() => checkCache(), []);
+
   return (
     <ButtonGroup className={styles.Actions}>
       <VersionSelector modelZUID={props.modelZUID} itemZUID={props.itemZUID} />
@@ -93,8 +119,17 @@ export default connect(state => {
             disabled={publishingDisabled || false}
             onClick={handlePublish}
           >
-            <i className="fas fa-cloud-upload-alt"></i>Publish{" "}
-            <span>&nbsp;Version&nbsp;</span>
+            {publishing ? (
+              <FontAwesomeIcon icon={faSpinner} spin />
+            ) : cached ? (
+              <FontAwesomeIcon icon={faCheckCircle} title="CDN in sync" />
+            ) : (
+              <FontAwesomeIcon
+                icon={faCloudUploadAlt}
+                title="CDN out of sync"
+              />
+            )}
+            Publish <span>&nbsp;Version&nbsp;</span>
             {props.item.meta.version}
           </Button>
           <Button
@@ -127,7 +162,7 @@ export default connect(state => {
         id="SaveItemButton"
       >
         {props.saving ? (
-          <FontAwesomeIcon icon={faSpinner} />
+          <FontAwesomeIcon icon={faSpinner} spin />
         ) : (
           <FontAwesomeIcon icon={faSave} />
         )}

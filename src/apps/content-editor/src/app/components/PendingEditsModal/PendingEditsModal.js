@@ -82,7 +82,7 @@ export default React.memo(function PendingEditsModal(props) {
           <ButtonGroup className={styles.Actions}>
             <Button disabled={loading} kind="save" onClick={handler}>
               {loading ? (
-                <FontAwesomeIcon icon={faSpinner} />
+                <FontAwesomeIcon icon={faSpinner} spin />
               ) : (
                 <FontAwesomeIcon icon={faSave} />
               )}
@@ -90,7 +90,7 @@ export default React.memo(function PendingEditsModal(props) {
             </Button>
             <Button disabled={loading} kind="warn" onClick={handler}>
               {loading ? (
-                <FontAwesomeIcon icon={faSpinner} />
+                <FontAwesomeIcon icon={faSpinner} spin />
               ) : (
                 <FontAwesomeIcon icon={faTrash} />
               )}

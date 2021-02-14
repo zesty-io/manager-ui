@@ -26,10 +26,10 @@ export const QuickView = React.memo(function QuickView(props) {
   const isPublished = props.publishing && props.publishing.isPublished;
   const isScheduled = props.scheduling && props.scheduling.isScheduled;
 
-  const [workflowRequestOpen, setWorkFlowRequestOpen] = useState(false);
   const codeAccess = usePermission("CODE");
   const domain = useDomain();
 
+  const [workflowRequestOpen, setWorkFlowRequestOpen] = useState(false);
   const handleWorkflow = () => {
     setWorkFlowRequestOpen(!workflowRequestOpen);
   };
@@ -82,9 +82,9 @@ export const QuickView = React.memo(function QuickView(props) {
                 <Url
                   target="_blank"
                   title="Instant API"
-                  href={`${domain ? domain : props.preview_domain}/-/instant/${
-                    props.itemZUID
-                  }.json`}
+                  href={`${
+                    domain ? domain : __CONFIG__.URL_PREVIEW_FULL
+                  }/-/instant/${props.itemZUID}.json`}
                 >
                   <FontAwesomeIcon icon={faBolt} />
                   &nbsp;{`/-/instant/${props.itemZUID}.json`}

@@ -147,7 +147,7 @@ const Footer = connect(state => {
       <ButtonGroup className={styles.FieldActions}>
         <Button kind="save" disabled={!props.field.dirty} onClick={onSave}>
           {loading ? (
-            <FontAwesomeIcon icon={faSpinner} />
+            <FontAwesomeIcon icon={faSpinner} spin />
           ) : (
             <FontAwesomeIcon icon={faSave} />
           )}
@@ -165,7 +165,7 @@ const Footer = connect(state => {
             }}
           >
             {loading ? (
-              <FontAwesomeIcon icon={faSpinner} />
+              <FontAwesomeIcon icon={faSpinner} spin />
             ) : (
               <FontAwesomeIcon icon={faPlayCircle} />
             )}
@@ -184,7 +184,7 @@ const Footer = connect(state => {
             }}
           >
             {loading ? (
-              <FontAwesomeIcon icon={faSpinner} />
+              <FontAwesomeIcon icon={faSpinner} spin />
             ) : (
               <FontAwesomeIcon icon={faPauseCircle} />
             )}
