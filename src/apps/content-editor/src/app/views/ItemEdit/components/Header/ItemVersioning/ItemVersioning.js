@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,7 +7,8 @@ import {
   faSpinner,
   faCalendar,
   faCheckCircle,
-  faCloudUploadAlt
+  faCloudUploadAlt,
+  faMinusCircle
 } from "@fortawesome/free-solid-svg-icons";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
@@ -31,7 +32,7 @@ export default connect(state => {
 
   const [open, setOpen] = useState(false);
   const [publishing, setPublishing] = useState(false);
-  const [cached, setCached] = useState(false);
+  const [cached, setCached] = useState(true);
 
   const checkCache = () => {
     fetch(
@@ -42,7 +43,6 @@ export default connect(state => {
         const isOk = json["x-status"] === 200;
         const isBusted = Number(json.age) === 0;
         // const isLang = json['content-language'] ===
-
         setCached(isOk && isBusted);
       });
   };
@@ -101,6 +101,8 @@ export default connect(state => {
     schedulingDisabled = handleScheduleDisable();
   }
 
+  useEffect(() => checkCache(), []);
+
   return (
     <ButtonGroup className={styles.Actions}>
       <VersionSelector modelZUID={props.modelZUID} itemZUID={props.itemZUID} />
@@ -117,9 +119,16 @@ export default connect(state => {
             {publishing ? (
               <FontAwesomeIcon icon={faSpinner} spin />
             ) : cached ? (
-              <FontAwesomeIcon icon={faCheckCircle} className={styles.Cached} />
+              <FontAwesomeIcon
+                icon={faCheckCircle}
+                className={styles.Cached}
+                title="CDN in sync"
+              />
             ) : (
-              <FontAwesomeIcon icon={faCloudUploadAlt} />
+              <FontAwesomeIcon
+                icon={faCloudUploadAlt}
+                title="CDN out of sync"
+              />
             )}
             Publish <span>&nbsp;Version&nbsp;</span>
             {props.item.meta.version}
