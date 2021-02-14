@@ -32,19 +32,22 @@ export default connect(state => {
 
   const [open, setOpen] = useState(false);
   const [publishing, setPublishing] = useState(false);
-  const [cached, setCached] = useState(true);
+  const [cached, setCached] = useState(false);
 
   const checkCache = () => {
-    fetch(
-      `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/head?url=${domain}${props.item.web.path}`
-    )
-      .then(res => res.json())
-      .then(json => {
-        const isOk = json["x-status"] === 200;
-        const isBusted = Number(json.age) === 0;
-        // const isLang = json['content-language'] ===
-        setCached(isOk && isBusted);
-      });
+    if (props?.props?.item?.web?.path) {
+      fetch(
+        `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/getHeaders?url=${domain}${props.item.web.path}`
+      )
+        .then(res => res.json())
+        .then(json => {
+          const isOk = json["x-status"] === 200;
+          // include 10 second gap as the URL could be experiencing significant traffic during a publish action
+          const isBusted = Number(json.age) <= 10;
+          // const isLang = json['content-language'] ===
+          setCached(isOk && isBusted);
+        });
+    }
   };
 
   const handlePublish = () => {
@@ -119,11 +122,7 @@ export default connect(state => {
             {publishing ? (
               <FontAwesomeIcon icon={faSpinner} spin />
             ) : cached ? (
-              <FontAwesomeIcon
-                icon={faCheckCircle}
-                className={styles.Cached}
-                title="CDN in sync"
-              />
+              <FontAwesomeIcon icon={faCheckCircle} title="CDN in sync" />
             ) : (
               <FontAwesomeIcon
                 icon={faCloudUploadAlt}
