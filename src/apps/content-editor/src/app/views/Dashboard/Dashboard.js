@@ -11,14 +11,10 @@ import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 // import { ContentVelocity } from "./components/ContentVelocity";
-import { PageviewTraffic } from "./components/PageviewTraffic";
-import { InboundTraffic } from "./components/InboundTraffic";
-import { SocialTraffic } from "./components/SocialTraffic";
+
 import { TopPerforming } from "./components/TopPerforming";
 import { RecentlyEdited } from "./components/RecentlyEdited";
-import { GoogleAuthOverlay } from "./components/GoogleAuthOverlay";
 
-import shelldata from "./shelldata";
 import { fetchRecentItems } from "shell/store/user";
 
 import styles from "./Dashboard.less";
@@ -168,51 +164,6 @@ export default connect(function(state, props) {
                   </Card>
                 );
               })}
-            </div>
-
-            <div
-              className={cx(
-                styles.columns,
-                styles.graphs,
-                styles.analyticsContainer
-              )}
-            >
-              {(!this.state.gaAuthenticated || this.state.gaLegacyAuth) && (
-                <GoogleAuthOverlay
-                  gaLegacyAuth={this.state.gaLegacyAuth}
-                  domainSet={this.state.domainSet}
-                  gaAuthenticated={this.state.gaAuthenticated}
-                  user={this.props.user}
-                  instance={this.props.instance}
-                />
-              )}
-              {/* TODO add Google Auth Modal here */}
-              <div className={cx(styles.column, styles.primary)}>
-                <PageviewTraffic
-                  setGALegacyStatus={this.setGALegacyStatus}
-                  instanceZUID={this.props.instanceZUID}
-                  profileID={this.props.instance.google_profile_id}
-                  data={shelldata.shellBarData()}
-                  domainSet={this.state.domainSet}
-                />
-              </div>
-
-              <div className={styles.column}>
-                <InboundTraffic
-                  setGALegacyStatus={this.setGALegacyStatus}
-                  instanceZUID={this.props.instanceZUID}
-                  profileID={this.props.instance.google_profile_id}
-                  data={shelldata.shellDoughnutData()}
-                  domainSet={this.state.domainSet}
-                />
-                <SocialTraffic
-                  setGALegacyStatus={this.setGALegacyStatus}
-                  instanceZUID={this.props.instanceZUID}
-                  profileID={this.props.instance.google_profile_id}
-                  data={shelldata.shellDoughnutData()}
-                  domainSet={this.state.domainSet}
-                />
-              </div>
             </div>
 
             <div className={styles.columns}>
