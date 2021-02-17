@@ -132,7 +132,10 @@ export default connect(function(state, props) {
             <header>
               <Card>
                 <CardHeader className={styles.DashboardHeader}>
-                  <h2>Account Name - Created Date of Account </h2>
+                  <h2>
+                    {this.props.instance.name} - Created Date:{" "}
+                    {this.props.instance.createdAt}{" "}
+                  </h2>
                   <h2>View Preview View Live</h2>
                 </CardHeader>
               </Card>
