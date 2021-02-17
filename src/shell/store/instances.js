@@ -1,7 +1,5 @@
 import { request } from "utility/request";
 
-const ZUID = window.location.host.split(".")[0];
-
 export function instances(state = [], action) {
   switch (action.type) {
     case "FETCHING_INSTANCES_SUCCESS":

@@ -1,4 +1,5 @@
 import { deepFreeze } from "utility/deepFreeze";
+import { request } from "utility/request";
 
 // Reducer
 export function logsInView(state = {}, action) {
