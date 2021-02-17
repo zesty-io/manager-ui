@@ -4,39 +4,24 @@
 .Dashboard {
   width: 100%;
 
-  .introduction {
-    padding: 32px 0;
-    color: @zesty-grey;
-    text-align: center;
-    h1 {
-      margin: 0 0 24px;
+  .DashboardHeader {
+    display: flex;
+    justify-content: space-between;
+  }
+  .LatestActivity {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
   }
 
-  .webEngineLinks {
-    font-weight: 300;
-    padding: 0px 12px;
-
-    .encompassedBlock {
-      border-radius: 4px;
-      padding: 4px;
-      border: 1px @border-color solid;
-      margin-left: 12px;
+  .WrapperActivity {
+    dd {
+      border: 2px solid black;
     }
-  }
-
-  h1 {
-    font-size: 48px;
-  }
-
-  h2 {
-    .icon {
-      padding-right: 5px;
-    }
-  }
-
-  .analyticsContainer {
-    position: relative;
   }
 
   .columns {

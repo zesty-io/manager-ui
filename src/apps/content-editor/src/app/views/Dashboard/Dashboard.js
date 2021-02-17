@@ -5,7 +5,11 @@ import cx from "classnames";
 import { useHistory } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faEdit,
+  faExternalLinkAlt
+} from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -51,7 +55,7 @@ export default connect(function(state, props) {
       const start = moment()
         .subtract(120, "days")
         .format("YYYY-MM-DD");
-
+      console.log(start);
       this.props
         .dispatch(fetchRecentItems(this.props.user.ZUID, start))
         .then(res => {
@@ -125,6 +129,92 @@ export default connect(function(state, props) {
       return (
         <section className={styles.Dashboard}>
           <div className={styles.container}>
+            <header>
+              <Card>
+                <CardHeader className={styles.DashboardHeader}>
+                  <h2>Account Name - Created Date of Account </h2>
+                  <h2>View Preview View Live</h2>
+                </CardHeader>
+              </Card>
+            </header>
+            <section className={styles.LatestActivity}>
+              <Card>
+                <CardHeader>Your Latest Edits</CardHeader>
+                <CardContent>
+                  <ul>
+                    <li>
+                      <div>
+                        <p>Title - Content Modal Name</p>
+                        <p>User 1 edited 1/1/2021</p>
+                      </div>
+                      <FontAwesomeIcon icon={faExternalLinkAlt} />
+                    </li>
+                    <li>
+                      <div>
+                        <p>Title - Content Modal Name</p>
+                        <p>User 1 edited 1/1/2021</p>
+                      </div>
+                      <FontAwesomeIcon icon={faExternalLinkAlt} />
+                    </li>
+                    <li>
+                      <div>
+                        <p>Title - Content Modal Name</p>
+                        <p>User 1 edited 1/1/2021</p>
+                      </div>
+                      <FontAwesomeIcon icon={faExternalLinkAlt} />
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>Your Latest Content Publishes</CardHeader>
+                <CardContent>
+                  <ul>
+                    <li>
+                      <div>
+                        <p>Title - Content Modal Name</p>
+                        <p>User 1 edited 1/1/2021</p>
+                      </div>
+                      <FontAwesomeIcon icon={faExternalLinkAlt} />
+                    </li>
+                    <li>
+                      <div>
+                        <p>Title - Content Modal Name</p>
+                        <p>User 1 edited 1/1/2021</p>
+                      </div>
+                      <FontAwesomeIcon icon={faExternalLinkAlt} />
+                    </li>
+                    <li>
+                      <div>
+                        <p>Title - Content Modal Name</p>
+                        <p>User 1 edited 1/1/2021</p>
+                      </div>
+                      <FontAwesomeIcon icon={faExternalLinkAlt} />
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>Instance Activity</CardHeader>
+                <CardContent>
+                  <div className={styles.WrapperActivity}>
+                    <dl>
+                      <h3>Last 30 days</h3>
+                      <dt>You</dt>
+                      <dd>20</dd>
+                      <dt>Full Team</dt>
+                      <dd>1034</dd>
+                      <h3>All time</h3>
+                      <dt>You</dt>
+                      <dd>20</dd>
+                      <dt>Full Team</dt>
+                      <dd>1034</dd>
+                    </dl>
+                  </div>
+                </CardContent>
+              </Card>
+            </section>
             <div className={styles.columns}>
               {this.state.favoriteModels.map((arr, i) => {
                 const [contentModelZUID, items] = arr;
