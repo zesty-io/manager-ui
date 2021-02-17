@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core";
 
-import DraggableItem from "./DragComponents/DraggableItem";
 import DragList from "./DragComponents/DragList";
 
 import { request } from "utility/request";
@@ -98,7 +97,6 @@ class ReorderNav extends Component {
     });
   };
   render() {
-    const currentNest = this.state.current;
     return (
       <section className={styles.Matte}>
         <span className={styles.container}>

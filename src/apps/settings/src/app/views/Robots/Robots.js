@@ -10,6 +10,7 @@ import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { notify } from "shell/store/notifications";
+import { request } from "utility/request";
 
 import styles from "./Robots.less";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

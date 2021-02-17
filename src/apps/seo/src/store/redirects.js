@@ -1,4 +1,6 @@
 import { notify } from "shell/store/notifications";
+import { request } from "utility/request";
+
 export function redirects(state = {}, action) {
   switch (action.type) {
     case "REDIRECTS_FETCH_SUCCESS":
