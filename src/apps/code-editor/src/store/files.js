@@ -1,5 +1,6 @@
 import { set } from "idb-keyval";
 import { notify } from "shell/store/notifications";
+import { request } from "utility/request";
 
 export function files(state = [], action) {
   let files;
