@@ -35,7 +35,7 @@ import { FieldTypeOneToOne } from "@zesty-io/core/FieldTypeOneToOne";
 import { FieldTypeOneToMany } from "@zesty-io/core/FieldTypeOneToMany";
 
 import styles from "./Field.less";
-import MediaStyles from "shell/components/MediaAppModal/MediaAppModal.less";
+import MediaStyles from "../../../../../../media/src/app/MediaAppModal.less";
 
 function sortTitle(a, b) {
   const nameA = String(a.text) && String(a.text).toUpperCase(); // ignore upper and lowercase

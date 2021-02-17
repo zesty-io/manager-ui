@@ -6,9 +6,13 @@ footer {
 
 .DrawerHandle {
   background-color: @zesty-light-blue;
-  justify-content: space-between;
   align-items: center;
-  padding: 6px;
+  padding: 8px 16px;
+  justify-content: flex-end;
+
+  button {
+    margin-left: 8px;
+  }
 }
 .limitText {
   color: @white;
@@ -30,13 +34,6 @@ footer {
   background-color: @zesty-light-blue;
   border-top: 2px solid darken(@zesty-light-blue, 5%);
   height: 50px !important;
-}
-
-.ButtonLoad {
-  position: absolute;
-  bottom: 6px;
-  right: 16px;
-  z-index: 1;
 }
 
 .MediaSelected {

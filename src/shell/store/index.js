@@ -1,11 +1,12 @@
 import { applyMiddleware, combineReducers, createStore } from "redux";
 import { createLogger } from "redux-logger";
-import * as Sentry from "@sentry/react";
 
 import thunkMiddleware from "redux-thunk";
 import createSentryMiddleware from "redux-sentry-middleware";
 import { fetchResource, resolveFieldOptions } from "./middleware/api";
 import { localStorage } from "./middleware/local-storage";
+
+import Sentry from "utility/sentry";
 
 import { auth } from "./auth";
 import { products } from "./products";
@@ -50,20 +51,11 @@ if (window.CONFIG?.ENV !== "production") {
 /**
  * Setup bug tracking
  */
-if (["stage", "production"].includes(window.CONFIG?.ENV)) {
-  Sentry.init({
-    release: window.CONFIG?.build?.data?.gitCommit,
-    environment: window.CONFIG?.ENV,
-    dsn:
-      "https://2e83c3767c484794a56832affe2d26d9@o162121.ingest.sentry.io/5441698"
-  });
-
-  middlewares.push(
-    createSentryMiddleware(Sentry, {
-      getUserContext: state => state.user
-    })
-  );
-}
+middlewares.push(
+  createSentryMiddleware(Sentry, {
+    getUserContext: state => state.user
+  })
+);
 
 function createReducer(asyncReducers) {
   let initialReducers = {

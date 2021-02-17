@@ -22,14 +22,14 @@ export function Actions(props) {
   const canPublish = usePermission("PUBLISH");
   const canDelete = usePermission("DELETE");
   const canUpdate = usePermission("UPDATE");
-
   const domain = useDomain();
 
   const { type } = props.model;
   const { publishing, scheduling, siblings } = props.item;
   const { listed, sort, updatedAt, version } = props.item.meta;
   const { path, metaTitle, metaLinkText } = props.item.web;
-  const { preview_domain, basicApi } = props.instance;
+  const { basicApi } = props.instance;
+  const liveURL = domain ? `${domain}${path}` : "";
 
   return (
     <aside className={styles.Actions}>
@@ -43,8 +43,8 @@ export function Actions(props) {
         publishing={publishing}
         scheduling={scheduling}
         siblings={siblings}
-        preview_domain={preview_domain}
         basicApi={basicApi}
+        liveURL={liveURL}
       />
 
       <WidgetPublishHistory
@@ -60,10 +60,7 @@ export function Actions(props) {
       />
 
       {props.set.type !== "dataset" && domain && (
-        <WidgetQuickShare
-          url={`${domain}/${path}`}
-          metaLinkText={metaLinkText}
-        />
+        <WidgetQuickShare url={liveURL} metaLinkText={metaLinkText} />
       )}
 
       {canUpdate && (

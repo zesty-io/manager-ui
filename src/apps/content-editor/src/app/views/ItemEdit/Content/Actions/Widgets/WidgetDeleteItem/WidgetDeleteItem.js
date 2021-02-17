@@ -50,7 +50,7 @@ export const WidgetDeleteItem = React.memo(function WidgetDeleteItem(props) {
             disabled={deleting}
           >
             {deleting ? (
-              <FontAwesomeIcon icon={faSpinner} />
+              <FontAwesomeIcon icon={faSpinner} spin />
             ) : (
               <FontAwesomeIcon icon={faTrashAlt} />
             )}

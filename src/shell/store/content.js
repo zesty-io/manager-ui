@@ -691,7 +691,7 @@ export function unlock(itemZUID) {
 }
 
 export function lock(itemZUID) {
-  return getState => {
+  return (dispatch, getState) => {
     const user = getState().user;
     if (user) {
       return request(`${CONFIG.SERVICE_REDIS_GATEWAY}/door/lock`, {

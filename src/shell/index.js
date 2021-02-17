@@ -7,8 +7,8 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { get } from "idb-keyval";
-import * as Sentry from "@sentry/react";
 
+import Sentry from "utility/sentry";
 import { store, injectReducer } from "shell/store";
 import { navContent } from "../apps/content-editor/src/store/navContent";
 
@@ -96,7 +96,7 @@ if (loadLocalStorageData) {
 
 MonacoSetup(store);
 
-const App = () => (
+const App = Sentry.withProfiler(() => (
   <Provider store={store}>
     <Sentry.ErrorBoundary fallback={() => <AppError />}>
       <BrowserRouter
@@ -116,7 +116,7 @@ const App = () => (
       </BrowserRouter>
     </Sentry.ErrorBoundary>
   </Provider>
-);
+));
 
 function render() {
   ReactDOM.render(<App />, document.getElementById("root"));

@@ -1,5 +1,6 @@
 import { request } from "utility/request";
 import { set } from "idb-keyval";
+import Sentry from "utility/sentry";
 
 export function user(
   state = {
@@ -24,6 +25,13 @@ export function user(
       }
 
     case "FETCH_USER_SUCCESS":
+      // set user
+      Sentry.setUser({
+        id: action.payload.data.ZUID,
+        email: action.payload.data.email,
+        username: `${action.payload.data.firstName} ${action.payload.data.lastName}`
+      });
+
       return { ...state, ...action.payload.data };
 
     case "LOADED_LOCAL_USER_LANG":

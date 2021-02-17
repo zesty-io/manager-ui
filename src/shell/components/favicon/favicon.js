@@ -28,7 +28,7 @@ import MediaApp from "../../../apps/media/src/app/MediaApp";
 import { fetchHeadTags, createHeadTag } from "shell/store/headTags";
 
 import styles from "./favicon.less";
-import MediaStyles from "shell/components/MediaAppModal/MediaAppModal.less";
+import MediaStyles from "../../../apps/media/src/app/MediaAppModal.less";
 
 export default connect(state => {
   return {
@@ -246,7 +246,7 @@ export default connect(state => {
           <ButtonGroup className={styles.Actions}>
             <Button kind="save" className={styles.Button} onClick={handleSave}>
               {loading ? (
-                <FontAwesomeIcon icon={faSpinner} />
+                <FontAwesomeIcon icon={faSpinner} spin />
               ) : (
                 <FontAwesomeIcon icon={faFileImage} />
               )}

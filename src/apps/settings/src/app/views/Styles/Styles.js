@@ -11,10 +11,10 @@ import { Modal } from "@zesty-io/core/Modal";
 
 import MediaApp from "../../../../../media/src/app/MediaApp";
 import { notify } from "shell/store/notifications";
-import { saveVariables } from "../../../store/settings";
+import { fetchStylesVariables, saveVariables } from "../../../store/settings";
 
 import styles from "./Styles.less";
-import MediaStyles from "shell/components/MediaAppModal/MediaAppModal.less";
+import MediaStyles from "../../../../../media/src/app/MediaAppModal.less";
 
 export default connect(state => {
   return {
@@ -105,6 +105,9 @@ export default connect(state => {
 
     Promise.all(requests)
       .then(responses => {
+        return props.dispatch(fetchStylesVariables());
+      })
+      .then(() => {
         setLoading(false);
         props.dispatch(
           notify({

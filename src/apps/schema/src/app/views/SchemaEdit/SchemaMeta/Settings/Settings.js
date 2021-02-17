@@ -185,7 +185,7 @@ function Footer(props) {
           }}
         >
           {loading ? (
-            <FontAwesomeIcon icon={faSpinner} />
+            <FontAwesomeIcon icon={faSpinner} spin />
           ) : (
             <FontAwesomeIcon icon={faSave} />
           )}
@@ -193,7 +193,7 @@ function Footer(props) {
         </Button>
         <Button onClick={duplicate} disabled={loading}>
           {loading ? (
-            <FontAwesomeIcon icon={faSpinner} />
+            <FontAwesomeIcon icon={faSpinner} spin />
           ) : (
             <FontAwesomeIcon icon={faClone} />
           )}
