@@ -11,8 +11,7 @@ import Missing from "shell/components/missing";
 
 import ContentApp from "apps/content-editor/src";
 
-import MediaApp from "apps/media/src";
-import DamApp from "apps/media-2/src";
+import DamApp from "apps/media/src";
 
 import AuditTrailApp from "apps/audit-trail/src";
 import AnalyticsApp from "apps/analytics/src";
