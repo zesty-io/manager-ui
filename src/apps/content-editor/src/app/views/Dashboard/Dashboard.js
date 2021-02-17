@@ -4,12 +4,16 @@ import moment from "moment-timezone";
 import cx from "classnames";
 import { useHistory } from "react-router-dom";
 
+import { PreviewUrl } from "../ItemEdit/components/Header/PreviewUrl/PreviewUrl";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
   faEdit,
-  faExternalLinkAlt
+  faExternalLinkAlt,
+  faLink
 } from "@fortawesome/free-solid-svg-icons";
+
+import { Url } from "@zesty-io/core/Url";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -136,7 +140,25 @@ export default connect(function(state, props) {
                     {this.props.instance.name} - Created Date:{" "}
                     {this.props.instance.createdAt}{" "}
                   </h2>
-                  <h2>View Preview View Live</h2>
+                  <Url
+                    target="_blank"
+                    title={`${CONFIG.URL_PREVIEW_PROTOCOL}${this.props.instance.randomHashID}${CONFIG.URL_PREVIEW}`}
+                    href={`${CONFIG.URL_PREVIEW_PROTOCOL}${this.props.instance.randomHashID}${CONFIG.URL_PREVIEW}`}
+                  >
+                    <FontAwesomeIcon icon={faExternalLinkAlt} />
+                    &nbsp;View Preview
+                  </Url>
+                  {this.props.instance.domain && (
+                    <Url
+                      className={styles.Live}
+                      href={`//${this.props.instance.domain}`}
+                      target="_blank"
+                      title="Open live link in standard browser window"
+                    >
+                      <FontAwesomeIcon icon={faExternalLinkAlt} />
+                      &nbsp;View Live
+                    </Url>
+                  )}
                 </CardHeader>
               </Card>
             </header>

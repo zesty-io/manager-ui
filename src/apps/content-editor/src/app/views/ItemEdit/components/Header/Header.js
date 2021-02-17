@@ -10,6 +10,7 @@ import ItemNavigation from "./ItemNavigation";
 import styles from "./Header.less";
 export class Header extends React.PureComponent {
   render() {
+    console.log(this.props);
     return (
       <header className={styles.Header}>
         <div className={cx(styles.Split)}>
