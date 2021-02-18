@@ -8,6 +8,7 @@ import {
   faCode,
   faDatabase,
   faEdit,
+  faFileCode,
   faHistory,
   faPlus
 } from "@fortawesome/free-solid-svg-icons";
@@ -38,7 +39,7 @@ export const FileActions = React.memo(function FileActions(props) {
             <FontAwesomeIcon icon={faBolt} />
           </Url>
         ) : (
-          <i className={cx(styles.FileLink, "far fa-file-code")}></i>
+          <FontAwesomeIcon className={styles.FileLink} icon={faFileCode} />
         )}
 
         <Switch>

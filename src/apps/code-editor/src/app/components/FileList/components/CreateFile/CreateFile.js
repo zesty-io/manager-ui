@@ -4,6 +4,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBan,
   faCheckCircle,
+  faPlug,
+  faPlus,
   faSpinner
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -72,7 +74,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
         kind="secondary"
         title="Create File"
       >
-        <i className="fa fa-plus" aria-hidden="true" />
+        <FontAwesomeIcon icon={faPlus} />
         <span className={styles.CreateFileBtnTxt}>Create File</span>
       </Button>
 

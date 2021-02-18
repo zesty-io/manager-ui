@@ -14,7 +14,7 @@ import {
 } from "shell/store/headTags";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSpinner, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
 import { Card, CardContent, CardFooter, CardHeader } from "@zesty-io/core/Card";
@@ -125,7 +125,7 @@ export const HeadTag = props => {
           kind="primary"
           onClick={() => dispatch(addTagAttribute(tag.ZUID))}
         >
-          <i className="fa fa-plus" /> Add attribute
+          <FontAwesomeIcon icon={faPlus} /> Add attribute
         </Button>
         {tag.hasOwnProperty("createdAt") ? (
           <Button
@@ -134,12 +134,12 @@ export const HeadTag = props => {
             kind="warn"
             id="DelteHeadtag"
           >
-            <i className={`fa fa-trash ${styles.Del}`} />
+            <FontAwesomeIcon className={styles.Del} icon={faTrash} />
             Delete Tag
           </Button>
         ) : (
           <Button className={styles.Delete} onClick={onCancel} kind="warn">
-            <i className={`fa fa-trash ${styles.Del}`} />
+            <FontAwesomeIcon className={styles.Del} icon={faTrash} />
             Cancel
           </Button>
         )}
@@ -184,7 +184,7 @@ export const HeadTag = props => {
                   onClick={() => dispatch(deleteTagAttribute(tag.ZUID, index))}
                   kind="warn"
                 >
-                  <i className={`fa fa-trash ${styles.Del}`} />
+                  <FontAwesomeIcon className={styles.Del} icon={faTrash} />
                 </Button>
               ) : (
                 <div style={{ width: "40px" }}></div>

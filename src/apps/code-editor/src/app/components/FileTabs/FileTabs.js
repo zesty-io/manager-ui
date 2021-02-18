@@ -1,7 +1,11 @@
 import React, { useEffect } from "react";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBolt, faCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBolt,
+  faCircle,
+  faTimesCircle
+} from "@fortawesome/free-solid-svg-icons";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 
@@ -78,7 +82,7 @@ export const FileTabs = React.memo(
                 >
                   {/* Figure out which icon to display */}
                   {file.synced && !file.dirty && (
-                    <i className="far fa-times-circle" title="Close file"></i>
+                    <FontAwesomeIcon title="Close file" icon={faTimesCircle} />
                   )}
                   {file.synced && file.dirty && (
                     <FontAwesomeIcon

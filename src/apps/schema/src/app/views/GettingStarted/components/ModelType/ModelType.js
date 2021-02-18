@@ -1,6 +1,16 @@
 import React from "react";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCopy,
+  faDatabase,
+  faFile,
+  faPlus,
+  faSave,
+  faTimes
+} from "@fortawesome/free-solid-svg-icons";
+
 import { Card } from "@zesty-io/core/Card";
 
 import styles from "./ModelType.less";
@@ -21,7 +31,7 @@ export function ModelType(props) {
             props.modelType === "pageset" ? styles.Selected : null
           )}
         >
-          <i className={cx(`far fa-file`, styles.icon)} />
+          <FontAwesomeIcon className={styles.icon} icon={faFile} />
           <h2 className={styles.headline}>Single page</h2>
           <p className={styles.subheadline}>
             e.g. About Us page, Contact Us page
@@ -34,7 +44,7 @@ export function ModelType(props) {
             props.modelType === "templateset" ? styles.Selected : null
           )}
         >
-          <i className={cx(`far fa-copy`, styles.icon)} />
+          <FontAwesomeIcon className={styles.icon} icon={faCopy} />
           <h2 className={styles.headline}>Multi-page set</h2>
           <p className={styles.subheadline}>
             e.g. Articles, Team member profiles
@@ -47,7 +57,7 @@ export function ModelType(props) {
             props.modelType === "dataset" ? styles.Selected : null
           )}
         >
-          <i className={cx(`fas fa-database`, styles.icon)} />
+          <FontAwesomeIcon className={styles.icon} icon={faDatabase} />
           <h2 className={styles.headline}>Headless set</h2>
           <p className={styles.subheadline}>
             e.g. app content, mobile navigation, category tags

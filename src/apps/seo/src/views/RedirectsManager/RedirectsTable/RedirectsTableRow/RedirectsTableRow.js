@@ -2,7 +2,11 @@ import React from "react";
 import cx from "classnames";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRight,
+  faFileAlt,
+  faTrashAlt
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
 
@@ -16,7 +20,7 @@ export default function RedirectsTableRow(props) {
 
       <span className={cx(styles.RedirectsTableRowCell, styles.code)}>
         {props.code}&nbsp;
-        <i className="fa fa-arrow-right" aria-hidden="true" />
+        <FontAwesomeIcon icon={faArrowRight} />
       </span>
 
       {props.target_type === "page" ? (
@@ -28,7 +32,8 @@ export default function RedirectsTableRow(props) {
             className={styles.internalLink}
             href={`#!/content/${props.target}`}
           >
-            <i className="icon icon-file-alt" /> {props.target_page_title}
+            <FontAwesomeIcon className={styles.icon} icon={faFileAlt} />{" "}
+            {props.target_page_title}
           </Link>
           <small>{props.target_page_url}</small>
         </span>
