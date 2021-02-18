@@ -3,8 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
   faUpload,
-  faChevronCircleDown,
-  faChevronCircleUp
+  faChevronDown,
+  faChevronUp
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
@@ -56,9 +56,9 @@ export function MediaSelected(props) {
                   {props.limitSelected > 1 ? "s" : ""} Selected
                 </span>
                 {open ? (
-                  <FontAwesomeIcon icon={faChevronCircleDown} />
+                  <FontAwesomeIcon icon={faChevronDown} />
                 ) : (
-                  <FontAwesomeIcon icon={faChevronCircleUp} />
+                  <FontAwesomeIcon icon={faChevronUp} />
                 )}
               </Button>
             </DrawerHandle>

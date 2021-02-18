@@ -3,10 +3,7 @@ import { useDispatch } from "react-redux";
 import moment from "moment";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronCircleDown,
-  faChevronCircleUp
-} from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
 import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
@@ -91,9 +88,9 @@ export const FileDrawer = React.memo(function FileDrawer(props) {
       <DrawerHandle className={styles.DrawerHandle} onClick={handleSetOpen}>
         <Button title="Open for additional file information">
           {open ? (
-            <FontAwesomeIcon icon={faChevronCircleDown} />
+            <FontAwesomeIcon icon={faChevronDown} />
           ) : (
-            <FontAwesomeIcon icon={faChevronCircleUp} />
+            <FontAwesomeIcon icon={faChevronUp} />
           )}
         </Button>
 
