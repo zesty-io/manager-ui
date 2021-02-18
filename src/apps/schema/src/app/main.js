@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Switch, Route, useLocation } from "react-router-dom";
+import cx from "classnames";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -21,7 +22,7 @@ export default connect(state => {
       width="100vw"
       height="100vh"
     >
-      <section className={styles.SchemaBuilder}>
+      <section className={cx(styles.SchemaBuilder, styles.SchemaStart)}>
         {location.pathname !== "/schema/start" && (
           <SchemaNav nav={props.navSchema} />
         )}
