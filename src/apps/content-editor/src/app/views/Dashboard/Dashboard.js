@@ -4,21 +4,13 @@ import moment from "moment-timezone";
 import cx from "classnames";
 import { useHistory } from "react-router-dom";
 
-import { PreviewUrl } from "../ItemEdit/components/Header/PreviewUrl/PreviewUrl";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlus,
-  faEdit,
-  faExternalLinkAlt,
-  faLink
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "@zesty-io/core/Url";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
-
-// import { ContentVelocity } from "./components/ContentVelocity";
 
 import { TopPerforming } from "./components/TopPerforming";
 import { RecentlyEdited } from "./components/RecentlyEdited";
@@ -55,11 +47,10 @@ export default connect(function(state, props) {
     };
 
     componentDidMount() {
-      // if (this.props.instance.google_profile_id) {
       const start = moment()
         .subtract(120, "days")
         .format("YYYY-MM-DD");
-      console.log(start);
+
       this.props
         .dispatch(fetchRecentItems(this.props.user.ZUID, start))
         .then(res => {
@@ -75,7 +66,6 @@ export default connect(function(state, props) {
             });
           }
         });
-      // }
     }
     setGALegacyStatus = status => {
       this.setState({ gaLegacyAuth: status });
@@ -130,6 +120,7 @@ export default connect(function(state, props) {
     }
 
     render() {
+      console.log("Dashboard Testing:", this.props);
       return (
         <section className={styles.Dashboard}>
           <div className={styles.container}>
@@ -162,6 +153,10 @@ export default connect(function(state, props) {
                 </CardHeader>
               </Card>
             </header>
+            <h1 className={cx(styles.User, styles.subheadline)}>
+              Ready to get cooking, {this.props.user.firstName}
+            </h1>
+            {/* User latest activity */}
             <section className={styles.LatestActivity}>
               <Card>
                 <CardHeader>Your Latest Edits</CardHeader>
