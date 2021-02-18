@@ -235,6 +235,85 @@ export default connect(function(state, props) {
                 </CardContent>
               </Card>
             </section>
+            <section className={styles.LinkOuts}>
+              <Card>
+                <CardHeader>This is the card Header</CardHeader>
+                <CardContent>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do .
+                </CardContent>
+                <CardFooter>this is the card footer</CardFooter>
+              </Card>
+              <Card>
+                <CardHeader>This is the card Header</CardHeader>
+                <CardContent>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                  laboris sunt in culpa qui officia deserunt mollit anim id est
+                  laborum.
+                </CardContent>
+                <CardFooter>this is the card footer</CardFooter>
+              </Card>
+              <Card>
+                <CardHeader>This is the card Header</CardHeader>
+                <CardContent>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Ut enim ad minm.
+                </CardContent>
+                <CardFooter>this is the card footer</CardFooter>
+              </Card>
+              <Card>
+                <CardHeader>This is the card Header</CardHeader>
+                <CardContent>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor inaliqua. Ut eesse cil occaecat cupidatat
+                  non proident, sunt in culpa qui officia deserunt mollit anim
+                  id est laborum.
+                </CardContent>
+                <CardFooter>this is the card footer</CardFooter>
+              </Card>
+              <Card>
+                <CardHeader>This is the card Header</CardHeader>
+                <CardContent>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eicupidatat non proident, sunt in culpa qui officia
+                  deserunt mollit anim id est laborum.
+                </CardContent>
+                <CardFooter>this is the card footer</CardFooter>
+              </Card>
+            </section>
+            <section className={styles.Chart}>
+              <Card>
+                <CardHeader>This is the card Header</CardHeader>
+                <CardContent>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                  irure dolor in reprehenderit in voluptate velit esse cillum
+                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                  cupidatat non proident, sunt in culpa qui officia deserunt
+                  mollit anim id est laborum.
+                </CardContent>
+                <CardFooter>this is the card footer</CardFooter>
+              </Card>
+              <Card>
+                <CardHeader>This is the card Header</CardHeader>
+                <CardContent>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                  irure dolor in reprehenderit in voluptate velit esse cillum
+                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                  cupidatat non proident, sunt in culpa qui officia deserunt
+                  mollit anim id est laborum.
+                </CardContent>
+                <CardFooter>this is the card footer</CardFooter>
+              </Card>
+            </section>
             <div className={styles.columns}>
               {this.state.favoriteModels.map((arr, i) => {
                 const [contentModelZUID, items] = arr;

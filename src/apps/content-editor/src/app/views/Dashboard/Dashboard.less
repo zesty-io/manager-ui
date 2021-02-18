@@ -12,7 +12,7 @@
   }
   .LatestActivity {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     li {
       display: flex;
       justify-content: space-between;
@@ -29,6 +29,15 @@
     }
   }
 
+  .LinkOuts {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .Chart {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+  }
   .columns {
     display: flex;
     flex-wrap: wrap;
