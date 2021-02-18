@@ -1,5 +1,13 @@
 import React, { useState } from "react";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBan,
+  faCheckCircle,
+  faSpinner,
+  faSync
+} from "@fortawesome/free-solid-svg-icons";
+
 import { Notice } from "@zesty-io/core/Notice";
 import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
@@ -33,9 +41,9 @@ export const Sync = React.memo(function Sync(props) {
     <div>
       <Button kind="alt" onClick={() => setOpen(true)}>
         {loading ? (
-          <i className="fas fa-spinner"></i>
+          <FontAwesomeIcon icon={faSpinner} />
         ) : (
-          <i className="fas fa-sync"></i>
+          <FontAwesomeIcon icon={faSync} />
         )}
         Sync
       </Button>
@@ -57,14 +65,15 @@ export const Sync = React.memo(function Sync(props) {
           <ButtonGroup className={styles.ModalActions}>
             <Button kind="save" onClick={handleSync} disabled={loading}>
               {loading ? (
-                <i className="fas fa-spinner" aria-hidden="true" />
+                <FontAwesomeIcon icon={faSpinner} />
               ) : (
-                <i className="fas fa-check-circle" aria-hidden="true" />
+                <FontAwesomeIcon icon={faCheckCircle} />
               )}
               Sync File
             </Button>
             <Button kind="cancel" onClick={() => setOpen(false)}>
-              <i className="fas fa-ban"></i>Cancel (ESC)
+              <FontAwesomeIcon icon={faBan} />
+              Cancel (ESC)
             </Button>
           </ButtonGroup>
         </ModalFooter>

@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faUpload } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheck,
+  faUpload,
+  faChevronDown,
+  faChevronUp
+} from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
 import { Card, CardContent } from "@zesty-io/core/Card";
@@ -51,9 +56,9 @@ export function MediaSelected(props) {
                   {props.limitSelected > 1 ? "s" : ""} Selected
                 </span>
                 {open ? (
-                  <i className="fas fa-chevron-down"></i>
+                  <FontAwesomeIcon icon={faChevronDown} />
                 ) : (
-                  <i className="fas fa-chevron-up"></i>
+                  <FontAwesomeIcon icon={faChevronUp} />
                 )}
               </Button>
             </DrawerHandle>

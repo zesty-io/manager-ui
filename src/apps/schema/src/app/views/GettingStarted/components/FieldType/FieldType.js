@@ -1,6 +1,13 @@
 import React from "react";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faAlignLeft,
+  faFileImage,
+  faFont
+} from "@fortawesome/free-solid-svg-icons";
+
 import { Card } from "@zesty-io/core/Card";
 
 import styles from "./FieldType.less";
@@ -20,7 +27,7 @@ export function FieldType(props) {
           })}
           onClick={() => props.setFieldType("text")}
         >
-          <i className={cx(`fas fa-font`, styles.icon)} />
+          <FontAwesomeIcon className={styles.icon} icon={faFont} />
           <h2 className={styles.OptionTitle}>Text</h2>
           <p className={styles.OptionDescription}>Simple one-line input.</p>
         </Card>
@@ -30,7 +37,7 @@ export function FieldType(props) {
           })}
           onClick={e => props.setFieldType("textarea")}
         >
-          <i className={cx(`fas fa-align-left`, styles.icon)} />
+          <FontAwesomeIcon className={styles.icon} icon={faAlignLeft} />
           <h2 className={styles.OptionTitle}>Rich text</h2>
           <p className={styles.OptionDescription}>
             Wysiwyg editor for formatted text.
@@ -42,7 +49,7 @@ export function FieldType(props) {
           })}
           onClick={() => props.setFieldType("images")}
         >
-          <i className={cx(`far fa-file-image`, styles.icon)} />
+          <FontAwesomeIcon className={styles.icon} icon={faFileImage} />
           <h2 className={styles.OptionTitle}>Media</h2>
           <p className={styles.OptionDescription}>Uploading images or files.</p>
         </Card>

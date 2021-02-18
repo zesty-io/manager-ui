@@ -1,16 +1,20 @@
 import React from "react";
 import moment from "moment";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBolt, faCodeBranch } from "@fortawesome/free-solid-svg-icons";
+
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
 
 import styles from "./FileStatus.less";
+
 export default function FileStatus(props) {
   return (
     <Card className={styles.FileStatus}>
       <CardHeader>
         <h1>
-          <i className="fas fa-code-branch"></i> Code File
+          <FontAwesomeIcon icon={faCodeBranch} /> Code File
         </h1>
       </CardHeader>
       <CardContent>
@@ -45,7 +49,7 @@ export default function FileStatus(props) {
                 target="_blank"
                 title="Preview JSON"
               >
-                <i className="fas fa-bolt"></i> Instant JSON API
+                <FontAwesomeIcon icon={faBolt} /> Instant JSON API
               </Url>
             </li>
           )}

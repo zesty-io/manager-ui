@@ -1,6 +1,12 @@
 import React, { Fragment, useState, useEffect } from "react";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronLeft,
+  faChevronRight
+} from "@fortawesome/free-solid-svg-icons";
+
 import { Button } from "@zesty-io/core/Button";
 
 import styles from "./Wizard.less";
@@ -67,7 +73,7 @@ export function Wizard(props) {
                           onClick={prev}
                           className={styles.Button}
                         >
-                          <i className="fa fa-chevron-left" /> Back
+                          <FontAwesomeIcon icon={faChevronLeft} /> Back
                         </Button>
                       )}
                       {step < props.children.length && (
@@ -77,11 +83,9 @@ export function Wizard(props) {
                           onClick={() => next(child.props.onNext)}
                           disabled={child.props.locked}
                         >
-                          <i
-                            className={cx(
-                              "fa fa-chevron-right",
-                              styles.ButtonIcon
-                            )}
+                          <FontAwesomeIcon
+                            className={styles.ButtonIcon}
+                            icon={faChevronRight}
                           />
                           {child.props.labelButtonNext
                             ? child.props.labelButtonNext

@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
+
 import { Url } from "@zesty-io/core/Url";
 import { Button } from "@zesty-io/core/Button";
 import { Notice } from "@zesty-io/core/Notice";
@@ -13,8 +16,7 @@ import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 
 import styles from "./Robots.less";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
+
 export default connect(state => {
   return {
     domains: state.instance.domains,
@@ -234,9 +236,9 @@ export default connect(state => {
               disabled={this.state.loading}
             >
               {this.state.loading ? (
-                <i className="fas fa-spinner"></i>
+                <FontAwesomeIcon icon={faSpinner} />
               ) : (
-                <i className="fas fa-save"></i>
+                <FontAwesomeIcon icon={faSave} />
               )}
               Save Settings
             </Button>
