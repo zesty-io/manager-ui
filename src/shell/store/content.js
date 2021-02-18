@@ -1,5 +1,6 @@
 import moment from "moment-timezone";
 import cloneDeep from "lodash.clonedeep";
+import PubSub from "pubsub-js";
 
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
@@ -405,7 +406,7 @@ export function saveItem(itemZUID, action = "") {
       dispatch(fetchItem(item.meta.contentModelZUID, itemZUID)).then(() => {
         // NOTE: Communicate with ActivePreview that this item
         // was updated and it needs to refreshed
-        zesty.trigger("PREVIEW_REFRESH");
+        PubSub.publish("PREVIEW_REFRESH");
       });
       return res;
     });

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { connect } from "react-redux";
+import PubSub from "pubsub-js";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
@@ -89,8 +90,7 @@ export default connect(state => {
       "height=850, width=1260, location=0, menubar=0, status=0, titlebar=0, toolbar=0"
     );
 
-    zesty.on("PREVIEW_ROUTE", route);
-    zesty.on("PREVIEW_REFRESH", refresh);
+    PubSub.subscribe("PREVIEW_REFRESH", refresh);
 
     // If instance manager is closed then close active preview
     window.addEventListener("beforeunload", close);
@@ -102,7 +102,6 @@ export default connect(state => {
 
     // if active preview is closed detach manager event listeners to avoid memory leak
     preview.addEventListener("beforeunload", () => {
-      zesty.off("PREVIEW_ROUTE");
       zesty.off("PREVIEW_REFRESH");
       window.removeEventListener("beforeunload", close);
     });

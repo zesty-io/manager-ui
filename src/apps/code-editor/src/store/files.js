@@ -1,6 +1,7 @@
 import { set } from "idb-keyval";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
+import PubSub from "pubsub-js";
 
 export function files(state = [], action) {
   let files;
@@ -444,7 +445,7 @@ export function saveFile(ZUID, status) {
           });
 
           // re-render ActivePreview on code file save
-          zesty.trigger("PREVIEW_REFRESH");
+          PubSub.publish("PREVIEW_REFRESH");
 
           // Re-fetch file to ensure we have latest version number
           return dispatch(fetchFile(file.ZUID, pathPart));
