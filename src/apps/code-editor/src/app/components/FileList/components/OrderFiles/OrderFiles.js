@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowsAlt, faBan, faSave } from "@fortawesome/free-solid-svg-icons";
 
 import { Dropzone } from "./components/Dropzone";
 import { Draggable } from "./components/Draggable";
@@ -99,7 +101,7 @@ export default connect((state, props) => {
         kind="primary"
         title="Change combine and pre-process order"
       >
-        <i className="fas fa-arrows-alt" aria-hidden="true" />
+        <FontAwesomeIcon icon={faArrowsAlt} />
         <span>Order</span>
       </Button>
 
@@ -159,10 +161,10 @@ export default connect((state, props) => {
           </ModalContent>
           <ModalFooter>
             <Button kind="save" onClick={handleSaveSort} disabled={loading}>
-              <i className="fas fa-save"></i> Save Order
+              <FontAwesomeIcon icon={faSave} /> Save Order
             </Button>
             <Button kind="cancel" onClick={() => setOpen(false)}>
-              <i className="fas fa-ban"></i> Cancel (ESC)
+              <FontAwesomeIcon icon={faBan} /> Cancel (ESC)
             </Button>
           </ModalFooter>
         </Modal>

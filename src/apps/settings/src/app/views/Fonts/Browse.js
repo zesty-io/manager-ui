@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faSpinner } from "@fortawesome/free-solid-svg-icons";
+
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { Button } from "@zesty-io/core/Button";
 import { Search } from "@zesty-io/core/Search";
@@ -233,9 +236,9 @@ export default connect(state => {
                   disabled={isLoading}
                 >
                   {isLoading ? (
-                    <i className="fas fa-spinner"></i>
+                    <FontAwesomeIcon icon={faSpinner} />
                   ) : (
-                    <i className="fas fa-plus"></i>
+                    <FontAwesomeIcon icon={faPlus} />
                   )}{" "}
                   Add
                 </Button>

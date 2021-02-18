@@ -6,6 +6,12 @@ import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
 import styles from "./WidgetQuickShare.less";
+import {
+  faFacebookSquare,
+  faLinkedinIn,
+  faRedditSquare,
+  faTwitterSquare
+} from "@fortawesome/free-brands-svg-icons";
 export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
   const handleOpen = (evt, url) => {
     window.open(
@@ -19,7 +25,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
   };
 
   return (
-    <Card id="WidgetQuickShare" className="pageDetailWidget">
+    <Card id="WidgetQuickShare" className={styles.pageDetailWidget}>
       <CardHeader>
         <span>
           <FontAwesomeIcon icon={faShareAlt} />
@@ -39,7 +45,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
               )
             }
           >
-            <i className="fab fa-twitter-square" />
+            <FontAwesomeIcon icon={faTwitterSquare} />
             <p>Tweet</p>
           </span>
           <span
@@ -53,7 +59,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
               )
             }
           >
-            <i className="fab fa-facebook-square" />
+            <FontAwesomeIcon icon={faFacebookSquare} />
             <p>Share</p>
           </span>
           <span
@@ -67,7 +73,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
               )
             }
           >
-            <i className="fab fa-linkedin" />
+            <FontAwesomeIcon icon={faLinkedinIn} />
             <p>Share</p>
           </span>
           <span
@@ -81,7 +87,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
               )
             }
           >
-            <i className="fab fa-reddit-square" />
+            <FontAwesomeIcon icon={faRedditSquare} />
             <p>Share</p>
           </span>
         </ButtonGroup>

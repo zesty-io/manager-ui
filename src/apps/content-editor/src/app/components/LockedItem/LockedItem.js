@@ -2,7 +2,7 @@ import React from "react";
 import moment from "moment-timezone";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUnlock } from "@fortawesome/free-solid-svg-icons";
+import { faLock, faUnlock } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Divider } from "@zesty-io/core/Divider";
 import { Button } from "@zesty-io/core/Button";
@@ -23,7 +23,7 @@ export const LockedItem = ({
     <div className={styles.Wrapper}>
       <Card className={styles.Card}>
         <CardHeader className={styles.Header}>
-          <i className={`fa fa-lock ${styles.backgroundIcon}`} />
+          <FontAwesomeIcon className={styles.backgroundIcon} icon={faLock} />
           <h1>Item Locked</h1>
         </CardHeader>
         <CardContent className={styles.Center}>

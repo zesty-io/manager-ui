@@ -7,6 +7,13 @@ import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { deleteFile } from "../../../../../store/files";
 
 import styles from "./Delete.less";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBan,
+  faCheckCircle,
+  faExclamationCircle,
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
 export const Delete = React.memo(function Delete(props) {
   const [open, setOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -18,7 +25,8 @@ export const Delete = React.memo(function Delete(props) {
         onClick={() => setOpen(true)}
         className={styles.Button}
       >
-        <i className="fas fa-trash-alt"></i>Delete
+        <FontAwesomeIcon icon={faExclamationCircle} />
+        Delete
       </Button>
       <Modal
         className={styles.DeleteFileModal}
@@ -54,14 +62,15 @@ export const Delete = React.memo(function Delete(props) {
             }}
           >
             {deleting ? (
-              <i className="fas fa-spinner" aria-hidden="true" />
+              <FontAwesomeIcon icon={faSpinner} />
             ) : (
-              <i className="fas fa-check-circle" aria-hidden="true" />
+              <FontAwesomeIcon icon={faCheckCircle} />
             )}
             Delete File
           </Button>
           <Button kind="cancel" onClick={() => setOpen(false)}>
-            <i className="fas fa-ban"></i>Cancel (ESC)
+            <FontAwesomeIcon icon={faBan} />
+            Cancel (ESC)
           </Button>
         </ModalFooter>
       </Modal>
