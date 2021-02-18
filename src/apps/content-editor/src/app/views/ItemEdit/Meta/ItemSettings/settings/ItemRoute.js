@@ -132,7 +132,7 @@ export const ItemRoute = connect(state => {
 
               {loading && (
                 <InputIcon className={styles.Checking}>
-                  <FontAwesomeIcon icon={faSpinner} />
+                  <FontAwesomeIcon icon={faSpinner} spin />
                 </InputIcon>
               )}
 

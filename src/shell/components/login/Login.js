@@ -135,7 +135,7 @@ export default connect(state => {
               />
               <Button>
                 {loading ? (
-                  <FontAwesomeIcon icon={faSpinner} />
+                  <FontAwesomeIcon icon={faSpinner} spin />
                 ) : (
                   <FontAwesomeIcon icon={faSignInAlt} />
                 )}

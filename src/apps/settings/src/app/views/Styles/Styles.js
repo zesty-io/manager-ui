@@ -9,12 +9,12 @@ import { Select, Option } from "@zesty-io/core/Select";
 import { Button } from "@zesty-io/core/Button";
 import { Modal } from "@zesty-io/core/Modal";
 
-import MediaApp from "../../../../../media-2/src/app/MediaApp";
+import MediaApp from "../../../../../media/src/app/MediaApp";
 import { notify } from "shell/store/notifications";
 import { fetchStylesVariables, saveVariables } from "../../../store/settings";
 
 import styles from "./Styles.less";
-import MediaStyles from "../../../../../media-2/src/app/MediaAppModal.less";
+import MediaStyles from "../../../../../media/src/app/MediaAppModal.less";
 
 export default connect(state => {
   return {

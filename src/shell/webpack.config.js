@@ -9,11 +9,14 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 const CleanupStatsPlugin = require("./CleanupStatsPlugin");
 const MomentLocalesPlugin = require("moment-locales-webpack-plugin");
+const mkdirp = require("mkdirp");
 
 const release = require("../../etc/release");
 const CONFIG = require("./app.config");
 
 module.exports = async env => {
+  // create build/ dir
+  mkdirp.sync(path.resolve(__dirname, "../../build/"));
   // Attach release info onto config to connect with bug tracking software
   CONFIG[env.NODE_ENV].build = await release(env.NODE_ENV);
 

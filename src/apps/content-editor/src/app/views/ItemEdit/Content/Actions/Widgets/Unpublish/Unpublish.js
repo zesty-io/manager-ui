@@ -50,7 +50,7 @@ export const Unpublish = React.memo(function Unpublish(props) {
           disabled={loading || !isPublished}
         >
           {loading ? (
-            <FontAwesomeIcon icon={faSpinner} />
+            <FontAwesomeIcon icon={faSpinner} spin />
           ) : (
             <FontAwesomeIcon icon={faUnlink} />
           )}

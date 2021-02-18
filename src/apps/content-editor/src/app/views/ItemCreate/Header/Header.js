@@ -40,7 +40,7 @@ export default connect(state => {
           onClick={props.onSave}
         >
           {props.saving ? (
-            <FontAwesomeIcon icon={faSpinner} />
+            <FontAwesomeIcon icon={faSpinner} spin />
           ) : (
             <FontAwesomeIcon icon={faSave} />
           )}
