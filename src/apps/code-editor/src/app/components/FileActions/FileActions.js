@@ -2,6 +2,16 @@ import React from "react";
 import cx from "classnames";
 import { Switch, Route, useRouteMatch } from "react-router";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBolt,
+  faCode,
+  faDatabase,
+  faEdit,
+  faHistory,
+  faPlus
+} from "@fortawesome/free-solid-svg-icons";
+
 import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Url } from "@zesty-io/core/Url";
@@ -25,7 +35,7 @@ export const FileActions = React.memo(function FileActions(props) {
             target="_blank"
             title="Preview JSON"
           >
-            <i className="fas fa-bolt"></i>
+            <FontAwesomeIcon icon={faBolt} />
           </Url>
         ) : (
           <i className={cx(styles.FileLink, "far fa-file-code")}></i>
@@ -42,7 +52,7 @@ export const FileActions = React.memo(function FileActions(props) {
                     title="Edit Related Content"
                   >
                     <Button>
-                      <i className="fas fa-edit"></i>
+                      <FontAwesomeIcon icon={faEdit} />
                     </Button>
                   </AppLink>
 
@@ -52,7 +62,7 @@ export const FileActions = React.memo(function FileActions(props) {
                     title="Edit Related Model"
                   >
                     <Button>
-                      <i className="fas fa-database"></i>
+                      <FontAwesomeIcon icon={faDatabase} />
                     </Button>
                   </AppLink>
                 </React.Fragment>
@@ -70,7 +80,7 @@ export const FileActions = React.memo(function FileActions(props) {
                 title="Diff Versions"
               >
                 <Button>
-                  <i className="fas fa-history"></i>
+                  <FontAwesomeIcon icon={faHistory} />
                 </Button>
               </AppLink>
             </div>

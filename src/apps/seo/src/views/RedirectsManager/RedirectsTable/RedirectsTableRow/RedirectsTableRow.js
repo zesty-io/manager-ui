@@ -1,6 +1,8 @@
 import React from "react";
 import cx from "classnames";
 import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
 
@@ -44,7 +46,7 @@ export default function RedirectsTableRow(props) {
           className={cx(styles.removeBtn, "button deleteButton")}
           onClick={props.removeRedirect}
         >
-          <i className="fas fa-trash-alt" aria-hidden="true" />
+          <FontAwesomeIcon icon={faTrashAlt} />
           Remove
         </Button>
       </span>

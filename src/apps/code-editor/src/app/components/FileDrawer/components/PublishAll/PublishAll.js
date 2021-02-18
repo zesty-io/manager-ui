@@ -1,5 +1,11 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCheckCircle,
+  faCloudUploadAlt,
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Notice } from "@zesty-io/core/Notice";
 import { Button } from "@zesty-io/core/Button";
@@ -63,7 +69,7 @@ export default connect(state => {
       className={styles.PublishAll}
       header={
         <h1>
-          <i className="fas fa-cloud-upload-alt"></i> Publish All
+          <FontAwesomeIcon icon={faCloudUploadAlt} /> Publish All
         </h1>
       }
     >
@@ -91,9 +97,9 @@ export default connect(state => {
       <CardFooter>
         <Button kind="save" onClick={handlePublishAll} disabled={loading}>
           {loading ? (
-            <i className="fas fa-spinner"></i>
+            <FontAwesomeIcon icon={faSpinner} />
           ) : (
-            <i className="fas fa-check-circle"></i>
+            <FontAwesomeIcon icon={faCheckCircle} />
           )}{" "}
           Publish All Files
         </Button>
