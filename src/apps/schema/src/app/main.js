@@ -22,7 +22,12 @@ export default connect(state => {
       width="100vw"
       height="100vh"
     >
-      <section className={cx(styles.SchemaBuilder, styles.SchemaStart)}>
+      <section
+        className={cx(
+          styles.SchemaBuilder,
+          location.pathname === "/schema/start" ? styles.SchemaStart : ""
+        )}
+      >
         {location.pathname !== "/schema/start" && (
           <SchemaNav nav={props.navSchema} />
         )}
