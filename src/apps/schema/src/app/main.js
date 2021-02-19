@@ -21,6 +21,8 @@ export default connect(state => {
       width="100vw"
       height="100vh"
     >
+      <Route path="/schema/start" component={GettingStarted} />
+
       <section className={styles.SchemaBuilder}>
         {location.pathname !== "/schema/start" && (
           <SchemaNav nav={props.navSchema} />
@@ -28,7 +30,6 @@ export default connect(state => {
         <div className={styles.SchemaMain}>
           <Switch>
             <Route exact path="/schema/new" component={SchemaCreate} />
-            <Route path="/schema/start" component={GettingStarted} />
             <Route
               path="/schema/:modelZUID/field/:fieldZUID"
               component={SchemaEdit}
