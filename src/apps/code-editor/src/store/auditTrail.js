@@ -1,6 +1,6 @@
 import uniqBy from "lodash.uniqby";
-// import isEqual from "lodash/fp/isEqual";
 import { notify } from "shell/store/notifications";
+import { request } from "utility/request";
 
 export function auditTrail(state = [], action) {
   switch (action.type) {

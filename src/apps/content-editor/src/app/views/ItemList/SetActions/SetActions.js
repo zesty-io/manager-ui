@@ -9,7 +9,8 @@ import {
   faSpinner,
   faTimesCircle,
   faUpload,
-  faDatabase
+  faDatabase,
+  faBolt
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 import { Search } from "@zesty-io/core/Search";
@@ -121,7 +122,7 @@ export class SetActions extends Component {
                     : this.props.instance.preview_domain
                 }/-/instant/${this.props.modelZUID}.json`}
               >
-                <i className="fa fa-bolt" aria-hidden="true" />
+                <FontAwesomeIcon icon={faBolt} />
                 &nbsp;Instant API
               </Url>
             ) : null}

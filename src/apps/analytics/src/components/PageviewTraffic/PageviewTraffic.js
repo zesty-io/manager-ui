@@ -1,6 +1,7 @@
 import React from "react";
 import { Line } from "react-chartjs-2";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import { request } from "utility/request";
 
 import styles from "./PageviewTraffic.less";
 export class PageviewTraffic extends React.PureComponent {

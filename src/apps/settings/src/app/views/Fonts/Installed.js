@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBolt, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+
 import { Button } from "@zesty-io/core/Button";
 import { Search } from "@zesty-io/core/Search";
 import { Notice } from "@zesty-io/core/Notice";
@@ -191,7 +194,7 @@ export default connect(state => {
                   }
                   className={styles.ButtonRemoveFont}
                 >
-                  <i className="fas fa-trash"></i>
+                  <FontAwesomeIcon icon={faTrashAlt} />
                   Remove {parseVariant(variant.label)}
                 </Button>
               </div>

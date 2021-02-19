@@ -6,6 +6,7 @@ import { faSync, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 
 import { notify } from "shell/store/notifications";
+import { request } from "utility/request";
 import SharedWidgetStyles from "../SharedWidget.less";
 
 export const WidgetPurgeItem = React.memo(function WidgetPurgeItem(props) {

@@ -1,5 +1,6 @@
 import { notify } from "shell/store/notifications";
 import { resolvePathPart } from "./files";
+import { request } from "utility/request";
 
 export function headers(state = [], action) {
   switch (action.type) {

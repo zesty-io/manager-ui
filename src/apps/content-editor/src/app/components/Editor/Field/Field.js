@@ -16,7 +16,7 @@ import {
 // instead of individually importing
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Modal } from "@zesty-io/core/Modal";
-import MediaApp from "../../../../../../media-2/src/app/MediaApp";
+import MediaApp from "../../../../../../media/src/app/MediaApp";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
@@ -35,7 +35,7 @@ import { FieldTypeOneToOne } from "@zesty-io/core/FieldTypeOneToOne";
 import { FieldTypeOneToMany } from "@zesty-io/core/FieldTypeOneToMany";
 
 import styles from "./Field.less";
-import MediaStyles from "../../../../../../media-2/src/app/MediaAppModal.less";
+import MediaStyles from "../../../../../../media/src/app/MediaAppModal.less";
 
 function sortTitle(a, b) {
   const nameA = String(a.text) && String(a.text).toUpperCase(); // ignore upper and lowercase
@@ -215,7 +215,7 @@ export default connect(state => {
                 open={true}
                 type="global"
                 onClose={() => setImageModal()}
-                className={styles.MediaAppModal}
+                className={MediaStyles.MediaAppModal}
               >
                 <MediaApp
                   limitSelected={imageModal.limit}

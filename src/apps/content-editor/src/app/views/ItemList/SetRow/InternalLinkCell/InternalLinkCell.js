@@ -18,7 +18,7 @@ export class InternalLinkCell extends PureComponent {
             styles.Empty
           )}
         >
-          <i className={cx("fa fa-link", styles.empty)} aria-hidden="true" />
+          <FontAwesomeIcon className={styles.empty} icon={faLink} />
         </span>
       );
     }

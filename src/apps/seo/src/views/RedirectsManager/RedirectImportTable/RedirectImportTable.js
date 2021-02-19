@@ -1,7 +1,9 @@
 import React from "react";
 import cx from "classnames";
-import { Button } from "@zesty-io/core/Button";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faSave, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { Button } from "@zesty-io/core/Button";
 import styles from "./RedirectImportTable.less";
 
 import RedirectImportTableRow from "./RedirectImportTableRow";
@@ -25,11 +27,13 @@ export default class RedirectImportTable extends React.Component {
             className={cx("save", styles.addAll)}
             onClick={this.handleAddAllRedirects}
           >
-            <i className="fa fa-plus" aria-hidden="true"></i>Add All Redirects
+            <FontAwesomeIcon icon={faPlus} />
+            Add All Redirects
           </Button>
 
           <Button onClick={this.handleCancelImport}>
-            <i className="fa fa-times" aria-hidden="true"></i>Close Import
+            <FontAwesomeIcon icon={faTimes} />
+            Close Import
           </Button>
         </div>
         <div className={styles.Header}>

@@ -1,6 +1,9 @@
 import React from "react";
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+
 import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
 
@@ -14,7 +17,7 @@ export function FieldSuccess(props) {
 
       <div className={styles.SuccessButtons}>
         <Button kind="secondary" onClick={props.handleAddField}>
-          <i className="fa fa-chevron-left" /> Add another field
+          <FontAwesomeIcon icon={faChevronLeft} /> Add another field
         </Button>
 
         <AppLink
@@ -22,7 +25,7 @@ export function FieldSuccess(props) {
           onClick={props.goToContent}
         >
           <Button kind="save">
-            <i className="fa fa-check" /> I want to add content
+            <FontAwesomeIcon icon={faCheck} /> I want to add content
           </Button>
         </AppLink>
       </div>

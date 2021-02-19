@@ -7,14 +7,9 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { get } from "idb-keyval";
-import riot from "riot";
-import Clipboard from "clipboard";
-import DnD from "../vendors/common/dnd";
+import observable from "@riotjs/observable";
 
 import Sentry from "utility/sentry";
-
-import { request } from "utility/request";
-import { notify } from "shell/store/notifications";
 import { store, injectReducer } from "shell/store";
 import { navContent } from "../apps/content-editor/src/store/navContent";
 
@@ -31,18 +26,9 @@ injectReducer(store, "navContent", navContent);
 // Some legacy code refers to this global which is an observable
 // FIXME: this needs to get refactored out
 if (window.zesty == null) {
-  window.zesty = riot.observable();
+  window.zesty = observable();
 }
 window.zestyStore = store;
-
-window.ClipboardJS = Clipboard;
-window.DnD = DnD;
-window.riot = riot;
-
-// Media riot app depends on these references
-// FIXME: this needs to get refactored out
-window.request = request;
-window.growl = notice => store.dispatch(notify(notice));
 
 // Update urls in config to include the current instance zuid
 const instanceZUID = store.getState().instance.ZUID;
