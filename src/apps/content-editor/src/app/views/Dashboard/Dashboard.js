@@ -7,22 +7,20 @@ import { useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
-import { Url } from "@zesty-io/core/Url";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
+import { HeaderDashboard } from "./components/HeaderDashboard";
 import { TopPerforming } from "./components/TopPerforming";
 import { RecentlyEdited } from "./components/RecentlyEdited";
-
-import { HeaderDashboard } from "./components/HeaderDashboard";
+import { UserLatestEdits } from "./components/UserLatestEdits";
 
 import { fetchRecentItems, fetchUserEdits } from "shell/store/user";
 
 import styles from "./Dashboard.less";
 export default connect(function(state, props) {
-  // console.log("david State:", state);
   return {
     user: state.user,
     instanceZUID: state.instance.ZUID,
@@ -143,36 +141,13 @@ export default connect(function(state, props) {
               createdAt={this.props.instance.createdAt}
               randomHashID={this.props.instance.randomHashID}
               domain={this.props.instance.domain}
+              firstName={this.props.user.firstName}
             />
-            <h1 className={cx(styles.User, styles.subheadline)}>
-              Ready to get cooking, {this.props.user.firstName}
-            </h1>
+
             {/* User latest activity */}
             <section className={styles.LatestActivity}>
-              <Card>
-                <CardHeader>Your Latest Edits</CardHeader>
-                <CardContent>
-                  <WithLoader
-                    condition={!this.props.loading}
-                    message="Loading Recent Items"
-                  >
-                    {/* <ul>
-                      {this.state.userRecentMessage.map((item, i) => (
-                        <li key={i}>
-                          <AppLink
-                            to={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
-                          >
-                            {item.web.message
-                              ? `Title: ${item.meta.message}`
-                              : `Message: `}
-                          </AppLink>
-                        </li>
-                      ))}
-                    </ul> */}
-                    )
-                  </WithLoader>
-                </CardContent>
-              </Card>
+              <UserLatestEdits />
+
               <Card>
                 <CardHeader>Your Latest Content Publishes</CardHeader>
                 <CardContent>
