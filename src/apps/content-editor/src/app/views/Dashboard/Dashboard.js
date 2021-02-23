@@ -135,11 +135,15 @@ export default connect(function(state, props) {
     }
 
     render() {
-      // console.log(this.state.userRecentMessage);
       return (
         <section className={styles.Dashboard}>
           <div className={styles.container}>
-            {/* <HeaderDashboard /> */}
+            <HeaderDashboard
+              instanceName={this.props.instance.name}
+              createdAt={this.props.instance.createdAt}
+              randomHashID={this.props.instance.randomHashID}
+              domain={this.props.instance.domain}
+            />
             <h1 className={cx(styles.User, styles.subheadline)}>
               Ready to get cooking, {this.props.user.firstName}
             </h1>

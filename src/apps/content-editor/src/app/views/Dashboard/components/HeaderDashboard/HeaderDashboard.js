@@ -7,27 +7,28 @@ import { Url } from "@zesty-io/core/Url";
 
 import styles from "./HeaderDashboard.less";
 
-export default function HeaderDashboard() {
+export function HeaderDashboard(
+  { instanceName, createdAt, randomHashID, domain } = this.props.instance
+) {
   return (
     <header>
-      {/* <Card>
+      <Card>
         <CardHeader className={styles.DashboardHeader}>
           <h2>
-            {this.props.instance.name} - Created Date:{" "}
-            {this.props.instance.createdAt}{" "}
+            {instanceName} - Created Date: {createdAt}{" "}
           </h2>
           <Url
             target="_blank"
-            title={`${CONFIG.URL_PREVIEW_PROTOCOL}${this.props.instance.randomHashID}${CONFIG.URL_PREVIEW}`}
-            href={`${CONFIG.URL_PREVIEW_PROTOCOL}${this.props.instance.randomHashID}${CONFIG.URL_PREVIEW}`}
+            title={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
+            href={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
           >
             <FontAwesomeIcon icon={faExternalLinkAlt} />
             &nbsp;View Preview
           </Url>
-          {this.props.instance.domain && (
+          {domain && (
             <Url
               className={styles.Live}
-              href={`//${this.props.instance.domain}`}
+              href={`//${domain}`}
               target="_blank"
               title="Open live link in standard browser window"
             >
@@ -36,8 +37,7 @@ export default function HeaderDashboard() {
             </Url>
           )}
         </CardHeader>
-      </Card> */}
-      <h1>David Naimi</h1>
+      </Card>
     </header>
   );
 }
