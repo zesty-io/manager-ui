@@ -11,14 +11,18 @@ import { Url } from "@zesty-io/core/Url";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
+import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { TopPerforming } from "./components/TopPerforming";
 import { RecentlyEdited } from "./components/RecentlyEdited";
 
-import { fetchRecentItems } from "shell/store/user";
+import { HeaderDashboard } from "./components/HeaderDashboard";
+
+import { fetchRecentItems, fetchUserEdits } from "shell/store/user";
 
 import styles from "./Dashboard.less";
 export default connect(function(state, props) {
+  // console.log("david State:", state);
   return {
     user: state.user,
     instanceZUID: state.instance.ZUID,
@@ -38,12 +42,11 @@ export default connect(function(state, props) {
   class Dashboard extends React.PureComponent {
     state = {
       recentlyEditedItems: [],
+      userRecentMessage: [],
       favoriteModels: [],
       loading: true,
       webEngineOn: true, // in the future this will be a boolean pulled off the account, it will change the dash
-      domainSet: Boolean(this.props.instance.live_domain),
-      gaAuthenticated: Boolean(this.props.instance.google_profile_id),
-      gaLegacyAuth: false // we need response body from cloud function could change this
+      domainSet: Boolean(this.props.instance.live_domain)
     };
 
     componentDidMount() {
@@ -66,10 +69,22 @@ export default connect(function(state, props) {
             });
           }
         });
+
+      this.props.dispatch(fetchUserEdits(this.props.user.ZUID)).then(res => {
+        console.log("davey ", res.data);
+        if (res && res.data) {
+          this.setState({
+            userRecentMessage: [...this.res.data],
+            loading: false
+          });
+        } else {
+          this.setState({
+            loading: false
+          });
+        }
+      });
     }
-    setGALegacyStatus = status => {
-      this.setState({ gaLegacyAuth: status });
-    };
+
     /**
       Group items by model
       [
@@ -120,39 +135,11 @@ export default connect(function(state, props) {
     }
 
     render() {
-      console.log("Dashboard Testing:", this.props);
+      // console.log(this.state.userRecentMessage);
       return (
         <section className={styles.Dashboard}>
           <div className={styles.container}>
-            <header>
-              <Card>
-                <CardHeader className={styles.DashboardHeader}>
-                  <h2>
-                    {this.props.instance.name} - Created Date:{" "}
-                    {this.props.instance.createdAt}{" "}
-                  </h2>
-                  <Url
-                    target="_blank"
-                    title={`${CONFIG.URL_PREVIEW_PROTOCOL}${this.props.instance.randomHashID}${CONFIG.URL_PREVIEW}`}
-                    href={`${CONFIG.URL_PREVIEW_PROTOCOL}${this.props.instance.randomHashID}${CONFIG.URL_PREVIEW}`}
-                  >
-                    <FontAwesomeIcon icon={faExternalLinkAlt} />
-                    &nbsp;View Preview
-                  </Url>
-                  {this.props.instance.domain && (
-                    <Url
-                      className={styles.Live}
-                      href={`//${this.props.instance.domain}`}
-                      target="_blank"
-                      title="Open live link in standard browser window"
-                    >
-                      <FontAwesomeIcon icon={faExternalLinkAlt} />
-                      &nbsp;View Live
-                    </Url>
-                  )}
-                </CardHeader>
-              </Card>
-            </header>
+            <HeaderDashboard />
             <h1 className={cx(styles.User, styles.subheadline)}>
               Ready to get cooking, {this.props.user.firstName}
             </h1>
@@ -161,29 +148,25 @@ export default connect(function(state, props) {
               <Card>
                 <CardHeader>Your Latest Edits</CardHeader>
                 <CardContent>
-                  <ul>
-                    <li>
-                      <div>
-                        <p>Title - Content Modal Name</p>
-                        <p>User 1 edited 1/1/2021</p>
-                      </div>
-                      <FontAwesomeIcon icon={faExternalLinkAlt} />
-                    </li>
-                    <li>
-                      <div>
-                        <p>Title - Content Modal Name</p>
-                        <p>User 1 edited 1/1/2021</p>
-                      </div>
-                      <FontAwesomeIcon icon={faExternalLinkAlt} />
-                    </li>
-                    <li>
-                      <div>
-                        <p>Title - Content Modal Name</p>
-                        <p>User 1 edited 1/1/2021</p>
-                      </div>
-                      <FontAwesomeIcon icon={faExternalLinkAlt} />
-                    </li>
-                  </ul>
+                  <WithLoader
+                    condition={!this.props.loading}
+                    message="Loading Recent Items"
+                  >
+                    {/* <ul>
+                      {this.state.userRecentMessage.map((item, i) => (
+                        <li key={i}>
+                          <AppLink
+                            to={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
+                          >
+                            {item.web.message
+                              ? `Title: ${item.meta.message}`
+                              : `Message: `}
+                          </AppLink>
+                        </li>
+                      ))}
+                    </ul> */}
+                    )
+                  </WithLoader>
                 </CardContent>
               </Card>
               <Card>
@@ -289,11 +272,6 @@ export default connect(function(state, props) {
                 <CardHeader>This is the card Header</CardHeader>
                 <CardContent>
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                  irure dolor in reprehenderit in voluptate velit esse cillum
-                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat
                   cupidatat non proident, sunt in culpa qui officia deserunt
                   mollit anim id est laborum.
                 </CardContent>
@@ -304,10 +282,6 @@ export default connect(function(state, props) {
                 <CardContent>
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
                   do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                  irure dolor in reprehenderit in voluptate velit esse cillum
-                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat
                   cupidatat non proident, sunt in culpa qui officia deserunt
                   mollit anim id est laborum.
                 </CardContent>

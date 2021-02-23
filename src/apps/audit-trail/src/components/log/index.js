@@ -32,7 +32,6 @@ class Log extends Component {
   }
 
   render() {
-    console.log("david audit trail", this.props);
     let { meta, email, firstName, happenedAt, action } = this.props.log;
 
     return (

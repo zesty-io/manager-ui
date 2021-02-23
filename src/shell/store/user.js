@@ -110,3 +110,43 @@ export function fetchRecentItems(userZUID, start) {
     });
   };
 }
+
+// //Reducer
+// export function fetchUserEdits(state = {}, action){
+
+// }
+
+export function fetchUserEdits(userZUID) {
+  return dispatch => {
+    return request(
+      `${CONFIG.API_INSTANCE}/env/audits?q=${userZUID}&limit=5&action=2`
+    ).then(res => {
+      if (res.status === 400) {
+        dispatch(
+          notify({
+            message: `Failure fetching user's latest edits: ${res.error}`,
+            kind: "error"
+          })
+        );
+      } else {
+        dispatch({
+          type: "FETCH_USER_ITEMS_SUCCESS ",
+          payload: res.data
+            .filter(item => {
+              if (item) {
+                return true;
+              } else {
+                console.error("Broken item", item);
+                return false;
+              }
+            })
+            .reduce((acc, item) => {
+              acc[item.meta] = item;
+              return acc;
+            }, {})
+        });
+        return res;
+      }
+    });
+  };
+}
