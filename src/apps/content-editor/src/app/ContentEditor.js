@@ -30,12 +30,6 @@ export default connect(state => {
 })(
   class ContentEditor extends Component {
     componentDidMount() {
-      // listen for the reload nav event from riot sub-apps
-      zesty.on("RELOAD_NAV", () => {
-        this.props.dispatch(fetchNav());
-        this.props.dispatch(fetchModels());
-      });
-
       // Kick off loading data before app mount
       // to decrease time to first interaction
       this.props.dispatch(fetchNav());

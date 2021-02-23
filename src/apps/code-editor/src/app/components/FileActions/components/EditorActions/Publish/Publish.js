@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCloudUploadAlt, faSpinner } from "@fortawesome/free-solid-svg-icons";
+
 import { Button } from "@zesty-io/core/Button";
 
 import { publishFile, fetchFiles } from "../../../../../../store/files";
@@ -27,9 +30,9 @@ export const Publish = React.memo(function Publish(props) {
       }}
     >
       {publishing ? (
-        <i className="fas fa-spinner"></i>
+        <FontAwesomeIcon icon={faSpinner} />
       ) : (
-        <i className="fas fa-cloud-upload-alt"></i>
+        <FontAwesomeIcon icon={faCloudUploadAlt} />
       )}
       Publish{" "}
       <span className={styles.HideSmall}>&nbsp;Version {props.version}</span>

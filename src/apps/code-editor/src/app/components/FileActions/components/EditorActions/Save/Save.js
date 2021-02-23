@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner, faSave } from "@fortawesome/free-solid-svg-icons";
+
 import { Button } from "@zesty-io/core/Button";
 
 import { saveFile } from "../../../../../../store/files";
@@ -46,9 +49,9 @@ export default connect(state => {
     return (
       <Button kind="save" onClick={onSave} disabled={saving}>
         {saving ? (
-          <i className="fas fa-spinner"></i>
+          <FontAwesomeIcon icon={faSpinner} />
         ) : (
-          <i className="fas fa-save"></i>
+          <FontAwesomeIcon icon={faSave} />
         )}
         Save&nbsp;
         <span className={styles.HideSmall}>

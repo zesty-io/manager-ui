@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
+
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FielLabel, FieldLabel } from "@zesty-io/core/FieldLabel";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
@@ -211,9 +214,9 @@ export default connect(state => {
         disabled={loading}
       >
         {loading ? (
-          <i className="fas fa-spinner"></i>
+          <FontAwesomeIcon icon={faSpinner} />
         ) : (
-          <i className="fas fa-save"></i>
+          <FontAwesomeIcon icon={faSave} />
         )}
         Save Settings
       </Button>

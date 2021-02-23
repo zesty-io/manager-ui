@@ -123,7 +123,7 @@ export function CSVImporter(evt) {
             } else if (file.type === "text/xml") {
               const parser = new DOMParser();
               const xml = parser.parseFromString(fileReader.result, "text/xml");
-              targets = parseXML(xml);
+              targets = parseXML(xml, dispatch);
             }
 
             targets = findTargetPages(targets);
@@ -222,15 +222,17 @@ function findTargetPages(imports) {
   }, {});
 }
 
-function parseXML(xml) {
+function parseXML(xml, dispatch) {
   const urlset = xml.children[0];
 
   if (urlset.nodeName !== "urlset") {
-    growl({
-      kind: "warn",
-      message:
-        "XML sitemap imports must follow the https://www.sitemaps.org/protocol.html spec."
-    });
+    dispatch(
+      notify({
+        kind: "warn",
+        message:
+          "XML sitemap imports must follow the https://www.sitemaps.org/protocol.html spec."
+      })
+    );
     throw new Error("Invalid XML root node.");
   }
 

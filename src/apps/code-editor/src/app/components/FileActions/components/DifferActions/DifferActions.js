@@ -2,6 +2,15 @@ import React, { useState, useEffect } from "react";
 import cx from "classnames";
 import moment from "moment-timezone";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHistory,
+  faBan,
+  faSpinner,
+  faSave,
+  faArrowRight
+} from "@fortawesome/free-solid-svg-icons";
+
 import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Select, Option } from "@zesty-io/core/Select";
@@ -144,7 +153,7 @@ export const DifferActions = React.memo(function DifferActions(props) {
         ))}
       </Select>
 
-      <i className={cx(styles.Divider, "fas fa-arrow-right")}></i>
+      <FontAwesomeIcon className={styles.Divider} icon={faArrowRight} />
 
       <Select
         name="codeTwo"
@@ -169,13 +178,13 @@ export const DifferActions = React.memo(function DifferActions(props) {
       {props.synced ? (
         <>
           <Button className={styles.Button} onClick={loadVersion} kind="save">
-            <i className="fas fa-history"></i>
+            <FontAwesomeIcon icon={faHistory} />
             <span className={styles.Hide}>Load Version&nbsp;</span>{" "}
             {selectedVersion}
           </Button>
           <AppLink to={`/code/file/${props.fileType}/${props.fileZUID}`}>
             <Button className={styles.Button}>
-              <i className="fas fa-ban"></i> Cancel
+              <FontAwesomeIcon icon={faBan} /> Cancel
             </Button>
           </AppLink>
         </>
@@ -188,9 +197,9 @@ export const DifferActions = React.memo(function DifferActions(props) {
             disabled={saving}
           >
             {saving ? (
-              <i className="fas fa-spinner"></i>
+              <FontAwesomeIcon icon={faSpinner} />
             ) : (
-              <i className="fas fa-save"></i>
+              <FontAwesomeIcon icon={faSave} />
             )}
             Save Version {selectedVersion}
           </Button>

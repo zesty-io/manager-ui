@@ -23,12 +23,12 @@ import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { AppLink } from "@zesty-io/core/AppLink";
 
-import MediaApp from "../../../apps/media-2/src/app/MediaApp";
+import MediaApp from "../../../apps/media/src/app/MediaApp";
 
 import { fetchHeadTags, createHeadTag } from "shell/store/headTags";
 
 import styles from "./favicon.less";
-import MediaStyles from "../../../apps/media-2/src/app/MediaAppModal.less";
+import MediaStyles from "../../../apps/media/src/app/MediaAppModal.less";
 
 export default connect(state => {
   return {

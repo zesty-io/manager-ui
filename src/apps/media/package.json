@@ -1,32 +1,13 @@
 {
   "name": "media",
   "version": "1.0.0",
-  "description": "Application for managing assets uploaded to an instance",
+  "description": "Application for managing code on an instance",
   "main": "src/index.js",
   "scripts": {
-    "test": "cypress run",
-    "start": "concurrently \"cross-env ../../../node_modules/.bin/webpack --display=errors-only --progress --watch\" \"gulp\"",
-    "prebuild": "npm --silent install",
-    "build": "concurrently \"cross-env ../../../node_modules/.bin/webpack --display=errors-only --progress -p\" \"gulp\""
-  },
-  "dependencies": {
-    "concurrently": "^5.2.0",
-    "riot": "2.0.15"
+    "test": "cross-env ../../../node_modules/.bin/cypress run",
+    "test:open": "cross-env ../../../node_modules/.bin/cypress open"
   },
   "devDependencies": {
-    "babel": "5.8.38",
-    "babel-plugin-transform-remove-strict-mode": "0.0.2",
-    "babel-preset-es2015": "6.9.0",
-    "babel-preset-react": "6.24.1",
-    "babel-preset-stage-2": "6.24.1",
-    "cross-env": "7.0.2",
-    "gulp": "4.0.0",
-    "gulp-babel": "6.1.2",
-    "gulp-cached": "1.1.0",
-    "gulp-concat": "2.5.2",
-    "gulp-jshint": "1.10.0",
-    "gulp-less": "3.0.3",
-    "gulp-remember": "0.3.0",
-    "gulp-riot": "0.3.0"
+    "cross-env": "^7.0.2"
   }
 }

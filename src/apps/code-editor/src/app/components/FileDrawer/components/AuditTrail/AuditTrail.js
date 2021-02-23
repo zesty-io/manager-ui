@@ -1,17 +1,21 @@
 import React from "react";
 import moment from "moment";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHistory, faLink } from "@fortawesome/free-solid-svg-icons";
+
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Notice } from "@zesty-io/core/Notice";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./AuditTrail.less";
+
 export default function AuditTrail(props) {
   return (
     <Card className={styles.AuditTrail}>
       <CardHeader>
         <h1>
-          <i className="fas fa-history"></i> AuditTrail™
+          <FontAwesomeIcon icon={faHistory} /> AuditTrail™
         </h1>
       </CardHeader>
 
@@ -39,7 +43,7 @@ export default function AuditTrail(props) {
       </CardContent>
       <CardFooter>
         <AppLink className={styles.MoreLogs} to={`/audit-trail`}>
-          <i className="fas fa-link"></i> View all logs
+          <FontAwesomeIcon icon={faLink} /> View all logs
         </AppLink>
       </CardFooter>
     </Card>

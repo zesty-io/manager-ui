@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
+
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
@@ -9,12 +12,12 @@ import { Select, Option } from "@zesty-io/core/Select";
 import { Button } from "@zesty-io/core/Button";
 import { Modal } from "@zesty-io/core/Modal";
 
-import MediaApp from "../../../../../media-2/src/app/MediaApp";
+import MediaApp from "../../../../../media/src/app/MediaApp";
 import { notify } from "shell/store/notifications";
 import { fetchStylesVariables, saveVariables } from "../../../store/settings";
 
 import styles from "./Styles.less";
-import MediaStyles from "../../../../../media-2/src/app/MediaAppModal.less";
+import MediaStyles from "../../../../../media/src/app/MediaAppModal.less";
 
 export default connect(state => {
   return {
@@ -306,9 +309,9 @@ export default connect(state => {
         disabled={loading}
       >
         {loading ? (
-          <i className="fas fa-spinner"></i>
+          <FontAwesomeIcon icon={faSpinner} />
         ) : (
-          <i className="fas fa-save"></i>
+          <FontAwesomeIcon icon={faSave} />
         )}
         Save Settings
       </Button>
