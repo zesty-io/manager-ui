@@ -139,7 +139,7 @@ export default connect(function(state, props) {
       return (
         <section className={styles.Dashboard}>
           <div className={styles.container}>
-            <HeaderDashboard />
+            {/* <HeaderDashboard /> */}
             <h1 className={cx(styles.User, styles.subheadline)}>
               Ready to get cooking, {this.props.user.firstName}
             </h1>
