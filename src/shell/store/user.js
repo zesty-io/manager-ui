@@ -39,6 +39,7 @@ export function user(
     case "USER_SELECTED_LANG":
       return { ...state, selected_lang: action.payload.lang };
 
+    // Creating latest_edits reducer for dashboard
     case "FETCH_USER_LOGS_SUCCESS":
       return { ...state, latest_edits: action.payload };
 

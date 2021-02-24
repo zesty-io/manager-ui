@@ -5,9 +5,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHistory } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import cx from "classnames";
-import { getUserLogs, logUserEdits } from "shell/store/user";
+import { getUserLogs } from "shell/store/user";
 import styles from "./UserLatestEdits.less";
 
 export const UserLatestEdits = connect(state => state)(function UserLatestEdits(
@@ -33,25 +34,27 @@ export const UserLatestEdits = connect(state => state)(function UserLatestEdits(
   }, []);
 
   console.log("PROPS:", props);
+  console.log("MY PROPS:", props.user.latest_edits);
 
   return (
     <WithLoader condition={!loading} message="Loading UserLatestEdits">
       <Card>
         <CardHeader>Your Latest Edits</CardHeader>
         <CardContent>
-          {/* <ul>
-      {this.state.userRecentMessage.map((item, i) => (
-        <li key={i}>
-          <AppLink
-            to={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
-          >
-            {item.web.message
-              ? `Title: ${item.meta.message}`
-              : `Message: `}
-          </AppLink>
-        </li>
-      ))}
-    </ul> */}
+          <ul>
+            {props.user.latest_edits.map((item, i) => (
+              <li key={i}>
+                <p>{`User: ${item.firstName} Updated At: ${item.updatedAt}`}</p>
+                <AppLink
+                  to={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
+                >
+                  {item.meta.message
+                    ? `Title: ${item.meta.message}`
+                    : `Message: `}
+                </AppLink>
+              </li>
+            ))}
+          </ul>
         </CardContent>
       </Card>
     </WithLoader>
