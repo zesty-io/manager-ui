@@ -17,10 +17,20 @@ export const UserLatestEdits = connect(state => state)(function UserLatestEdits(
   props
 ) {
   const [loading, setLoading] = useState(true);
-
+  /*
+  enumeraton
+  Create Action = 1 + iota
+	Update
+	Delete
+	Publish
+	Unpublish
+	UndoDelete
+  */
+  const limitEdit = 5;
+  const actionUpdate = 2;
   useEffect(() => {
     props
-      .dispatch(getUserLogs(props.user.ZUID))
+      .dispatch(getUserLogs(props.user.ZUID, limitEdit, actionUpdate))
       .then(() => {
         setLoading(false);
       })
