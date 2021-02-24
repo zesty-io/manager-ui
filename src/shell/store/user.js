@@ -117,14 +117,14 @@ export function fetchRecentItems(userZUID, start) {
 }
 
 // Actions
-export function getUserLogs(userZUID) {
+export function getUserLogs(userZUID, limit) {
   return dispatch => {
     dispatch({
       type: "FETCHING_USER_LOGS"
     });
     // would be nice to get sorted by createdAt from api
     return request(
-      `${CONFIG.API_INSTANCE}/env/audits?q=${userZUID}&limit=5&action=2`
+      `${CONFIG.API_INSTANCE}/env/audits?userZUID=${userZUID}&limit=${limit}&action=2`
     )
       .then(res => {
         dispatch({

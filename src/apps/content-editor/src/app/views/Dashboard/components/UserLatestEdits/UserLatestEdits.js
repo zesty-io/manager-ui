@@ -4,21 +4,22 @@ import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
-import { Url } from "@zesty-io/core/Url";
+
 import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import cx from "classnames";
+
 import { getUserLogs } from "shell/store/user";
+
 import styles from "./UserLatestEdits.less";
 
 export const UserLatestEdits = connect(state => state)(function UserLatestEdits(
   props
 ) {
   const [loading, setLoading] = useState(true);
-
+  const editLimit = 5;
   useEffect(() => {
     props
-      .dispatch(getUserLogs(props.user.ZUID))
+      .dispatch(getUserLogs(props.user.ZUID, editLimit))
       .then(() => {
         setLoading(false);
       })
@@ -38,7 +39,7 @@ export const UserLatestEdits = connect(state => state)(function UserLatestEdits(
 
   return (
     <WithLoader condition={!loading} message="Loading UserLatestEdits">
-      <Card>
+      <Card className={styles.UserLatestEdits}>
         <CardHeader>Your Latest Edits</CardHeader>
         <CardContent>
           <ul>

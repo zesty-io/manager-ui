@@ -20,6 +20,7 @@ import { UserLatestEdits } from "./components/UserLatestEdits";
 import { fetchRecentItems } from "shell/store/user";
 
 import styles from "./Dashboard.less";
+
 export default connect(function(state, props) {
   return {
     user: state.user,
