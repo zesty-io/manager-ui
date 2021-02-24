@@ -16,10 +16,10 @@ export const UserLatestEdits = connect(state => state)(function UserLatestEdits(
   props
 ) {
   const [loading, setLoading] = useState(true);
-  const editLimit = 5;
+
   useEffect(() => {
     props
-      .dispatch(getUserLogs(props.user.ZUID, editLimit))
+      .dispatch(getUserLogs(props.user.ZUID))
       .then(() => {
         setLoading(false);
       })
@@ -33,6 +33,7 @@ export const UserLatestEdits = connect(state => state)(function UserLatestEdits(
         );
       });
   }, []);
+
   //TESTING
   console.log("PROPS:", props);
   console.log("MY PROPS:", props.user.latest_edits);
@@ -47,7 +48,12 @@ export const UserLatestEdits = connect(state => state)(function UserLatestEdits(
               <li key={i}>
                 <p>{`User: ${item.firstName} Updated At: ${item.updatedAt}`}</p>
                 <AppLink
-                  to={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
+                  to={`/content/${item.meta.message
+                    .split(" ")
+                    .slice(-1)
+                    .join("")
+                    .replaceAll('"', "")
+                    .replaceAll(/`/g, "")}/${item.affectedZUID}`}
                 >
                   <FontAwesomeIcon icon={faExternalLinkAlt} />
                 </AppLink>
