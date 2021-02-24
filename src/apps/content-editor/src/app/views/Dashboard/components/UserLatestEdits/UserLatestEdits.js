@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHistory } from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -27,12 +27,12 @@ export const UserLatestEdits = connect(state => state)(function UserLatestEdits(
         props.dispatch(
           notify({
             kind: "warn",
-            message: "Failed to load UserLogs logs"
+            message: "Failed to load User Logs logs"
           })
         );
       });
   }, []);
-
+  //TESTING
   console.log("PROPS:", props);
   console.log("MY PROPS:", props.user.latest_edits);
 
@@ -48,9 +48,7 @@ export const UserLatestEdits = connect(state => state)(function UserLatestEdits(
                 <AppLink
                   to={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
                 >
-                  {item.meta.message
-                    ? `Title: ${item.meta.message}`
-                    : `Message: `}
+                  <FontAwesomeIcon icon={faExternalLinkAlt} />
                 </AppLink>
               </li>
             ))}

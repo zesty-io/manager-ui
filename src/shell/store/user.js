@@ -127,13 +127,10 @@ export function getUserLogs(userZUID) {
       `${CONFIG.API_INSTANCE}/env/audits?q=${userZUID}&limit=5&action=2`
     )
       .then(res => {
-        console.log(res.data);
-
         dispatch({
           type: "FETCH_USER_LOGS_SUCCESS",
           payload: res.data
         });
-        console.log("User DATA ", data);
       })
       .catch(err => {
         dispatch({
