@@ -17,7 +17,11 @@ import { TopPerforming } from "./components/TopPerforming";
 import { RecentlyEdited } from "./components/RecentlyEdited";
 import { UserLatestEdits } from "./components/UserLatestEdits";
 
-import { fetchRecentItems, fetchUserEdits } from "shell/store/user";
+import {
+  fetchRecentItems,
+  fetchUserEdits,
+  getUserLogs
+} from "shell/store/user";
 
 import styles from "./Dashboard.less";
 export default connect(function(state, props) {
@@ -68,19 +72,19 @@ export default connect(function(state, props) {
           }
         });
 
-      this.props.dispatch(fetchUserEdits(this.props.user.ZUID)).then(res => {
-        console.log("davey ", res.data);
-        if (res && res.data) {
-          this.setState({
-            userRecentMessage: [...this.res.data],
-            loading: false
-          });
-        } else {
-          this.setState({
-            loading: false
-          });
-        }
-      });
+      // this.props.dispatch(fetchUserEdits(this.props.user.ZUID)).then(res => {
+      //   console.log("davey ", res.data);
+      //   if (res && res.data) {
+      //     this.setState({
+      //       userRecentMessage: [...this.res.data],
+      //       loading: false
+      //     });
+      //   } else {
+      //     this.setState({
+      //       loading: false
+      //     });
+      //   }
+      // });
     }
 
     /**
@@ -146,7 +150,7 @@ export default connect(function(state, props) {
 
             {/* User latest activity */}
             <section className={styles.LatestActivity}>
-              <UserLatestEdits />
+              <UserLatestEdits user={this.props.user.ZUID} />
 
               <Card>
                 <CardHeader>Your Latest Content Publishes</CardHeader>

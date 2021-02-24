@@ -8,7 +8,8 @@ export function user(
     firstName: "",
     email: "",
     permissions: [],
-    selected_lang: ""
+    selected_lang: "",
+    latest_edits: []
   },
   action
 ) {
@@ -37,6 +38,9 @@ export function user(
     case "LOADED_LOCAL_USER_LANG":
     case "USER_SELECTED_LANG":
       return { ...state, selected_lang: action.payload.lang };
+
+    case "FETCH_USER_LOGS_SUCCESS":
+      return { ...state, latest_edits: action.payload };
 
     default:
       return state;
@@ -111,42 +115,65 @@ export function fetchRecentItems(userZUID, start) {
   };
 }
 
-// //Reducer
-// export function fetchUserEdits(state = {}, action){
-
-// }
-
-export function fetchUserEdits(userZUID) {
+// Actions
+export function getUserLogs(userZUID) {
   return dispatch => {
+    dispatch({
+      type: "FETCHING_USER_LOGS"
+    });
+    // would be nice to get sorted by createdAt from api
     return request(
       `${CONFIG.API_INSTANCE}/env/audits?q=${userZUID}&limit=5&action=2`
-    ).then(res => {
-      if (res.status === 400) {
-        dispatch(
-          notify({
-            message: `Failure fetching user's latest edits: ${res.error}`,
-            kind: "error"
-          })
-        );
-      } else {
+    )
+      .then(res => {
+        console.log(res.data);
+
         dispatch({
-          type: "FETCH_USER_ITEMS_SUCCESS ",
+          type: "FETCH_USER_LOGS_SUCCESS",
           payload: res.data
-            .filter(item => {
-              if (item) {
-                return true;
-              } else {
-                console.error("Broken item", item);
-                return false;
-              }
-            })
-            .reduce((acc, item) => {
-              acc[item.meta] = item;
-              return acc;
-            }, {})
         });
-        return res;
-      }
-    });
+        console.log("User DATA ", data);
+      })
+      .catch(err => {
+        dispatch({
+          type: "FETCH_USER_LOGS_ERROR",
+          err
+        });
+      });
   };
 }
+
+// export function fetchUserEdits(userZUID) {
+//   return dispatch => {
+//     return request(
+//       `${CONFIG.API_INSTANCE}/env/audits?q=${userZUID}&limit=5&action=2`
+//     ).then(res => {
+//       if (res.status === 400) {
+//         dispatch(
+//           notify({
+//             message: `Failure fetching user's latest edits: ${res.error}`,
+//             kind: "error"
+//           })
+//         );
+//       } else {
+//         dispatch({
+//           type: "FETCH_USER_ITEMS_SUCCESS ",
+//           payload: res.data
+//             .filter(item => {
+//               if (item) {
+//                 return true;
+//               } else {
+//                 console.error("Broken item", item);
+//                 return false;
+//               }
+//             })
+//             .reduce((acc, item) => {
+//               acc[item.meta] = item;
+//               return acc;
+//             }, {})
+//         });
+//         return res;
+//       }
+//     });
+//   };
+// }
