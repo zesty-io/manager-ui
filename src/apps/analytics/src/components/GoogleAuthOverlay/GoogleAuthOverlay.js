@@ -1,4 +1,5 @@
 import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe, faKey, faPlug } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
@@ -33,7 +34,6 @@ export class GoogleAuthOverlay extends React.Component {
         "&domain=" +
         this.props.instance.domains[0].domain
     );
-    console.log(address);
 
     var win = window.open(
       address,
