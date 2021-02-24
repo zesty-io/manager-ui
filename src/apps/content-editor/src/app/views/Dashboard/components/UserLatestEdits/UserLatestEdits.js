@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
+import moment from "moment";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
@@ -42,24 +43,25 @@ export const UserLatestEdits = connect(state => state)(function UserLatestEdits(
     <WithLoader condition={!loading} message="Loading UserLatestEdits">
       <Card className={styles.UserLatestEdits}>
         <CardHeader>Your Latest Edits</CardHeader>
-        <CardContent>
-          <ul>
-            {props.user.latest_edits.map((item, i) => (
-              <li key={i}>
-                <p>{`User: ${item.firstName} Updated At: ${item.updatedAt}`}</p>
-                <AppLink
-                  to={`/content/${item.meta.message
-                    .split(" ")
-                    .slice(-1)
-                    .join("")
-                    .replaceAll('"', "")
-                    .replaceAll(/`/g, "")}/${item.affectedZUID}`}
-                >
-                  <FontAwesomeIcon icon={faExternalLinkAlt} />
-                </AppLink>
-              </li>
-            ))}
-          </ul>
+        <CardContent className={styles.CardContent}>
+          {props.user.latest_edits.map((item, i) => (
+            <div key={i}>
+              <hgroup>
+                <h4>{`${item.meta.message}`}</h4>
+                <h5>{`Updated: ${moment(item.updatedAt).fromNow()}`}</h5>
+              </hgroup>
+              <AppLink
+                to={`/content/${item.meta.message
+                  .split(" ")
+                  .slice(-1)
+                  .join("")
+                  .replaceAll('"', "")
+                  .replaceAll(/`/g, "")}/${item.affectedZUID}`}
+              >
+                <FontAwesomeIcon icon={faExternalLinkAlt} />
+              </AppLink>
+            </div>
+          ))}
         </CardContent>
       </Card>
     </WithLoader>
