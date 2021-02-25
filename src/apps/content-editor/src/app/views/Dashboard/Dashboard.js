@@ -136,47 +136,20 @@ export default connect(function(state, props) {
             <section className={styles.LatestActivity}>
               <UserLatestEdits user={this.props.user.ZUID} />
               <UserLatestPublishes user={this.props.user.ZUID} />
-
-              <Card>
-                <CardHeader>Your Latest Content Publishes</CardHeader>
-                <CardContent>
-                  <ul>
-                    <li>
-                      <div>
-                        <p>Title - Content Modal Name</p>
-                        <p>User 1 edited 1/1/2021</p>
-                      </div>
-                      <FontAwesomeIcon icon={faExternalLinkAlt} />
-                    </li>
-                    <li>
-                      <div>
-                        <p>Title - Content Modal Name</p>
-                        <p>User 1 edited 1/1/2021</p>
-                      </div>
-                      <FontAwesomeIcon icon={faExternalLinkAlt} />
-                    </li>
-                    <li>
-                      <div>
-                        <p>Title - Content Modal Name</p>
-                        <p>User 1 edited 1/1/2021</p>
-                      </div>
-                      <FontAwesomeIcon icon={faExternalLinkAlt} />
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-
+              {/* STATS */}
               <Card>
                 <CardHeader>Instance Activity</CardHeader>
                 <CardContent>
                   <div className={styles.WrapperActivity}>
+                    <h3>Last 30 days</h3>
                     <dl>
-                      <h3>Last 30 days</h3>
                       <dt>You</dt>
                       <dd>20</dd>
                       <dt>Full Team</dt>
                       <dd>1034</dd>
-                      <h3>All time</h3>
+                    </dl>
+                    <h3>All time</h3>
+                    <dl>
                       <dt>You</dt>
                       <dd>20</dd>
                       <dt>Full Team</dt>
