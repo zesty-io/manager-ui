@@ -2,35 +2,28 @@ import React from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock, faEye } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faEye, faCircle } from "@fortawesome/free-solid-svg-icons";
+
 import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./PublishStatusCell.less";
 export const PublishStatusCell = React.memo(function PublishStatusCell(props) {
   if (props.type === "dataset") {
     return (
-      <span className={cx(styles.PublishStatusCell)}>
+      <AppLink className={cx(styles.PublishStatusCell)} to={`${props.url}`}>
         {props.item &&
         props.item.scheduling &&
         props.item.scheduling.isScheduled ? (
-          <i
-            className={cx("fas fa-clock", styles.Scheduled)}
-            aria-hidden="true"
-          />
+          <FontAwesomeIcon icon={faClock} className={styles.Scheduled} />
         ) : props.item &&
           props.item.publishing &&
           props.item.publishing.isPublished ? (
-          <i
-            className={cx("fas fa-circle", styles.Published)}
-            aria-hidden="true"
-          />
+          <FontAwesomeIcon icon={faCircle} className={styles.Published} />
         ) : (
-          <i
-            className={cx("fas fa-circle", styles.Unpublished)}
-            aria-hidden="true"
-          />
+          <FontAwesomeIcon icon={faCircle} className={styles.Unpublished} />
         )}
-      </span>
+      </AppLink>
     );
   } else {
     return (
