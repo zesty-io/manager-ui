@@ -18,7 +18,10 @@ export function request(url, opts = {}) {
       opts.headers &&
       (opts.headers["Content-Type"] || opts.headers["content-type"])
     ) {
-      console.log(`Custom content-type: ${JSON.stringify(opts.headers)}`);
+      console.log(
+        `Custom content-type: ${opts.headers["Content-Type"] ||
+          opts.headers["content-type"]}`
+      );
     } else {
       if (opts.json) {
         opts.headers["Content-Type"] = "application/json";
