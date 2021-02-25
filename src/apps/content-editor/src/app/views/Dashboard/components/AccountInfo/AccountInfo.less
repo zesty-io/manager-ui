@@ -1,10 +1,26 @@
-.QuickJumps {
-  .Icon {
-    display: flex;
-    font-size: 24px;
-    margin: 8px auto;
+@import "~@zesty-io/core/colors.less";
+
+.AccountInfo {
+  .CardContent {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 8px;
+    justify-items: end;
   }
   .Links {
-    margin-right: 8px;
+    display: flex;
+    flex-direction: column;
+    & > * {
+      margin: 4px 0;
+    }
+  }
+  mark {
+    background-color: @zesty-light-blue;
+  }
+  img {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    box-shadow: 1px 1px 10px #171b26;
   }
 }

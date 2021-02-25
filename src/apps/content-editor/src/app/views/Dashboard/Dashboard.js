@@ -32,6 +32,7 @@ import { fetchRecentItems } from "shell/store/user";
 import styles from "./Dashboard.less";
 
 export default connect(function(state, props) {
+  console.log("davey: ", state);
   return {
     user: state.user,
     instanceZUID: state.instance.ZUID,
@@ -171,7 +172,6 @@ export default connect(function(state, props) {
             <section className={styles.LinkOuts}>
               <QuickJumps
                 cardTitle={"Open Preview"}
-                image={faExternalLinkAlt}
                 docsTitle={"WebEngine Docs Link"}
                 docsLink={"https://zesty.org/services/web-engine"}
                 randomHashID={this.props.instance.randomHashID}
@@ -207,8 +207,9 @@ export default connect(function(state, props) {
               />
             </section>
             <section className={styles.Chart}>
+              {/* Graph */}
               <Card>
-                <CardHeader>This is the card Header</CardHeader>
+                <CardHeader>Editing Trend Last 30days Coming Soon</CardHeader>
                 <CardContent>
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
                   cupidatat non proident, sunt in culpa qui officia deserunt
@@ -216,7 +217,12 @@ export default connect(function(state, props) {
                 </CardContent>
                 <CardFooter>this is the card footer</CardFooter>
               </Card>
-              <AccountInfo />
+              {/* ACCOUNT INFO */}
+              <AccountInfo
+                instanceZUID={this.props.instance.ZUID}
+                randomHashID={this.props.instance.randomHashID}
+                domain={this.props.instance.domain}
+              />
             </section>
             <div className={styles.columns}>
               {this.state.favoriteModels.map((arr, i) => {

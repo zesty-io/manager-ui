@@ -1,7 +1,11 @@
 import React from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExternalLinkAlt,
+  faEye,
+  faHome
+} from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
 import cx from "classnames";
@@ -20,14 +24,6 @@ export function HeaderDashboard(
               {instanceName} - Created Date: {createdAt}{" "}
             </h2>
             <div>
-              <Url
-                target="_blank"
-                title={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
-                href={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
-              >
-                <FontAwesomeIcon icon={faExternalLinkAlt} />
-                &nbsp;View Preview
-              </Url>
               {domain && (
                 <Url
                   className={styles.Live}
@@ -35,10 +31,18 @@ export function HeaderDashboard(
                   target="_blank"
                   title="Open live link in standard browser window"
                 >
-                  <FontAwesomeIcon icon={faExternalLinkAlt} />
+                  <FontAwesomeIcon icon={faHome} />
                   &nbsp;View Live
                 </Url>
               )}
+              <Url
+                target="_blank"
+                title={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
+                href={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
+              >
+                <FontAwesomeIcon icon={faEye} />
+                &nbsp;View Preview
+              </Url>
             </div>
           </CardHeader>
         </Card>

@@ -1,6 +1,7 @@
 import React from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faHome } from "@fortawesome/free-solid-svg-icons";
 
 import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
@@ -27,18 +28,6 @@ export function QuickJumps({
               &nbsp;{cardTitle}
             </Url>
           )}
-          {/* Conditional for Preview */}
-          {randomHashID && (
-            <Url
-              className={styles.Links}
-              target="_blank"
-              title={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
-              href={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
-            >
-              <FontAwesomeIcon icon={image} />
-              &nbsp;View Preview
-            </Url>
-          )}
           {/* Conditional for Live */}
           {liveLink && (
             <Url
@@ -47,8 +36,20 @@ export function QuickJumps({
               target="_blank"
               title="Open live link in standard browser window"
             >
-              <FontAwesomeIcon icon={image} />
+              <FontAwesomeIcon icon={faHome} />
               &nbsp;View Live
+            </Url>
+          )}
+          {/* Conditional for Preview */}
+          {randomHashID && (
+            <Url
+              className={styles.Links}
+              target="_blank"
+              title={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
+              href={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
+            >
+              <FontAwesomeIcon icon={faEye} />
+              &nbsp;View Preview
             </Url>
           )}
         </CardContent>
