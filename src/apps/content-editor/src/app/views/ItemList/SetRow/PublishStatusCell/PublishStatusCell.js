@@ -3,13 +3,15 @@ import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock, faEye, faCircle } from "@fortawesome/free-solid-svg-icons";
+
 import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./PublishStatusCell.less";
 export const PublishStatusCell = React.memo(function PublishStatusCell(props) {
   if (props.type === "dataset") {
     return (
-      <Url className={cx(styles.PublishStatusCell)} href={`${props.url}`}>
+      <AppLink className={cx(styles.PublishStatusCell)} to={`${props.url}`}>
         {props.item &&
         props.item.scheduling &&
         props.item.scheduling.isScheduled ? (
@@ -21,7 +23,7 @@ export const PublishStatusCell = React.memo(function PublishStatusCell(props) {
         ) : (
           <FontAwesomeIcon icon={faCircle} className={styles.Unpublished} />
         )}
-      </Url>
+      </AppLink>
     );
   } else {
     return (
