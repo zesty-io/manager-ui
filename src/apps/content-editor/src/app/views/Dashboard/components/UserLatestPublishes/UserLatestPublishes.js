@@ -44,10 +44,6 @@ export const UserLatestPublishes = connect(state => state)(
         });
     }, []);
 
-    //TESTING
-    console.log("PROPS:", props);
-    console.log("DP LATEST PUBLISHES:", props.user.latest_publishes);
-
     return (
       <WithLoader condition={!loading} message="Loading UserLatestPublishes">
         <Card className={styles.UserLatestPublishes}>

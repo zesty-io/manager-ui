@@ -17,6 +17,7 @@ import { TopPerforming } from "./components/TopPerforming";
 import { RecentlyEdited } from "./components/RecentlyEdited";
 import { UserLatestEdits } from "./components/UserLatestEdits";
 import { UserLatestPublishes } from "./components/UserLatestPublishes";
+import { QuickJumps } from "./components/QuickJumps";
 
 import { fetchRecentItems } from "shell/store/user";
 
@@ -160,14 +161,15 @@ export default connect(function(state, props) {
               </Card>
             </section>
             <section className={styles.LinkOuts}>
-              <Card>
-                <CardHeader>This is the card Header</CardHeader>
-                <CardContent>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do .
-                </CardContent>
-                <CardFooter>this is the card footer</CardFooter>
-              </Card>
+              <QuickJumps
+                cardTitle={"Open Preview"}
+                image={faExternalLinkAlt}
+                randomHashID={this.props.instance.randomHashID}
+                domain={this.props.instance.domain}
+                docsTitle={"WebEngine Docs Link"}
+                docsLink={"https://zesty.org/services/web-engine"}
+              />
+
               <Card>
                 <CardHeader>This is the card Header</CardHeader>
                 <CardContent>

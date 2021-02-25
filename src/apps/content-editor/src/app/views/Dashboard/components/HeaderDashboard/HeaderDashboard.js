@@ -11,6 +11,7 @@ export function HeaderDashboard(
   { instanceName, createdAt, randomHashID, domain, firstName } = this.props
     .instance
 ) {
+  console.log("domain", domain);
   return (
     <>
       <header>
