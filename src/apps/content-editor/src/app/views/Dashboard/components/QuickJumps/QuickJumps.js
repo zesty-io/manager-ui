@@ -13,46 +13,45 @@ import styles from "./QuickJumps.less";
 
 export function QuickJumps(
   props,
-  { randomHashID, domain } = this.props.instance
+  { randomHashID, liveLink } = this.props.instance
 ) {
-  console.log(domain);
   return (
     <div>
       <Card>
-        <CardHeader>{props.cardTitle}</CardHeader>
         <CardContent>
-          <Url
-            href={`//${domain}`}
-            target="_blank"
-            title="Open live link in standard browser window"
-          >
-            <FontAwesomeIcon icon={faExternalLinkAlt} />
-            &nbsp;View Live
-          </Url>
+          {/* QuickJumps links */}
+          {props.quickJump && (
+            <Url href={`/${props.quickJump}`} title={props.quickJump}>
+              <FontAwesomeIcon icon={props.image} />
+              &nbsp;{props.cardTitle}
+            </Url>
+          )}
+          {/* Conditional for Preview */}
           {randomHashID && (
             <Url
               target="_blank"
               title={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
               href={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
             >
-              <FontAwesomeIcon icon={faExternalLinkAlt} />
+              <FontAwesomeIcon icon={props.image} />
               &nbsp;View Preview
             </Url>
           )}
-          {domain && (
+          {/* Conditional for Live */}
+          {liveLink && (
             <Url
-              href={`//${domain}`}
+              href={`//${liveLink}`}
               target="_blank"
               title="Open live link in standard browser window"
             >
-              <FontAwesomeIcon icon={faExternalLinkAlt} />
+              <FontAwesomeIcon icon={props.image} />
               &nbsp;View Live
             </Url>
           )}
         </CardContent>
         <CardFooter>
           <Url href={props.docsLink} target="_blank" title={props.docsLink}>
-            <FontAwesomeIcon icon={faExternalLinkAlt} />
+            <FontAwesomeIcon icon={props.image} />
             &nbsp;{props.docsTitle}
           </Url>
         </CardFooter>

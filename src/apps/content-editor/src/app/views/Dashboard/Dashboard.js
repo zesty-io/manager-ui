@@ -5,7 +5,11 @@ import cx from "classnames";
 import { useHistory } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faExternalLinkAlt,
+  faCode
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
@@ -164,51 +168,18 @@ export default connect(function(state, props) {
               <QuickJumps
                 cardTitle={"Open Preview"}
                 image={faExternalLinkAlt}
-                randomHashID={this.props.instance.randomHashID}
-                domain={this.props.instance.domain}
                 docsTitle={"WebEngine Docs Link"}
                 docsLink={"https://zesty.org/services/web-engine"}
+                randomHashID={this.props.instance.randomHashID}
+                liveLink={this.props.instance.domain}
               />
-
-              <Card>
-                <CardHeader>This is the card Header</CardHeader>
-                <CardContent>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris sunt in culpa qui officia deserunt mollit anim id est
-                  laborum.
-                </CardContent>
-                <CardFooter>this is the card footer</CardFooter>
-              </Card>
-              <Card>
-                <CardHeader>This is the card Header</CardHeader>
-                <CardContent>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minm.
-                </CardContent>
-                <CardFooter>this is the card footer</CardFooter>
-              </Card>
-              <Card>
-                <CardHeader>This is the card Header</CardHeader>
-                <CardContent>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor inaliqua. Ut eesse cil occaecat cupidatat
-                  non proident, sunt in culpa qui officia deserunt mollit anim
-                  id est laborum.
-                </CardContent>
-                <CardFooter>this is the card footer</CardFooter>
-              </Card>
-              <Card>
-                <CardHeader>This is the card Header</CardHeader>
-                <CardContent>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eicupidatat non proident, sunt in culpa qui officia
-                  deserunt mollit anim id est laborum.
-                </CardContent>
-                <CardFooter>this is the card footer</CardFooter>
-              </Card>
+              <QuickJumps
+                cardTitle={"Edit Code"}
+                image={faCode}
+                docsTitle={"Code Docs Link"}
+                docsLink={"https://zesty.org/services/manager-ui/editor"}
+                quickJump={"code"}
+              />
             </section>
             <section className={styles.Chart}>
               <Card>
