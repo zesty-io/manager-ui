@@ -19,6 +19,7 @@ import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
+import { AccountInfo } from "./components/AccountInfo";
 import { HeaderDashboard } from "./components/HeaderDashboard";
 import { TopPerforming } from "./components/TopPerforming";
 import { RecentlyEdited } from "./components/RecentlyEdited";
@@ -215,16 +216,7 @@ export default connect(function(state, props) {
                 </CardContent>
                 <CardFooter>this is the card footer</CardFooter>
               </Card>
-              <Card>
-                <CardHeader>This is the card Header</CardHeader>
-                <CardContent>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  cupidatat non proident, sunt in culpa qui officia deserunt
-                  mollit anim id est laborum.
-                </CardContent>
-                <CardFooter>this is the card footer</CardFooter>
-              </Card>
+              <AccountInfo />
             </section>
             <div className={styles.columns}>
               {this.state.favoriteModels.map((arr, i) => {

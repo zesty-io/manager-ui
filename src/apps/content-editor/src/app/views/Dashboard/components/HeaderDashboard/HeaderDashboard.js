@@ -19,25 +19,27 @@ export function HeaderDashboard(
             <h2>
               {instanceName} - Created Date: {createdAt}{" "}
             </h2>
-            <Url
-              target="_blank"
-              title={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
-              href={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
-            >
-              <FontAwesomeIcon icon={faExternalLinkAlt} />
-              &nbsp;View Preview
-            </Url>
-            {domain && (
+            <div>
               <Url
-                className={styles.Live}
-                href={`//${domain}`}
                 target="_blank"
-                title="Open live link in standard browser window"
+                title={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
+                href={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
               >
                 <FontAwesomeIcon icon={faExternalLinkAlt} />
-                &nbsp;View Live
+                &nbsp;View Preview
               </Url>
-            )}
+              {domain && (
+                <Url
+                  className={styles.Live}
+                  href={`//${domain}`}
+                  target="_blank"
+                  title="Open live link in standard browser window"
+                >
+                  <FontAwesomeIcon icon={faExternalLinkAlt} />
+                  &nbsp;View Live
+                </Url>
+              )}
+            </div>
           </CardHeader>
         </Card>
       </header>
