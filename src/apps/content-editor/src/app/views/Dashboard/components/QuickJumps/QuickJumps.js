@@ -4,26 +4,28 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
-import { AppLink } from "@zesty-io/core/AppLink";
+
 import { WithLoader } from "@zesty-io/core/WithLoader";
-
-import { getUserLogs } from "shell/store/user";
-
 import styles from "./QuickJumps.less";
 
-export function QuickJumps(
-  props,
-  { randomHashID, liveLink } = this.props.instance
-) {
+export function QuickJumps({
+  cardTitle,
+  quickJump,
+  randomHashID,
+  image,
+  liveLink,
+  docsLink,
+  docsTitle
+} = props) {
   return (
     <div>
       <Card>
         <CardContent>
           {/* QuickJumps links */}
-          {props.quickJump && (
-            <Url href={`/${props.quickJump}`} title={props.quickJump}>
-              <FontAwesomeIcon icon={props.image} />
-              &nbsp;{props.cardTitle}
+          {quickJump && (
+            <Url href={`/${quickJump}`} title={quickJump}>
+              <FontAwesomeIcon icon={image} />
+              &nbsp;{cardTitle}
             </Url>
           )}
           {/* Conditional for Preview */}
@@ -33,7 +35,7 @@ export function QuickJumps(
               title={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
               href={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
             >
-              <FontAwesomeIcon icon={props.image} />
+              <FontAwesomeIcon icon={image} />
               &nbsp;View Preview
             </Url>
           )}
@@ -44,15 +46,14 @@ export function QuickJumps(
               target="_blank"
               title="Open live link in standard browser window"
             >
-              <FontAwesomeIcon icon={props.image} />
+              <FontAwesomeIcon icon={image} />
               &nbsp;View Live
             </Url>
           )}
         </CardContent>
         <CardFooter>
-          <Url href={props.docsLink} target="_blank" title={props.docsLink}>
-            <FontAwesomeIcon icon={props.image} />
-            &nbsp;{props.docsTitle}
+          <Url href={docsLink} target="_blank" title={docsLink}>
+            &nbsp;{docsTitle}
           </Url>
         </CardFooter>
       </Card>

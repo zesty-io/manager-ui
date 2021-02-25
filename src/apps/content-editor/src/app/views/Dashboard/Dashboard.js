@@ -8,7 +8,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
   faExternalLinkAlt,
-  faCode
+  faCode,
+  faCog,
+  faDatabase,
+  faHistory
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
@@ -176,9 +179,30 @@ export default connect(function(state, props) {
               <QuickJumps
                 cardTitle={"Edit Code"}
                 image={faCode}
-                docsTitle={"Code Docs Link"}
+                docsTitle={"Code Docs"}
                 docsLink={"https://zesty.org/services/manager-ui/editor"}
                 quickJump={"code"}
+              />
+              <QuickJumps
+                cardTitle={"Settings"}
+                image={faCog}
+                docsTitle={"Settings Docs"}
+                docsLink={"https://zesty.org/services/manager-ui/settings"}
+                quickJump={"settings"}
+              />
+              <QuickJumps
+                cardTitle={"Schema"}
+                image={faDatabase}
+                docsTitle={"Schema Docs"}
+                docsLink={"https://zesty.org/services/manager-ui/schema"}
+                quickJump={"schema"}
+              />
+              <QuickJumps
+                cardTitle={"Audit Trail"}
+                image={faHistory}
+                docsTitle={"Audit Trail Docs"}
+                docsLink={"https://zesty.org/services/manager-ui/audit-trail"}
+                quickJump={"audit-trail"}
               />
             </section>
             <section className={styles.Chart}>
