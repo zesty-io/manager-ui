@@ -83,6 +83,16 @@ export function settings(
         ...state,
         instance: arrInstances
       };
+    case "UPDATE_STYLES_SUCCESS":
+      const styles = state.styles;
+      const styleIndex = styles
+        .map(item => item.ZUID)
+        .indexOf(action.payload.ZUID);
+      styles[styleIndex] = action.payload;
+      return {
+        ...state,
+        styles
+      };
 
     default:
       return state;
@@ -175,14 +185,24 @@ export function fetchStylesVariables() {
   };
 }
 
-export function saveVariables(zuid, data) {
-  return request(`${CONFIG.API_INSTANCE}/web/stylesheets/variables/${zuid}`, {
-    method: "PUT",
-    json: true,
-    body: data
-  })
-    .then(res => res)
-    .catch(err => console.log("err", err));
+export function saveStyleVariable(zuid, data) {
+  return dispatch => {
+    console.log("saving style variable");
+    return request(`${CONFIG.API_INSTANCE}/web/stylesheets/variables/${zuid}`, {
+      method: "PUT",
+      json: true,
+      body: data
+    })
+      .then(res => {
+        if (res) {
+          dispatch({
+            type: "UPDATE_STYLES_SUCCESS",
+            payload: data
+          });
+        }
+      })
+      .catch(err => console.log("err", err));
+  };
 }
 
 export function updateSettings(zuid, data) {

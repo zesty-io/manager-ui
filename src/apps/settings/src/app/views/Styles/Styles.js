@@ -14,7 +14,7 @@ import { Modal } from "@zesty-io/core/Modal";
 
 import MediaApp from "../../../../../media/src/app/MediaApp";
 import { notify } from "shell/store/notifications";
-import { fetchStylesVariables, saveVariables } from "../../../store/settings";
+import { saveStyleVariable } from "../../../store/settings";
 
 import styles from "./Styles.less";
 import MediaStyles from "../../../../../media/src/app/MediaAppModal.less";
@@ -25,68 +25,74 @@ export default connect(state => {
     fontsInstalled: state.settings.fontsInstalled
   };
 })(function Styles(props) {
+  const [saving, setSaving] = useState(false);
   const [fields, setFields] = useState([]);
-  const [state, setState] = useState({});
+  const [fieldValues, setFieldValues] = useState({});
   const [dirtyFields, setDirtyFields] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [fonts, setFonts] = useState([]);
   const [imageModal, setImageModal] = useState();
 
+  // Set Fields and Field Values from store/URL
   useEffect(() => {
     const category = props.match.params.category
       ? props.match.params.category
       : 4;
 
-    const arr = props.styles.filter(item => item.category == category);
+    const fieldsByCategory = props.styles.filter(
+      item => item.category == category
+    );
     let newState = {};
-    arr.forEach(field => {
+    fieldsByCategory.forEach(field => {
       if (field.type === "font_picker") {
         newState[field.referenceName] = parseFamily(field.value);
       } else {
         newState[field.referenceName] = field.value;
       }
     });
-    setFields(arr);
-    setState(newState);
-    fontsOptions(props.fontsInstalled);
-  }, [props.styles, props.fontsInstalled, props.match]);
+    setFields(fieldsByCategory);
+    setFieldValues(newState);
+  }, [props.styles, props.match]);
 
-  function fontsOptions(arr) {
-    arr.forEach(headTag => {
-      const style = document.createElement("style");
-      const att = document.createAttribute("id");
-      att.value = "googlefont";
-      style.setAttributeNode(att);
-      const css = `@import url('${headTag.attributes.href}');`;
-      style.append(css);
-      document.head.appendChild(style);
-    });
+  // Set Font Options from installed fonts
+  useEffect(() => {
+    // inject all installed fonts
+    props.fontsInstalled.forEach(injectFontImport);
     setFonts(
-      arr.map(headTag => {
+      props.fontsInstalled.map(headTag => {
         const url = headTag.attributes.href;
         const fontVariants = url.split("=")[1];
         const font = fontVariants.split(":")[0];
         const variants = fontVariants.split(":")[1].split(",");
-        for (let i = 0; i < variants.length; i++) {
-          return {
-            label: font.replace("+", " "),
-            family: font.replace("+", " "),
-            weight: variants[i]
-          };
-        }
+        // We only need first variant of a font
+        return {
+          label: font.replace("+", " "),
+          family: font.replace("+", " "),
+          weight: variants[0]
+        };
       })
     );
+  }, [props.fontsInstalled]);
+
+  function injectFontImport(font) {
+    const id = `googlefont`;
+    const style = document.createElement("style");
+    const att = document.createAttribute("id");
+    att.value = id;
+    style.setAttributeNode(att);
+    const css = `@import url('${font.attributes.href}');`;
+    style.append(css);
+    document.head.appendChild(style);
   }
 
-  function setValue(type, value) {
-    setState({ ...state, [type]: value });
+  function setValue(value, name) {
+    setFieldValues({ ...fieldValues, [name]: value });
 
-    if (dirtyFields.includes(type)) return;
-    setDirtyFields([...dirtyFields, type]);
+    if (dirtyFields.includes(name)) return;
+    setDirtyFields([...dirtyFields, name]);
   }
 
-  function sendData() {
-    setLoading(true);
+  function saveSettings() {
+    setSaving(true);
 
     const requests = fields
       .filter(field => {
@@ -95,32 +101,33 @@ export default connect(state => {
         }
       })
       .map(field => {
-        return saveVariables(field.ZUID, {
-          category: field.category,
-          name: field.name,
-          referenceName: field.referenceName,
-          value: state[field.referenceName],
-          options: field.options,
-          tips: field.tips,
-          type: field.type
-        });
+        return props.dispatch(
+          saveStyleVariable(field.ZUID, {
+            ZUID: field.ZUID,
+            category: field.category,
+            name: field.name,
+            referenceName: field.referenceName,
+            value: fieldValues[field.referenceName],
+            options: field.options,
+            tips: field.tips,
+            type: field.type
+          })
+        );
       });
 
     Promise.all(requests)
-      .then(responses => {
-        return props.dispatch(fetchStylesVariables());
-      })
       .then(() => {
-        setLoading(false);
+        setSaving(false);
+        setDirtyFields([]);
         props.dispatch(
           notify({
             kind: "success",
-            message: "Data has been updated"
+            message: "Settings Saved"
           })
         );
       })
       .catch(err => {
-        setLoading(false);
+        setSaving(false);
         props.dispatch(
           notify({
             kind: "warn",
@@ -154,17 +161,16 @@ export default connect(state => {
     if (font) {
       if (font.split(":").length < 2) {
         return "";
-      } else {
-        if (
-          font
-            .split(":")[1]
-            .split()
-            .includes("i")
-        ) {
-          return "italic";
-        }
-        return "";
       }
+      if (
+        font
+          .split(":")[1]
+          .split()
+          .includes("i")
+      ) {
+        return "italic";
+      }
+      return "";
     }
   }
 
@@ -174,10 +180,10 @@ export default connect(state => {
         return (
           <FieldTypeColor
             key={field.ZUID}
-            value={state[field.referenceName]}
+            value={fieldValues[field.referenceName]}
             description={field.description}
             name={field.referenceName}
-            onChange={(value, name) => setValue(name, value)}
+            onChange={setValue}
             label={field.name}
           />
         );
@@ -187,8 +193,8 @@ export default connect(state => {
             key={field.ZUID}
             name={field.referenceName}
             label={field.name}
-            value={state[field.referenceName]}
-            onChange={(value, name) => setValue(name, value)}
+            value={fieldValues[field.referenceName]}
+            onChange={setValue}
             description={field.description}
             options={Object.keys(field.options).map(option => ({
               value: option,
@@ -203,7 +209,7 @@ export default connect(state => {
             <div className={styles.fontPicker}>
               <Select
                 name={field.referenceName}
-                onSelect={(value, name) => setValue(name, value)}
+                onSelect={setValue}
                 className={[styles.selectFont]}
                 // if default value is a font-family stack with ',' then show "Select"
                 value={
@@ -225,9 +231,9 @@ export default connect(state => {
                 <span
                   style={{
                     fontSize: "1.4rem",
-                    fontFamily: parseFamily(state[field.referenceName]),
-                    fontStyle: parseStyle(state[field.referenceName]),
-                    fontWeight: parseWeight(state[field.referenceName])
+                    fontFamily: parseFamily(fieldValues[field.referenceName]),
+                    fontStyle: parseStyle(fieldValues[field.referenceName]),
+                    fontWeight: parseWeight(fieldValues[field.referenceName])
                   }}
                 >
                   This is a text example
@@ -237,7 +243,7 @@ export default connect(state => {
           </div>
         );
       case "image":
-        const images = (state[field.referenceName] || "")
+        const images = (fieldValues[field.referenceName] || "")
           .split(",")
           .filter(el => el);
         return (
@@ -249,9 +255,11 @@ export default connect(state => {
               description={field.description}
               limit="1"
               images={
-                state[field.referenceName] ? [state[field.referenceName]] : []
+                fieldValues[field.referenceName]
+                  ? [fieldValues[field.referenceName]]
+                  : []
               }
-              onChange={(value, name) => setValue(name, value)}
+              onChange={setValue}
               resolveImage={(zuid, width, height) =>
                 `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
               }
@@ -284,8 +292,8 @@ export default connect(state => {
             key={field.ZUID}
             label={field.name}
             name={field.referenceName}
-            value={state[field.referenceName]}
-            onChange={(value, name) => setValue(name, value)}
+            value={fieldValues[field.referenceName]}
+            onChange={setValue}
             description={field.tips}
             maxLength={640}
           />
@@ -305,10 +313,10 @@ export default connect(state => {
         id="SaveSettings"
         kind="save"
         className={styles.SaveBtn}
-        onClick={sendData}
-        disabled={loading}
+        onClick={saveSettings}
+        disabled={saving || dirtyFields.length === 0}
       >
-        {loading ? (
+        {saving ? (
           <FontAwesomeIcon icon={faSpinner} />
         ) : (
           <FontAwesomeIcon icon={faSave} />

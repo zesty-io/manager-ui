@@ -203,7 +203,11 @@ export default connect(state => {
         ))}
         {fonts.length === 0 && (
           <Notice>
-            <p>That font doesn't exist</p>
+            {search.length === 0 ? (
+              <p>No fonts installed</p>
+            ) : (
+              <p>No matching fonts found</p>
+            )}
           </Notice>
         )}
       </div>

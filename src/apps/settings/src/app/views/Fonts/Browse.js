@@ -19,7 +19,6 @@ export default connect(state => {
   };
 })(function Browse(props) {
   const [previewText, setPreviewText] = useState("");
-  const [fontsArr, setfontsArr] = useState([]);
   const [styleTags, setTags] = useState([]);
   const [search, setSearch] = useState("");
   const [pagination, setPagination] = useState({
@@ -32,18 +31,26 @@ export default connect(state => {
   const [variantsSelected, setVariants] = useState({});
   const [isLoading, setLoading] = useState(false);
 
+  // when google fonts are ready, create pagination, tags state
+  // and inject first page of font tags
   useEffect(() => {
-    setfontsArr(props.fonts);
     setPagination({
       ...pagination,
       data: props.fonts.slice(pagination.start, pagination.end),
       total: Math.ceil(props.fonts.length / 10)
     });
-    setStyleTagsByType(props.fonts);
-    setTagsFromFontsArr();
+    injectFontTags(props.fonts);
+    setTags(
+      props.fonts.map(font => {
+        return `@import url('https://fonts.googleapis.com/css?family=${font.family.replace(
+          /\s/g,
+          "+"
+        )}');`;
+      })
+    );
   }, [props.fonts]);
 
-  function setStyleTagsByType(fonts) {
+  function injectFontTags(fonts) {
     if (Array.isArray(fonts)) {
       fonts.slice(0, 10).forEach(font => {
         const style = document.createElement("style");
@@ -69,17 +76,6 @@ export default connect(state => {
       style.append(css);
       document.head.appendChild(style);
     }
-  }
-
-  function setTagsFromFontsArr() {
-    setTags(
-      props.fonts.map(font => {
-        return `@import url('https://fonts.googleapis.com/css?family=${font.family.replace(
-          /\s/g,
-          "+"
-        )}');`;
-      })
-    );
   }
 
   function parseVariants(variants) {
@@ -182,27 +178,29 @@ export default connect(state => {
   }
 
   function selectFontVariant(font, e) {
+    let newVariants;
     if (e.target.checked) {
       if (Object.keys(variantsSelected).includes(font)) {
-        setVariants({
+        newVariants = {
           ...variantsSelected,
           [font]: [...variantsSelected[font], variantValidation(e.target.name)]
-        });
+        };
       } else {
-        setVariants({
+        newVariants = {
           ...variantsSelected,
           [font]: [variantValidation(e.target.name)]
-        });
+        };
       }
     } else {
-      setVariants({
+      newVariants = {
         ...variantsSelected,
         [font]: variantsSelected[font].filter(
           variant => variant !== variantValidation(e.target.name)
         )
-      });
+      };
     }
-    console.log("varians selected", variantsSelected);
+    setVariants(newVariants);
+    console.log("variants selected", newVariants);
   }
 
   function renderFontsList() {
@@ -256,7 +254,7 @@ export default connect(state => {
         ))}
         {pagination.data.length === 0 && (
           <Notice>
-            <p>That font doesn't exist</p>
+            <p>No matching fonts found</p>
           </Notice>
         )}
       </div>
@@ -299,7 +297,7 @@ export default connect(state => {
       ...pagination,
       current:
         action === "next" ? pagination.current + 1 : pagination.current - 1,
-      data: fontsArr.slice(start, end),
+      data: props.fonts.slice(start, end),
       start: start,
       end: end
     });
@@ -308,22 +306,22 @@ export default connect(state => {
   function onSearch(value) {
     setSearch(value);
     setTimeout(() => {
-      const fontResult = fontsArr.find(
+      const fontResult = props.fonts.find(
         font => font.family.toLowerCase() === value.toLowerCase()
       );
       if (fontResult) {
-        const element = fontsArr.filter(
+        const element = props.fonts.filter(
           font => font.family.toLowerCase() === value.toLowerCase()
         );
         setPagination({ ...pagination, data: element });
-        setStyleTagsByType(fontFound);
+        injectFontTags(fontFound);
       } else {
         setPagination({ ...pagination, data: [] });
       }
 
       if (value === "") {
-        setPagination({ ...pagination, data: fontsArr.slice(0, 10) });
-        setStyleTagsByType(fontsArr.slice(0, 10));
+        setPagination({ ...pagination, data: props.fonts.slice(0, 10) });
+        injectFontTags(props.fonts.slice(0, 10));
       }
     }, 2000);
   }
