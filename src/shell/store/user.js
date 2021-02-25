@@ -9,7 +9,8 @@ export function user(
     email: "",
     permissions: [],
     selected_lang: "",
-    latest_edits: []
+    latest_edits: [],
+    latest_publishes: []
   },
   action
 ) {
@@ -39,9 +40,19 @@ export function user(
     case "USER_SELECTED_LANG":
       return { ...state, selected_lang: action.payload.lang };
 
-    // Creating latest_edits reducer for dashboard
+    //DRY Creating latest_edits reducer for dashboard
     case "FETCH_USER_LOGS_SUCCESS":
-      return { ...state, latest_edits: action.payload };
+      return {
+        ...state,
+        latest_edits: action.payload
+      };
+
+    // DRY Creating latest_publishes reducer for dashboard
+    case "FETCH_USER_PUBLISHES_SUCCESS":
+      return {
+        ...state,
+        latest_publishes: action.payload
+      };
 
     default:
       return state;
@@ -135,6 +146,30 @@ export function getUserLogs(userZUID, limit = 5, action) {
       .catch(err => {
         dispatch({
           type: "FETCH_USER_LOGS_ERROR",
+          err
+        });
+      });
+  };
+}
+// Actions
+export function getUserPublished(userZUID, limit = 5, action) {
+  return dispatch => {
+    dispatch({
+      type: "FETCHING_USER_PUBLISHES"
+    });
+    // would be nice to get sorted by createdAt from api
+    return request(
+      `${CONFIG.API_INSTANCE}/env/audits?userZUID=${userZUID}&limit=${limit}&action=${action}`
+    )
+      .then(res => {
+        dispatch({
+          type: "FETCH_USER_PUBLISHES_SUCCESS",
+          payload: res.data
+        });
+      })
+      .catch(err => {
+        dispatch({
+          type: "FETCH_USER_PUBLISHES_ERROR",
           err
         });
       });

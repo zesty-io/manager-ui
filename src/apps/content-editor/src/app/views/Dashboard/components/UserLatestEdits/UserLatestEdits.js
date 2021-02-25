@@ -39,7 +39,7 @@ export const UserLatestEdits = connect(state => state)(function UserLatestEdits(
         props.dispatch(
           notify({
             kind: "warn",
-            message: "Failed to load User Logs logs"
+            message: "Failed to load User Logs"
           })
         );
       });
@@ -47,7 +47,7 @@ export const UserLatestEdits = connect(state => state)(function UserLatestEdits(
 
   //TESTING
   console.log("PROPS:", props);
-  console.log("MY PROPS:", props.user.latest_edits);
+  console.log(" PROPS LATEST EDITS:", props.user.latest_edits);
 
   return (
     <WithLoader condition={!loading} message="Loading UserLatestEdits">

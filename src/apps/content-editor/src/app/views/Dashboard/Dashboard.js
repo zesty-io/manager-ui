@@ -16,6 +16,7 @@ import { HeaderDashboard } from "./components/HeaderDashboard";
 import { TopPerforming } from "./components/TopPerforming";
 import { RecentlyEdited } from "./components/RecentlyEdited";
 import { UserLatestEdits } from "./components/UserLatestEdits";
+import { UserLatestPublishes } from "./components/UserLatestPublishes";
 
 import { fetchRecentItems } from "shell/store/user";
 
@@ -134,6 +135,7 @@ export default connect(function(state, props) {
             {/* User latest activity */}
             <section className={styles.LatestActivity}>
               <UserLatestEdits user={this.props.user.ZUID} />
+              <UserLatestPublishes user={this.props.user.ZUID} />
 
               <Card>
                 <CardHeader>Your Latest Content Publishes</CardHeader>
