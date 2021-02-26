@@ -5,52 +5,23 @@ import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
-
 import { AppLink } from "@zesty-io/core/AppLink";
-import { WithLoader } from "@zesty-io/core/WithLoader";
 
-import { getUserLogs } from "shell/store/user";
+import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import styles from "./UserLatestEdits.less";
 
-export const UserLatestEdits = connect(state => state)(function UserLatestEdits(
-  props
-) {
-  const [loading, setLoading] = useState(true);
-  /*
-  enumeraton
-  Create Action = 1 + iota
-	Update
-	Delete
-	Publish
-	Unpublish
-	UndoDelete
-  */
-  const limitEdit = 5;
-  const actionUpdate = 2;
-  useEffect(() => {
-    props
-      .dispatch(getUserLogs(props.user.ZUID, limitEdit, actionUpdate))
-      .then(() => {
-        setLoading(false);
-      })
-      .catch(err => {
-        setLoading(false);
-        props.dispatch(
-          notify({
-            kind: "warn",
-            message: "Failed to load User Logs"
-          })
-        );
-      });
-  }, []);
-
+export function UserLatestEdits(props) {
+  console.log(props);
+  props.user.forEach(x => {
+    console.log(x.meta.message);
+  });
   return (
-    <WithLoader condition={!loading} message="Loading UserLatestEdits">
+    <>
       <Card className={styles.UserLatestEdits}>
         <CardHeader>Your Latest Edits</CardHeader>
         <CardContent className={styles.CardContent}>
-          {props.user.latest_edits.map((item, i) => (
+          {props.user.map((item, i) => (
             <div key={i}>
               <hgroup>
                 <h4>{`${item.meta.message}`}</h4>
@@ -70,6 +41,6 @@ export const UserLatestEdits = connect(state => state)(function UserLatestEdits(
           ))}
         </CardContent>
       </Card>
-    </WithLoader>
+    </>
   );
-});
+}

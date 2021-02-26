@@ -44,14 +44,12 @@ export function user(
     case "FETCH_USER_LOGS_SUCCESS":
       return {
         ...state,
-        latest_edits: action.payload
-      };
-
-    // DRY Creating latest_publishes reducer for dashboard
-    case "FETCH_USER_PUBLISHES_SUCCESS":
-      return {
-        ...state,
-        latest_publishes: action.payload
+        latest_edits: action.payload.filter(
+          user => user.actionByUserZUID === state.ZUID && user.action === 2
+        ),
+        latest_publishes: action.payload.filter(
+          user => user.actionByUserZUID === state.ZUID && user.action === 4
+        )
       };
 
     default:
@@ -128,15 +126,13 @@ export function fetchRecentItems(userZUID, start) {
 }
 
 // Actions
-export function getUserLogs(userZUID, limit = 5, action) {
+export function getUserLogs() {
   return dispatch => {
     dispatch({
       type: "FETCHING_USER_LOGS"
     });
     // would be nice to get sorted by createdAt from api
-    return request(
-      `${CONFIG.API_INSTANCE}/env/audits?userZUID=${userZUID}&limit=${limit}&action=${action}`
-    )
+    return request(`${CONFIG.API_INSTANCE}/env/audits`)
       .then(res => {
         dispatch({
           type: "FETCH_USER_LOGS_SUCCESS",
@@ -146,30 +142,6 @@ export function getUserLogs(userZUID, limit = 5, action) {
       .catch(err => {
         dispatch({
           type: "FETCH_USER_LOGS_ERROR",
-          err
-        });
-      });
-  };
-}
-// Actions
-export function getUserPublished(userZUID, limit = 5, action) {
-  return dispatch => {
-    dispatch({
-      type: "FETCHING_USER_PUBLISHES"
-    });
-    // would be nice to get sorted by createdAt from api
-    return request(
-      `${CONFIG.API_INSTANCE}/env/audits?userZUID=${userZUID}&limit=${limit}&action=${action}`
-    )
-      .then(res => {
-        dispatch({
-          type: "FETCH_USER_PUBLISHES_SUCCESS",
-          payload: res.data
-        });
-      })
-      .catch(err => {
-        dispatch({
-          type: "FETCH_USER_PUBLISHES_ERROR",
           err
         });
       });

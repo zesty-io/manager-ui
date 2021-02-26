@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 import cx from "classnames";
@@ -24,15 +24,14 @@ import { HeaderDashboard } from "./components/HeaderDashboard";
 import { TopPerforming } from "./components/TopPerforming";
 import { RecentlyEdited } from "./components/RecentlyEdited";
 import { UserLatestEdits } from "./components/UserLatestEdits";
-import { UserLatestPublishes } from "./components/UserLatestPublishes";
+
 import { QuickJumps } from "./components/QuickJumps";
 
-import { fetchRecentItems } from "shell/store/user";
+import { fetchRecentItems, getUserLogs } from "shell/store/user";
 
 import styles from "./Dashboard.less";
 
 export default connect(function(state, props) {
-  console.log("davey: ", state);
   return {
     user: state.user,
     instanceZUID: state.instance.ZUID,
@@ -52,7 +51,6 @@ export default connect(function(state, props) {
   class Dashboard extends React.PureComponent {
     state = {
       recentlyEditedItems: [],
-      userRecentMessage: [],
       favoriteModels: [],
       loading: true,
       webEngineOn: true, // in the future this will be a boolean pulled off the account, it will change the dash
@@ -64,29 +62,24 @@ export default connect(function(state, props) {
         .subtract(120, "days")
         .format("YYYY-MM-DD");
 
-      this.props
-        .dispatch(fetchRecentItems(this.props.user.ZUID, start))
-        .then(res => {
-          if (res && res.data) {
-            this.setState({
-              recentlyEditedItems: this.getLastEditedItems(res.data),
-              favoriteModels: this.getFavoriteModels(res.data),
-              loading: false
-            });
-          } else {
-            this.setState({
-              loading: false
-            });
-          }
-        });
+      Promise.all([
+        this.props.dispatch(fetchRecentItems(this.props.user.ZUID, start)),
+        this.props.dispatch(getUserLogs())
+      ]).then(res => {
+        if (res && res.data) {
+          this.setState({
+            recentlyEditedItems: this.getLastEditedItems(res.data),
+            favoriteModels: this.getFavoriteModels(res.data),
+            loading: false
+          });
+        } else {
+          this.setState({
+            loading: false
+          });
+        }
+      });
     }
 
-    /**
-      Group items by model
-      [
-        [contentModelZUID, [item, item, ...]]
-      ]
-    **/
     getFavoriteModels(items) {
       const grouped = items.reduce((acc, item) => {
         if (acc[item.meta.contentModelZUID]) {
@@ -131,6 +124,8 @@ export default connect(function(state, props) {
     }
 
     render() {
+      // console.log(this.props);
+
       return (
         <section className={styles.Dashboard}>
           <div className={styles.container}>
@@ -144,8 +139,9 @@ export default connect(function(state, props) {
 
             {/* User latest activity */}
             <section className={styles.LatestActivity}>
-              <UserLatestEdits user={this.props.user.ZUID} />
-              <UserLatestPublishes user={this.props.user.ZUID} />
+              <UserLatestEdits user={this.props.user.latest_edits} />
+              <UserLatestEdits user={this.props.user.latest_publishes} />
+
               {/* STATS */}
               <Card>
                 <CardHeader>Instance Activity</CardHeader>
