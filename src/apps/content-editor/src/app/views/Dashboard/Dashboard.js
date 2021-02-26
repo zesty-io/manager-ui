@@ -145,7 +145,8 @@ export default connect(function(state, props) {
 
               {/* STATS */}
               <InstanceActivity
-                totalEdits={this.props.user.total_user_actions}
+                totalUserEdits={this.props.user.total_user_actions}
+                totalEveryoneEdits={this.props.user.total_everyone_actions}
               />
             </section>
             <section className={styles.LinkOuts}>

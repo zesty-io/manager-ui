@@ -11,7 +11,8 @@ export function user(
     selected_lang: "",
     latest_edits: [],
     latest_publishes: [],
-    total_user_actions: []
+    total_user_actions: [],
+    total_everyone_actions: []
   },
   action
 ) {
@@ -53,7 +54,8 @@ export function user(
         ),
         total_user_actions: action.payload.filter(
           user => user.actionByUserZUID === state.ZUID && user.action
-        )
+        ),
+        total_everyone_actions: action.payload.filter(user => user.action)
       };
 
     default:
