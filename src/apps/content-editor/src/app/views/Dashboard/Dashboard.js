@@ -219,6 +219,7 @@ export default connect(function(state, props) {
               </Card>
               {/* ACCOUNT INFO */}
               <AccountInfo
+                instanceName={this.props.instance.name}
                 instanceZUID={this.props.instance.ZUID}
                 randomHashID={this.props.instance.randomHashID}
                 domain={this.props.instance.domain}

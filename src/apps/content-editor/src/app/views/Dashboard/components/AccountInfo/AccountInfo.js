@@ -12,12 +12,21 @@ import { Url } from "@zesty-io/core/Url";
 
 import styles from "./AccountInfo.less";
 
-export function AccountInfo({ instanceZUID, domain, randomHashID } = props) {
+export function AccountInfo({
+  instanceName,
+  instanceZUID,
+  domain,
+  randomHashID
+} = props) {
   return (
     <div className={styles.AccountInfo}>
       <Card>
         <CardHeader>
-          Account: <mark>{instanceZUID}</mark>
+          <p>Account: {instanceName}</p>
+          <p>
+            {" "}
+            ZUID: <mark>{instanceZUID}</mark>
+          </p>
         </CardHeader>
         <CardContent className={styles.CardContent}>
           <div className={styles.Links}>
@@ -50,7 +59,11 @@ export function AccountInfo({ instanceZUID, domain, randomHashID } = props) {
             </Url>
             <p>
               <FontAwesomeIcon icon={faUsers} />
-              &nbsp; Users: 8
+              &nbsp; You: 8
+            </p>
+            <p>
+              <FontAwesomeIcon icon={faUsers} />
+              &nbsp; Everyone: 8
             </p>
           </div>
 
