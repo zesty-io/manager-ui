@@ -29,7 +29,7 @@ export default connect(state => {
     data: []
   });
   const [variantsSelected, setVariants] = useState({});
-  const [isLoading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // when google fonts are ready, create pagination, tags state
   // and inject first page of font tags
@@ -120,11 +120,11 @@ export default connect(state => {
   }
 
   function onUpdateFont(font) {
-    setLoading(true);
+    setSaving(true);
 
     installSiteFont(font, variantsSelected[font])
       .then(res => {
-        setLoading(false);
+        setSaving(false);
 
         filterFontsInstalled(
           res.attributes.href.split("=")[1].split(":")[0],
@@ -149,7 +149,7 @@ export default connect(state => {
       })
       .catch(err => {
         console.log(err);
-        setLoading(false);
+        setSaving(false);
         props.dispatch(
           notify({
             kind: "success",
@@ -231,9 +231,13 @@ export default connect(state => {
                   id="InstallFont"
                   className={styles.SaveBtn}
                   onClick={() => onUpdateFont(itemFont.family)}
-                  disabled={isLoading}
+                  disabled={
+                    saving ||
+                    !variantsSelected[itemFont.family] ||
+                    variantsSelected[itemFont.family].length === 0
+                  }
                 >
-                  {isLoading ? (
+                  {saving ? (
                     <FontAwesomeIcon icon={faSpinner} />
                   ) : (
                     <FontAwesomeIcon icon={faPlus} />

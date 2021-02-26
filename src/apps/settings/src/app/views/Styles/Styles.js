@@ -62,13 +62,17 @@ export default connect(state => {
         const url = headTag.attributes.href;
         const fontVariants = url.split("=")[1];
         const font = fontVariants.split(":")[0];
-        const variants = fontVariants.split(":")[1].split(",");
-        // We only need first variant of a font
-        return {
+        const variants = fontVariants.split(":")[1];
+        const fontOption = {
           label: font.replace("+", " "),
-          family: font.replace("+", " "),
-          weight: variants[0]
+          family: font.replace("+", " ")
         };
+        if (variants) {
+          const variantsArr = variants.split(",");
+          // We only need first variant of a font
+          fontOption.weight = variantsArr[0];
+        }
+        return fontOption;
       })
     );
   }, [props.fontsInstalled]);
@@ -222,7 +226,11 @@ export default connect(state => {
                 {fonts.map((option, index) => (
                   <Option
                     key={index}
-                    value={`${option.family}:${option.weight}`}
+                    value={
+                      option.weight
+                        ? `${option.family}:${option.weight}`
+                        : option.family
+                    }
                     text={option.family}
                   />
                 ))}

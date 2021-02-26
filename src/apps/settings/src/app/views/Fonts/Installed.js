@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBolt, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
 import { Search } from "@zesty-io/core/Search";
@@ -54,7 +54,7 @@ export default connect(state => {
 
       document.head.appendChild(style);
     });
-  }, []);
+  }, [props.fontsInstalled]);
 
   function parseVariant(variant) {
     if (variant.split("").includes("i")) {
@@ -143,11 +143,15 @@ export default connect(state => {
 
   function toggleEnableFont(variant, value, font) {
     if (window.confirm("Do you really want to uninstall this font?")) {
+      console.log(fonts);
       const copyFonts = fonts
         .map(f => {
           if (f.font === font) {
             const pos = f.variants.map(v => v.label).indexOf(variant);
-            f.variants[pos].value = value.toString();
+            // handle broken installed fonts with no variants
+            if (pos !== -1) {
+              f.variants[pos].value = value.toString();
+            }
             f.variants = f.variants.filter(variant => variant.value === "1");
           }
           return f;
@@ -170,13 +174,32 @@ export default connect(state => {
                 <h3>{font.font}</h3>
               </div>
             </header>
+            {font.variants.length === 0 && (
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <p
+                  className={styles.ParagraphFontInstalled}
+                  style={{
+                    fontFamily: font.font.replace("+", " ")
+                  }}
+                >
+                  All their equipment and instruments are alive.
+                </p>
+                <Button
+                  kind="warn"
+                  onClick={() => toggleEnableFont(null, "0", font.font)}
+                  className={styles.ButtonRemoveFont}
+                >
+                  <FontAwesomeIcon icon={faTrashAlt} />
+                  Remove
+                </Button>
+              </div>
+            )}
             {font.variants.map((variant, idx) => (
               <div
                 key={idx}
                 style={{ display: "flex", justifyContent: "space-between" }}
               >
                 <p
-                  key={idx}
                   className={styles.ParagraphFontInstalled}
                   style={{
                     fontFamily: font.font.replace("+", " "),
