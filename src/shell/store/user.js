@@ -10,7 +10,8 @@ export function user(
     permissions: [],
     selected_lang: "",
     latest_edits: [],
-    latest_publishes: []
+    latest_publishes: [],
+    total_user_actions: []
   },
   action
 ) {
@@ -49,6 +50,9 @@ export function user(
         ),
         latest_publishes: action.payload.filter(
           user => user.actionByUserZUID === state.ZUID && user.action === 4
+        ),
+        total_user_actions: action.payload.filter(
+          user => user.actionByUserZUID === state.ZUID && user.action
         )
       };
 

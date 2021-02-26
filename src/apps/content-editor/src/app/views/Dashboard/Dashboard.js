@@ -24,6 +24,7 @@ import { HeaderDashboard } from "./components/HeaderDashboard";
 import { TopPerforming } from "./components/TopPerforming";
 import { RecentlyEdited } from "./components/RecentlyEdited";
 import { UserLatestEdits } from "./components/UserLatestEdits";
+import { InstanceActivity } from "./components/InstanceActivity";
 
 import { QuickJumps } from "./components/QuickJumps";
 
@@ -124,7 +125,7 @@ export default connect(function(state, props) {
     }
 
     render() {
-      // console.log(this.props);
+      console.log(this.props);
 
       return (
         <section className={styles.Dashboard}>
@@ -137,33 +138,15 @@ export default connect(function(state, props) {
               firstName={this.props.user.firstName}
             />
 
-            {/* User latest activity */}
+            {/* USER LATEST  */}
             <section className={styles.LatestActivity}>
               <UserLatestEdits user={this.props.user.latest_edits} />
               <UserLatestEdits user={this.props.user.latest_publishes} />
 
               {/* STATS */}
-              <Card>
-                <CardHeader>Instance Activity</CardHeader>
-                <CardContent>
-                  <div className={styles.WrapperActivity}>
-                    <h3>Last 30 days</h3>
-                    <dl>
-                      <dt>You</dt>
-                      <dd>20</dd>
-                      <dt>Full Team</dt>
-                      <dd>1034</dd>
-                    </dl>
-                    <h3>All time</h3>
-                    <dl>
-                      <dt>You</dt>
-                      <dd>20</dd>
-                      <dt>Full Team</dt>
-                      <dd>1034</dd>
-                    </dl>
-                  </div>
-                </CardContent>
-              </Card>
+              <InstanceActivity
+                totalEdits={this.props.user.total_user_actions}
+              />
             </section>
             <section className={styles.LinkOuts}>
               <QuickJumps
