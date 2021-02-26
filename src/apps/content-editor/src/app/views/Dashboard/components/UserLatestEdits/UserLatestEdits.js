@@ -12,16 +12,12 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import styles from "./UserLatestEdits.less";
 
 export function UserLatestEdits(props) {
-  console.log(props);
-  props.user.forEach(x => {
-    console.log(x.meta.message);
-  });
   return (
     <>
       <Card className={styles.UserLatestEdits}>
         <CardHeader>Your Latest Edits</CardHeader>
         <CardContent className={styles.CardContent}>
-          {props.user.map((item, i) => (
+          {props.user.slice(0, 5).map((item, i) => (
             <div key={i}>
               <hgroup>
                 <h4>{`${item.meta.message}`}</h4>
