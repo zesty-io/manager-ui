@@ -1,15 +1,18 @@
 import React from "react";
+import { request } from "utility/request";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
   faEye,
   faUser,
-  faUsers
+  faUsers,
+  faGlobe
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
-
+import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
+import Favicon from "shell/components/favicon";
 import styles from "./AccountInfo.less";
 
 export function AccountInfo({
@@ -18,6 +21,17 @@ export function AccountInfo({
   domain,
   randomHashID
 } = props) {
+  const fetchImage = function() {
+    const width = 200;
+    const height = 200;
+    request(
+      `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${instanceZUID}/getimage/?w=${width}&h=${height}&type=fit`
+    ).then(res => {
+      console.log(res);
+    });
+  };
+  fetchImage();
+
   return (
     <div className={styles.AccountInfo}>
       <Card>
@@ -66,11 +80,15 @@ export function AccountInfo({
               &nbsp; Everyone: 8
             </p>
           </div>
-
-          <img
-            src="https://www.w3schools.com/howto/img_nature.jpg"
-            alt="Placeholder"
-          />
+          {/* <Favicon /> */}
+          {/* {faviconURL ? (
+            <img
+              src={faviconURL}
+              alt=" Select Favicon"
+            />
+          ) : (
+            <FontAwesomeIcon icon={faGlobe} />
+          )} */}
         </CardContent>
       </Card>
     </div>

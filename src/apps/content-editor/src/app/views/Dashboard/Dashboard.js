@@ -140,8 +140,14 @@ export default connect(function(state, props) {
 
             {/* USER LATEST  */}
             <section className={styles.LatestActivity}>
-              <UserLatestEdits user={this.props.user.latest_edits} />
-              <UserLatestEdits user={this.props.user.latest_publishes} />
+              <UserLatestEdits
+                user={this.props.user.latest_edits}
+                cardTitle={"Your Latest Edits"}
+              />
+              <UserLatestEdits
+                user={this.props.user.latest_publishes}
+                cardTitle={"Your Latest Content Publishes"}
+              />
 
               {/* STATS */}
               <InstanceActivity

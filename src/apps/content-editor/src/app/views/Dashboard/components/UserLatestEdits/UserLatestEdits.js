@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
+import React from "react";
 import moment from "moment";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,7 +14,7 @@ export function UserLatestEdits(props) {
   return (
     <>
       <Card className={styles.UserLatestEdits}>
-        <CardHeader>Your Latest Edits</CardHeader>
+        <CardHeader>{props.cardTitle}</CardHeader>
         <CardContent className={styles.CardContent}>
           {props.user.slice(0, 5).map((item, i) => (
             <div key={i}>
