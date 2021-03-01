@@ -136,7 +136,9 @@ export default connect(state => {
           )
         );
 
-        setVariants({ [font]: null });
+        const newVariants = { ...variantsSelected };
+        delete newVariants[font];
+        setVariants(newVariants);
         props.dispatch(
           notify({
             kind: "success",
@@ -192,12 +194,18 @@ export default connect(state => {
         };
       }
     } else {
+      const fontVariants = variantsSelected[font].filter(
+        variant => variant !== variantValidation(e.target.name)
+      );
+
       newVariants = {
-        ...variantsSelected,
-        [font]: variantsSelected[font].filter(
-          variant => variant !== variantValidation(e.target.name)
-        )
+        ...variantsSelected
       };
+      if (fontVariants.length) {
+        newVariants[font] = fontVariants;
+      } else {
+        delete newVariants[font];
+      }
     }
     setVariants(newVariants);
     console.log("variants selected", newVariants);
@@ -213,7 +221,7 @@ export default connect(state => {
                 <h3 className={styles.FontFamily}>{itemFont.family}</h3>
                 <ul className={styles.FontVariants}>
                   {itemFont.variants.map((item, index) => (
-                    <li key={`${itemFont.family}-${index}`}>
+                    <li key={`${itemFont.family}-${item}`}>
                       <input
                         type="checkbox"
                         onChange={e => selectFontVariant(itemFont.family, e)}
@@ -231,11 +239,7 @@ export default connect(state => {
                   id="InstallFont"
                   className={styles.SaveBtn}
                   onClick={() => onUpdateFont(itemFont.family)}
-                  disabled={
-                    saving ||
-                    !variantsSelected[itemFont.family] ||
-                    variantsSelected[itemFont.family].length === 0
-                  }
+                  disabled={saving || !variantsSelected[itemFont.family]}
                 >
                   {saving ? (
                     <FontAwesomeIcon icon={faSpinner} />
