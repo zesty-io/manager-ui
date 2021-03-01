@@ -1,6 +1,9 @@
 import React from "react";
 import styles from "./RedirectImportTableRow.less";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+
 import { Button } from "@zesty-io/core/Button";
 import { Input } from "@zesty-io/core/Input";
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
@@ -81,7 +84,8 @@ export default class RedirectImportTableRow extends React.Component {
 
         <span className={styles.RowCell}>
           <Button className="save" onClick={this.handleAddRedirect}>
-            <i className="fa fa-plus" aria-hidden="true"></i>Redirect
+            <FontAwesomeIcon icon={faPlus} />
+            Redirect
           </Button>
         </span>
       </div>

@@ -15,7 +15,8 @@ import {
   faPalette,
   faSortNumericUp,
   faMoneyBillAlt,
-  faIdCard
+  faIdCard,
+  faExclamationTriangle
 } from "@fortawesome/free-solid-svg-icons";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
@@ -42,7 +43,10 @@ export default function FieldSettings(props) {
 
       {!field && (
         <aside className={cx(styles.Description, styles.Warn)}>
-          <i className={cx(styles.Icon, "fas fa-exclamation-triangle")} />
+          <FontAwesomeIcon
+            className={styles.Icon}
+            icon={faExclamationTriangle}
+          />
           <p>
             The <code>{`${props.field.datatype}`}</code> field type is
             deprecated. Don't be alarmed, it just means we do not allow the

@@ -1,5 +1,13 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBan,
+  faCheckCircle,
+  faPlug,
+  faPlus,
+  faSpinner
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
@@ -66,7 +74,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
         kind="secondary"
         title="Create File"
       >
-        <i className="fa fa-plus" aria-hidden="true" />
+        <FontAwesomeIcon icon={faPlus} />
         <span className={styles.CreateFileBtnTxt}>Create File</span>
       </Button>
 
@@ -158,9 +166,9 @@ export const CreateFile = React.memo(function CreateFile(props) {
                 disabled={type === "" || type === "0" || loading}
               >
                 {loading ? (
-                  <i className="fas fa-spinner" aria-hidden="true" />
+                  <FontAwesomeIcon icon={faSpinner} />
                 ) : (
-                  <i className="fas fa-check-circle" aria-hidden="true" />
+                  <FontAwesomeIcon icon={faCheckCircle} />
                 )}
                 Create File
               </Button>
@@ -172,7 +180,8 @@ export const CreateFile = React.memo(function CreateFile(props) {
                   setOpen(false);
                 }}
               >
-                <i className="fas fa-ban"></i>Cancel (ESC)
+                <FontAwesomeIcon icon={faBan} />
+                Cancel (ESC)
               </Button>
             </ButtonGroup>
           </ModalFooter>

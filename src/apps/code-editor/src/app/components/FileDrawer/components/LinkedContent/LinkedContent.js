@@ -1,16 +1,19 @@
 import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faEye, faLink } from "@fortawesome/free-solid-svg-icons";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./LinkedContent.less";
+
 export default function LinkedContent(props) {
   return (
     <Card className={styles.LinkedContent}>
       <CardHeader>
         <h1>
-          <i className="fas fa-edit"></i> Linked Content
+          <FontAwesomeIcon icon={faEdit} /> Linked Content
         </h1>
       </CardHeader>
       <CardContent>
@@ -29,7 +32,7 @@ export default function LinkedContent(props) {
                     to={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
                     title="Edit item content"
                   >
-                    <i className="fas fa-edit"></i>{" "}
+                    <FontAwesomeIcon icon={faEdit} />
                     <strong>{item.web.metaTitle}</strong>{" "}
                   </AppLink>
                 </p>
@@ -41,7 +44,7 @@ export default function LinkedContent(props) {
                     target="_blank"
                     title="Preview Item Webpage"
                   >
-                    <i className="fas fa-eye"></i> <em>{item.web.path}</em>
+                    <FontAwesomeIcon icon={faEye} /> <em>{item.web.path}</em>
                   </Url>
                 </p>
               </li>
@@ -56,7 +59,8 @@ export default function LinkedContent(props) {
             to={`/content/${props.file.contentModelZUID}`}
             title="Edit Related Content"
           >
-            <i className="fas fa-link"></i>Edit Linked Content
+            <FontAwesomeIcon icon={faLink} />
+            Edit Linked Content
           </AppLink>
         </p>
       </CardFooter>

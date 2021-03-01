@@ -7,6 +7,7 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { get } from "idb-keyval";
+import observable from "@riotjs/observable";
 
 import Sentry from "utility/sentry";
 import { store, injectReducer } from "shell/store";
@@ -24,6 +25,9 @@ injectReducer(store, "navContent", navContent);
 
 // Some legacy code refers to this global which is an observable
 // FIXME: this needs to get refactored out
+if (window.zesty == null) {
+  window.zesty = observable();
+}
 window.zestyStore = store;
 
 // Update urls in config to include the current instance zuid

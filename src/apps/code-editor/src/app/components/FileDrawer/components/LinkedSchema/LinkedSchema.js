@@ -1,4 +1,6 @@
 import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDatabase, faLink } from "@fortawesome/free-solid-svg-icons";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -10,7 +12,7 @@ export default function LinkedSchema(props) {
     <Card className={styles.LinkedSchema}>
       <CardHeader>
         <h1>
-          <i className="fas fa-database"></i> Linked Schema
+          <FontAwesomeIcon icon={faDatabase} /> Linked Schema
         </h1>
       </CardHeader>
       <CardContent>
@@ -47,7 +49,8 @@ export default function LinkedSchema(props) {
             to={`/schema/${props.file.contentModelZUID}`}
             title="Edit Related Model"
           >
-            <i className="fas fa-link"></i>Edit Linked Schema
+            <FontAwesomeIcon icon={faLink} />
+            Edit Linked Schema
           </AppLink>
         </p>
       </CardFooter>

@@ -1,4 +1,6 @@
 import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGlobe, faKey, faPlug } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
 
@@ -32,7 +34,6 @@ export class GoogleAuthOverlay extends React.Component {
         "&domain=" +
         this.props.instance.domains[0].domain
     );
-    console.log(address);
 
     var win = window.open(
       address,
@@ -62,7 +63,7 @@ export class GoogleAuthOverlay extends React.Component {
             src="https://developers.google.com/analytics/images/terms/logo_lockup_analytics_icon_vertical_white_2x.png"
           />
           <p>
-            <i className="fa fa-plug" aria-hidden="true" />{" "}
+            <FontAwesomeIcon icon={faPlug} />{" "}
             <strong>Zesty.io WebEngine™</strong> Integration
           </p>
         </div>
@@ -82,7 +83,7 @@ export class GoogleAuthOverlay extends React.Component {
             )}
             <div className={styles.buttonHolder}>
               <Button kind="save" onClick={this.createAnalyticsPopup}>
-                <i className="fa fa-key" aria-hidden="true" />
+                <FontAwesomeIcon icon={faKey} />
                 Click here to Authenticate With Google
               </Button>
             </div>
@@ -98,7 +99,7 @@ export class GoogleAuthOverlay extends React.Component {
                   window.location = `${CONFIG.URL_ACCOUNTS}/instances/${this.props.instance.ZUID}/launch`;
                 }}
               >
-                <i className="fa fa-globe" aria-hidden="true" />
+                <FontAwesomeIcon icon={faGlobe} />
                 Click here to Setup Your Domain
               </Button>
             </div>
