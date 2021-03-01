@@ -122,7 +122,8 @@ export default connect(state => {
   function onUpdateFont(font) {
     setSaving(true);
 
-    installSiteFont(font, variantsSelected[font])
+    props
+      .dispatch(installSiteFont(font, variantsSelected[font]))
       .then(res => {
         setSaving(false);
 
