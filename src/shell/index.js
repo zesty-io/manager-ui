@@ -9,7 +9,7 @@ import { BrowserRouter } from "react-router-dom";
 import { get } from "idb-keyval";
 import observable from "@riotjs/observable";
 
-import Sentry from "utility/sentry";
+import { Sentry, history } from "utility/sentry";
 import { store, injectReducer } from "shell/store";
 import { navContent } from "../apps/content-editor/src/store/navContent";
 
@@ -104,6 +104,7 @@ const App = Sentry.withProfiler(() => (
   <Provider store={store}>
     <Sentry.ErrorBoundary fallback={() => <AppError />}>
       <BrowserRouter
+        history={history}
         getUserConfirmation={(message, callback) => {
           if (message === "confirm") {
             window.openNavigationModal(callback);
