@@ -29,6 +29,7 @@ export const fetchResource = store => next => (action = {}) => {
         });
     } else {
       console.log("duplicate request: ", action.uri);
+      return Promise.resolve();
     }
   } else {
     return next(action);
