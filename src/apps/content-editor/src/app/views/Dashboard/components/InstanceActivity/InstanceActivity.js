@@ -21,19 +21,18 @@ export function InstanceActivity({
       .subtract(days, "days")
       .unix();
 
-  useEffect(() => {
-    // Loop through updatedAt dates && filter recentedits 30 days ago
-    const checkEdits = total => {
-      total.filter(user => {
-        let userLatest = moment(user.updatedAt).unix();
-        if (userLatest <= today && userLatest >= DaysAgo(30)) {
-          console.log(total.length);
-          setActivityNumber(total.length);
-        }
-      });
-    };
-    checkEdits(totalUserEdits);
-  });
+  // Loop through updatedAt dates && filter recentedits 30 days ago
+  const checkEdits = total => {
+    total.filter(user => {
+      let userLatest = moment(user.updatedAt).unix();
+      if (userLatest <= today && userLatest >= DaysAgo(30)) {
+        console.log(total);
+        console.log(total.length);
+        return total;
+      }
+    });
+  };
+  setActivityNumber(checkEdits(totalUserEdits));
 
   return (
     <>
@@ -44,7 +43,6 @@ export function InstanceActivity({
             <h3>Last 30 Days Edits</h3>
             <dl>
               <dt>You</dt>
-
               <dd>{activityNumber}</dd>
               <dt>Everyone</dt>
               <dd>{totalEveryoneEdits.length}</dd>
