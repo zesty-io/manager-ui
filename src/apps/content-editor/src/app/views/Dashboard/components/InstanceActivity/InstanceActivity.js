@@ -33,7 +33,7 @@ export function InstanceActivity({
       });
     };
     checkEdits(totalUserEdits);
-  }, [activityNumber]);
+  });
 
   return (
     <>
