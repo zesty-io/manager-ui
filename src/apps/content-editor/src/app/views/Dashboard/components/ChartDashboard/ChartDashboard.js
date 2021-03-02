@@ -79,10 +79,18 @@ export function ChartDashboard({ totalUserEdits, totalEveryoneEdits } = props) {
             width={400}
             options={{
               maintainAspectRatio: false,
+              responsive: true,
+              title: {
+                text:
+                  "	Create: 1 Update: 2 Delete: 3 Publish: 4 Unpublish: 5 UndoDelete: 6",
+                display: true
+              },
               scales: {
                 yAxes: [
                   {
                     ticks: {
+                      autoSkip: true,
+                      maxTicksLimit: 6,
                       beginAtZero: true
                     }
                   }
