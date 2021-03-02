@@ -12,8 +12,6 @@ export function InstanceActivity({
   totalUserEdits,
   totalEveryoneEdits
 } = props) {
-  const [activityNumber, setActivityNumber] = useState(0);
-
   let today = moment().unix();
   // Get date from # days ago
   let DaysAgo = days =>
@@ -22,17 +20,18 @@ export function InstanceActivity({
       .unix();
 
   // Loop through updatedAt dates && filter recentedits 30 days ago
-  const checkEdits = total => {
-    total.filter(user => {
+  const checkEdits = (total, days) => {
+    return total.filter(user => {
       let userLatest = moment(user.updatedAt).unix();
-      if (userLatest <= today && userLatest >= DaysAgo(30)) {
-        console.log(total);
+      if (userLatest <= today && userLatest >= DaysAgo(days)) {
+        console.log(total, days);
         console.log(total.length);
         return total;
       }
     });
   };
-  setActivityNumber(checkEdits(totalUserEdits));
+  const userNumber = checkEdits(totalUserEdits, 30);
+  const everyoneNumber = checkEdits(totalEveryoneEdits, 30);
 
   return (
     <>
@@ -43,17 +42,17 @@ export function InstanceActivity({
             <h3>Last 30 Days Edits</h3>
             <dl>
               <dt>You</dt>
-              <dd>{activityNumber}</dd>
+              <dd>{userNumber.length}</dd>
               <dt>Everyone</dt>
-              <dd>{totalEveryoneEdits.length}</dd>
+              <dd>{everyoneNumber.length}</dd>
             </dl>
-            <h3>All time</h3>
+            {/* <h3>All time</h3>
             <dl>
               <dt>You</dt>
               <dd>20</dd>
               <dt>Everyone</dt>
               <dd>1034</dd>
-            </dl>
+            </dl> */}
           </div>
         </CardContent>
       </Card>
