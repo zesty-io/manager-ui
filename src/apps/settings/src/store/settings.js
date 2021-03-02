@@ -83,6 +83,16 @@ export function settings(
         ...state,
         instance: arrInstances
       };
+    case "UPDATE_STYLES_SUCCESS":
+      const styles = state.styles;
+      const styleIndex = styles
+        .map(item => item.ZUID)
+        .indexOf(action.payload.ZUID);
+      styles[styleIndex] = action.payload;
+      return {
+        ...state,
+        styles
+      };
 
     default:
       return state;
@@ -175,14 +185,23 @@ export function fetchStylesVariables() {
   };
 }
 
-export function saveVariables(zuid, data) {
-  return request(`${CONFIG.API_INSTANCE}/web/stylesheets/variables/${zuid}`, {
-    method: "PUT",
-    json: true,
-    body: data
-  })
-    .then(res => res)
-    .catch(err => console.log("err", err));
+export function saveStyleVariable(zuid, data) {
+  return dispatch => {
+    return request(`${CONFIG.API_INSTANCE}/web/stylesheets/variables/${zuid}`, {
+      method: "PUT",
+      json: true,
+      body: data
+    })
+      .then(res => {
+        if (res) {
+          dispatch({
+            type: "UPDATE_STYLES_SUCCESS",
+            payload: data
+          });
+        }
+      })
+      .catch(err => console.log("err", err));
+  };
 }
 
 export function updateSettings(zuid, data) {
@@ -220,27 +239,29 @@ export function fetchFonts() {
 }
 
 export function installSiteFont(font, variants) {
-  font = font.replace(/\s/g, "+");
-  variants = variants.join();
+  return (dispatch, getState) => {
+    font = font.replace(/\s/g, "+");
+    variants = variants.join();
 
-  return request(`${CONFIG.API_INSTANCE}/web/headtags`, {
-    method: "POST",
-    json: true,
-    body: {
-      type: "link",
-      attributes: {
-        rel: "stylesheet",
-        href: `https://fonts.googleapis.com/css?family=${font}:${variants}`
-      },
-      sort: 1,
-      resourceZUID: "8-b6b5acc6ca-n7hh8b"
-    }
-  })
-    .then(res => res.data)
-    .catch(err => {
-      console.log(err);
-      return err;
-    });
+    return request(`${CONFIG.API_INSTANCE}/web/headtags`, {
+      method: "POST",
+      json: true,
+      body: {
+        type: "link",
+        attributes: {
+          rel: "stylesheet",
+          href: `https://fonts.googleapis.com/css?family=${font}:${variants}`
+        },
+        sort: 1,
+        resourceZUID: getState().instance.ZUID
+      }
+    })
+      .then(res => res.data)
+      .catch(err => {
+        console.log(err);
+        return err;
+      });
+  };
 }
 
 export function fetchFontsInstalled() {

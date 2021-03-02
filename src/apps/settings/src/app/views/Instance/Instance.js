@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { FielLabel, FieldLabel } from "@zesty-io/core/FieldLabel";
+import { FieldLabel } from "@zesty-io/core/FieldLabel";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
@@ -15,40 +15,6 @@ import { notify } from "shell/store/notifications";
 
 import { updateSettings } from "../../../store/settings";
 
-const TooltipStyle = `
-          .tip--2Be6h {
-            z-index: 10 !important;
-          }
-          .Tooltip:hover .tipText--1ga9d{
-            display: block;
-            position: absolute;
-            background: #1b202c;
-            color: #fff;
-            font-family: Verdana, Arial, Monaco, Sans-Serif;
-            padding: 15px 23px;
-            width: 25rem;
-            line-height: 20px;
-            bottom: -95px !important;
-            border-radius: 4px;
-            left: -7px;
-            z-index: 11;
-            overflow-wrap: break-word;
-            box-shadow: 0px 0px 15px rgba(10, 0, 0, 0.2);
-          }
-          .Tooltip:hover .tipText--1ga9d::before {
-            width: 8px;
-            height: 8px;
-            position: absolute;
-            background: #1b202c;
-            bottom: 86px !important;
-            left: 6px;
-            z-index: 11;
-            transform: rotate(45deg);
-            content: " ";
-            border-radius: 3px 0 0 0;
-          }
-        `;
-
 import styles from "./SettingsStyles.less";
 export default connect(state => {
   return {
@@ -56,10 +22,12 @@ export default connect(state => {
     instance: state.settings.instance
   };
 })(function Settings(props) {
-  const [loading, setLoading] = useState(false);
-  const [fields, setFields] = useState(props.instance);
+  const [saving, setSaving] = useState(false);
+  const [fields, setFields] = useState([]);
   const [fieldValues, setFieldValues] = useState({});
+  const [dirtyFields, setDirtyFields] = useState([]);
 
+  // Set Fields and Field Values from store/URL
   useEffect(() => {
     const category = props.match.params.category
       ? props.match.params.category
@@ -72,54 +40,54 @@ export default connect(state => {
     setFields(matchingFields);
     setFieldValues(
       matchingFields.reduce((acc, field) => {
-        acc[field.ZUID] = field.value;
+        acc[field.key] = field.value;
         return acc;
       }, {})
     );
-    setTimeout(() => {
-      const elements = document.getElementsByClassName("tip--2Be6h");
-      const element = elements[0];
-      const style = document.createElement("style");
-      style.innerHTML = TooltipStyle;
-      const ref = document.querySelector("script");
-      ref.parentNode.insertBefore(style, ref);
-      if (element) {
-        element.classList.add("Tooltip");
-      }
-    }, 100);
   }, [props.instance.length, props.match]);
 
-  function setValue(value, ZUID) {
-    setFieldValues({ ...fieldValues, [ZUID]: value });
+  function setValue(value, name) {
+    setFieldValues({ ...fieldValues, [name]: value });
+
+    if (dirtyFields.includes(name)) return;
+    setDirtyFields([...dirtyFields, name]);
   }
 
   function saveFields() {
-    setLoading(true);
+    setSaving(true);
 
-    const requests = fields.map(field => {
-      const value =
-        fieldValues[field.ZUID] === null
-          ? null
-          : fieldValues[field.ZUID].toString();
-      return props.dispatch(
-        updateSettings(field.ZUID, {
-          ...field,
-          value
-        })
-      );
-    });
+    const requests = fields
+      .filter(field => {
+        if (dirtyFields.some(item => field.key === item)) {
+          return field;
+        }
+      })
+      .map(field => {
+        const value =
+          fieldValues[field.key] === null
+            ? null
+            : fieldValues[field.key].toString();
+        return props.dispatch(
+          updateSettings(field.ZUID, {
+            ...field,
+            value
+          })
+        );
+      });
 
     Promise.all(requests)
       .then(responses => {
-        setLoading(false);
+        setSaving(false);
+        setDirtyFields([]);
         props.dispatch(
           notify({
             kind: "success",
-            message: "Data has been updated"
+            message: "Settings Saved"
           })
         );
       })
       .catch(err => {
+        setSaving(false);
         props.dispatch(
           notify({
             kind: "warn",
@@ -139,9 +107,9 @@ export default connect(state => {
                   <FieldLabel label={field.keyFriendly} />
                   <div className={styles.selectProtocol}>
                     <Select
-                      name={field.ZUID}
-                      onSelect={(value, name) => setValue(name, value)}
-                      value={fieldValues[field.ZUID]}
+                      name={field.key}
+                      onSelect={setValue}
+                      value={fieldValues[field.key]}
                     >
                       <Option value="Select" text="Select" />
                       {field.options.split(",").map((option, index) => (
@@ -149,7 +117,7 @@ export default connect(state => {
                           key={index}
                           value={option}
                           text={option}
-                          selected={fieldValues[field.ZUID] === option}
+                          selected={fieldValues[field.key] === option}
                         />
                       ))}
                     </Select>
@@ -160,8 +128,8 @@ export default connect(state => {
               return (
                 <FieldTypeBinary
                   key={field.ZUID}
-                  name={field.ZUID}
-                  value={fieldValues[field.ZUID]}
+                  name={field.key}
+                  value={fieldValues[field.key]}
                   label={field.keyFriendly}
                   tooltip={field.tips}
                   onValue="On"
@@ -174,8 +142,8 @@ export default connect(state => {
             return (
               <FieldTypeTextarea
                 key={field.ZUID}
-                name={field.ZUID}
-                value={fieldValues[field.ZUID]}
+                name={field.key}
+                value={fieldValues[field.key]}
                 label={field.keyFriendly}
                 tooltip={field.tips}
                 onChange={setValue}
@@ -185,7 +153,7 @@ export default connect(state => {
             return (
               <FieldTypeDropDown
                 key={field.ZUID}
-                name={field.ZUID}
+                name={field.key}
                 label={field.keyFriendly}
                 description={field.description}
                 options={[{ value: "", text: "Selected" }]}
@@ -197,8 +165,8 @@ export default connect(state => {
               <FieldTypeText
                 key={field.ZUID}
                 label={field.keyFriendly}
-                name={field.ZUID}
-                value={fieldValues[field.ZUID]}
+                name={field.key}
+                value={fieldValues[field.key]}
                 onChange={setValue}
                 description={field.tips}
                 maxLength={640}
@@ -211,9 +179,9 @@ export default connect(state => {
         id="saveSettings"
         kind="save"
         onClick={saveFields}
-        disabled={loading}
+        disabled={saving || dirtyFields.length === 0}
       >
-        {loading ? (
+        {saving ? (
           <FontAwesomeIcon icon={faSpinner} />
         ) : (
           <FontAwesomeIcon icon={faSave} />
