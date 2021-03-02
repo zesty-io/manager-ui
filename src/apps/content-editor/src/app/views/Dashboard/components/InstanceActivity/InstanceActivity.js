@@ -24,8 +24,6 @@ export function InstanceActivity({
     return total.filter(user => {
       let userLatest = moment(user.updatedAt).unix();
       if (userLatest <= today && userLatest >= DaysAgo(days)) {
-        console.log(total, days);
-        console.log(total.length);
         return total;
       }
     });

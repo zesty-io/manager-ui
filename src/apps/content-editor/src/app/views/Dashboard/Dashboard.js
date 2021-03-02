@@ -126,8 +126,6 @@ export default connect(function(state, props) {
     }
 
     render() {
-      console.log(this.props);
-
       return (
         <section className={styles.Dashboard}>
           <div className={styles.container}>
