@@ -7,7 +7,6 @@ import { useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
-  faExternalLinkAlt,
   faCode,
   faCog,
   faDatabase,
@@ -17,7 +16,6 @@ import {
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
-import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { AccountInfo } from "./components/AccountInfo";
 import { ChartDashboard } from "./components/ChartDashboard";
@@ -154,6 +152,7 @@ export default connect(function(state, props) {
                 totalEveryoneEdits={this.props.user.total_everyone_actions}
               />
             </section>
+            {/* LINK OUTS DOCS */}
             <section className={styles.LinkOuts}>
               <QuickJumps
                 cardTitle={"Open Preview"}
@@ -191,8 +190,8 @@ export default connect(function(state, props) {
                 quickJump={"audit-trail"}
               />
             </section>
+            {/* Graph */}
             <section className={styles.Chart}>
-              {/* Graph */}
               <ChartDashboard
                 totalUserEdits={this.props.user.total_user_actions}
                 totalEveryoneEdits={this.props.user.total_everyone_actions}
