@@ -143,7 +143,6 @@ export default connect(state => {
 
   function toggleEnableFont(variant, value, font) {
     if (window.confirm("Do you really want to uninstall this font?")) {
-      console.log(fonts);
       const copyFonts = fonts
         .map(f => {
           if (f.font === font) {

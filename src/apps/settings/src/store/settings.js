@@ -187,7 +187,6 @@ export function fetchStylesVariables() {
 
 export function saveStyleVariable(zuid, data) {
   return dispatch => {
-    console.log("saving style variable");
     return request(`${CONFIG.API_INSTANCE}/web/stylesheets/variables/${zuid}`, {
       method: "PUT",
       json: true,
