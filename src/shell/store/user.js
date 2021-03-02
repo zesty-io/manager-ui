@@ -1,6 +1,6 @@
 import { request } from "utility/request";
 import { set } from "idb-keyval";
-import Sentry from "utility/sentry";
+import { Sentry } from "utility/sentry";
 
 export function user(
   state = {
