@@ -48,6 +48,7 @@ export const FileList = React.memo(function FileList(props) {
 
   const actions = [
     <FontAwesomeIcon
+      title="Publish file"
       icon={faCloudUploadAlt}
       className={styles.Action}
       showIcon={true}

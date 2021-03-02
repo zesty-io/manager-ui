@@ -42,6 +42,7 @@ export function ContentNav(props) {
 
   const actions = [
     <FontAwesomeIcon
+      title="Hide from nav"
       icon={faEyeSlash}
       onClick={props => {
         dispatch(hideNavItem(props.path));
