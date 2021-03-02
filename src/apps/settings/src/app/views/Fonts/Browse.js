@@ -209,7 +209,6 @@ export default connect(state => {
       }
     }
     setVariants(newVariants);
-    console.log("variants selected", newVariants);
   }
 
   function renderFontsList() {
@@ -243,7 +242,7 @@ export default connect(state => {
                   disabled={saving || !variantsSelected[itemFont.family]}
                 >
                   {saving ? (
-                    <FontAwesomeIcon icon={faSpinner} />
+                    <FontAwesomeIcon spin={true} icon={faSpinner} />
                   ) : (
                     <FontAwesomeIcon icon={faPlus} />
                   )}{" "}
