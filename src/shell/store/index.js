@@ -6,7 +6,7 @@ import createSentryMiddleware from "redux-sentry-middleware";
 import { fetchResource, resolveFieldOptions } from "./middleware/api";
 import { localStorage } from "./middleware/local-storage";
 
-import Sentry from "utility/sentry";
+import { Sentry } from "utility/sentry";
 
 import { auth } from "./auth";
 import { products } from "./products";
@@ -38,7 +38,7 @@ const middlewares = [
  * Do not log actions in production
  * Improves performance and keeps bug tracking clean
  */
-if (window.CONFIG?.ENV !== "production") {
+if (__CONFIG__?.ENV !== "production") {
   middlewares.push(
     createLogger({
       collapsed: true,
@@ -53,7 +53,17 @@ if (window.CONFIG?.ENV !== "production") {
  */
 middlewares.push(
   createSentryMiddleware(Sentry, {
-    getUserContext: state => state.user
+    getUserContext: state => state.user,
+    stateTransformer: state => {
+      // Specify allow list of transferable data to sentry
+      return {
+        userRole: state.userRole,
+        products: state.products,
+        platform: state.platform,
+        notifications: state.notifications,
+        instance: state.instance
+      };
+    }
   })
 );
 
