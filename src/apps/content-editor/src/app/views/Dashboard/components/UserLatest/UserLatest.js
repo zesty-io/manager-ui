@@ -6,11 +6,9 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { AppLink } from "@zesty-io/core/AppLink";
 
-import { WithLoader } from "@zesty-io/core/WithLoader";
+import styles from "./UserLatest.less";
 
-import styles from "./UserLatestEdits.less";
-
-export function UserLatestEdits(props) {
+export function UserLatest(props) {
   return (
     <>
       <Card className={styles.UserLatestEdits}>

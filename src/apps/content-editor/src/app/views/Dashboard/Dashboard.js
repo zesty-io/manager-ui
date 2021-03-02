@@ -24,7 +24,7 @@ import { ChartDashboard } from "./components/ChartDashboard";
 import { HeaderDashboard } from "./components/HeaderDashboard";
 import { TopPerforming } from "./components/TopPerforming";
 import { RecentlyEdited } from "./components/RecentlyEdited";
-import { UserLatestEdits } from "./components/UserLatestEdits";
+import { UserLatest } from "./components/UserLatest";
 import { InstanceActivity } from "./components/InstanceActivity";
 
 import { QuickJumps } from "./components/QuickJumps";
@@ -141,11 +141,11 @@ export default connect(function(state, props) {
 
             {/* USER LATEST  */}
             <section className={styles.LatestActivity}>
-              <UserLatestEdits
+              <UserLatest
                 user={this.props.user.latest_edits}
                 cardTitle={"Your Latest Edits"}
               />
-              <UserLatestEdits
+              <UserLatest
                 user={this.props.user.latest_publishes}
                 cardTitle={"Your Latest Content Publishes"}
               />
@@ -195,7 +195,10 @@ export default connect(function(state, props) {
             </section>
             <section className={styles.Chart}>
               {/* Graph */}
-              <ChartDashboard />
+              <ChartDashboard
+                totalUserEdits={this.props.user.total_user_actions}
+                totalEveryoneEdits={this.props.user.total_everyone_actions}
+              />
 
               {/* ACCOUNT INFO */}
               <AccountInfo

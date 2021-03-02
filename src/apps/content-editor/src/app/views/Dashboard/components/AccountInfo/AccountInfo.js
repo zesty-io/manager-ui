@@ -21,16 +21,16 @@ export function AccountInfo({
   domain,
   randomHashID
 } = props) {
-  const fetchImage = function() {
-    const width = 200;
-    const height = 200;
-    request(
-      `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${instanceZUID}/getimage/?w=${width}&h=${height}&type=fit`
-    ).then(res => {
-      console.log(res);
-    });
-  };
-  fetchImage();
+  // const fetchImage = function() {
+  //   const width = 200;
+  //   const height = 200;
+  //   request(
+  //     `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${instanceZUID}/getimage/?w=${width}&h=${height}&type=fit`
+  //   ).then(res => {
+  //     console.log(res);
+  //   });
+  // };
+  // fetchImage();
 
   return (
     <div className={styles.AccountInfo}>
