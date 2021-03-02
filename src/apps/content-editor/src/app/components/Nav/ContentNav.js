@@ -6,7 +6,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowsAlt,
   faCaretDown,
-  faCaretLeft
+  faCaretLeft,
+  faEyeSlash
 } from "@fortawesome/free-solid-svg-icons";
 import { ReorderNav } from "../ReorderNav";
 import { Nav } from "@zesty-io/core/Nav";
@@ -40,12 +41,12 @@ export function ContentNav(props) {
   };
 
   const actions = [
-    {
-      icon: "fas fa-eye-slash",
-      onClick: nodeProps => {
-        dispatch(hideNavItem(nodeProps.path));
-      }
-    }
+    <FontAwesomeIcon
+      icon={faEyeSlash}
+      onClick={props => {
+        dispatch(hideNavItem(props.path));
+      }}
+    />
   ];
 
   return (

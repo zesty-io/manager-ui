@@ -47,15 +47,13 @@ export const FileList = React.memo(function FileList(props) {
   };
 
   const actions = [
-    {
-      icon: faCloudUploadAlt,
-      styles: styles.Action,
-      showIcon: true,
-      available: file => !file.isLive,
-      onClick: file => {
-        props.dispatch(publishFile(file.ZUID, file.status));
-      }
-    }
+    <FontAwesomeIcon
+      icon={faCloudUploadAlt}
+      className={styles.Action}
+      showIcon={true}
+      available={file => !file.isLive}
+      onClick={file => props.dispatch(publishFile(file.ZUID, file.status))}
+    />
   ];
 
   return (
