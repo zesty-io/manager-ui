@@ -1,5 +1,6 @@
 import { request } from "utility/request";
 import { set } from "idb-keyval";
+import moment from "moment-timezone";
 import { Sentry } from "utility/sentry";
 
 export function user(
@@ -29,7 +30,6 @@ export function user(
       }
 
     case "FETCH_USER_SUCCESS":
-      // set user
       Sentry.setUser({
         id: action.payload.data.ZUID,
         email: action.payload.data.email,
@@ -137,8 +137,14 @@ export function getUserLogs() {
     dispatch({
       type: "FETCHING_USER_LOGS"
     });
-    // would be nice to get sorted by createdAt from api
-    return request(`${CONFIG.API_INSTANCE}/env/audits`)
+
+    // FIXME The API is not return all the logs within the specified time frame
+    // const now = moment();
+    // const end = now.format("YYYY-MM-DD");
+    // const start = now.subtract(30, "days").format("YYYY-MM-DD");
+    // `start_date=${start}&end_date=${end}`
+
+    return request(`${CONFIG.API_INSTANCE}/env/audits?limit=1000`)
       .then(res => {
         dispatch({
           type: "FETCH_USER_LOGS_SUCCESS",
