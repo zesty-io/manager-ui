@@ -144,7 +144,7 @@ export function getUserLogs() {
     // const start = now.subtract(30, "days").format("YYYY-MM-DD");
     // `start_date=${start}&end_date=${end}`
 
-    return request(`${CONFIG.API_INSTANCE}/env/audits?limit=1000`)
+    return request(`${CONFIG.API_INSTANCE}/env/audits?limit=5000`)
       .then(res => {
         dispatch({
           type: "FETCH_USER_LOGS_SUCCESS",
