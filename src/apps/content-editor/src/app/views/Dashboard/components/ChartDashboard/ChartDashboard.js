@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import moment from "moment";
 
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
@@ -46,7 +46,7 @@ export function ChartDashboard(props) {
       <Card>
         <CardHeader>Last 30 days of isntance actions</CardHeader>
         <CardContent>
-          <Line
+          <Bar
             data={{
               labels: [...categories],
               datasets: [
