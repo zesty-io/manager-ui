@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import moment from "moment";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { AppLink } from "@zesty-io/core/AppLink";
 
@@ -23,10 +23,6 @@ export function UserLatest(props) {
         <CardContent className={styles.CardContent}>
           {user.slice(0, 5).map((item, i) => (
             <div key={i}>
-              <hgroup>
-                <h4>{`${item.meta.message}`}</h4>
-                <h5>{`Updated: ${moment(item.updatedAt).fromNow()}`}</h5>
-              </hgroup>
               <AppLink
                 to={`/content/${item.meta.message
                   .split(" ")
@@ -35,8 +31,10 @@ export function UserLatest(props) {
                   .replaceAll('"', "")
                   .replaceAll(/`/g, "")}/${item.affectedZUID}`}
               >
-                <FontAwesomeIcon icon={faExternalLinkAlt} />
+                {/* <FontAwesomeIcon icon={faLink} /> */}
+                <h4>{`${item.meta.message}`}</h4>
               </AppLink>
+              <h5>{`Updated: ${moment(item.updatedAt).fromNow()}`}</h5>
             </div>
           ))}
         </CardContent>
