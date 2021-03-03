@@ -80,17 +80,19 @@ export function fetchFields(modelZUID) {
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/fields?showDeleted=true`,
       handler: res => {
-        return dispatch({
-          type: "FETCH_FIELDS_SUCCESS",
-          payload: res.data.reduce((acc, field, i) => {
-            acc[field.ZUID] = field;
-            acc[field.ZUID].settings = acc[field.ZUID].settings || {};
-            acc[field.ZUID].settings.list =
-              acc[field.ZUID].settings.list || false;
+        if (Array.isArray(res.data)) {
+          return dispatch({
+            type: "FETCH_FIELDS_SUCCESS",
+            payload: res.data.reduce((acc, field, i) => {
+              acc[field.ZUID] = field;
+              acc[field.ZUID].settings = acc[field.ZUID].settings || {};
+              acc[field.ZUID].settings.list =
+                acc[field.ZUID].settings.list || false;
 
-            return acc;
-          }, {})
-        });
+              return acc;
+            }, {})
+          });
+        }
       }
     });
   };
