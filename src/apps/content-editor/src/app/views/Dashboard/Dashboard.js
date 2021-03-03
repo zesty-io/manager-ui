@@ -24,19 +24,17 @@ import { TopPerforming } from "./components/TopPerforming";
 import { RecentlyEdited } from "./components/RecentlyEdited";
 import { UserLatest } from "./components/UserLatest";
 import { InstanceActivity } from "./components/InstanceActivity";
-
 import { QuickJumps } from "./components/QuickJumps";
 
 import { fetchRecentItems, getUserLogs } from "shell/store/user";
 
 import styles from "./Dashboard.less";
-
-export default connect(function(state, props) {
+export default connect(function(state) {
   return {
     user: state.user,
-    instanceZUID: state.instance.ZUID,
     instance: state.instance,
-    instanceName: state.instance.name,
+    headTags: state.headTags,
+    logs: state.logs,
     contentModels: Object.keys(state.models).reduce((acc, modelZUID) => {
       if (
         state.models[modelZUID] &&
@@ -52,9 +50,7 @@ export default connect(function(state, props) {
     state = {
       recentlyEditedItems: [],
       favoriteModels: [],
-      loading: true,
-      webEngineOn: true, // in the future this will be a boolean pulled off the account, it will change the dash
-      domainSet: Boolean(this.props.instance.live_domain)
+      loading: true
     };
 
     componentDidMount() {
@@ -127,82 +123,83 @@ export default connect(function(state, props) {
       return (
         <section className={styles.Dashboard}>
           <div className={styles.container}>
-            <HeaderDashboard
+            {/* <HeaderDashboard
               instanceName={this.props.instance.name}
               createdAt={this.props.instance.createdAt}
               randomHashID={this.props.instance.randomHashID}
               domain={this.props.instance.domain}
               firstName={this.props.user.firstName}
-            />
+            /> */}
 
-            {/* USER LATEST  */}
             <section className={styles.LatestActivity}>
-              <UserLatest
-                user={this.props.user.latest_edits}
-                cardTitle={"Your Latest Edits"}
-              />
-              <UserLatest
-                user={this.props.user.latest_publishes}
-                cardTitle={"Your Latest Content Publishes"}
-              />
-
-              {/* STATS */}
-              <InstanceActivity
-                totalUserEdits={this.props.user.total_user_actions}
-                totalEveryoneEdits={this.props.user.total_everyone_actions}
-              />
-            </section>
-            {/* LINK OUTS DOCS */}
-            <section className={styles.LinkOuts}>
-              <QuickJumps
-                cardTitle={"Open Preview"}
-                docsTitle={"WebEngine Docs Link"}
-                docsLink={"https://zesty.org/services/web-engine"}
-                randomHashID={this.props.instance.randomHashID}
-                liveLink={this.props.instance.domain}
-              />
-              <QuickJumps
-                cardTitle={"Edit Code"}
-                image={faCode}
-                docsTitle={"Code Docs"}
-                docsLink={"https://zesty.org/services/manager-ui/editor"}
-                quickJump={"code"}
-              />
-              <QuickJumps
-                cardTitle={"Settings"}
-                image={faCog}
-                docsTitle={"Settings Docs"}
-                docsLink={"https://zesty.org/services/manager-ui/settings"}
-                quickJump={"settings"}
-              />
-              <QuickJumps
-                cardTitle={"Schema"}
-                image={faDatabase}
-                docsTitle={"Schema Docs"}
-                docsLink={"https://zesty.org/services/manager-ui/schema"}
-                quickJump={"schema"}
-              />
-              <QuickJumps
-                cardTitle={"Audit Trail"}
-                image={faHistory}
-                docsTitle={"Audit Trail Docs"}
-                docsLink={"https://zesty.org/services/manager-ui/audit-trail"}
-                quickJump={"audit-trail"}
-              />
-            </section>
-            {/* Graph */}
-            <section className={styles.Chart}>
-              <ChartDashboard
-                totalUserEdits={this.props.user.total_user_actions}
-                totalEveryoneEdits={this.props.user.total_everyone_actions}
-              />
-
-              {/* ACCOUNT INFO */}
               <AccountInfo
                 instanceName={this.props.instance.name}
                 instanceZUID={this.props.instance.ZUID}
                 randomHashID={this.props.instance.randomHashID}
                 domain={this.props.instance.domain}
+                headTags={this.props.headTags}
+              />
+              <UserLatest
+                user={this.props.user.latest_edits}
+                cardTitle="Your Latest Edits"
+              />
+              <UserLatest
+                user={this.props.user.latest_publishes}
+                cardTitle="Your Latest Content Publishes"
+              />
+            </section>
+            <section className={styles.LinkOuts}>
+              <h1 className={cx(styles.WelcomeBanner, styles.display)}>
+                Ready to get cooking, {this.props.user.firstName}
+              </h1>
+
+              <div className={styles.Cards}>
+                <QuickJumps
+                  cardTitle={"Open Preview"}
+                  docsTitle={"WebEngine Docs"}
+                  docsLink={"https://zesty.org/services/web-engine"}
+                  randomHashID={this.props.instance.randomHashID}
+                  liveLink={this.props.instance.domain}
+                />
+                <QuickJumps
+                  cardTitle={"Code"}
+                  image={faCode}
+                  docsTitle={"Code Docs"}
+                  docsLink={"https://zesty.org/services/manager-ui/editor"}
+                  quickJump={"code"}
+                />
+                <QuickJumps
+                  cardTitle={"Settings"}
+                  image={faCog}
+                  docsTitle={"Settings Docs"}
+                  docsLink={"https://zesty.org/services/manager-ui/settings"}
+                  quickJump={"settings"}
+                />
+                <QuickJumps
+                  cardTitle={"Schema"}
+                  image={faDatabase}
+                  docsTitle={"Schema Docs"}
+                  docsLink={"https://zesty.org/services/manager-ui/schema"}
+                  quickJump={"schema"}
+                />
+                <QuickJumps
+                  cardTitle={"AuditTrail"}
+                  image={faHistory}
+                  docsTitle={"AuditTrail Docs"}
+                  docsLink={"https://zesty.org/services/manager-ui/audit-trail"}
+                  quickJump={"audit-trail"}
+                />
+              </div>
+            </section>
+            <section className={styles.Chart}>
+              <InstanceActivity
+                totalUserEdits={this.props.user.total_user_actions}
+                totalEveryoneEdits={this.props.user.total_everyone_actions}
+              />
+              <ChartDashboard
+                // totalUserEdits={this.props.user.total_user_actions}
+                // totalEveryoneEdits={this.props.user.total_everyone_actions}
+                logs={this.props.logs}
               />
             </section>
             <div className={styles.columns}>
@@ -258,7 +255,7 @@ export default connect(function(state, props) {
               </div>
               <div className={cx(styles.column, styles.recent)}>
                 <TopPerforming
-                  instanceZUID={this.props.instanceZUID}
+                  instanceZUID={this.props.instance.ZUID}
                   profileID={this.props.instance.google_profile_id}
                 />
               </div>

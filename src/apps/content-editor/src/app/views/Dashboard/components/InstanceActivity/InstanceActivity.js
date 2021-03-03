@@ -34,10 +34,9 @@ export function InstanceActivity({
   return (
     <>
       <Card>
-        <CardHeader>Instance Activity</CardHeader>
+        <CardHeader>Total 30 days of instance actions</CardHeader>
         <CardContent>
           <div className={styles.WrapperActivity}>
-            <h3>Last 30 Days Edits</h3>
             <dl>
               <dt>You</dt>
               <dd>{userNumber.length}</dd>
