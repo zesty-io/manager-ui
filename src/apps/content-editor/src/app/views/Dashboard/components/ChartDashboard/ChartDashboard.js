@@ -44,7 +44,7 @@ export function ChartDashboard(props) {
   return (
     <div className={styles.ChartDashboard}>
       <Card>
-        <CardHeader>Last 30 days of isntance actions</CardHeader>
+        <CardHeader>Last 30 days of instance actions</CardHeader>
         <CardContent>
           <Bar
             data={{

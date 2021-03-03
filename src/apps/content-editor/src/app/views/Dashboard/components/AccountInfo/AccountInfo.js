@@ -7,7 +7,7 @@ import {
   faUser,
   faFileImage
 } from "@fortawesome/free-solid-svg-icons";
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+import { Card, CardFooter, CardContent } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
 import styles from "./AccountInfo.less";
 
@@ -29,20 +29,17 @@ export function AccountInfo(props) {
   return (
     <div className={styles.AccountInfo}>
       <Card>
-        <CardHeader>
-          <p className={styles.subheadline}>{props.instanceName}</p>
-        </CardHeader>
         <CardContent className={styles.CardContent}>
           {faviconURL ? (
-            <img src={faviconURL} />
+            <img src={faviconURL} height="64px" width="64px" />
           ) : (
             <FontAwesomeIcon icon={faFileImage} />
           )}
 
           <div className={styles.Links}>
-            <p>
+            {/* <p>
               ZUID: <mark>{props.instanceZUID}</mark>
-            </p>
+            </p> */}
             {props.domain && (
               <Url
                 className={styles.Live}
@@ -62,16 +59,19 @@ export function AccountInfo(props) {
               <FontAwesomeIcon icon={faEye} />
               &nbsp;View Preview
             </Url>
-            <Url
+            {/* <Url
               target="_blank"
               title="Accounts Edit link"
               href={`https://accounts.zesty.io/instances/${props.instanceZUID}`}
             >
               <FontAwesomeIcon icon={faUser} />
               &nbsp; Accounts Edit Link
-            </Url>
+            </Url> */}
           </div>
         </CardContent>
+        <CardFooter>
+          <p className={styles.subheadline}>{props.instanceName}</p>
+        </CardFooter>
       </Card>
     </div>
   );
