@@ -46,6 +46,7 @@ export const MediaHeader = React.memo(function MediaHeader(props) {
               currentGroup={props.currentGroup}
               currentBin={props.currentBin}
               onClose={() => setCreateGroupModal(false)}
+              setCurrentGroupID={props.setCurrentGroupID}
             />
           )}
 
