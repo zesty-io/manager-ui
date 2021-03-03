@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,12 +9,19 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import styles from "./UserLatest.less";
 
 export function UserLatest(props) {
+  const [user, setUser] = useState([]);
+
+  useEffect(() => {
+    const user = props.user;
+    setUser(user);
+  }, [props.user]);
+
   return (
     <>
       <Card className={styles.UserLatestEdits}>
         <CardHeader>{props.cardTitle}</CardHeader>
         <CardContent className={styles.CardContent}>
-          {props.user.slice(0, 5).map((item, i) => (
+          {user.slice(0, 5).map((item, i) => (
             <div key={i}>
               <hgroup>
                 <h4>{`${item.meta.message}`}</h4>
