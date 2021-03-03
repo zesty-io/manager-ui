@@ -131,49 +131,32 @@ export default connect(function(state) {
               firstName={this.props.user.firstName}
             /> */}
 
-            <section className={styles.LatestActivity}>
-              <AccountInfo
-                instanceName={this.props.instance.name}
-                instanceZUID={this.props.instance.ZUID}
-                randomHashID={this.props.instance.randomHashID}
-                domain={this.props.instance.domain}
-                headTags={this.props.headTags}
-              />
-              <UserLatest
-                user={this.props.user.latest_edits}
-                cardTitle="Your Latest Edits"
-              />
-              <UserLatest
-                user={this.props.user.latest_publishes}
-                cardTitle="Your Latest Content Publishes"
-              />
-            </section>
             <section className={styles.LinkOuts}>
               <h1 className={cx(styles.WelcomeBanner, styles.display)}>
-                Ready to get cooking, {this.props.user.firstName}
+                Ready to get building, {this.props.user.firstName}
               </h1>
 
               <div className={styles.Cards}>
-                <QuickJumps
+                <AccountInfo
+                  instanceName={this.props.instance.name}
+                  instanceZUID={this.props.instance.ZUID}
+                  randomHashID={this.props.instance.randomHashID}
+                  domain={this.props.instance.domain}
+                  headTags={this.props.headTags}
+                />
+                {/* <QuickJumps
                   cardTitle={"Open Preview"}
                   docsTitle={"WebEngine Docs"}
                   docsLink={"https://zesty.org/services/web-engine"}
                   randomHashID={this.props.instance.randomHashID}
                   liveLink={this.props.instance.domain}
-                />
+                /> */}
                 <QuickJumps
                   cardTitle={"Code"}
                   image={faCode}
                   docsTitle={"Code Docs"}
                   docsLink={"https://zesty.org/services/manager-ui/editor"}
                   quickJump={"code"}
-                />
-                <QuickJumps
-                  cardTitle={"Settings"}
-                  image={faCog}
-                  docsTitle={"Settings Docs"}
-                  docsLink={"https://zesty.org/services/manager-ui/settings"}
-                  quickJump={"settings"}
                 />
                 <QuickJumps
                   cardTitle={"Schema"}
@@ -189,18 +172,31 @@ export default connect(function(state) {
                   docsLink={"https://zesty.org/services/manager-ui/audit-trail"}
                   quickJump={"audit-trail"}
                 />
+                <QuickJumps
+                  cardTitle={"Settings"}
+                  image={faCog}
+                  docsTitle={"Settings Docs"}
+                  docsLink={"https://zesty.org/services/manager-ui/settings"}
+                  quickJump={"settings"}
+                />
               </div>
             </section>
-            <section className={styles.Chart}>
+            <section className={styles.LatestActivity}>
               <InstanceActivity
                 totalUserEdits={this.props.user.total_user_actions}
                 totalEveryoneEdits={this.props.user.total_everyone_actions}
               />
-              <ChartDashboard
-                // totalUserEdits={this.props.user.total_user_actions}
-                // totalEveryoneEdits={this.props.user.total_everyone_actions}
-                logs={this.props.logs}
+              <UserLatest
+                user={this.props.user.latest_edits}
+                cardTitle="Your 5 Latest Content Edits"
               />
+              <UserLatest
+                user={this.props.user.latest_publishes}
+                cardTitle="Your 5 Latest Publishes"
+              />
+            </section>
+            <section className={styles.Chart}>
+              <ChartDashboard logs={this.props.logs} />
             </section>
             <div className={styles.columns}>
               {this.state.favoriteModels.map((arr, i) => {
