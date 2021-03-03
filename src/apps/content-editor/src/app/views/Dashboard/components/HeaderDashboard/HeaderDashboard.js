@@ -47,9 +47,9 @@ export function HeaderDashboard(
           </CardHeader>
         </Card>
       </header>
-      <h1 className={cx(styles.User, styles.subheadline)}>
+      {/* <h1 className={cx(styles.User, styles.subheadline)}>
         Ready to get cooking, {firstName}
-      </h1>
+      </h1> */}
     </>
   );
 }

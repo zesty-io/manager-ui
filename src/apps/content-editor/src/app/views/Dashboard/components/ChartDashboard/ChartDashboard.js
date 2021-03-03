@@ -1,77 +1,59 @@
-import React from "react";
-import { request } from "utility/request";
-import { Bar } from "react-chartjs-2";
+import React, { useEffect, useState } from "react";
+import { Line } from "react-chartjs-2";
 import moment from "moment";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHome,
-  faEye,
-  faUser,
-  faUsers,
-  faGlobe
-} from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
 import styles from "./ChartDashboard.less";
+export function ChartDashboard(props) {
+  const [categories, setCategories] = useState([]);
+  const [data, setData] = useState([]);
 
-export function ChartDashboard({ totalUserEdits, totalEveryoneEdits } = props) {
-  let today = moment().unix();
-  // Get date from # days ago
-  let DaysAgo = days =>
-    moment()
-      .subtract(days, "days")
-      .unix();
+  useEffect(() => {
+    const logs = Object.keys(props.logs)
+      .filter(zuid => zuid.slice(0, 2) === "15")
+      .map(zuid => props.logs[zuid]);
 
-  // Loop through updatedAt dates && filter recentedits 30 days ago
-  const checkEdits = (total, days) => {
-    return total.filter(user => {
-      let userLatest = moment(user.updatedAt).unix();
-      if (userLatest <= today && userLatest >= DaysAgo(days)) {
-        return total;
-      }
+    const base = [...new Array(30)];
+    const timestamps = base
+      .map((_, idx) =>
+        moment()
+          .startOf("day")
+          .subtract(idx, "days")
+      )
+      .reverse();
+
+    const categories = timestamps.map(time => time.format("MM-DD-YY"));
+
+    const timestampsMap = timestamps.reduce((acc, time) => {
+      acc[time.format("MM-DD-YY")] = 0;
+      return acc;
+    }, {});
+
+    logs.forEach(log => {
+      const time = moment(log.createdAt).format("MM-DD-YY");
+      timestampsMap[time] = timestampsMap[time] + 1;
     });
-  };
-  const userNumber = checkEdits(totalUserEdits, 30);
-  // const everyoneNumber = checkEdits(totalEveryoneEdits, 30);
-  console.log(userNumber);
 
-  const userData = userNumber.map(act => act.action);
+    const data = Object.values(timestampsMap);
 
-  const lastThirtyDays = [...new Array(30)].map((i, idx) =>
-    moment()
-      .startOf("day")
-      .subtract(idx, "days")
-      .format("MM-DD-YY")
-  );
+    setCategories(categories);
+    setData(data);
+  }, [Object.keys(props.logs).length]);
 
   return (
     <div className={styles.ChartDashboard}>
       <Card>
-        <CardHeader>Editing Trend Last 30 days Coming Soon</CardHeader>
+        <CardHeader>Last 30 days of isntance actions</CardHeader>
         <CardContent>
-          <Bar
+          <Line
             data={{
-              labels: [...lastThirtyDays],
+              labels: [...categories],
               datasets: [
                 {
-                  label: "Latest Actions Activity",
-                  data: [...userData],
-                  backgroundColor: [
-                    "rgba(255, 99, 132, 0.2)",
-                    "rgba(54, 162, 235, 0.2)",
-                    "rgba(255, 206, 86, 0.2)",
-                    "rgba(75, 192, 192, 0.2)",
-                    "rgba(153, 102, 255, 0.2)"
-                  ],
-                  borderColor: [
-                    "rgba(255, 99, 132, 1)",
-                    "rgba(54, 162, 235, 1)",
-                    "rgba(255, 206, 86, 1)",
-                    "rgba(75, 192, 192, 1)",
-                    "rgba(153, 102, 255, 1)"
-                  ],
-                  borderWidth: 2
+                  // label: "Actions Per Day",
+                  display: false,
+                  data: data
                 }
               ]
             }}
@@ -88,6 +70,7 @@ export function ChartDashboard({ totalUserEdits, totalEveryoneEdits } = props) {
                   }
                 ]
               },
+              // title: { text: "Rolling 30 Day Aggregate", display: true },
               labels: {
                 fontFamily: " Montserrat"
               }

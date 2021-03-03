@@ -1,39 +1,52 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
   faEye,
   faUser,
-  faUsers,
   faFileImage
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
 import styles from "./AccountInfo.less";
 
-export function AccountInfo({
-  instanceName,
-  instanceZUID,
-  domain,
-  randomHashID
-} = props) {
+export function AccountInfo(props) {
+  const [faviconURL, setFaviconURL] = useState("");
+
+  useEffect(() => {
+    const tag = Object.values(props.headTags).find(tag =>
+      tag.attributes.find(
+        attr => attr.key === "sizes" && attr.value === "196x196"
+      )
+    );
+    if (tag) {
+      const attr = tag.attributes.find(attr => attr.key === "href");
+      setFaviconURL(attr.value);
+    }
+  }, [props.headTags]);
+
   return (
     <div className={styles.AccountInfo}>
       <Card>
         <CardHeader>
-          <p>Account: {instanceName}</p>
-          <p>
-            {" "}
-            ZUID: <mark>{instanceZUID}</mark>
-          </p>
+          <p className={styles.subheadline}>{props.instanceName}</p>
         </CardHeader>
         <CardContent className={styles.CardContent}>
+          {faviconURL ? (
+            <img src={faviconURL} />
+          ) : (
+            <FontAwesomeIcon icon={faFileImage} />
+          )}
+
           <div className={styles.Links}>
-            {domain && (
+            <p>
+              ZUID: <mark>{props.instanceZUID}</mark>
+            </p>
+            {props.domain && (
               <Url
                 className={styles.Live}
-                href={`//${domain}`}
+                href={`//${props.domain}`}
                 target="_blank"
                 title="Open live link in standard browser window"
               >
@@ -43,8 +56,8 @@ export function AccountInfo({
             )}
             <Url
               target="_blank"
-              title={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
-              href={`${CONFIG.URL_PREVIEW_PROTOCOL}${randomHashID}${CONFIG.URL_PREVIEW}`}
+              title={`${CONFIG.URL_PREVIEW_PROTOCOL}${props.randomHashID}${CONFIG.URL_PREVIEW}`}
+              href={`${CONFIG.URL_PREVIEW_PROTOCOL}${props.randomHashID}${CONFIG.URL_PREVIEW}`}
             >
               <FontAwesomeIcon icon={faEye} />
               &nbsp;View Preview
@@ -52,28 +65,12 @@ export function AccountInfo({
             <Url
               target="_blank"
               title="Accounts Edit link"
-              href={`https://accounts.zesty.io/instances/${instanceZUID}`}
+              href={`https://accounts.zesty.io/instances/${props.instanceZUID}`}
             >
               <FontAwesomeIcon icon={faUser} />
               &nbsp; Accounts Edit Link
             </Url>
-            <p>
-              <FontAwesomeIcon icon={faUsers} />
-              &nbsp; You: 8
-            </p>
-            <p>
-              <FontAwesomeIcon icon={faUsers} />
-              &nbsp; Everyone: 8
-            </p>
           </div>
-
-          {instanceZUID ? (
-            <img
-              src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${instanceZUID}/getimage/&type=fit`}
-            />
-          ) : (
-            <FontAwesomeIcon icon={faFileImage} />
-          )}
         </CardContent>
       </Card>
     </div>

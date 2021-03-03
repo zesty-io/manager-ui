@@ -17,15 +17,22 @@
   }
 
   .LinkOuts {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    text-align: center;
+    margin: 32px 0;
+    .Cards {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      text-align: center;
+    }
+    .WelcomeBanner {
+      text-align: center;
+    }
   }
 
   .Chart {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr 2fr;
   }
+
   .columns {
     display: flex;
     flex-wrap: wrap;
