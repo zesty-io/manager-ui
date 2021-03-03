@@ -41,9 +41,13 @@ export default connect(state => {
         props.platform.isMac ? "CMD" : "CTRL"
       } + Shift + K)`}
       onSelect={item => {
-        history.push(
-          `/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`
-        );
+        if (item?.meta) {
+          history.push(
+            `/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`
+          );
+        } else {
+          throw new Error("Item missing meta");
+        }
       }}
     />
   );
