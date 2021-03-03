@@ -41,6 +41,8 @@ export function ChartDashboard(props) {
     setData(data);
   }, [Object.keys(props.logs).length]);
 
+  const color = new Array(30).fill("rgba(54, 162, 235, 0.2)");
+
   return (
     <div className={styles.ChartDashboard}>
       <Card>
@@ -49,11 +51,13 @@ export function ChartDashboard(props) {
           <Bar
             data={{
               labels: [...categories],
+
               datasets: [
                 {
                   // label: "Actions Per Day",
                   display: false,
-                  data: data
+                  data: data,
+                  backgroundColor: color
                 }
               ]
             }}
@@ -62,10 +66,12 @@ export function ChartDashboard(props) {
             options={{
               maintainAspectRatio: false,
               responsive: true,
+              legend: {
+                display: false
+              },
               title: {
-                text:
-                  "	Create: 1 Update: 2 Delete: 3 Publish: 4 Unpublish: 5 UndoDelete: 6",
-                display: true
+                text: "Create: 1 Update: 2 Delete: 3 Publish: 4 Unpublish: 5",
+                display: false
               },
               scales: {
                 yAxes: [
