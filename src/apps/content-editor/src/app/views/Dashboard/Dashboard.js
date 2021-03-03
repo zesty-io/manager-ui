@@ -150,7 +150,7 @@ export default connect(function(state) {
             </section>
             <section className={styles.LinkOuts}>
               <h1 className={cx(styles.WelcomeBanner, styles.display)}>
-                Ready to get cooking, {this.props.user.firstName}
+                Ready to get started, {this.props.user.firstName}
               </h1>
 
               <div className={styles.Cards}>
