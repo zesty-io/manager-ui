@@ -74,19 +74,7 @@ export default connect(function(state) {
           }
         });
 
-      this.props.dispatch(getUserLogs()).then(res => {
-        if (res && res.data) {
-          this.setState({
-            recentlyEditedItems: this.getLastEditedItems(res.data),
-            favoriteModels: this.getFavoriteModels(res.data),
-            loading: false
-          });
-        } else {
-          this.setState({
-            loading: false
-          });
-        }
-      });
+      this.props.dispatch(getUserLogs());
     }
 
     getFavoriteModels(items) {
