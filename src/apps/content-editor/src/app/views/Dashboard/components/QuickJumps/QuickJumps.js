@@ -20,7 +20,7 @@ export function QuickJumps({
   return (
     <div className={styles.QuickJumps}>
       <Card>
-        <CardContent>
+        <CardContent className={styles.CardContent}>
           {/* QuickJumps links */}
           {quickJump && (
             <Url href={`/${quickJump}`} title={quickJump}>
@@ -53,7 +53,7 @@ export function QuickJumps({
             </Url>
           )}
         </CardContent>
-        <CardFooter>
+        <CardFooter className={styles.CardFooter}>
           <Url href={docsLink} target="_blank" title={docsLink}>
             &nbsp;{docsTitle}
           </Url>
