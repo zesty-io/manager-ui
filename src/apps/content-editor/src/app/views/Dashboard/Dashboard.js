@@ -10,7 +10,8 @@ import {
   faCode,
   faCog,
   faDatabase,
-  faHistory
+  faHistory,
+  faClock
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
@@ -206,15 +207,16 @@ export default connect(function(state) {
                 return (
                   <Card className={styles.Card} key={i}>
                     <CardHeader>
-                      <h2 className={styles.columns}>
+                      <h4 className={styles.columns}>
                         <div className={styles.column}>
+                          <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
                           Recent{" "}
                           <AppLink to={`/content/${contentModelZUID}`}>
                             {model && model.label}
                           </AppLink>{" "}
                           Edits
                         </div>
-                      </h2>
+                      </h4>
                     </CardHeader>
                     <CardContent>
                       <ul>
@@ -250,12 +252,12 @@ export default connect(function(state) {
                   loading={this.state.loading}
                 />
               </div>
-              <div className={cx(styles.column, styles.recent)}>
+              {/* <div className={cx(styles.column, styles.recent)}>
                 <TopPerforming
                   instanceZUID={this.props.instance.ZUID}
                   profileID={this.props.instance.google_profile_id}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </section>

@@ -3,7 +3,7 @@ import moment from "moment";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
 import styles from "./InstanceActivity.less";
@@ -31,7 +31,10 @@ export function InstanceActivity(props) {
   return (
     <>
       <Card>
-        <CardHeader>Total 30 days of instance actions</CardHeader>
+        <CardHeader>
+          <FontAwesomeIcon icon={faCalendar} /> Total 30 days of instance
+          actions
+        </CardHeader>
         <CardContent>
           <div className={styles.WrapperActivity}>
             <dl>

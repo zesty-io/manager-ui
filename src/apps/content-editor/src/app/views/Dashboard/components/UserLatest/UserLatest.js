@@ -2,7 +2,7 @@ import React from "react";
 import moment from "moment";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { faClock } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { AppLink } from "@zesty-io/core/AppLink";
 
@@ -12,7 +12,9 @@ export function UserLatest(props) {
   return (
     <>
       <Card className={styles.UserLatestEdits}>
-        <CardHeader>{props.cardTitle}</CardHeader>
+        <CardHeader>
+          <FontAwesomeIcon icon={faClock} /> {props.cardTitle}
+        </CardHeader>
         <CardContent className={styles.CardContent}>
           {props.user.slice(0, 5).map((item, i) => (
             <div key={i}>

@@ -5,6 +5,8 @@ import moment from "moment";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
 import styles from "./ChartDashboard.less";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 export function ChartDashboard(props) {
   const [categories, setCategories] = useState([]);
   const [data, setData] = useState([]);
@@ -48,7 +50,9 @@ export function ChartDashboard(props) {
   return (
     <div className={styles.ChartDashboard}>
       <Card>
-        <CardHeader>Last 30 days of instance actions</CardHeader>
+        <CardHeader>
+          <FontAwesomeIcon icon={faCalendar} /> Last 30 days of instance actions
+        </CardHeader>
         <CardContent>
           <Bar
             data={{

@@ -34,8 +34,8 @@
   }
 
   .columns {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     svg {
       margin-right: 8px;
     }
@@ -51,7 +51,6 @@
     .Card {
       display: flex;
       flex-direction: column;
-      flex: 1 1 300px;
 
       ul {
         list-style: circle;
@@ -59,12 +58,6 @@
         a {
           margin: 0;
         }
-      }
-    }
-
-    .graphs {
-      .primary {
-        flex: 2;
       }
     }
 
