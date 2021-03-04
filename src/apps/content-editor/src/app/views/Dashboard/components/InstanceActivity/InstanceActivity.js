@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-
 import moment from "moment";
+import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
@@ -39,9 +39,13 @@ export function InstanceActivity({
           <div className={styles.WrapperActivity}>
             <dl>
               <dt>You</dt>
-              <dd>{userNumber.length}</dd>
+              <dd className={styles.title}>
+                <b>{userNumber.length}</b>
+              </dd>
               <dt>Everyone</dt>
-              <dd>{everyoneNumber.length}</dd>
+              <dd className={styles.title}>
+                <b>{everyoneNumber.length}</b>
+              </dd>
             </dl>
             {/* <h3>All time</h3>
             <dl>

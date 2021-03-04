@@ -15,6 +15,8 @@ export function ChartDashboard(props) {
       .map(zuid => props.logs[zuid]);
 
     const base = [...new Array(30)];
+
+    // moment ascending date
     const timestamps = base
       .map((_, idx) =>
         moment()
@@ -23,6 +25,7 @@ export function ChartDashboard(props) {
       )
       .reverse();
 
+    // format moment ascending date
     const categories = timestamps.map(time => time.format("MM-DD-YY"));
 
     const timestampsMap = timestamps.reduce((acc, time) => {
@@ -34,7 +37,6 @@ export function ChartDashboard(props) {
       const time = moment(log.createdAt).format("MM-DD-YY");
       timestampsMap[time] = timestampsMap[time] + 1;
     });
-
     const data = Object.values(timestampsMap);
 
     setCategories(categories);
@@ -54,7 +56,6 @@ export function ChartDashboard(props) {
 
               datasets: [
                 {
-                  // label: "Actions Per Day",
                   display: false,
                   data: data,
                   backgroundColor: color
@@ -84,7 +85,7 @@ export function ChartDashboard(props) {
                   }
                 ]
               },
-              // title: { text: "Rolling 30 Day Aggregate", display: true },
+
               labels: {
                 fontFamily: " Montserrat"
               }
