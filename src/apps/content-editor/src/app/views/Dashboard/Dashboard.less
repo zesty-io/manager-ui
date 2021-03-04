@@ -5,15 +5,12 @@
 
 .Dashboard {
   width: 100%;
+  height: calc(100vh - 54px);
+  overflow: auto;
 
   .LatestActivity {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    li {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
   }
 
   .LinkOuts {
@@ -33,36 +30,18 @@
     grid-template-columns: 1fr;
   }
 
-  .columns {
+  .RecentActivities {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     svg {
       margin-right: 8px;
     }
-  }
-  .column {
-    flex: 1 1 300px;
-  }
-
-  .container {
-    height: calc(100vh - 54px);
-    overflow: auto;
-
-    .Card {
-      display: flex;
-      flex-direction: column;
-
-      ul {
-        list-style: circle;
-        margin-left: 24px;
-        a {
-          margin: 0;
-        }
+    ul {
+      list-style: circle;
+      margin-left: 24px;
+      a {
+        margin: 0;
       }
-    }
-
-    .recent {
-      flex: 2;
     }
   }
 }

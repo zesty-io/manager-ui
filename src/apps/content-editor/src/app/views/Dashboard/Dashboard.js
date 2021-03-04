@@ -124,8 +124,7 @@ export default connect(function(state) {
     render() {
       return (
         <section className={styles.Dashboard}>
-          <div className={styles.container}>
-            {/* <HeaderDashboard
+          {/* <HeaderDashboard
               instanceName={this.props.instance.name}
               createdAt={this.props.instance.createdAt}
               randomHashID={this.props.instance.randomHashID}
@@ -133,133 +132,118 @@ export default connect(function(state) {
               firstName={this.props.user.firstName}
             /> */}
 
-            <section className={styles.LinkOuts}>
-              <h1 className={cx(styles.WelcomeBanner, styles.display)}>
-                Ready to get building, {this.props.user.firstName}
-              </h1>
+          <section className={styles.LinkOuts}>
+            <h1 className={cx(styles.WelcomeBanner, styles.display)}>
+              Ready to get building, {this.props.user.firstName}
+            </h1>
 
-              <div className={styles.Cards}>
-                <AccountInfo
-                  instanceName={this.props.instance.name}
-                  instanceZUID={this.props.instance.ZUID}
-                  randomHashID={this.props.instance.randomHashID}
-                  domain={this.props.instance.domain}
-                  headTags={this.props.headTags}
-                />
-                {/* <QuickJumps
+            <div className={styles.Cards}>
+              <AccountInfo
+                instanceName={this.props.instance.name}
+                instanceZUID={this.props.instance.ZUID}
+                randomHashID={this.props.instance.randomHashID}
+                domain={this.props.instance.domain}
+                headTags={this.props.headTags}
+              />
+              {/* <QuickJumps
                   cardTitle={"Open Preview"}
                   docsTitle={"WebEngine Docs"}
                   docsLink={"https://zesty.org/services/web-engine"}
                   randomHashID={this.props.instance.randomHashID}
                   liveLink={this.props.instance.domain}
                 /> */}
-                <QuickJumps
-                  cardTitle={"Code"}
-                  image={faCode}
-                  docsTitle={"Code Docs"}
-                  docsLink={"https://zesty.org/services/manager-ui/editor"}
-                  quickJump={"code"}
-                />
-                <QuickJumps
-                  cardTitle={"Schema"}
-                  image={faDatabase}
-                  docsTitle={"Schema Docs"}
-                  docsLink={"https://zesty.org/services/manager-ui/schema"}
-                  quickJump={"schema"}
-                />
-                <QuickJumps
-                  cardTitle={"AuditTrail"}
-                  image={faHistory}
-                  docsTitle={"AuditTrail Docs"}
-                  docsLink={"https://zesty.org/services/manager-ui/audit-trail"}
-                  quickJump={"audit-trail"}
-                />
-                <QuickJumps
-                  cardTitle={"Settings"}
-                  image={faCog}
-                  docsTitle={"Settings Docs"}
-                  docsLink={"https://zesty.org/services/manager-ui/settings"}
-                  quickJump={"settings"}
-                />
-              </div>
-            </section>
-            <section className={styles.LatestActivity}>
-              <InstanceActivity
-                totalUserEdits={this.props.user.total_user_actions}
-                totalEveryoneEdits={this.props.user.total_everyone_actions}
+              <QuickJumps
+                cardTitle={"Code"}
+                image={faCode}
+                docsTitle={"Code Docs"}
+                docsLink={"https://zesty.org/services/manager-ui/editor"}
+                quickJump={"code"}
               />
-              <UserLatest
-                user={this.props.user.latest_edits}
-                cardTitle="Your 5 Latest Content Edits"
+              <QuickJumps
+                cardTitle={"Schema"}
+                image={faDatabase}
+                docsTitle={"Schema Docs"}
+                docsLink={"https://zesty.org/services/manager-ui/schema"}
+                quickJump={"schema"}
               />
-              <UserLatest
-                user={this.props.user.latest_publishes}
-                cardTitle="Your 5 Latest Publishes"
+              <QuickJumps
+                cardTitle={"AuditTrail"}
+                image={faHistory}
+                docsTitle={"AuditTrail Docs"}
+                docsLink={"https://zesty.org/services/manager-ui/audit-trail"}
+                quickJump={"audit-trail"}
               />
-            </section>
-            <section className={styles.Chart}>
-              <ChartDashboard logs={this.props.logs} />
-            </section>
-            <div className={styles.columns}>
-              {this.state.favoriteModels.map((arr, i) => {
-                const [contentModelZUID, items] = arr;
-                const model = this.props.contentModels[contentModelZUID];
-                return (
-                  <Card className={styles.Card} key={i}>
-                    <CardHeader>
-                      <h4 className={styles.columns}>
-                        <div className={styles.column}>
-                          <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
-                          Recent{" "}
-                          <AppLink to={`/content/${contentModelZUID}`}>
-                            {model && model.label}
-                          </AppLink>{" "}
-                          Edits
-                        </div>
-                      </h4>
-                    </CardHeader>
-                    <CardContent>
-                      <ul>
-                        {items.map((item, i) => {
-                          return (
-                            <li key={i}>
-                              <AppLink
-                                to={`/content/${contentModelZUID}/${item.meta.ZUID}`}
-                              >
-                                {item.web.metaTitle}
-                              </AppLink>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </CardContent>
-                    <DashboardCardFooter
-                      model={model}
-                      contentModelZUID={contentModelZUID}
-                    />
-                  </Card>
-                );
-              })}
+              <QuickJumps
+                cardTitle={"Settings"}
+                image={faCog}
+                docsTitle={"Settings Docs"}
+                docsLink={"https://zesty.org/services/manager-ui/settings"}
+                quickJump={"settings"}
+              />
             </div>
-
-            <div className={styles.columns}>
-              {/*<div className={styles.column}>
-              <ContentVelocity />
-            </div>*/}
-              <div className={cx(styles.column)}>
-                <RecentlyEdited
-                  items={this.state.recentlyEditedItems}
-                  loading={this.state.loading}
-                />
-              </div>
-              {/* <div className={cx(styles.column, styles.recent)}>
-                <TopPerforming
-                  instanceZUID={this.props.instance.ZUID}
-                  profileID={this.props.instance.google_profile_id}
-                />
-              </div> */}
-            </div>
-          </div>
+          </section>
+          <section className={styles.LatestActivity}>
+            <InstanceActivity
+              totalUserEdits={this.props.user.total_user_actions}
+              totalEveryoneEdits={this.props.user.total_everyone_actions}
+            />
+            <UserLatest
+              user={this.props.user.latest_edits}
+              cardTitle="Your 5 Latest Content Edits"
+            />
+            <UserLatest
+              user={this.props.user.latest_publishes}
+              cardTitle="Your 5 Latest Publishes"
+            />
+          </section>
+          <section className={styles.Chart}>
+            <ChartDashboard logs={this.props.logs} />
+          </section>
+          <section className={styles.RecentActivities}>
+            <RecentlyEdited
+              items={this.state.recentlyEditedItems}
+              loading={this.state.loading}
+            />
+            {this.state.favoriteModels.map((arr, i) => {
+              const [contentModelZUID, items] = arr;
+              const model = this.props.contentModels[contentModelZUID];
+              return (
+                <Card className={styles.Card} key={i}>
+                  <CardHeader>
+                    <h4 className={styles.columns}>
+                      <div className={styles.column}>
+                        <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
+                        Recent{" "}
+                        <AppLink to={`/content/${contentModelZUID}`}>
+                          {model && model.label}
+                        </AppLink>{" "}
+                        Edits
+                      </div>
+                    </h4>
+                  </CardHeader>
+                  <CardContent>
+                    <ul>
+                      {items.map((item, i) => {
+                        return (
+                          <li key={i}>
+                            <AppLink
+                              to={`/content/${contentModelZUID}/${item.meta.ZUID}`}
+                            >
+                              {item.web.metaTitle}
+                            </AppLink>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </CardContent>
+                  <DashboardCardFooter
+                    model={model}
+                    contentModelZUID={contentModelZUID}
+                  />
+                </Card>
+              );
+            })}
+          </section>
         </section>
       );
     }

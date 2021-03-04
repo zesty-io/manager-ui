@@ -16,23 +16,24 @@ export function UserLatest(props) {
           <FontAwesomeIcon icon={faClock} /> {props.cardTitle}
         </CardHeader>
         <CardContent className={styles.CardContent}>
-          {props.user.slice(0, 5).map((item, i) => (
-            <div key={i}>
-              <hgroup></hgroup>
-              <AppLink
-                to={`/content/${item.meta.message
-                  .split(" ")
-                  .slice(-1)
-                  .join("")
-                  .replaceAll('"', "")
-                  .replaceAll(/`/g, "")}/${item.affectedZUID}`}
-              >
-                {/* <FontAwesomeIcon icon={faExternalLinkAlt} /> */}
-                <h4>{`${item.meta.message}`}</h4>
-              </AppLink>
-              <h5>{`Updated: ${moment(item.updatedAt).fromNow()}`}</h5>
-            </div>
-          ))}
+          <ul>
+            {props.user.slice(0, 5).map((item, i) => (
+              <li key={i}>
+                <AppLink
+                  to={`/content/${item.meta.message
+                    .split(" ")
+                    .slice(-1)
+                    .join("")
+                    .replaceAll('"', "")
+                    .replaceAll(/`/g, "")}/${item.affectedZUID}`}
+                >
+                  {/* <FontAwesomeIcon icon={faExternalLinkAlt} /> */}
+                  <h4>{`${item.meta.message}`}</h4>
+                </AppLink>
+                <h5>{`Updated: ${moment(item.updatedAt).fromNow()}`}</h5>
+              </li>
+            ))}
+          </ul>
         </CardContent>
       </Card>
     </>
