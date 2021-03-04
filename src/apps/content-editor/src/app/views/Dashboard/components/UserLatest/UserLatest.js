@@ -16,10 +16,7 @@ export function UserLatest(props) {
         <CardContent className={styles.CardContent}>
           {props.user.slice(0, 5).map((item, i) => (
             <div key={i}>
-              <hgroup>
-                <h4>{`${item.meta.message}`}</h4>
-                <h5>{`Updated: ${moment(item.updatedAt).fromNow()}`}</h5>
-              </hgroup>
+              <hgroup></hgroup>
               <AppLink
                 to={`/content/${item.meta.message
                   .split(" ")
@@ -28,8 +25,10 @@ export function UserLatest(props) {
                   .replaceAll('"', "")
                   .replaceAll(/`/g, "")}/${item.affectedZUID}`}
               >
-                <FontAwesomeIcon icon={faExternalLinkAlt} />
+                {/* <FontAwesomeIcon icon={faExternalLinkAlt} /> */}
+                <h4>{`${item.meta.message}`}</h4>
               </AppLink>
+              <h5>{`Updated: ${moment(item.updatedAt).fromNow()}`}</h5>
             </div>
           ))}
         </CardContent>
