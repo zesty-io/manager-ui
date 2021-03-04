@@ -58,10 +58,23 @@ export default connect(function(state) {
         .subtract(120, "days")
         .format("YYYY-MM-DD");
 
-      Promise.all([
-        this.props.dispatch(fetchRecentItems(this.props.user.ZUID, start)),
-        this.props.dispatch(getUserLogs())
-      ]).then(res => {
+      this.props
+        .dispatch(fetchRecentItems(this.props.user.ZUID, start))
+        .then(res => {
+          if (res && res.data) {
+            this.setState({
+              recentlyEditedItems: this.getLastEditedItems(res.data),
+              favoriteModels: this.getFavoriteModels(res.data),
+              loading: false
+            });
+          } else {
+            this.setState({
+              loading: false
+            });
+          }
+        });
+
+      this.props.dispatch(getUserLogs()).then(res => {
         if (res && res.data) {
           this.setState({
             recentlyEditedItems: this.getLastEditedItems(res.data),
