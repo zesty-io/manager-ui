@@ -8,10 +8,7 @@ import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
 import styles from "./InstanceActivity.less";
 
-export function InstanceActivity({
-  totalUserEdits,
-  totalEveryoneEdits
-} = props) {
+export function InstanceActivity(props) {
   let today = moment().unix();
   // Get date from # days ago
   let DaysAgo = days =>
@@ -28,8 +25,8 @@ export function InstanceActivity({
       }
     });
   };
-  const userNumber = checkEdits(totalUserEdits, 30);
-  const everyoneNumber = checkEdits(totalEveryoneEdits, 30);
+  const userNumber = checkEdits(props.totalUserEdits, 30);
+  const everyoneNumber = checkEdits(props.totalEveryoneEdits, 30);
 
   return (
     <>
