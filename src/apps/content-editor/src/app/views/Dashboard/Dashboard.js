@@ -243,6 +243,14 @@ export default connect(function(state) {
                 </Card>
               );
             })}
+            <section className={styles.TopPerforming}>
+              {/* {this.props.instance.google_profile_id && ( */}
+              <TopPerforming
+                instanceZUID={this.props.instanceZUID}
+                profileID={this.props.instance.google_profile_id}
+              />
+              {/* )} */}
+            </section>
           </section>
         </section>
       );
