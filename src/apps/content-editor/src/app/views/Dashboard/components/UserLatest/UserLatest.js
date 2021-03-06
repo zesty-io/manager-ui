@@ -19,17 +19,22 @@ export function UserLatest(props) {
           <ul>
             {props.user.slice(0, 5).map((item, i) => (
               <li key={i}>
-                <AppLink
-                  to={`/content/${item.meta.message
-                    .split(" ")
-                    .slice(-1)
-                    .join("")
-                    .replaceAll('"', "")
-                    .replaceAll(/`/g, "")}/${item.affectedZUID}`}
-                >
-                  {/* <FontAwesomeIcon icon={faExternalLinkAlt} /> */}
+                {item.meta.message.includes("Content") ? (
+                  <AppLink
+                    to={`/content/${item.meta.message
+                      .split(" ")
+                      .slice(-1)
+                      .join("")
+                      .replaceAll('"', "")
+                      .replaceAll(/`/g, "")}/${item.affectedZUID}`}
+                  >
+                    {/* <FontAwesomeIcon icon={faExternalLinkAlt} /> */}
+                    <h4>{`${item.meta.message}`}</h4>
+                  </AppLink>
+                ) : (
                   <h4>{`${item.meta.message}`}</h4>
-                </AppLink>
+                )}
+
                 <h5>{`Updated: ${moment(item.updatedAt).fromNow()}`}</h5>
               </li>
             ))}
