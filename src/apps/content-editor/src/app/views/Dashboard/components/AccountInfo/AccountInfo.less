@@ -1,11 +1,14 @@
 @import "~@zesty-io/core/colors.less";
 
 .AccountInfo {
+  .Card {
+    min-height: 141px;
+  }
   .CardContent {
     display: grid;
-    grid-template-columns: max-content 1fr;
+    grid-template-columns: max-content max-content;
     gap: 16px;
-    // min-height: 240px;
+
     text-align: left;
   }
   .Links {
@@ -18,9 +21,7 @@
   mark {
     background-color: @zesty-light-blue;
   }
-  // img {
-  //   width: 100%;
-  //   max-width: 200px;
-  //   height: auto;
-  // }
+  img {
+    border-radius: 4px;
+  }
 }

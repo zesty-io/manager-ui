@@ -11,12 +11,14 @@ import {
   faCog,
   faDatabase,
   faHistory,
-  faClock
+  faClock,
+  faUser
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
+import { Url } from "@zesty-io/core/Url";
 
 import { AccountInfo } from "./components/AccountInfo";
 import { ChartDashboard } from "./components/ChartDashboard";
@@ -122,6 +124,7 @@ export default connect(function(state) {
     }
 
     render() {
+      console.log(this.props);
       return (
         <section className={styles.Dashboard}>
           {/* <HeaderDashboard
@@ -131,15 +134,16 @@ export default connect(function(state) {
               domain={this.props.instance.domain}
               firstName={this.props.user.firstName}
             /> */}
+          <div className={styles.Header}>
+            <h1 className={cx(styles.WelcomeBanner, styles.display)}>
+              Welcome, {this.props.user.firstName}
+            </h1>
+            <h2 className={styles.display}>{this.props.instance.name} </h2>
+          </div>
 
           <section className={styles.LinkOuts}>
-            <h1 className={cx(styles.WelcomeBanner, styles.display)}>
-              Ready to get building, {this.props.user.firstName}
-            </h1>
-
             <div className={styles.Cards}>
               <AccountInfo
-                instanceName={this.props.instance.name}
                 instanceZUID={this.props.instance.ZUID}
                 randomHashID={this.props.instance.randomHashID}
                 domain={this.props.instance.domain}
@@ -190,6 +194,7 @@ export default connect(function(state) {
             <UserLatest
               user={this.props.user.latest_edits}
               cardTitle="Your 5 Latest Content Edits"
+              logs={this.props.logs}
             />
             <UserLatest
               user={this.props.user.latest_publishes}
@@ -200,10 +205,10 @@ export default connect(function(state) {
             <ChartDashboard logs={this.props.logs} />
           </section>
           <section className={styles.RecentActivities}>
-            <RecentlyEdited
+            {/* <RecentlyEdited
               items={this.state.recentlyEditedItems}
               loading={this.state.loading}
-            />
+            /> */}
             {this.state.favoriteModels.map((arr, i) => {
               const [contentModelZUID, items] = arr;
               const model = this.props.contentModels[contentModelZUID];
@@ -243,14 +248,6 @@ export default connect(function(state) {
                 </Card>
               );
             })}
-            <section className={styles.TopPerforming}>
-              {/* {this.props.instance.google_profile_id && ( */}
-              <TopPerforming
-                instanceZUID={this.props.instanceZUID}
-                profileID={this.props.instance.google_profile_id}
-              />
-              {/* )} */}
-            </section>
           </section>
         </section>
       );

@@ -28,7 +28,7 @@ export function AccountInfo(props) {
 
   return (
     <div className={styles.AccountInfo}>
-      <Card>
+      <Card className={styles.Card}>
         <CardContent className={styles.CardContent}>
           {faviconURL ? (
             <img src={faviconURL} height="64px" width="64px" />
@@ -48,7 +48,7 @@ export function AccountInfo(props) {
                 title="Open live link in standard browser window"
               >
                 <FontAwesomeIcon icon={faHome} />
-                &nbsp;View Live
+                &nbsp;View Live Domain
               </Url>
             )}
             <Url
@@ -57,21 +57,18 @@ export function AccountInfo(props) {
               href={`${CONFIG.URL_PREVIEW_PROTOCOL}${props.randomHashID}${CONFIG.URL_PREVIEW}`}
             >
               <FontAwesomeIcon icon={faEye} />
-              &nbsp;View Preview
+              &nbsp;View WebEngine Preview
             </Url>
-            {/* <Url
+            <Url
               target="_blank"
               title="Accounts Edit link"
               href={`https://accounts.zesty.io/instances/${props.instanceZUID}`}
             >
               <FontAwesomeIcon icon={faUser} />
               &nbsp; Accounts Edit Link
-            </Url> */}
+            </Url>
           </div>
         </CardContent>
-        <CardFooter>
-          <p className={styles.subheadline}>{props.instanceName}</p>
-        </CardFooter>
       </Card>
     </div>
   );
