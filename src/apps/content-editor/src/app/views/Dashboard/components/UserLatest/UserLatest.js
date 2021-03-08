@@ -2,13 +2,18 @@ import React from "react";
 import moment from "moment";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronRight,
+  faClock,
+  faExternalLinkAlt
+} from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./UserLatest.less";
 
 export function UserLatest(props) {
+  console.log(props);
   return (
     <>
       <Card className={styles.UserLatestEdits}>
@@ -19,23 +24,22 @@ export function UserLatest(props) {
           <ul>
             {props.user.slice(0, 5).map((item, i) => (
               <li key={i}>
-                {item.meta.message.includes("Content") ? (
-                  <AppLink
-                    to={`/content/${item.meta.message
-                      .split(" ")
-                      .slice(-1)
-                      .join("")
-                      .replaceAll('"', "")
-                      .replaceAll(/`/g, "")}/${item.affectedZUID}`}
-                  >
-                    {/* <FontAwesomeIcon icon={faExternalLinkAlt} /> */}
-                    <h4>{`${item.meta.message}`}</h4>
-                  </AppLink>
-                ) : (
+                <hgroup>
                   <h4>{`${item.meta.message}`}</h4>
-                )}
-
-                <h5>{`Updated: ${moment(item.updatedAt).fromNow()}`}</h5>
+                  <h5>{`Updated: ${moment(item.updatedAt).fromNow()}`}</h5>
+                </hgroup>
+                <AppLink
+                  className={styles.AppLink}
+                  to={`/content/${item.meta.message
+                    .split(" ")
+                    .slice(-1)
+                    .join("")
+                    .replaceAll('"', "")
+                    .replaceAll(/`/g, "")}/${item.affectedZUID}`}
+                >
+                  View
+                  <FontAwesomeIcon icon={faChevronRight} />
+                </AppLink>
               </li>
             ))}
           </ul>

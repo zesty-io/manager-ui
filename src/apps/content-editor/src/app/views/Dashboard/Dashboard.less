@@ -8,10 +8,14 @@
   height: calc(100vh - 54px);
   overflow: auto;
 
+  svg {
+    margin-right: 8px;
+  }
+
   .Header {
     display: flex;
     flex-direction: column;
-    padding: 16px;
+    padding: 8px 16px;
 
     .WelcomeBanner {
       font-weight: bold;
@@ -40,9 +44,7 @@
   .RecentActivities {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    svg {
-      margin-right: 8px;
-    }
+
     ul {
       list-style: circle;
       margin-left: 24px;

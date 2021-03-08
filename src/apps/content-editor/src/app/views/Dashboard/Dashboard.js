@@ -124,7 +124,7 @@ export default connect(function(state) {
     }
 
     render() {
-      console.log(this.props);
+      console.log("DASHBOARD PROPS: ", this.props);
       return (
         <section className={styles.Dashboard}>
           {/* <HeaderDashboard
@@ -193,12 +193,12 @@ export default connect(function(state) {
             />
             <UserLatest
               user={this.props.user.latest_edits}
-              cardTitle="Your 5 Latest Content Edits"
+              cardTitle="Your Latest Edits"
               logs={this.props.logs}
             />
             <UserLatest
               user={this.props.user.latest_publishes}
-              cardTitle="Your 5 Latest Publishes"
+              cardTitle="Your Latest Publishes"
             />
           </section>
           <section className={styles.Chart}>
@@ -211,7 +211,17 @@ export default connect(function(state) {
             /> */}
             {this.state.favoriteModels.map((arr, i) => {
               const [contentModelZUID, items] = arr;
+              console.log(
+                "🚀 ~ file: Dashboard.js ~ line 214 ~ Dashboard ~ {this.state.favoriteModels.map ~ items",
+                items
+              );
               const model = this.props.contentModels[contentModelZUID];
+              {
+                /* console.log(
+                "🚀 ~ file: Dashboard.js ~ line 215 ~ Dashboard ~ {this.state.favoriteModels.map ~ model",
+                model
+              ); */
+              }
               return (
                 <Card className={styles.Card} key={i}>
                   <CardHeader>
