@@ -11,7 +11,7 @@ export function contentVersions(state = {}, action) {
         // DeDupe versions
         [action.itemZUID]: [action.data, ...existingVersions].reduce(
           (acc, item) => {
-            if (!acc.find(el => el.meta?.version === item.meta.version)) {
+            if (!acc.find(el => el?.meta?.version === item?.meta?.version)) {
               acc.push(item);
             }
 
