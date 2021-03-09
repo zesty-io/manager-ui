@@ -21,7 +21,7 @@ export function QuickJumps({
 } = props) {
   return (
     <div className={styles.QuickJumps}>
-      <Card>
+      <Card className={styles.Card}>
         <CardContent className={styles.CardContent}>
           <AppLink
             to={`/${quickJump}`}
@@ -39,7 +39,7 @@ export function QuickJumps({
             className={cx(styles.bodyText, styles.Docs)}
           >
             <FontAwesomeIcon icon={faExternalLinkAlt} />
-            &nbsp;Read Documentation
+            &nbsp;Documentation
           </Url>
         </CardContent>
       </Card>

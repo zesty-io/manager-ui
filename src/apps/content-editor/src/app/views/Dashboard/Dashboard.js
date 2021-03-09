@@ -133,13 +133,12 @@ export default connect(function(state) {
               domain={this.props.instance.domain}
               firstName={this.props.user.firstName}
             /> */}
-          <div className={styles.Header}>
+          {/* <div className={styles.Header}>
             <h1 className={cx(styles.WelcomeBanner, styles.display)}>
               <strong>{this.props.user.firstName}</strong>, you are working on{" "}
               <strong>{this.props.instance.name}</strong>
             </h1>
-            {/* <h2 className={styles.display}>{this.props.instance.name} </h2> */}
-          </div>
+          </div> */}
 
           <section className={styles.LinkOuts}>
             <div className={styles.Cards}>
@@ -148,6 +147,7 @@ export default connect(function(state) {
                 randomHashID={this.props.instance.randomHashID}
                 domain={this.props.instance.domain}
                 headTags={this.props.headTags}
+                instanceName={this.props.instance.name}
               />
               {/* <QuickJumps
                   cardTitle={"Open Preview"}

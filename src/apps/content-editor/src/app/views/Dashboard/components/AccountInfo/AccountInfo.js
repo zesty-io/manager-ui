@@ -5,9 +5,10 @@ import {
   faHome,
   faEye,
   faUser,
-  faFileImage
+  faFileImage,
+  faGlobeAmericas
 } from "@fortawesome/free-solid-svg-icons";
-import { Card, CardFooter, CardContent } from "@zesty-io/core/Card";
+import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
 import styles from "./AccountInfo.less";
 
@@ -29,6 +30,10 @@ export function AccountInfo(props) {
   return (
     <div className={styles.AccountInfo}>
       <Card className={styles.Card}>
+        <CardHeader>
+          <FontAwesomeIcon icon={faGlobeAmericas} />
+          {props.instanceName}
+        </CardHeader>
         <CardContent className={styles.CardContent}>
           {faviconURL ? (
             <img src={faviconURL} height="64px" width="64px" />
