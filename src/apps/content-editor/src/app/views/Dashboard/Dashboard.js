@@ -188,13 +188,18 @@ export default connect(function(state) {
           </section>
           <section className={styles.LatestActivity}>
             <UserLatest
-              user={this.props.user.latest_edits}
+              // user={this.props.user.latest_edits}
               cardTitle="Your Latest Edits"
               logs={this.props.logs}
+              user={this.props.user}
+              action="2"
             />
             <UserLatest
-              user={this.props.user.latest_publishes}
+              // user={this.props.user.latest_publishes}
               cardTitle="Your Latest Publishes"
+              logs={this.props.logs}
+              user={this.props.user}
+              action="4"
             />
           </section>
           <section className={styles.Chart}>

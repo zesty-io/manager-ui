@@ -61,8 +61,9 @@ export function InstanceActivity(props) {
             </div>
 
             <h1 className={styles.title}>
-              You had a total of <strong>{edits + publishes}</strong> actions
-              this month
+              {props.user.firstName} you had a total of{" "}
+              <strong>{edits + publishes}</strong> actions in the last{" "}
+              <strong>30 days</strong>
             </h1>
 
             {/* <p>Edits: {props.userEdits.length}</p>
