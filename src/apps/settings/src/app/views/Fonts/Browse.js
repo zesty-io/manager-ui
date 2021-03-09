@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { connect } from "react-redux";
+import debounce from "lodash/debounce";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSpinner } from "@fortawesome/free-solid-svg-icons";
@@ -313,26 +314,27 @@ export default connect(state => {
 
   function onSearch(value) {
     setSearch(value);
-    setTimeout(() => {
+    debouncedSearch(value);
+  }
+  const debouncedSearch = useCallback(
+    debounce(term => {
       const fontResult = props.fonts.find(
-        font => font.family.toLowerCase() === value.toLowerCase()
+        font => font.family.toLowerCase() === term.toLowerCase()
       );
       if (fontResult) {
-        const element = props.fonts.filter(
-          font => font.family.toLowerCase() === value.toLowerCase()
-        );
-        setPagination({ ...pagination, data: element });
-        injectFontTags(fontFound);
+        setPagination({ ...pagination, data: [fontResult] });
+        injectFontTags(fontResult);
       } else {
         setPagination({ ...pagination, data: [] });
       }
 
-      if (value === "") {
+      if (term === "") {
         setPagination({ ...pagination, data: props.fonts.slice(0, 10) });
         injectFontTags(props.fonts.slice(0, 10));
       }
-    }, 2000);
-  }
+    }, 500),
+    [props.fonts]
+  );
 
   return (
     <div className={styles.PageContainer}>
