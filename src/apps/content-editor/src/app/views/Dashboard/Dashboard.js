@@ -135,9 +135,10 @@ export default connect(function(state) {
             /> */}
           <div className={styles.Header}>
             <h1 className={cx(styles.WelcomeBanner, styles.display)}>
-              Welcome, {this.props.user.firstName}
+              <strong>{this.props.user.firstName}</strong>, you are working on{" "}
+              <strong>{this.props.instance.name}</strong>
             </h1>
-            <h2 className={styles.display}>{this.props.instance.name} </h2>
+            {/* <h2 className={styles.display}>{this.props.instance.name} </h2> */}
           </div>
 
           <section className={styles.LinkOuts}>
@@ -158,42 +159,34 @@ export default connect(function(state) {
               <QuickJumps
                 cardTitle={"Code"}
                 image={faCode}
-                docsTitle={"Code Docs"}
+                docsTitle={"Read Docs"}
                 docsLink={"https://zesty.org/services/manager-ui/editor"}
                 quickJump={"code"}
               />
               <QuickJumps
                 cardTitle={"Schema"}
                 image={faDatabase}
-                docsTitle={"Schema Docs"}
+                docsTitle={"Read Docs"}
                 docsLink={"https://zesty.org/services/manager-ui/schema"}
                 quickJump={"schema"}
               />
               <QuickJumps
                 cardTitle={"AuditTrail"}
                 image={faHistory}
-                docsTitle={"AuditTrail Docs"}
+                docsTitle={"Read Docs"}
                 docsLink={"https://zesty.org/services/manager-ui/audit-trail"}
                 quickJump={"audit-trail"}
               />
               <QuickJumps
                 cardTitle={"Settings"}
                 image={faCog}
-                docsTitle={"Settings Docs"}
+                docsTitle={"Read Docs"}
                 docsLink={"https://zesty.org/services/manager-ui/settings"}
                 quickJump={"settings"}
               />
             </div>
           </section>
           <section className={styles.LatestActivity}>
-            <InstanceActivity
-              totalUserEdits={this.props.user.total_user_actions}
-              totalEveryoneEdits={this.props.user.total_everyone_actions}
-              firstName={this.props.user.firstName}
-              lastName={this.props.user.lastName}
-              userEdits={this.props.user.latest_edits}
-              userPublishes={this.props.user.latest_publishes}
-            />
             <UserLatest
               user={this.props.user.latest_edits}
               cardTitle="Your Latest Edits"
@@ -205,6 +198,14 @@ export default connect(function(state) {
             />
           </section>
           <section className={styles.Chart}>
+            <InstanceActivity
+              totalUserEdits={this.props.user.total_user_actions}
+              totalEveryoneEdits={this.props.user.total_everyone_actions}
+              firstName={this.props.user.firstName}
+              lastName={this.props.user.lastName}
+              userEdits={this.props.user.latest_edits}
+              userPublishes={this.props.user.latest_publishes}
+            />
             <ChartDashboard logs={this.props.logs} />
           </section>
           <section className={styles.RecentActivities}>

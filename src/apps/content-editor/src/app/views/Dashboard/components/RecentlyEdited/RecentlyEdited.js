@@ -13,7 +13,8 @@ export class RecentlyEdited extends React.Component {
       <Card className={styles.Card}>
         <CardHeader>
           <h4>
-            <FontAwesomeIcon icon={faClock} /> Recent Instance Edits
+            <FontAwesomeIcon icon={faClock} />
+            Recent Instance Edits
           </h4>
         </CardHeader>
         <CardContent>

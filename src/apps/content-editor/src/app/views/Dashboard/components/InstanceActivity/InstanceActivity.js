@@ -32,18 +32,48 @@ export function InstanceActivity(props) {
     <>
       <Card>
         <CardHeader>
-          <FontAwesomeIcon icon={faCalendar} /> Total 30 days of instance
-          actions
+          <FontAwesomeIcon icon={faCalendar} />
+          30 days of your actions
         </CardHeader>
         <CardContent>
           <div className={styles.WrapperActivity}>
-            <h1>
-              {props.firstName} {props.lastName}
+            {/* <h1 className={styles.title}>
+              {props.firstName} you made &hellip;
+            </h1> */}
+
+            <div className={styles.Stats}>
+              <div className={styles.Stat}>
+                <h2 className={styles.headline}>{props.userEdits.length}</h2>
+                <small className={styles.subheadline}>Edits</small>
+              </div>
+
+              <div className={styles.Stat}>
+                <h2 className={styles.headline}>
+                  {props.userPublishes.length}
+                </h2>
+                <small className={styles.subheadline}>Publishes</small>
+              </div>
+
+              {/* <div className={styles.Stat}>
+                <h2 className={styles.headline}>
+                  <strong>{userNumber.length}</strong>
+                </h2>
+                <small className={styles.subheadline}>Total Actions</small>
+              </div> */}
+            </div>
+
+            <h1 className={styles.title}>
+              You had a total of{" "}
+              <strong>
+                {props.userEdits.length + props.userPublishes.length}
+              </strong>{" "}
+              actions this month
             </h1>
-            <p>Edits: {props.userEdits.length}</p>
+
+            {/* <p>Edits: {props.userEdits.length}</p>
             <p>Publishes: {props.userPublishes.length}</p>
             <p>Total Actions: {userNumber.length}</p>
-            <p>Everyone: {everyoneNumber.length}</p>
+            <p>Everyone: {everyoneNumber.length}</p> */}
 
             {/* <dl>
               <dt>You</dt>

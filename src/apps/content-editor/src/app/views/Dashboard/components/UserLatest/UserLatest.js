@@ -17,7 +17,8 @@ export function UserLatest(props) {
     <>
       <Card className={styles.UserLatestEdits}>
         <CardHeader>
-          <FontAwesomeIcon icon={faClock} /> {props.cardTitle}
+          <FontAwesomeIcon icon={faClock} />
+          {props.cardTitle}
         </CardHeader>
         <CardContent className={styles.CardContent}>
           <ul>

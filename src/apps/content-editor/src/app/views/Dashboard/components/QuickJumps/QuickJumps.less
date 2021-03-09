@@ -1,16 +1,31 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
 .QuickJumps {
+  flex: 1;
+
+  .CardContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
   .Icon {
     display: block;
     font-size: 24px;
-    margin: 8px auto;
+    margin: 3px auto;
+  }
+  .Docs {
+    color: @zesty-light-grey;
+
+    margin-top: 12px;
   }
 
-  .Links {
-    margin: 8px;
-    display: block;
-  }
+  // .Links {
+  //   margin: 8px;
+  //   display: block;
+  // }
 }
 
-.CardFooter {
-  min-height: 30px;
-}
+// .CardFooter {
+//   min-height: 30px;
+// }

@@ -1,5 +1,19 @@
 @import "~@zesty-io/core/typography.less";
 .WrapperActivity {
+  .Stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    margin: 16px 0 32px;
+  }
+  .Stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h1 {
+    text-align: center;
+  }
+
   dt {
     padding-bottom: 8px;
   }

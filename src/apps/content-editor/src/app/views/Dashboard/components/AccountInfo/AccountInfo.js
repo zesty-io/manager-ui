@@ -60,12 +60,11 @@ export function AccountInfo(props) {
               &nbsp;View WebEngine Preview
             </Url>
             <Url
-              target="_blank"
-              title="Accounts Edit link"
-              href={`https://accounts.zesty.io/instances/${props.instanceZUID}`}
+              title="Open this instance accounts overview"
+              href={`${CONFIG.URL_ACCOUNTS}/instances/${props.instanceZUID}`}
             >
               <FontAwesomeIcon icon={faUser} />
-              &nbsp; Accounts Edit Link
+              &nbsp; Instance Admin
             </Url>
           </div>
         </CardContent>

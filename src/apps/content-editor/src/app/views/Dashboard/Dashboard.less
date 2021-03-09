@@ -1,44 +1,47 @@
 @import "~@zesty-io/core/colors.less";
 @import "~@zesty-io/core/typography.less";
 
-@border-color: #dee6ff;
+// @border-color: #dee6ff;
 
 .Dashboard {
   width: 100%;
   height: calc(100vh - 54px);
   overflow: auto;
 
-  svg {
-    margin-right: 8px;
-  }
+  // svg {
+  //   margin-right: 8px;
+  // }
 
   .Header {
-    display: flex;
-    flex-direction: column;
+    // display: flex;
+    // flex-direction: column;
     padding: 8px 16px;
 
     .WelcomeBanner {
-      font-weight: bold;
+      // font-weight: bold;
+      margin: 32px 0 0;
     }
   }
 
   .LatestActivity {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .LinkOuts {
     .Cards {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      text-align: center;
+      // display: grid;
+      // grid-template-columns: repeat(5, 1fr);
+      // text-align: center;
+      display: flex;
+      flex-wrap: wrap;
     }
   }
 
   .Chart,
   .TopPerforming {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 2fr;
   }
 
   .RecentActivities {

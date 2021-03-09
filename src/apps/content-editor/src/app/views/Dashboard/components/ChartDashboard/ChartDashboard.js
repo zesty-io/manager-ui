@@ -51,7 +51,8 @@ export function ChartDashboard(props) {
     <div className={styles.ChartDashboard}>
       <Card>
         <CardHeader>
-          <FontAwesomeIcon icon={faCalendar} /> Last 30 days of instance actions
+          <FontAwesomeIcon icon={faCalendar} />
+          30 days of team actions
         </CardHeader>
         <CardContent>
           <Bar

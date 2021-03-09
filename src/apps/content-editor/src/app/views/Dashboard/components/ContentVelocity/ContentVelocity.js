@@ -8,8 +8,8 @@ export class ContentVelocity extends React.Component {
       <Card>
         <CardHeader>
           <h2>
-            <span className={`${styles.icon} fa fa-line-chart`} /> Content
-            Velocity
+            <span className={`${styles.icon} fa fa-line-chart`} />
+            Content Velocity
           </h2>
         </CardHeader>
         <CardContent>
