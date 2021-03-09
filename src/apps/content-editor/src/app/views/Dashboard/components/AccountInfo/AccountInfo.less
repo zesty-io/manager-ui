@@ -1,0 +1,32 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.AccountInfo {
+  display: flex;
+  flex: 1;
+
+  .Card {
+    flex: 1;
+  }
+
+  .CardContent {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    gap: 16px;
+
+    text-align: left;
+  }
+  .Links {
+    display: flex;
+    flex-direction: column;
+    & > * {
+      margin: 4px 0;
+    }
+  }
+  mark {
+    background-color: @zesty-light-blue;
+  }
+  img {
+    border-radius: 4px;
+  }
+}

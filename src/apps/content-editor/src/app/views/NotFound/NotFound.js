@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import cx from "classnames";
+// import cx from "classnames";
 
 import { Url } from "@zesty-io/core/Url";
 
@@ -8,8 +8,10 @@ export class NotFound extends Component {
   render() {
     return (
       <section className={styles.NotFound}>
-        <h1>We are sorry but it seems this page is missing</h1>
-        <h2>
+        <h1 className={styles.title}>
+          We are sorry but it seems this page is missing
+        </h1>
+        <h2 className={styles.display}>
           If you expected something to be here please contact support with this
           url
         </h2>

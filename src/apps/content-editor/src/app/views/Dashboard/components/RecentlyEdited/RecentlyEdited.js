@@ -12,9 +12,10 @@ export class RecentlyEdited extends React.Component {
     return (
       <Card className={styles.Card}>
         <CardHeader>
-          <h2>
-            <FontAwesomeIcon icon={faClock} /> Recent Instance Edits
-          </h2>
+          <h4>
+            <FontAwesomeIcon icon={faClock} />
+            Recent Instance Edits
+          </h4>
         </CardHeader>
         <CardContent>
           <WithLoader

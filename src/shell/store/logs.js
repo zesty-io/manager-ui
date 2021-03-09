@@ -18,6 +18,16 @@ export function logs(state = {}, action) {
           auditTrailPublish: action.data
         }
       };
+
+    case "FETCH_USER_LOGS_SUCCESS":
+      const logs = { ...state };
+
+      action.payload.forEach(log => {
+        logs[log.ZUID] = log;
+      });
+
+      return logs;
+
     default:
       return state;
   }

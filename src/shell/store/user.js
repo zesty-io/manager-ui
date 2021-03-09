@@ -1,5 +1,6 @@
 import { request } from "utility/request";
 import { set } from "idb-keyval";
+import moment from "moment-timezone";
 import { Sentry } from "utility/sentry";
 
 export function user(
@@ -8,7 +9,11 @@ export function user(
     firstName: "",
     email: "",
     permissions: [],
-    selected_lang: ""
+    selected_lang: "",
+    latest_edits: [],
+    latest_publishes: [],
+    total_user_actions: [],
+    total_everyone_actions: []
   },
   action
 ) {
@@ -25,7 +30,6 @@ export function user(
       }
 
     case "FETCH_USER_SUCCESS":
-      // set user
       Sentry.setUser({
         id: action.payload.data.ZUID,
         email: action.payload.data.email,
@@ -37,6 +41,22 @@ export function user(
     case "LOADED_LOCAL_USER_LANG":
     case "USER_SELECTED_LANG":
       return { ...state, selected_lang: action.payload.lang };
+
+    //DRY Creating latest_edits reducer for dashboard
+    case "FETCH_USER_LOGS_SUCCESS":
+      return {
+        ...state,
+        latest_edits: action.payload.filter(
+          user => user.actionByUserZUID === state.ZUID && user.action === 2
+        ),
+        latest_publishes: action.payload.filter(
+          user => user.actionByUserZUID === state.ZUID && user.action === 4
+        ),
+        total_user_actions: action.payload.filter(
+          user => user.actionByUserZUID === state.ZUID && user.action
+        ),
+        total_everyone_actions: action.payload.filter(user => user.action)
+      };
 
     default:
       return state;
@@ -108,5 +128,34 @@ export function fetchRecentItems(userZUID, start) {
 
       return res;
     });
+  };
+}
+
+// Actions
+export function getUserLogs() {
+  return dispatch => {
+    dispatch({
+      type: "FETCHING_USER_LOGS"
+    });
+
+    // FIXME The API is not return all the logs within the specified time frame
+    // const now = moment();
+    // const end = now.format("YYYY-MM-DD");
+    // const start = now.subtract(30, "days").format("YYYY-MM-DD");
+    // `start_date=${start}&end_date=${end}`
+
+    return request(`${CONFIG.API_INSTANCE}/env/audits?limit=10000`)
+      .then(res => {
+        dispatch({
+          type: "FETCH_USER_LOGS_SUCCESS",
+          payload: res.data
+        });
+      })
+      .catch(err => {
+        dispatch({
+          type: "FETCH_USER_LOGS_ERROR",
+          err
+        });
+      });
   };
 }
