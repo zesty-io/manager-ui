@@ -9,24 +9,24 @@ import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import styles from "./InstanceActivity.less";
 
 export function InstanceActivity(props) {
-  let today = moment().unix();
-  // Get date from # days ago
-  let DaysAgo = days =>
-    moment()
-      .subtract(days, "days")
-      .unix();
+  const [edits, setEdits] = useState(0);
+  const [publishes, setPublishes] = useState(0);
 
-  // Loop through updatedAt dates && filter recentedits 30 days ago
-  const checkEdits = (total, days) => {
-    return total.filter(user => {
-      let userLatest = moment(user.updatedAt).unix();
-      if (userLatest <= today && userLatest >= DaysAgo(days)) {
-        return total;
-      }
-    });
-  };
-  const userNumber = checkEdits(props.totalUserEdits, 30);
-  const everyoneNumber = checkEdits(props.totalEveryoneEdits, 30);
+  useEffect(() => {
+    const since = moment().subtract(30, "days");
+    const userLogs = Object.keys(props.logs)
+      .filter(
+        logZUID => props.logs[logZUID].actionByUserZUID === props.user.ZUID
+      )
+      .map(zuid => props.logs[zuid])
+      .filter(log => moment(log.createdAt).isSameOrAfter(since));
+
+    const edits = userLogs.filter(log => log.action === 2);
+    const publishes = userLogs.filter(log => log.action === 4);
+
+    setEdits(edits.length);
+    setPublishes(publishes.length);
+  }, [props.user, props.logs]);
 
   return (
     <>
@@ -43,14 +43,12 @@ export function InstanceActivity(props) {
 
             <div className={styles.Stats}>
               <div className={styles.Stat}>
-                <h2 className={styles.headline}>{props.userEdits.length}</h2>
+                <h2 className={styles.headline}>{edits}</h2>
                 <small className={styles.subheadline}>Edits</small>
               </div>
 
               <div className={styles.Stat}>
-                <h2 className={styles.headline}>
-                  {props.userPublishes.length}
-                </h2>
+                <h2 className={styles.headline}>{publishes}</h2>
                 <small className={styles.subheadline}>Publishes</small>
               </div>
 
@@ -63,11 +61,8 @@ export function InstanceActivity(props) {
             </div>
 
             <h1 className={styles.title}>
-              You had a total of{" "}
-              <strong>
-                {props.userEdits.length + props.userPublishes.length}
-              </strong>{" "}
-              actions this month
+              You had a total of <strong>{edits + publishes}</strong> actions
+              this month
             </h1>
 
             {/* <p>Edits: {props.userEdits.length}</p>

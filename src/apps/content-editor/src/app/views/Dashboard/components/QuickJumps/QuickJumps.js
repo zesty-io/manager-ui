@@ -24,7 +24,7 @@ export function QuickJumps({
       <Card>
         <CardContent className={styles.CardContent}>
           <AppLink
-            href={`/${quickJump}`}
+            to={`/${quickJump}`}
             title={quickJump}
             className={styles.title}
           >

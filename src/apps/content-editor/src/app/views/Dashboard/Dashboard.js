@@ -199,12 +199,14 @@ export default connect(function(state) {
           </section>
           <section className={styles.Chart}>
             <InstanceActivity
-              totalUserEdits={this.props.user.total_user_actions}
-              totalEveryoneEdits={this.props.user.total_everyone_actions}
-              firstName={this.props.user.firstName}
-              lastName={this.props.user.lastName}
-              userEdits={this.props.user.latest_edits}
-              userPublishes={this.props.user.latest_publishes}
+              // totalUserEdits={this.props.user.total_user_actions}
+              // totalEveryoneEdits={this.props.user.total_everyone_actions}
+              // firstName={this.props.user.firstName}
+              // lastName={this.props.user.lastName}
+              // userEdits={this.props.user.latest_edits}
+              // userPublishes={this.props.user.latest_publishes}
+              logs={this.props.logs}
+              user={this.props.user}
             />
             <ChartDashboard logs={this.props.logs} />
           </section>
