@@ -124,7 +124,6 @@ export default connect(function(state) {
     }
 
     render() {
-      console.log("DASHBOARD PROPS: ", this.props);
       return (
         <section className={styles.Dashboard}>
           {/* <HeaderDashboard
@@ -190,6 +189,10 @@ export default connect(function(state) {
             <InstanceActivity
               totalUserEdits={this.props.user.total_user_actions}
               totalEveryoneEdits={this.props.user.total_everyone_actions}
+              firstName={this.props.user.firstName}
+              lastName={this.props.user.lastName}
+              userEdits={this.props.user.latest_edits}
+              userPublishes={this.props.user.latest_publishes}
             />
             <UserLatest
               user={this.props.user.latest_edits}
@@ -211,10 +214,7 @@ export default connect(function(state) {
             /> */}
             {this.state.favoriteModels.map((arr, i) => {
               const [contentModelZUID, items] = arr;
-              console.log(
-                "🚀 ~ file: Dashboard.js ~ line 214 ~ Dashboard ~ {this.state.favoriteModels.map ~ items",
-                items
-              );
+
               const model = this.props.contentModels[contentModelZUID];
               {
                 /* console.log(

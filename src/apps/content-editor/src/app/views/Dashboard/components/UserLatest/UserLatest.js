@@ -13,7 +13,6 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import styles from "./UserLatest.less";
 
 export function UserLatest(props) {
-  console.log(props);
   return (
     <>
       <Card className={styles.UserLatestEdits}>

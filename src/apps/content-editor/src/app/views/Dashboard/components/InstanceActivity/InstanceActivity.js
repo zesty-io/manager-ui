@@ -37,7 +37,15 @@ export function InstanceActivity(props) {
         </CardHeader>
         <CardContent>
           <div className={styles.WrapperActivity}>
-            <dl>
+            <h1>
+              {props.firstName} {props.lastName}
+            </h1>
+            <p>Edits: {props.userEdits.length}</p>
+            <p>Publishes: {props.userPublishes.length}</p>
+            <p>Total Actions: {userNumber.length}</p>
+            <p>Everyone: {everyoneNumber.length}</p>
+
+            {/* <dl>
               <dt>You</dt>
               <dd className={styles.title}>
                 <b>{userNumber.length}</b>
@@ -46,13 +54,6 @@ export function InstanceActivity(props) {
               <dd className={styles.title}>
                 <b>{everyoneNumber.length}</b>
               </dd>
-            </dl>
-            {/* <h3>All time</h3>
-            <dl>
-              <dt>You</dt>
-              <dd>20</dd>
-              <dt>Everyone</dt>
-              <dd>1034</dd>
             </dl> */}
           </div>
         </CardContent>
