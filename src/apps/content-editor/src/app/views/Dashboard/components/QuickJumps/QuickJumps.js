@@ -10,32 +10,24 @@ import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./QuickJumps.less";
 
-export function QuickJumps({
-  cardTitle,
-  quickJump,
-  randomHashID,
-  image,
-  liveLink,
-  docsLink,
-  docsTitle
-} = props) {
+export function QuickJumps(props) {
   return (
     <div className={styles.QuickJumps}>
       <Card className={styles.Card}>
         <CardContent className={styles.CardContent}>
           <AppLink
-            to={`/${quickJump}`}
-            title={quickJump}
+            to={`/${props.quickJump}`}
+            title={props.quickJump}
             className={styles.title}
           >
-            <FontAwesomeIcon className={styles.Icon} icon={image} />
-            {cardTitle}
+            <FontAwesomeIcon className={styles.Icon} icon={props.image} />
+            {props.cardTitle}
           </AppLink>
 
           <Url
-            href={docsLink}
+            href={props.docsLink}
             target="_blank"
-            title={docsLink}
+            title={props.docsLink}
             className={cx(styles.bodyText, styles.Docs)}
           >
             <FontAwesomeIcon icon={faExternalLinkAlt} />
