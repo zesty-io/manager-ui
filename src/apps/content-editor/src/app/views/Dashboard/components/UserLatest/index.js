@@ -1,0 +1,1 @@
+export { UserLatest } from "./UserLatest";

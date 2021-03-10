@@ -123,6 +123,27 @@ export default connect(state => {
 
   const [imageModal, setImageModal] = useState();
 
+  function renderMediaModal() {
+    return ReactDOM.createPortal(
+      <Modal
+        open={true}
+        type="global"
+        onClose={() => setImageModal()}
+        className={MediaStyles.MediaAppModal}
+      >
+        <MediaApp
+          limitSelected={imageModal.limit}
+          modal={true}
+          addImages={images => {
+            imageModal.callback(images);
+            setImageModal();
+          }}
+        />
+      </Modal>,
+      document.getElementById("modalMount")
+    );
+  }
+
   switch (datatype) {
     case "text":
     case "fontawesome":
@@ -182,7 +203,6 @@ export default connect(state => {
       );
     case "wysiwyg_advanced":
     case "wysiwyg_basic":
-      const modal = document.getElementById("modalMount");
       return (
         <div className={styles.WYSIWYGFieldType}>
           <FieldTypeTinyMCE
@@ -209,25 +229,7 @@ export default connect(state => {
               setImageModal(opts);
             }}
           />
-          {imageModal &&
-            ReactDOM.createPortal(
-              <Modal
-                open={true}
-                type="global"
-                onClose={() => setImageModal()}
-                className={MediaStyles.MediaAppModal}
-              >
-                <MediaApp
-                  limitSelected={imageModal.limit}
-                  modal={true}
-                  addImages={images => {
-                    imageModal.callback(images);
-                    setImageModal();
-                  }}
-                />
-              </Modal>,
-              modal
-            )}
+          {imageModal && renderMediaModal()}
         </div>
       );
     case "markdown":
@@ -244,7 +246,11 @@ export default connect(state => {
             onChange={onChange}
             type={datatype}
             maxLength="16000"
+            mediaBrowser={opts => {
+              setImageModal(opts);
+            }}
           />
+          {imageModal && renderMediaModal()}
         </div>
       );
 

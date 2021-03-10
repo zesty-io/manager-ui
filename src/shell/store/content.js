@@ -84,9 +84,11 @@ export function content(state = {}, action) {
           ...action.payload.data[action.payload.itemZUID]
         };
       } else {
-        // no publish or schedule records so remove them from the item
-        delete state[action.payload.itemZUID].publishing;
-        delete state[action.payload.itemZUID].scheduling;
+        if (state[action.payload.itemZUID]) {
+          // no publish or schedule records so remove them from the item
+          delete state[action.payload.itemZUID].publishing;
+          delete state[action.payload.itemZUID].scheduling;
+        }
       }
 
       return { ...state };

@@ -1,33 +1,40 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 import cx from "classnames";
 import { useHistory } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faCode,
+  faCog,
+  faDatabase,
+  faHistory,
+  faClock,
+  faUser
+} from "@fortawesome/free-solid-svg-icons";
+
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
 
-// import { ContentVelocity } from "./components/ContentVelocity";
-import { PageviewTraffic } from "./components/PageviewTraffic";
-import { InboundTraffic } from "./components/InboundTraffic";
-import { SocialTraffic } from "./components/SocialTraffic";
-import { TopPerforming } from "./components/TopPerforming";
+import { AccountInfo } from "./components/AccountInfo";
+import { ChartDashboard } from "./components/ChartDashboard";
 import { RecentlyEdited } from "./components/RecentlyEdited";
-import { GoogleAuthOverlay } from "./components/GoogleAuthOverlay";
+import { UserLatest } from "./components/UserLatest";
+import { InstanceActivity } from "./components/InstanceActivity";
+import { QuickJumps } from "./components/QuickJumps";
 
-import shelldata from "./shelldata";
-import { fetchRecentItems } from "shell/store/user";
+import { fetchRecentItems, getUserLogs } from "shell/store/user";
 
 import styles from "./Dashboard.less";
-export default connect(function(state, props) {
+export default connect(function(state) {
   return {
     user: state.user,
-    instanceZUID: state.instance.ZUID,
     instance: state.instance,
-    instanceName: state.instance.name,
+    headTags: state.headTags,
+    logs: state.logs,
     contentModels: Object.keys(state.models).reduce((acc, modelZUID) => {
       if (
         state.models[modelZUID] &&
@@ -43,15 +50,10 @@ export default connect(function(state, props) {
     state = {
       recentlyEditedItems: [],
       favoriteModels: [],
-      loading: true,
-      webEngineOn: true, // in the future this will be a boolean pulled off the account, it will change the dash
-      domainSet: Boolean(this.props.instance.live_domain),
-      gaAuthenticated: Boolean(this.props.instance.google_profile_id),
-      gaLegacyAuth: false // we need response body from cloud function could change this
+      loading: true
     };
 
     componentDidMount() {
-      // if (this.props.instance.google_profile_id) {
       const start = moment()
         .subtract(120, "days")
         .format("YYYY-MM-DD");
@@ -71,17 +73,10 @@ export default connect(function(state, props) {
             });
           }
         });
-      // }
+
+      this.props.dispatch(getUserLogs());
     }
-    setGALegacyStatus = status => {
-      this.setState({ gaLegacyAuth: status });
-    };
-    /**
-      Group items by model
-      [
-        [contentModelZUID, [item, item, ...]]
-      ]
-    **/
+
     getFavoriteModels(items) {
       const grouped = items.reduce((acc, item) => {
         if (acc[item.meta.contentModelZUID]) {
@@ -128,111 +123,116 @@ export default connect(function(state, props) {
     render() {
       return (
         <section className={styles.Dashboard}>
-          <div className={styles.container}>
-            <div className={styles.columns}>
-              {this.state.favoriteModels.map((arr, i) => {
-                const [contentModelZUID, items] = arr;
-                const model = this.props.contentModels[contentModelZUID];
-                return (
-                  <Card className={styles.Card} key={i}>
-                    <CardHeader>
-                      <h2 className={styles.columns}>
-                        <div className={styles.column}>
-                          Recent{" "}
-                          <AppLink to={`/content/${contentModelZUID}`}>
-                            {model && model.label}
-                          </AppLink>{" "}
-                          Edits
-                        </div>
-                      </h2>
-                    </CardHeader>
-                    <CardContent>
-                      <ul>
-                        {items.map((item, i) => {
-                          return (
-                            <li key={i}>
-                              <AppLink
-                                to={`/content/${contentModelZUID}/${item.meta.ZUID}`}
-                              >
-                                {item.web.metaTitle}
-                              </AppLink>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </CardContent>
-                    <DashboardCardFooter
-                      model={model}
-                      contentModelZUID={contentModelZUID}
-                    />
-                  </Card>
-                );
-              })}
-            </div>
+          <section className={styles.LinkOuts}>
+            <div className={styles.Cards}>
+              <AccountInfo
+                instanceZUID={this.props.instance.ZUID}
+                randomHashID={this.props.instance.randomHashID}
+                domain={this.props.instance.domain}
+                headTags={this.props.headTags}
+                instanceName={this.props.instance.name}
+              />
 
-            <div
-              className={cx(
-                styles.columns,
-                styles.graphs,
-                styles.analyticsContainer
-              )}
-            >
-              {(!this.state.gaAuthenticated || this.state.gaLegacyAuth) && (
-                <GoogleAuthOverlay
-                  gaLegacyAuth={this.state.gaLegacyAuth}
-                  domainSet={this.state.domainSet}
-                  gaAuthenticated={this.state.gaAuthenticated}
-                  user={this.props.user}
-                  instance={this.props.instance}
-                />
-              )}
-              {/* TODO add Google Auth Modal here */}
-              <div className={cx(styles.column, styles.primary)}>
-                <PageviewTraffic
-                  setGALegacyStatus={this.setGALegacyStatus}
-                  instanceZUID={this.props.instanceZUID}
-                  profileID={this.props.instance.google_profile_id}
-                  data={shelldata.shellBarData()}
-                  domainSet={this.state.domainSet}
-                />
-              </div>
-
-              <div className={styles.column}>
-                <InboundTraffic
-                  setGALegacyStatus={this.setGALegacyStatus}
-                  instanceZUID={this.props.instanceZUID}
-                  profileID={this.props.instance.google_profile_id}
-                  data={shelldata.shellDoughnutData()}
-                  domainSet={this.state.domainSet}
-                />
-                <SocialTraffic
-                  setGALegacyStatus={this.setGALegacyStatus}
-                  instanceZUID={this.props.instanceZUID}
-                  profileID={this.props.instance.google_profile_id}
-                  data={shelldata.shellDoughnutData()}
-                  domainSet={this.state.domainSet}
-                />
-              </div>
+              <QuickJumps
+                cardTitle={"Code"}
+                image={faCode}
+                docsTitle={"Read Docs"}
+                docsLink={"https://zesty.org/services/manager-ui/editor"}
+                quickJump={"code"}
+              />
+              <QuickJumps
+                cardTitle={"Schema"}
+                image={faDatabase}
+                docsTitle={"Read Docs"}
+                docsLink={"https://zesty.org/services/manager-ui/schema"}
+                quickJump={"schema"}
+              />
+              <QuickJumps
+                cardTitle={"AuditTrail"}
+                image={faHistory}
+                docsTitle={"Read Docs"}
+                docsLink={"https://zesty.org/services/manager-ui/audit-trail"}
+                quickJump={"audit-trail"}
+              />
+              <QuickJumps
+                cardTitle={"Settings"}
+                image={faCog}
+                docsTitle={"Read Docs"}
+                docsLink={"https://zesty.org/services/manager-ui/settings"}
+                quickJump={"settings"}
+              />
             </div>
+          </section>
+          <section className={styles.LatestActivity}>
+            <UserLatest
+              cardTitle="Your Latest Edits"
+              logs={this.props.logs}
+              user={this.props.user}
+              action="2"
+            />
+            <UserLatest
+              cardTitle="Your Latest Publishes"
+              logs={this.props.logs}
+              user={this.props.user}
+              action="4"
+            />
+          </section>
+          <section className={styles.Chart}>
+            <InstanceActivity logs={this.props.logs} user={this.props.user} />
+            <ChartDashboard logs={this.props.logs} />
+          </section>
+          <section className={styles.RecentActivities}>
+            {/* <RecentlyEdited
+              items={this.state.recentlyEditedItems}
+              loading={this.state.loading}
+            /> */}
+            {this.state.favoriteModels.map((arr, i) => {
+              const [contentModelZUID, items] = arr;
 
-            <div className={styles.columns}>
-              {/*<div className={styles.column}>
-              <ContentVelocity />
-            </div>*/}
-              <div className={cx(styles.column)}>
-                <RecentlyEdited
-                  items={this.state.recentlyEditedItems}
-                  loading={this.state.loading}
-                />
-              </div>
-              <div className={cx(styles.column, styles.recent)}>
-                <TopPerforming
-                  instanceZUID={this.props.instanceZUID}
-                  profileID={this.props.instance.google_profile_id}
-                />
-              </div>
-            </div>
-          </div>
+              const model = this.props.contentModels[contentModelZUID];
+              {
+                /* console.log(
+                "🚀 ~ file: Dashboard.js ~ line 215 ~ Dashboard ~ {this.state.favoriteModels.map ~ model",
+                model
+              ); */
+              }
+              return (
+                <Card className={styles.Card} key={i}>
+                  <CardHeader>
+                    <h4 className={styles.columns}>
+                      <div className={styles.column}>
+                        <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
+                        Recent{" "}
+                        <AppLink to={`/content/${contentModelZUID}`}>
+                          {model && model.label}
+                        </AppLink>{" "}
+                        Edits
+                      </div>
+                    </h4>
+                  </CardHeader>
+                  <CardContent>
+                    <ul>
+                      {items.map((item, i) => {
+                        return (
+                          <li key={i}>
+                            <AppLink
+                              to={`/content/${contentModelZUID}/${item.meta.ZUID}`}
+                            >
+                              {item.web.metaTitle}
+                            </AppLink>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </CardContent>
+                  <DashboardCardFooter
+                    model={model}
+                    contentModelZUID={contentModelZUID}
+                  />
+                </Card>
+              );
+            })}
+          </section>
         </section>
       );
     }

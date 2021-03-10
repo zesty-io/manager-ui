@@ -37,18 +37,20 @@ const mediaSlice = createSlice({
       const closed = getClosedGroups();
       const hidden = getHiddenGroups();
 
-      action.payload.forEach(bin => {
-        bin.closed = closed.includes(bin.id);
-        bin.children = [];
-        bin.path = `/media/${bin.id}`;
-        bin.hidden = hidden.includes(bin.id);
-        state.groups[bin.id] = bin;
-        if (bin.hidden) {
-          state.groups[1].children.push(bin.id);
-        } else {
-          state.groups[0].children.push(bin.id);
-        }
-      });
+      if (Array.isArray(action.payload)) {
+        action.payload.forEach(bin => {
+          bin.closed = closed.includes(bin.id);
+          bin.children = [];
+          bin.path = `/media/${bin.id}`;
+          bin.hidden = hidden.includes(bin.id);
+          state.groups[bin.id] = bin;
+          if (bin.hidden) {
+            state.groups[1].children.push(bin.id);
+          } else {
+            state.groups[0].children.push(bin.id);
+          }
+        });
+      }
     },
     editBinSuccess(state, action) {
       const bin = state.groups[action.payload.id];

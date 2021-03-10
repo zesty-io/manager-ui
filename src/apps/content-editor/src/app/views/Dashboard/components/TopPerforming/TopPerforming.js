@@ -85,10 +85,10 @@ export class TopPerforming extends React.PureComponent {
     return (
       <Card>
         <CardHeader>
-          <h2>
+          <h4>
             <FontAwesomeIcon icon={faArrowCircleUp} />
             Top Performing Content
-          </h2>
+          </h4>
         </CardHeader>
         <CardContent>
           <WithLoader

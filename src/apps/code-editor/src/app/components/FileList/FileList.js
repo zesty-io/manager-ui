@@ -10,7 +10,8 @@ import { OrderFiles } from "./components/OrderFiles";
 import { FilterFiles } from "./components/FilterFiles";
 // import { PublishAll } from "./components/PublishAll";
 // import { SelectBranch } from "./components/SelectBranch";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
 import { resolvePathPart, publishFile } from "../../../store/files";
 import { collapseNavItem } from "../../../store/navCode";
 
@@ -46,15 +47,14 @@ export const FileList = React.memo(function FileList(props) {
   };
 
   const actions = [
-    {
-      icon: "fas fa-cloud-upload-alt",
-      styles: styles.Action,
-      showIcon: true,
-      available: file => !file.isLive,
-      onClick: file => {
-        props.dispatch(publishFile(file.ZUID, file.status));
-      }
-    }
+    <FontAwesomeIcon
+      title="Publish file"
+      icon={faCloudUploadAlt}
+      className={styles.Action}
+      showIcon={true}
+      available={file => !file.isLive}
+      onClick={file => props.dispatch(publishFile(file.ZUID, file.status))}
+    />
   ];
 
   return (

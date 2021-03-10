@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { connect } from "react-redux";
+import debounce from "lodash/debounce";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSpinner } from "@fortawesome/free-solid-svg-icons";
@@ -19,7 +20,6 @@ export default connect(state => {
   };
 })(function Browse(props) {
   const [previewText, setPreviewText] = useState("");
-  const [fontsArr, setfontsArr] = useState([]);
   const [styleTags, setTags] = useState([]);
   const [search, setSearch] = useState("");
   const [pagination, setPagination] = useState({
@@ -30,20 +30,28 @@ export default connect(state => {
     data: []
   });
   const [variantsSelected, setVariants] = useState({});
-  const [isLoading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
+  // when google fonts are ready, create pagination, tags state
+  // and inject first page of font tags
   useEffect(() => {
-    setfontsArr(props.fonts);
     setPagination({
       ...pagination,
       data: props.fonts.slice(pagination.start, pagination.end),
       total: Math.ceil(props.fonts.length / 10)
     });
-    setStyleTagsByType(props.fonts);
-    setTagsFromFontsArr();
+    injectFontTags(props.fonts);
+    setTags(
+      props.fonts.map(font => {
+        return `@import url('https://fonts.googleapis.com/css?family=${font.family.replace(
+          /\s/g,
+          "+"
+        )}');`;
+      })
+    );
   }, [props.fonts]);
 
-  function setStyleTagsByType(fonts) {
+  function injectFontTags(fonts) {
     if (Array.isArray(fonts)) {
       fonts.slice(0, 10).forEach(font => {
         const style = document.createElement("style");
@@ -69,17 +77,6 @@ export default connect(state => {
       style.append(css);
       document.head.appendChild(style);
     }
-  }
-
-  function setTagsFromFontsArr() {
-    setTags(
-      props.fonts.map(font => {
-        return `@import url('https://fonts.googleapis.com/css?family=${font.family.replace(
-          /\s/g,
-          "+"
-        )}');`;
-      })
-    );
   }
 
   function parseVariants(variants) {
@@ -124,11 +121,12 @@ export default connect(state => {
   }
 
   function onUpdateFont(font) {
-    setLoading(true);
+    setSaving(true);
 
-    installSiteFont(font, variantsSelected[font])
+    props
+      .dispatch(installSiteFont(font, variantsSelected[font]))
       .then(res => {
-        setLoading(false);
+        setSaving(false);
 
         filterFontsInstalled(
           res.attributes.href.split("=")[1].split(":")[0],
@@ -140,7 +138,9 @@ export default connect(state => {
           )
         );
 
-        setVariants({ [font]: null });
+        const newVariants = { ...variantsSelected };
+        delete newVariants[font];
+        setVariants(newVariants);
         props.dispatch(
           notify({
             kind: "success",
@@ -153,7 +153,7 @@ export default connect(state => {
       })
       .catch(err => {
         console.log(err);
-        setLoading(false);
+        setSaving(false);
         props.dispatch(
           notify({
             kind: "success",
@@ -182,27 +182,34 @@ export default connect(state => {
   }
 
   function selectFontVariant(font, e) {
+    let newVariants;
     if (e.target.checked) {
       if (Object.keys(variantsSelected).includes(font)) {
-        setVariants({
+        newVariants = {
           ...variantsSelected,
           [font]: [...variantsSelected[font], variantValidation(e.target.name)]
-        });
+        };
       } else {
-        setVariants({
+        newVariants = {
           ...variantsSelected,
           [font]: [variantValidation(e.target.name)]
-        });
+        };
       }
     } else {
-      setVariants({
-        ...variantsSelected,
-        [font]: variantsSelected[font].filter(
-          variant => variant !== variantValidation(e.target.name)
-        )
-      });
+      const fontVariants = variantsSelected[font].filter(
+        variant => variant !== variantValidation(e.target.name)
+      );
+
+      newVariants = {
+        ...variantsSelected
+      };
+      if (fontVariants.length) {
+        newVariants[font] = fontVariants;
+      } else {
+        delete newVariants[font];
+      }
     }
-    console.log("varians selected", variantsSelected);
+    setVariants(newVariants);
   }
 
   function renderFontsList() {
@@ -215,7 +222,7 @@ export default connect(state => {
                 <h3 className={styles.FontFamily}>{itemFont.family}</h3>
                 <ul className={styles.FontVariants}>
                   {itemFont.variants.map((item, index) => (
-                    <li key={`${itemFont.family}-${index}`}>
+                    <li key={`${itemFont.family}-${item}`}>
                       <input
                         type="checkbox"
                         onChange={e => selectFontVariant(itemFont.family, e)}
@@ -233,10 +240,10 @@ export default connect(state => {
                   id="InstallFont"
                   className={styles.SaveBtn}
                   onClick={() => onUpdateFont(itemFont.family)}
-                  disabled={isLoading}
+                  disabled={saving || !variantsSelected[itemFont.family]}
                 >
-                  {isLoading ? (
-                    <FontAwesomeIcon icon={faSpinner} />
+                  {saving ? (
+                    <FontAwesomeIcon spin={true} icon={faSpinner} />
                   ) : (
                     <FontAwesomeIcon icon={faPlus} />
                   )}{" "}
@@ -256,7 +263,7 @@ export default connect(state => {
         ))}
         {pagination.data.length === 0 && (
           <Notice>
-            <p>That font doesn't exist</p>
+            <p>No matching fonts found</p>
           </Notice>
         )}
       </div>
@@ -299,7 +306,7 @@ export default connect(state => {
       ...pagination,
       current:
         action === "next" ? pagination.current + 1 : pagination.current - 1,
-      data: fontsArr.slice(start, end),
+      data: props.fonts.slice(start, end),
       start: start,
       end: end
     });
@@ -307,26 +314,27 @@ export default connect(state => {
 
   function onSearch(value) {
     setSearch(value);
-    setTimeout(() => {
-      const fontResult = fontsArr.find(
-        font => font.family.toLowerCase() === value.toLowerCase()
+    debouncedSearch(value);
+  }
+  const debouncedSearch = useCallback(
+    debounce(term => {
+      const fontResult = props.fonts.find(
+        font => font.family.toLowerCase() === term.toLowerCase()
       );
       if (fontResult) {
-        const element = fontsArr.filter(
-          font => font.family.toLowerCase() === value.toLowerCase()
-        );
-        setPagination({ ...pagination, data: element });
-        setStyleTagsByType(fontFound);
+        setPagination({ ...pagination, data: [fontResult] });
+        injectFontTags(fontResult);
       } else {
         setPagination({ ...pagination, data: [] });
       }
 
-      if (value === "") {
-        setPagination({ ...pagination, data: fontsArr.slice(0, 10) });
-        setStyleTagsByType(fontsArr.slice(0, 10));
+      if (term === "") {
+        setPagination({ ...pagination, data: props.fonts.slice(0, 10) });
+        injectFontTags(props.fonts.slice(0, 10));
       }
-    }, 2000);
-  }
+    }, 500),
+    [props.fonts]
+  );
 
   return (
     <div className={styles.PageContainer}>
