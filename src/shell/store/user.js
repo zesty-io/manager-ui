@@ -1,6 +1,5 @@
 import { request } from "utility/request";
 import { set } from "idb-keyval";
-import moment from "moment-timezone";
 import { Sentry } from "utility/sentry";
 
 export function user(

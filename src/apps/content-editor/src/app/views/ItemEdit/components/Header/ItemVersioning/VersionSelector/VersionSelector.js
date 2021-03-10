@@ -71,16 +71,17 @@ export default connect((state, props) => {
         loading={loading}
         onSelect={onSelect}
       >
-        {props.versions.map(item => (
-          <Option
-            key={`${item.meta?.ZUID}-${item.meta?.version}`}
-            className={styles.VersionOption}
-            value={item.meta?.version}
-            html={`Version ${item.meta?.version} <small>${moment(
-              item.web?.createdAt
-            ).format("MMM Do YYYY, [at] h:mm a")}</small>`}
-          />
-        ))}
+        {Array.isArray(props.versions) &&
+          props.versions.map(item => (
+            <Option
+              key={`${item.meta?.ZUID}-${item.meta?.version}`}
+              className={styles.VersionOption}
+              value={item.meta?.version}
+              html={`Version ${item.meta?.version} <small>${moment(
+                item.web?.createdAt
+              ).format("MMM Do YYYY, [at] h:mm a")}</small>`}
+            />
+          ))}
       </Select>
     );
   })

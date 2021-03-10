@@ -18,12 +18,9 @@ import {
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
-import { Url } from "@zesty-io/core/Url";
 
 import { AccountInfo } from "./components/AccountInfo";
 import { ChartDashboard } from "./components/ChartDashboard";
-import { HeaderDashboard } from "./components/HeaderDashboard";
-import { TopPerforming } from "./components/TopPerforming";
 import { RecentlyEdited } from "./components/RecentlyEdited";
 import { UserLatest } from "./components/UserLatest";
 import { InstanceActivity } from "./components/InstanceActivity";
@@ -126,20 +123,6 @@ export default connect(function(state) {
     render() {
       return (
         <section className={styles.Dashboard}>
-          {/* <HeaderDashboard
-              instanceName={this.props.instance.name}
-              createdAt={this.props.instance.createdAt}
-              randomHashID={this.props.instance.randomHashID}
-              domain={this.props.instance.domain}
-              firstName={this.props.user.firstName}
-            /> */}
-          {/* <div className={styles.Header}>
-            <h1 className={cx(styles.WelcomeBanner, styles.display)}>
-              <strong>{this.props.user.firstName}</strong>, you are working on{" "}
-              <strong>{this.props.instance.name}</strong>
-            </h1>
-          </div> */}
-
           <section className={styles.LinkOuts}>
             <div className={styles.Cards}>
               <AccountInfo
@@ -149,13 +132,7 @@ export default connect(function(state) {
                 headTags={this.props.headTags}
                 instanceName={this.props.instance.name}
               />
-              {/* <QuickJumps
-                  cardTitle={"Open Preview"}
-                  docsTitle={"WebEngine Docs"}
-                  docsLink={"https://zesty.org/services/web-engine"}
-                  randomHashID={this.props.instance.randomHashID}
-                  liveLink={this.props.instance.domain}
-                /> */}
+
               <QuickJumps
                 cardTitle={"Code"}
                 image={faCode}
@@ -188,14 +165,12 @@ export default connect(function(state) {
           </section>
           <section className={styles.LatestActivity}>
             <UserLatest
-              // user={this.props.user.latest_edits}
               cardTitle="Your Latest Edits"
               logs={this.props.logs}
               user={this.props.user}
               action="2"
             />
             <UserLatest
-              // user={this.props.user.latest_publishes}
               cardTitle="Your Latest Publishes"
               logs={this.props.logs}
               user={this.props.user}
@@ -203,16 +178,7 @@ export default connect(function(state) {
             />
           </section>
           <section className={styles.Chart}>
-            <InstanceActivity
-              // totalUserEdits={this.props.user.total_user_actions}
-              // totalEveryoneEdits={this.props.user.total_everyone_actions}
-              // firstName={this.props.user.firstName}
-              // lastName={this.props.user.lastName}
-              // userEdits={this.props.user.latest_edits}
-              // userPublishes={this.props.user.latest_publishes}
-              logs={this.props.logs}
-              user={this.props.user}
-            />
+            <InstanceActivity logs={this.props.logs} user={this.props.user} />
             <ChartDashboard logs={this.props.logs} />
           </section>
           <section className={styles.RecentActivities}>
