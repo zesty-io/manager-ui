@@ -14,7 +14,6 @@ import styles from "./UserLatest.less";
 
 export function UserLatest(props) {
   const [latest, setLatest] = useState([]);
-  console.log(latest);
 
   useEffect(() => {
     const userLogs = Object.keys(props.logs)
