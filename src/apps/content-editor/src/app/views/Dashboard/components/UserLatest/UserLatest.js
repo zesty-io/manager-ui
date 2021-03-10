@@ -73,7 +73,7 @@ export function UserLatest(props) {
               <li key={i}>
                 <hgroup>
                   {/* <h4>{`${log.meta.message}`}</h4> */}
-                  <h4>{title}</h4>
+                  <h4>{title ? title : log.meta.message}</h4>
                   <h5>{`Updated: ${moment(log.updatedAt).fromNow()}`}</h5>
                 </hgroup>
 
