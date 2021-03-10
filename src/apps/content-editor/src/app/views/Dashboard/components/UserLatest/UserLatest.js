@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
-
+import { request } from "utility/request";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronRight,
@@ -14,6 +14,7 @@ import styles from "./UserLatest.less";
 
 export function UserLatest(props) {
   const [latest, setLatest] = useState([]);
+  const [title, setTitle] = useState("Loading....");
 
   useEffect(() => {
     const userLogs = Object.keys(props.logs)
@@ -30,15 +31,31 @@ export function UserLatest(props) {
       })
       .slice(0, 5);
 
+    const requestArray = userLogs.map(afZUID => afZUID.affectedZUID);
+    console.log(
+      "🚀 ~ file: UserLatest.js ~ line 35 ~ useEffect ~ requestArray",
+      requestArray
+    );
+
+    Promise.all(
+      requestArray.map(affectedZUID => {
+        return request(`${CONFIG.API_INSTANCE}/search/items?q=${affectedZUID}`)
+          .then(data => {
+            console.log(data.data[0].web.metaTitle);
+            const title = data.data[0].web.metaTitle;
+            return title;
+          })
+          .catch(err => console.log(err));
+      })
+    );
+
     setLatest(userLogs);
+    setTitle(title);
   }, [props.user, props.logs]);
 
   return (
     <Card className={styles.UserLatestEdits}>
-      <CardHeader>
-        <FontAwesomeIcon icon={faClock} />
-        {props.cardTitle}
-      </CardHeader>
+      <CardHeader>{props.cardTitle}</CardHeader>
       <CardContent className={styles.CardContent}>
         <ul>
           {latest.map((log, i) => {
@@ -54,7 +71,8 @@ export function UserLatest(props) {
             return (
               <li key={i}>
                 <hgroup>
-                  <h4>{`${log.meta.message}`}</h4>
+                  {/* <h4>{`${log.meta.message}`}</h4> */}
+                  <h4>{title}</h4>
                   <h5>{`Updated: ${moment(log.updatedAt).fromNow()}`}</h5>
                 </hgroup>
 
