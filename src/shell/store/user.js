@@ -8,11 +8,7 @@ export function user(
     firstName: "",
     email: "",
     permissions: [],
-    selected_lang: "",
-    latest_edits: [],
-    latest_publishes: [],
-    total_user_actions: [],
-    total_everyone_actions: []
+    selected_lang: ""
   },
   action
 ) {
@@ -44,17 +40,7 @@ export function user(
     //DRY Creating latest_edits reducer for dashboard
     case "FETCH_USER_LOGS_SUCCESS":
       return {
-        ...state,
-        latest_edits: action.payload.filter(
-          user => user.actionByUserZUID === state.ZUID && user.action === 2
-        ),
-        latest_publishes: action.payload.filter(
-          user => user.actionByUserZUID === state.ZUID && user.action === 4
-        ),
-        total_user_actions: action.payload.filter(
-          user => user.actionByUserZUID === state.ZUID && user.action
-        ),
-        total_everyone_actions: action.payload.filter(user => user.action)
+        ...state
       };
 
     default:
