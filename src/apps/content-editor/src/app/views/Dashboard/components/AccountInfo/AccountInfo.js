@@ -42,9 +42,6 @@ export function AccountInfo(props) {
           )}
 
           <div className={styles.Links}>
-            {/* <p>
-              ZUID: <mark>{props.instanceZUID}</mark>
-            </p> */}
             {props.domain && (
               <Url
                 className={styles.Live}

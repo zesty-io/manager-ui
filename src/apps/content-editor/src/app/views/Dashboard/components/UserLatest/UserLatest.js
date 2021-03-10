@@ -2,11 +2,7 @@ import React, { useState, useEffect } from "react";
 import moment from "moment";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronRight,
-  faClock,
-  faExternalLinkAlt
-} from "@fortawesome/free-solid-svg-icons";
+import { faChevronRight, faClock } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { AppLink } from "@zesty-io/core/AppLink";
 
