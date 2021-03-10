@@ -26,7 +26,7 @@ export function UserLatest(props) {
       })
       .map(zuid => props.logs[zuid])
       .sort((loga, logb) => {
-        return Date.parse(logb.createdAt) - Date.parse(loga.createdAt);
+        return moment(logb.createdAt) - moment(loga.createdAt);
       })
       .slice(0, 5);
 
