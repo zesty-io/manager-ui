@@ -13,11 +13,17 @@ export function UserLatest(props) {
 
   useEffect(() => {
     const userLogs = Object.keys(props.logs)
-      .filter(
-        logZUID => props.logs[logZUID].actionByUserZUID === props.user.ZUID
-      )
+
+      .filter(logZUID => {
+        return (
+          props.logs[logZUID].actionByUserZUID === props.user.ZUID &&
+          props.logs[logZUID].action == props.action
+        );
+      })
       .map(zuid => props.logs[zuid])
-      .filter(log => log.action == props.action)
+      .sort((loga, logb) => {
+        return moment(logb.createdAt) - moment(loga.createdAt);
+      })
       .slice(0, 5);
 
     setLatest(userLogs);
