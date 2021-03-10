@@ -32,21 +32,20 @@ export function UserLatest(props) {
       .slice(0, 5);
 
     Promise.all(
-      userLogs.map(affectedZUID => {
+      userLogs.map(log => {
         return request(
-          `${CONFIG.API_INSTANCE}/search/items?q=${affectedZUID.affectedZUID}`
+          `${CONFIG.API_INSTANCE}/search/items?q=${log.affectedZUID}`
         )
           .then(data => {
-            console.log(data);
-            affectedZUID.recentTitle = data.data[0]?.web?.metaTitle;
-            console.log(affectedZUID);
-            return affectedZUID;
+            log.recentTitle = data.data[0]?.web?.metaTitle;
+            return log;
           })
           .catch(err => console.log(err));
       })
-    ).then(log => {
-      const david = log.map(x => x.recentTitle);
-      setTitle(david);
+    ).then(obj => {
+      const recentTitle = obj.map(name => name.recentTitle);
+      console.log(recentTitle);
+      setTitle(recentTitle);
     });
 
     setLatest(userLogs);
@@ -70,7 +69,6 @@ export function UserLatest(props) {
             return (
               <li key={i}>
                 <hgroup>
-                  {/* <h1>{}</h1> */}
                   <h4>{title ? title : log.meta.message}</h4>
                   <h5>{`Updated: ${moment(log.updatedAt).fromNow()}`}</h5>
                 </hgroup>
