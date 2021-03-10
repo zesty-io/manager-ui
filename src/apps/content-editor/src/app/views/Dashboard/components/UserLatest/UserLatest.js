@@ -14,14 +14,21 @@ import styles from "./UserLatest.less";
 
 export function UserLatest(props) {
   const [latest, setLatest] = useState([]);
+  console.log(latest);
 
   useEffect(() => {
     const userLogs = Object.keys(props.logs)
-      .filter(
-        logZUID => props.logs[logZUID].actionByUserZUID === props.user.ZUID
-      )
+
+      .filter(logZUID => {
+        return (
+          props.logs[logZUID].actionByUserZUID === props.user.ZUID &&
+          props.logs[logZUID].action == props.action
+        );
+      })
       .map(zuid => props.logs[zuid])
-      .filter(log => log.action == props.action)
+      .sort((loga, logb) => {
+        return Date.parse(logb.happenedAt) - Date.parse(loga.happenedAt);
+      })
       .slice(0, 5);
 
     setLatest(userLogs);
