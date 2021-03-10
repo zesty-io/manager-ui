@@ -41,16 +41,17 @@ export function UserLatest(props) {
       requestArray.map(affectedZUID => {
         return request(`${CONFIG.API_INSTANCE}/search/items?q=${affectedZUID}`)
           .then(data => {
-            console.log(data.data[0].web.metaTitle);
-            const title = data.data[0].web.metaTitle;
+            console.log(data);
+            console.log(data.data[0].web?.metaTitle);
+            const title = data.data[0].web?.metaTitle;
             return title;
           })
           .catch(err => console.log(err));
       })
     );
 
-    setLatest(userLogs);
     setTitle(title);
+    setLatest(userLogs);
   }, [props.user, props.logs]);
 
   return (
