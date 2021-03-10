@@ -1,0 +1,31 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.UserLatestEdits {
+  .CardContent {
+    min-height: 295px;
+    padding: 0;
+    ul {
+      padding-left: 0;
+    }
+  }
+
+  li {
+    list-style: none;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    &:nth-of-type(odd) {
+      background: #efefef;
+    }
+  }
+  .AppLink {
+    svg {
+      margin-left: 8px;
+
+      //  center aligns text with svg
+      top: 0.125em;
+      position: relative;
+    }
+  }
+}
