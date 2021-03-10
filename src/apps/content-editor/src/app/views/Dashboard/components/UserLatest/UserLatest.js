@@ -14,7 +14,7 @@ import styles from "./UserLatest.less";
 
 export function UserLatest(props) {
   const [latest, setLatest] = useState([]);
-  const [title, setTitle] = useState("Loading....");
+  const [title, setTitle] = useState([]);
 
   useEffect(() => {
     const userLogs = Object.keys(props.logs)
@@ -31,26 +31,24 @@ export function UserLatest(props) {
       })
       .slice(0, 5);
 
-    const requestArray = userLogs.map(afZUID => afZUID.affectedZUID);
-    console.log(
-      "🚀 ~ file: UserLatest.js ~ line 35 ~ useEffect ~ requestArray",
-      requestArray
-    );
-
     Promise.all(
-      requestArray.map(affectedZUID => {
-        return request(`${CONFIG.API_INSTANCE}/search/items?q=${affectedZUID}`)
+      userLogs.map(affectedZUID => {
+        return request(
+          `${CONFIG.API_INSTANCE}/search/items?q=${affectedZUID.affectedZUID}`
+        )
           .then(data => {
             console.log(data);
-            console.log(data.data[0].web?.metaTitle);
-            const title = data.data[0].web?.metaTitle;
-            return title;
+            affectedZUID.recentTitle = data.data[0]?.web?.metaTitle;
+            console.log(affectedZUID);
+            return affectedZUID;
           })
           .catch(err => console.log(err));
       })
-    );
+    ).then(log => {
+      const david = log.map(x => x.recentTitle);
+      setTitle(david);
+    });
 
-    setTitle(title);
     setLatest(userLogs);
   }, [props.user, props.logs]);
 
@@ -72,7 +70,7 @@ export function UserLatest(props) {
             return (
               <li key={i}>
                 <hgroup>
-                  {/* <h4>{`${log.meta.message}`}</h4> */}
+                  {/* <h1>{}</h1> */}
                   <h4>{title ? title : log.meta.message}</h4>
                   <h5>{`Updated: ${moment(log.updatedAt).fromNow()}`}</h5>
                 </hgroup>
