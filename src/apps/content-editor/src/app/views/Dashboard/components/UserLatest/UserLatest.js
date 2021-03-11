@@ -37,13 +37,16 @@ export function UserLatest(props) {
           })
           .catch(err => console.log(err));
       })
-    ).then(obj => {
-      setLatest(obj);
+    ).then(logs => {
+      setLatest(logs);
     });
   }, [props.user, props.logs]);
   return (
     <Card className={styles.UserLatestEdits}>
-      <CardHeader>{props.cardTitle}</CardHeader>
+      <CardHeader>
+        <FontAwesomeIcon icon={faClock} />
+        {props.cardTitle}
+      </CardHeader>
       <CardContent className={styles.CardContent}>
         <ul>
           {latest.map((log, i) => {
