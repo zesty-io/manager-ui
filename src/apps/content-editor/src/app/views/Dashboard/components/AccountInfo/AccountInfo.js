@@ -11,6 +11,7 @@ import {
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
 import styles from "./AccountInfo.less";
+import { AppLink } from "@zesty-io/core/AppLink";
 
 export function AccountInfo(props) {
   const [faviconURL, setFaviconURL] = useState("");
@@ -38,7 +39,9 @@ export function AccountInfo(props) {
           {faviconURL ? (
             <img src={faviconURL} height="64px" width="64px" />
           ) : (
-            <FontAwesomeIcon icon={faFileImage} />
+            <AppLink className={styles.UploadImg} to="/settings/head">
+              <FontAwesomeIcon icon={faFileImage} />
+            </AppLink>
           )}
 
           <div className={styles.Links}>
