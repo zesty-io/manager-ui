@@ -10,7 +10,6 @@ import styles from "./UserLatest.less";
 
 export function UserLatest(props) {
   const [latest, setLatest] = useState([]);
-  const [title, setTitle] = useState([]);
 
   useEffect(() => {
     const userLogs = Object.keys(props.logs)
@@ -26,7 +25,7 @@ export function UserLatest(props) {
         return moment(logb.createdAt) - moment(loga.createdAt);
       })
       .slice(0, 5);
-
+    //Fetch content model metaTitles
     Promise.all(
       userLogs.map(log => {
         return request(
@@ -39,14 +38,9 @@ export function UserLatest(props) {
           .catch(err => console.log(err));
       })
     ).then(obj => {
-      const recentTitle = obj.map(name => name.recentTitle);
-      console.log(recentTitle);
-      setTitle(recentTitle);
+      setLatest(obj);
     });
-
-    setLatest(userLogs);
   }, [props.user, props.logs]);
-
   return (
     <Card className={styles.UserLatestEdits}>
       <CardHeader>{props.cardTitle}</CardHeader>
@@ -65,7 +59,9 @@ export function UserLatest(props) {
             return (
               <li key={i}>
                 <hgroup>
-                  <h4>{title ? title : log.meta.message}</h4>
+                  <h4>
+                    {log.recentTitle ? log.recentTitle : log.meta.message}
+                  </h4>
                   <h5>{`Updated: ${moment(log.updatedAt).fromNow()}`}</h5>
                 </hgroup>
 
