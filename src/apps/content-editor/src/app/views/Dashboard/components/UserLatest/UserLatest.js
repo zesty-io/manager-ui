@@ -24,7 +24,7 @@ export function UserLatest(props) {
       .sort((loga, logb) => {
         return moment(logb.createdAt) - moment(loga.createdAt);
       });
-
+    //Filtering out repeated edited titles
     const affectedUserLogs = userLogs
       .filter((log, index) => {
         const _log = log;
