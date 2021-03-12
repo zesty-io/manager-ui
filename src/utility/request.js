@@ -1,7 +1,6 @@
 import Cookies from "js-cookie";
 import { store } from "shell/store";
-import { notify } from "shell/store/notifications";
-import { verify } from "shell/store/auth";
+import { endSession } from "shell/store/auth";
 
 export function request(url, opts = {}) {
   if (!url) {
@@ -54,27 +53,8 @@ export function request(url, opts = {}) {
       // if (res.status === 400) {}
 
       if (res.status === 401) {
-        const state = store.getState();
-
-        // When a token is set it means this user had previously logged in
-        // but a request returned a 401, indicating their session has since
-        // ended and we need them to re-login
-        if (state.auth.token) {
-          store.dispatch(
-            notify({
-              kind: "warn",
-              message: "Your session has ended. Opening the login modal."
-            })
-          );
-
-          setTimeout(() => {
-            store.dispatch(verify());
-          }, 5000);
-        } else {
-          // This may create a lot of noise in our error capturing
-          // but I want to understand if we are seeing instances of this code path
-          throw new Error(`401:RequestUnauthenticated: ${res.url}`);
-        }
+        store.dispatch(endSession());
+        throw new Error(`401:Unauthenticated: ${res.url}`);
       }
 
       // Not Found

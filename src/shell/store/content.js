@@ -245,14 +245,15 @@ export function fetchItem(modelZUID, itemZUID) {
           });
           return res;
         }
-        if (!res || !res.data) {
-          throw new Error("Bad response from API. Missing resource data.");
+
+        // Only insert valid items into state
+        if (res?.data?.meta?.ZUID) {
+          dispatch({
+            type: "FETCH_ITEM_SUCCESS",
+            data: { ...res.data, dirty: false },
+            itemZUID
+          });
         }
-        dispatch({
-          type: "FETCH_ITEM_SUCCESS",
-          data: { ...res.data, dirty: false },
-          itemZUID
-        });
 
         return res;
       }
