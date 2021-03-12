@@ -41,7 +41,7 @@ export function AccountInfo(props) {
           ) : (
             <AppLink
               className={styles.UploadImg}
-              title="Upload Image"
+              title="Add Image"
               to="/settings/head"
             >
               <FontAwesomeIcon icon={faUpload} />
@@ -76,9 +76,9 @@ export function AccountInfo(props) {
               &nbsp; Instance Admin
             </Url>
             {!faviconURL ? (
-              <AppLink to="/settings/head" title="Upload Image">
+              <AppLink to="/settings/head" title="Add Image">
                 <FontAwesomeIcon icon={faUpload} />
-                &nbsp; Upload Image
+                &nbsp; Add Image
               </AppLink>
             ) : (
               ""
