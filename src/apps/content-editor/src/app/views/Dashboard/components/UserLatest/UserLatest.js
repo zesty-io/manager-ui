@@ -12,7 +12,7 @@ export function UserLatest(props) {
   const [latest, setLatest] = useState([]);
 
   useEffect(() => {
-    const userLogs = Object.keys(props.logs)
+    let userLogs = Object.keys(props.logs)
 
       .filter(logZUID => {
         return (
@@ -23,11 +23,23 @@ export function UserLatest(props) {
       .map(zuid => props.logs[zuid])
       .sort((loga, logb) => {
         return moment(logb.createdAt) - moment(loga.createdAt);
+      });
+    //Filtering out repeated edited titles
+    const affectedUserLogs = userLogs
+      .filter((log, index) => {
+        const _log = log;
+        return (
+          index ===
+          userLogs.findIndex(other_log => {
+            return other_log.affectedZUID === _log.affectedZUID;
+          })
+        );
       })
       .slice(0, 5);
+
     //Fetch content model metaTitles
     Promise.all(
-      userLogs.map(log => {
+      affectedUserLogs.map(log => {
         return request(
           `${CONFIG.API_INSTANCE}/search/items?q=${log.affectedZUID}`
         )
