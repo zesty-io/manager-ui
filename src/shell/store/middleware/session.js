@@ -14,11 +14,6 @@ export const session = store => next => (action = {}) => {
           const state = store.getState();
           if (state.auth.valid) {
             // User is not logging in and a request was unauthenticated
-            // Trigger re-login modal
-
-            console.log("unauth:", data);
-
-            // Request was unauthenticated so trigger login modal
             store.dispatch(endSession());
           }
         }
@@ -31,22 +26,6 @@ export const session = store => next => (action = {}) => {
     // Ensure we continue the promise chain
     return result;
   }
-
-  // if (action?.payload?.code) {
-  //   // We are dealing with a request
-
-  //   if (action.payload.code === 401) {
-  //     // Request was unauthenticated
-
-  //     const state = store.getState();
-  //     console.log("unauth:", state);
-
-  //     if (!state.auth.checking) {
-  //       // User is not logging in and a request was unauthenticated
-  //       // Trigger re-login modal
-  //     }
-  //   }
-  // }
 
   // Ensure we continue redux action handling
   return next(action);
