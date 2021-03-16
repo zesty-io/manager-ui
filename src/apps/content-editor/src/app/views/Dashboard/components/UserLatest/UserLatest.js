@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
+import uniqBy from "lodash/uniqBy";
 import { request } from "utility/request";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight, faClock } from "@fortawesome/free-solid-svg-icons";
@@ -24,20 +25,10 @@ export function UserLatest(props) {
       .sort((loga, logb) => {
         return moment(logb.createdAt) - moment(loga.createdAt);
       });
-    //Filtering out repeated edited titles
-    const affectedUserLogs = userLogs
-      .filter((log, index) => {
-        const _log = log;
-        return (
-          index ===
-          userLogs.findIndex(other_log => {
-            return other_log.affectedZUID === _log.affectedZUID;
-          })
-        );
-      })
-      .slice(0, 5);
 
     //Fetch content model metaTitles
+    const affectedUserLogs = uniqBy(userLogs, "affectedZUID").slice(0, 5);
+
     Promise.all(
       affectedUserLogs.map(log => {
         return request(
