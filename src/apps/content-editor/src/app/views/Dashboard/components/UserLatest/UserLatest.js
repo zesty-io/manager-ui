@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
-
+import { request } from "utility/request";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight, faClock } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
@@ -25,10 +25,22 @@ export function UserLatest(props) {
         return moment(logb.createdAt) - moment(loga.createdAt);
       })
       .slice(0, 5);
-
-    setLatest(userLogs);
+    //Fetch content model metaTitles
+    Promise.all(
+      userLogs.map(log => {
+        return request(
+          `${CONFIG.API_INSTANCE}/search/items?q=${log.affectedZUID}`
+        )
+          .then(data => {
+            log.recentTitle = data.data[0]?.web?.metaTitle;
+            return log;
+          })
+          .catch(err => console.log(err));
+      })
+    ).then(logs => {
+      setLatest(logs);
+    });
   }, [props.user, props.logs]);
-
   return (
     <Card className={styles.UserLatestEdits}>
       <CardHeader>
@@ -50,7 +62,9 @@ export function UserLatest(props) {
             return (
               <li key={i}>
                 <hgroup>
-                  <h4>{`${log.meta.message}`}</h4>
+                  <h4>
+                    {log.recentTitle ? log.recentTitle : log.meta.message}
+                  </h4>
                   <h5>{`Updated: ${moment(log.updatedAt).fromNow()}`}</h5>
                 </hgroup>
 

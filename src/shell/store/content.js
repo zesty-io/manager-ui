@@ -245,14 +245,15 @@ export function fetchItem(modelZUID, itemZUID) {
           });
           return res;
         }
-        if (!res || !res.data) {
-          throw new Error("Bad response from API. Missing resource data.");
+
+        // Only insert valid items into state
+        if (res?.data?.meta?.ZUID) {
+          dispatch({
+            type: "FETCH_ITEM_SUCCESS",
+            data: { ...res.data, dirty: false },
+            itemZUID
+          });
         }
-        dispatch({
-          type: "FETCH_ITEM_SUCCESS",
-          data: { ...res.data, dirty: false },
-          itemZUID
-        });
 
         return res;
       }
@@ -266,17 +267,15 @@ export function searchItems(itemZUID) {
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/search/items?q=${itemZUID}`,
       handler: res => {
-        if (!res || !Array.isArray(res.data)) {
-          throw new Error("Bad response from API. Missing resource data.");
+        if (Array.isArray(res.data)) {
+          dispatch({
+            type: "SEARCH_ITEMS_SUCCESS",
+            data: res.data.reduce((acc, item) => {
+              acc[item.meta.ZUID] = item;
+              return acc;
+            }, {})
+          });
         }
-
-        dispatch({
-          type: "SEARCH_ITEMS_SUCCESS",
-          data: res.data.reduce((acc, item) => {
-            acc[item.meta.ZUID] = item;
-            return acc;
-          }, {})
-        });
 
         return res;
       }
@@ -627,17 +626,15 @@ export function fetchItemPublishing(modelZUID, itemZUID) {
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`,
       handler: res => {
-        if (!res || !res.data || !Array.isArray(res.data)) {
-          throw new Error("Bad response from API. Missing resource data.");
+        if (Array.isArray(res.data)) {
+          dispatch({
+            type: "FETCH_ITEM_PUBLISHING",
+            payload: {
+              data: parsePublishState(res.data),
+              itemZUID
+            }
+          });
         }
-
-        dispatch({
-          type: "FETCH_ITEM_PUBLISHING",
-          payload: {
-            data: parsePublishState(res.data),
-            itemZUID
-          }
-        });
       }
     });
   };

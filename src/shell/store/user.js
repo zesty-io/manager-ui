@@ -1,6 +1,5 @@
 import { request } from "utility/request";
 import { set } from "idb-keyval";
-import moment from "moment-timezone";
 import { Sentry } from "utility/sentry";
 
 export function user(
@@ -9,11 +8,7 @@ export function user(
     firstName: "",
     email: "",
     permissions: [],
-    selected_lang: "",
-    latest_edits: [],
-    latest_publishes: [],
-    total_user_actions: [],
-    total_everyone_actions: []
+    selected_lang: ""
   },
   action
 ) {
@@ -41,22 +36,6 @@ export function user(
     case "LOADED_LOCAL_USER_LANG":
     case "USER_SELECTED_LANG":
       return { ...state, selected_lang: action.payload.lang };
-
-    //DRY Creating latest_edits reducer for dashboard
-    case "FETCH_USER_LOGS_SUCCESS":
-      return {
-        ...state,
-        latest_edits: action.payload.filter(
-          user => user.actionByUserZUID === state.ZUID && user.action === 2
-        ),
-        latest_publishes: action.payload.filter(
-          user => user.actionByUserZUID === state.ZUID && user.action === 4
-        ),
-        total_user_actions: action.payload.filter(
-          user => user.actionByUserZUID === state.ZUID && user.action
-        ),
-        total_everyone_actions: action.payload.filter(user => user.action)
-      };
 
     default:
       return state;

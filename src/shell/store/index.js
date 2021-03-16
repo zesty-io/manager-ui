@@ -53,7 +53,18 @@ if (__CONFIG__?.ENV !== "production") {
  */
 middlewares.push(
   createSentryMiddleware(Sentry, {
-    getUserContext: state => state.user,
+    getUserContext: state => {
+      return {
+        email: state.user.email,
+        ZUID: state.user.ZUID,
+        createdAt: state.user.createdAt,
+        firstName: state.user.firstName,
+        lastName: state.user.lastName,
+        lastLogin: state.user.lastLogin,
+        selected_lang: state.user.selected_lang,
+        updatedAt: state.user.updatedAt
+      };
+    },
     stateTransformer: state => {
       // Specify allow list of transferable data to sentry
       return {

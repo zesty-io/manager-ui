@@ -18,7 +18,7 @@ export default connect(state => {
   };
 })(
   React.memo(function GlobalNotifications(props) {
-    const [open, setOpen] = useState(Boolean(props.notifications.length));
+    const [open, setOpen] = useState(false);
     const [showAll, setShowAll] = useState(false);
 
     const ref = useOnclickOutside(() => {
@@ -26,16 +26,18 @@ export default connect(state => {
     });
 
     useEffect(() => {
-      setOpen(Boolean(props.notifications.length));
+      if (props.notifications.length) {
+        setOpen(true);
 
-      // On every render set timeout to hide notices
-      const token = setTimeout(() => {
-        setOpen(false);
-      }, 5000);
+        // On every render set timeout to hide notices
+        const token = setTimeout(() => {
+          setOpen(false);
+        }, 5000);
 
-      return () => {
-        clearTimeout(token);
-      };
+        return () => {
+          clearTimeout(token);
+        };
+      }
     }, [props.notifications.length]);
 
     return (
