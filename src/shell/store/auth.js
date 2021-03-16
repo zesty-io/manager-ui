@@ -69,7 +69,7 @@ export function endSession() {
       dispatch(
         notify({
           kind: "warn",
-          message: "Your session has ended. Opening the login modal."
+          message: "Your session ended. Redirecting to login."
         })
       );
 

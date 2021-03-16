@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
-import { store } from "shell/store";
-import { endSession } from "shell/store/auth";
+// import { store } from "shell/store";
+// import { endSession } from "shell/store/auth";
 
 export function request(url, opts = {}) {
   if (!url) {
@@ -52,10 +52,10 @@ export function request(url, opts = {}) {
       // // Bad Request
       // if (res.status === 400) {}
 
-      if (res.status === 401) {
-        store.dispatch(endSession());
-        throw new Error(`401:Unauthenticated: ${res.url}`);
-      }
+      // if (res.status === 401) {
+      //   store.dispatch(endSession());
+      //   throw new Error(`401:Unauthenticated: ${res.url}`);
+      // }
 
       // Not Found
       // if (res.status === 404) {}

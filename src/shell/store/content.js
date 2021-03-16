@@ -315,22 +315,24 @@ export function fetchItems(modelZUID, options = {}) {
           throw res;
         }
 
-        dispatch({
-          type: "FETCH_ITEMS_SUCCESS",
-          data: res.data
-            .filter(item => {
-              if (item.meta && item.web && item.data) {
-                return true;
-              } else {
-                console.error("Broken item", item);
-                return false;
-              }
-            }) // We only allow items which include meta, web & data
-            .reduce((acc, item) => {
-              acc[item.meta.ZUID] = item;
-              return acc;
-            }, {})
-        });
+        if (res.status === 200) {
+          dispatch({
+            type: "FETCH_ITEMS_SUCCESS",
+            data: res.data
+              .filter(item => {
+                if (item.meta && item.web && item.data) {
+                  return true;
+                } else {
+                  console.error("Broken item", item);
+                  return false;
+                }
+              }) // We only allow items which include meta, web & data
+              .reduce((acc, item) => {
+                acc[item.meta.ZUID] = item;
+                return acc;
+              }, {})
+          });
+        }
 
         return res;
       }
