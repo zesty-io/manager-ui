@@ -52,10 +52,9 @@ export function request(url, opts = {}) {
       // // Bad Request
       // if (res.status === 400) {}
 
-      if (res.status === 401) {
-        store.dispatch(endSession());
-        throw new Error(`401:Unauthenticated: ${res.url}`);
-      }
+      // if (res.status === 401) {
+      //   throw new Error(`401:Unauthenticated: ${res.url}`);
+      // }
 
       // Not Found
       // if (res.status === 404) {}

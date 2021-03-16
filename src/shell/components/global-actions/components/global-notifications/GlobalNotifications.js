@@ -18,6 +18,7 @@ export default connect(state => {
   };
 })(
   React.memo(function GlobalNotifications(props) {
+    const [initialRender, setInitialRender] = useState(true);
     const [open, setOpen] = useState(false);
     const [showAll, setShowAll] = useState(false);
 
@@ -26,7 +27,7 @@ export default connect(state => {
     });
 
     useEffect(() => {
-      if (props.notifications.length) {
+      if (!initialRender && props.notifications.length) {
         setOpen(true);
 
         // On every render set timeout to hide notices
@@ -38,6 +39,9 @@ export default connect(state => {
           clearTimeout(token);
         };
       }
+
+      // Avoid displaying logout notice on re-login
+      setInitialRender(false);
     }, [props.notifications.length]);
 
     return (
