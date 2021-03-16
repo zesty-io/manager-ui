@@ -5,7 +5,8 @@ import { notify } from "shell/store/notifications";
 export function auth(
   state = {
     checking: true,
-    valid: false
+    valid: false,
+    sessionEnding: false
   },
   action
 ) {
@@ -24,6 +25,7 @@ export function auth(
       return {
         ...state,
         checking: false,
+        sessionEnding: false,
         valid: action.payload.code === 200,
         token: action.payload.meta.token
       };
@@ -35,6 +37,12 @@ export function auth(
     case "FETCH_LOGIN_ERROR":
       return { ...state, checking: false, valid: action.payload.auth };
 
+    case "SESSION_ENDING":
+      return { ...state, sessionEnding: true };
+
+    case "SESSION_INVALID":
+      return { ...state, valid: false };
+
     case "LOGOUT":
       Cookies.remove(CONFIG.COOKIE_NAME, {
         path: "/",
@@ -45,6 +53,35 @@ export function auth(
     default:
       return state;
   }
+}
+
+export function endSession() {
+  return (dispatch, getState) => {
+    const state = getState();
+
+    dispatch({
+      type: "SESSION_ENDING"
+    });
+
+    // Track session ending to avoid mutliple notifications
+    // when multiple requests return 401
+    if (!state.auth.sessionEnding) {
+      dispatch(
+        notify({
+          kind: "warn",
+          message: "Your session ended. Redirecting to login."
+        })
+      );
+
+      // Wait 5 seconds so it is not a jarring experience
+      // switching someone to the login screen
+      setTimeout(() => {
+        dispatch({
+          type: "SESSION_INVALID"
+        });
+      }, 5000);
+    }
+  };
 }
 
 export function verify() {

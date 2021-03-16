@@ -245,14 +245,15 @@ export function fetchItem(modelZUID, itemZUID) {
           });
           return res;
         }
-        if (!res || !res.data) {
-          throw new Error("Bad response from API. Missing resource data.");
+
+        // Only insert valid items into state
+        if (res?.data?.meta?.ZUID) {
+          dispatch({
+            type: "FETCH_ITEM_SUCCESS",
+            data: { ...res.data, dirty: false },
+            itemZUID
+          });
         }
-        dispatch({
-          type: "FETCH_ITEM_SUCCESS",
-          data: { ...res.data, dirty: false },
-          itemZUID
-        });
 
         return res;
       }
@@ -314,22 +315,24 @@ export function fetchItems(modelZUID, options = {}) {
           throw res;
         }
 
-        dispatch({
-          type: "FETCH_ITEMS_SUCCESS",
-          data: res.data
-            .filter(item => {
-              if (item.meta && item.web && item.data) {
-                return true;
-              } else {
-                console.error("Broken item", item);
-                return false;
-              }
-            }) // We only allow items which include meta, web & data
-            .reduce((acc, item) => {
-              acc[item.meta.ZUID] = item;
-              return acc;
-            }, {})
-        });
+        if (res.status === 200) {
+          dispatch({
+            type: "FETCH_ITEMS_SUCCESS",
+            data: res.data
+              .filter(item => {
+                if (item.meta && item.web && item.data) {
+                  return true;
+                } else {
+                  console.error("Broken item", item);
+                  return false;
+                }
+              }) // We only allow items which include meta, web & data
+              .reduce((acc, item) => {
+                acc[item.meta.ZUID] = item;
+                return acc;
+              }, {})
+          });
+        }
 
         return res;
       }
