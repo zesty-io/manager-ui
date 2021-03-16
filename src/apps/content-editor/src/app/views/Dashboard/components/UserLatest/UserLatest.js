@@ -48,36 +48,42 @@ export function UserLatest(props) {
         {props.cardTitle}
       </CardHeader>
       <CardContent className={styles.CardContent}>
-        <ul>
-          {latest.map((log, i) => {
-            let url = "";
+        {latest.length > 0 ? (
+          <ul>
+            {latest.map((log, i) => {
+              let url = "";
 
-            if (log.meta?.url) {
-              url = log.meta.url
-                .split("/")
-                .slice(3)
-                .join("/");
-            }
+              if (log.meta?.url) {
+                url = log.meta.url
+                  .split("/")
+                  .slice(3)
+                  .join("/");
+              }
 
-            return (
-              <li key={i}>
-                <hgroup>
-                  <h4>
-                    {log.recentTitle ? log.recentTitle : log.meta.message}
-                  </h4>
-                  <h5>{`Updated: ${moment(log.updatedAt).fromNow()}`}</h5>
-                </hgroup>
+              return (
+                <li key={i}>
+                  <hgroup>
+                    <h4>
+                      {log.recentTitle ? log.recentTitle : log.meta.message}
+                    </h4>
+                    <h5>{`Updated: ${moment(log.updatedAt).fromNow()}`}</h5>
+                  </hgroup>
 
-                {url && (
-                  <AppLink className={styles.AppLink} to={url}>
-                    View
-                    <FontAwesomeIcon icon={faChevronRight} />
-                  </AppLink>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+                  {url && (
+                    <AppLink className={styles.AppLink} to={url}>
+                      View
+                      <FontAwesomeIcon icon={faChevronRight} />
+                    </AppLink>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        ) : props.action == "2" ? (
+          <h3 className={styles.display}>No recent changes</h3>
+        ) : (
+          <h3 className={styles.display}>No recent publishes</h3>
+        )}
       </CardContent>
     </Card>
   );
