@@ -5,7 +5,6 @@ import thunkMiddleware from "redux-thunk";
 import createSentryMiddleware from "redux-sentry-middleware";
 import { fetchResource, resolveFieldOptions } from "./middleware/api";
 import { localStorage } from "./middleware/local-storage";
-import { session } from "./middleware/session";
 
 import { Sentry } from "utility/sentry";
 
@@ -30,7 +29,6 @@ import ui from "./ui";
 // Middleware is applied in order of array
 const middlewares = [
   localStorage,
-  session,
   fetchResource,
   resolveFieldOptions,
   thunkMiddleware
