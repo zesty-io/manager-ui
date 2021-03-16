@@ -1,15 +1,18 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase, faLink } from "@fortawesome/free-solid-svg-icons";
+import cx from "classnames";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Url } from "@zesty-io/core/Url";
 
 import styles from "./LinkedSchema.less";
+import shared from "../../FileDrawer.less";
+
 export default function LinkedSchema(props) {
   return (
-    <Card className={styles.LinkedSchema}>
+    <Card className={cx(styles.LinkedSchema, shared.DrawerStyles)}>
       <CardHeader>
         <h1>
           <FontAwesomeIcon icon={faDatabase} /> Linked Schema

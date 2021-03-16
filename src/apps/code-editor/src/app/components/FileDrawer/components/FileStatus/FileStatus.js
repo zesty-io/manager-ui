@@ -1,5 +1,6 @@
 import React from "react";
 import moment from "moment";
+import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBolt, faCodeBranch } from "@fortawesome/free-solid-svg-icons";
@@ -8,10 +9,11 @@ import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
 
 import styles from "./FileStatus.less";
+import shared from "../../FileDrawer.less";
 
 export default function FileStatus(props) {
   return (
-    <Card className={styles.FileStatus}>
+    <Card className={cx(styles.FileStatus, shared.DrawerStyles)}>
       <CardHeader>
         <h1>
           <FontAwesomeIcon icon={faCodeBranch} /> Code File
