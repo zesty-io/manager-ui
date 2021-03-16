@@ -6,7 +6,7 @@ import {
   faEye,
   faUser,
   faGlobeAmericas,
-  faUpload
+  faCog
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
@@ -39,13 +39,7 @@ export function AccountInfo(props) {
           {faviconURL ? (
             <img src={faviconURL} height="64px" width="64px" />
           ) : (
-            <AppLink
-              className={styles.UploadImg}
-              title="Add an image"
-              to="/settings/head"
-            >
-              <FontAwesomeIcon icon={faUpload} />
-            </AppLink>
+            <FontAwesomeIcon className={styles.UploadImg} icon={faCog} />
           )}
 
           <div className={styles.Links}>
@@ -76,9 +70,9 @@ export function AccountInfo(props) {
               &nbsp; Instance Admin
             </Url>
             {!faviconURL ? (
-              <AppLink to="/settings/head" title="Add an image">
-                <FontAwesomeIcon icon={faUpload} />
-                &nbsp; Add an image
+              <AppLink to="/settings/head" title="Set Favicon">
+                <FontAwesomeIcon icon={faCog} />
+                &nbsp; Set Favicon
               </AppLink>
             ) : (
               ""
