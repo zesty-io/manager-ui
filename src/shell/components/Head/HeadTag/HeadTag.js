@@ -69,10 +69,10 @@ export const HeadTag = props => {
       .then(res => {
         props.dispatch(
           notify({
-            message: res.data.error
-              ? `Failed to update head tag. ${res.data.status}`
+            message: res.error
+              ? `Failed to update head tag. ${res.status}`
               : "Successfully updated head tag",
-            kind: res.data.error ? "warn" : "success"
+            kind: res.error ? "warn" : "success"
           })
         );
 
