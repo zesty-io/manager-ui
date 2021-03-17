@@ -42,8 +42,6 @@ export default connect(state => {
         setOpen(false);
       }
     };
-    console.log("userRole", props.userRole);
-    console.log("userRole", props.userRole.name);
 
     window.addEventListener("click", handleGlobalClick);
 
@@ -124,7 +122,6 @@ export default connect(state => {
                   `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${props.instance.ZUID}`
                 ).then(res => {
                   setPurge(false);
-                  console.log(res);
                 });
               }}
             >
