@@ -1,17 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import cx from "classnames";
-import { connect, useSelector } from "react-redux";
+import { connect } from "react-redux";
 
 import { Button } from "@zesty-io/core/Button";
-import { Notice } from "@zesty-io/core/Notice";
+
 import { request } from "utility/request";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
   faExternalLinkAlt,
   faExclamationCircle,
-  faCheckCircle,
-  faBan,
   faSpinner
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -25,14 +23,14 @@ import styles from "./GlobalInstance.less";
 export default connect(state => {
   return {
     instance: state.instance,
-    instances: state.instances
+    instances: state.instances,
+    userRole: state.userRole
   };
 })(function GlobalInstance(props) {
   const ref = useRef();
   const domain = useDomain();
   const [open, setOpen] = useState(false);
   const [purge, setPurge] = useState(false);
-  const userRole = useSelector(state => state.userRole);
 
   useEffect(() => {
     const handleGlobalClick = evt => {
@@ -111,7 +109,7 @@ export default connect(state => {
           ))}
         </ul>
         {/*  ONLY Owner and Admin can purge cache */}
-        {userRole.name === "Owner" || userRole.name === "Admin" ? (
+        {props.userRole.name === "Owner" || props.userRole.name === "Admin" ? (
           <div>
             <Button
               kind="warn"
