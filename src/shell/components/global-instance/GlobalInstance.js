@@ -2,10 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
 
+import { Button } from "@zesty-io/core/Button";
+import { Notice } from "@zesty-io/core/Notice";
+import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
-  faExternalLinkAlt
+  faExternalLinkAlt,
+  faExclamationCircle,
+  faCheckCircle,
+  faBan,
+  faSpinner
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Select, Option } from "@zesty-io/core/Select";
@@ -23,6 +30,7 @@ export default connect(state => {
   const ref = useRef();
   const domain = useDomain();
   const [open, setOpen] = useState(false);
+  const [purge, setPurge] = useState(false);
 
   useEffect(() => {
     const handleGlobalClick = evt => {
@@ -38,6 +46,7 @@ export default connect(state => {
     return () => window.removeEventListener("click", handleGlobalClick);
   }, [ref]);
 
+  console.log(props);
   return (
     <section className={cx(styles.bodyText, styles.GlobalInstance)} ref={ref}>
       <menu className={styles.Actions}>
@@ -100,6 +109,42 @@ export default connect(state => {
             </li>
           ))}
         </ul>
+        {/*  ONLY Owner and Admin can purge cache */}
+        {/* {userRole.name === "Owner" || userRole.name === "Admin" ? ( */}
+        <div>
+          <Button kind="warn" onClick={() => setOpen(true)}>
+            <FontAwesomeIcon icon={faExclamationCircle} />
+            <span>Purge</span>
+          </Button>
+          <Modal type="local" open={open} onClose={() => setOpen(false)}>
+            <ModalContent className={styles.ModalContent}>
+              <Notice>
+                Are you sure you want to trigger a CDN purge causing production
+                to update immediately.
+              </Notice>
+            </ModalContent>
+            <ModalFooter className={styles.ModalFooter}>
+              <Button
+                kind="save"
+                onClick={() => {
+                  alert("Purgulator");
+                }}
+              >
+                {purge ? (
+                  <FontAwesomeIcon icon={faSpinner} />
+                ) : (
+                  <FontAwesomeIcon icon={faCheckCircle} />
+                )}
+                PURGE
+              </Button>
+              <Button kind="cancel" onClick={() => setOpen(false)}>
+                <FontAwesomeIcon icon={faBan} />
+                Cancel (ESC)
+              </Button>
+            </ModalFooter>
+          </Modal>
+        </div>
+        {/* ) : null} */}
       </main>
     </section>
   );
