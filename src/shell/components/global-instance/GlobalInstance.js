@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
+import { usePermission } from "shell/hooks/use-permissions";
 
 import { Button } from "@zesty-io/core/Button";
 
@@ -31,6 +32,7 @@ export default connect(state => {
   const domain = useDomain();
   const [open, setOpen] = useState(false);
   const [purge, setPurge] = useState(false);
+  const canPurge = usePermission("PUBLISH");
 
   useEffect(() => {
     const handleGlobalClick = evt => {
@@ -40,6 +42,8 @@ export default connect(state => {
         setOpen(false);
       }
     };
+    console.log("userRole", props.userRole);
+    console.log("userRole", props.userRole.name);
 
     window.addEventListener("click", handleGlobalClick);
 
@@ -108,8 +112,8 @@ export default connect(state => {
             </li>
           ))}
         </ul>
-        {/*  ONLY Owner and Admin can purge cache */}
-        {props.userRole.name === "Owner" || props.userRole.name === "Admin" ? (
+
+        {canPurge && (
           <div>
             <Button
               kind="warn"
@@ -117,7 +121,7 @@ export default connect(state => {
               onClick={() => {
                 setPurge(true);
                 return request(
-                  `https://us-central1-zesty-prod.cloudfunctions.net/fastlyPurge?zuid=${props.instance.ZUID}`
+                  `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${props.instance.ZUID}`
                 ).then(res => {
                   setPurge(false);
                   console.log(res);
@@ -132,7 +136,7 @@ export default connect(state => {
               Purge All
             </Button>
           </div>
-        ) : null}
+        )}
       </main>
     </section>
   );
