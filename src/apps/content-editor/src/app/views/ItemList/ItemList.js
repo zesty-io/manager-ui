@@ -46,8 +46,11 @@ export default connect((state, props) => {
     ? state.languages.find(lang => lang.code === state.user.selected_lang) || {}
     : {};
 
+  const userSelectedLang = state.user.selected_lang || "en-US";
+
   return {
     selectedLang,
+    userSelectedLang,
     model,
     modelZUID,
     user: state.user,
@@ -126,8 +129,8 @@ export default connect((state, props) => {
         ? props.filters[props.modelZUID]
         : DEFAULT_FILTER
     );
-    load(props.modelZUID);
-  }, [props.modelZUID]);
+    load(props.modelZUID, props.userSelectedLang);
+  }, [props.modelZUID, props.userSelectedLang]);
 
   // on filter change
   // run and persist filters
@@ -182,14 +185,20 @@ export default connect((state, props) => {
     setItems(newItems);
   }
 
-  async function load(modelZUID) {
+  async function load(modelZUID, lang) {
     setInitialLoading(true);
     setBackgroundLoading(true);
 
     try {
       const [, itemsRes] = await Promise.all([
         props.dispatch(fetchFields(modelZUID)),
-        props.dispatch(fetchItems(modelZUID, { limit: PAGE_SIZE, page: 1 }))
+        props.dispatch(
+          fetchItems(modelZUID, {
+            limit: PAGE_SIZE,
+            page: 1,
+            lang
+          })
+        )
       ]);
       if (_isMounted.current) {
         // render 1st page of results
@@ -198,7 +207,7 @@ export default connect((state, props) => {
 
         if (itemsRes._meta.totalResults === PAGE_SIZE) {
           // load page 2 until last page
-          await crawlFetchItems(modelZUID);
+          await crawlFetchItems(modelZUID, lang);
           // re-render after all pages fetched
           setShouldRunFilters(true);
         }
@@ -218,13 +227,15 @@ export default connect((state, props) => {
   // end crawling if component unmounts
   // end crawling on modelZUID change
   // end crawling on error
-  async function crawlFetchItems(modelZUID) {
+  async function crawlFetchItems(modelZUID, lang) {
     const limit = PAGE_SIZE;
     let page = 2;
     let totalItems = limit;
     while (totalItems === limit && _isMounted.current) {
       if (modelZUID !== props.modelZUID) break;
-      const res = await props.dispatch(fetchItems(modelZUID, { limit, page }));
+      const res = await props.dispatch(
+        fetchItems(modelZUID, { limit, page, lang })
+      );
       page++;
       totalItems = res._meta.totalResults;
       if (_isMounted.current) {
@@ -665,7 +676,7 @@ export default connect((state, props) => {
                   type: "UNMARK_ITEMS_DIRTY",
                   items: props.dirtyItems
                 });
-                return load(props.modelZUID);
+                return Promise.resolve();
               }}
             />
 
