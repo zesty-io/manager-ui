@@ -1,16 +1,18 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faEye, faLink } from "@fortawesome/free-solid-svg-icons";
+import cx from "classnames";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./LinkedContent.less";
+import shared from "../../FileDrawer.less";
 
 export default function LinkedContent(props) {
   return (
-    <Card className={styles.LinkedContent}>
+    <Card className={cx(styles.LinkedContent, shared.DrawerStyles)}>
       <CardHeader>
         <h1>
           <FontAwesomeIcon icon={faEdit} /> Linked Content

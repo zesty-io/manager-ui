@@ -1,5 +1,6 @@
 import React from "react";
 import moment from "moment";
+import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHistory, faLink } from "@fortawesome/free-solid-svg-icons";
@@ -9,10 +10,11 @@ import { Notice } from "@zesty-io/core/Notice";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./AuditTrail.less";
+import shared from "../../FileDrawer.less";
 
 export default function AuditTrail(props) {
   return (
-    <Card className={styles.AuditTrail}>
+    <Card className={cx(styles.AuditTrail, shared.DrawerStyles)}>
       <CardHeader>
         <h1>
           <FontAwesomeIcon icon={faHistory} /> AuditTrail™
