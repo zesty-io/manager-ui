@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import cx from "classnames";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 
 import { Button } from "@zesty-io/core/Button";
 import { Notice } from "@zesty-io/core/Notice";
-import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
+import { request } from "utility/request";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
@@ -21,6 +21,7 @@ import { Url } from "@zesty-io/core/Url";
 import { useDomain } from "shell/hooks/use-domain";
 
 import styles from "./GlobalInstance.less";
+
 export default connect(state => {
   return {
     instance: state.instance,
@@ -31,6 +32,7 @@ export default connect(state => {
   const domain = useDomain();
   const [open, setOpen] = useState(false);
   const [purge, setPurge] = useState(false);
+  const userRole = useSelector(state => state.userRole);
 
   useEffect(() => {
     const handleGlobalClick = evt => {
@@ -46,7 +48,6 @@ export default connect(state => {
     return () => window.removeEventListener("click", handleGlobalClick);
   }, [ref]);
 
-  console.log(props);
   return (
     <section className={cx(styles.bodyText, styles.GlobalInstance)} ref={ref}>
       <menu className={styles.Actions}>
@@ -110,41 +111,30 @@ export default connect(state => {
           ))}
         </ul>
         {/*  ONLY Owner and Admin can purge cache */}
-        {/* {userRole.name === "Owner" || userRole.name === "Admin" ? ( */}
-        <div>
-          <Button kind="warn" onClick={() => setOpen(true)}>
-            <FontAwesomeIcon icon={faExclamationCircle} />
-            <span>Purge</span>
-          </Button>
-          <Modal type="local" open={open} onClose={() => setOpen(false)}>
-            <ModalContent className={styles.ModalContent}>
-              <Notice>
-                Are you sure you want to trigger a CDN purge causing production
-                to update immediately.
-              </Notice>
-            </ModalContent>
-            <ModalFooter className={styles.ModalFooter}>
-              <Button
-                kind="save"
-                onClick={() => {
-                  alert("Purgulator");
-                }}
-              >
-                {purge ? (
-                  <FontAwesomeIcon icon={faSpinner} />
-                ) : (
-                  <FontAwesomeIcon icon={faCheckCircle} />
-                )}
-                PURGE
-              </Button>
-              <Button kind="cancel" onClick={() => setOpen(false)}>
-                <FontAwesomeIcon icon={faBan} />
-                Cancel (ESC)
-              </Button>
-            </ModalFooter>
-          </Modal>
-        </div>
-        {/* ) : null} */}
+        {userRole.name === "Owner" || userRole.name === "Admin" ? (
+          <div>
+            <Button
+              kind="warn"
+              disabled={purge}
+              onClick={() => {
+                setPurge(true);
+                return request(
+                  `https://us-central1-zesty-prod.cloudfunctions.net/fastlyPurge?zuid=${props.instance.ZUID}`
+                ).then(res => {
+                  setPurge(false);
+                  console.log(res);
+                });
+              }}
+            >
+              {purge ? (
+                <FontAwesomeIcon icon={faSpinner} />
+              ) : (
+                <FontAwesomeIcon icon={faExclamationCircle} />
+              )}
+              Purge All
+            </Button>
+          </div>
+        ) : null}
       </main>
     </section>
   );
