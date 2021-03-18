@@ -24,8 +24,7 @@ import styles from "./GlobalInstance.less";
 export default connect(state => {
   return {
     instance: state.instance,
-    instances: state.instances,
-    userRole: state.userRole
+    instances: state.instances
   };
 })(function GlobalInstance(props) {
   const ref = useRef();
