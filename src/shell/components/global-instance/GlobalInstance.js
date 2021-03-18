@@ -18,6 +18,7 @@ import { Select, Option } from "@zesty-io/core/Select";
 import { Url } from "@zesty-io/core/Url";
 
 import { useDomain } from "shell/hooks/use-domain";
+import { notify } from "shell/store/notifications";
 
 import styles from "./GlobalInstance.less";
 
@@ -119,17 +120,30 @@ export default connect(state => {
                 setPurge(true);
                 return request(
                   `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${props.instance.ZUID}`
-                ).then(res => {
-                  setPurge(false);
-                });
+                )
+                  .then(res => {
+                    if (res.status === 200) {
+                      setPurge(false);
+                    }
+                  })
+                  .catch(err => {
+                    dispatch({
+                      kind: "warn",
+                      message: err.message,
+                      err
+                    });
+                  })
+                  .finally(() => {
+                    setPurge(false);
+                  });
               }}
             >
               {purge ? (
-                <FontAwesomeIcon icon={faSpinner} />
+                <FontAwesomeIcon className={styles.Spinner} icon={faSpinner} />
               ) : (
                 <FontAwesomeIcon icon={faExclamationCircle} />
               )}
-              Purge All
+              Refresh Instance Cache
             </Button>
           </div>
         )}
