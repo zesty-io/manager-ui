@@ -114,7 +114,7 @@ export default connect(state => {
         {canPurge && (
           <div>
             <Button
-              kind="warn"
+              className={styles.Button}
               disabled={purge}
               onClick={() => {
                 setPurge(true);
