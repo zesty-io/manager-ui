@@ -36,6 +36,20 @@ export default React.memo(function GlobalActions(props) {
           />
           {openMenu && <GlobalHelpMenu />}
         </span>
+
+        <Url
+          href={`https://zesty.io`}
+          title="View source code commit"
+          target="_blank"
+          className={styles.GlobalAction}
+        >
+          <img
+            src="https://brand.zesty.io/zesty-io-logo.svg"
+            alt={`Zesty.io`}
+            width="18px"
+            height="18px"
+          />
+        </Url>
       </div>
       <div className={styles.AppVersion}>
         <Url
@@ -43,12 +57,6 @@ export default React.memo(function GlobalActions(props) {
           title="View source code commit"
           target="_blank"
         >
-          <img
-            src="https://brand.zesty.io/zesty-io-logo.svg"
-            alt={`Zesty.io version ${CONFIG?.build?.data?.gitCommit}`}
-            width="24px"
-            height="24px"
-          />
           <span className={styles.VersionNumber}>
             {CONFIG?.build?.data?.gitCommit}
           </span>

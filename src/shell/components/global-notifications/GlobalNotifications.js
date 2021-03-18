@@ -71,7 +71,7 @@ export default connect(state => {
     return (
       <aside ref={ref} className={cx(styles.Notifications)}>
         <span
-          className={styles.Bell}
+          className={cx(styles.Bell, showToast ? styles.Flash : null)}
           title="See All Notifications"
           onClick={() => setDrawerOpen(!drawerOpen)}
         >
@@ -82,8 +82,8 @@ export default connect(state => {
           )}
         </span>
 
-        {showToast && (
-          <div className={cx(styles.Toast)}>
+        {props.notifications[0] && (
+          <div className={cx(styles.Toast, showToast ? null : styles.Hide)}>
             <FontAwesomeIcon
               className={cx(
                 props.notifications[0].kind
@@ -101,12 +101,13 @@ export default connect(state => {
           className={styles.Drawer}
           position="right"
           offset="0px"
-          width="500px"
+          width="400px"
+          height="calc(100vh - 54px)"
           open={drawerOpen}
         >
           <DrawerContent className={styles.DrawerContent}>
             <header>
-              <h1 className={styles.display}>Notifications</h1>
+              <h1 className={styles.display}>My Notifications</h1>
               <AppLink to="/audit-trail">View All Logs</AppLink>
             </header>
 

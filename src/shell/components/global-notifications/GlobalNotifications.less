@@ -13,11 +13,11 @@
     color: rgb(188, 213, 255);
     background: lighten(@zesty-dark-blue, 15%);
     border-radius: 50%;
-    // border: 2px solid #bcd5ff;
     padding: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: background-color 1s ease-in;
 
     .Count {
       font-weight: bold;
@@ -28,6 +28,10 @@
     &:focus {
       background: lighten(@zesty-dark-blue, 20%);
     }
+  }
+
+  .Flash {
+    background-color: @zesty-orange;
   }
 
   .Toast {
@@ -44,9 +48,20 @@
     display: flex;
     align-items: center;
     box-shadow: 0px 0px 6px #404759;
+    opacity: 1;
+
+    &.Hide {
+      opacity: 0;
+      bottom: 48px;
+      transition: all 1s linear;
+      z-index: -10;
+    }
 
     svg {
       margin-right: 8px;
+      width: 16px;
+      height: 16px;
+
       &.save,
       &.success {
         color: @zesty-green;
@@ -72,22 +87,23 @@
     bottom: 0;
     top: 54px;
     box-shadow: 0px 0px 12px lighten(@zesty-dark-blue, 20%);
-    height: calc(100vh - 54px);
     background-color: #fff;
 
     .DrawerContent {
-      padding: 16px;
+      padding: 0 16px 16px 16px;
 
       header {
-        margin-bottom: 32px;
+        background-color: #fff;
+        padding: 16px 0 32px;
+        position: sticky;
+        top: 0;
       }
 
       ul {
         list-style-type: none;
-        width: max-content;
 
         .Notification {
-          margin: 8px 0;
+          margin: 12px 0;
 
           .Icon {
             margin-right: 8px;
@@ -103,10 +119,10 @@
           .Message {
             display: flex;
             align-items: center;
-            margin-bottom: -8px; // pull timestamp closer
+            line-height: 16px;
           }
           .Timestamp {
-            margin-left: 20px;
+            margin-left: 24px;
           }
         }
       }
