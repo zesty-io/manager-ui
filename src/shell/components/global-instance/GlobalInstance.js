@@ -121,11 +121,6 @@ export default connect(state => {
                 return request(
                   `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${props.instance.ZUID}`
                 )
-                  .then(res => {
-                    if (res.status === 200) {
-                      setPurge(false);
-                    }
-                  })
                   .catch(err => {
                     dispatch({
                       kind: "warn",
@@ -139,7 +134,7 @@ export default connect(state => {
               }}
             >
               {purge ? (
-                <FontAwesomeIcon className={styles.Spinner} icon={faSpinner} />
+                <FontAwesomeIcon spin icon={faSpinner} />
               ) : (
                 <FontAwesomeIcon icon={faExclamationCircle} />
               )}
