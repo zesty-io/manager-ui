@@ -1,0 +1,115 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.Notifications {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .Bell {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    color: rgb(188, 213, 255);
+    background: lighten(@zesty-dark-blue, 15%);
+    border-radius: 50%;
+    // border: 2px solid #bcd5ff;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .Count {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    &:hover,
+    &:focus {
+      background: lighten(@zesty-dark-blue, 20%);
+    }
+  }
+
+  .Toast {
+    position: fixed;
+    bottom: 16px;
+    border-radius: 4px;
+    right: 16px;
+    background-color: @zesty-light-blue;
+    padding: 8px;
+    min-width: 200px;
+    max-width: 500px;
+    z-index: 100;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    box-shadow: 0px 0px 6px #404759;
+
+    svg {
+      margin-right: 8px;
+      &.save,
+      &.success {
+        color: @zesty-green;
+      }
+      &.warn,
+      &.error {
+        color: @zesty-red;
+      }
+    }
+
+    .Message {
+      font-weight: 500;
+    }
+  }
+
+  .None {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .Drawer {
+    bottom: 0;
+    top: 54px;
+    box-shadow: 0px 0px 12px lighten(@zesty-dark-blue, 20%);
+    height: calc(100vh - 54px);
+    background-color: #fff;
+
+    .DrawerContent {
+      padding: 16px;
+
+      header {
+        margin-bottom: 32px;
+      }
+
+      ul {
+        list-style-type: none;
+        width: max-content;
+
+        .Notification {
+          margin: 8px 0;
+
+          .Icon {
+            margin-right: 8px;
+          }
+          .Icon.save,
+          .Icon.success {
+            color: @zesty-green;
+          }
+          .Icon.warn,
+          .Icon.error {
+            color: @zesty-red;
+          }
+          .Message {
+            display: flex;
+            align-items: center;
+            margin-bottom: -8px; // pull timestamp closer
+          }
+          .Timestamp {
+            margin-left: 20px;
+          }
+        }
+      }
+    }
+  }
+}

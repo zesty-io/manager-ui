@@ -19,6 +19,7 @@ import {
 import GlobalSearch from "shell/components/global-search";
 import GlobalAccount from "shell/components/global-account";
 import GlobalInstance from "shell/components/global-instance";
+import { GlobalNotifications } from "shell/components/global-notifications";
 
 import styles from "./GlobalTabs.less";
 
@@ -299,6 +300,7 @@ export default connect(state => {
             </ol>
           </nav>
           <GlobalInstance />
+          <GlobalNotifications />
           <GlobalAccount />
         </div>
       </section>
