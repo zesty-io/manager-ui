@@ -95,26 +95,10 @@ export default connect(state => {
             alt="Instance Image"
           />
         )}
-
-        <ul className={styles.Domains}>
-          {props.instance.domains.map(domain => (
-            <li key={domain.domain}>
-              <Url
-                title={`http://${domain.domain}`}
-                href={`http://${domain.domain}`}
-              >
-                <FontAwesomeIcon icon={faExternalLinkAlt} />
-                &nbsp;
-                {domain.domain}
-              </Url>
-            </li>
-          ))}
-        </ul>
-
         {canPurge && (
           <div>
             <Button
-              kind="warn"
+              className={styles.Button}
               disabled={purge}
               onClick={() => {
                 setPurge(true);
@@ -142,6 +126,20 @@ export default connect(state => {
             </Button>
           </div>
         )}
+        <ul className={styles.Domains}>
+          {props.instance.domains.map(domain => (
+            <li key={domain.domain}>
+              <Url
+                title={`http://${domain.domain}`}
+                href={`http://${domain.domain}`}
+              >
+                <FontAwesomeIcon icon={faExternalLinkAlt} />
+                &nbsp;
+                {domain.domain}
+              </Url>
+            </li>
+          ))}
+        </ul>
       </main>
     </section>
   );
