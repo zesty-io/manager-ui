@@ -37,22 +37,22 @@
   .Toast {
     position: fixed;
     bottom: 16px;
-    border-radius: 4px;
-    right: 16px;
-    background-color: @zesty-light-blue;
-    padding: 8px;
+    border-radius: 4px 0 0 4px;
+    right: 0;
+    background-color: #fff;
+    padding: 10px;
     min-width: 200px;
     max-width: 500px;
     z-index: 100;
     width: fit-content;
     display: flex;
     align-items: center;
-    box-shadow: 0px 0px 6px #404759;
+    box-shadow: 0px 0px 6px #7b8192;
     opacity: 1;
 
     &.Hide {
       opacity: 0;
-      bottom: 48px;
+      right: -525px;
       transition: all 1s linear;
       z-index: -10;
     }
