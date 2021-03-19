@@ -5,7 +5,6 @@ import { useRouteMatch } from "react-router-dom";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { FileList } from "../../components/FileList";
-import { FileTabs } from "../../components/FileTabs";
 import { Workspace } from "../../components/Workspace/";
 
 import { fetchFiles } from "../../../store/files";
@@ -60,12 +59,6 @@ export default connect(state => {
           />
         </nav>
         <section className={styles.FileEditor}>
-          {/* <FileTabs
-            dispatch={props.dispatch}
-            files={props.files}
-            openFileZUID={match && match.params.fileZUID}
-            status={props.status}
-          /> */}
           <Workspace
             dispatch={props.dispatch}
             files={props.files}
