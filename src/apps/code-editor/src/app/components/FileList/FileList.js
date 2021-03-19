@@ -23,7 +23,7 @@ export const FileList = React.memo(function FileList(props) {
   );
 
   let { pathname } = useLocation();
-  let hashPath = `/#!${pathname}`;
+  let hashPath = `/${pathname}`;
 
   useEffect(() => {
     setShownFiles(props.navCode.tree.sort(byLabel));

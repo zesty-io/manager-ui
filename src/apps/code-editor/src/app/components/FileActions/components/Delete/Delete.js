@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router";
 
 import { Button } from "@zesty-io/core/Button";
 import { Notice } from "@zesty-io/core/Notice";
@@ -17,6 +18,7 @@ import {
 export const Delete = React.memo(function Delete(props) {
   const [open, setOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const history = useHistory();
 
   return (
     <div className={styles.DeleteBtn}>
@@ -53,7 +55,7 @@ export const Delete = React.memo(function Delete(props) {
                   setDeleting(false);
                   if (res.status === 200) {
                     setOpen(false);
-                    window.location = "/#!/code";
+                    history.push("/code");
                   }
                 })
                 .catch(err => {

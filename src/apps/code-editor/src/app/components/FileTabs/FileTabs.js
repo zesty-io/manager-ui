@@ -45,11 +45,11 @@ export const FileTabs = React.memo(
       if (file.ZUID === props.openFileZUID) {
         let nextActiveFile = openFiles.find(f => f.ZUID !== file.ZUID);
         if (nextActiveFile) {
-          window.location = `/#!/code/file/${resolvePathPart(
+          window.location = `/code/file/${resolvePathPart(
             nextActiveFile.type
           )}/${nextActiveFile.ZUID}`;
         } else {
-          window.location = "/#!/code";
+          window.location = "/code";
         }
       }
     };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import cx from "classnames";
 import moment from "moment-timezone";
+import { useHistory } from "react-router";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -28,6 +29,7 @@ export const DifferActions = React.memo(function DifferActions(props) {
   const [selectedVersion, setSelectedVersion] = useState(
     props.publishedVersion ? props.publishedVersion : 0
   );
+  const history = useHistory();
 
   function loadVersion() {
     if (selectedVersion === "local") {
@@ -41,7 +43,7 @@ export const DifferActions = React.memo(function DifferActions(props) {
       );
     }
 
-    window.location = `/#!/code/file/views/${props.fileZUID}`;
+    history.push(`/code/file/views/${props.fileZUID}`);
   }
 
   function resolveSync() {
@@ -61,7 +63,7 @@ export const DifferActions = React.memo(function DifferActions(props) {
     props
       .dispatch(saveFile(props.fileZUID, props.status))
       .then(() => {
-        window.location = `/#!/code/file/views/${props.fileZUID}`;
+        history.push(`/code/file/views/${props.fileZUID}`);
       })
       .finally(() => {
         setSaving(false);
