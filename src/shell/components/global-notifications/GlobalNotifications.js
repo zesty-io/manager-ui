@@ -101,7 +101,7 @@ export default connect(state => {
           className={styles.Drawer}
           position="right"
           offset="0px"
-          width="400px"
+          width="450px"
           height="calc(100vh - 54px)"
           open={drawerOpen}
         >
