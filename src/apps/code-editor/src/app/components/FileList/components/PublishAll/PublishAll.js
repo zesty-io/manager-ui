@@ -121,7 +121,7 @@ export default connect(state => {
             <ButtonGroup className={styles.ModalActions}>
               <Button kind="save" onClick={handlePublishAll} disabled={loading}>
                 {loading ? (
-                  <FontAwesomeIcon icon={faSpinner} />
+                  <FontAwesomeIcon spin icon={faSpinner} />
                 ) : (
                   <FontAwesomeIcon icon={faCheckCircle} />
                 )}

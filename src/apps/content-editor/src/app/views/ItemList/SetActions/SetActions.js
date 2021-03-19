@@ -10,7 +10,8 @@ import {
   faTimesCircle,
   faUpload,
   faDatabase,
-  faBolt
+  faBolt,
+  faSync
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 import { Search } from "@zesty-io/core/Search";
@@ -82,10 +83,7 @@ export class SetActions extends Component {
                 onClick={this.props.onSaveAll}
               >
                 {this.props.saving ? (
-                  <i
-                    className={cx("fas fa-sync", styles.Spinner)}
-                    aria-hidden="true"
-                  />
+                  <FontAwesomeIcon spin icon={faSync} />
                 ) : (
                   <FontAwesomeIcon icon={faSave} />
                 )}

@@ -236,7 +236,7 @@ export default connect(state => {
               disabled={this.state.loading}
             >
               {this.state.loading ? (
-                <FontAwesomeIcon icon={faSpinner} />
+                <FontAwesomeIcon spin icon={faSpinner} />
               ) : (
                 <FontAwesomeIcon icon={faSave} />
               )}

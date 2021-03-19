@@ -14,7 +14,12 @@ import {
 } from "shell/store/headTags";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faSpinner, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faSave,
+  faSpinner,
+  faTrash
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
 import { Card, CardContent, CardFooter, CardHeader } from "@zesty-io/core/Card";
@@ -201,9 +206,9 @@ export const HeadTag = props => {
           onClick={tag.hasOwnProperty("createdAt") ? onSave : onCreate}
         >
           {saving ? (
-            <FontAwesomeIcon icon={faSpinner} />
+            <FontAwesomeIcon spin icon={faSpinner} />
           ) : (
-            <FontAwesomeIcon icon={faSpinner} />
+            <FontAwesomeIcon icon={faSave} />
           )}
           {tag.hasOwnProperty("createdAt")
             ? "Save head tag"

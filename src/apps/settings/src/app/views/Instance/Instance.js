@@ -182,7 +182,7 @@ export default connect(state => {
         disabled={saving || dirtyFields.length === 0}
       >
         {saving ? (
-          <FontAwesomeIcon icon={faSpinner} />
+          <FontAwesomeIcon spin icon={faSpinner} />
         ) : (
           <FontAwesomeIcon icon={faSave} />
         )}
