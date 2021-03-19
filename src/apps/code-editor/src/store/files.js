@@ -285,12 +285,6 @@ export function fetchFile(fileZUID, fileType, options = { forceSync: false }) {
     return request(`${CONFIG.API_INSTANCE}/web/${fileType}/${fileZUID}`).then(
       res => {
         if (res.status === 200) {
-          dispatch(
-            notify({
-              message: `Loaded ${res.data.fileName} version ${res.data.version}`
-            })
-          );
-
           dispatch({
             type: "FETCH_FILE_SUCCESS",
             // Make shape match batch fetch responses so

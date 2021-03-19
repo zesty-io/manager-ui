@@ -108,7 +108,7 @@ export const LinkCreate = connect((state, props) => {
               kind: "save"
             });
 
-            window.location.hash = `#!/content/link/${res.current_znode_id}`;
+            window.location = `/content/link/${res.current_znode_id}`;
           }
         })
         .catch(err => {

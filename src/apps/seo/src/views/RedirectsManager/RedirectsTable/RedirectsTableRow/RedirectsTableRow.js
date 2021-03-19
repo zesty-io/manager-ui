@@ -30,7 +30,7 @@ export default function RedirectsTableRow(props) {
         >
           <Link
             className={styles.internalLink}
-            href={`#!/content/${props.target}`}
+            href={`/content/${props.target}`}
           >
             <FontAwesomeIcon className={styles.icon} icon={faFileAlt} />{" "}
             {props.target_page_title}

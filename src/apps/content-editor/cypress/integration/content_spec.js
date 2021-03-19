@@ -266,10 +266,10 @@ describe("Content Specs", () => {
       cy.get("#SaveItemButton").click();
       cy.contains("Saved a new ", { timeout: 3000 }).should("exist");
       // testing tag deletion
-      cy.get('[href="#!/content/6-675028-84dq4s/7-480ab4-wg7x7j"]').should(
+      cy.get('[href="/content/6-675028-84dq4s/7-480ab4-wg7x7j"]').should(
         "exist"
       );
-      cy.get('[href="#!/content/6-675028-84dq4s/7-480ab4-wg7x7j"]')
+      cy.get('[href="/content/6-675028-84dq4s/7-480ab4-wg7x7j"]')
         .siblings("svg")
         .click({ timeout: 3000 });
     });

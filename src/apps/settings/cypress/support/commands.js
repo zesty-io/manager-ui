@@ -18,6 +18,6 @@ Cypress.Commands.add("login", (eml, pass) => {
 });
 
 Cypress.Commands.add("gotoSchema", () => {
-  cy.visit("/#!/schema");
+  cy.visit("/schema");
   cy.get(".SchemaNav", { timeout: 10000 }).should("exist");
 });
