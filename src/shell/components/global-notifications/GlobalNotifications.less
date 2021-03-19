@@ -1,0 +1,131 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.Notifications {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .Bell {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    color: rgb(188, 213, 255);
+    background: lighten(@zesty-dark-blue, 15%);
+    border-radius: 50%;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 1s ease-in;
+
+    .Count {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    &:hover,
+    &:focus {
+      background: lighten(@zesty-dark-blue, 20%);
+    }
+  }
+
+  .Flash {
+    background-color: @zesty-orange;
+  }
+
+  .Toast {
+    position: fixed;
+    bottom: 16px;
+    border-radius: 4px 0 0 4px;
+    right: 0;
+    background-color: #fff;
+    padding: 10px;
+    min-width: 200px;
+    max-width: 500px;
+    z-index: 100;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    box-shadow: 0px 0px 6px #7b8192;
+    opacity: 1;
+
+    &.Hide {
+      opacity: 0;
+      right: -525px;
+      transition: all 1s linear;
+      z-index: -10;
+    }
+
+    svg {
+      margin-right: 8px;
+      width: 16px;
+      height: 16px;
+
+      &.save,
+      &.success {
+        color: @zesty-green;
+      }
+      &.warn,
+      &.error {
+        color: @zesty-red;
+      }
+    }
+
+    .Message {
+      font-weight: 500;
+    }
+  }
+
+  .None {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .Drawer {
+    bottom: 0;
+    top: 54px;
+    box-shadow: 0px 0px 12px lighten(@zesty-dark-blue, 20%);
+    background-color: #fff;
+
+    .DrawerContent {
+      padding: 0 16px 16px 16px;
+
+      header {
+        background-color: #fff;
+        padding: 16px 0 32px;
+        position: sticky;
+        top: 0;
+      }
+
+      ul {
+        list-style-type: none;
+
+        .Notification {
+          margin: 12px 0;
+
+          .Icon {
+            margin-right: 8px;
+          }
+          .Icon.save,
+          .Icon.success {
+            color: @zesty-green;
+          }
+          .Icon.warn,
+          .Icon.error {
+            color: @zesty-red;
+          }
+          .Message {
+            display: flex;
+            align-items: center;
+            line-height: 16px;
+          }
+          .Timestamp {
+            margin-left: 24px;
+          }
+        }
+      }
+    }
+  }
+}
