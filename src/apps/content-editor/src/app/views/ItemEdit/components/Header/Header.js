@@ -22,12 +22,7 @@ export class Header extends React.PureComponent {
           </div>
           <div className={styles.Right}>
             <div className={styles.Links}>
-              {this.props.item.web.path && (
-                <LiveUrl
-                  item={this.props.item}
-                  instance={this.props.instance}
-                />
-              )}
+              {this.props.item.web.path && <LiveUrl item={this.props.item} />}
 
               {this.props.item.web.path && (
                 <PreviewUrl
