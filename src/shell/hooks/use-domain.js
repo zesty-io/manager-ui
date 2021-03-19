@@ -16,9 +16,9 @@ export function useDomain() {
      * That is most likely the primary domain.
      */
 
-    const prodDomains = state.instance.domains.filter(
-      domain => domain.branch !== "dev"
-    );
+    const prodDomains = state.instance.domains
+      .filter(domain => domain.branch !== "dev")
+      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
     const customDomain = prodDomains.find(
       domain => !domain.domain.includes(".zesty.dev")
