@@ -248,6 +248,8 @@ function buildTree(nodes) {
     }
   });
 
+  sortCustom(tree);
+
   // sort nested nav children
   Object.keys(map).forEach(zuid => {
     sortCustom(map[zuid].children);
@@ -274,8 +276,6 @@ function split(tree) {
 
   walk(tree, (tree, leaf) => {
     if (leaf.hidden) {
-      // remove leaf from tree
-      tree.splice(tree.indexOf(leaf), 1);
       hidden.push(leaf);
     } else if (!leaf.parentZUID) {
       // no parent zuid means this is a root leaf
