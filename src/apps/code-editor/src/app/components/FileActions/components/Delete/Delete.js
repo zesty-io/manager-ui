@@ -64,7 +64,7 @@ export const Delete = React.memo(function Delete(props) {
             }}
           >
             {deleting ? (
-              <FontAwesomeIcon icon={faSpinner} />
+              <FontAwesomeIcon spin icon={faSpinner} />
             ) : (
               <FontAwesomeIcon icon={faCheckCircle} />
             )}

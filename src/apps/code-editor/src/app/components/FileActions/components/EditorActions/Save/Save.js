@@ -49,7 +49,7 @@ export default connect(state => {
     return (
       <Button kind="save" onClick={onSave} disabled={saving}>
         {saving ? (
-          <FontAwesomeIcon icon={faSpinner} />
+          <FontAwesomeIcon spin icon={faSpinner} />
         ) : (
           <FontAwesomeIcon icon={faSave} />
         )}

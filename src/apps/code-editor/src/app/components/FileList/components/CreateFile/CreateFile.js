@@ -166,7 +166,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
                 disabled={type === "" || type === "0" || loading}
               >
                 {loading ? (
-                  <FontAwesomeIcon icon={faSpinner} />
+                  <FontAwesomeIcon spin icon={faSpinner} />
                 ) : (
                   <FontAwesomeIcon icon={faCheckCircle} />
                 )}

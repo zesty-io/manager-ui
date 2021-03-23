@@ -258,6 +258,7 @@ const mediaSlice = createSlice({
         file.filename = action.payload.filename;
         file.title = action.payload.title;
         file.group_id = action.payload.group_id;
+        file.url = action.payload.url;
       }
     },
     searchFilesStart(state, action) {

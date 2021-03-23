@@ -199,7 +199,7 @@ export const DifferActions = React.memo(function DifferActions(props) {
             disabled={saving}
           >
             {saving ? (
-              <FontAwesomeIcon icon={faSpinner} />
+              <FontAwesomeIcon spin icon={faSpinner} />
             ) : (
               <FontAwesomeIcon icon={faSave} />
             )}

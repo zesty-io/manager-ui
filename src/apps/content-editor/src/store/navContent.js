@@ -248,6 +248,8 @@ function buildTree(nodes) {
     }
   });
 
+  sortCustom(tree);
+
   // sort nested nav children
   Object.keys(map).forEach(zuid => {
     sortCustom(map[zuid].children);
