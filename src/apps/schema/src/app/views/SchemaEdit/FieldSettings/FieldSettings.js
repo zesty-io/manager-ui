@@ -16,7 +16,8 @@ import {
   faSortNumericUp,
   faMoneyBillAlt,
   faIdCard,
-  faExclamationTriangle
+  faExclamationTriangle,
+  faImage
 } from "@fortawesome/free-solid-svg-icons";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
@@ -162,7 +163,12 @@ export const FIELD_TYPES = [
       </React.Fragment>
     ),
     title: "Text",
-    html: '<i class="fas fa-paragraph" aria-hidden="true"></i>&nbsp;Text'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faParagraph} />
+        &nbsp;Text
+      </React.Fragment>
+    )
   },
   {
     value: "textarea",
@@ -174,7 +180,12 @@ export const FIELD_TYPES = [
     description:
       "Textarea fields are useful for unstructured large chunks of text. They provide more character length than a text field but exclude the styling control of a WYSIWYG field. Textarea content is stored raw without going through any processing.",
     title: "Textarea",
-    html: '<i class="fas fa-paragraph" aria-hidden="true"></i>&nbsp;Textarea'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faParagraph} />
+        &nbsp;TextArea
+      </React.Fragment>
+    )
   },
   {
     value: "wysiwyg_basic",
@@ -194,7 +205,12 @@ export const FIELD_TYPES = [
       </React.Fragment>
     ),
     title: "WYSIWYG",
-    html: '<i class="fas fa-paragraph" aria-hidden="true"></i>&nbsp;WYSIWYG'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faParagraph} />
+        &nbsp;WYSIWYG
+      </React.Fragment>
+    )
   },
   {
     value: "markdown",
@@ -221,7 +237,12 @@ export const FIELD_TYPES = [
       </React.Fragment>
     ),
     title: "Markdown",
-    html: '<i class="fas fa-paragraph" aria-hidden="true"></i>&nbsp;Markdown'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faParagraph} />
+        &nbsp;Markdown
+      </React.Fragment>
+    )
   },
   {
     value: "article_writer",
@@ -241,8 +262,12 @@ export const FIELD_TYPES = [
       </React.Fragment>
     ),
     title: "Article Writer",
-    html:
-      '<i class="fas fa-paragraph" aria-hidden="true"></i>&nbsp;Article Writer'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faParagraph} />
+        &nbsp;Article Writer
+      </React.Fragment>
+    )
   },
   {
     value: "images",
@@ -262,7 +287,12 @@ export const FIELD_TYPES = [
       </React.Fragment>
     ),
     title: "Media",
-    html: '<i class="fas fa-images" aria-hidden="true"></i>&nbsp;Media'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faImages} />
+        &nbsp;Media
+      </React.Fragment>
+    )
   },
   {
     value: "date",
@@ -280,7 +310,12 @@ export const FIELD_TYPES = [
       </React.Fragment>
     ),
     title: "Date",
-    html: '<i class="fas fa-calendar" aria-hidden="true"></i>&nbsp;Date'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faCalendar} />
+        &nbsp;Date
+      </React.Fragment>
+    )
   },
   {
     value: "dropdown",
@@ -298,7 +333,12 @@ export const FIELD_TYPES = [
       </React.Fragment>
     ),
     title: "Dropdown",
-    html: '<i class="fas fa-list" aria-hidden="true"></i>&nbsp;Dropdown'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faList} />
+        &nbsp;Dropdown
+      </React.Fragment>
+    )
   },
   {
     value: "one_to_one",
@@ -310,7 +350,12 @@ export const FIELD_TYPES = [
     description:
       "One to one relationships allow content editors to connect another models content to this one by selecting the other item based upon one of it's fields. This provides the ability to resolve this relationship within a template or the SDK and gain access to the related item data.",
     title: "Related: One to One",
-    html: '<i class="fas fa-arrows-alt-h"></i>&nbsp;Related: One to One'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faArrowsAltH} />
+        &nbsp;Related: One to One
+      </React.Fragment>
+    )
   },
   {
     value: "one_to_many",
@@ -322,7 +367,12 @@ export const FIELD_TYPES = [
     description:
       "Many to one relationships allows content editors to connect many items from another model to this one by selecting the other items based upon one of their fields. This provides the ability to resolve the relationships within a template or the SDK and gain access to the related items data.",
     title: "Related: Many to One",
-    html: '<i class="fas fa-sitemap"></i>&nbsp;Related: Many to one'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faSitemap} />
+        &nbsp;Related: Many to one
+      </React.Fragment>
+    )
   },
   {
     value: "link",
@@ -340,8 +390,12 @@ export const FIELD_TYPES = [
       </React.Fragment>
     ),
     title: "External URL",
-    html:
-      '<i class="fas fa-external-link-alt" aria-hidden="true"></i>&nbsp;External URL'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faExternalLinkAlt} />
+        &nbsp;External URL
+      </React.Fragment>
+    )
   },
   {
     value: "internal_link",
@@ -360,7 +414,12 @@ export const FIELD_TYPES = [
       </React.Fragment>
     ),
     title: "Internal Link",
-    html: '<i class="fas fa-link" aria-hidden="true"></i>&nbsp;Internal Link'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faLink} />
+        &nbsp;Internal Link
+      </React.Fragment>
+    )
   },
   {
     value: "yes_no",
@@ -371,7 +430,12 @@ export const FIELD_TYPES = [
     ),
     description: "",
     title: "Toggle",
-    html: '<i class="fas fa-toggle-on" aria-hidden="true"></i>&nbsp;Toggle'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faToggleOn} />
+        &nbsp;Toggle
+      </React.Fragment>
+    )
   },
   {
     value: "number",
@@ -393,7 +457,12 @@ export const FIELD_TYPES = [
     ),
     description: "",
     title: "Color",
-    html: '<i class="fas fa-palette" aria-hidden="true"></i>&nbsp;Color'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faPalette} />
+        &nbsp;Color
+      </React.Fragment>
+    )
   },
   {
     value: "sort",
@@ -404,7 +473,12 @@ export const FIELD_TYPES = [
     ),
     description: "",
     title: "Sort",
-    html: '<i class="fas fa-sort-numeric-up"></i>&nbsp;Sort'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faSortNumericUp} />
+        &nbsp;Sort
+      </React.Fragment>
+    )
   },
   {
     value: "currency",
@@ -415,8 +489,12 @@ export const FIELD_TYPES = [
     ),
     description: "",
     title: "Currency",
-    html:
-      '<i class="fas fa-money-bill-alt" aria-hidden="true"></i>&nbsp;Currency'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faMoneyBillAlt} />
+        &nbsp;Currency
+      </React.Fragment>
+    )
   },
   {
     value: "uuid",
@@ -427,6 +505,11 @@ export const FIELD_TYPES = [
     ),
     description: "",
     title: "UUID",
-    html: '<i class="fas fa-id-card"></i>&nbsp;UUID'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faIdCard} />
+        &nbsp;UUID
+      </React.Fragment>
+    )
   }
 ];
