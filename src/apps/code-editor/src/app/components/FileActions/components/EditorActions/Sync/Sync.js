@@ -41,7 +41,7 @@ export const Sync = React.memo(function Sync(props) {
     <div>
       <Button kind="alt" onClick={() => setOpen(true)}>
         {loading ? (
-          <FontAwesomeIcon icon={faSpinner} />
+          <FontAwesomeIcon spin icon={faSpinner} />
         ) : (
           <FontAwesomeIcon icon={faSync} />
         )}
@@ -65,7 +65,7 @@ export const Sync = React.memo(function Sync(props) {
           <ButtonGroup className={styles.ModalActions}>
             <Button kind="save" onClick={handleSync} disabled={loading}>
               {loading ? (
-                <FontAwesomeIcon icon={faSpinner} />
+                <FontAwesomeIcon spin icon={faSpinner} />
               ) : (
                 <FontAwesomeIcon icon={faCheckCircle} />
               )}

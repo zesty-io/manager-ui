@@ -243,7 +243,7 @@ export default connect(state => {
                   disabled={saving || !variantsSelected[itemFont.family]}
                 >
                   {saving ? (
-                    <FontAwesomeIcon spin={true} icon={faSpinner} />
+                    <FontAwesomeIcon spin icon={faSpinner} />
                   ) : (
                     <FontAwesomeIcon icon={faPlus} />
                   )}{" "}

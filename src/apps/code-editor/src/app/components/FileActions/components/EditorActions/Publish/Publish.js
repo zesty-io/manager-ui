@@ -30,7 +30,7 @@ export const Publish = React.memo(function Publish(props) {
       }}
     >
       {publishing ? (
-        <FontAwesomeIcon icon={faSpinner} />
+        <FontAwesomeIcon spin icon={faSpinner} />
       ) : (
         <FontAwesomeIcon icon={faCloudUploadAlt} />
       )}
