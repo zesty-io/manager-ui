@@ -22,28 +22,49 @@ export function UserLatest(props) {
         );
       })
       .map(zuid => props.logs[zuid])
+      .filter(
+        afZUID =>
+          afZUID.affectedZUID.slice(0, 1).includes("7") ||
+          afZUID.affectedZUID.slice(0, 1).includes("6") ||
+          afZUID.affectedZUID.slice(0, 2).includes("11")
+      )
       .sort((loga, logb) => {
         return moment(logb.createdAt) - moment(loga.createdAt);
       });
 
     //Fetch content model metaTitles
-    const affectedUserLogs = uniqBy(userLogs, "affectedZUID").slice(0, 5);
+    let affectedUserLogs = uniqBy(userLogs, "affectedZUID").slice(0, 5);
 
     Promise.all(
       affectedUserLogs.map(log => {
-        return request(
-          `${CONFIG.API_INSTANCE}/search/items?q=${log.affectedZUID}`
-        )
-          .then(data => {
-            log.recentTitle = data.data[0]?.web?.metaTitle;
-            return log;
-          })
-          .catch(err => console.log(err));
+        if (
+          log.affectedZUID.slice(0, 1).includes("7") ||
+          log.affectedZUID.slice(0, 1).includes("6")
+        ) {
+          return request(
+            `${CONFIG.API_INSTANCE}/search/items?q=${log.affectedZUID}`
+          )
+            .then(data => {
+              log.recentTitle = data.data[0]?.web?.metaTitle;
+              return log;
+            })
+            .catch(err => console.log(err));
+        } else if (log.affectedZUID.slice(0, 2).includes("11")) {
+          return request(`${CONFIG.API_INSTANCE}/web/views/${log.affectedZUID}`)
+            .then(data => {
+              log.recentTitle = data.data.fileName;
+              return log;
+            })
+            .catch(err => console.log(err));
+        } else {
+          return log;
+        }
       })
     ).then(logs => {
       setLatest(logs);
     });
   }, [props.user, props.logs]);
+
   return (
     <Card className={styles.UserLatestEdits}>
       <CardHeader>
