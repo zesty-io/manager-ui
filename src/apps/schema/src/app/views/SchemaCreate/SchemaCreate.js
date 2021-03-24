@@ -18,6 +18,7 @@ import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { fetchParents } from "../../../store/parents";
 import { createModel } from "shell/store/models";
 import { formatName } from "utility/formatName";
+import { formatPathPart } from "utility/formatPathPart";
 
 const SCHEMA_TYPES = [
   {
@@ -52,6 +53,7 @@ export default connect(state => {
   let history = useHistory();
 
   const [name, setName] = useState("");
+  const [pathPart, setPathPart] = useState("");
   const [label, setLabel] = useState("");
   const [description, setDescription] = useState("");
   const [listed, setListed] = useState(true);
@@ -277,6 +279,7 @@ export default connect(state => {
                 setLabel(value);
                 // When changing the label update the reference name as well
                 setName(formatName(value));
+                setPathPart(formatPathPart(value));
               }}
               error={errors["label"]}
             />
@@ -390,7 +393,7 @@ export default connect(state => {
                                 canonicalTagMode: 1,
                                 metaLinkText: label,
                                 metaTitle: label,
-                                pathPart: name,
+                                pathPart: pathPart,
                                 parentZUID: parent
                               },
                               meta: {
