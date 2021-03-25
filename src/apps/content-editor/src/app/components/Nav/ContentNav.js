@@ -135,7 +135,7 @@ export function ContentNav(props) {
         </div>
       </div>
 
-      {reorderOpen && <ReorderNav handleClose={() => setReorderOpen(false)} />}
+      <ReorderNav isOpen={reorderOpen} toggleOpen={toggleModal} />
     </React.Fragment>
   );
 }

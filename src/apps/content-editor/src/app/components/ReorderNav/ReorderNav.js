@@ -97,51 +97,60 @@ class ReorderNav extends Component {
       dirty: true
     });
   };
+
+  // componentDidUpdate(prevProps) {
+  //   if (this.props.toggleOpen !== prevProps) {
+  //     this.setState(!toggleOpen);
+  //   }
+  // }
+
   render() {
     return (
-      <Modal type="global" open={true} onClose={this.props.toggleOpen}>
-        <ModalContent className={styles.ModalContent}>
-          <span className={styles.container}>
-            <span className={styles.buttons}>
-              <Button
-                kind="cancel"
-                className={styles.close}
-                onClick={this.props.handleClose}
-                id="CloseReorderModal"
-              >
-                <FontAwesomeIcon icon={faTimes} />
-              </Button>
-            </span>
-            <h3>Change the order of items in your navigation</h3>
+      this.props.isOpen && (
+        <Modal type="global" open={true} onClose={this.props.toggleOpen}>
+          <ModalContent className={styles.ModalContent}>
+            <span className={styles.container}>
+              <span className={styles.buttons}>
+                <Button
+                  kind="cancel"
+                  className={styles.close}
+                  onClick={this.props.handleClose}
+                  id="CloseReorderModal"
+                >
+                  <FontAwesomeIcon icon={faTimes} />
+                </Button>
+              </span>
+              <h3>Change the order of items in your navigation</h3>
 
-            <DragList
-              handleNestChange={this.handleNestChange}
-              handleMove={this.handleMove}
-            >
-              {this.state[this.state.current]}
-            </DragList>
-          </span>
-        </ModalContent>
-        <ModalFooter className={styles.ModalFooter}>
-          {" "}
-          {this.state.dirty ? (
-            <Button
-              kind="save"
-              onClick={this.requestForReorder}
-              disabled={this.state.requesting}
-            >
-              Save Changes
-            </Button>
-          ) : (
-            <p />
-          )}
-          {this.state.current === "root" ? null : (
-            <Button onClick={() => this.setState({ current: "root" })}>
-              Return to Root
-            </Button>
-          )}
-        </ModalFooter>
-      </Modal>
+              <DragList
+                handleNestChange={this.handleNestChange}
+                handleMove={this.handleMove}
+              >
+                {this.state[this.state.current]}
+              </DragList>
+            </span>
+          </ModalContent>
+          <ModalFooter className={styles.ModalFooter}>
+            {" "}
+            {this.state.dirty ? (
+              <Button
+                kind="save"
+                onClick={this.requestForReorder}
+                disabled={this.state.requesting}
+              >
+                Save Changes
+              </Button>
+            ) : (
+              <p />
+            )}
+            {this.state.current === "root" ? null : (
+              <Button onClick={() => this.setState({ current: "root" })}>
+                Return to Root
+              </Button>
+            )}
+          </ModalFooter>
+        </Modal>
+      )
     );
   }
 }
