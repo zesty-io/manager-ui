@@ -98,11 +98,11 @@ class ReorderNav extends Component {
     });
   };
 
-  // componentDidUpdate(prevProps) {
-  //   if (this.props.toggleOpen !== prevProps) {
-  //     this.setState(!toggleOpen);
-  //   }
-  // }
+  componentDidUpdate(prevProps) {
+    if (this.props.toggleOpen !== prevProps) {
+      this.setState(!toggleOpen);
+    }
+  }
 
   render() {
     return (
@@ -110,16 +110,6 @@ class ReorderNav extends Component {
         <Modal type="global" open={true} onClose={this.props.toggleOpen}>
           <ModalContent className={styles.ModalContent}>
             <span className={styles.container}>
-              <span className={styles.buttons}>
-                <Button
-                  kind="cancel"
-                  className={styles.close}
-                  onClick={this.props.handleClose}
-                  id="CloseReorderModal"
-                >
-                  <FontAwesomeIcon icon={faTimes} />
-                </Button>
-              </span>
               <h3>Change the order of items in your navigation</h3>
 
               <DragList
