@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core";
+import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 
 import DragList from "./DragComponents/DragList";
 
@@ -98,43 +99,49 @@ class ReorderNav extends Component {
   };
   render() {
     return (
-      <section className={styles.Matte}>
-        <span className={styles.container}>
-          <span className={styles.buttons}>
-            <Button
-              kind="cancel"
-              className={styles.close}
-              onClick={this.props.handleClose}
-              id="CloseReorderModal"
-            >
-              <FontAwesomeIcon icon={faTimes} />
-            </Button>
-            {this.state.dirty ? (
+      <Modal type="global" open={true} onClose={this.props.toggleOpen}>
+        <ModalContent className={styles.ModalContent}>
+          <span className={styles.container}>
+            <span className={styles.buttons}>
               <Button
-                kind="save"
-                onClick={this.requestForReorder}
-                disabled={this.state.requesting}
+                kind="cancel"
+                className={styles.close}
+                onClick={this.props.handleClose}
+                id="CloseReorderModal"
               >
-                Save Changes
+                <FontAwesomeIcon icon={faTimes} />
               </Button>
-            ) : (
-              <p />
-            )}
+            </span>
+            <h3>Change the order of items in your navigation</h3>
+
+            <DragList
+              handleNestChange={this.handleNestChange}
+              handleMove={this.handleMove}
+            >
+              {this.state[this.state.current]}
+            </DragList>
           </span>
-          <h3>Change the order of items in your navigation</h3>
+        </ModalContent>
+        <ModalFooter className={styles.ModalFooter}>
+          {" "}
+          {this.state.dirty ? (
+            <Button
+              kind="save"
+              onClick={this.requestForReorder}
+              disabled={this.state.requesting}
+            >
+              Save Changes
+            </Button>
+          ) : (
+            <p />
+          )}
           {this.state.current === "root" ? null : (
             <Button onClick={() => this.setState({ current: "root" })}>
               Return to Root
             </Button>
           )}
-          <DragList
-            handleNestChange={this.handleNestChange}
-            handleMove={this.handleMove}
-          >
-            {this.state[this.state.current]}
-          </DragList>
-        </span>
-      </section>
+        </ModalFooter>
+      </Modal>
     );
   }
 }
