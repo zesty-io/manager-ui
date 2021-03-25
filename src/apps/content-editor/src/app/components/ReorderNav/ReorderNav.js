@@ -98,16 +98,14 @@ class ReorderNav extends Component {
     });
   };
 
-  componentDidUpdate(prevProps) {
-    if (this.props.toggleOpen !== prevProps) {
-      this.setState(!toggleOpen);
-    }
-  }
-
   render() {
     return (
       this.props.isOpen && (
-        <Modal type="global" open={true} onClose={this.props.toggleOpen}>
+        <Modal
+          type="global"
+          open={this.props.toggleOpen}
+          onClose={this.props.toggleOpen}
+        >
           <ModalContent className={styles.ModalContent}>
             <span className={styles.container}>
               <h3>Change the order of items in your navigation</h3>

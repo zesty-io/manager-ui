@@ -51,7 +51,7 @@ export function ContentNav(props) {
   ];
 
   const toggleModal = () => {
-    setReorderOpen(true);
+    setReorderOpen(!reorderOpen);
   };
 
   return (
