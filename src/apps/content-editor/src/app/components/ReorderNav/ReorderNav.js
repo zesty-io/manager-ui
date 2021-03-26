@@ -2,8 +2,10 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "@zesty-io/core";
+import { faSave, faBackward } from "@fortawesome/free-solid-svg-icons";
+import { Button } from "@zesty-io/core/Button";
+import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
+
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 
 import DragList from "./DragComponents/DragList";
@@ -105,6 +107,7 @@ class ReorderNav extends Component {
           type="global"
           open={this.props.toggleOpen}
           onClose={this.props.toggleOpen}
+          className={styles.ReorderNav}
         >
           <ModalContent className={styles.ModalContent}>
             <span className={styles.container}>
@@ -119,23 +122,23 @@ class ReorderNav extends Component {
             </span>
           </ModalContent>
           <ModalFooter className={styles.ModalFooter}>
-            {" "}
-            {this.state.dirty ? (
+            <ButtonGroup className={styles.ButtonGroup}>
+              <Button
+                onClick={() => this.setState({ current: "root" })}
+                disabled={this.state.current === "root"}
+              >
+                <FontAwesomeIcon icon={faBackward} />
+                Return to Root
+              </Button>
               <Button
                 kind="save"
                 onClick={this.requestForReorder}
-                disabled={this.state.requesting}
+                disabled={!this.state.dirty || this.state.requesting}
               >
+                <FontAwesomeIcon icon={faSave} />
                 Save Changes
               </Button>
-            ) : (
-              <p />
-            )}
-            {this.state.current === "root" ? null : (
-              <Button onClick={() => this.setState({ current: "root" })}>
-                Return to Root
-              </Button>
-            )}
+            </ButtonGroup>
           </ModalFooter>
         </Modal>
       )

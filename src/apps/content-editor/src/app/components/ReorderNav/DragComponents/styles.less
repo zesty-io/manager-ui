@@ -3,11 +3,21 @@
   flex-direction: column;
   width: 100%;
   overflow-y: auto;
+
   li {
-    justify-content: space-between;
-    margin: 8px;
-    i {
-      padding-left: 8px;
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+
+    .node {
+      display: flex;
+      align-items: center;
+
+      svg {
+        margin: 0;
+        width: 18px;
+        height: 18px;
+      }
     }
   }
 }
