@@ -30,24 +30,24 @@ export default connect(state => {
       selectedMembers: []
     };
 
-    componentDidMount() {
-      //fetch team members and fields
-      request(
-        `${CONFIG.API_ACCOUNTS}/instances/${this.props.instance.ZUID}/users`
-      ).then(data => {
-        this.setState({ loaded: true });
-        if (data.status === 400) {
-          this.props.dispatch(
-            notify({
-              message: `Failure fetching users: ${data.error}`,
-              kind: "error"
-            })
-          );
-        } else {
-          this.setState({ users: data.data });
-        }
-      });
-    }
+    // componentDidMount() {
+    //   //fetch team members and fields
+    //   request(
+    //     `${CONFIG.API_ACCOUNTS}/instances/${this.props.instance.ZUID}/users`
+    //   ).then(data => {
+    //     this.setState({ loaded: true });
+    //     if (data.status === 400) {
+    //       this.props.dispatch(
+    //         notify({
+    //           message: `Failure fetching users: ${data.error}`,
+    //           kind: "error"
+    //         })
+    //       );
+    //     } else {
+    //       this.setState({ users: data.data });
+    //     }
+    //   });
+    // }
 
     handleSelectField = evt => {
       const { name, checked } = evt.target;
