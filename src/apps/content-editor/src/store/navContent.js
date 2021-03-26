@@ -276,8 +276,6 @@ function split(tree) {
 
   walk(tree, (tree, leaf) => {
     if (leaf.hidden) {
-      // remove leaf from tree
-      tree.splice(tree.indexOf(leaf), 1);
       hidden.push(leaf);
     } else if (!leaf.parentZUID) {
       // no parent zuid means this is a root leaf
@@ -298,7 +296,8 @@ function split(tree) {
  * @param {*} operate
  */
 function walk(tree, operate) {
-  tree.forEach(leaf => {
+  const toSplice = [];
+  tree.forEach((leaf, index) => {
     // optimization: if a leaf is hidden then we do not need to
     // continue walking this branch as all of it's children should remain hidden as well
     if (!leaf.hidden) {
@@ -309,5 +308,14 @@ function walk(tree, operate) {
 
     // ensure we operate on every leaf on this branch
     operate(tree, leaf);
+    if (leaf.hidden) {
+      toSplice.push(index);
+    }
+  });
+  // Splice hidden leaves off the tree in reverse
+  // so that indexes are are not shifted during splicing
+  // e.g. toSplice = [0, 2] removes 3rd item, then 1st item
+  toSplice.reverse().forEach(index => {
+    tree.splice(index, 1);
   });
 }
