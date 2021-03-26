@@ -50,6 +50,10 @@ export function ContentNav(props) {
     />
   ];
 
+  const toggleModal = () => {
+    setReorderOpen(!reorderOpen);
+  };
+
   return (
     <React.Fragment>
       <div className={styles.Actions}>
@@ -79,7 +83,7 @@ export function ContentNav(props) {
               />
             ))}
         </Select>
-        <Button id="ReorderNavButton" onClick={() => setReorderOpen(true)}>
+        <Button id="ReorderNavButton" onClick={toggleModal}>
           <FontAwesomeIcon
             icon={faArrowsAlt}
             title="Re-order content navigation"
@@ -131,7 +135,7 @@ export function ContentNav(props) {
         </div>
       </div>
 
-      {reorderOpen && <ReorderNav handleClose={() => setReorderOpen(false)} />}
+      <ReorderNav isOpen={reorderOpen} toggleOpen={toggleModal} />
     </React.Fragment>
   );
 }
