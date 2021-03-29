@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import cx from "classnames";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowsAlt, faBan, faSave } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowsAlt,
+  faBan,
+  faExpandArrowsAlt,
+  faSave
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Dropzone } from "./components/Dropzone";
 import { Draggable } from "./components/Draggable";
@@ -145,10 +150,11 @@ export default connect((state, props) => {
                     <span className={styles.Position}>{`${Number(
                       file.sort
                     )})`}</span>
-                    <span className={styles.Name}>{file.fileName}</span>
-                    <i
-                      className={cx("fas fa-expand-arrows-alt", styles.Icon)}
+                    <FontAwesomeIcon
+                      className={styles.Icon}
+                      icon={faExpandArrowsAlt}
                     />
+                    <span className={styles.Name}>{file.fileName}</span>
                   </Draggable>
                 );
               })}
