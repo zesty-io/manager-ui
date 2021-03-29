@@ -1,14 +1,15 @@
 import React from "react";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChartLine } from "@fortawesome/free-solid-svg-icons";
 
-import styles from "./ContentVelocity.less";
 export class ContentVelocity extends React.Component {
   render() {
     return (
       <Card>
         <CardHeader>
           <h2>
-            <span className={`${styles.icon} fa fa-line-chart`} />
+            <FontAwesomeIcon icon={faChartLine} />
             Content Velocity
           </h2>
         </CardHeader>

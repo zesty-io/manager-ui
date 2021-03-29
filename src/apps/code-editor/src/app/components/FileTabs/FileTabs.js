@@ -91,10 +91,11 @@ export const FileTabs = React.memo(
                     />
                   )}
                   {!file.synced && (
-                    <i
-                      className={cx(styles.Sync, "fas fa-circle")}
+                    <FontAwesomeIcon
+                      className={styles.Sync}
+                      icon={faCircle}
                       title="Your local file changes differ from the remote files"
-                    ></i>
+                    />
                   )}
                 </span>
               </AppLink>
