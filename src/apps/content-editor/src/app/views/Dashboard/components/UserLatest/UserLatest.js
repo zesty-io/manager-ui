@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import uniqBy from "lodash/uniqBy";
+import zuid from "zuid";
 import { request } from "utility/request";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight, faClock } from "@fortawesome/free-solid-svg-icons";
@@ -17,7 +18,6 @@ export function UserLatest(props) {
   useEffect(() => {
     setLoading(true);
     let userLogs = Object.keys(props.logs)
-
       .filter(logZUID => {
         return (
           props.logs[logZUID].actionByUserZUID === props.user.ZUID &&
@@ -38,43 +38,36 @@ export function UserLatest(props) {
 
     Promise.all(
       affectedUserLogs.map(log => {
-        switch (log.affectedZUID.slice(0, 2)) {
-          case log.affectedZUID.slice(0, 2).includes("7-"):
-            console.log("case 7");
-            return request(
-              `${CONFIG.API_INSTANCE}/search/items?q=${log.affectedZUID}`
-            )
-              .then(data => {
-                log.recentTitle = data.data[0]?.web?.metaTitle;
-                return log;
-              })
-              .catch(err => console.log(err));
-
-          case log.affectedZUID.slice(0, 2).includes("6-"):
-            console.log("case 6");
-            return request(
-              `${CONFIG.API_INSTANCE}/content/models/${log.affectedZUID}`
-            )
-              .then(data => {
-                log.recentTitle = data.data?.label;
-                return log;
-              })
-              .catch(err => console.log(err));
-
-          case log.affectedZUID.slice(0, 2).includes("11"):
-            console.log("case 11");
-            return request(
-              `${CONFIG.API_INSTANCE}/web/views/${log.affectedZUID}`
-            )
-              .then(data => {
-                log.recentTitle = data.data.fileName;
-                return log;
-              })
-              .catch(err => console.log(err));
-
-          default:
-            console.log("case return log");
-            return log;
+        if (zuid.matches(log.affectedZUID, zuid.prefix.SITE_CONTENT_ITEM)) {
+          console.log("case 7");
+          return request(
+            `${CONFIG.API_INSTANCE}/search/items?q=${log.affectedZUID}`
+          )
+            .then(data => {
+              log.recentTitle = data.data[0]?.web?.metaTitle;
+              return log;
+            })
+            .catch(err => console.log(err));
+        } else if (
+          zuid.matches(log.affectedZUID, zuid.prefix.SITE_CONTENT_SET)
+        ) {
+          return request(
+            `${CONFIG.API_INSTANCE}/content/models/${log.affectedZUID}`
+          )
+            .then(data => {
+              log.recentTitle = data.data?.label;
+              return log;
+            })
+            .catch(err => console.log(err));
+        } else if (zuid.matches(log.affectedZUID, zuid.prefix.SITE_VIEW)) {
+          return request(`${CONFIG.API_INSTANCE}/web/views/${log.affectedZUID}`)
+            .then(data => {
+              log.recentTitle = data.data.fileName;
+              return log;
+            })
+            .catch(err => console.log(err));
+        } else {
+          return log;
         }
       })
     ).then(logs => {
