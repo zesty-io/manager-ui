@@ -49,7 +49,7 @@ export function UserLatest(props) {
                 return log;
               })
               .catch(err => console.log(err));
-            break;
+
           case log.affectedZUID.slice(0, 2).includes("6-"):
             console.log("case 6");
             return request(
@@ -60,7 +60,7 @@ export function UserLatest(props) {
                 return log;
               })
               .catch(err => console.log(err));
-            break;
+
           case log.affectedZUID.slice(0, 2).includes("11"):
             console.log("case 11");
             return request(
@@ -71,7 +71,7 @@ export function UserLatest(props) {
                 return log;
               })
               .catch(err => console.log(err));
-            break;
+
           default:
             console.log("case return log");
             return log;
