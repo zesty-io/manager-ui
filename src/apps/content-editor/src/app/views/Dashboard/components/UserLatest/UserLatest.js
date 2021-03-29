@@ -25,42 +25,56 @@ export function UserLatest(props) {
         );
       })
       .map(zuid => props.logs[zuid])
-      .filter(
-        afZUID =>
-          afZUID.affectedZUID.slice(0, 1).includes("7") ||
-          afZUID.affectedZUID.slice(0, 1).includes("6") ||
-          afZUID.affectedZUID.slice(0, 2).includes("11")
-      )
       .sort((loga, logb) => {
         return moment(logb.createdAt) - moment(loga.createdAt);
       });
 
     //Fetch content model metaTitles
     let affectedUserLogs = uniqBy(userLogs, "affectedZUID").slice(0, 5);
+    console.log(
+      "🚀 ~ file: UserLatest.js ~ line 34 ~ useEffect ~ affectedUserLogs",
+      affectedUserLogs
+    );
 
     Promise.all(
       affectedUserLogs.map(log => {
-        if (
-          log.affectedZUID.slice(0, 1).includes("7") ||
-          log.affectedZUID.slice(0, 1).includes("6")
-        ) {
-          return request(
-            `${CONFIG.API_INSTANCE}/search/items?q=${log.affectedZUID}`
-          )
-            .then(data => {
-              log.recentTitle = data.data[0]?.web?.metaTitle;
-              return log;
-            })
-            .catch(err => console.log(err));
-        } else if (log.affectedZUID.slice(0, 2).includes("11")) {
-          return request(`${CONFIG.API_INSTANCE}/web/views/${log.affectedZUID}`)
-            .then(data => {
-              log.recentTitle = data.data.fileName;
-              return log;
-            })
-            .catch(err => console.log(err));
-        } else {
-          return log;
+        switch (log.affectedZUID.slice(0, 2)) {
+          case log.affectedZUID.slice(0, 2).includes("7-"):
+            console.log("case 7");
+            return request(
+              `${CONFIG.API_INSTANCE}/search/items?q=${log.affectedZUID}`
+            )
+              .then(data => {
+                log.recentTitle = data.data[0]?.web?.metaTitle;
+                return log;
+              })
+              .catch(err => console.log(err));
+            break;
+          case log.affectedZUID.slice(0, 2).includes("6-"):
+            console.log("case 6");
+            return request(
+              `${CONFIG.API_INSTANCE}/content/models/${log.affectedZUID}`
+            )
+              .then(data => {
+                log.recentTitle = data.data?.label;
+                return log;
+              })
+              .catch(err => console.log(err));
+            break;
+          case log.affectedZUID.slice(0, 2).includes("11"):
+            console.log("case 11");
+            return request(
+              `${CONFIG.API_INSTANCE}/web/views/${log.affectedZUID}`
+            )
+              .then(data => {
+                log.recentTitle = data.data.fileName;
+                return log;
+              })
+              .catch(err => console.log(err));
+            break;
+          default:
+            console.log("case return log");
+            return log;
         }
       })
     ).then(logs => {
