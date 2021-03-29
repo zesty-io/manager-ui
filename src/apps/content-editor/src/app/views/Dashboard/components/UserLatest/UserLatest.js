@@ -31,15 +31,10 @@ export function UserLatest(props) {
 
     //Fetch content model metaTitles
     let affectedUserLogs = uniqBy(userLogs, "affectedZUID").slice(0, 5);
-    console.log(
-      "🚀 ~ file: UserLatest.js ~ line 34 ~ useEffect ~ affectedUserLogs",
-      affectedUserLogs
-    );
 
     Promise.all(
       affectedUserLogs.map(log => {
         if (zuid.matches(log.affectedZUID, zuid.prefix.SITE_CONTENT_ITEM)) {
-          console.log("case 7");
           return request(
             `${CONFIG.API_INSTANCE}/search/items?q=${log.affectedZUID}`
           )
