@@ -63,11 +63,11 @@ export function UserLatest(props) {
           return request(`${CONFIG.API_INSTANCE}/web/views/${log.affectedZUID}`)
             .then(data => {
               log.recentTitle = cleaner(log.meta.message);
-
               return log;
             })
             .catch(err => console.log(err));
         } else {
+          log.recentTitle = cleaner(log.meta.message);
           return log;
         }
       })
@@ -101,13 +101,7 @@ export function UserLatest(props) {
                   <li key={i}>
                     <div>
                       <h4>
-                        {log.recentTitle
-                          ? log.recentTitle
-                          : log.meta.message.includes("`")
-                          ? log.meta.message
-                              .replaceAll("`", "")
-                              .replace("/", "")
-                          : log.meta.message}
+                        {log.recentTitle ? log.recentTitle : log.meta.message}
                       </h4>
                       <h5>{`${
                         props.cardTitle.includes("Edits")
