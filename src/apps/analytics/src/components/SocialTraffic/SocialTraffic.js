@@ -1,6 +1,8 @@
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHashtag } from "@fortawesome/free-solid-svg-icons";
 import { request } from "utility/request";
 
 import styles from "./SocialTraffic.less";
@@ -63,9 +65,7 @@ export class SocialTraffic extends React.PureComponent {
         <CardHeader>
           <h2 className={styles.columns}>
             <div className={styles.column}>
-              <span
-                className={`${styles.icon} fa fa-hashtag ${styles.muted}`}
-              />
+              <FontAwesomeIcon className={styles.muted} icon={faHashtag} />
               Social Traffic
             </div>
             <div

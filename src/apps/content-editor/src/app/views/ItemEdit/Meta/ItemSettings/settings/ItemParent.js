@@ -4,6 +4,8 @@ import debounce from "lodash.debounce";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { Infotip } from "@zesty-io/core/Infotip";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHome } from "@fortawesome/free-solid-svg-icons";
 
 import { searchItems } from "shell/store/content";
 
@@ -138,7 +140,15 @@ export const ItemParent = connect(state => {
               searchLength="0"
               loading={loading}
             >
-              <Option value="0" html="<i class='fa fa-home'></i>&nbsp;/" />
+              <Option
+                value="0"
+                component={
+                  <React.Fragment>
+                    <FontAwesomeIcon icon={faHome} />
+                    &nbsp;/
+                  </React.Fragment>
+                }
+              />
               {parents.map(item => (
                 <Option key={item.value} value={item.value} text={item.text} />
               ))}

@@ -1,5 +1,10 @@
 import React from "react";
 import cx from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faSortAlphaDown,
+  faSortAlphaUp
+} from "@fortawesome/free-solid-svg-icons";
 import styles from "./RedirectsTableHeader.less";
 
 export default function RedirectsTableHeader(props) {
@@ -19,16 +24,10 @@ export default function RedirectsTableHeader(props) {
         >
           From
           {props.sortBy === "from" && props.sortDirection === "desc" ? (
-            <i
-              className={cx(styles.icon, "fa fa-sort-alpha-desc")}
-              aria-hidden="true"
-            ></i>
+            <FontAwesomeIcon icon={faSortAlphaDown} />
           ) : null}
           {props.sortBy === "from" && props.sortDirection === "asc" ? (
-            <i
-              className={cx(styles.icon, "fa fa-sort-alpha-asc")}
-              aria-hidden="true"
-            ></i>
+            <FontAwesomeIcon icon={faSortAlphaUp} />
           ) : null}
         </span>
       </span>
@@ -46,16 +45,10 @@ export default function RedirectsTableHeader(props) {
         >
           Type
           {props.sortBy === "type" && props.sortDirection === "desc" ? (
-            <i
-              className={cx(styles.icon, "fa fa-sort-alpha-desc")}
-              aria-hidden="true"
-            ></i>
+            <FontAwesomeIcon icon={faSortAlphaDown} />
           ) : null}
           {props.sortBy === "type" && props.sortDirection === "asc" ? (
-            <i
-              className={cx(styles.icon, "fa fa-sort-alpha-asc")}
-              aria-hidden="true"
-            ></i>
+            <FontAwesomeIcon icon={faSortAlphaUp} />
           ) : null}
         </span>
       </span>
@@ -74,16 +67,10 @@ export default function RedirectsTableHeader(props) {
         >
           To
           {props.sortBy === "to" && props.sortDirection === "desc" ? (
-            <i
-              className={cx(styles.icon, "fa fa-sort-alpha-desc")}
-              aria-hidden="true"
-            ></i>
+            <FontAwesomeIcon icon={faSortAlphaDown} />
           ) : null}
           {props.sortBy === "to" && props.sortDirection === "asc" ? (
-            <i
-              className={cx(styles.icon, "fa fa-sort-alpha-asc")}
-              aria-hidden="true"
-            ></i>
+            <FontAwesomeIcon icon={faSortAlphaUp} />
           ) : null}
         </span>
       </span>

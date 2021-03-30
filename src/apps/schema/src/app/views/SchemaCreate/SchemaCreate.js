@@ -7,7 +7,12 @@ import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faDatabase,
+  faFile,
+  faListAlt,
+  faPlus
+} from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { Button } from "@zesty-io/core/Button";
@@ -23,18 +28,31 @@ import { formatPathPart } from "utility/formatPathPart";
 const SCHEMA_TYPES = [
   {
     value: "templateset",
-    html:
-      '<i class="fas fa-file" aria-hidden="true"></i>&nbsp;Single Page Model'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faFile} />
+        &nbsp;Single Page Model
+      </React.Fragment>
+    )
   },
   {
     value: "pageset",
-    html:
-      '<i class="fas fa-list-alt" aria-hidden="true"></i>&nbsp;Multi Page Model'
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faListAlt} />
+        &nbsp;Multi Page Model
+      </React.Fragment>
+    )
   },
   {
     value: "dataset",
-    html:
-      '<i class="fas fa-database" aria-hidden="true"></i>&nbsp;Headless Data Model'
+
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faDatabase} />
+        &nbsp;Headless Data Model
+      </React.Fragment>
+    )
   }
 ];
 
@@ -170,6 +188,7 @@ export default connect(state => {
             </div>
 
             <FieldTypeDropDown
+              className={styles.FieldTypeDropDown}
               name="type"
               label="Selected Model Type"
               value={type}

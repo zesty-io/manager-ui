@@ -1,6 +1,8 @@
 import React from "react";
 import { Line } from "react-chartjs-2";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChartArea } from "@fortawesome/free-solid-svg-icons";
 
 import { request } from "utility/request";
 
@@ -75,9 +77,7 @@ export class PageviewTraffic extends React.PureComponent {
         <CardHeader>
           <h2 className={styles.columns}>
             <div className={styles.column}>
-              <span
-                className={`${styles.icon} fa fa-area-chart ${styles.muted}`}
-              />
+              <FontAwesomeIcon className={styles.muted} icon={faChartArea} />
               Pageview/Traffic
             </div>
             <div

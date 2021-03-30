@@ -9,6 +9,11 @@ import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
 import { Option } from "@zesty-io/core/Select";
 import { Input } from "@zesty-io/core/Input";
 import { Button } from "@zesty-io/core/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faExternalLinkSquareAlt,
+  faLink
+} from "@fortawesome/free-solid-svg-icons";
 
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
@@ -174,12 +179,24 @@ export const LinkCreate = connect((state, props) => {
                 onChange={this.onChange}
               >
                 <Option
+                  className={styles.Icon}
                   value="internal"
-                  html="<i class='fa fa-link'></i>&nbsp;Internal Link"
+                  component={
+                    <React.Fragment>
+                      <FontAwesomeIcon icon={faLink} />
+                      &nbsp;Internal Link
+                    </React.Fragment>
+                  }
                 />
                 <Option
+                  className={styles.Icon}
                   value="external"
-                  html="<i class='fas fa-external-link-square-alt'></i>&nbsp;External Link"
+                  component={
+                    <React.Fragment>
+                      <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
+                      &nbsp;External Link
+                    </React.Fragment>
+                  }
                 />
               </FieldTypeDropDown>
             </CardHeader>
