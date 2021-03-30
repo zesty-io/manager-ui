@@ -93,13 +93,16 @@ export function UserLatest(props) {
 
                 return (
                   <li key={i}>
-                    <hgroup>
+                    <div>
                       <h4>
                         {log.recentTitle ? log.recentTitle : log.meta.message}
                       </h4>
-                      <h5>{`Updated: ${moment(log.updatedAt).fromNow()}`}</h5>
-                    </hgroup>
-
+                      <h5>{`${
+                        props.cardTitle.includes("Edits")
+                          ? "Edited"
+                          : "Published"
+                      } : ${moment(log.updatedAt).fromNow()}`}</h5>
+                    </div>
                     {url && (
                       <AppLink className={styles.AppLink} to={url}>
                         View
