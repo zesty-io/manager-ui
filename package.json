@@ -82,7 +82,8 @@
     "regenerator-runtime": "0.13.5",
     "reselect": "^4.0.0",
     "showdown": "1.9.1",
-    "uuid": "7.0.2"
+    "uuid": "7.0.2",
+    "zuid": "github:zesty-io/zuid-js#v1.2.0"
   },
   "devDependencies": {
     "@babel/cli": "7.8.4",

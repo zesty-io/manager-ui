@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import uniqBy from "lodash/uniqBy";
+import zuid from "zuid";
 import { request } from "utility/request";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight, faClock } from "@fortawesome/free-solid-svg-icons";
@@ -17,7 +18,6 @@ export function UserLatest(props) {
   useEffect(() => {
     setLoading(true);
     let userLogs = Object.keys(props.logs)
-
       .filter(logZUID => {
         return (
           props.logs[logZUID].actionByUserZUID === props.user.ZUID &&
@@ -30,24 +30,47 @@ export function UserLatest(props) {
       });
 
     //Fetch content model metaTitles
-    const affectedUserLogs = uniqBy(userLogs, "affectedZUID").slice(0, 5);
+    let affectedUserLogs = uniqBy(userLogs, "affectedZUID").slice(0, 5);
 
     Promise.all(
       affectedUserLogs.map(log => {
-        return request(
-          `${CONFIG.API_INSTANCE}/search/items?q=${log.affectedZUID}`
-        )
-          .then(data => {
-            log.recentTitle = data.data[0]?.web?.metaTitle;
-            return log;
-          })
-          .catch(err => console.log(err));
+        if (zuid.matches(log.affectedZUID, zuid.prefix.SITE_CONTENT_ITEM)) {
+          return request(
+            `${CONFIG.API_INSTANCE}/search/items?q=${log.affectedZUID}`
+          )
+            .then(data => {
+              log.recentTitle = data.data[0]?.web?.metaTitle;
+              return log;
+            })
+            .catch(err => console.log(err));
+        } else if (
+          zuid.matches(log.affectedZUID, zuid.prefix.SITE_CONTENT_SET)
+        ) {
+          return request(
+            `${CONFIG.API_INSTANCE}/content/models/${log.affectedZUID}`
+          )
+            .then(data => {
+              log.recentTitle = data.data?.label;
+              return log;
+            })
+            .catch(err => console.log(err));
+        } else if (zuid.matches(log.affectedZUID, zuid.prefix.SITE_VIEW)) {
+          return request(`${CONFIG.API_INSTANCE}/web/views/${log.affectedZUID}`)
+            .then(data => {
+              log.recentTitle = data.data.fileName;
+              return log;
+            })
+            .catch(err => console.log(err));
+        } else {
+          return log;
+        }
       })
     ).then(logs => {
       setLatest(logs);
       setLoading(false);
     });
   }, [props.user, props.logs]);
+
   return (
     <Card className={styles.UserLatestEdits}>
       <WithLoader condition={!loading} message={`Loading ${props.cardTitle}`}>
