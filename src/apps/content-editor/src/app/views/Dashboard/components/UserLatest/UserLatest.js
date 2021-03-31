@@ -58,7 +58,7 @@ export function UserLatest(props) {
             `${CONFIG.API_INSTANCE}/content/models/${log.affectedZUID}`
           )
             .then(data => {
-              log.recentTitle = `Modified ${data.data?.label}`;
+              log.recentTitle = `Modified Schema ${data.data?.label}`;
               return log;
             })
             .catch(err => console.log(err));
