@@ -1,14 +1,20 @@
-import React, { PureComponent, Fragment } from "react";
+import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSave, faBan, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
-import { WithLoader } from "@zesty-io/core/WithLoader";
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
+import {
+  faSave,
+  faSpinner,
+  faEnvelope
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  CollapsibleCard,
+  CardContent,
+  CardFooter
+} from "@zesty-io/core/CollapsibleCard";
 import { Button } from "@zesty-io/core/Button";
 import { Textarea } from "@zesty-io/core/Textarea";
 
@@ -16,38 +22,17 @@ import styles from "./WorkflowRequests.less";
 export default connect(state => {
   return {
     user: state.user,
-    instance: state.instance
+    instance: state.instance,
+    users: state.users
   };
 })(
   class WorkflowRequest extends PureComponent {
     state = {
-      users: [],
-      loaded: false,
       sending: false,
-      fields: this.props.fields,
       message: "",
       selectedFields: [],
       selectedMembers: []
     };
-
-    // componentDidMount() {
-    //   //fetch team members and fields
-    //   request(
-    //     `${CONFIG.API_ACCOUNTS}/instances/${this.props.instance.ZUID}/users`
-    //   ).then(data => {
-    //     this.setState({ loaded: true });
-    //     if (data.status === 400) {
-    //       this.props.dispatch(
-    //         notify({
-    //           message: `Failure fetching users: ${data.error}`,
-    //           kind: "error"
-    //         })
-    //       );
-    //     } else {
-    //       this.setState({ users: data.data });
-    //     }
-    //   });
-    // }
 
     handleSelectField = evt => {
       const { name, checked } = evt.target;
@@ -91,9 +76,14 @@ export default connect(state => {
       const reviewLinkRaw = `<p><a href="${window.location.href}">${window.location.href}</a></p>`;
       const thankYou = `<p>Thank you!</p>`;
       const body = `${header}${message}${reviewMessage}${reviewLink}${reviewLinkRaw}${thankYou}`;
+
       const subject = `${this.props.instance.name} Workflow Request from ${this.props.user.firstName}`;
       const to = this.state.selectedMembers.join(", ");
-      this.setState({ sending: true });
+
+      this.setState({
+        sending: true
+      });
+
       request(`${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/sendEmail`, {
         json: true,
         body: {
@@ -101,56 +91,66 @@ export default connect(state => {
           subject,
           to
         }
-      }).then(res => {
-        this.props.dispatch(
-          notify({
-            message: "Successfully sent workflow request",
-            kind: "save"
-          })
-        );
-        this.setState({ sending: false }, () => this.props.handleClose());
-      });
+      })
+        .then(res => {
+          if (res.status === 200) {
+            this.props.dispatch(
+              notify({
+                message: "Sent workflow request",
+                kind: "save"
+              })
+            );
+          } else {
+            this.props.dispatch(
+              notify({
+                message: "Failed sending workflow request",
+                kind: "warn"
+              })
+            );
+          }
+        })
+        .finally(() => {
+          this.setState({
+            sending: false
+          });
+        });
     };
 
     render() {
-      const { handleClose } = this.props;
       return (
-        <Card className={styles.WorkflowRequest}>
-          <CardHeader>Workflow Request</CardHeader>
+        <CollapsibleCard
+          className={styles.WorkflowRequest}
+          header={
+            <span>
+              <FontAwesomeIcon icon={faEnvelope} />
+              &nbsp;Workflow Request
+            </span>
+          }
+        >
           <CardContent>
-            <h3>Select team members to contact</h3>
-            <WithLoader condition={this.state.loaded}>
-              <div className={styles.ScrollContainer}>
-                <ul>
-                  {this.state.users.map(user => (
-                    <li className={styles.Checkboxes} key={user.ZUID}>
-                      <input
-                        type="checkbox"
-                        onClick={this.handleSelectUser}
-                        name={user.email}
-                      />
-                      {user.firstName} {user.lastName}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </WithLoader>
+            <h3 className={styles.subheadline}>Select team members</h3>
+            <ul>
+              {this.props.users.map(user => (
+                <li className={styles.Checkboxes} key={user.ZUID}>
+                  <label onClick={this.handleSelectUser}>
+                    <input type="checkbox" name={user.email} />
+                    {user.firstName} {user.lastName}
+                  </label>
+                </li>
+              ))}
+            </ul>
 
-            <h3>Select fields to be reviewed or edited</h3>
-            <div className={styles.ScrollContainer}>
-              <ul>
-                {this.state.fields.map(field => (
-                  <li className={styles.Checkboxes} key={field.ZUID}>
-                    <input
-                      type="checkbox"
-                      onClick={this.handleSelectField}
-                      name={field.name}
-                    />
+            <h3 className={styles.subheadline}>Select fields for review</h3>
+            <ul>
+              {this.props.fields.map(field => (
+                <li className={styles.Checkboxes} key={field.ZUID}>
+                  <label onClick={this.handleSelectField}>
+                    <input type="checkbox" name={field.name} />
                     {field.label}
-                  </li>
-                ))}
-              </ul>
-            </div>
+                  </label>
+                </li>
+              ))}
+            </ul>
             <Textarea
               className={styles.TextArea}
               name="message"
@@ -164,30 +164,21 @@ export default connect(state => {
             />
           </CardContent>
           <CardFooter>
-            <ButtonGroup>
-              <Button
-                className={styles.Button}
-                onClick={this.handleSend}
-                id="WorkflowRequestSendButton"
-                disabled={this.state.sending}
-              >
+            <Button
+              id="WorkflowRequestSendButton"
+              className={styles.Button}
+              onClick={this.handleSend}
+              disabled={this.state.sending}
+            >
+              {this.state.sending ? (
+                <FontAwesomeIcon icon={faSpinner} spin />
+              ) : (
                 <FontAwesomeIcon icon={faSave} />
-                {this.state.sending ? (
-                  <Fragment>
-                    <FontAwesomeIcon icon={faSpinner} spin />
-                    &nbsp;Sending
-                  </Fragment>
-                ) : (
-                  "Send"
-                )}
-              </Button>
-              <Button onClick={handleClose}>
-                <FontAwesomeIcon icon={faBan} />
-                Cancel
-              </Button>
-            </ButtonGroup>
+              )}
+              Send Email
+            </Button>
           </CardFooter>
-        </Card>
+        </CollapsibleCard>
       );
     }
   }

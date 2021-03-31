@@ -6,6 +6,7 @@ import { useDomain } from "shell/hooks/use-domain";
 import WidgetPublishHistory from "./Widgets/WidgetPublishHistory";
 import WidgetDraftHistory from "./Widgets/WidgetDraftHistory";
 import WidgetPurgeItem from "./Widgets/WidgetPurgeItem";
+import { WorkflowRequest } from "./Widgets/WorkflowRequest";
 import { Unpublish } from "./Widgets/Unpublish";
 import { QuickView } from "./Widgets/QuickView";
 import { WidgetQuickShare } from "./Widgets/WidgetQuickShare";
@@ -46,6 +47,8 @@ export function Actions(props) {
         basicApi={basicApi}
         liveURL={liveURL}
       />
+
+      <WorkflowRequest itemTitle={metaTitle} fields={props.fields} />
 
       <WidgetPublishHistory
         dispatch={props.dispatch}

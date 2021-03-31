@@ -6,6 +6,7 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import { fetchInstance, fetchDomains } from "shell/store/instance";
 import { fetchUser } from "shell/store/user";
 import { fetchUserRole } from "shell/store/userRole";
+import { fetchUsers } from "shell/store/users";
 import { fetchProducts } from "shell/store/products";
 import { detectPlatform } from "shell/store/platform";
 import { fetchInstances } from "shell/store/instances";
@@ -33,13 +34,16 @@ export default connect(state => {
             setError("You do not have permission to access to this instance");
           }
         });
+
       Promise.all([
         props.dispatch(fetchUser(props.user.ZUID)),
         props.dispatch(fetchUserRole())
       ]).then(() => {
         props.dispatch(fetchProducts());
       });
+
       props.dispatch(fetchDomains());
+      props.dispatch(fetchUsers());
       props.dispatch(detectPlatform());
       props.dispatch(fetchInstances());
     }, []);

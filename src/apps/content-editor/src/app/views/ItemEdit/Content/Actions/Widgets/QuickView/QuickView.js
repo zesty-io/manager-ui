@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import React, { Fragment } from "react";
 import moment from "moment-timezone";
 import cx from "classnames";
 
@@ -6,19 +6,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCodeBranch,
   faBolt,
-  faEnvelope,
   faDatabase,
   faCode
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { Button } from "@zesty-io/core/Button";
 import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import { usePermission } from "shell/hooks/use-permissions";
 import { useDomain } from "shell/hooks/use-domain";
-import { WorkflowRequest } from "../WorkflowRequest";
 
 import SharedWidgetStyles from "../SharedWidget.less";
 import styles from "./QuickView.less";
@@ -28,11 +25,6 @@ export const QuickView = React.memo(function QuickView(props) {
 
   const codeAccess = usePermission("CODE");
   const domain = useDomain();
-
-  const [workflowRequestOpen, setWorkFlowRequestOpen] = useState(false);
-  const handleWorkflow = () => {
-    setWorkFlowRequestOpen(!workflowRequestOpen);
-  };
 
   return (
     <Fragment>
@@ -106,36 +98,17 @@ export const QuickView = React.memo(function QuickView(props) {
           </p>
         </CardContent>
         <CardFooter className={SharedWidgetStyles.FooterSpacing}>
-          <ButtonGroup>
-            <Button
-              className={SharedWidgetStyles.Button}
-              id="WorkflowRequestButton"
-              onClick={handleWorkflow}
-            >
-              <FontAwesomeIcon icon={faEnvelope} />
-              Workflow Request
-            </Button>
-
-            {codeAccess && (
-              <ButtonGroup>
-                <AppLink to={`/schema/${props.modelZUID}`}>
-                  <FontAwesomeIcon icon={faDatabase} />
-                  &nbsp;Edit Schema
-                </AppLink>
-                <AppLink to="/code/">
-                  <FontAwesomeIcon icon={faCode} />
-                  &nbsp;Edit Code
-                </AppLink>
-              </ButtonGroup>
-            )}
-          </ButtonGroup>
-
-          {workflowRequestOpen && (
-            <WorkflowRequest
-              itemTitle={props.metaTitle}
-              handleClose={handleWorkflow}
-              fields={props.fields}
-            />
+          {codeAccess && (
+            <ButtonGroup>
+              <AppLink to={`/schema/${props.modelZUID}`}>
+                <FontAwesomeIcon icon={faDatabase} />
+                &nbsp;Edit Schema
+              </AppLink>
+              <AppLink to="/code/">
+                <FontAwesomeIcon icon={faCode} />
+                &nbsp;Edit Code
+              </AppLink>
+            </ButtonGroup>
           )}
         </CardFooter>
       </Card>
