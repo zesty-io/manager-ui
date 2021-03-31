@@ -32,6 +32,11 @@ export function UserLatest(props) {
     //Fetch content model metaTitles
     let affectedUserLogs = uniqBy(userLogs, "affectedZUID").slice(0, 5);
 
+    const cleaner = string => {
+      if (typeof string !== "string") return "";
+      return string.replaceAll("`", "").replace("/", "");
+    };
+
     Promise.all(
       affectedUserLogs.map(log => {
         if (zuid.matches(log.affectedZUID, zuid.prefix.SITE_CONTENT_ITEM)) {
@@ -39,7 +44,10 @@ export function UserLatest(props) {
             `${CONFIG.API_INSTANCE}/search/items?q=${log.affectedZUID}`
           )
             .then(data => {
-              log.recentTitle = data.data[0]?.web?.metaTitle;
+              log.recentTitle =
+                log.action === 2
+                  ? `Modified View ${data.data[0]?.web?.metaTitle}`
+                  : `Published View ${data.data[0]?.web?.metaTitle}`;
               return log;
             })
             .catch(err => console.log(err));
@@ -50,18 +58,19 @@ export function UserLatest(props) {
             `${CONFIG.API_INSTANCE}/content/models/${log.affectedZUID}`
           )
             .then(data => {
-              log.recentTitle = data.data?.label;
+              log.recentTitle = `Modified Schema ${data.data?.label}`;
               return log;
             })
             .catch(err => console.log(err));
         } else if (zuid.matches(log.affectedZUID, zuid.prefix.SITE_VIEW)) {
           return request(`${CONFIG.API_INSTANCE}/web/views/${log.affectedZUID}`)
             .then(data => {
-              log.recentTitle = data.data.fileName;
+              log.recentTitle = cleaner(log.meta.message);
               return log;
             })
             .catch(err => console.log(err));
         } else {
+          log.recentTitle = cleaner(log.meta.message);
           return log;
         }
       })
@@ -93,13 +102,16 @@ export function UserLatest(props) {
 
                 return (
                   <li key={i}>
-                    <hgroup>
+                    <div>
                       <h4>
                         {log.recentTitle ? log.recentTitle : log.meta.message}
                       </h4>
-                      <h5>{`Updated: ${moment(log.updatedAt).fromNow()}`}</h5>
-                    </hgroup>
-
+                      <h5>{`${
+                        props.cardTitle.includes("Edits")
+                          ? "Edited"
+                          : "Published"
+                      } : ${moment(log.updatedAt).fromNow()}`}</h5>
+                    </div>
                     {url && (
                       <AppLink className={styles.AppLink} to={url}>
                         View
