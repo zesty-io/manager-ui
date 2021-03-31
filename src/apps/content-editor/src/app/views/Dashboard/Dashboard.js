@@ -128,7 +128,6 @@ export default connect(function(state) {
               <AccountInfo
                 instanceZUID={this.props.instance.ZUID}
                 randomHashID={this.props.instance.randomHashID}
-                domain={this.props.instance.domain}
                 headTags={this.props.headTags}
                 instanceName={this.props.instance.name}
               />
