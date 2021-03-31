@@ -12,9 +12,11 @@ import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
 import styles from "./AccountInfo.less";
 import { AppLink } from "@zesty-io/core/AppLink";
+import { useDomain } from "shell/hooks/use-domain";
 
 export function AccountInfo(props) {
   const [faviconURL, setFaviconURL] = useState("");
+  const domain = useDomain();
 
   useEffect(() => {
     const tag = Object.values(props.headTags).find(tag =>
@@ -43,10 +45,10 @@ export function AccountInfo(props) {
           )}
 
           <div className={styles.Links}>
-            {props.domain && (
+            {domain && (
               <Url
                 className={styles.Live}
-                href={`//${props.domain}`}
+                href={domain}
                 target="_blank"
                 title="Open live link in standard browser window"
               >

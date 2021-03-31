@@ -12,6 +12,7 @@ import { HeadTag } from "./HeadTag";
 import { Preview } from "./Preview";
 
 import { fetchHeadTags, addHeadTag } from "shell/store/headTags";
+import { useDomain } from "shell/hooks/use-domain";
 
 import styles from "./Head.less";
 export default connect((state, props) => {
@@ -31,20 +32,16 @@ export default connect((state, props) => {
     }
   }
 
-  const domain =
-    Array.isArray(state.instance.domains) && state.instance.domains[0]
-      ? state.instance.domains[0].domain
-      : "";
-
   return {
     item,
-    domain,
     instanceName: state.instance.name,
     tags: Object.values(state.headTags)
       .filter(tag => tag.resourceZUID === props.resourceZUID)
       .sort((a, b) => a.sort > b.sort)
   };
 })(function Head(props) {
+  const domain = useDomain();
+
   useEffect(() => {
     props.dispatch(fetchHeadTags());
   }, []);
@@ -82,7 +79,7 @@ export default connect((state, props) => {
       <Preview
         item={props.item}
         instanceName={props.instanceName}
-        domain={props.domain}
+        domain={domain}
         tags={props.tags}
       />
     </div>
