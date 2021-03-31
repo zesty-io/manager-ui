@@ -44,7 +44,10 @@ export function UserLatest(props) {
             `${CONFIG.API_INSTANCE}/search/items?q=${log.affectedZUID}`
           )
             .then(data => {
-              log.recentTitle = data.data[0]?.web?.metaTitle;
+              log.recentTitle =
+                log.action === 2
+                  ? `Modified View ${data.data[0]?.web?.metaTitle}`
+                  : `Published View ${data.data[0]?.web?.metaTitle}`;
               return log;
             })
             .catch(err => console.log(err));
@@ -55,7 +58,7 @@ export function UserLatest(props) {
             `${CONFIG.API_INSTANCE}/content/models/${log.affectedZUID}`
           )
             .then(data => {
-              log.recentTitle = data.data?.label;
+              log.recentTitle = `Modified ${data.data?.label}`;
               return log;
             })
             .catch(err => console.log(err));
