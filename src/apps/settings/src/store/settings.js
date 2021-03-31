@@ -1,6 +1,12 @@
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
-import { faCog, faFont } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCog,
+  faEnvelope,
+  faFont,
+  faTools
+} from "@fortawesome/free-solid-svg-icons";
 
 export function settings(
   state = {
@@ -101,8 +107,8 @@ export function settings(
 
 const ICONS = {
   general: faCog,
-  tools: "fas fa-tools",
-  contact: "fas fa-envelope"
+  tools: faTools,
+  contact: faEnvelope
 };
 
 const sortNav = (a, b) => {

@@ -9,7 +9,8 @@ import {
   faSpinner,
   faSave,
   faPlayCircle,
-  faPauseCircle
+  faPauseCircle,
+  faExclamationTriangle
 } from "@fortawesome/free-solid-svg-icons";
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
@@ -65,8 +66,8 @@ function Header(props) {
         {props.type.icon ? (
           props.type.icon
         ) : (
-          <i
-            className={cx("fas fa-exclamation-triangle")}
+          <FontAwesomeIcon
+            icon={faExclamationTriangle}
             title={`The ${props.field.datatype} field type is no longer supported`}
           />
         )}

@@ -378,7 +378,20 @@ export default connect(state => {
             if (item.web.metaTitle) {
               html += `<strong style="display:block;font-weight:bold;">${item.web.metaTitle}</strong>`;
             } else {
-              html += `<small style="display:block;font-weight:bold;"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;<a href="/content/${item.meta.contentModelZUID}/${itemZUID}">${itemZUID}</a> is missing a meta title</small>`;
+              return {
+                component: (
+                  <>
+                    <FontAwesomeIcon icon={faExclamationTriangle} />
+                    &nbsp;
+                    <AppLink
+                      to={`/content/${item.meta.contentModelZUID}/${itemZUID}`}
+                    >
+                      ${itemZUID}
+                    </AppLink>
+                    <b style={{ color: "#000" }}> is missing a meta title</b>
+                  </>
+                )
+              };
             }
 
             if (item.web.path || item.web.pathPart) {

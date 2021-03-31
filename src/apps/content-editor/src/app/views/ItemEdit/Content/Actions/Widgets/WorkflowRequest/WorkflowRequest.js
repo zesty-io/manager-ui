@@ -5,7 +5,7 @@ import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faSave, faBan, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
@@ -171,6 +171,7 @@ export default connect(state => {
                 id="WorkflowRequestSendButton"
                 disabled={this.state.sending}
               >
+                <FontAwesomeIcon icon={faSave} />
                 {this.state.sending ? (
                   <Fragment>
                     <FontAwesomeIcon icon={faSpinner} spin />
@@ -180,7 +181,10 @@ export default connect(state => {
                   "Send"
                 )}
               </Button>
-              <Button onClick={handleClose}>Cancel</Button>
+              <Button onClick={handleClose}>
+                <FontAwesomeIcon icon={faBan} />
+                Cancel
+              </Button>
             </ButtonGroup>
           </CardFooter>
         </Card>

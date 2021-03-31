@@ -1,7 +1,10 @@
 import React from "react";
+
 import { Doughnut } from "react-chartjs-2";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { request } from "utility/request";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChartPie } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./InboundTraffic.less";
 export class InboundTraffic extends React.PureComponent {
@@ -64,9 +67,7 @@ export class InboundTraffic extends React.PureComponent {
         <CardHeader>
           <h2 className={styles.columns}>
             <div className={styles.column}>
-              <span
-                className={`${styles.icon} fa fa-pie-chart ${styles.muted}`}
-              />
+              <FontAwesomeIcon className={styles.muted} icon={faChartPie} />
               Inbound Traffic
             </div>
             <div

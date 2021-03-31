@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import uniqBy from "lodash/uniqBy";
+import zuid from "zuid";
 import { request } from "utility/request";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight, faClock } from "@fortawesome/free-solid-svg-icons";
@@ -17,7 +18,6 @@ export function UserLatest(props) {
   useEffect(() => {
     setLoading(true);
     let userLogs = Object.keys(props.logs)
-
       .filter(logZUID => {
         return (
           props.logs[logZUID].actionByUserZUID === props.user.ZUID &&
@@ -30,24 +30,56 @@ export function UserLatest(props) {
       });
 
     //Fetch content model metaTitles
-    const affectedUserLogs = uniqBy(userLogs, "affectedZUID").slice(0, 5);
+    let affectedUserLogs = uniqBy(userLogs, "affectedZUID").slice(0, 5);
+
+    const cleaner = string => {
+      if (typeof string !== "string") return "";
+      return string.replaceAll("`", "").replace("/", "");
+    };
 
     Promise.all(
       affectedUserLogs.map(log => {
-        return request(
-          `${CONFIG.API_INSTANCE}/search/items?q=${log.affectedZUID}`
-        )
-          .then(data => {
-            log.recentTitle = data.data[0]?.web?.metaTitle;
-            return log;
-          })
-          .catch(err => console.log(err));
+        if (zuid.matches(log.affectedZUID, zuid.prefix.SITE_CONTENT_ITEM)) {
+          return request(
+            `${CONFIG.API_INSTANCE}/search/items?q=${log.affectedZUID}`
+          )
+            .then(data => {
+              log.recentTitle =
+                log.action === 2
+                  ? `Modified View ${data.data[0]?.web?.metaTitle}`
+                  : `Published View ${data.data[0]?.web?.metaTitle}`;
+              return log;
+            })
+            .catch(err => console.log(err));
+        } else if (
+          zuid.matches(log.affectedZUID, zuid.prefix.SITE_CONTENT_SET)
+        ) {
+          return request(
+            `${CONFIG.API_INSTANCE}/content/models/${log.affectedZUID}`
+          )
+            .then(data => {
+              log.recentTitle = `Modified Schema ${data.data?.label}`;
+              return log;
+            })
+            .catch(err => console.log(err));
+        } else if (zuid.matches(log.affectedZUID, zuid.prefix.SITE_VIEW)) {
+          return request(`${CONFIG.API_INSTANCE}/web/views/${log.affectedZUID}`)
+            .then(data => {
+              log.recentTitle = cleaner(log.meta.message);
+              return log;
+            })
+            .catch(err => console.log(err));
+        } else {
+          log.recentTitle = cleaner(log.meta.message);
+          return log;
+        }
       })
     ).then(logs => {
       setLatest(logs);
       setLoading(false);
     });
   }, [props.user, props.logs]);
+
   return (
     <Card className={styles.UserLatestEdits}>
       <WithLoader condition={!loading} message={`Loading ${props.cardTitle}`}>
@@ -70,13 +102,16 @@ export function UserLatest(props) {
 
                 return (
                   <li key={i}>
-                    <hgroup>
+                    <div>
                       <h4>
                         {log.recentTitle ? log.recentTitle : log.meta.message}
                       </h4>
-                      <h5>{`Updated: ${moment(log.updatedAt).fromNow()}`}</h5>
-                    </hgroup>
-
+                      <h5>{`${
+                        props.cardTitle.includes("Edits")
+                          ? "Edited"
+                          : "Published"
+                      } : ${moment(log.updatedAt).fromNow()}`}</h5>
+                    </div>
                     {url && (
                       <AppLink className={styles.AppLink} to={url}>
                         View

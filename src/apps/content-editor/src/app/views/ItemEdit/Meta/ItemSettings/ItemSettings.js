@@ -8,11 +8,13 @@ import { ItemRoute } from "./settings/ItemRoute";
 import { ItemParent } from "./settings/ItemParent";
 import { CanonicalTag } from "./settings/CanonicalTag";
 import { SitemapPriority } from "./settings/SitemapPriority";
+import { useDomain } from "shell/hooks/use-domain";
 
 import styles from "./ItemSettings.less";
 
 export const ItemSettings = React.memo(
   function ItemSettings(props) {
+    const domain = useDomain();
     let { data, meta, web } = props.item;
 
     data = data || {};
@@ -81,17 +83,13 @@ export const ItemSettings = React.memo(
           <div className={styles.SearchResult}>
             <h6 className={styles.GoogleTitle}>{web.metaTitle}</h6>
             <div className={styles.GoogleLink}>
-              {props.instance.domains.length ? (
+              {domain ? (
                 <a
                   id="google-link-example"
                   target="_blank"
-                  href={`//${props.instance.domains[0].domain}${
-                    web.path ? web.path : "/"
-                  }`}
+                  href={`${domain}${web.path ? web.path : "/"}`}
                 >
-                  {`${props.instance.domains[0].domain}${
-                    web.path ? web.path : "/"
-                  }`}
+                  {`${domain}${web.path ? web.path : "/"}`}
                 </a>
               ) : null}
 
