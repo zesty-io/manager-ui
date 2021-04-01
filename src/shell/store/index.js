@@ -20,12 +20,15 @@ import { models } from "./models";
 import { fields } from "./fields";
 import { content } from "./content";
 import { contentVersions } from "./contentVersions";
-import media from "./media";
 import { logs } from "./logs";
 import { notifications } from "./notifications";
 import { platform } from "./platform";
 import { headTags } from "./headTags";
 import ui from "./ui";
+
+// RTK
+import media from "./media";
+import { users } from "./users";
 
 // Middleware is applied in order of array
 const middlewares = [
@@ -87,6 +90,7 @@ function createReducer(asyncReducers) {
     },
     auth,
     user,
+    users: users.reducer,
     userRole,
     products,
     instance,

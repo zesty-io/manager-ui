@@ -1,25 +1,33 @@
+@import "~@zesty-io/core/typography.less";
+
 .WorkflowRequest {
   margin: 0;
-  .ScrollContainer {
-    padding: 8px 0;
-    margin: 8px 0;
-    max-height: 300px;
-    overflow-y: auto;
-    border-radius: 3px;
-    border: solid 1px rgba(0, 0, 0, 0.12);
+
+  ul {
+    padding: 0;
+    margin-bottom: 16px;
   }
+
   .Checkboxes {
-    cursor: pointer;
+    margin: 8px 0;
+    list-style: none;
+
+    // &:hover,
+    // &:focus {
+    // }
+
+    label {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
     input[type="checkbox"] {
       margin-right: 8px;
-      margin-bottom: 8px;
     }
   }
+
   .TextArea {
     min-width: auto;
     width: calc(100% - 20px);
-  }
-  .Button {
-    margin-right: 8px;
   }
 }
