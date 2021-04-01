@@ -65,19 +65,35 @@ export default connect(state => {
     };
 
     handleSend = () => {
-      const header = `<h3>Workflow Request on the ${this.props.itemTitle} page from ${this.props.user.firstName}</h3>`;
-      const message = this.state.message
-        ? `<p>${this.state.message}</p>`
-        : `<p>${this.props.user.firstName} is requesting content for the "${this.props.itemTitle}" page.</p>`;
-      const reviewMessage = `<p>Areas to review or edit: ${this.state.selectedFields.join(
-        ", "
-      )}</p>`;
-      const reviewLink = `<p>Please click <a href="${window.location.href}">this link</a> to view this page in Zesty.</p>`;
-      const reviewLinkRaw = `<p><a href="${window.location.href}">${window.location.href}</a></p>`;
-      const thankYou = `<p>Thank you!</p>`;
-      const body = `${header}${message}${reviewMessage}${reviewLink}${reviewLinkRaw}${thankYou}`;
+      const body = `
+<p><strong>${this.props.user.firstName +
+        " " +
+        this.props.user
+          .lastName}</strong> has sent you a workflow request for <a href="${
+        window.location.href
+      }">${this.props.itemTitle}</a> on ${this.props.instance.name}.</p>
 
-      const subject = `${this.props.instance.name} Workflow Request from ${this.props.user.firstName}`;
+${
+  this.state.message
+    ? `<blockquote style="border-left: 3px solid #444;padding: 0 12px;">${this.state.message}</blockquote>`
+    : ""
+}
+
+${
+  this.state.selectedFields.length
+    ? `<p>Fields to review:</p>
+  <ul>
+  ${this.state.selectedFields.map(field => `<li>${field}</li>`).join("")}
+  </ul>`
+    : ""
+}
+
+<p><small>Direct Link: <a href="${window.location.href}">${
+        window.location.href
+      }</a></small></p>
+      `;
+
+      const subject = `Workflow Request on ${this.props.instance.name} from ${this.props.user.firstName}`;
       const to = this.state.selectedMembers.join(", ");
 
       this.setState({
