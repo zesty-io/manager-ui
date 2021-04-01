@@ -112,14 +112,18 @@ ${
           if (res.status === 200) {
             this.props.dispatch(
               notify({
-                message: "Sent workflow request",
+                message: `Sent workflow request on ${
+                  this.props.itemTitle
+                } to ${this.state.selectedMembers.join(", ")}`,
                 kind: "save"
               })
             );
           } else {
             this.props.dispatch(
               notify({
-                message: "Failed sending workflow request",
+                message: `Failed sending workflow request on ${
+                  this.props.itemTitle
+                } to ${this.state.selectedMembers.join(", ")}`,
                 kind: "warn"
               })
             );
