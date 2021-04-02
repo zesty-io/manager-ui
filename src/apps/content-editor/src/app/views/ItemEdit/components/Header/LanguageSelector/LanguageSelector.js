@@ -5,7 +5,6 @@ import { useHistory, useLocation } from "react-router-dom";
 
 import { Select, Option } from "@zesty-io/core/Select";
 
-import { fetchLangauges } from "shell/store/languages";
 import { selectLang } from "shell/store/user";
 
 import styles from "./LanguageSelector.less";
@@ -30,14 +29,6 @@ export const LanguageSelector = connect((state, props) => {
 })(props => {
   const location = useLocation();
   const history = useHistory();
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!props.languages.length && !loading) {
-      setLoading(true);
-      props.dispatch(fetchLangauges("enabled")).then(() => setLoading(false));
-    }
-  });
 
   const handleSelect = val => {
     props.dispatch(selectLang(val));
@@ -59,7 +50,7 @@ export const LanguageSelector = connect((state, props) => {
           className={cx(styles.LanguageSelector, props.className)}
           value={props.selectedLang}
           onSelect={handleSelect}
-          loading={loading}
+          loading={false}
         >
           {props.languages.map(lang => (
             <Option key={lang.code} text={lang.code} value={lang.code} />

@@ -62,7 +62,14 @@ function sortHTML(a, b) {
   return 0;
 }
 
-function resolveRelatedOptions(fields, items, fieldZUID, modelZUID) {
+function resolveRelatedOptions(
+  fields,
+  items,
+  fieldZUID,
+  modelZUID,
+  langID,
+  value
+) {
   // guard against absent data in state
   const field = fields && fields[fieldZUID];
   if (!field || !items) {
@@ -70,12 +77,17 @@ function resolveRelatedOptions(fields, items, fieldZUID, modelZUID) {
   }
 
   return Object.keys(items)
-    .filter(
-      itemZUID =>
+    .filter(itemZUID => {
+      return (
         items[itemZUID] &&
         items[itemZUID].meta &&
-        items[itemZUID].meta.contentModelZUID === modelZUID
-    )
+        items[itemZUID].meta.contentModelZUID === modelZUID &&
+        // filter by content language
+        (langID === items[itemZUID].meta.langID ||
+          // ...unless option already selected
+          value?.split(",").includes(itemZUID))
+      );
+    })
     .map(itemZUID => {
       return {
         filterValue: items[itemZUID].data[field.name],
@@ -101,7 +113,8 @@ function resolveRelatedOptions(fields, items, fieldZUID, modelZUID) {
 export default connect(state => {
   return {
     allItems: state.content,
-    allFields: state.fields
+    allFields: state.fields,
+    allLanguages: state.languages
   };
 })(function Field(props) {
   const {
@@ -116,6 +129,7 @@ export default connect(state => {
     name,
     relatedFieldZUID,
     relatedModelZUID,
+    langID,
     onChange,
     onSave,
     dispatch
@@ -453,23 +467,33 @@ export default connect(state => {
         }
       }
 
-      const onOneToOneOpen = useCallback(
-        () => Promise.resolve(dispatch(fetchItems(relatedModelZUID))),
-        []
-      );
+      const onOneToOneOpen = useCallback(() => {
+        if (!props.allLanguages.length) {
+          return Promise.resolve();
+        }
+        return dispatch(
+          fetchItems(relatedModelZUID, {
+            lang: props.allLanguages.find(lang => lang.ID === langID).code
+          })
+        );
+      }, [props.allLanguages.length]);
 
       let oneToOneOptions = useMemo(() => {
         return resolveRelatedOptions(
           props.allFields,
           props.allItems,
           relatedFieldZUID,
-          relatedModelZUID
+          relatedModelZUID,
+          langID,
+          value
         );
       }, [
-        Object.keys(props.allFields).length,
-        Object.keys(props.allItems).length,
+        props.allFields,
+        props.allItems,
         relatedModelZUID,
-        relatedFieldZUID
+        relatedFieldZUID,
+        langID,
+        value
       ]);
 
       if (value && !oneToOneOptions.find(opt => opt.value === value)) {
@@ -529,22 +553,33 @@ export default connect(state => {
           props.allFields,
           props.allItems,
           relatedFieldZUID,
-          relatedModelZUID
+          relatedModelZUID,
+          langID,
+          value
         );
       }, [
-        Object.keys(props.allFields).length,
-        Object.keys(props.allItems).length,
+        props.allFields,
+        props.allItems,
         relatedModelZUID,
-        relatedFieldZUID
+        relatedFieldZUID,
+        langID,
+        value
       ]);
 
       // Delay loading options until user opens dropdown
       const onOneToManyOpen = useCallback(() => {
+        if (!props.allLanguages.length) {
+          return Promise.resolve();
+        }
         return Promise.all([
           dispatch(fetchFields(relatedModelZUID)),
-          dispatch(fetchItems(relatedModelZUID))
+          dispatch(
+            fetchItems(relatedModelZUID, {
+              lang: props.allLanguages.find(lang => lang.ID === langID).code
+            })
+          )
         ]);
-      }, []);
+      }, [props.allLanguages.length, relatedModelZUID, langID]);
 
       return (
         <FieldTypeOneToMany
