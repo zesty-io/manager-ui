@@ -20,13 +20,13 @@ class LinkEdit extends Component {
     super(props);
 
     this.state = {
-      set_name: "zesty_link",
       type: "internal",
-      parent_zuid: "0",
-      external: "",
-      seo_link_title: "",
-      target: false,
-      rel: false,
+      parentZUID: "0",
+      label: "",
+      metaTitle: "",
+      target: null,
+      relNoFollow: false,
+      targetBlank: false,
       internalLinkOptions: [],
       linkZUID: this.props.linkZUID,
       loading: false
@@ -44,12 +44,13 @@ class LinkEdit extends Component {
   componentDidUpdate() {
     if (this.props.linkZUID !== this.state.linkZUID) {
       this.setState({
-        set_name: "zesty_link",
-        parent_zuid: "0",
-        external: "",
-        seo_link_title: "",
-        target: false,
-        rel: false,
+        type: "internal",
+        parentZUID: "0",
+        label: "",
+        metaTitle: "",
+        target: null,
+        relNoFollow: false,
+        targetBlank: false,
         internalLinkOptions: [],
         linkZUID: this.props.linkZUID,
         loading: false
@@ -63,16 +64,7 @@ class LinkEdit extends Component {
       loading: true
     });
 
-    return request(
-      `${CONFIG.LEGACY_SITES_SERVICE}/ajax/content_call.ajax.php`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-        },
-        body: `hash[0]=content&hash[1]=${linkZUID}`
-      }
-    )
+    return request(`${CONFIG.API_INSTANCE}/content/links/${linkZUID}`)
       .then(res => {
         if (this.__mounted) {
           this.setState({
@@ -87,11 +79,11 @@ class LinkEdit extends Component {
           } else {
             // 0 indicates a top level menu link, nothing to resolve
             // otherwise if a parent zuid value exists resolve it's data
-            if (res.znode.parent_zuid != "0" && res.znode.parent_zuid) {
-              let parent = this.props.items[res.znode.parent_zuid];
+            if (res.data.parentZUID !== "0" && res.data.parentZUID) {
+              let parent = this.props.items[res.data.parentZUID];
 
               if (!parent || !parent.meta.ZUID) {
-                this.search(res.znode.parent_zuid);
+                this.search(res.data.parentZUID);
               } else {
                 this.setState({
                   internalLinkOptions: [
@@ -106,10 +98,10 @@ class LinkEdit extends Component {
             }
 
             // Internal links store the linked zuid on the path_part
-            if (res.znode.type === "internal" && res.znode.path_part) {
-              let link = this.props.items[res.znode.path_part];
+            if (res.data.type === "internal" && res.data.target) {
+              let link = this.props.items[res.data.target];
               if (!link || !link.meta.ZUID) {
-                this.search(res.znode.path_part);
+                this.search(res.data.target);
               } else {
                 this.setState({
                   internalLinkOptions: [
@@ -123,15 +115,25 @@ class LinkEdit extends Component {
               }
             }
 
+            let relNoFollow = false;
+            let targetBlank = false;
+            res.data.source.split(";").forEach(sourceField => {
+              if (sourceField === "rel:true") {
+                relNoFollow = true;
+              } else if (sourceField === "target:_blank") {
+                targetBlank = true;
+              }
+            });
+
             this.setState({
-              zuid: res.znode.zuid,
-              set_name: res.znode.set_name,
-              type: res.znode.type,
-              parent_zuid: res.znode.parent_zuid,
-              seo_link_title: res.znode.seo_link_title,
-              target: res.znode.target == null ? false : true,
-              rel: res.znode.rel == null ? false : true,
-              [res.znode.type]: res.znode.path_part
+              ZUID: res.data.ZUID,
+              type: res.data.type,
+              parentZUID: res.data.parentZUID,
+              label: res.data.label,
+              metaTitle: res.data.metaTitle || res.data.label,
+              targetBlank,
+              relNoFollow,
+              target: res.data.target
             });
           }
         }
@@ -151,35 +153,29 @@ class LinkEdit extends Component {
   saveLink = () => {
     this.setState({ saving: true });
 
+    const source = [];
+    if (this.state.relNoFollow) {
+      source.push("rel:true");
+    }
+    if (this.state.targetBlank) {
+      source.push("target:_blank");
+    }
+
     const params = {
-      zuid: this.state.zuid,
-      set_name: this.state.set_name,
+      ZUID: this.state.ZUID,
       type: this.state.type,
-      parent_zuid: this.state.parent_zuid,
-      seo_link_title: this.state.seo_link_title,
-      target: this.state.target ? "_blank" : null,
-      rel: this.state.rel ? "nofollow" : null,
-      // send internal or external key with that value from store
-      [this.state.type]: this.state[this.state.type]
+      parentZUID: this.state.parentZUID,
+      label: this.state.label,
+      metaTitle: this.state.metaTitle,
+      source: source.join(";"),
+      target: this.state.target
     };
 
-    // Convert to urlencoded
-    const body = Object.keys(params)
-      .map(
-        key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
-      )
-      .join("&");
-
-    return request(
-      `${CONFIG.LEGACY_SITES_SERVICE}/ajax/process_link.ajax.php`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-        },
-        body
-      }
-    )
+    return request(`${CONFIG.API_INSTANCE}/content/links/${params.ZUID}`, {
+      method: "PUT",
+      json: true,
+      body: params
+    })
       .then(res => {
         if (res.error) {
           notify({
@@ -198,8 +194,8 @@ class LinkEdit extends Component {
       });
   };
 
-  search = zuid => {
-    return request(`${CONFIG.service.instance_api}/search/items?q=${zuid}`)
+  search = term => {
+    return request(`${CONFIG.API_INSTANCE}/search/items?q=${term}`)
       .then(res => {
         if (res.status !== 200) {
           notify({
@@ -244,7 +240,8 @@ class LinkEdit extends Component {
       });
   };
 
-  onChange = (name, value) => {
+  onChange = (value, name) => {
+    console.log("onChange", name, value);
     this.setState({
       [name]: value
     });
@@ -262,11 +259,11 @@ class LinkEdit extends Component {
             <CardContent className={styles.CardContent}>
               <FieldTypeInternalLink
                 className={styles.Row}
-                name="parent_zuid"
+                name="parentZUID"
                 label="Select a parent for your link"
-                value={this.state.parent_zuid}
+                value={this.state.parentZUID}
                 options={this.state.internalLinkOptions.filter(
-                  op => op.value !== this.state.internal
+                  op => op.value !== this.state.target
                 )}
                 onChange={this.onChange}
                 onSearch={this.search}
@@ -275,9 +272,9 @@ class LinkEdit extends Component {
               {this.state.type === "internal" ? (
                 <FieldTypeInternalLink
                   className={styles.Row}
-                  name="internal"
+                  name="target"
                   label="Select an item to link to"
-                  value={this.state.internal}
+                  value={this.state.target}
                   options={this.state.internalLinkOptions}
                   onChange={this.onChange}
                   onSearch={this.search}
@@ -286,8 +283,8 @@ class LinkEdit extends Component {
                 <FieldTypeUrl
                   className={styles.Row}
                   label="Provide an external URL to link to"
-                  name="external"
-                  value={this.state.external}
+                  name="target"
+                  value={this.state.target}
                   onChange={this.onChange}
                 />
               )}
@@ -295,17 +292,20 @@ class LinkEdit extends Component {
               <FieldTypeText
                 className={styles.Row}
                 label="Link title"
-                name="seo_link_title"
-                value={this.state.seo_link_title}
-                onChange={this.onChange}
+                name="metaTitle"
+                value={this.state.metaTitle}
+                onChange={value => {
+                  this.onChange(value, "label");
+                  this.onChange(value, "metaTitle");
+                }}
               />
               <label className={styles.Checkboxes}>
                 <Input
                   type="checkbox"
-                  name="target"
-                  checked={this.state.target}
+                  name="targetBlank"
+                  checked={this.state.targetBlank}
                   onClick={evt => {
-                    this.onChange("target", evt.target.checked);
+                    this.onChange(evt.target.checked, "targetBlank");
                   }}
                 />
                 target = _blank
@@ -314,9 +314,9 @@ class LinkEdit extends Component {
                 <Input
                   type="checkbox"
                   name="rel"
-                  checked={this.state.rel}
+                  checked={this.state.relNoFollow}
                   onClick={evt => {
-                    this.onChange("rel", evt.target.checked);
+                    this.onChange(evt.target.checked, "relNoFollow");
                   }}
                 />
                 rel = nofollow
@@ -341,6 +341,6 @@ class LinkEdit extends Component {
 export default connect((state, props) => {
   return {
     linkZUID: props.match.params.linkZUID,
-    items: state.contentModelItems
+    items: state.content
   };
 })(LinkEdit);
