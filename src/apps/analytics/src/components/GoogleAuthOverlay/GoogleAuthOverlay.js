@@ -4,7 +4,9 @@ import { faGlobe, faKey, faPlug } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
 
+import GaAuthenticate from "./GaAuthenticate";
 import styles from "./GoogleAuthOverlay.less";
+
 export class GoogleAuthOverlay extends React.Component {
   state = {
     titles: {
@@ -81,14 +83,11 @@ export class GoogleAuthOverlay extends React.Component {
                 <p>{this.state.descriptions.notAuthenticated}</p>
               </React.Fragment>
             )}
-            {!this.props.user.staff && (
-              <div className={styles.buttonHolder}>
-                <Button kind="save" onClick={this.createAnalyticsPopup}>
-                  <FontAwesomeIcon icon={faKey} />
-                  Click here to Authenticate With Google
-                </Button>
-              </div>
-            )}
+
+            <div className={styles.buttonHolder}>
+              {/* Exported this button in order to utilize usePermission hook */}
+              <GaAuthenticate onClick={this.createAnalyticsPopup} />
+            </div>
           </React.Fragment>
         ) : (
           <React.Fragment>
