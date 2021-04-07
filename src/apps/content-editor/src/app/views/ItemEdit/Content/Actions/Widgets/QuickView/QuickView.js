@@ -68,7 +68,7 @@ export const QuickView = React.memo(function QuickView(props) {
                 )}
               </span>
             </li>
-            {props.basicApi ? (
+            {codeAccess && (
               <li>
                 <strong>API:</strong>&nbsp;
                 <Url
@@ -82,7 +82,7 @@ export const QuickView = React.memo(function QuickView(props) {
                   &nbsp;{`/-/instant/${props.itemZUID}.json`}
                 </Url>
               </li>
-            ) : null}
+            )}
             <li>Last edited {moment(props.updatedAt).fromNow()}</li>
             {props.publishing && props.publishing.version && (
               <li>Version {props.publishing.version} is published</li>
