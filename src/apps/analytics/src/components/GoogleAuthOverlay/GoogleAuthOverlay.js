@@ -81,7 +81,7 @@ export class GoogleAuthOverlay extends React.Component {
                 <p>{this.state.descriptions.notAuthenticated}</p>
               </React.Fragment>
             )}
-            {this.props.user.staff && (
+            {!this.props.user.staff && (
               <div className={styles.buttonHolder}>
                 <Button kind="save" onClick={this.createAnalyticsPopup}>
                   <FontAwesomeIcon icon={faKey} />
