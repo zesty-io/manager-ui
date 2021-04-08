@@ -24,7 +24,6 @@ export const QuickView = React.memo(function QuickView(props) {
   const isScheduled = props.scheduling && props.scheduling.isScheduled;
 
   const codeAccess = usePermission("CODE");
-  const domain = useDomain();
 
   return (
     <Fragment>
@@ -68,21 +67,19 @@ export const QuickView = React.memo(function QuickView(props) {
                 )}
               </span>
             </li>
-            {props.basicApi ? (
+            {codeAccess && (
               <li>
                 <strong>API:</strong>&nbsp;
                 <Url
                   target="_blank"
                   title="Instant API"
-                  href={`${
-                    domain ? domain : __CONFIG__.URL_PREVIEW_FULL
-                  }/-/instant/${props.itemZUID}.json`}
+                  href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.itemZUID}.json`}
                 >
                   <FontAwesomeIcon icon={faBolt} />
                   &nbsp;{`/-/instant/${props.itemZUID}.json`}
                 </Url>
               </li>
-            ) : null}
+            )}
             <li>Last edited {moment(props.updatedAt).fromNow()}</li>
             {props.publishing && props.publishing.version && (
               <li>Version {props.publishing.version} is published</li>
