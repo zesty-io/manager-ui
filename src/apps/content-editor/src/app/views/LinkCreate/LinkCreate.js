@@ -27,77 +27,43 @@ export const LinkCreate = connect((state, props) => {
     constructor(props) {
       super(props);
 
-      //       set_name: zesty_link
-      // zuid: 17-265584-k3dz8l
-      // type: internal
-      // parent_zuid: 0
-      // internal: 7-b939a4-457q19
-      // seo_link_title: Internal Link test
-
-      //       set_name: zesty_link
-      // zuid: 17-f3362c-2d1j66
-      // type: external
-      // parent_zuid: 0
-      // external: https://zesty.io
-      // seo_link_title: External Link test
-
-      // Current Internal Link Creation
-      //       set_name: zesty_link
-      // zuid: new
-      // type: internal
-      // parent_zuid: 7-44e368-sbjn9m
-      // internal: 7-72f010f-8rjntl
-      // seo_link_title: Internal Link 1
-      // target: _blank
-      // rel: nofollow
-
       this.state = {
-        set_name: "zesty_link",
         type: "internal",
-        parent_zuid: "0",
-        external: "",
-        seo_link_title: "",
-        target: "",
-        rel: "",
-
+        parentZUID: "0",
+        label: "",
+        metaTitle: "",
+        target: null,
+        relNoFollow: false,
+        targetBlank: false,
         internalLinkOptions: []
       };
     }
 
     saveLink = () => {
-      const stateData = {
-        zuid: "new",
-        set_name: this.state.set_name,
-        type: this.state.type,
-        parent_zuid: this.state.parent_zuid,
-        seo_link_title: this.state.seo_link_title,
-        target: this.state.target,
-        rel: this.state.rel,
-        // send internal or external key with that value from store
-        [this.state.type]: this.state[this.state.type]
-      };
-      let data = "";
-      // build up a text string for the request body
-      Object.entries(stateData).map(([key, value], i) => {
-        value && (data += `${key}=${value}&`);
-      });
-      // trim the ampersand from the end of the string
-      const body = data.substr(0, data.length - 1);
-
       this.setState({
         saving: true
       });
 
-      return request(
-        `${CONFIG.LEGACY_SITES_SERVICE}/ajax/process_link.ajax.php`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-          },
-          body
+      const source = [];
+      if (this.state.relNoFollow) {
+        source.push("rel:true");
+      }
+      if (this.state.targetBlank) {
+        source.push("target:_blank");
+      }
+
+      return request(`${CONFIG.API_INSTANCE}/content/links`, {
+        method: "POST",
+        json: true,
+        body: {
+          type: this.state.type,
+          parentZUID: this.state.parentZUID,
+          label: this.state.label,
+          metaTitle: this.state.metaTitle,
+          source: source.join(";"),
+          target: this.state.target
         }
-      )
+      })
         .then(res => {
           this.setState({ saving: false });
           if (res.error) {
@@ -113,7 +79,7 @@ export const LinkCreate = connect((state, props) => {
               kind: "save"
             });
 
-            window.location = `/content/link/${res.current_znode_id}`;
+            window.location = `/content/link/${res.data.ZUID}`;
           }
         })
         .catch(err => {
@@ -123,7 +89,7 @@ export const LinkCreate = connect((state, props) => {
     };
 
     handleSearch = term => {
-      return request(`${CONFIG.service.instance_api}/search/items?q=${term}`)
+      return request(`${CONFIG.API_INSTANCE}/search/items?q=${term}`)
         .then(res => {
           if (res.status === 200) {
             const searchResults = res.data
@@ -161,7 +127,7 @@ export const LinkCreate = connect((state, props) => {
         });
     };
 
-    onChange = (name, value) => {
+    onChange = (value, name) => {
       this.setState({
         [name]: value
       });
@@ -204,9 +170,9 @@ export const LinkCreate = connect((state, props) => {
             <CardContent>
               <FieldTypeInternalLink
                 className={styles.Row}
-                name="parent_zuid"
+                name="parentZUID"
                 label="Select a parent for your link"
-                value={this.state.parent_zuid}
+                value={this.state.parentZUID}
                 options={this.state.internalLinkOptions}
                 onChange={this.onChange}
                 onSearch={this.handleSearch}
@@ -215,9 +181,9 @@ export const LinkCreate = connect((state, props) => {
               {this.state.type === "internal" ? (
                 <FieldTypeInternalLink
                   className={styles.Row}
-                  name="internal"
+                  name="target"
                   label="Select an item to link to"
-                  value={this.state.internal}
+                  value={this.state.target}
                   options={this.state.internalLinkOptions}
                   onChange={this.onChange}
                   onSearch={this.handleSearch}
@@ -226,7 +192,7 @@ export const LinkCreate = connect((state, props) => {
                 <FieldTypeUrl
                   className={styles.Row}
                   label="Provide an external URL to link to"
-                  name="external"
+                  name="target"
                   onChange={this.onChange}
                 />
               )}
@@ -234,18 +200,21 @@ export const LinkCreate = connect((state, props) => {
               <FieldTypeText
                 className={styles.Row}
                 label="Link title"
-                name="seo_link_title"
-                value={this.state.seo_link_title}
-                onChange={this.onChange}
+                name="metaTitle"
+                value={this.state.metaTitle}
+                onChange={value => {
+                  this.onChange(value, "label");
+                  this.onChange(value, "metaTitle");
+                }}
               />
 
               <label className={styles.Checkboxes}>
                 <Input
                   type="checkbox"
-                  name="target"
-                  checked={this.state.target}
+                  name="targetBlank"
+                  checked={this.state.targetBlank}
                   onClick={evt => {
-                    this.onChange("target", evt.target.checked);
+                    this.onChange(evt.target.checked, "targetBlank");
                   }}
                 />
                 target = _blank
@@ -253,10 +222,10 @@ export const LinkCreate = connect((state, props) => {
               <label className={styles.Checkboxes}>
                 <Input
                   type="checkbox"
-                  name="rel"
-                  checked={this.state.rel}
+                  name="relNoFollow"
+                  checked={this.state.relNoFollow}
                   onClick={evt => {
-                    this.onChange("rel", evt.target.checked);
+                    this.onChange(evt.target.checked, "relNoFollow");
                   }}
                 />
                 rel = nofollow
