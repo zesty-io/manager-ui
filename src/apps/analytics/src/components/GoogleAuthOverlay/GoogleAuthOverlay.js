@@ -84,10 +84,8 @@ export class GoogleAuthOverlay extends React.Component {
               </React.Fragment>
             )}
 
-            <div className={styles.buttonHolder}>
-              {/* Exported this button in order to utilize usePermission hook */}
-              <GaAuthenticate onClick={this.createAnalyticsPopup} />
-            </div>
+            {/* Exported this button in order to utilize usePermission hook */}
+            <GaAuthenticate onClick={this.createAnalyticsPopup} />
           </React.Fragment>
         ) : (
           <React.Fragment>
