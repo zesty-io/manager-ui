@@ -17,7 +17,7 @@ export function usePermission(action, zuid = "") {
   const user = useSelector(selectUser);
   const role = useSelector(selectRole);
 
-  // We only want to recalulate the permission inputs change
+  // We only want to recalculate the permission inputs change
   return useMemo(() => {
     // "With great power comes great responsibility" - Benjamin Franklin Parker
     if (user.staff) {
