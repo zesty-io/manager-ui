@@ -241,7 +241,6 @@ class LinkEdit extends Component {
   };
 
   onChange = (value, name) => {
-    console.log("onChange", name, value);
     this.setState({
       [name]: value
     });
