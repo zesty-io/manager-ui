@@ -468,15 +468,12 @@ export default connect(state => {
       }
 
       const onOneToOneOpen = useCallback(() => {
-        if (!props.allLanguages.length) {
-          return Promise.resolve();
-        }
         return dispatch(
           fetchItems(relatedModelZUID, {
             lang: props.allLanguages.find(lang => lang.ID === langID).code
           })
         );
-      }, [props.allLanguages.length]);
+      }, [props.allLanguages.length, relatedModelZUID, langID]);
 
       let oneToOneOptions = useMemo(() => {
         return resolveRelatedOptions(
@@ -568,9 +565,6 @@ export default connect(state => {
 
       // Delay loading options until user opens dropdown
       const onOneToManyOpen = useCallback(() => {
-        if (!props.allLanguages.length) {
-          return Promise.resolve();
-        }
         return Promise.all([
           dispatch(fetchFields(relatedModelZUID)),
           dispatch(
