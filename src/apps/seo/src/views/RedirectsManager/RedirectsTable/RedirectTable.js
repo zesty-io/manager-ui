@@ -3,7 +3,7 @@ import styles from "./RedirectTable.less";
 
 import { removeRedirect } from "../../../store/redirects";
 
-import RedirectCreator from "./RedirectCreator";
+import { RedirectCreator } from "./RedirectCreator";
 import RedirectsTableHeader from "./RedirectsTableHeader";
 import RedirectsTableRow from "./RedirectsTableRow";
 
