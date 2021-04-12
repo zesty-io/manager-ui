@@ -223,7 +223,9 @@ const ListOption = props => {
 
       {/* meta */}
       <p>{`Created by ${
-        createdBy ? createdBy.firstName + " " + createdBy.lastName : "Unknown"
+        createdBy
+          ? createdBy.firstName + " " + createdBy.lastName
+          : "Unknown User"
       } on ${moment(props.opt?.web?.createdAt).format(
         CONFIG.TIME_DISPLAY_FORMAT
       )}`}</p>
