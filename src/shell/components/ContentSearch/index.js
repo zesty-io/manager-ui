@@ -1,13 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { connect, useDispatch } from "react-redux";
+import moment from "moment-timezone";
 import debounce from "lodash.debounce";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronRight,
-  faEdit,
-  faExclamationTriangle
-} from "@fortawesome/free-solid-svg-icons";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 import { Search } from "@zesty-io/core/Search";
 import { Loader } from "@zesty-io/core/Loader";
@@ -93,6 +90,10 @@ export default React.forwardRef((props, providedRef) => {
     }
   }
 
+  function handleFocus(evt) {
+    setHasSelected(false);
+  }
+
   function handleSelect(option) {
     props.onSelect(option);
 
@@ -123,6 +124,7 @@ export default React.forwardRef((props, providedRef) => {
         placeholder={props.placeholder}
         onKeyUp={handleKeyUp}
         onChange={val => setTerm(val)}
+        onFocus={handleFocus}
         ref={providedRef}
         value={term}
       />
@@ -140,7 +142,12 @@ export default React.forwardRef((props, providedRef) => {
   );
 });
 
-const List = props => {
+const List = connect(state => {
+  return {
+    languages: state.languages,
+    users: state.users
+  };
+})(props => {
   return (
     <ul
       className={cx(styles.SearchResults)}
@@ -165,13 +172,23 @@ const List = props => {
           optRef={props.refs[i]}
           selectedIndex={props.selectedIndex}
           index={i}
+          users={props.users}
+          languages={props.languages}
         />
       ))}
     </ul>
   );
-};
+});
 
 const ListOption = props => {
+  const createdBy = props.users.find(
+    user => user.ZUID === props.opt?.web?.createdByUserZUID
+  );
+
+  const lang = props.languages.find(
+    lang => lang.ID === props.opt?.meta?.langID
+  );
+
   return (
     <li
       onClick={() => props.onSelect(props.opt)}
@@ -181,7 +198,8 @@ const ListOption = props => {
         props.selectedIndex === props.index ? styles.SelectedRow : null
       )}
     >
-      <p>
+      {/* main line */}
+      <p className={styles.ItemName}>
         <span className={styles.subheadline}>
           {props.opt?.web?.metaTitle ? (
             <React.Fragment>
@@ -196,8 +214,22 @@ const ListOption = props => {
             </React.Fragment>
           )}
         </span>
+
+        <span>{lang?.code || ""}</span>
       </p>
+
+      {/* path */}
       {props.opt?.web?.path && <p>{props.opt.web.path}</p>}
+
+      {/* meta */}
+      <p>{`Created by ${
+        createdBy ? createdBy.firstName + " " + createdBy.lastName : "Unknown"
+      } on ${moment(props.opt?.web?.createdAt).format(
+        CONFIG.TIME_DISPLAY_FORMAT
+      )}`}</p>
+      <p>{`Version ${props.opt?.meta?.version} last edited ${moment(
+        props.opt?.meta?.updatedAt
+      ).from()}`}</p>
     </li>
   );
 };
