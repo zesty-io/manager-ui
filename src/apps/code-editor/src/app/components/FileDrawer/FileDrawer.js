@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import moment from "moment";
+import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
@@ -85,7 +86,13 @@ export const FileDrawer = React.memo(function FileDrawer(props) {
       offset="50px"
       open={open}
     >
-      <DrawerHandle className={styles.DrawerHandle} onClick={handleSetOpen}>
+      <DrawerHandle
+        className={cx(
+          styles.DrawerHandle,
+          !open ? styles.DrawerClosed : styles.DrawerOpen
+        )}
+        onClick={handleSetOpen}
+      >
         <Button title="Open for additional file information">
           {open ? (
             <FontAwesomeIcon icon={faChevronDown} />
