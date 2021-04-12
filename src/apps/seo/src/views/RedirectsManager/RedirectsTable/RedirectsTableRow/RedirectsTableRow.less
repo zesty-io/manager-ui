@@ -2,7 +2,6 @@
 .RedirectsTableRow {
   align-items: center;
   background-color: @white;
-  // border-bottom: 1px @zesty-field-blue solid;
   display: flex;
 
   &:nth-of-type(odd) {
@@ -15,7 +14,7 @@
   &:nth-of-type(odd):hover,
   &:nth-of-type(odd):focus,
   &:nth-of-type(odd):active {
-    background-color: lighten(@zesty-field-blue, 2%);
+    background-color: lighten(@zesty-field-blue, 10%);
   }
 
   .RedirectsTableRowCell {
@@ -24,7 +23,8 @@
       font-size: 1em;
     }
     .removeBtn {
-      line-height: initial;
+      // line-height: initial;
+      align-items: center;
     }
   }
   .code {
