@@ -1,13 +1,12 @@
 @import "~@zesty-io/core/colors.less";
 .RedirectsTableRow {
   align-items: center;
-  background-color: @zesty-white;
-  border-bottom: 1px @zesty-field-blue solid;
+  background-color: @white;
+  // border-bottom: 1px @zesty-field-blue solid;
   display: flex;
 
   &:nth-of-type(odd) {
-    // background-color: lighten(@zesty-field-blue, 3%);
-    background-color: #dae2f1;
+    background: lighten(@zesty-light-blue, 15%);
   }
 
   &:hover,
@@ -20,7 +19,7 @@
   }
 
   .RedirectsTableRowCell {
-    padding: 0.6rem 1rem;
+    padding: 16px;
     .internalLink {
       font-size: 1em;
     }

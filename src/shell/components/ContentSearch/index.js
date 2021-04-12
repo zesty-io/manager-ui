@@ -4,7 +4,10 @@ import moment from "moment-timezone";
 import debounce from "lodash.debounce";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExclamationTriangle,
+  faEdit
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Search } from "@zesty-io/core/Search";
 import { Loader } from "@zesty-io/core/Loader";
@@ -161,7 +164,10 @@ const List = connect(state => {
       )}
 
       {!props.loading && !props.options.length && (
-        <li>No results found for search term: {props.term}</li>
+        <li>
+          <FontAwesomeIcon icon={faExclamationTriangle} /> No results found for
+          search term: <strong>{props.term}</strong>
+        </li>
       )}
 
       {props.options.map((opt, i) => (
@@ -204,6 +210,10 @@ const ListOption = props => {
           {props.opt?.web?.metaTitle ? (
             <React.Fragment>
               {/* <span>TODO show model icon</span>  */}
+              <span>
+                <FontAwesomeIcon icon={faEdit} />
+              </span>
+
               {/* TODO show item language */}
               {props.opt.web.metaTitle}
             </React.Fragment>
