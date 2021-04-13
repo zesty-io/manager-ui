@@ -154,7 +154,7 @@ export function CSVImporter(evt) {
           dispatch(
             notify({
               kind: "warn",
-              message: "Imports must be a CSV file"
+              message: "Import must be a CSV file"
             })
           );
         }
