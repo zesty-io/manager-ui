@@ -17,7 +17,9 @@ import {
   faMoneyBillAlt,
   faIdCard,
   faExclamationTriangle,
-  faImage
+  faImage,
+  faCalendarTimes,
+  faCalendarAlt
 } from "@fortawesome/free-solid-svg-icons";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
@@ -304,8 +306,8 @@ export const FIELD_TYPES = [
     description: (
       <React.Fragment>
         <p>
-          Date fields allow authors to select a date and time that will be
-          guaranteed to be in a structured format.
+          Date fields allow authors to select a date that will be guaranteed to
+          be in a structured format.
         </p>
       </React.Fragment>
     ),
@@ -314,6 +316,29 @@ export const FIELD_TYPES = [
       <React.Fragment>
         <FontAwesomeIcon icon={faCalendar} />
         &nbsp;Date
+      </React.Fragment>
+    )
+  },
+  {
+    value: "datetime",
+    icon: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faCalendar} />
+      </React.Fragment>
+    ),
+    description: (
+      <React.Fragment>
+        <p>
+          Date &amp; Time fields allow authors to select a date and time that
+          will be guaranteed to be in a structured format.
+        </p>
+      </React.Fragment>
+    ),
+    title: "Date & Time",
+    component: (
+      <React.Fragment>
+        <FontAwesomeIcon icon={faCalendarAlt} />
+        &nbsp;Date &amp; Time
       </React.Fragment>
     )
   },
