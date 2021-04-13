@@ -110,6 +110,9 @@ function resolveRelatedOptions(
     .sort(sortTitle);
 }
 
+const getSelectedLang = (langs, langID) =>
+  langs.find(lang => lang.ID === langID).code;
+
 export default connect(state => {
   return {
     allItems: state.content,
@@ -470,7 +473,7 @@ export default connect(state => {
       const onOneToOneOpen = useCallback(() => {
         return dispatch(
           fetchItems(relatedModelZUID, {
-            lang: props.allLanguages.find(lang => lang.ID === langID).code
+            lang: getSelectedLang(props.allLanguages, langID)
           })
         );
       }, [props.allLanguages.length, relatedModelZUID, langID]);
@@ -485,8 +488,8 @@ export default connect(state => {
           value
         );
       }, [
-        props.allFields,
-        props.allItems,
+        Object.keys(props.allFields).length,
+        Object.keys(props.allItems).length,
         relatedModelZUID,
         relatedFieldZUID,
         langID,
@@ -555,8 +558,8 @@ export default connect(state => {
           value
         );
       }, [
-        props.allFields,
-        props.allItems,
+        Object.keys(props.allFields).length,
+        Object.keys(props.allItems).length,
         relatedModelZUID,
         relatedFieldZUID,
         langID,
@@ -569,7 +572,7 @@ export default connect(state => {
           dispatch(fetchFields(relatedModelZUID)),
           dispatch(
             fetchItems(relatedModelZUID, {
-              lang: props.allLanguages.find(lang => lang.ID === langID).code
+              lang: getSelectedLang(props.allLanguages, langID)
             })
           )
         ]);

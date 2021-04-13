@@ -50,7 +50,6 @@ export const LanguageSelector = connect((state, props) => {
           className={cx(styles.LanguageSelector, props.className)}
           value={props.selectedLang}
           onSelect={handleSelect}
-          loading={false}
         >
           {props.languages.map(lang => (
             <Option key={lang.code} text={lang.code} value={lang.code} />
