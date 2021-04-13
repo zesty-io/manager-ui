@@ -9,7 +9,6 @@ import {
   faExclamationTriangle,
   faSort,
   faSortAlphaDown,
-  faSortNumericUp,
   faUser
 } from "@fortawesome/free-solid-svg-icons";
 
