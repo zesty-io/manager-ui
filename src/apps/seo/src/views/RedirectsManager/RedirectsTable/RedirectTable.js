@@ -109,8 +109,12 @@ export default class RedirectTable extends React.Component {
 
     if (direction === "desc") {
       return Object.keys(redirects).sort((a, b) => {
-        const prev = redirects[a][mapping[by]].toLowerCase().trim();
-        const next = redirects[b][mapping[by]].toLowerCase().trim();
+        const prev = String(redirects[a][mapping[by]])
+          ?.toLowerCase()
+          .trim();
+        const next = String(redirects[b][mapping[by]])
+          ?.toLowerCase()
+          .trim();
 
         if (prev > next) {
           return -1;
@@ -122,8 +126,12 @@ export default class RedirectTable extends React.Component {
       });
     } else if (direction === "asc") {
       return Object.keys(redirects).sort((a, b) => {
-        const prev = redirects[a][mapping[by]].toLowerCase().trim();
-        const next = redirects[b][mapping[by]].toLowerCase().trim();
+        const prev = String(redirects[a][mapping[by]])
+          ?.toLowerCase()
+          .trim();
+        const next = String(redirects[b][mapping[by]])
+          ?.toLowerCase()
+          .trim();
 
         if (prev < next) {
           return -1;
