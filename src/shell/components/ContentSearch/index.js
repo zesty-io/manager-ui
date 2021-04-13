@@ -58,7 +58,7 @@ export default React.forwardRef((props, providedRef) => {
           }
         })
         .finally(() => setLoading(false));
-    }, 500),
+    }, 650),
     []
   );
 
@@ -163,7 +163,12 @@ const List = connect(state => {
 
   const sortBy = {
     default: (a, b) => {
-      console.log("sort:default");
+      if (a.meta.sort < b.meta.sort) {
+        return -1;
+      }
+      if (a.meta.sort > b.meta.sort) {
+        return 1;
+      }
       return 0;
     },
     alpha: (a, b) => {
@@ -205,7 +210,6 @@ const List = connect(state => {
   };
 
   const filter = opt => {
-    console.log("filter", filterTerm, opt);
     if (filterTerm) {
       const lang = props.languages.find(
         lang => lang.ID === props.opt?.meta?.langID
@@ -230,8 +234,8 @@ const List = connect(state => {
       // NOTE we could get better performance if we handle the
       // onSelect event at this parent UL, by taking advantage of event bubbling
     >
-      <li>
-        <ButtonGroup>
+      <li className={styles.Actions}>
+        <ButtonGroup className={styles.SortBy}>
           <span>Sort By</span>
           <Button onClick={() => setSortType("default")}>
             <FontAwesomeIcon icon={faSort} /> Default
@@ -250,9 +254,9 @@ const List = connect(state => {
           </Button>
         </ButtonGroup>
 
-        <div>
+        <div className={styles.FilterBy}>
           <span>Filter By</span>
-          <Input onChange={val => setFilterTerm(val)} />
+          <Input onChange={evt => setFilterTerm(evt.target.value)} />
         </div>
       </li>
 
@@ -263,7 +267,9 @@ const List = connect(state => {
       )}
 
       {!props.loading && !props.options.length && (
-        <li>No results found for search term: {props.term}</li>
+        <li className={styles.headline}>
+          No results found for search term: <strong>{props.term}</strong>
+        </li>
       )}
 
       {props.options
@@ -309,7 +315,6 @@ const ListOption = props => {
           {props.opt?.web?.metaTitle ? (
             <React.Fragment>
               {/* <span>TODO show model icon</span>  */}
-              {/* TODO show item language */}
               {props.opt.web.metaTitle}
             </React.Fragment>
           ) : (
@@ -334,7 +339,7 @@ const ListOption = props => {
       } on ${moment(props.opt?.web?.createdAt).format(
         CONFIG.TIME_DISPLAY_FORMAT
       )}`}</p>
-      <p>{`Version ${props.opt?.meta?.version} last edited ${moment(
+      <p>{`Version ${props.opt?.meta?.version} was edited ${moment(
         props.opt?.meta?.updatedAt
       ).from()}`}</p>
     </li>
