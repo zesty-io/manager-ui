@@ -1,4 +1,6 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
 .RedirectsTableHeader {
   display: flex;
   position: sticky;
@@ -12,15 +14,12 @@
     font-weight: 900;
     padding: 0 1rem;
 
-    .icon {
-      padding-left: 3px;
-    }
-
     .column {
       border-bottom: 3px solid @zesty-field-blue;
       padding-bottom: 0.1rem;
-      line-height: 24px;
-      font-size: 16px;
+      svg {
+        padding-left: 8px;
+      }
     }
     &:hover,
     &:active,
