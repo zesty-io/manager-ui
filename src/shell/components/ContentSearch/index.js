@@ -4,10 +4,20 @@ import moment from "moment-timezone";
 import debounce from "lodash.debounce";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCalendar,
+  faExclamationTriangle,
+  faSort,
+  faSortAlphaDown,
+  faSortNumericUp,
+  faUser
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Search } from "@zesty-io/core/Search";
 import { Loader } from "@zesty-io/core/Loader";
+import { Button } from "@zesty-io/core/Button";
+import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
+import { Input } from "@zesty-io/core/Input";
 
 import { searchItems } from "shell/store/content";
 
@@ -148,12 +158,104 @@ const List = connect(state => {
     users: state.users
   };
 })(props => {
+  const [sortType, setSortType] = useState("default");
+  const [filterTerm, setFilterTerm] = useState("");
+
+  const sortBy = {
+    default: (a, b) => {
+      console.log("sort:default");
+      return 0;
+    },
+    alpha: (a, b) => {
+      if (a.web.metaTitle?.toLowerCase() < b.web.metaTitle?.toLowerCase()) {
+        return -1;
+      }
+      if (a.web.metaTitle?.toLowerCase() > b.web.metaTitle?.toLowerCase()) {
+        return 1;
+      }
+      return 0;
+    },
+    edited: (a, b) => {
+      if (moment(a.meta.updatedAt) > moment(b.meta.updatedAt)) {
+        return -1;
+      }
+      if (moment(a.meta.updatedAt) < moment(b.meta.updatedAt)) {
+        return 1;
+      }
+      return 0;
+    },
+    created: (a, b) => {
+      if (moment(a.web.createdAt) > moment(b.web.createdAt)) {
+        return -1;
+      }
+      if (moment(a.web.createdAt) < moment(b.web.createdAt)) {
+        return 1;
+      }
+      return 0;
+    },
+    user: (a, b) => {
+      if (a.web.createdByUserZUID > b.web.createdByUserZUID) {
+        return -1;
+      }
+      if (a.web.createdByUserZUID < b.web.createdByUserZUID) {
+        return 1;
+      }
+      return 0;
+    }
+  };
+
+  const filter = opt => {
+    console.log("filter", filterTerm, opt);
+    if (filterTerm) {
+      const lang = props.languages.find(
+        lang => lang.ID === props.opt?.meta?.langID
+      );
+
+      if (
+        opt.web?.metaTitle?.includes(filterTerm) ||
+        opt.web?.path?.includes(filterTerm) ||
+        opt.meta?.version === filterTerm ||
+        lang?.code?.includes(filterTerm)
+      ) {
+        return true;
+      }
+    } else {
+      return true;
+    }
+  };
+
   return (
     <ul
       className={cx(styles.SearchResults)}
       // NOTE we could get better performance if we handle the
       // onSelect event at this parent UL, by taking advantage of event bubbling
     >
+      <li>
+        <ButtonGroup>
+          <span>Sort By</span>
+          <Button onClick={() => setSortType("default")}>
+            <FontAwesomeIcon icon={faSort} /> Default
+          </Button>
+          <Button onClick={() => setSortType("alpha")}>
+            <FontAwesomeIcon icon={faSortAlphaDown} /> Title
+          </Button>
+          <Button onClick={() => setSortType("edited")}>
+            <FontAwesomeIcon icon={faCalendar} /> Edited
+          </Button>
+          <Button onClick={() => setSortType("created")}>
+            <FontAwesomeIcon icon={faCalendar} /> Created
+          </Button>
+          <Button onClick={() => setSortType("user")}>
+            <FontAwesomeIcon icon={faUser} /> User
+          </Button>
+        </ButtonGroup>
+
+        <div>
+          <span>Filter By</span>
+          <Input onChange={val => setFilterTerm(val)} />
+        </div>
+      </li>
+
       {props.loading && (
         <li>
           <Loader label="Searching" />
@@ -164,18 +266,21 @@ const List = connect(state => {
         <li>No results found for search term: {props.term}</li>
       )}
 
-      {props.options.map((opt, i) => (
-        <ListOption
-          key={i}
-          opt={opt}
-          onSelect={props.onSelect}
-          optRef={props.refs[i]}
-          selectedIndex={props.selectedIndex}
-          index={i}
-          users={props.users}
-          languages={props.languages}
-        />
-      ))}
+      {props.options
+        .filter(filter)
+        .sort(sortBy[sortType])
+        .map((opt, i) => (
+          <ListOption
+            key={i}
+            opt={opt}
+            onSelect={props.onSelect}
+            optRef={props.refs[i]}
+            selectedIndex={props.selectedIndex}
+            index={i}
+            users={props.users}
+            languages={props.languages}
+          />
+        ))}
     </ul>
   );
 });
