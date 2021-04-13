@@ -47,10 +47,18 @@
     &.Actions,
     &.Actions:hover,
     &.Actions:focus {
+      flex-direction: column;
+      @media only screen and (min-width: 2000px) {
+        flex-direction: row;
+      }
       background-color: lighten(@zesty-light-blue, 10%);
       display: flex;
       .SortBy {
         flex: 2;
+        margin-bottom: 16px;
+        button {
+          margin-right: 8px;
+        }
       }
       .FilterBy {
         flex: 1;
