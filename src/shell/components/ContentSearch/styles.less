@@ -59,6 +59,18 @@
     &.Actions:hover,
     &.Actions:focus {
       background-color: lighten(@zesty-light-blue, 10%);
+      display: flex;
+      .SortBy {
+        flex: 2;
+      }
+      .FilterBy {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        input {
+          width: auto;
+        }
+      }
     }
 
     .ModelIcon {

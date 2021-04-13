@@ -238,27 +238,29 @@ const List = connect(state => {
       // onSelect event at this parent UL, by taking advantage of event bubbling
     >
       <li className={styles.Actions}>
-        <ButtonGroup className={styles.SortBy}>
-          <span>Sort By</span>
-          <Button onClick={() => setSortType("default")}>
-            <FontAwesomeIcon icon={faSort} /> Default
-          </Button>
-          <Button onClick={() => setSortType("alpha")}>
-            <FontAwesomeIcon icon={faSortAlphaDown} /> Title
-          </Button>
-          <Button onClick={() => setSortType("edited")}>
-            <FontAwesomeIcon icon={faCalendar} /> Edited
-          </Button>
-          <Button onClick={() => setSortType("created")}>
-            <FontAwesomeIcon icon={faCalendar} /> Created
-          </Button>
-          <Button onClick={() => setSortType("user")}>
-            <FontAwesomeIcon icon={faUser} /> User
-          </Button>
-        </ButtonGroup>
+        <div className={styles.SortBy}>
+          <p className={styles.Title}>Sort By</p>
+          <ButtonGroup>
+            <Button onClick={() => setSortType("default")}>
+              <FontAwesomeIcon icon={faSort} /> Default
+            </Button>
+            <Button onClick={() => setSortType("alpha")}>
+              <FontAwesomeIcon icon={faSortAlphaDown} /> Title
+            </Button>
+            <Button onClick={() => setSortType("edited")}>
+              <FontAwesomeIcon icon={faCalendar} /> Edited
+            </Button>
+            <Button onClick={() => setSortType("created")}>
+              <FontAwesomeIcon icon={faCalendar} /> Created
+            </Button>
+            <Button onClick={() => setSortType("user")}>
+              <FontAwesomeIcon icon={faUser} /> User
+            </Button>
+          </ButtonGroup>
+        </div>
 
         <div className={styles.FilterBy}>
-          <span>Filter By</span>
+          <p>Filter By</p>
           <Input onChange={evt => setFilterTerm(evt.target.value)} />
         </div>
       </li>
