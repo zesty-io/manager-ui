@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./RedirectTable.less";
+import cx from "classnames";
 
 import { removeRedirect } from "../../../store/redirects";
 
@@ -84,7 +85,11 @@ export default class RedirectTable extends React.Component {
         );
       });
     } else {
-      return <div className={styles.noResults}>No Results Found</div>;
+      return (
+        <div className={cx(styles.noResults, styles.subheadline)}>
+          No Redirect Found
+        </div>
+      );
     }
   }
   handleRemoveRedirect(zuid) {
