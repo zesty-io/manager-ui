@@ -6,11 +6,16 @@ import ContentSearch from "shell/components/ContentSearch";
 
 export default connect(state => {
   return {
-    platform: state.platform,
-    languages: state.languages
+    platform: state.platform
   };
 })(function GlobalSearch(props) {
-  const searchRef = useRef();
+  const ref = useRef();
+  const history = useHistory();
+
+  const placeholder = `Global Search (${
+    props.platform.isMac ? "CMD" : "CTRL"
+  } + Shift + K)`;
+
   const focusGlobalSearch = useCallback(
     evt => {
       if (
@@ -20,35 +25,38 @@ export default connect(state => {
         evt.key === "K"
       ) {
         evt.preventDefault();
-        searchRef.current.focus();
+        ref.current.focus();
       }
     },
     [props.platform]
   );
-  const history = useHistory();
+
   useEffect(() => {
     document.addEventListener("keydown", focusGlobalSearch);
     return () => {
       document.removeEventListener("keydown", focusGlobalSearch);
     };
   }, []);
+
+  const handleSelect = item => {
+    if (item?.meta) {
+      history.push(`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`);
+    } else {
+      props.dispatch(
+        notice({
+          kind: "warn",
+          message: "Selected item is missing meta data"
+        })
+      );
+    }
+  };
+
   return (
     <ContentSearch
-      ref={searchRef}
-      clearSearchOnSelect={true}
-      clearSearchOnClickOutside={true}
-      placeholder={`Global Search (${
-        props.platform.isMac ? "CMD" : "CTRL"
-      } + Shift + K)`}
-      onSelect={item => {
-        if (item?.meta) {
-          history.push(
-            `/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`
-          );
-        } else {
-          throw new Error("Item missing meta");
-        }
-      }}
+      ref={ref}
+      placeholder={placeholder}
+      onSelect={handleSelect}
+      value=""
     />
   );
 });

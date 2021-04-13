@@ -1,4 +1,5 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
 
 .GlobalSearch {
   position: relative;
@@ -16,7 +17,7 @@
 .SearchResults {
   position: absolute;
   z-index: 110;
-  max-height: 590px;
+  max-height: 700px;
   min-width: 850px;
   list-style: none;
   overflow: auto;
@@ -25,9 +26,10 @@
   left: 0px;
   top: 38px;
 
-  .Start,
-  .NoResults {
-    font-weight: bold;
+  .ItemName {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
   }
 
   li {
@@ -40,37 +42,47 @@
     &.SelectedRow,
     &:hover {
       background-color: @white;
-      svg {
-        color: @zesty-blue;
+    }
+
+    &.Actions,
+    &.Actions:hover,
+    &.Actions:focus {
+      flex-direction: column;
+      @media only screen and (min-width: 2000px) {
+        flex-direction: row;
       }
-      .faChevronRight {
-        display: block;
+      background-color: lighten(@zesty-light-blue, 10%);
+      display: flex;
+      .SortBy {
+        flex: 2;
+        margin-bottom: 16px;
+        button {
+          margin-right: 8px;
+        }
+      }
+      .FilterBy {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        input {
+          width: auto;
+        }
+      }
+      .SortBy,
+      .FilterBy {
+        .Title {
+          margin-bottom: 4px;
+        }
       }
     }
-    .ListItem {
-      display: flex;
-      align-items: baseline;
-      svg {
-        margin-right: 8px;
-        font-size: 16px;
-      }
+
+    .ModelIcon {
+      margin-right: 8px;
+      color: @zesty-grey;
     }
   }
 
   li:last-child {
     border-bottom: none;
   }
-}
-.SearchResultTitle {
-  font-size: 20px;
-  margin-bottom: 4px;
-}
-.SearchResultPath {
-  color: @zesty-gray;
-  font-size: 12px;
-}
-
-.faChevronRight {
-  margin-left: auto;
-  display: none;
 }

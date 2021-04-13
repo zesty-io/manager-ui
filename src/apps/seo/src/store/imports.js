@@ -117,13 +117,25 @@ export function CSVImporter(evt) {
           fileReader.onloadend = () => {
             let targets = {};
 
-            if (file.type === "text/csv" || file.name.match(CSV_REGEXP)) {
-              const [columns, imports] = CSVToArray(fileReader.result);
-              targets = compareKeys(imports, state.redirects);
-            } else if (file.type === "text/xml") {
-              const parser = new DOMParser();
-              const xml = parser.parseFromString(fileReader.result, "text/xml");
-              targets = parseXML(xml, dispatch);
+            try {
+              if (file.type === "text/csv" || file.name.match(CSV_REGEXP)) {
+                const [columns, imports] = CSVToArray(fileReader.result);
+                targets = compareKeys(imports, state.redirects);
+              } else if (file.type === "text/xml") {
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(
+                  fileReader.result,
+                  "text/xml"
+                );
+                targets = parseXML(xml, dispatch);
+              }
+            } catch (err) {
+              dispatch(
+                notify({
+                  kind: "error",
+                  message: `Failed reading file: ${err}`
+                })
+              );
             }
 
             targets = findTargetPages(targets);
@@ -139,12 +151,12 @@ export function CSVImporter(evt) {
 
           fileReader.readAsText(file, "UTF-8");
         } else {
-          dispatch({
-            type: IMPORT_REDIRECTS,
-            redirects: []
-          });
-          dispatch(notify({ message: "Imports must be a CSV file" }));
-          throw new Error("Importer requires a CSV");
+          dispatch(
+            notify({
+              kind: "warn",
+              message: "Import must be a CSV file"
+            })
+          );
         }
       }
     }

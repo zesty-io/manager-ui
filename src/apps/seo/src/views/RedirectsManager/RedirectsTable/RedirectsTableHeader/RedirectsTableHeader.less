@@ -1,28 +1,26 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
 .RedirectsTableHeader {
   display: flex;
   position: sticky;
   top: 3rem;
-  background: @zesty-field-blue;
-  border-bottom: 1px solid #b8c8e2;
   z-index: 1;
   align-items: baseline;
-  padding-bottom: 0.5rem;
+  padding-bottom: 16px;
+  background-color: @appBkgColor;
 
   .RedirectsTableHeaderCell {
     cursor: pointer;
     font-weight: 900;
     padding: 0 1rem;
 
-    .icon {
-      padding-left: 3px;
-    }
-
     .column {
       border-bottom: 3px solid @zesty-field-blue;
       padding-bottom: 0.1rem;
-      line-height: 24px;
-      font-size: 16px;
+      svg {
+        padding-left: 8px;
+      }
     }
     &:hover,
     &:active,

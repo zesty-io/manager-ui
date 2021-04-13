@@ -1,2 +1,1 @@
-import RedirectCreator from "./RedirectCreator";
-export default RedirectCreator;
+export { RedirectCreator } from "./RedirectCreator";
