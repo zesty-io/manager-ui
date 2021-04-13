@@ -1,2 +1,1 @@
-import RedirectFilter from "./RedirectFilter";
-export default RedirectFilter;
+export { RedirectFilter } from "./RedirectFilter";

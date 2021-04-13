@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./RedirectActions.less";
 
-import RedirectFilter from "./RedirectFilter";
+import { RedirectFilter } from "./RedirectFilter";
 import RedirectsImport from "./RedirectsImport";
 
 import { CSVImporter } from "../../../store/imports";
