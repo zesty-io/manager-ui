@@ -323,7 +323,7 @@ export const FIELD_TYPES = [
     value: "datetime",
     icon: (
       <React.Fragment>
-        <FontAwesomeIcon icon={faCalendar} />
+        <FontAwesomeIcon icon={faCalendarAlt} />
       </React.Fragment>
     ),
     description: (
