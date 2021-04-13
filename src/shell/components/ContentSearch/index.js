@@ -260,7 +260,7 @@ const List = connect(state => {
         </div>
 
         <div className={styles.FilterBy}>
-          <p>Filter By</p>
+          <p className={styles.Title}>Filter By</p>
           <Input onChange={evt => setFilterTerm(evt.target.value)} />
         </div>
       </li>
