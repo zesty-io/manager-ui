@@ -6,7 +6,10 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendar,
+  faDatabase,
   faExclamationTriangle,
+  faFile,
+  faListAlt,
   faSort,
   faSortAlphaDown,
   faUser
@@ -154,7 +157,8 @@ export default React.forwardRef((props, providedRef) => {
 const List = connect(state => {
   return {
     languages: state.languages,
-    users: state.users
+    users: state.users,
+    models: state.models
   };
 })(props => {
   const [sortType, setSortType] = useState("default");
@@ -284,6 +288,7 @@ const List = connect(state => {
             index={i}
             users={props.users}
             languages={props.languages}
+            models={props.models}
           />
         ))}
     </ul>
@@ -299,6 +304,26 @@ const ListOption = props => {
     lang => lang.ID === props.opt?.meta?.langID
   );
 
+  let modelIcon;
+  const model = props.models[props.opt.meta.contentModelZUID];
+  if (model && model.type) {
+    if (model.type === "dataset") {
+      modelIcon = (
+        <FontAwesomeIcon className={styles.ModelIcon} icon={faDatabase} />
+      );
+    }
+    if (model.type === "templateset") {
+      modelIcon = (
+        <FontAwesomeIcon className={styles.ModelIcon} icon={faFile} />
+      );
+    }
+    if (model.type === "pageset") {
+      modelIcon = (
+        <FontAwesomeIcon className={styles.ModelIcon} icon={faListAlt} />
+      );
+    }
+  }
+
   return (
     <li
       onClick={() => props.onSelect(props.opt)}
@@ -310,10 +335,10 @@ const ListOption = props => {
     >
       {/* main line */}
       <p className={styles.ItemName}>
-        <span className={styles.subheadline}>
+        <span className={styles.title}>
           {props.opt?.web?.metaTitle ? (
             <React.Fragment>
-              {/* <span>TODO show model icon</span>  */}
+              {modelIcon}
               {props.opt.web.metaTitle}
             </React.Fragment>
           ) : (
@@ -324,23 +349,25 @@ const ListOption = props => {
           )}
         </span>
 
-        <span>{lang?.code || ""}</span>
+        <span className={styles.Lang}>{lang?.code || ""}</span>
       </p>
 
       {/* path */}
-      {props.opt?.web?.path && <p>{props.opt.web.path}</p>}
+      {props.opt?.web?.path && (
+        <p className={styles.bodyText}>{props.opt.web.path}</p>
+      )}
 
       {/* meta */}
-      <p>{`Created by ${
+      <p className={styles.caption}>{`Created by ${
         createdBy
           ? createdBy.firstName + " " + createdBy.lastName
           : "Unknown User"
       } on ${moment(props.opt?.web?.createdAt).format(
         CONFIG.TIME_DISPLAY_FORMAT
       )}`}</p>
-      <p>{`Version ${props.opt?.meta?.version} was edited ${moment(
-        props.opt?.meta?.updatedAt
-      ).from()}`}</p>
+      <p className={styles.caption}>{`Version ${
+        props.opt?.meta?.version
+      } was edited ${moment(props.opt?.meta?.updatedAt).from()}`}</p>
     </li>
   );
 };
