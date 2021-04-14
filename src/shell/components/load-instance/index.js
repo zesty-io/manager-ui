@@ -10,6 +10,7 @@ import { fetchUsers } from "shell/store/users";
 import { fetchProducts } from "shell/store/products";
 import { detectPlatform } from "shell/store/platform";
 import { fetchInstances } from "shell/store/instances";
+import { fetchLangauges } from "shell/store/languages";
 
 import styles from "./LoadInstance.less";
 
@@ -17,7 +18,8 @@ export default connect(state => {
   return {
     instance: state.instance,
     user: state.user,
-    products: state.products
+    products: state.products,
+    languages: state.languages
   };
 })(
   React.memo(function LoadInstance(props) {
@@ -46,6 +48,7 @@ export default connect(state => {
       props.dispatch(fetchUsers());
       props.dispatch(detectPlatform());
       props.dispatch(fetchInstances());
+      props.dispatch(fetchLangauges("enabled"));
     }, []);
 
     return (
@@ -60,7 +63,8 @@ export default connect(state => {
               props.products &&
               props.instance.ID &&
               props.instance.domains &&
-              props.user.ID
+              props.user.ID &&
+              props.languages.length
             }
             message="Loading Instance"
             width="100vw"
