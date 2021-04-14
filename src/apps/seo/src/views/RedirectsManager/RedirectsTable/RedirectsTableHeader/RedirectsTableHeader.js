@@ -18,6 +18,7 @@ export default function RedirectsTableHeader(props) {
       >
         <span
           className={cx(
+            styles.subheadline,
             styles.column,
             props.sortBy === "from" ? styles.sorted : ""
           )}
@@ -39,6 +40,7 @@ export default function RedirectsTableHeader(props) {
       >
         <span
           className={cx(
+            styles.subheadline,
             styles.column,
             props.sortBy === "type" ? styles.sorted : ""
           )}
@@ -61,6 +63,7 @@ export default function RedirectsTableHeader(props) {
       >
         <span
           className={cx(
+            styles.subheadline,
             styles.column,
             props.sortBy === "to" ? styles.sorted : ""
           )}
