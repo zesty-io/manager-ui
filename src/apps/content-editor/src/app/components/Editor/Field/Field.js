@@ -488,8 +488,8 @@ export default connect(state => {
           value
         );
       }, [
-        Object.keys(props.allFields).length,
-        Object.keys(props.allItems).length,
+        props.allFields,
+        props.allItems,
         relatedModelZUID,
         relatedFieldZUID,
         langID,
@@ -558,8 +558,8 @@ export default connect(state => {
           value
         );
       }, [
-        Object.keys(props.allFields).length,
-        Object.keys(props.allItems).length,
+        props.allFields,
+        props.allItems,
         relatedModelZUID,
         relatedFieldZUID,
         langID,
