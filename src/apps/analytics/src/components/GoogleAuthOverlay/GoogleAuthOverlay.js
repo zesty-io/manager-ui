@@ -73,42 +73,17 @@ export class GoogleAuthOverlay extends React.Component {
           </p>
         </div>
 
-        <GoogleAuthOverlayDomain />
-
-        {this.props.domainSet ? (
-          <React.Fragment>
-            {this.props.gaLegacyAuth ? (
-              <React.Fragment>
-                <h2>{this.state.titles.legacyAuthentication}</h2>
-                <p>{this.state.descriptions.legacyAuthentication}</p>
-              </React.Fragment>
-            ) : (
-              <React.Fragment>
-                <h2>{this.state.titles.notAuthenticated}</h2>
-                <p>{this.state.descriptions.notAuthenticated}</p>
-              </React.Fragment>
-            )}
-
-            {/* Exported this button in order to utilize usePermission hook */}
-            <GaAuthenticate onClick={this.createAnalyticsPopup} />
-          </React.Fragment>
-        ) : (
-          <React.Fragment>
-            <h2>{this.state.titles.noDomain}</h2>
-            <p>{this.state.descriptions.noDomain}</p>
-            <div className={styles.buttonHolder}>
-              <Button
-                kind="secondary"
-                onClick={() => {
-                  window.location = `${CONFIG.URL_ACCOUNTS}/instances/${this.props.instance.ZUID}/launch`;
-                }}
-              >
-                <FontAwesomeIcon icon={faGlobe} />
-                Click here to Setup Your Domain
-              </Button>
-            </div>
-          </React.Fragment>
-        )}
+        <GoogleAuthOverlayDomain
+          gaLegacyAuth={this.props.gaLegacyAuth}
+          authTitles={this.state.titles.legacyAuthentication}
+          authDescriptions={this.state.titles.legacyAuthentication}
+          authNotTitles={this.state.titles.notAuthenticated}
+          authNotDescriptions={this.state.descriptions.notAuthenticated}
+          authTitlesNoDomain={this.state.titles.noDomain}
+          authDescriptionsNoDomain={this.state.descriptions.noDomain}
+          instanceZUID={this.props.instance.ZUID}
+          onClick={this.createAnalyticsPopup}
+        />
 
         <p className={styles.generalDescription}>
           {this.state.generalDescription}
