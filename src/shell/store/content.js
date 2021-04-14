@@ -212,6 +212,7 @@ export function generateItem(modelZUID) {
       },
       meta: {
         ZUID: itemZUID,
+        langID: 1,
         contentModelZUID: modelZUID,
         createdByUserZUID: state.user.user_zuid,
         createdAt: moment()
