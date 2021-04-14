@@ -86,13 +86,7 @@ export const FileDrawer = React.memo(function FileDrawer(props) {
       offset="50px"
       open={open}
     >
-      <DrawerHandle
-        className={cx(
-          styles.DrawerHandle,
-          !open ? styles.DrawerClosed : styles.DrawerOpen
-        )}
-        onClick={handleSetOpen}
-      >
+      <DrawerHandle className={styles.DrawerHandle} onClick={handleSetOpen}>
         <Button title="Open for additional file information">
           {open ? (
             <FontAwesomeIcon icon={faChevronDown} />
