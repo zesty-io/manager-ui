@@ -29,34 +29,34 @@ export class GoogleAuthOverlay extends React.Component {
       "Authenticating Google Analytics will automate GA tags in your Web Engine renders pages. If you use Zesty.io purely headlessly, Google Analytics will on provide value on rendered web views."
   };
 
-  createAnalyticsPopup = evt => {
-    var address = encodeURI(
-      CONFIG.SERVICE_GOOGLE_ANALYTICS_AUTH +
-        "?user_id=" +
-        this.props.user.ID +
-        "&account_id=" +
-        this.props.instance.ID +
-        "&domain=" +
-        this.props.instance.domains[0].domain
-    );
+  // createAnalyticsPopup = evt => {
+  //   var address = encodeURI(
+  //     CONFIG.SERVICE_GOOGLE_ANALYTICS_AUTH +
+  //       "?user_id=" +
+  //       this.props.user.ID +
+  //       "&account_id=" +
+  //       this.props.instance.ID +
+  //       "&domain=" +
+  //       this.props.instance.domains[0].domain
+  //   );
 
-    var win = window.open(
-      address,
-      "analytics",
-      "width=700,height=450,left=" +
-        (evt.target.offsetLeft + 400) +
-        ",top=" +
-        evt.target.offsetTop
-    );
-    // var timer = setInterval(function() {
-    //   if (win.closed) {
-    //     clearInterval(timer);
-    //     _ajax.get("/ajax/analytics_store_id.ajax.php", {}, function(response) {
-    //       window.location.reload();
-    //     });
-    //   }
-    // }, 1000);
-  };
+  //   var win = window.open(
+  //     address,
+  //     "analytics",
+  //     "width=700,height=450,left=" +
+  //       (evt.target.offsetLeft + 400) +
+  //       ",top=" +
+  //       evt.target.offsetTop
+  //   );
+  //   // var timer = setInterval(function() {
+  //   //   if (win.closed) {
+  //   //     clearInterval(timer);
+  //   //     _ajax.get("/ajax/analytics_store_id.ajax.php", {}, function(response) {
+  //   //       window.location.reload();
+  //   //     });
+  //   //   }
+  //   // }, 1000);
+  // };
 
   render() {
     return (
@@ -82,7 +82,8 @@ export class GoogleAuthOverlay extends React.Component {
           authTitlesNoDomain={this.state.titles.noDomain}
           authDescriptionsNoDomain={this.state.descriptions.noDomain}
           instanceZUID={this.props.instance.ZUID}
-          onClick={this.createAnalyticsPopup}
+          userID={this.props.user.ID}
+          instanceID={this.props.ID}
         />
 
         <p className={styles.generalDescription}>

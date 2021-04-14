@@ -9,41 +9,53 @@ import GaAuthenticate from "./GaAuthenticate";
 export default function GoogleAuthOverlayDomain(props) {
   const domain = useDomain();
 
-  return (
-    <div>
-      {domain ? (
-        <React.Fragment>
-          {props.gaLegacyAuth ? (
-            <React.Fragment>
-              <h2>{props.authTitles}</h2>
-              <p>{props.authDescriptions}</p>
-            </React.Fragment>
-          ) : (
-            <React.Fragment>
-              <h2>{props.authNotTitles}</h2>
-              <p>{props.authNotDescriptions}</p>
-            </React.Fragment>
-          )}
+  const createAnalyticsPopup = evt => {
+    // var address = encodeURI(
+    //   CONFIG.SERVICE_GOOGLE_ANALYTICS_AUTH +
+    //     "?user_id=" +
+    //     props.userID +
+    //     "&account_id=" +
+    //     props.instanceID +
+    //     "&domain=" +
+    //     domain
+    // );
 
-          <GaAuthenticate onClick={props.createAnalyticsPopup} />
-        </React.Fragment>
-      ) : (
-        <React.Fragment>
-          <h2>{props.authTitlesNoDomain}</h2>
-          <p>{props.authDescriptionsNoDomain}</p>
-          <div className={styles.buttonHolder}>
-            <Button
-              kind="secondary"
-              onClick={() => {
-                window.location = `${CONFIG.URL_ACCOUNTS}/instances/${props.instanceZUID}/launch`;
-              }}
-            >
-              <FontAwesomeIcon icon={faGlobe} />
-              Click here to Setup Your Domain
-            </Button>
-          </div>
-        </React.Fragment>
-      )}
-    </div>
-  );
+    return (
+      <div>
+        {domain ? (
+          <React.Fragment>
+            {props.gaLegacyAuth ? (
+              <React.Fragment>
+                <h2>{props.authTitles}</h2>
+                <p>{props.authDescriptions}</p>
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <h2>{props.authNotTitles}</h2>
+                <p>{props.authNotDescriptions}</p>
+              </React.Fragment>
+            )}
+
+            <GaAuthenticate onClick={createAnalyticsPopup} />
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <h2>{props.authTitlesNoDomain}</h2>
+            <p>{props.authDescriptionsNoDomain}</p>
+            <div className={styles.buttonHolder}>
+              <Button
+                kind="secondary"
+                onClick={() => {
+                  window.location = `${CONFIG.URL_ACCOUNTS}/instances/${props.instanceZUID}/launch`;
+                }}
+              >
+                <FontAwesomeIcon icon={faGlobe} />
+                Click here to Setup Your Domain
+              </Button>
+            </div>
+          </React.Fragment>
+        )}
+      </div>
+    );
+  };
 }
