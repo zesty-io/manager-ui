@@ -5,6 +5,9 @@ import { faGlobe, faKey, faPlug } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 
 import GaAuthenticate from "./GaAuthenticate";
+
+import GoogleAuthOverlayDomain from "./GoogleAuthOverlayDomain";
+
 import styles from "./GoogleAuthOverlay.less";
 
 export class GoogleAuthOverlay extends React.Component {
@@ -69,6 +72,8 @@ export class GoogleAuthOverlay extends React.Component {
             <strong>Zesty.io WebEngine™</strong> Integration
           </p>
         </div>
+
+        <GoogleAuthOverlayDomain />
 
         {this.props.domainSet ? (
           <React.Fragment>
