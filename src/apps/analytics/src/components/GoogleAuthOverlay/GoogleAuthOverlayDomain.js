@@ -1,6 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGlobe, faKey, faPlug } from "@fortawesome/free-solid-svg-icons";
+import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import { useDomain } from "shell/hooks/use-domain";
 
 import { Button } from "@zesty-io/core/Button";
