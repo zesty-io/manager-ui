@@ -141,7 +141,6 @@ export default connect(function(state) {
               {(!this.state.gaAuthenticated || this.state.gaLegacyAuth) && (
                 <GoogleAuthOverlay
                   gaLegacyAuth={this.state.gaLegacyAuth}
-                  domainSet={domainSet}
                   gaAuthenticated={this.state.gaAuthenticated}
                   user={this.props.user}
                   instance={this.props.instance}
