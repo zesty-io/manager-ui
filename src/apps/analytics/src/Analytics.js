@@ -162,7 +162,6 @@ export default connect(function(state) {
                   instanceZUID={this.props.instanceZUID}
                   profileID={this.props.instance.google_profile_id}
                   data={shelldata.shellDoughnutData()}
-                  domainSet={domainSet}
                 />
                 <SocialTraffic
                   setGALegacyStatus={this.setGALegacyStatus}
