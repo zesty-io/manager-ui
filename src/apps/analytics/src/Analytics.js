@@ -123,11 +123,6 @@ export default connect(function(state) {
     }
 
     render() {
-      const domainSet = Boolean(
-        this.props.instance.domains &&
-          this.props.instance.domains[0] &&
-          this.props.instance.domains[0].domain
-      );
       return (
         <section className={styles.Dashboard}>
           <div className={styles.container}>
@@ -168,7 +163,6 @@ export default connect(function(state) {
                   instanceZUID={this.props.instanceZUID}
                   profileID={this.props.instance.google_profile_id}
                   data={shelldata.shellDoughnutData()}
-                  domainSet={domainSet}
                 />
               </div>
             </div>
