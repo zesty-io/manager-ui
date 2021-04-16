@@ -37,6 +37,37 @@ import { FieldTypeOneToMany } from "@zesty-io/core/FieldTypeOneToMany";
 import styles from "./Field.less";
 import MediaStyles from "../../../../../../media/src/app/MediaAppModal.less";
 
+// NOTE: Componetized so it can be memoized for input/render perf
+const RelatedOption = React.memo(props => {
+  return (
+    <span>
+      <span onClick={evt => evt.stopPropagation()}>
+        <AppLink
+          className={styles.relatedItemLink}
+          to={`/content/${props.modelZUID}/${props.itemZUID}`}
+        >
+          <FontAwesomeIcon icon={faEdit} />
+        </AppLink>
+      </span>
+      &nbsp;{props.text}
+    </span>
+  );
+});
+
+// NOTE: Componetized so it can be memoized for input/render perf
+const LinkOption = React.memo(props => {
+  return (
+    <React.Fragment>
+      <FontAwesomeIcon icon={faExclamationTriangle} />
+      &nbsp;
+      <AppLink to={`/content/${props.modelZUID}/${props.itemZUID}`}>
+        {props.itemZUID}
+      </AppLink>
+      <strong>&nbsp;is missing a meta title</strong>
+    </React.Fragment>
+  );
+});
+
 function sortTitle(a, b) {
   const nameA = String(a.text) && String(a.text).toUpperCase(); // ignore upper and lowercase
   const nameB = String(b.text) && String(b.text).toUpperCase(); // ignore upper and lowercase
@@ -93,17 +124,11 @@ function resolveRelatedOptions(
         filterValue: items[itemZUID].data[field.name],
         value: itemZUID,
         component: (
-          <span>
-            <span onClick={evt => evt.stopPropagation()}>
-              <AppLink
-                className={styles.relatedItemLink}
-                to={`/content/${modelZUID}/${itemZUID}`}
-              >
-                <FontAwesomeIcon icon={faEdit} />
-              </AppLink>
-            </span>
-            &nbsp;{items[itemZUID].data[field.name]}
-          </span>
+          <RelatedOption
+            modelZUID={modelZUID}
+            itemZUID={itemZUID}
+            text={items[itemZUID].data[field.name]}
+          />
         )
       };
     })
@@ -381,6 +406,7 @@ export default connect(state => {
     case "internal_link":
       let internalLinkRelatedItem = props.allItems[value];
       let internalLinkOptions = useMemo(() => {
+        console.log("Recalculat:InternaLinkOpts");
         return Object.keys(props.allItems)
           .filter(
             itemZUID =>
@@ -397,16 +423,10 @@ export default connect(state => {
             } else {
               return {
                 component: (
-                  <>
-                    <FontAwesomeIcon icon={faExclamationTriangle} />
-                    &nbsp;
-                    <AppLink
-                      to={`/content/${item.meta.contentModelZUID}/${itemZUID}`}
-                    >
-                      ${itemZUID}
-                    </AppLink>
-                    <b style={{ color: "#000" }}> is missing a meta title</b>
-                  </>
+                  <LinkOption
+                    modelZUID={item.meta.contentModelZUID}
+                    itemZUID={itemZUID}
+                  />
                 )
               };
             }
@@ -488,8 +508,8 @@ export default connect(state => {
           value
         );
       }, [
-        props.allFields,
-        props.allItems,
+        Object.keys(props.allFields).length,
+        Object.keys(props.allItems).length,
         relatedModelZUID,
         relatedFieldZUID,
         langID,
@@ -558,8 +578,8 @@ export default connect(state => {
           value
         );
       }, [
-        props.allFields,
-        props.allItems,
+        Object.keys(props.allFields).length,
+        Object.keys(props.allItems).length,
         relatedModelZUID,
         relatedFieldZUID,
         langID,
