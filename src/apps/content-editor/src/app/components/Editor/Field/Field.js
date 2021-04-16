@@ -406,7 +406,6 @@ export default connect(state => {
     case "internal_link":
       let internalLinkRelatedItem = props.allItems[value];
       let internalLinkOptions = useMemo(() => {
-        console.log("Recalculat:InternaLinkOpts");
         return Object.keys(props.allItems)
           .filter(
             itemZUID =>
