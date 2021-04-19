@@ -43,25 +43,27 @@ export default React.forwardRef((props, providedRef) => {
 
   const debouncedSearch = useCallback(
     debounce(term => {
-      dispatch(searchItems(term))
-        .then(res => {
-          if (res.status === 200) {
-            let results = res.data;
-            if (props.filterResults) {
-              results = props.filterResults(results);
+      if (term) {
+        dispatch(searchItems(term))
+          .then(res => {
+            if (res.status === 200) {
+              let results = res.data;
+              if (props.filterResults) {
+                results = props.filterResults(results);
+              }
+              setRefs(results.map(() => React.createRef()));
+              setSearchResults(results);
+            } else {
+              props.dispatch(
+                notice({
+                  kind: "warn",
+                  message: `Error searching for term: ${term}`
+                })
+              );
             }
-            setRefs(results.map(() => React.createRef()));
-            setSearchResults(results);
-          } else {
-            props.dispatch(
-              notice({
-                kind: "warn",
-                message: `Error searching for term: ${term}`
-              })
-            );
-          }
-        })
-        .finally(() => setLoading(false));
+          })
+          .finally(() => setLoading(false));
+      }
     }, 650),
     []
   );
