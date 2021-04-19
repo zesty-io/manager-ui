@@ -515,7 +515,11 @@ export default connect(state => {
         value
       ]);
 
-      if (value && !oneToOneOptions.find(opt => opt.value === value)) {
+      if (
+        value &&
+        value != "0" &&
+        !oneToOneOptions.find(opt => opt.value === value)
+      ) {
         //the related option is not in the array, we need ot insert it
         oneToOneOptions.unshift({
           filterValue: value,
