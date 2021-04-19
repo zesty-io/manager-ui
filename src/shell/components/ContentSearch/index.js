@@ -12,7 +12,8 @@ import {
   faListAlt,
   faSort,
   faSortAlphaDown,
-  faUser
+  faUser,
+  faEye
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Search } from "@zesty-io/core/Search";
@@ -20,6 +21,7 @@ import { Loader } from "@zesty-io/core/Loader";
 import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Input } from "@zesty-io/core/Input";
+import { Url } from "@zesty-io/core/Url";
 
 import { searchItems } from "shell/store/content";
 
@@ -356,7 +358,15 @@ const ListOption = props => {
 
       {/* path */}
       {props.opt?.web?.path && (
-        <p className={styles.bodyText}>{props.opt.web.path}</p>
+        <p className={styles.bodyText}>
+          <Url
+            href={`${CONFIG.URL_PREVIEW_FULL}${props.opt.web.path}`}
+            target="_blank"
+          >
+            <FontAwesomeIcon icon={faEye} />
+            &nbsp;{props.opt.web.path}
+          </Url>
+        </p>
       )}
 
       {/* meta */}

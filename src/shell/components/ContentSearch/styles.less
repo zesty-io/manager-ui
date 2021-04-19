@@ -39,9 +39,20 @@
     border-bottom: 1px solid darken(@zesty-field-blue, 8%);
     padding: 16px 12px;
 
+    .Lang {
+      flex-basis: 80px;
+      justify-content: flex-end;
+      display: flex;
+    }
+
     &.SelectedRow,
     &:hover {
       background-color: @white;
+    }
+
+    &.Actions {
+      position: sticky;
+      top: 0;
     }
 
     &.Actions,
