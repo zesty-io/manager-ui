@@ -19,13 +19,12 @@ import { request } from "utility/request";
 import styles from "./Robots.less";
 
 export default connect(state => {
-  const domain = useDomain();
-
   return {
-    domains: domain,
     platform: state.platform
   };
 })(function Robots(props) {
+  const domain = useDomain();
+
   const [loading, setLoading] = useState(false);
   const [robotOn, setRobotOn] = useState({
     admin: false,
@@ -45,9 +44,9 @@ export default connect(state => {
     keyFriendly: "Custom Robots.txt Content",
     parsleyAccess: false
   });
-  const [robotURL, setRobotURL] = useState(
-    `https://${props.domains}/robots.txt`
-  );
+  const [robotURL, setRobotURL] = useState(`${domain}/robots.txt`);
+
+  // const robotURL = `${domain}/robots.txt`;
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
@@ -70,9 +69,9 @@ export default connect(state => {
         value: Number(robots_on.value)
       });
     });
-  }, []);
+  }, [robotText, robotOn]);
 
-  function handleKeyDown(evt) {
+  const handleKeyDown = evt => {
     if (
       ((props.platform.isMac && evt.metaKey) ||
         (!props.platform.isMac && evt.ctrlKey)) &&
@@ -81,23 +80,9 @@ export default connect(state => {
       evt.preventDefault();
       handleSave();
     }
-  }
+  };
 
-  function handleRobotsOn(value) {
-    setRobotOn({
-      ...robotOn,
-      value
-    });
-  }
-
-  function handleRobotsText(value) {
-    setRobotText({
-      ...robotText,
-      value
-    });
-  }
-
-  function handleSave() {
+  const handleSave = () => {
     setLoading(true);
 
     const robotsOn = makeRequest({
@@ -126,9 +111,9 @@ export default connect(state => {
         );
         setLoading(true);
       });
-  }
+  };
 
-  function makeRequest(data) {
+  const makeRequest = data => {
     return request(
       `${CONFIG.API_INSTANCE}/env/settings${data.ZUID ? `/${data.ZUID}` : ""}`,
       {
@@ -139,7 +124,7 @@ export default connect(state => {
         body: JSON.stringify(data)
       }
     );
-  }
+  };
 
   return (
     <WithLoader condition={robotOn.ZUID} message="Finding robots.txt settings">
@@ -169,7 +154,7 @@ export default connect(state => {
             value={Boolean(robotOn.value)}
             offValue="No"
             onValue="Yes"
-            onChange={handleRobotsOn}
+            onChange={() => setRobotOn(robotOn)}
           />
         </div>
 
@@ -193,7 +178,7 @@ export default connect(state => {
             name="settings[general][robots_text]"
             label={robotText.keyFriendly}
             tooltip={robotText.tips}
-            onChange={handleRobotsText}
+            onChange={() => setRobotText(robotText)}
             defaultValue={robotText.value}
           />
         </div>
