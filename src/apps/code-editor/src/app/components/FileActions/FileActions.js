@@ -26,6 +26,7 @@ import { Delete } from "./components/Delete";
 import styles from "./FileActions.less";
 export const FileActions = React.memo(function FileActions(props) {
   const match = useRouteMatch("/code/file/:fileType/:fileZUID");
+
   return (
     <header className={styles.FileActions}>
       <div className={styles.FileMeta}>
@@ -128,6 +129,7 @@ export const FileActions = React.memo(function FileActions(props) {
             dispatch={props.dispatch}
             fileZUID={props.fileZUID}
             status={props.status}
+            fileName={props.fileName}
           />
         </Route>
       </Switch>

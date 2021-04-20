@@ -22,14 +22,18 @@ export const Delete = React.memo(function Delete(props) {
 
   return (
     <div className={styles.DeleteBtn}>
-      <Button
-        kind="warn"
-        onClick={() => setOpen(true)}
-        className={styles.Button}
-      >
-        <FontAwesomeIcon icon={faExclamationCircle} />
-        Delete
-      </Button>
+      {props.fileName !== "loader" ? (
+        <Button
+          kind="warn"
+          onClick={() => setOpen(true)}
+          className={styles.Button}
+        >
+          <FontAwesomeIcon icon={faExclamationCircle} />
+          Delete
+        </Button>
+      ) : (
+        " "
+      )}
       <Modal
         className={styles.DeleteFileModal}
         type="local"
