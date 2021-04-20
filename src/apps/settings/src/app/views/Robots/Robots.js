@@ -44,9 +44,9 @@ export default connect(state => {
     keyFriendly: "Custom Robots.txt Content",
     parsleyAccess: false
   });
-  const [robotURL, setRobotURL] = useState(`${domain}/robots.txt`);
+  // const [robotURL, setRobotURL] = useState(`${domain}/robots.txt`);
 
-  // const robotURL = `${domain}/robots.txt`;
+  const robotURL = `${domain}/robots.txt`;
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
