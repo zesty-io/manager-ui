@@ -69,7 +69,7 @@ export default connect(state => {
         value: Number(robots_on.value)
       });
     });
-  }, [robotText, robotOn]);
+  }, []);
 
   const handleKeyDown = evt => {
     if (
@@ -199,5 +199,4 @@ export default connect(state => {
       </div>
     </WithLoader>
   );
-  /// closing function
 });
