@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 
 import ContentSearch from "shell/components/ContentSearch";
+import { notify } from "shell/store/notifications";
 
 export default connect(state => {
   return {
@@ -43,7 +44,7 @@ export default connect(state => {
       history.push(`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`);
     } else {
       props.dispatch(
-        notice({
+        notify({
           kind: "warn",
           message: "Selected item is missing meta data"
         })

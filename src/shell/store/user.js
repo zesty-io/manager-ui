@@ -8,7 +8,7 @@ export function user(
     firstName: "",
     email: "",
     permissions: [],
-    selected_lang: ""
+    selected_lang: "en-US"
   },
   action
 ) {
@@ -79,14 +79,7 @@ export function fetchRecentItems(userZUID, start) {
     return request(
       `${CONFIG.API_INSTANCE}/search/items?q=${userZUID}&order=created&dir=DESC&start_date=${start}`
     ).then(res => {
-      if (res.status === 400) {
-        dispatch(
-          notify({
-            message: `Failure fetching recent items: ${res.error}`,
-            kind: "error"
-          })
-        );
-      } else {
+      if (res.status === 200) {
         dispatch({
           type: "FETCH_ITEMS_SUCCESS",
           payload: res.data
@@ -103,6 +96,24 @@ export function fetchRecentItems(userZUID, start) {
               return acc;
             }, {})
         });
+      }
+
+      if (res.status === 400) {
+        dispatch(
+          notify({
+            message: `There was an issue fetching recent items: ${res.error}`,
+            kind: "error"
+          })
+        );
+      }
+
+      if (res.status === 500) {
+        dispatch(
+          notify({
+            message: `API error fetching recent items: ${res.error}`,
+            kind: "error"
+          })
+        );
       }
 
       return res;
