@@ -1,22 +1,30 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import moment from "moment";
 import uniqBy from "lodash/uniqBy";
 import zuid from "zuid";
-import { request } from "utility/request";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight, faClock } from "@fortawesome/free-solid-svg-icons";
+
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
-import styles from "./UserLatest.less";
+import { request } from "utility/request";
+import { searchItems } from "shell/store/content";
+import { fetchModel } from "shell/store/models";
 
+import styles from "./UserLatest.less";
 export function UserLatest(props) {
+  const dispatch = useDispatch();
+
   const [latest, setLatest] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
+
+    // Filter logs to actions by the session user
     let userLogs = Object.keys(props.logs)
       .filter(logZUID => {
         return (
@@ -29,55 +37,63 @@ export function UserLatest(props) {
         return moment(logb.createdAt) - moment(loga.createdAt);
       });
 
-    //Fetch content model metaTitles
+    // Find 5 latest unique logs
     let affectedUserLogs = uniqBy(userLogs, "affectedZUID").slice(0, 5);
 
-    const cleaner = string => {
-      if (typeof string !== "string") return "";
-      return string.replaceAll("`", "").replace("/", "");
-    };
-
+    // Clean up log messages
+    // Based on the ZUID prefix request differing endpoints to resolve affected record data
     Promise.all(
       affectedUserLogs.map(log => {
-        if (zuid.matches(log.affectedZUID, zuid.prefix.SITE_CONTENT_ITEM)) {
-          return request(
-            `${CONFIG.API_INSTANCE}/search/items?q=${log.affectedZUID}`
-          )
-            .then(data => {
-              log.recentTitle =
-                log.action === 2
-                  ? `Modified View ${data.data[0]?.web?.metaTitle}`
-                  : `Published View ${data.data[0]?.web?.metaTitle}`;
+        switch (Number(log.affectedZUID.split("-")[0])) {
+          // Display content item meta title
+          case zuid.prefix.SITE_CONTENT_ITEM:
+            return dispatch(searchItems(log.affectedZUID)).then(item => {
+              if (log.action === 2) {
+                log.recentTitle = `Modified Content Item ${item.data[0]?.web?.metaTitle}`;
+              } else if (log.action === 4) {
+                log.recentTitle = `Published Content Item ${item.data[0]?.web?.metaTitle}`;
+              } else {
+                log.recentTitle = log.meta.message;
+              }
               return log;
-            })
-            .catch(err => console.log(err));
-        } else if (
-          zuid.matches(log.affectedZUID, zuid.prefix.SITE_CONTENT_SET)
-        ) {
-          return request(
-            `${CONFIG.API_INSTANCE}/content/models/${log.affectedZUID}`
-          )
-            .then(data => {
-              log.recentTitle = `Modified Schema ${data.data?.label}`;
+            });
+
+          // Display model labels
+          case zuid.prefix.SITE_CONTENT_SET:
+            return dispatch(fetchModel(log.affectedZUID)).then(model => {
+              log.recentTitle = `Modified Schema ${model.payload?.label}`;
               return log;
-            })
-            .catch(err => console.log(err));
-        } else if (zuid.matches(log.affectedZUID, zuid.prefix.SITE_VIEW)) {
-          return request(`${CONFIG.API_INSTANCE}/web/views/${log.affectedZUID}`)
-            .then(data => {
-              log.recentTitle = cleaner(log.meta.message);
-              return log;
-            })
-            .catch(err => console.log(err));
-        } else {
-          log.recentTitle = cleaner(log.meta.message);
-          return log;
+            });
+
+          // Display field and model labels
+          case zuid.prefix.SITE_FIELD:
+            // NOTE: Can not use fetchField action because we do not have the field model ZUID on hand
+            return request(
+              `${CONFIG.API_INSTANCE}${log.meta.uri.slice(3)}` // strip api version from uri
+            ).then(field => {
+              return request(
+                `${CONFIG.API_INSTANCE}/content/models/${field.data.contentModelZUID}`
+              ).then(model => {
+                if (log.action === 2) {
+                  log.recentTitle = `Modified ${field.data.label} Field on ${model.data.label} Model`;
+                } else {
+                  log.recentTitle = log.meta.message;
+                }
+                return log;
+              });
+            });
+
+          default:
+            // strip backticks from default log message
+            log.recentTitle = log.meta.message.replaceAll("`", "");
+            return log;
         }
       })
-    ).then(logs => {
-      setLatest(logs);
-      setLoading(false);
-    });
+    )
+      .then(logs => {
+        setLatest(logs);
+      })
+      .finally(() => setLoading(false));
   }, [props.user, props.logs]);
 
   return (
