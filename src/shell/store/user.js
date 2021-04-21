@@ -107,15 +107,6 @@ export function fetchRecentItems(userZUID, start) {
         );
       }
 
-      if (res.status === 500) {
-        dispatch(
-          notify({
-            message: `API error fetching recent items: ${res.error}`,
-            kind: "error"
-          })
-        );
-      }
-
       return res;
     });
   };
