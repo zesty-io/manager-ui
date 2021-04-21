@@ -24,6 +24,7 @@ import { Input } from "@zesty-io/core/Input";
 import { Url } from "@zesty-io/core/Url";
 
 import { searchItems } from "shell/store/content";
+import { notify } from "shell/store/notifications";
 
 import styles from "./styles.less";
 export default React.forwardRef((props, providedRef) => {
@@ -55,7 +56,7 @@ export default React.forwardRef((props, providedRef) => {
               setSearchResults(results);
             } else {
               props.dispatch(
-                notice({
+                notify({
                   kind: "warn",
                   message: `Error searching for term: ${term}`
                 })

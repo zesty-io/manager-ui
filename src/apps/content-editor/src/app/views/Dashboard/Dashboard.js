@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
-import cx from "classnames";
 import { useHistory } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,8 +10,7 @@ import {
   faCog,
   faDatabase,
   faHistory,
-  faClock,
-  faUser
+  faClock
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
@@ -21,7 +19,6 @@ import { AppLink } from "@zesty-io/core/AppLink";
 
 import { AccountInfo } from "./components/AccountInfo";
 import { ChartDashboard } from "./components/ChartDashboard";
-import { RecentlyEdited } from "./components/RecentlyEdited";
 import { UserLatest } from "./components/UserLatest";
 import { InstanceActivity } from "./components/InstanceActivity";
 import { QuickJumps } from "./components/QuickJumps";
@@ -181,20 +178,10 @@ export default connect(function(state) {
             <ChartDashboard logs={this.props.logs} />
           </section>
           <section className={styles.RecentActivities}>
-            {/* <RecentlyEdited
-              items={this.state.recentlyEditedItems}
-              loading={this.state.loading}
-            /> */}
             {this.state.favoriteModels.map((arr, i) => {
               const [contentModelZUID, items] = arr;
-
               const model = this.props.contentModels[contentModelZUID];
-              {
-                /* console.log(
-                "🚀 ~ file: Dashboard.js ~ line 215 ~ Dashboard ~ {this.state.favoriteModels.map ~ model",
-                model
-              ); */
-              }
+
               return (
                 <Card className={styles.Card} key={i}>
                   <CardHeader>

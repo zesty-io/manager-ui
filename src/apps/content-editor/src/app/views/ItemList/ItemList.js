@@ -106,19 +106,20 @@ export default connect((state, props) => {
     };
   }, []);
 
-  // redirect to single entry
+  // globals is a special dataset which should have a single entry
+  // it contains instance wide parsley referenceable values
   useEffect(() => {
-    if (
-      props.model &&
-      (props.model.name === "clippings" || props.model.type === "templateset")
-    ) {
-      // First item is always the column row
+    if (["clippings", "globals"].includes(props?.model?.name.toLowerCase())) {
+      // only force redirect if there is a single globals content item
       if (items.length === 2) {
-        // redirect to the single entry in content clippings
-        history.push(`/content/${props.modelZUID}/${items[1].meta.ZUID}`);
+        // the first record is the list column headers so we use the second which
+        // should be the first content item
+        history.push(
+          `/content/${items[1]?.meta?.contentModelZUID}/${items[1]?.meta?.ZUID}`
+        );
       }
     }
-  }, [props.modelZUID]);
+  }, [props.modelZUID, items.length]);
 
   // on initial and
   // on modelZUID change
