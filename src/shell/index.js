@@ -6,7 +6,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
-import { get } from "idb-keyval";
+import { getMany } from "idb-keyval";
 import observable from "@riotjs/observable";
 
 import { Sentry, history } from "utility/sentry";
@@ -38,12 +38,12 @@ const loadLocalStorageData = true;
 // Load Local Storage Data
 if (loadLocalStorageData) {
   try {
-    Promise.all([
-      get(`${instanceZUID}:user:selected_lang`),
-      get(`${instanceZUID}:navContent`),
-      get(`${instanceZUID}:models`),
-      get(`${instanceZUID}:fields`),
-      get(`${instanceZUID}:content`)
+    getMany([
+      `${instanceZUID}:user:selected_lang`,
+      `${instanceZUID}:navContent`,
+      `${instanceZUID}:models`,
+      `${instanceZUID}:fields`,
+      `${instanceZUID}:content`
     ]).then(results => {
       const [lang, nav, models, fields, content] = results;
 
