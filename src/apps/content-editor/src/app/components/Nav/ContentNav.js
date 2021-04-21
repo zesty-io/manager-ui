@@ -67,9 +67,9 @@ export function ContentNav(props) {
           <Option value="link" text="Internal/External Link" />
           {Object.keys(props.models)
             .filter(modelZUID => {
-              return (
-                props.models[modelZUID].label !==
-                ("Dashboard Widgets" || "Widgets")
+              // exclude these special models from the create item list
+              return !["widgets", "clippings", "globals"].includes(
+                props.models[modelZUID]?.name.toLowerCase()
               );
             })
             .sort((a, b) => {
