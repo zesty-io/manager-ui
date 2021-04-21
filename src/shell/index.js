@@ -6,7 +6,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
-import { getMany } from "idb-keyval";
+import { getMany } from "utility/idb";
 import observable from "@riotjs/observable";
 
 import { Sentry, history } from "utility/sentry";

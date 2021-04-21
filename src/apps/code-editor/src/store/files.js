@@ -1,4 +1,4 @@
-import { set } from "idb-keyval";
+import { set } from "utility/idb";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 

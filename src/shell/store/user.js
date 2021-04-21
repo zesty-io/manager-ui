@@ -1,5 +1,5 @@
 import { request } from "utility/request";
-import { set } from "idb-keyval";
+import { set } from "utility/idb";
 import { Sentry } from "utility/sentry";
 
 export function user(

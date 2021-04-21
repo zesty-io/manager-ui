@@ -1,4 +1,4 @@
-import { set } from "idb-keyval";
+import { set } from "utility/idb";
 
 export const localStorage = store => next => action => {
   const result = next(action);
