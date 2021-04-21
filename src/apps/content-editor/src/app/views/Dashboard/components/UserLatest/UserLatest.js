@@ -48,20 +48,23 @@ export function UserLatest(props) {
           // Display content item meta title
           case zuid.prefix.SITE_CONTENT_ITEM:
             return dispatch(searchItems(log.affectedZUID)).then(item => {
-              if (log.action === 2) {
-                log.recentTitle = `Modified Content Item ${item.data[0]?.web?.metaTitle}`;
-              } else if (log.action === 4) {
-                log.recentTitle = `Published Content Item ${item.data[0]?.web?.metaTitle}`;
-              } else {
-                log.recentTitle = log.meta.message;
+              if (item?.data[0]?.web?.metaTitle) {
+                if (log.action === 2) {
+                  log.recentTitle = `Modified Content Item ${item.data[0]?.web?.metaTitle}`;
+                } else if (log.action === 4) {
+                  log.recentTitle = `Published Content Item ${item.data[0]?.web?.metaTitle}`;
+                }
               }
+
               return log;
             });
 
           // Display model labels
           case zuid.prefix.SITE_CONTENT_SET:
             return dispatch(fetchModel(log.affectedZUID)).then(model => {
-              log.recentTitle = `Modified Schema ${model.payload?.label}`;
+              if (model?.payload?.label) {
+                log.recentTitle = `Modified Schema ${model.payload?.label}`;
+              }
               return log;
             });
 
@@ -74,11 +77,12 @@ export function UserLatest(props) {
               return request(
                 `${CONFIG.API_INSTANCE}/content/models/${field.data.contentModelZUID}`
               ).then(model => {
-                if (log.action === 2) {
-                  log.recentTitle = `Modified ${field.data.label} Field on ${model.data.label} Schema`;
-                } else {
-                  log.recentTitle = log.meta.message;
+                if (field?.data?.label && model?.data?.label) {
+                  if (log.action === 2) {
+                    log.recentTitle = `Modified ${field.data.label} Field on ${model.data.label} Schema`;
+                  }
                 }
+
                 return log;
               });
             });
