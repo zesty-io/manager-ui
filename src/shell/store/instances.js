@@ -1,4 +1,5 @@
 import { request } from "utility/request";
+import { notify } from "shell/store/notifications";
 
 export function instances(state = [], action) {
   switch (action.type) {
@@ -16,15 +17,41 @@ export function fetchInstances() {
     });
 
     return request(`${CONFIG.API_ACCOUNTS}/instances`).then(res => {
-      if (res.status === 403) {
-        throw res;
+      if (res.status === 200) {
+        dispatch({
+          type: "FETCHING_INSTANCES_SUCCESS",
+          payload: {
+            data: res.data
+          }
+        });
       }
-      dispatch({
-        type: "FETCHING_INSTANCES_SUCCESS",
-        payload: {
-          data: res.data
-        }
-      });
+
+      if (res.status === 400) {
+        dispatch(
+          notify({
+            kind: "warn",
+            messages: "There was an issue loading your instances list"
+          })
+        );
+      }
+
+      if (res.status === 403) {
+        dispatch(
+          notify({
+            kind: "warn",
+            messages: "You are forbidden from loading an instances list"
+          })
+        );
+      }
+
+      if (res.status === 500) {
+        dispatch(
+          notify({
+            kind: "warn",
+            messages: "API error loading your instances list"
+          })
+        );
+      }
 
       return res;
     });
