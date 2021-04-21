@@ -121,11 +121,6 @@ export default connect(function(state) {
     }
 
     render() {
-      const domainSet = Boolean(
-        this.props.instance.domains &&
-          this.props.instance.domains[0] &&
-          this.props.instance.domains[0].domain
-      );
       return (
         <section className={styles.Dashboard}>
           <div className={styles.container}>
@@ -139,7 +134,6 @@ export default connect(function(state) {
               {(!this.state.gaAuthenticated || this.state.gaLegacyAuth) && (
                 <GoogleAuthOverlay
                   gaLegacyAuth={this.state.gaLegacyAuth}
-                  domainSet={domainSet}
                   gaAuthenticated={this.state.gaAuthenticated}
                   user={this.props.user}
                   instance={this.props.instance}
@@ -152,7 +146,6 @@ export default connect(function(state) {
                   instanceZUID={this.props.instanceZUID}
                   profileID={this.props.instance.google_profile_id}
                   data={shelldata.shellBarData()}
-                  domainSet={domainSet}
                 />
               </div>
 
@@ -162,14 +155,12 @@ export default connect(function(state) {
                   instanceZUID={this.props.instanceZUID}
                   profileID={this.props.instance.google_profile_id}
                   data={shelldata.shellDoughnutData()}
-                  domainSet={domainSet}
                 />
                 <SocialTraffic
                   setGALegacyStatus={this.setGALegacyStatus}
                   instanceZUID={this.props.instanceZUID}
                   profileID={this.props.instance.google_profile_id}
                   data={shelldata.shellDoughnutData()}
-                  domainSet={domainSet}
                 />
               </div>
             </div>
