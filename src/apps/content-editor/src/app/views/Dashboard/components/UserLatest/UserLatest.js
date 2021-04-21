@@ -75,7 +75,7 @@ export function UserLatest(props) {
                 `${CONFIG.API_INSTANCE}/content/models/${field.data.contentModelZUID}`
               ).then(model => {
                 if (log.action === 2) {
-                  log.recentTitle = `Modified ${field.data.label} Field on ${model.data.label} Model`;
+                  log.recentTitle = `Modified ${field.data.label} Field on ${model.data.label} Schema`;
                 } else {
                   log.recentTitle = log.meta.message;
                 }
