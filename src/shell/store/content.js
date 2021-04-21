@@ -212,6 +212,7 @@ export function generateItem(modelZUID) {
       },
       meta: {
         ZUID: itemZUID,
+        langID: 1,
         contentModelZUID: modelZUID,
         createdByUserZUID: state.user.user_zuid,
         createdAt: moment()
@@ -261,11 +262,18 @@ export function fetchItem(modelZUID, itemZUID) {
   };
 }
 
-export function searchItems(itemZUID) {
+export function searchItems(
+  term,
+  query = {
+    order: "created",
+    dir: "DESC",
+    limit: "100"
+  }
+) {
   return dispatch => {
     return dispatch({
       type: "FETCH_RESOURCE",
-      uri: `${CONFIG.API_INSTANCE}/search/items?q=${itemZUID}`,
+      uri: `${CONFIG.API_INSTANCE}/search/items?q=${term}&order=${query.order}&dir=${query.dir}&limit=${query.limit}`,
       handler: res => {
         if (Array.isArray(res.data)) {
           dispatch({

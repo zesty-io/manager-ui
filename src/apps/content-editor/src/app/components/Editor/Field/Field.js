@@ -37,6 +37,37 @@ import { FieldTypeOneToMany } from "@zesty-io/core/FieldTypeOneToMany";
 import styles from "./Field.less";
 import MediaStyles from "../../../../../../media/src/app/MediaAppModal.less";
 
+// NOTE: Componetized so it can be memoized for input/render perf
+const RelatedOption = React.memo(props => {
+  return (
+    <span>
+      <span onClick={evt => evt.stopPropagation()}>
+        <AppLink
+          className={styles.relatedItemLink}
+          to={`/content/${props.modelZUID}/${props.itemZUID}`}
+        >
+          <FontAwesomeIcon icon={faEdit} />
+        </AppLink>
+      </span>
+      &nbsp;{props.text}
+    </span>
+  );
+});
+
+// NOTE: Componetized so it can be memoized for input/render perf
+const LinkOption = React.memo(props => {
+  return (
+    <React.Fragment>
+      <FontAwesomeIcon icon={faExclamationTriangle} />
+      &nbsp;
+      <AppLink to={`/content/${props.modelZUID}/${props.itemZUID}`}>
+        {props.itemZUID}
+      </AppLink>
+      <strong>&nbsp;is missing a meta title</strong>
+    </React.Fragment>
+  );
+});
+
 function sortTitle(a, b) {
   const nameA = String(a.text) && String(a.text).toUpperCase(); // ignore upper and lowercase
   const nameB = String(b.text) && String(b.text).toUpperCase(); // ignore upper and lowercase
@@ -62,7 +93,14 @@ function sortHTML(a, b) {
   return 0;
 }
 
-function resolveRelatedOptions(fields, items, fieldZUID, modelZUID) {
+function resolveRelatedOptions(
+  fields,
+  items,
+  fieldZUID,
+  modelZUID,
+  langID,
+  value
+) {
   // guard against absent data in state
   const field = fields && fields[fieldZUID];
   if (!field || !items) {
@@ -70,38 +108,41 @@ function resolveRelatedOptions(fields, items, fieldZUID, modelZUID) {
   }
 
   return Object.keys(items)
-    .filter(
-      itemZUID =>
+    .filter(itemZUID => {
+      return (
         items[itemZUID] &&
         items[itemZUID].meta &&
-        items[itemZUID].meta.contentModelZUID === modelZUID
-    )
+        items[itemZUID].meta.contentModelZUID === modelZUID &&
+        // filter by content language
+        (langID === items[itemZUID].meta.langID ||
+          // ...unless option already selected
+          value?.split(",").includes(itemZUID))
+      );
+    })
     .map(itemZUID => {
       return {
         filterValue: items[itemZUID].data[field.name],
         value: itemZUID,
         component: (
-          <span>
-            <span onClick={evt => evt.stopPropagation()}>
-              <AppLink
-                className={styles.relatedItemLink}
-                to={`/content/${modelZUID}/${itemZUID}`}
-              >
-                <FontAwesomeIcon icon={faEdit} />
-              </AppLink>
-            </span>
-            &nbsp;{items[itemZUID].data[field.name]}
-          </span>
+          <RelatedOption
+            modelZUID={modelZUID}
+            itemZUID={itemZUID}
+            text={items[itemZUID].data[field.name]}
+          />
         )
       };
     })
     .sort(sortTitle);
 }
 
+const getSelectedLang = (langs, langID) =>
+  langs.find(lang => lang.ID === langID).code;
+
 export default connect(state => {
   return {
     allItems: state.content,
-    allFields: state.fields
+    allFields: state.fields,
+    allLanguages: state.languages
   };
 })(function Field(props) {
   const {
@@ -116,6 +157,7 @@ export default connect(state => {
     name,
     relatedFieldZUID,
     relatedModelZUID,
+    langID,
     onChange,
     onSave,
     dispatch
@@ -380,16 +422,10 @@ export default connect(state => {
             } else {
               return {
                 component: (
-                  <>
-                    <FontAwesomeIcon icon={faExclamationTriangle} />
-                    &nbsp;
-                    <AppLink
-                      to={`/content/${item.meta.contentModelZUID}/${itemZUID}`}
-                    >
-                      ${itemZUID}
-                    </AppLink>
-                    <b style={{ color: "#000" }}> is missing a meta title</b>
-                  </>
+                  <LinkOption
+                    modelZUID={item.meta.contentModelZUID}
+                    itemZUID={itemZUID}
+                  />
                 )
               };
             }
@@ -453,26 +489,37 @@ export default connect(state => {
         }
       }
 
-      const onOneToOneOpen = useCallback(
-        () => Promise.resolve(dispatch(fetchItems(relatedModelZUID))),
-        []
-      );
+      const onOneToOneOpen = useCallback(() => {
+        return dispatch(
+          fetchItems(relatedModelZUID, {
+            lang: getSelectedLang(props.allLanguages, langID)
+          })
+        );
+      }, [props.allLanguages.length, relatedModelZUID, langID]);
 
       let oneToOneOptions = useMemo(() => {
         return resolveRelatedOptions(
           props.allFields,
           props.allItems,
           relatedFieldZUID,
-          relatedModelZUID
+          relatedModelZUID,
+          langID,
+          value
         );
       }, [
         Object.keys(props.allFields).length,
         Object.keys(props.allItems).length,
         relatedModelZUID,
-        relatedFieldZUID
+        relatedFieldZUID,
+        langID,
+        value
       ]);
 
-      if (value && !oneToOneOptions.find(opt => opt.value === value)) {
+      if (
+        value &&
+        value != "0" &&
+        !oneToOneOptions.find(opt => opt.value === value)
+      ) {
         //the related option is not in the array, we need ot insert it
         oneToOneOptions.unshift({
           filterValue: value,
@@ -529,22 +576,30 @@ export default connect(state => {
           props.allFields,
           props.allItems,
           relatedFieldZUID,
-          relatedModelZUID
+          relatedModelZUID,
+          langID,
+          value
         );
       }, [
         Object.keys(props.allFields).length,
         Object.keys(props.allItems).length,
         relatedModelZUID,
-        relatedFieldZUID
+        relatedFieldZUID,
+        langID,
+        value
       ]);
 
       // Delay loading options until user opens dropdown
       const onOneToManyOpen = useCallback(() => {
         return Promise.all([
           dispatch(fetchFields(relatedModelZUID)),
-          dispatch(fetchItems(relatedModelZUID))
+          dispatch(
+            fetchItems(relatedModelZUID, {
+              lang: getSelectedLang(props.allLanguages, langID)
+            })
+          )
         ]);
-      }, []);
+      }, [props.allLanguages.length, relatedModelZUID, langID]);
 
       return (
         <FieldTypeOneToMany

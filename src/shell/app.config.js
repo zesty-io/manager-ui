@@ -38,7 +38,10 @@ module.exports = {
     COOKIE_NAME: "APP_SID",
     COOKIE_DOMAIN: ".zesty.io",
 
-    GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
+    GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk",
+
+    TIME_DISPLAY_FORMAT: "MMMM Do YYYY, [at] h:mm a",
+    TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss"
   },
   stage: {
     VERSION: pkg.version,
@@ -53,10 +56,10 @@ module.exports = {
 
     SERVICE_AUTH: "https://auth.api.stage.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
-    SERVICE_MEDIA_MANAGER: "https://stage-svc.zesty.io/media-manager-service",
-    SERVICE_MEDIA_RESOLVER: "https://stage-svc.zesty.io/media-resolver-service",
-    SERVICE_MEDIA_STORAGE: "https://stage-svc.zesty.io/media-storage-service",
-    SERVICE_MEDIA_MODIFY: "https://stage-svc.zesty.io/media-modify-service",
+    SERVICE_MEDIA_MANAGER: "https://media-manager.api.stage.zesty.io",
+    SERVICE_MEDIA_RESOLVER: "https://media-resolver.api.stage.zesty.io",
+    SERVICE_MEDIA_STORAGE: "https://media-storage.api.stage.zesty.io",
+    SERVICE_MEDIA_MODIFY: "https://media-modify.api.stage.zesty.io",
     SERVICE_REDIS_GATEWAY: "https://cache.stage.zesty.io",
     SERVICE_GOOGLE_ANALYTICS_AUTH:
       "https://us-central1-zesty-stage.cloudfunctions.net/authenticateGoogleAnalytics",
@@ -74,7 +77,10 @@ module.exports = {
     COOKIE_NAME: "STAGE_APP_SID",
     COOKIE_DOMAIN: ".zesty.io",
 
-    GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk"
+    GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk",
+
+    TIME_DISPLAY_FORMAT: "MMMM Do YYYY, [at] h:mm a",
+    TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss"
   },
   development: {
     VERSION: pkg.version,
@@ -110,7 +116,10 @@ module.exports = {
     URL_ACCOUNTS: "https://accounts.dev.zesty.io:9001",
 
     COOKIE_NAME: "DEV_APP_SID",
-    COOKIE_DOMAIN: ".zesty.io"
+    COOKIE_DOMAIN: ".zesty.io",
+
+    TIME_DISPLAY_FORMAT: "MMMM Do YYYY, [at] h:mm a",
+    TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss"
   },
   local: {
     VERSION: pkg.version,
@@ -148,6 +157,9 @@ module.exports = {
     URL_ACCOUNTS: "https://accounts.zesty.localdev:9001",
 
     COOKIE_NAME: "DEV_APP_SID",
-    COOKIE_DOMAIN: ".zesty.localdev"
+    COOKIE_DOMAIN: ".zesty.localdev",
+
+    TIME_DISPLAY_FORMAT: "MMMM Do YYYY, [at] h:mm a",
+    TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss"
   }
 };

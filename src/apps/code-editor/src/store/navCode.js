@@ -6,7 +6,8 @@ import {
   faListAlt,
   faFileCode,
   faBolt,
-  faDirections
+  faDirections,
+  faLock
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faJs,
@@ -187,7 +188,7 @@ function resolveNavData(file) {
     ...file,
     label: file.sort ? `(${file.sort}) ${file.fileName}` : file.fileName,
     path: `/code/file/${pathPart}/${file.ZUID}`,
-    icon: ICONS[file.type]
+    icon: file.fileName === "loader" ? faLock : ICONS[file.type]
   };
 
   // Remove this prop to ensure we don't accidentially

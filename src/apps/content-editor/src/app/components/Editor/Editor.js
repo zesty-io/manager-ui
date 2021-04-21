@@ -135,6 +135,7 @@ export default class Editor extends PureComponent {
                     onChange={this.onChange}
                     onSave={onSave}
                     value={item && item.data && item.data[field.name]}
+                    langID={item?.meta?.langID}
                   />
                 </div>
               );
