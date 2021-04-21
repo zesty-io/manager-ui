@@ -46,7 +46,7 @@ export default connect((state, props) => {
     ? state.languages.find(lang => lang.code === state.user.selected_lang) || {}
     : {};
 
-  const userSelectedLang = state.user.selected_lang || "en-US";
+  const userSelectedLang = state.user.selected_lang;
 
   return {
     selectedLang,
