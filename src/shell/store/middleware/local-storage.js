@@ -1,4 +1,4 @@
-import { set, get } from "idb-keyval";
+import { set } from "idb-keyval";
 
 export const localStorage = store => next => action => {
   const result = next(action);
@@ -7,18 +7,6 @@ export const localStorage = store => next => action => {
     const state = store.getState();
 
     switch (action.type) {
-      case "SET_LOCAL":
-        set(
-          `${state.instance.ZUID}:${action.payload.key}`,
-          action.payload.data
-        );
-        break;
-
-      case "GET_LOCAL":
-        // TODO how does this get returned to caller?
-        get(`${state.instance.ZUID}:${action.payload.key}`);
-        break;
-
       case "FETCH_ITEM_SUCCESS":
       case "FETCH_ITEMS_SUCCESS":
       case "SEARCH_ITEMS_SUCCESS":
