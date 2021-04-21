@@ -49,7 +49,10 @@ if (loadLocalStorageData) {
 
       store.dispatch({
         type: "LOADED_LOCAL_USER_LANG",
-        payload: { lang }
+        payload: {
+          // default to english
+          lang: lang || "en-US"
+        }
       });
 
       // FIXME: This is broken because on initial nav fetch we modify
