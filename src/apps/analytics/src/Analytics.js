@@ -3,8 +3,6 @@ import { connect } from "react-redux";
 import cx from "classnames";
 import moment from "moment";
 
-import { Url } from "@zesty-io/core/Url";
-
 // import { ContentVelocity } from "./components/ContentVelocity";
 import { PageviewTraffic } from "./components/PageviewTraffic";
 import { InboundTraffic } from "./components/InboundTraffic";
