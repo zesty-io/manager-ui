@@ -8,7 +8,7 @@ export function user(
     firstName: "",
     email: "",
     permissions: [],
-    selected_lang: ""
+    selected_lang: "en-US"
   },
   action
 ) {
