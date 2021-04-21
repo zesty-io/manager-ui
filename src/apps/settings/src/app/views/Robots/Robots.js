@@ -58,16 +58,16 @@ export default connect(state => {
       );
 
       // Merge current local state with incoming remote state
-      setRobotText({
-        ...robotText,
+      setRobotText(prevRobotText => ({
+        ...prevRobotText,
         ...robots_text
-      });
-      setRobotOn({
-        ...robotOn,
+      }));
+      setRobotOn(prevRobotOn => ({
+        ...prevRobotOn,
         ...robots_on,
         // We require this to be a number to properly convert to a boolean for the FeildTypeBinary compnent
         value: Number(robots_on.value)
-      });
+      }));
     });
   }, []);
 
@@ -80,6 +80,20 @@ export default connect(state => {
       evt.preventDefault();
       handleSave();
     }
+  };
+
+  const handleRobotsOn = value => {
+    setRobotOn(prevRobotOn => ({
+      ...prevRobotOn,
+      value
+    }));
+  };
+
+  const handleRobotsText = value => {
+    setRobotText(prevRobotText => ({
+      ...prevRobotText,
+      value
+    }));
   };
 
   const handleSave = () => {
@@ -154,7 +168,7 @@ export default connect(state => {
             value={Boolean(robotOn.value)}
             offValue="No"
             onValue="Yes"
-            onChange={() => setRobotOn(robotOn)}
+            onChange={handleRobotsOn}
           />
         </div>
 
@@ -178,7 +192,7 @@ export default connect(state => {
             name="settings[general][robots_text]"
             label={robotText.keyFriendly}
             tooltip={robotText.tips}
-            onChange={() => setRobotText(robotText)}
+            onChange={handleRobotsText}
             defaultValue={robotText.value}
           />
         </div>
