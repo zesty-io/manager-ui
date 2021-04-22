@@ -116,7 +116,6 @@ export default connect(state => {
         setLoading(false);
       })
       .catch(err => {
-        console.log(err);
         props.dispatch(
           notify({
             kind: "warn",
