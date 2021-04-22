@@ -6,7 +6,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
-import { getMany } from "utility/idb";
+import idb from "utility/idb";
 import observable from "@riotjs/observable";
 
 import { Sentry, history } from "utility/sentry";
@@ -38,64 +38,66 @@ const loadLocalStorageData = true;
 // Load Local Storage Data
 if (loadLocalStorageData) {
   try {
-    getMany([
-      `${instanceZUID}:user:selected_lang`,
-      `${instanceZUID}:navContent`,
-      `${instanceZUID}:models`,
-      `${instanceZUID}:fields`,
-      `${instanceZUID}:content`
-    ]).then(results => {
-      const [lang, nav, models, fields, content] = results;
+    idb
+      .getMany([
+        `${instanceZUID}:user:selected_lang`,
+        `${instanceZUID}:navContent`,
+        `${instanceZUID}:models`,
+        `${instanceZUID}:fields`,
+        `${instanceZUID}:content`
+      ])
+      .then(results => {
+        const [lang, nav, models, fields, content] = results;
 
-      store.dispatch({
-        type: "LOADED_LOCAL_USER_LANG",
-        payload: {
-          // default to english
-          lang: lang || "en-US"
-        }
+        store.dispatch({
+          type: "LOADED_LOCAL_USER_LANG",
+          payload: {
+            // default to english
+            lang: lang || "en-US"
+          }
+        });
+
+        // FIXME: This is broken because on initial nav fetch we modify
+        // the raw response before entering it into local state so when re-loading
+        // from local db it's not in the shape the redux store expects.
+        // store.dispatch({
+        //   type: "LOADED_LOCAL_CONTENT_NAV",
+        //   raw: nav
+        // });
+
+        store.dispatch({
+          type: "LOADED_LOCAL_MODELS",
+          payload: models
+        });
+
+        store.dispatch({
+          type: "LOADED_LOCAL_FIELDS",
+          payload: fields
+        });
+
+        store.dispatch({
+          type: "LOADED_LOCAL_ITEMS",
+          data: content
+        });
+
+        // if (Array.isArray(itemZUIDs)) {
+        //   const items = itemZUIDs.map(itemZUID =>
+        //     get(`${zesty.instance.ZUID}:content:${itemZUID}`)
+        //   );
+        //
+        //   Promise.all(items).then(itemsArr => {
+        //     const itemsObj = itemsArr.reduce((acc, item) => {
+        //       acc[item.meta.ZUID] = item;
+        //       return acc;
+        //     }, {});
+        //
+        //     store.dispatch({
+        //       type: "LOADED_LOCAL_ITEMS",
+        //       data: itemsObj
+        //     });
+        //   });
+        // }
       });
-
-      // FIXME: This is broken because on initial nav fetch we modify
-      // the raw response before entering it into local state so when re-loading
-      // from local db it's not in the shape the redux store expects.
-      // store.dispatch({
-      //   type: "LOADED_LOCAL_CONTENT_NAV",
-      //   raw: nav
-      // });
-
-      store.dispatch({
-        type: "LOADED_LOCAL_MODELS",
-        payload: models
-      });
-
-      store.dispatch({
-        type: "LOADED_LOCAL_FIELDS",
-        payload: fields
-      });
-
-      store.dispatch({
-        type: "LOADED_LOCAL_ITEMS",
-        data: content
-      });
-
-      // if (Array.isArray(itemZUIDs)) {
-      //   const items = itemZUIDs.map(itemZUID =>
-      //     get(`${zesty.instance.ZUID}:content:${itemZUID}`)
-      //   );
-      //
-      //   Promise.all(items).then(itemsArr => {
-      //     const itemsObj = itemsArr.reduce((acc, item) => {
-      //       acc[item.meta.ZUID] = item;
-      //       return acc;
-      //     }, {});
-      //
-      //     store.dispatch({
-      //       type: "LOADED_LOCAL_ITEMS",
-      //       data: itemsObj
-      //     });
-      //   });
-      // }
-    });
   } catch (err) {
     console.error("IndexedDB:get:error", err);
   }
