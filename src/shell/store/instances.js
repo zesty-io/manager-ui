@@ -44,15 +44,6 @@ export function fetchInstances() {
         );
       }
 
-      if (res.status === 500) {
-        dispatch(
-          notify({
-            kind: "warn",
-            messages: "API error loading your instances list"
-          })
-        );
-      }
-
       return res;
     });
   };
