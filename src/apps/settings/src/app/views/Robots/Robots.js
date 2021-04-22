@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { useDomain } from "shell/hooks/use-domain";
@@ -44,13 +44,10 @@ export default connect(state => {
     keyFriendly: "Custom Robots.txt Content",
     parsleyAccess: false
   });
-  // const [robotURL, setRobotURL] = useState(`${domain}/robots.txt`);
 
   const robotURL = `${domain}/robots.txt`;
 
   useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-
     request(`${CONFIG.API_INSTANCE}/env/settings`).then(res => {
       const robots_on = res.data.find(setting => setting.key === "robots_on");
       const robots_text = res.data.find(
@@ -69,6 +66,9 @@ export default connect(state => {
         value: Number(robots_on.value)
       }));
     });
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   const handleKeyDown = evt => {
