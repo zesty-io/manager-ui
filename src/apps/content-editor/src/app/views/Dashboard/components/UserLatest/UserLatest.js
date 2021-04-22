@@ -50,9 +50,9 @@ export function UserLatest(props) {
             return dispatch(searchItems(log.affectedZUID)).then(item => {
               if (item?.data[0]?.web?.metaTitle) {
                 if (log.action === 2) {
-                  log.recentTitle = `Modified Content Item ${item.data[0]?.web?.metaTitle}`;
+                  log.recentTitle = `Modified Content Item ${item.data[0].web.metaTitle}`;
                 } else if (log.action === 4) {
-                  log.recentTitle = `Published Content Item ${item.data[0]?.web?.metaTitle}`;
+                  log.recentTitle = `Published Content Item ${item.data[0].web.metaTitle}`;
                 }
               }
 
