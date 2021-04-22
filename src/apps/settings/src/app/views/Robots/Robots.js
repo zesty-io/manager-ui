@@ -19,7 +19,6 @@ import { request } from "utility/request";
 import styles from "./Robots.less";
 
 export default connect(state => {
-  console.log("david", state);
   return {
     domain: state.instance.domain,
     platform: state.platform
