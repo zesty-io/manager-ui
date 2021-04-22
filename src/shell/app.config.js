@@ -56,10 +56,10 @@ module.exports = {
 
     SERVICE_AUTH: "https://auth.api.stage.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
-    SERVICE_MEDIA_MANAGER: "https://media-manager.api.stage.zesty.io",
-    SERVICE_MEDIA_RESOLVER: "https://media-resolver.api.stage.zesty.io",
-    SERVICE_MEDIA_STORAGE: "https://media-storage.api.stage.zesty.io",
-    SERVICE_MEDIA_MODIFY: "https://media-modify.api.stage.zesty.io",
+    SERVICE_MEDIA_MANAGER: "https://stage-svc.zesty.io/media-manager-service",
+    SERVICE_MEDIA_RESOLVER: "https://stage-svc.zesty.io/media-resolver-service",
+    SERVICE_MEDIA_STORAGE: "https://stage-svc.zesty.io/media-storage-service",
+    SERVICE_MEDIA_MODIFY: "https://stage-svc.zesty.io/media-modify-service",
     SERVICE_REDIS_GATEWAY: "https://cache.stage.zesty.io",
     SERVICE_GOOGLE_ANALYTICS_AUTH:
       "https://us-central1-zesty-stage.cloudfunctions.net/authenticateGoogleAnalytics",
