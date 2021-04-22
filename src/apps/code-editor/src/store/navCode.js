@@ -1,4 +1,4 @@
-import { set } from "idb-keyval";
+import idb from "utility/idb";
 
 import {
   faStickyNote,
@@ -83,7 +83,7 @@ export function navCode(
       });
 
       // Store files which are collapsed locally
-      set(
+      idb.set(
         `${action.payload.instanceZUID}:openFiles`,
         files.filter(file => file.open || file.closed)
       );

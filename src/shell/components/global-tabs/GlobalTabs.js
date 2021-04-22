@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { get, set } from "idb-keyval";
+import idb from "utility/idb";
 import cx from "classnames";
 
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -76,7 +76,7 @@ export default connect(state => {
 
     // Load prev session routes
     useEffect(() => {
-      get(`${props.instanceZUID}:session:routes`).then(storedRoutes => {
+      idb.get(`${props.instanceZUID}:session:routes`).then(storedRoutes => {
         if (Array.isArray(storedRoutes) && storedRoutes.length) {
           setRoutes(storedRoutes);
 
@@ -233,7 +233,7 @@ export default connect(state => {
       });
 
       // store routes to local storage and reload on app start
-      set(`${props.instanceZUID}:session:routes`, newRoutes);
+      idb.set(`${props.instanceZUID}:session:routes`, newRoutes);
       setRoutes(newRoutes);
     }, [history.location, props.models, props.content, props.files, props.mediaGroups, props.mediaFiles, props.mediaSearchFiles]);
 

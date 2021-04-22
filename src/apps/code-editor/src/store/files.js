@@ -1,4 +1,4 @@
-import { set } from "idb-keyval";
+import idb from "utility/idb";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 
@@ -145,7 +145,7 @@ export function files(state = [], action) {
         return file;
       });
 
-      set(
+      idb.set(
         `${action.payload.instanceZUID}:openFiles`,
         files.filter(file => file.open)
       );
@@ -160,7 +160,7 @@ export function files(state = [], action) {
       });
 
       // Make sure to udpate openFiles local storage
-      set(
+      idb.set(
         `${action.payload.instanceZUID}:openFiles`,
         files.filter(file => file.open)
       );
@@ -184,7 +184,7 @@ export function files(state = [], action) {
         return file;
       });
 
-      set(
+      idb.set(
         `${action.payload.instanceZUID}:openFiles`,
         files.filter(file => file.open)
       );
@@ -206,7 +206,7 @@ export function files(state = [], action) {
         }
       });
 
-      set(
+      idb.set(
         `${action.payload.instanceZUID}:openFiles`,
         files.filter(file => file.open)
       );
