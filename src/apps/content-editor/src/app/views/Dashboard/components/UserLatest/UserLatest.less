@@ -2,19 +2,22 @@
 @import "~@zesty-io/core/typography.less";
 
 .UserLatestEdits {
-  min-height: 335px;
+  display: flex;
+  flex-direction: column;
+  min-height: 275px;
+
   .CardContent {
-    min-height: 295px;
     padding: 0;
 
-    h3 {
+    ul {
+      padding-left: 0;
+    }
+
+    .NoLogs {
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 295px;
-    }
-    ul {
-      padding-left: 0;
+      min-height: 210px;
     }
   }
 
