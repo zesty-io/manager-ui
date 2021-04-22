@@ -20,6 +20,7 @@ import styles from "./Robots.less";
 
 export default connect(state => {
   return {
+    domain: state.instance.domain,
     platform: state.platform
   };
 })(function Robots(props) {
@@ -46,6 +47,8 @@ export default connect(state => {
   });
 
   const robotURL = `${domain}/robots.txt`;
+
+  const iframeURL = `https://${props.domain}/robots.txt`;
 
   useEffect(() => {
     request(`${CONFIG.API_INSTANCE}/env/settings`).then(res => {
@@ -179,7 +182,7 @@ export default connect(state => {
           </h2>
           <iframe
             className={styles.Iframe}
-            src={`${robotURL}?q=${Math.random()
+            src={`${iframeURL}?q=${Math.random()
               .toString(36)
               .substring(2, 15)}`}
           ></iframe>
