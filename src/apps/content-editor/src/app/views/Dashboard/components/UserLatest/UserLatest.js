@@ -63,7 +63,7 @@ export function UserLatest(props) {
           case zuid.prefix.SITE_CONTENT_SET:
             return dispatch(fetchModel(log.affectedZUID)).then(model => {
               if (model?.payload?.label) {
-                log.recentTitle = `Modified Schema ${model.payload?.label}`;
+                log.recentTitle = `Modified Schema ${model.payload.label}`;
               }
               return log;
             });
