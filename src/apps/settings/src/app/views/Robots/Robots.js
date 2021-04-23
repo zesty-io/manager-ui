@@ -47,7 +47,7 @@ export default connect(state => {
 
   const robotURL = `${domain}/robots.txt`;
 
-  //https url required for iframe
+  //https url required for iframe to prevent cross-site attacks
   const iframeURL = `https://${robotURL.slice(7)}?q=${Math.random()
     .toString(36)
     .substring(2, 15)}`;
