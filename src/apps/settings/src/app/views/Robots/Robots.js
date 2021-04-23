@@ -20,6 +20,7 @@ import styles from "./Robots.less";
 
 export default connect(state => {
   return {
+    domain: state.instance.domain,
     platform: state.platform
   };
 })(function Robots(props) {
