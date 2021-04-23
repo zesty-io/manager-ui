@@ -253,7 +253,7 @@ export default connect(state => {
       const newRoutes = routes.filter(route => route.pathname !== path);
 
       // store routes to local storage and reload on app start
-      set(`${props.instanceZUID}:session:routes`, newRoutes);
+      idb.set(`${props.instanceZUID}:session:routes`, newRoutes);
       setRoutes(newRoutes);
     };
 
