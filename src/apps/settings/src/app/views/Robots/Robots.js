@@ -48,8 +48,6 @@ export default connect(state => {
 
   const robotURL = `${domain}/robots.txt`;
 
-  const iframeURL = `https://${props.domain}/robots.txt`;
-
   useEffect(() => {
     request(`${CONFIG.API_INSTANCE}/env/settings`).then(res => {
       const robots_on = res.data.find(setting => setting.key === "robots_on");
@@ -182,7 +180,7 @@ export default connect(state => {
           </h2>
           <iframe
             className={styles.Iframe}
-            src={`${iframeURL}?q=${Math.random()
+            src={`https://${robotURL.slice(7)}?q=${Math.random()
               .toString(36)
               .substring(2, 15)}`}
           ></iframe>
