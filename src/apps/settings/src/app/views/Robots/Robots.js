@@ -48,7 +48,10 @@ export default connect(state => {
 
   const robotURL = `${domain}/robots.txt`;
 
-  const iframeURL = `https://${props.domain}/robots.txt`;
+  //https url required for iframe to prevent cross-site attacks
+  const iframeURL = `https://${robotURL.slice(7)}?q=${Math.random()
+    .toString(36)
+    .substring(2, 15)}`;
 
   useEffect(() => {
     request(`${CONFIG.API_INSTANCE}/env/settings`).then(res => {
@@ -151,18 +154,6 @@ export default connect(state => {
         </h2>
 
         <div className={styles.Row}>
-          <Notice>
-            <p>Changes will not be reflected until a publish event occurs.</p>
-          </Notice>
-          <Notice>
-            <p>
-              Stage/preview urls ALWAYS have robots.txt off to avoid being
-              crawled by search engines.
-            </p>
-          </Notice>
-        </div>
-
-        <div className={styles.Row}>
           <FieldTypeBinary
             name="settings[general][robots_on]"
             label={robotOn.keyFriendly}
@@ -180,12 +171,7 @@ export default connect(state => {
               {robotURL}
             </Url>
           </h2>
-          <iframe
-            className={styles.Iframe}
-            src={`${iframeURL}?q=${Math.random()
-              .toString(36)
-              .substring(2, 15)}`}
-          ></iframe>
+          <iframe className={styles.Iframe} src={iframeURL}></iframe>
         </div>
 
         <div className={styles.Row}>
@@ -197,6 +183,17 @@ export default connect(state => {
             onChange={handleRobotsText}
             defaultValue={robotText.value}
           />
+        </div>
+        <div className={styles.Row}>
+          <Notice className={styles.Notice}>
+            <p>Changes will not be reflected until a publish event occurs.</p>
+          </Notice>
+          <Notice>
+            <p>
+              Stage/preview urls ALWAYS have robots.txt off to avoid being
+              crawled by search engines.
+            </p>
+          </Notice>
         </div>
 
         <Button
