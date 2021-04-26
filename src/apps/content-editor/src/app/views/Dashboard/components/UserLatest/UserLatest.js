@@ -101,7 +101,9 @@ export function UserLatest(props) {
               });
 
             default:
-              if (log?.meta?.message) {
+              // NOTE: Brave browser does not support replaceAll so check for presence of
+              // function before using. Defaults to API log
+              if (log?.meta?.message?.replaceAll) {
                 // strip backticks from default log message
                 log.recentTitle = `You ${log.meta.message.replaceAll(
                   "`",
