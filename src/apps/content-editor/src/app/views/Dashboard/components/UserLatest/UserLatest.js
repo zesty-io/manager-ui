@@ -101,11 +101,14 @@ export function UserLatest(props) {
               });
 
             default:
-              // strip backticks from default log message
-              log.recentTitle = `You ${log.meta.message.replaceAll(
-                "`",
-                ""
-              )} ${moment(log.updatedAt).fromNow()}`;
+              if (log?.meta?.message) {
+                // strip backticks from default log message
+                log.recentTitle = `You ${log.meta.message.replaceAll(
+                  "`",
+                  ""
+                )} ${moment(log.updatedAt).fromNow()}`;
+              }
+
               return log;
           }
         })
