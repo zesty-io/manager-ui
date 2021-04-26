@@ -101,7 +101,7 @@ export function UserLatest(props) {
               });
 
             default:
-              if (log.meta.message) {
+              if (log?.meta?.message) {
                 // strip backticks from default log message
                 log.recentTitle = `You ${log.meta.message.replaceAll(
                   "`",
