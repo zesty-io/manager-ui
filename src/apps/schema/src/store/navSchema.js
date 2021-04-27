@@ -19,8 +19,8 @@ const ICONS = {
 };
 
 const sortNav = (a, b) => {
-  let labelA = a.label.toLowerCase().trim(); // ignore upper and lowercase
-  let labelB = b.label.toLowerCase().trim(); // ignore upper and lowercase
+  let labelA = a?.label.toLowerCase().trim(); // ignore upper and lowercase
+  let labelB = b?.label.toLowerCase().trim(); // ignore upper and lowercase
   if (labelA < labelB) {
     return -1;
   }
