@@ -55,7 +55,7 @@ export default React.forwardRef((props, providedRef) => {
               setRefs(results.map(() => React.createRef()));
               setSearchResults(results);
             } else {
-              props.dispatch(
+              dispatch(
                 notify({
                   kind: "warn",
                   message: `Error searching for term: ${term}`
