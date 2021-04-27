@@ -112,8 +112,8 @@ export const fetchHeadTags = () => {
               message: `Failed to fetch head tags`
             })
           );
-          if (res.error) {
-            throw new Error(res.error);
+          if (!res.ok) {
+            throw new Error(`${res.error} & ${res.status}`);
           }
         }
       }
