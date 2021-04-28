@@ -66,7 +66,7 @@ export default function FieldSettings(props) {
             className={styles.Setting}
             name="label"
             label="Field Label"
-            value={props.field.label}
+            defaultValue={props.field.label}
             maxLength="200"
             onChange={(val, key) => {
               if (props.new && props.updateMultipleValues) {
@@ -83,7 +83,7 @@ export default function FieldSettings(props) {
             className={styles.Setting}
             name="name"
             label="Field Name (Parsley Code Reference). Can not contain spaces, uppercase or special characters."
-            value={props.field.name}
+            defaultValue={props.field.name}
             maxLength="50"
             onChange={(val, name) => props.updateValue(formatName(val), name)}
           />
@@ -121,7 +121,7 @@ export default function FieldSettings(props) {
             name="tooltip"
             maxLength="250"
             label="Tool tip displayed to content editors"
-            value={props.field.settings.tooltip}
+            defaultValue={props.field.settings.tooltip}
             onChange={props.updateFieldSetting}
           />
 
@@ -129,7 +129,7 @@ export default function FieldSettings(props) {
             className={styles.Setting}
             name="description"
             label="Description displayed to content editors"
-            value={props.field.description}
+            defaultValue={props.field.description}
             maxLength="250"
             onChange={props.updateValue}
           />
