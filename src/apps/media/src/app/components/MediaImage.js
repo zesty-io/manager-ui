@@ -8,7 +8,9 @@ import {
   faFileExcel,
   faFileImage,
   faFilePdf,
-  faFileVideo
+  faFilePowerpoint,
+  faFileVideo,
+  faFileWord
 } from "@fortawesome/free-solid-svg-icons";
 
 import { fileExtension } from "../FileUtils";
