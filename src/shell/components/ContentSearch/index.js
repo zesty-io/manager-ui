@@ -342,7 +342,7 @@ const ListOption = props => {
     >
       {/* main line */}
       <p className={styles.ItemName}>
-        <span className={styles.title}>
+        <span className={styles.subheadline}>
           {props.opt?.web?.metaTitle ? (
             <React.Fragment>
               {modelIcon}
