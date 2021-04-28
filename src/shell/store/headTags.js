@@ -112,8 +112,13 @@ export const fetchHeadTags = () => {
               message: `Failed to fetch head tags`
             })
           );
-          if (!res.ok) {
-            throw new Error(`${res.error} & ${res.status}`);
+          if (res.error) {
+            dispatch(
+              notify({
+                kind: "warn",
+                message: `Failed to load file. ${res.status} | ${res.error}`
+              })
+            );
           }
         }
       }
