@@ -113,7 +113,12 @@ export const fetchHeadTags = () => {
             })
           );
           if (res.error) {
-            throw new Error(res.error);
+            dispatch(
+              notify({
+                kind: "warn",
+                message: `Failed to load file. ${res.status} | ${res.error}`
+              })
+            );
           }
         }
       }
