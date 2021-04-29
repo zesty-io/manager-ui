@@ -15,6 +15,8 @@ import { request } from "utility/request";
 
 import styles from "./LinkEdit.less";
 
+// Used to handle stale state after async actions
+// https://css-tricks.com/dealing-with-stale-props-and-states-in-reacts-functional-components/
 function useAsyncState(value) {
   const ref = useRef(value);
   const [, forceRender] = useState(false);
