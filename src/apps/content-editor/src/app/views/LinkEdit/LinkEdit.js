@@ -15,25 +15,11 @@ import { request } from "utility/request";
 
 import styles from "./LinkEdit.less";
 
-// Used to handle stale state after async actions
-// https://css-tricks.com/dealing-with-stale-props-and-states-in-reacts-functional-components/
-function useAsyncState(value) {
-  const ref = useRef(value);
-  const [, forceRender] = useState(false);
-
-  function updateState(newState) {
-    ref.current = newState;
-    forceRender(s => !s);
-  }
-
-  return [ref, updateState];
-}
-
 function LinkEdit(props) {
   const history = useHistory();
   const isMounted = useRef(false);
 
-  const [state, setState] = useAsyncState({
+  const [state, setState] = useState({
     type: "internal",
     parentZUID: "0",
     label: "",
@@ -59,10 +45,10 @@ function LinkEdit(props) {
 
   useEffect(() => {
     if (isMounted.current) {
-      if (props.linkZUID !== state.current.linkZUID) {
-        console.log(props.linkZUID, state.current.linkZUID);
+      if (props.linkZUID !== state.linkZUID) {
+        console.log(props.linkZUID, state.linkZUID);
         setState({
-          ...state.current,
+          ...state,
           type: "internal",
           parentZUID: "0",
           label: "",
@@ -81,7 +67,7 @@ function LinkEdit(props) {
 
   function fetchLink(linkZUID) {
     setState({
-      ...state.current,
+      ...state,
       loading: true
     });
 
@@ -89,7 +75,7 @@ function LinkEdit(props) {
       .then(res => {
         if (isMounted.current) {
           setState({
-            ...state.current,
+            ...state,
             loading: false
           });
 
@@ -110,9 +96,9 @@ function LinkEdit(props) {
                 search(res.data.parentZUID);
               } else {
                 setState({
-                  ...state.current,
+                  ...state,
                   internalLinkOptions: [
-                    ...state.current.internalLinkOptions,
+                    ...state.internalLinkOptions,
                     {
                       value: parent.meta.ZUID,
                       text: parent.web.path
@@ -129,9 +115,9 @@ function LinkEdit(props) {
                 search(res.data.target);
               } else {
                 setState({
-                  ...state.current,
+                  ...state,
                   internalLinkOptions: [
-                    ...state.current.internalLinkOptions,
+                    ...state.internalLinkOptions,
                     {
                       value: link.meta.ZUID,
                       text: link.web.path
@@ -152,7 +138,7 @@ function LinkEdit(props) {
             });
 
             setState({
-              ...state.current,
+              ...state,
               ZUID: res.data.ZUID,
               type: res.data.type,
               parentZUID: res.data.parentZUID,
@@ -174,31 +160,31 @@ function LinkEdit(props) {
           })
         );
         setState({
-          ...state.current,
+          ...state,
           loading: false
         });
       });
   }
 
   function saveLink() {
-    setState({ ...state.current, saving: true });
+    setState({ ...state, saving: true });
 
     const source = [];
-    if (state.current.relNoFollow) {
+    if (state.relNoFollow) {
       source.push("rel:true");
     }
-    if (state.current.targetBlank) {
+    if (state.targetBlank) {
       source.push("target:_blank");
     }
 
     const params = {
-      ZUID: state.current.ZUID,
-      type: state.current.type,
-      parentZUID: state.current.parentZUID,
-      label: state.current.label,
-      metaTitle: state.current.metaTitle,
+      ZUID: state.ZUID,
+      type: state.type,
+      parentZUID: state.parentZUID,
+      label: state.label,
+      metaTitle: state.metaTitle,
       source: source.join(";"),
-      target: state.current.target
+      target: state.target
     };
 
     return request(`${CONFIG.API_INSTANCE}/content/links/${params.ZUID}`, {
@@ -208,7 +194,7 @@ function LinkEdit(props) {
     })
       .then(res => {
         if (res.error) {
-          setState({ ...state.current, saving: false });
+          setState({ ...state, saving: false });
           let message = "";
           if (/metaTitle/.test(res.error)) {
             message = "Missing Link title";
@@ -228,13 +214,13 @@ function LinkEdit(props) {
             })
           );
         } else {
-          setState({ ...state.current, saving: false });
+          setState({ ...state, saving: false });
           props.dispatch(notify({ message: "Saved link", kind: "save" }));
         }
       })
       .catch(err => {
         console.error(err);
-        setState({ ...state.current, saving: false });
+        setState({ ...state, saving: false });
         props.dispatch(notify({ message: "Error saving link", kind: "error" }));
       });
   }
@@ -262,7 +248,7 @@ function LinkEdit(props) {
           });
 
         const dedupeOptions = [
-          ...state.current.internalLinkOptions,
+          ...state.internalLinkOptions,
           ...searchResults
         ].reduce((acc, el) => {
           if (!acc.find(opt => opt.value === el.value)) {
@@ -272,9 +258,11 @@ function LinkEdit(props) {
           return acc;
         }, []);
 
-        setState({
-          ...state.current,
-          internalLinkOptions: dedupeOptions
+        setState(s => {
+          return {
+            ...s,
+            internalLinkOptions: dedupeOptions
+          };
         });
 
         return res;
@@ -292,7 +280,7 @@ function LinkEdit(props) {
 
   function onChange(value, name) {
     setState({
-      ...state.current,
+      ...state,
       [name]: value
     });
   }
@@ -309,32 +297,32 @@ function LinkEdit(props) {
 
   return (
     <section className={styles.Editor}>
-      <WithLoader condition={!state.current.loading} message="Loading Link">
+      <WithLoader condition={!state.loading} message="Loading Link">
         <Card className={styles.LinkEdit}>
           <CardHeader className={styles.EditorHeader}>
-            {state.current.type === "internal" && <h2>Internal Link</h2>}
-            {state.current.type === "external" && <h2>External Link</h2>}
+            {state.type === "internal" && <h2>Internal Link</h2>}
+            {state.type === "external" && <h2>External Link</h2>}
           </CardHeader>
           <CardContent className={styles.CardContent}>
             <FieldTypeInternalLink
               className={styles.Row}
               name="parentZUID"
               label="Select a parent for your link"
-              value={state.current.parentZUID}
-              options={state.current.internalLinkOptions.filter(
-                op => op.value !== state.current.target
+              value={state.parentZUID}
+              options={state.internalLinkOptions.filter(
+                op => op.value !== state.target
               )}
               onChange={onChange}
               onSearch={search}
             />
 
-            {state.current.type === "internal" ? (
+            {state.type === "internal" ? (
               <FieldTypeInternalLink
                 className={styles.Row}
                 name="target"
                 label="Select an item to link to"
-                value={state.current.target}
-                options={state.current.internalLinkOptions}
+                value={state.target}
+                options={state.internalLinkOptions}
                 onChange={onChange}
                 onSearch={search}
               />
@@ -343,7 +331,7 @@ function LinkEdit(props) {
                 className={styles.Row}
                 label="Provide an external URL to link to"
                 name="target"
-                value={state.current.target}
+                value={state.target}
                 onChange={onChange}
                 maxLength={500}
               />
@@ -353,10 +341,10 @@ function LinkEdit(props) {
               className={styles.Row}
               label="Link title"
               name="metaTitle"
-              value={state.current.metaTitle}
+              value={state.metaTitle}
               onChange={value => {
                 setState({
-                  ...state.current,
+                  ...state,
                   label: value,
                   metaTitle: value
                 });
@@ -366,7 +354,7 @@ function LinkEdit(props) {
               <Input
                 type="checkbox"
                 name="targetBlank"
-                checked={state.current.targetBlank}
+                checked={state.targetBlank}
                 onClick={evt => {
                   onChange(evt.target.checked, "targetBlank");
                 }}
@@ -377,7 +365,7 @@ function LinkEdit(props) {
               <Input
                 type="checkbox"
                 name="rel"
-                checked={state.current.relNoFollow}
+                checked={state.relNoFollow}
                 onClick={evt => {
                   onChange(evt.target.checked, "relNoFollow");
                 }}
@@ -386,16 +374,12 @@ function LinkEdit(props) {
             </label>
           </CardContent>
           <CardFooter className={styles.LinkEditActions}>
-            <Button
-              kind="save"
-              disabled={state.current.saving}
-              onClick={saveLink}
-            >
+            <Button kind="save" disabled={state.saving} onClick={saveLink}>
               Save Changes
             </Button>
             {/* <Button
               kind="warn"
-              disabled={state.current.saving}
+              disabled={state.saving}
               onClick={deleteLink}
             >
               Delete
