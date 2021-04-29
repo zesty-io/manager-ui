@@ -1,12 +1,12 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
-import { Option } from "@zesty-io/core/Select";
+import { Select, Option } from "@zesty-io/core/Select";
 import { Input } from "@zesty-io/core/Input";
 import { Button } from "@zesty-io/core/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,231 +19,248 @@ import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 
 import styles from "./LinkCreate.less";
-export const LinkCreate = connect((state, props) => {
-  // NOTE: I don't think this compoentn needs to be connected
-  return {};
-})(
-  class LinkCreate extends Component {
-    constructor(props) {
-      super(props);
+export function LinkCreate(props) {
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const [state, setState] = useState({
+    type: "internal",
+    parentZUID: "0",
+    label: "",
+    metaTitle: "",
+    target: "",
+    relNoFollow: false,
+    targetBlank: false,
+    internalLinkOptions: []
+  });
 
-      this.state = {
-        type: "internal",
-        parentZUID: "0",
-        label: "",
-        metaTitle: "",
-        target: null,
-        relNoFollow: false,
-        targetBlank: false,
-        internalLinkOptions: []
-      };
+  function saveLink() {
+    setState({
+      ...state,
+      saving: true
+    });
+
+    const source = [];
+    if (state.relNoFollow) {
+      source.push("rel:true");
+    }
+    if (state.targetBlank) {
+      source.push("target:_blank");
     }
 
-    saveLink = () => {
-      this.setState({
-        saving: true
-      });
-
-      const source = [];
-      if (this.state.relNoFollow) {
-        source.push("rel:true");
+    return request(`${CONFIG.API_INSTANCE}/content/links`, {
+      method: "POST",
+      json: true,
+      body: {
+        type: state.type,
+        parentZUID: state.parentZUID,
+        label: state.label,
+        metaTitle: state.metaTitle,
+        source: source.join(";"),
+        target: state.target
       }
-      if (this.state.targetBlank) {
-        source.push("target:_blank");
-      }
-
-      return request(`${CONFIG.API_INSTANCE}/content/links`, {
-        method: "POST",
-        json: true,
-        body: {
-          type: this.state.type,
-          parentZUID: this.state.parentZUID,
-          label: this.state.label,
-          metaTitle: this.state.metaTitle,
-          source: source.join(";"),
-          target: this.state.target
-        }
-      })
-        .then(res => {
-          this.setState({ saving: false });
-          if (res.error) {
+    })
+      .then(res => {
+        setState({ ...state, saving: false });
+        if (res.error) {
+          let message = "";
+          if (/metaTitle/.test(res.error)) {
+            message = "Missing Link title";
+          } else if (
+            /internal links must target a content item/.test(res.error)
+          ) {
+            message = "Missing Link target";
+          } else if (
+            /external links must target an external site/.test(res.error)
+          ) {
+            message = "Missing Link protocol";
+          }
+          dispatch(
             notify({
-              message: `Failure creating link: ${res.message}`,
+              message: `Failure creating link: ${message}`,
               kind: "error"
-            });
-          } else {
-            // this is a successful save
-            // message and redirect to new item here
+            })
+          );
+        } else {
+          // this is a successful save
+          // message and redirect to new item here
+          dispatch(
             notify({
               message: "Successfully created link",
               kind: "save"
+            })
+          );
+
+          history.push(`/content/link/${res.data.ZUID}`);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        setState({ ...state, saving: false });
+      });
+  }
+
+  function handleSearch(term) {
+    return request(`${CONFIG.API_INSTANCE}/search/items?q=${term}`)
+      .then(res => {
+        if (res.status === 200) {
+          const searchResults = res.data
+            .filter(item => item.web.path)
+            .map(item => {
+              return {
+                value: item.meta.ZUID,
+                text: item.web.path
+              };
             });
 
-            window.location = `/content/link/${res.data.ZUID}`;
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          this.setState({ saving: false });
-        });
-    };
+          const dedupeOptions = [
+            ...state.internalLinkOptions,
+            ...searchResults
+          ].reduce((acc, el) => {
+            if (!acc.find(opt => opt.value === el.value)) {
+              acc.push(el);
+            }
 
-    handleSearch = term => {
-      return request(`${CONFIG.API_INSTANCE}/search/items?q=${term}`)
-        .then(res => {
-          if (res.status === 200) {
-            const searchResults = res.data
-              .filter(item => item.web.path)
-              .map(item => {
-                return {
-                  value: item.meta.ZUID,
-                  text: item.web.path
-                };
-              });
+            return acc;
+          }, []);
 
-            const dedupeOptions = [
-              ...this.state.internalLinkOptions,
-              ...searchResults
-            ].reduce((acc, el) => {
-              if (!acc.find(opt => opt.value === el.value)) {
-                acc.push(el);
-              }
-
-              return acc;
-            }, []);
-
-            this.setState({
-              internalLinkOptions: dedupeOptions
-            });
-          } else {
-            return notify({
+          setState({
+            ...state,
+            internalLinkOptions: dedupeOptions
+          });
+        } else {
+          return dispatch(
+            notify({
               message: `Failure searching: ${res.error}`,
               kind: "error"
-            });
-          }
-        })
-        .catch(err => {
-          console.error("LinkCreate:handleSearch", err);
-        });
-    };
-
-    onChange = (value, name) => {
-      this.setState({
-        [name]: value
+            })
+          );
+        }
+      })
+      .catch(err => {
+        console.error("LinkCreate:handleSearch", err);
       });
-    };
-
-    render() {
-      return (
-        <section className={styles.Editor}>
-          <Card className={styles.LinkCreate}>
-            <CardHeader className={styles.EditorHeader}>
-              <FieldTypeDropDown
-                label="Select link type"
-                name="type"
-                value={this.state.type}
-                onChange={this.onChange}
-              >
-                <Option
-                  className={styles.Icon}
-                  value="internal"
-                  component={
-                    <React.Fragment>
-                      <FontAwesomeIcon icon={faLink} />
-                      &nbsp;Internal Link
-                    </React.Fragment>
-                  }
-                />
-                <Option
-                  className={styles.Icon}
-                  value="external"
-                  component={
-                    <React.Fragment>
-                      <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
-                      &nbsp;External Link
-                    </React.Fragment>
-                  }
-                />
-              </FieldTypeDropDown>
-            </CardHeader>
-
-            <CardContent>
-              <FieldTypeInternalLink
-                className={styles.Row}
-                name="parentZUID"
-                label="Select a parent for your link"
-                value={this.state.parentZUID}
-                options={this.state.internalLinkOptions}
-                onChange={this.onChange}
-                onSearch={this.handleSearch}
-              />
-
-              {this.state.type === "internal" ? (
-                <FieldTypeInternalLink
-                  className={styles.Row}
-                  name="target"
-                  label="Select an item to link to"
-                  value={this.state.target}
-                  options={this.state.internalLinkOptions}
-                  onChange={this.onChange}
-                  onSearch={this.handleSearch}
-                />
-              ) : (
-                <FieldTypeUrl
-                  className={styles.Row}
-                  label="Provide an external URL to link to"
-                  name="target"
-                  onChange={this.onChange}
-                />
-              )}
-
-              <FieldTypeText
-                className={styles.Row}
-                label="Link title"
-                name="metaTitle"
-                value={this.state.metaTitle}
-                onChange={value => {
-                  this.onChange(value, "label");
-                  this.onChange(value, "metaTitle");
-                }}
-              />
-
-              <label className={styles.Checkboxes}>
-                <Input
-                  type="checkbox"
-                  name="targetBlank"
-                  checked={this.state.targetBlank}
-                  onClick={evt => {
-                    this.onChange(evt.target.checked, "targetBlank");
-                  }}
-                />
-                target = _blank
-              </label>
-              <label className={styles.Checkboxes}>
-                <Input
-                  type="checkbox"
-                  name="relNoFollow"
-                  checked={this.state.relNoFollow}
-                  onClick={evt => {
-                    this.onChange(evt.target.checked, "relNoFollow");
-                  }}
-                />
-                rel = nofollow
-              </label>
-            </CardContent>
-            <CardFooter>
-              <Button
-                id="CreateLinkButton"
-                disabled={this.state.saving}
-                kind="save"
-                onClick={this.saveLink}
-              >
-                Create Link
-              </Button>
-            </CardFooter>
-          </Card>
-        </section>
-      );
-    }
   }
-);
+
+  function onChange(value, name) {
+    setState({
+      ...state,
+      [name]: value
+    });
+  }
+
+  return (
+    <section className={styles.Editor}>
+      <Card className={styles.LinkCreate}>
+        <CardHeader className={styles.EditorHeader}>
+          <Select
+            label="Select link type"
+            name="type"
+            value={state.type}
+            onSelect={onChange}
+          >
+            <Option
+              className={styles.Icon}
+              value="internal"
+              component={
+                <React.Fragment>
+                  <FontAwesomeIcon icon={faLink} />
+                  &nbsp;Internal Link
+                </React.Fragment>
+              }
+            />
+            <Option
+              className={styles.Icon}
+              value="external"
+              component={
+                <React.Fragment>
+                  <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
+                  &nbsp;External Link
+                </React.Fragment>
+              }
+            />
+          </Select>
+        </CardHeader>
+
+        <CardContent>
+          <FieldTypeInternalLink
+            className={styles.Row}
+            name="parentZUID"
+            label="Select a parent for your link"
+            value={state.parentZUID}
+            options={state.internalLinkOptions}
+            onChange={onChange}
+            onSearch={handleSearch}
+          />
+
+          {state.type === "internal" ? (
+            <FieldTypeInternalLink
+              className={styles.Row}
+              name="target"
+              label="Select an item to link to"
+              value={state.target}
+              options={state.internalLinkOptions}
+              onChange={onChange}
+              onSearch={handleSearch}
+            />
+          ) : (
+            <FieldTypeUrl
+              className={styles.Row}
+              label="Provide an external URL to link to"
+              name="target"
+              value={state.target}
+              onChange={onChange}
+              maxLength={500}
+            />
+          )}
+
+          <FieldTypeText
+            className={styles.Row}
+            label="Link title"
+            name="metaTitle"
+            value={state.metaTitle}
+            onChange={value => {
+              setState({
+                ...state,
+                label: value,
+                metaTitle: value
+              });
+            }}
+          />
+
+          <label className={styles.Checkboxes}>
+            <Input
+              type="checkbox"
+              name="targetBlank"
+              checked={state.targetBlank}
+              onClick={evt => {
+                onChange(evt.target.checked, "targetBlank");
+              }}
+            />
+            target = _blank
+          </label>
+          <label className={styles.Checkboxes}>
+            <Input
+              type="checkbox"
+              name="relNoFollow"
+              checked={state.relNoFollow}
+              onClick={evt => {
+                onChange(evt.target.checked, "relNoFollow");
+              }}
+            />
+            rel = nofollow
+          </label>
+        </CardContent>
+        <CardFooter>
+          <Button
+            id="CreateLinkButton"
+            disabled={state.saving}
+            kind="save"
+            onClick={saveLink}
+          >
+            Create Link
+          </Button>
+        </CardFooter>
+      </Card>
+    </section>
+  );
+}

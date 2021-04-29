@@ -1,5 +1,6 @@
-import React, { Component } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
+import { useHistory } from "react-router";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -13,81 +14,103 @@ import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 
 import styles from "./LinkEdit.less";
-class LinkEdit extends Component {
-  __mounted = false;
 
-  constructor(props) {
-    super(props);
+function useAsyncState(value) {
+  const ref = useRef(value);
+  const [, forceRender] = useState(false);
 
-    this.state = {
-      type: "internal",
-      parentZUID: "0",
-      label: "",
-      metaTitle: "",
-      target: null,
-      relNoFollow: false,
-      targetBlank: false,
-      internalLinkOptions: [],
-      linkZUID: this.props.linkZUID,
-      loading: false
+  function updateState(newState) {
+    ref.current = newState;
+    forceRender(s => !s);
+  }
+
+  return [ref, updateState];
+}
+
+function LinkEdit(props) {
+  const history = useHistory();
+  const isMounted = useRef(false);
+
+  const [state, setState] = useAsyncState({
+    type: "internal",
+    parentZUID: "0",
+    label: "",
+    metaTitle: "",
+    target: "",
+    relNoFollow: false,
+    targetBlank: false,
+    internalLinkOptions: [],
+    linkZUID: props.linkZUID,
+    loading: false
+  });
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
     };
-  }
+  }, []);
 
-  componentDidMount() {
-    this.__mounted = true;
-    this.fetchLink(this.props.linkZUID);
-  }
-  componentWillUnmount() {
-    this.__mounted = false;
-  }
+  useEffect(() => {
+    fetchLink(props.linkZUID);
+  }, []);
 
-  componentDidUpdate() {
-    if (this.props.linkZUID !== this.state.linkZUID) {
-      this.setState({
-        type: "internal",
-        parentZUID: "0",
-        label: "",
-        metaTitle: "",
-        target: null,
-        relNoFollow: false,
-        targetBlank: false,
-        internalLinkOptions: [],
-        linkZUID: this.props.linkZUID,
-        loading: false
-      });
-      this.fetchLink(this.props.linkZUID);
+  useEffect(() => {
+    if (isMounted.current) {
+      if (props.linkZUID !== state.current.linkZUID) {
+        console.log(props.linkZUID, state.current.linkZUID);
+        setState({
+          ...state.current,
+          type: "internal",
+          parentZUID: "0",
+          label: "",
+          metaTitle: "",
+          target: "",
+          relNoFollow: false,
+          targetBlank: false,
+          internalLinkOptions: [],
+          linkZUID: props.linkZUID,
+          loading: false
+        });
+        fetchLink(props.linkZUID);
+      }
     }
-  }
+  }, [props.linkZUID]);
 
-  fetchLink = linkZUID => {
-    this.setState({
+  function fetchLink(linkZUID) {
+    setState({
+      ...state.current,
       loading: true
     });
 
     return request(`${CONFIG.API_INSTANCE}/content/links/${linkZUID}`)
       .then(res => {
-        if (this.__mounted) {
-          this.setState({
+        if (isMounted.current) {
+          setState({
+            ...state.current,
             loading: false
           });
 
           if (res.error) {
-            notify({
-              message: `Failure loading link: ${res.message}`,
-              kind: "error"
-            });
+            props.dispatch(
+              notify({
+                message: `Failure loading link: ${res.message}`,
+                kind: "error"
+              })
+            );
           } else {
             // 0 indicates a top level menu link, nothing to resolve
             // otherwise if a parent zuid value exists resolve it's data
             if (res.data.parentZUID !== "0" && res.data.parentZUID) {
-              let parent = this.props.items[res.data.parentZUID];
+              let parent = props.items[res.data.parentZUID];
 
               if (!parent || !parent.meta.ZUID) {
-                this.search(res.data.parentZUID);
+                search(res.data.parentZUID);
               } else {
-                this.setState({
+                setState({
+                  ...state.current,
                   internalLinkOptions: [
-                    ...this.state.internalLinkOptions,
+                    ...state.current.internalLinkOptions,
                     {
                       value: parent.meta.ZUID,
                       text: parent.web.path
@@ -99,13 +122,14 @@ class LinkEdit extends Component {
 
             // Internal links store the linked zuid on the path_part
             if (res.data.type === "internal" && res.data.target) {
-              let link = this.props.items[res.data.target];
+              let link = props.items[res.data.target];
               if (!link || !link.meta.ZUID) {
-                this.search(res.data.target);
+                search(res.data.target);
               } else {
-                this.setState({
+                setState({
+                  ...state.current,
                   internalLinkOptions: [
-                    ...this.state.internalLinkOptions,
+                    ...state.current.internalLinkOptions,
                     {
                       value: link.meta.ZUID,
                       text: link.web.path
@@ -125,7 +149,8 @@ class LinkEdit extends Component {
               }
             });
 
-            this.setState({
+            setState({
+              ...state.current,
               ZUID: res.data.ZUID,
               type: res.data.type,
               parentZUID: res.data.parentZUID,
@@ -140,35 +165,38 @@ class LinkEdit extends Component {
       })
       .catch(err => {
         console.error(err);
-        notify({
-          message: "There was an issue loading this link",
-          kind: "error"
-        });
-        this.setState({
+        props.dispatch(
+          notify({
+            message: "There was an issue loading this link",
+            kind: "error"
+          })
+        );
+        setState({
+          ...state.current,
           loading: false
         });
       });
-  };
+  }
 
-  saveLink = () => {
-    this.setState({ saving: true });
+  function saveLink() {
+    setState({ ...state.current, saving: true });
 
     const source = [];
-    if (this.state.relNoFollow) {
+    if (state.current.relNoFollow) {
       source.push("rel:true");
     }
-    if (this.state.targetBlank) {
+    if (state.current.targetBlank) {
       source.push("target:_blank");
     }
 
     const params = {
-      ZUID: this.state.ZUID,
-      type: this.state.type,
-      parentZUID: this.state.parentZUID,
-      label: this.state.label,
-      metaTitle: this.state.metaTitle,
+      ZUID: state.current.ZUID,
+      type: state.current.type,
+      parentZUID: state.current.parentZUID,
+      label: state.current.label,
+      metaTitle: state.current.metaTitle,
       source: source.join(";"),
-      target: this.state.target
+      target: state.current.target
     };
 
     return request(`${CONFIG.API_INSTANCE}/content/links/${params.ZUID}`, {
@@ -178,30 +206,47 @@ class LinkEdit extends Component {
     })
       .then(res => {
         if (res.error) {
-          notify({
-            message: `Failure creating link: ${res.message}`,
-            kind: "error"
-          });
+          setState({ ...state.current, saving: false });
+          let message = "";
+          if (/metaTitle/.test(res.error)) {
+            message = "Missing Link title";
+          } else if (
+            /internal links must target a content item/.test(res.error)
+          ) {
+            message = "Missing Link target";
+          } else if (
+            /external links must target an external site/.test(res.error)
+          ) {
+            message = "Missing Link protocol";
+          }
+          props.dispatch(
+            notify({
+              message: `Error saving link: ${message}`,
+              kind: "error"
+            })
+          );
         } else {
-          this.setState({ saving: false });
-          notify({ message: "Saved link", kind: "save" });
+          setState({ ...state.current, saving: false });
+          props.dispatch(notify({ message: "Saved link", kind: "save" }));
         }
       })
       .catch(err => {
         console.error(err);
-        this.setState({ saving: false });
-        notify({ message: "Error saving link", kind: "error" });
+        setState({ ...state.current, saving: false });
+        props.dispatch(notify({ message: "Error saving link", kind: "error" }));
       });
-  };
+  }
 
-  search = term => {
+  function search(term) {
     return request(`${CONFIG.API_INSTANCE}/search/items?q=${term}`)
       .then(res => {
         if (res.status !== 200) {
-          notify({
-            message: "Error fetching API",
-            kind: "error"
-          });
+          props.dispatch(
+            notify({
+              message: "Error fetching API",
+              kind: "error"
+            })
+          );
           throw res;
         }
 
@@ -215,7 +260,7 @@ class LinkEdit extends Component {
           });
 
         const dedupeOptions = [
-          ...this.state.internalLinkOptions,
+          ...state.current.internalLinkOptions,
           ...searchResults
         ].reduce((acc, el) => {
           if (!acc.find(opt => opt.value === el.value)) {
@@ -225,7 +270,8 @@ class LinkEdit extends Component {
           return acc;
         }, []);
 
-        this.setState({
+        setState({
+          ...state.current,
           internalLinkOptions: dedupeOptions
         });
 
@@ -233,108 +279,130 @@ class LinkEdit extends Component {
       })
       .catch(err => {
         console.error(err);
-        notify({
-          message: "Failed loading API",
-          kind: "error"
-        });
+        props.dispatch(
+          notify({
+            message: "Failed loading API",
+            kind: "error"
+          })
+        );
       });
-  };
+  }
 
-  onChange = (value, name) => {
-    this.setState({
+  function onChange(value, name) {
+    setState({
+      ...state.current,
       [name]: value
     });
-  };
+  }
 
-  render() {
-    return (
-      <section className={styles.Editor}>
-        <WithLoader condition={!this.state.loading} message="Loading Link">
-          <Card className={styles.LinkEdit}>
-            <CardHeader className={styles.EditorHeader}>
-              {this.state.type === "internal" && <h2>Internal Link</h2>}
-              {this.state.type === "external" && <h2>External Link</h2>}
-            </CardHeader>
-            <CardContent className={styles.CardContent}>
+  function deleteLink() {
+    return request(`${CONFIG.API_INSTANCE}/content/links/${props.linkZUID}`, {
+      method: "DELETE",
+      json: true
+    }).then(res => {
+      props.dispatch(notify({ message: "Deleted Link", kind: "save" }));
+      history.push("/content");
+    });
+  }
+
+  return (
+    <section className={styles.Editor}>
+      <WithLoader condition={!state.current.loading} message="Loading Link">
+        <Card className={styles.LinkEdit}>
+          <CardHeader className={styles.EditorHeader}>
+            {state.current.type === "internal" && <h2>Internal Link</h2>}
+            {state.current.type === "external" && <h2>External Link</h2>}
+          </CardHeader>
+          <CardContent className={styles.CardContent}>
+            <FieldTypeInternalLink
+              className={styles.Row}
+              name="parentZUID"
+              label="Select a parent for your link"
+              value={state.current.parentZUID}
+              options={state.current.internalLinkOptions.filter(
+                op => op.value !== state.current.target
+              )}
+              onChange={onChange}
+              onSearch={search}
+            />
+
+            {state.current.type === "internal" ? (
               <FieldTypeInternalLink
                 className={styles.Row}
-                name="parentZUID"
-                label="Select a parent for your link"
-                value={this.state.parentZUID}
-                options={this.state.internalLinkOptions.filter(
-                  op => op.value !== this.state.target
-                )}
-                onChange={this.onChange}
-                onSearch={this.search}
+                name="target"
+                label="Select an item to link to"
+                value={state.current.target}
+                options={state.current.internalLinkOptions}
+                onChange={onChange}
+                onSearch={search}
               />
-
-              {this.state.type === "internal" ? (
-                <FieldTypeInternalLink
-                  className={styles.Row}
-                  name="target"
-                  label="Select an item to link to"
-                  value={this.state.target}
-                  options={this.state.internalLinkOptions}
-                  onChange={this.onChange}
-                  onSearch={this.search}
-                />
-              ) : (
-                <FieldTypeUrl
-                  className={styles.Row}
-                  label="Provide an external URL to link to"
-                  name="target"
-                  value={this.state.target}
-                  onChange={this.onChange}
-                />
-              )}
-
-              <FieldTypeText
+            ) : (
+              <FieldTypeUrl
                 className={styles.Row}
-                label="Link title"
-                name="metaTitle"
-                value={this.state.metaTitle}
-                onChange={value => {
-                  this.onChange(value, "label");
-                  this.onChange(value, "metaTitle");
+                label="Provide an external URL to link to"
+                name="target"
+                value={state.current.target}
+                onChange={onChange}
+                maxLength={500}
+              />
+            )}
+
+            <FieldTypeText
+              className={styles.Row}
+              label="Link title"
+              name="metaTitle"
+              value={state.current.metaTitle}
+              onChange={value => {
+                setState({
+                  ...state.current,
+                  label: value,
+                  metaTitle: value
+                });
+              }}
+            />
+            <label className={styles.Checkboxes}>
+              <Input
+                type="checkbox"
+                name="targetBlank"
+                checked={state.current.targetBlank}
+                onClick={evt => {
+                  onChange(evt.target.checked, "targetBlank");
                 }}
               />
-              <label className={styles.Checkboxes}>
-                <Input
-                  type="checkbox"
-                  name="targetBlank"
-                  checked={this.state.targetBlank}
-                  onClick={evt => {
-                    this.onChange(evt.target.checked, "targetBlank");
-                  }}
-                />
-                target = _blank
-              </label>
-              <label className={styles.Checkboxes}>
-                <Input
-                  type="checkbox"
-                  name="rel"
-                  checked={this.state.relNoFollow}
-                  onClick={evt => {
-                    this.onChange(evt.target.checked, "relNoFollow");
-                  }}
-                />
-                rel = nofollow
-              </label>
-            </CardContent>
-            <CardFooter>
-              <Button
-                kind="save"
-                disabled={this.state.saving}
-                onClick={this.saveLink}
-              >
-                Save Changes
-              </Button>
-            </CardFooter>
-          </Card>
-        </WithLoader>
-      </section>
-    );
-  }
+              target = _blank
+            </label>
+            <label className={styles.Checkboxes}>
+              <Input
+                type="checkbox"
+                name="rel"
+                checked={state.current.relNoFollow}
+                onClick={evt => {
+                  onChange(evt.target.checked, "relNoFollow");
+                }}
+              />
+              rel = nofollow
+            </label>
+          </CardContent>
+          <CardFooter className={styles.LinkEditActions}>
+            <Button
+              kind="save"
+              disabled={state.current.saving}
+              onClick={saveLink}
+            >
+              Save Changes
+            </Button>
+            {/* <Button
+              kind="warn"
+              disabled={state.current.saving}
+              onClick={deleteLink}
+            >
+              Delete
+            </Button> */}
+          </CardFooter>
+        </Card>
+      </WithLoader>
+    </section>
+  );
 }
 
 export default connect((state, props) => {
