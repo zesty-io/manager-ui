@@ -284,17 +284,17 @@ export default connect(state => {
                       : null
                   )}
                 >
-                  <AppLink to={`${route.pathname}${route.search}`}>
-                    {route.icon && <FontAwesomeIcon icon={route.icon} />}
-                    &nbsp;
-                    {route.name ? route.name : `${route.pathname.slice(1)}`}
-                  </AppLink>
                   <span
                     className={styles.Close}
                     onClick={() => removeRoute(route.pathname)}
                   >
                     <FontAwesomeIcon icon={faTimesCircle} />
                   </span>
+                  <AppLink to={`${route.pathname}${route.search}`}>
+                    {route.icon && <FontAwesomeIcon icon={route.icon} />}
+                    &nbsp;
+                    {route.name ? route.name : `${route.pathname.slice(1)}`}
+                  </AppLink>
                 </li>
               ))}
             </ol>
