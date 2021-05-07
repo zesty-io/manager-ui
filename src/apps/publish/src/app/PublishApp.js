@@ -10,15 +10,15 @@ import styles from "./PublishApp.less";
 export default connect(state => {
   return {};
 })(function PublishApp(props) {
-  const steps = [
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />
-  ];
-  // const steps = [];
+  // const steps = [
+  //   <PlanStep />,
+  //   <PlanStep />,
+  //   <PlanStep />,
+  //   <PlanStep />,
+  //   <PlanStep />,
+  //   <PlanStep />
+  // ];
+  const steps = [];
 
   return (
     <section className={cx(styles.PublishApp, styles.bodyText)}>
