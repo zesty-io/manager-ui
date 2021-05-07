@@ -10,15 +10,33 @@ import styles from "./PublishApp.less";
 export default connect(state => {
   return {};
 })(function PublishApp(props) {
-  // const steps = [
-  //   <PlanStep />,
-  //   <PlanStep />,
-  //   <PlanStep />,
-  //   <PlanStep />,
-  //   <PlanStep />,
-  //   <PlanStep />
-  // ];
-  const steps = [];
+  const steps = [
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />
+  ];
+  // const steps = [];
 
   return (
     <section className={cx(styles.PublishApp, styles.bodyText)}>
@@ -41,6 +59,11 @@ export default connect(state => {
           </tbody>
         </table>
       </main>
+      <footer className={styles.Meta}>
+        <p>Total plan steps 000</p>
+        <p>Successful steps 000</p>
+        <p>Failed steps 000</p>
+      </footer>
     </section>
   );
 });
