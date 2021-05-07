@@ -1,10 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEdit,
-  faExternalLinkAlt,
-  faMinus
-} from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faEye, faMinus } from "@fortawesome/free-solid-svg-icons";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { Url } from "@zesty-io/core/Url";
@@ -20,17 +16,6 @@ export function PlanStep(props) {
   ];
   return (
     <tr className={styles.PlanStep}>
-      <td>
-        <Url href={``}>
-          <FontAwesomeIcon icon={faEdit} />
-        </Url>
-      </td>
-      <td>
-        <Url href={``}>
-          <FontAwesomeIcon icon={faExternalLinkAlt} />
-        </Url>
-      </td>
-
       <td>en-US</td>
 
       <td>
@@ -45,6 +30,16 @@ export function PlanStep(props) {
 
       <td>Last published version 00 on DATE by User Name</td>
 
+      <td>
+        <Url href={``}>
+          <FontAwesomeIcon icon={faEdit} />
+        </Url>
+      </td>
+      <td>
+        <Url href={``}>
+          <FontAwesomeIcon icon={faEye} />
+        </Url>
+      </td>
       <td className={styles.Remove}>
         <Button>
           <FontAwesomeIcon icon={faMinus} />

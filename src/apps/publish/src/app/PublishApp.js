@@ -45,13 +45,13 @@ export default connect(state => {
         <table className={styles.Plan}>
           <thead>
             <tr>
-              <th className={styles.subheadline}>Edit</th>
-              <th className={styles.subheadline}>Preview</th>
               <th className={styles.subheadline}>Language</th>
               <th className={styles.subheadline}>Version</th>
               <th className={styles.subheadline}>Title</th>
               <th className={styles.subheadline}>Last Published</th>
-              <th className={styles.subheadline}>&nbsp;</th>
+              <th className={styles.subheadline}>Edit</th>
+              <th className={styles.subheadline}>Preview</th>
+              <th className={styles.subheadline}>Remove</th>
             </tr>
           </thead>
           <tbody>
