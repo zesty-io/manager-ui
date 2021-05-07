@@ -45,7 +45,7 @@ export function PlanStep(props) {
 
       <td>Last published version 00 on DATE by User Name</td>
 
-      <td>
+      <td className={styles.Remove}>
         <Button>
           <FontAwesomeIcon icon={faMinus} />
         </Button>

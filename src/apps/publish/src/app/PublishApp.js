@@ -22,7 +22,6 @@ export default connect(state => {
 
   return (
     <section className={cx(styles.PublishApp, styles.bodyText)}>
-      <h1 className={styles.display}>Publish Plan</h1>
       <Header />
       <main>
         <table className={styles.Plan}>
@@ -38,7 +37,7 @@ export default connect(state => {
             </tr>
           </thead>
           <tbody>
-            {steps.length ? steps.map((step, i) => step) : <Start key={i} />}
+            {steps.length ? steps.map((step, i) => step) : <Start />}
           </tbody>
         </table>
       </main>
