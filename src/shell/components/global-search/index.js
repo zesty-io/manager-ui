@@ -13,9 +13,9 @@ export default connect(state => {
   const ref = useRef();
   const history = useHistory();
 
-  const placeholder = `Global Search (${
-    props.platform.isMac ? "CMD" : "CTRL"
-  } + Shift + K)`;
+  const placeholder =
+    props.placeholder ||
+    `Global Search (${props.platform.isMac ? "CMD" : "CTRL"} + Shift + K)`;
 
   const focusGlobalSearch = useCallback(
     evt => {

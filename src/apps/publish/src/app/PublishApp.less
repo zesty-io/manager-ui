@@ -3,15 +3,34 @@
 
 .PublishApp {
   margin: 16px;
+  @media (min-width: 2000px) {
+    margin: 32px;
+  }
 
-  thead,
-  tbody {
-    tr {
-      display: grid;
-      grid-template-columns: 75px 100px 200px minmax(auto, 500px) max-content 75px;
+  .Plan {
+    margin-top: 32px;
+    width: 100%;
 
-      th {
-        text-align: left;
+    tbody {
+      border: 1px solid @zesty-light-blue;
+      border-radius: 4px;
+
+      height: calc(100vh - 254px);
+      overflow-y: scroll;
+      display: block;
+    }
+
+    thead,
+    tbody {
+      tr {
+        display: grid;
+        grid-template-columns: 45px 90px 110px 200px 1fr minmax(auto, 400px) 49px;
+        column-gap: 16px;
+        padding: 4px 8px;
+
+        th {
+          text-align: left;
+        }
       }
     }
   }

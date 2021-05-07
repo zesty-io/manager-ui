@@ -9,7 +9,7 @@ import styles from "./Header.less";
 export function Header(props) {
   return (
     <header className={styles.Header}>
-      <GlobalSearch />
+      <GlobalSearch placeholder="Search for items to include in your publish plan" />
       <Button>
         <FontAwesomeIcon icon={faCloudUploadAlt} />
         Publish All

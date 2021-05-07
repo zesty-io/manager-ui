@@ -1,10 +1,24 @@
 @import "~@zesty-io/core/colors.less";
 @import "~@zesty-io/core/typography.less";
 .PlanStep {
-  display: grid;
-  grid-template-columns: 75px 100px 200px minmax(auto, 500px) max-content 75px;
+  align-items: center;
+  background-color: @white;
+  display: flex;
 
-  th {
+  &:nth-of-type(odd) {
+    background: lighten(@zesty-light-blue, 15%);
+  }
+
+  &:hover,
+  &:focus,
+  &:active,
+  &:nth-of-type(odd):hover,
+  &:nth-of-type(odd):focus,
+  &:nth-of-type(odd):active {
+    background-color: lighten(@zesty-field-blue, 10%);
+  }
+
+  td {
     text-align: left;
   }
 }
