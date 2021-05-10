@@ -34,6 +34,21 @@ export default connect(state => {
     <PlanStep />,
     <PlanStep />,
     <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
+    <PlanStep />,
     <PlanStep />
   ];
   // const steps = [];
@@ -45,13 +60,14 @@ export default connect(state => {
         <table className={styles.Plan}>
           <thead>
             <tr>
-              <th className={styles.subheadline}>Language</th>
+              <th className={cx(styles.subheadline)}>Lang</th>
               <th className={styles.subheadline}>Version</th>
+
+              {/* sorting by title would be cool but could be a stretch goal */}
               <th className={styles.subheadline}>Title</th>
-              <th className={styles.subheadline}>Last Published</th>
-              <th className={styles.subheadline}>Edit</th>
-              <th className={styles.subheadline}>Preview</th>
-              <th className={styles.subheadline}>Remove</th>
+
+              <th className={styles.subheadline}>Last Publish</th>
+              <th className={cx(styles.subheadline)}>Edit/View/Remove</th>
             </tr>
           </thead>
           <tbody>

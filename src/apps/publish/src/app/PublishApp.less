@@ -16,16 +16,22 @@
       border-radius: 4px 4px 0 0;
 
       // Structure
-      height: calc(100vh - 225px);
-      overflow-y: scroll;
+      max-height: calc(100vh - 225px);
+      overflow-y: scroll; // enforce scrollbar so thead can position with it in mind
       display: block;
+    }
+
+    thead {
+      tr {
+        margin-right: 10px; // account for the table overflow scrollbar
+      }
     }
 
     thead,
     tbody {
       tr {
         display: grid;
-        grid-template-columns: 110px 200px 1fr minmax(auto, 400px) 45px 90px 90px;
+        grid-template-columns: 60px 200px 1fr minmax(auto, 400px) 190px;
         column-gap: 16px;
         padding: 12px;
 
