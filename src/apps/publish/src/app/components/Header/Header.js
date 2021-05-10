@@ -11,7 +11,7 @@ export function Header(props) {
     <header className={styles.Header}>
       <h1 className={styles.display}>Publish Plan</h1>
       <GlobalSearch placeholder="Search for items to include in your publish plan" />
-      <Button>
+      <Button kind="alt" disabled={!props.canPublish && "disabled"}>
         <FontAwesomeIcon icon={faCloudUploadAlt} />
         Publish All
       </Button>
