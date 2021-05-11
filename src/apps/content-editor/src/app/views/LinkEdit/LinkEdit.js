@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import { connect } from "react-redux";
-import { useHistory } from "react-router";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory, useParams } from "react-router";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -10,16 +10,30 @@ import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
 import { Input } from "@zesty-io/core/Input";
 import { Button } from "@zesty-io/core/Button";
 
+import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 
 import styles from "./LinkEdit.less";
 
-function LinkEdit(props) {
+export default function LinkEdit() {
   const history = useHistory();
+  const dispatch = useDispatch();
   const isMounted = useRef(false);
+  const { linkZUID } = useParams();
+  const content = useSelector(state => state.content);
+  const internalLinkOptions = useMemo(() => {
+    return Object.keys(content)
+      .filter(key => content[key].web.path)
+      .map(key => {
+        return {
+          value: content[key].meta.ZUID,
+          text: content[key].web.path
+        };
+      });
+  }, [content]);
 
-  const [state, setState] = useState({
+  const INITIAL_STATE = {
     type: "internal",
     parentZUID: "0",
     label: "",
@@ -27,10 +41,10 @@ function LinkEdit(props) {
     target: "",
     relNoFollow: false,
     targetBlank: false,
-    internalLinkOptions: [],
-    linkZUID: props.linkZUID,
+    linkZUID,
     loading: false
-  });
+  };
+  const [state, setState] = useState(INITIAL_STATE);
 
   useEffect(() => {
     isMounted.current = true;
@@ -40,105 +54,64 @@ function LinkEdit(props) {
   }, []);
 
   useEffect(() => {
-    fetchLink(props.linkZUID);
+    fetchLink(linkZUID);
   }, []);
 
+  // navigating to different link will reset state and fetch new Link
   useEffect(() => {
-    if (isMounted.current) {
-      if (props.linkZUID !== state.linkZUID) {
-        console.log(props.linkZUID, state.linkZUID);
-        setState({
-          ...state,
-          type: "internal",
-          parentZUID: "0",
-          label: "",
-          metaTitle: "",
-          target: "",
-          relNoFollow: false,
-          targetBlank: false,
-          internalLinkOptions: [],
-          linkZUID: props.linkZUID,
-          loading: false
-        });
-        fetchLink(props.linkZUID);
-      }
+    if (linkZUID !== state.linkZUID) {
+      setState(INITIAL_STATE);
+      fetchLink(linkZUID);
     }
-  }, [props.linkZUID]);
+  }, [linkZUID]);
 
   function fetchLink(linkZUID) {
-    setState({
-      ...state,
+    setState(s => ({
+      ...s,
       loading: true
-    });
+    }));
 
     return request(`${CONFIG.API_INSTANCE}/content/links/${linkZUID}`)
       .then(res => {
+        if (res.error) {
+          throw res.error;
+        }
+        return res;
+      })
+      .then(res => {
         if (isMounted.current) {
-          setState({
-            ...state,
-            loading: false
+          // 0 indicates a top level menu link, nothing to resolve
+          // otherwise if a parent zuid value exists resolve it's data
+          if (res.data.parentZUID !== "0" && res.data.parentZUID) {
+            let parent = content[res.data.parentZUID];
+
+            if (!parent || !parent.meta.ZUID) {
+              dispatch(searchItems(res.data.parentZUID));
+            }
+          }
+
+          // Internal links store the linked zuid on the path_part
+          if (res.data.type === "internal" && res.data.target) {
+            let link = content[res.data.target];
+            if (!link || !link.meta.ZUID) {
+              dispatch(searchItems(res.data.target));
+            }
+          }
+
+          let relNoFollow = false;
+          let targetBlank = false;
+          res.data.source.split(";").forEach(sourceField => {
+            if (sourceField === "rel:true") {
+              relNoFollow = true;
+            } else if (sourceField === "target:_blank") {
+              targetBlank = true;
+            }
           });
 
-          if (res.error) {
-            props.dispatch(
-              notify({
-                message: `Failure loading link: ${res.message}`,
-                kind: "error"
-              })
-            );
-          } else {
-            // 0 indicates a top level menu link, nothing to resolve
-            // otherwise if a parent zuid value exists resolve it's data
-            if (res.data.parentZUID !== "0" && res.data.parentZUID) {
-              let parent = props.items[res.data.parentZUID];
-
-              if (!parent || !parent.meta.ZUID) {
-                search(res.data.parentZUID);
-              } else {
-                setState({
-                  ...state,
-                  internalLinkOptions: [
-                    ...state.internalLinkOptions,
-                    {
-                      value: parent.meta.ZUID,
-                      text: parent.web.path
-                    }
-                  ]
-                });
-              }
-            }
-
-            // Internal links store the linked zuid on the path_part
-            if (res.data.type === "internal" && res.data.target) {
-              let link = props.items[res.data.target];
-              if (!link || !link.meta.ZUID) {
-                search(res.data.target);
-              } else {
-                setState({
-                  ...state,
-                  internalLinkOptions: [
-                    ...state.internalLinkOptions,
-                    {
-                      value: link.meta.ZUID,
-                      text: link.web.path
-                    }
-                  ]
-                });
-              }
-            }
-
-            let relNoFollow = false;
-            let targetBlank = false;
-            res.data.source.split(";").forEach(sourceField => {
-              if (sourceField === "rel:true") {
-                relNoFollow = true;
-              } else if (sourceField === "target:_blank") {
-                targetBlank = true;
-              }
-            });
-
-            setState({
-              ...state,
+          setState(s => {
+            return {
+              ...s,
+              loading: false,
               ZUID: res.data.ZUID,
               type: res.data.type,
               parentZUID: res.data.parentZUID,
@@ -147,15 +120,15 @@ function LinkEdit(props) {
               targetBlank,
               relNoFollow,
               target: res.data.target
-            });
-          }
+            };
+          });
         }
       })
       .catch(err => {
         console.error(err);
-        props.dispatch(
+        dispatch(
           notify({
-            message: "There was an issue loading this link",
+            message: "Failed loading link",
             kind: "error"
           })
         );
@@ -207,7 +180,7 @@ function LinkEdit(props) {
           ) {
             message = "Missing Link protocol";
           }
-          props.dispatch(
+          dispatch(
             notify({
               message: `Error saving link: ${message}`,
               kind: "error"
@@ -215,66 +188,13 @@ function LinkEdit(props) {
           );
         } else {
           setState({ ...state, saving: false });
-          props.dispatch(notify({ message: "Saved link", kind: "save" }));
+          dispatch(notify({ message: "Saved link", kind: "save" }));
         }
       })
       .catch(err => {
         console.error(err);
         setState({ ...state, saving: false });
-        props.dispatch(notify({ message: "Error saving link", kind: "error" }));
-      });
-  }
-
-  function search(term) {
-    return request(`${CONFIG.API_INSTANCE}/search/items?q=${term}`)
-      .then(res => {
-        if (res.status !== 200) {
-          props.dispatch(
-            notify({
-              message: "Error fetching API",
-              kind: "error"
-            })
-          );
-          throw res;
-        }
-
-        const searchResults = res.data
-          .filter(item => item.web.path)
-          .map(item => {
-            return {
-              value: item.meta.ZUID,
-              text: item.web.path
-            };
-          });
-
-        const dedupeOptions = [
-          ...state.internalLinkOptions,
-          ...searchResults
-        ].reduce((acc, el) => {
-          if (!acc.find(opt => opt.value === el.value)) {
-            acc.push(el);
-          }
-
-          return acc;
-        }, []);
-
-        setState(s => {
-          return {
-            ...s,
-            internalLinkOptions: dedupeOptions
-          };
-        });
-
-        return res;
-      })
-      .catch(err => {
-        console.error(err);
-        props.dispatch(
-          notify({
-            message: "Failed loading API",
-            kind: "error"
-          })
-        );
+        dispatch(notify({ message: "Error saving link", kind: "error" }));
       });
   }
 
@@ -286,11 +206,11 @@ function LinkEdit(props) {
   }
 
   function deleteLink() {
-    return request(`${CONFIG.API_INSTANCE}/content/links/${props.linkZUID}`, {
+    return request(`${CONFIG.API_INSTANCE}/content/links/${linkZUID}`, {
       method: "DELETE",
       json: true
     }).then(res => {
-      props.dispatch(notify({ message: "Deleted Link", kind: "save" }));
+      dispatch(notify({ message: "Deleted Link", kind: "save" }));
       history.push("/content");
     });
   }
@@ -309,11 +229,9 @@ function LinkEdit(props) {
               name="parentZUID"
               label="Select a parent for your link"
               value={state.parentZUID}
-              options={state.internalLinkOptions.filter(
-                op => op.value !== state.target
-              )}
+              options={internalLinkOptions}
               onChange={onChange}
-              onSearch={search}
+              onSearch={term => dispatch(searchItems(term))}
             />
 
             {state.type === "internal" ? (
@@ -322,9 +240,9 @@ function LinkEdit(props) {
                 name="target"
                 label="Select an item to link to"
                 value={state.target}
-                options={state.internalLinkOptions}
+                options={internalLinkOptions}
                 onChange={onChange}
-                onSearch={search}
+                onSearch={term => dispatch(searchItems(term))}
               />
             ) : (
               <FieldTypeUrl
@@ -333,7 +251,7 @@ function LinkEdit(props) {
                 name="target"
                 value={state.target}
                 onChange={onChange}
-                maxLength={500}
+                maxLength={255}
               />
             )}
 
@@ -390,10 +308,3 @@ function LinkEdit(props) {
     </section>
   );
 }
-
-export default connect((state, props) => {
-  return {
-    linkZUID: props.match.params.linkZUID,
-    items: state.content
-  };
-})(LinkEdit);
