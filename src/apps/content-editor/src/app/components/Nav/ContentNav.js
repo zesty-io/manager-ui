@@ -69,7 +69,7 @@ export function ContentNav(props) {
             .filter(modelZUID => {
               // exclude these special models from the create item list
               return !["widgets", "clippings", "globals"].includes(
-                props.models[modelZUID]?.name.toLowerCase()
+                props?.models[modelZUID]?.name.toLowerCase()
               );
             })
             .sort((a, b) => {
