@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
@@ -15,13 +15,26 @@ import {
   faLink
 } from "@fortawesome/free-solid-svg-icons";
 
+import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 
 import styles from "./LinkCreate.less";
-export function LinkCreate(props) {
+export function LinkCreate() {
   const dispatch = useDispatch();
   const history = useHistory();
+  const content = useSelector(state => state.content);
+  const internalLinkOptions = useMemo(() => {
+    return Object.keys(content)
+      .filter(key => content[key].web.path)
+      .map(key => {
+        return {
+          value: content[key].meta.ZUID,
+          text: content[key].web.path
+        };
+      });
+  }, [content]);
+
   const [state, setState] = useState({
     type: "internal",
     parentZUID: "0",
@@ -29,8 +42,7 @@ export function LinkCreate(props) {
     metaTitle: "",
     target: "",
     relNoFollow: false,
-    targetBlank: false,
-    internalLinkOptions: []
+    targetBlank: false
   });
 
   function saveLink() {
@@ -99,48 +111,6 @@ export function LinkCreate(props) {
       });
   }
 
-  function handleSearch(term) {
-    return request(`${CONFIG.API_INSTANCE}/search/items?q=${term}`)
-      .then(res => {
-        if (res.status === 200) {
-          const searchResults = res.data
-            .filter(item => item.web.path)
-            .map(item => {
-              return {
-                value: item.meta.ZUID,
-                text: item.web.path
-              };
-            });
-
-          const dedupeOptions = [
-            ...state.internalLinkOptions,
-            ...searchResults
-          ].reduce((acc, el) => {
-            if (!acc.find(opt => opt.value === el.value)) {
-              acc.push(el);
-            }
-
-            return acc;
-          }, []);
-
-          setState({
-            ...state,
-            internalLinkOptions: dedupeOptions
-          });
-        } else {
-          return dispatch(
-            notify({
-              message: `Failure searching: ${res.error}`,
-              kind: "error"
-            })
-          );
-        }
-      })
-      .catch(err => {
-        console.error("LinkCreate:handleSearch", err);
-      });
-  }
-
   function onChange(value, name) {
     setState({
       ...state,
@@ -187,9 +157,9 @@ export function LinkCreate(props) {
             name="parentZUID"
             label="Select a parent for your link"
             value={state.parentZUID}
-            options={state.internalLinkOptions}
+            options={internalLinkOptions}
             onChange={onChange}
-            onSearch={handleSearch}
+            onSearch={term => dispatch(searchItems(term))}
           />
 
           {state.type === "internal" ? (
@@ -198,9 +168,9 @@ export function LinkCreate(props) {
               name="target"
               label="Select an item to link to"
               value={state.target}
-              options={state.internalLinkOptions}
+              options={internalLinkOptions}
               onChange={onChange}
-              onSearch={handleSearch}
+              onSearch={term => dispatch(searchItems(term))}
             />
           ) : (
             <FieldTypeUrl
@@ -209,7 +179,7 @@ export function LinkCreate(props) {
               name="target"
               value={state.target}
               onChange={onChange}
-              maxLength={500}
+              maxLength={255}
             />
           )}
 
