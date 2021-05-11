@@ -35,8 +35,8 @@
   li {
     cursor: pointer;
     color: @zesty-dark-blue;
-    background: @zesty-field-blue;
-    border-bottom: 1px solid darken(@zesty-field-blue, 8%);
+    background-color: @appBkgColor;
+    border-bottom: 1px solid darken(@appBkgColor, 8%);
     padding: 16px 12px;
 
     .Lang {
@@ -62,7 +62,8 @@
       @media only screen and (min-width: 2000px) {
         flex-direction: row;
       }
-      background-color: lighten(@zesty-light-blue, 10%);
+
+      background-color: @white;
       display: flex;
       .SortBy {
         flex: 2;

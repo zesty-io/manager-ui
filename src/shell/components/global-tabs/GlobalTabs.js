@@ -58,14 +58,11 @@ export default connect(state => {
   return {
     instanceName: state.instance.name,
     instanceZUID: state.instance.ZUID,
-    fields: state.fields,
     models: state.models,
     content: state.content,
     files: state.files,
     user: state.user,
-    mediaGroups: state.media.groups,
-    mediaFiles: state.media.files,
-    mediaSearchFiles: state.media.search.files
+    mediaGroups: state.media.groups
   };
 })(
   React.memo(function GlobalTabs(props) {
@@ -126,6 +123,21 @@ export default connect(state => {
         return;
       }
 
+      // Don't show Schema Field Tabs
+      if (parts[0] === "schema" && parts[2] === "field") {
+        return;
+      }
+
+      // Don't show Media File Tabs
+      if (parts[0] === "media" && parts[2] === "file") {
+        return;
+      }
+
+      // Don't show Code Editor Diff Tabs
+      if (parts[0] === "code" && parts[4] === "diff") {
+        return;
+      }
+
       let existingIndex = newRoutes.findIndex(
         route => route.pathname === history.location.pathname
       );
@@ -155,15 +167,6 @@ export default connect(state => {
             }
             route.icon = faFolder;
             break;
-          case "3":
-            const file =
-              props.mediaFiles.find(file => file.id === zuid) ||
-              props.mediaSearchFiles.find(file => file.id === zuid);
-            if (file) {
-              route.name = file.filename;
-            }
-            route.icon = faFile;
-            break;
           case "6":
             if (props.models) {
               const model = props.models[zuid];
@@ -174,17 +177,6 @@ export default connect(state => {
             }
             route.icon = faDatabase;
             break;
-          case "12":
-            if (props.fields) {
-              const field = props.fields[zuid];
-
-              if (field) {
-                route.name = "Field: " + field.label;
-              }
-            }
-            route.icon = faDatabase;
-            break;
-
           case "7":
             if (props.content) {
               const item = props.content[zuid];
@@ -235,7 +227,7 @@ export default connect(state => {
       // store routes to local storage and reload on app start
       idb.set(`${props.instanceZUID}:session:routes`, newRoutes);
       setRoutes(newRoutes);
-    }, [history.location, props.models, props.content, props.files, props.mediaGroups, props.mediaFiles, props.mediaSearchFiles]);
+    }, [history.location, props.models, props.content, props.files, props.mediaGroups]);
 
     // Update Breadcrumb
     useEffect(() => {
