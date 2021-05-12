@@ -41,6 +41,7 @@
     }
     img {
       margin-bottom: 4px;
+      margin-right: 8px;
     }
   }
 
@@ -49,8 +50,9 @@
     padding: 8px;
     width: 100%;
     text-align: left;
-
+    color: @zesty-field-blue;
     position: relative;
+    text-shadow: none;
 
     a {
       margin: 0;
@@ -59,8 +61,9 @@
     svg {
       width: 18px;
       height: 18px;
+      margin-right: 8px;
     }
-
+    &:hover,
     .GlobalActionIcon:hover,
     .GlobalActionIcon:focus,
     .GlobalActionIcon:active {
@@ -68,28 +71,3 @@
     }
   }
 }
-
-// @media (min-width: 2000px) {
-//   .GlobalSubMenu {
-//     align-items: initial;
-
-//     .GlobalActions {
-//       flex-wrap: initial;
-//       align-content: initial;
-//       flex-direction: row;
-//     }
-
-//     .AppVersion {
-//       a {
-//         flex-direction: row;
-//       }
-//       img {
-//         margin: 0 8px 0 0;
-//       }
-//       .VersionNumber {
-//         margin: 0;
-//         font-size: 14px;
-//       }
-//     }
-//   }
-// }

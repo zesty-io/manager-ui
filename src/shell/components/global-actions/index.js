@@ -3,7 +3,7 @@ import useOnclickOutside from "react-cool-onclickoutside";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { faHashtag, faQuestion } from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "@zesty-io/core/Url";
 
@@ -52,16 +52,19 @@ export default React.memo(function GlobalActions(props) {
             width="18px"
             height="18px"
           />
-          Source Code
+          <span className={styles.GlobalAction}>Source Code</span>
         </Url>
-      </div>
-      <div className={styles.AppVersion}>
         <Url
+          className={styles.GlobalAction}
           href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
           title="View source code commit"
           target="_blank"
         >
           <span className={styles.VersionNumber}>
+            <FontAwesomeIcon
+              icon={faHashtag}
+              className={styles.GlobalActionIcon}
+            />
             {CONFIG?.build?.data?.gitCommit}
           </span>
         </Url>
