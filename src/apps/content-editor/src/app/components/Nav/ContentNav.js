@@ -68,7 +68,6 @@ export function ContentNav(props) {
           {Object.keys(props.models)
             .filter(modelZUID => {
               // exclude these special models from the create item list
-              if (!props.models[modelZUID].name) return;
               return !["widgets", "clippings", "globals"].includes(
                 props?.models[modelZUID]?.name.toLowerCase()
               );
