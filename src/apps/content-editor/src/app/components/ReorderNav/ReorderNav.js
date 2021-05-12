@@ -72,7 +72,7 @@ class ReorderNav extends Component {
       });
     }
     this.setState({
-      [name]: [...this.props.nav.find(item => item.ZUID === name).children],
+      [name]: [...this?.props?.nav.find(item => item.ZUID === name).children],
       current: name
     });
   };
