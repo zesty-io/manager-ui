@@ -1,4 +1,5 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
 
 .GlobalSubMenu {
   background-color: @globalMenuBkgColor;
@@ -12,10 +13,9 @@
   flex-direction: column;
 
   .GlobalActions {
-    display: flex;
-    flex-wrap: wrap;
-    align-content: center;
-    flex-direction: column;
+    display: grid;
+    grid-gap: 12px;
+    padding: 8px 0;
   }
 
   .AppVersion {
@@ -48,7 +48,7 @@
     cursor: pointer;
     padding: 8px;
     width: 100%;
-    text-align: center;
+    text-align: left;
 
     position: relative;
 
@@ -69,27 +69,27 @@
   }
 }
 
-@media (min-width: 2000px) {
-  .GlobalSubMenu {
-    align-items: initial;
+// @media (min-width: 2000px) {
+//   .GlobalSubMenu {
+//     align-items: initial;
 
-    .GlobalActions {
-      flex-wrap: initial;
-      align-content: initial;
-      flex-direction: row;
-    }
+//     .GlobalActions {
+//       flex-wrap: initial;
+//       align-content: initial;
+//       flex-direction: row;
+//     }
 
-    .AppVersion {
-      a {
-        flex-direction: row;
-      }
-      img {
-        margin: 0 8px 0 0;
-      }
-      .VersionNumber {
-        margin: 0;
-        font-size: 14px;
-      }
-    }
-  }
-}
+//     .AppVersion {
+//       a {
+//         flex-direction: row;
+//       }
+//       img {
+//         margin: 0 8px 0 0;
+//       }
+//       .VersionNumber {
+//         margin: 0;
+//         font-size: 14px;
+//       }
+//     }
+//   }
+// }

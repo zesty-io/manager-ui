@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import useOnclickOutside from "react-cool-onclickoutside";
+import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
@@ -20,8 +21,9 @@ export default React.memo(function GlobalActions(props) {
   return (
     <div className={styles.GlobalSubMenu}>
       <div className={styles.GlobalActions}>
-        <span className={styles.GlobalAction}>
+        <span className={cx(styles.GlobalAction)}>
           <ActivePreview className={styles.GlobalActionIcon} />
+          Preview
         </span>
 
         <span
@@ -35,6 +37,7 @@ export default React.memo(function GlobalActions(props) {
             className={styles.GlobalActionIcon}
           />
           {openMenu && <GlobalHelpMenu />}
+          Help
         </span>
 
         <Url
@@ -49,6 +52,7 @@ export default React.memo(function GlobalActions(props) {
             width="18px"
             height="18px"
           />
+          Source Code
         </Url>
       </div>
       <div className={styles.AppVersion}>
