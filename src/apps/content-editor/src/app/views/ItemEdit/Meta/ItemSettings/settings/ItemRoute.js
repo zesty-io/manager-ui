@@ -37,6 +37,7 @@ export const ItemRoute = connect(state => {
 
         return request(`${CONFIG.API_INSTANCE}/search/items?q=${fullPath}`)
           .then(res => {
+            if (!res.data) return;
             // check list of partial matches for exact path match
             const matches = res.data.filter(item => {
               /**
