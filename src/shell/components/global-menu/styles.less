@@ -8,20 +8,34 @@
   padding: 8px 0;
 
   a {
+    text-align: left;
     color: @zesty-field-blue;
     text-decoration: none;
     letter-spacing: 1px;
     padding: 8px;
     border-left: 2px solid @globalMenuBkgColor;
-    text-align: center;
 
     .title {
-      display: none;
+      display: inline-block;
     }
+
     svg {
-      margin-right: 0;
+      margin-right: 8px;
     }
   }
+
+  //CLOSED MENU
+  // a {
+
+  //   text-align: center;
+
+  //   .title {
+  //     display: none;
+  //   }
+  //   svg {
+  //     margin-right: 0;
+  //   }
+  // }
 
   .current {
     border-left: 2px solid @zesty-orange;
@@ -42,24 +56,6 @@
     &:active,
     &:focus {
       color: @zesty-orange;
-    }
-  }
-}
-
-//application differ in min/max media queries
-//in order to get consistent visuals it's important to use the same media-query
-//in our case we are using min-width
-@media (min-width: 2000px) {
-  .GlobalMenu {
-    a {
-      text-align: left;
-      .title {
-        display: inline-block;
-      }
-
-      svg {
-        margin-right: 8px;
-      }
     }
   }
 }
