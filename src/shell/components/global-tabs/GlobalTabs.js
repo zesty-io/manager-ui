@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 import idb from "utility/idb";
@@ -66,10 +66,9 @@ export default connect(state => {
   };
 })(
   React.memo(function GlobalTabs(props) {
-    let history = useHistory();
+    const history = useHistory();
 
     const [routes, setRoutes] = useState([]);
-    const [ZUID, setZUID] = useState("");
 
     // Load prev session routes
     useEffect(() => {
@@ -88,6 +87,8 @@ export default connect(state => {
 
     // Track route changes to display quick links
     useEffect(() => {
+      console.log("updating routes");
+
       let newRoutes = [...routes];
       const [parts, zuid, prefix, contentSection] = parse(
         history.location.pathname
@@ -229,18 +230,6 @@ export default connect(state => {
       setRoutes(newRoutes);
     }, [history.location, props.models, props.content, props.files, props.mediaGroups]);
 
-    // Update Breadcrumb
-    useEffect(() => {
-      const [, zuid, prefix] = parse(history.location.pathname);
-
-      // breadcrumbs only exist for content items
-      if (prefix === "7" || prefix === "6" || prefix === "17") {
-        setZUID(zuid);
-      } else {
-        setZUID("");
-      }
-    }, [history.location]);
-
     const removeRoute = path => {
       const newRoutes = routes.filter(route => route.pathname !== path);
 
@@ -248,6 +237,33 @@ export default connect(state => {
       idb.set(`${props.instanceZUID}:session:routes`, newRoutes);
       setRoutes(newRoutes);
     };
+
+    const tabContainerRef = useRef(null);
+    const tabRefs = useRef([]);
+    useLayoutEffect(() => {
+      if (tabContainerRef.current) {
+        console.log(routes.length);
+        console.log("update tab widths");
+        const { width } = tabContainerRef.current.getBoundingClientRect();
+        const NUM_TABS = routes.length;
+        const TAB_BAR_WIDTH = Math.floor(width);
+        const MIN_TAB_WIDTH = 100;
+        const MAX_TAB_WIDTH = 200;
+        const TAB_PADDING = 16;
+        const TAB_BORDER = 1;
+        const TAB_WIDTH = Math.floor(
+          Math.min(
+            Math.max(TAB_BAR_WIDTH / NUM_TABS, MIN_TAB_WIDTH),
+            MAX_TAB_WIDTH
+          )
+        );
+        const INNER_TAB_WIDTH = TAB_WIDTH - TAB_PADDING - TAB_BORDER;
+        tabRefs.current.forEach(ref => {
+          console.log(ref, INNER_TAB_WIDTH);
+          ref.style.width = `${INNER_TAB_WIDTH}px`;
+        });
+      }
+    }, [routes.length]);
 
     return (
       <section className={styles.GlobalTopBar}>
@@ -264,11 +280,16 @@ export default connect(state => {
           >
             <FontAwesomeIcon icon={faTimesCircle} />
           </Button> */}
-          <nav className={styles.QuickLinks}>
+          <nav ref={tabContainerRef} className={styles.QuickLinks}>
             <ol className={styles.Links}>
               {routes.map((route, i) => (
                 <li
                   key={i}
+                  ref={element => {
+                    if (element) {
+                      tabRefs.current[i] = element;
+                    }
+                  }}
                   className={cx(
                     styles.Route,
                     route.pathname === history.location.pathname
