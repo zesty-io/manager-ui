@@ -94,10 +94,22 @@ export function fetchModel(modelZUID) {
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}`,
       handler: res => {
-        return dispatch({
-          type: "FETCH_MODEL_SUCCESS",
-          payload: res.data
-        });
+        if (res.status === 200) {
+          return dispatch({
+            type: "FETCH_MODEL_SUCCESS",
+            payload: res.data
+          });
+        } else {
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `Failed to fetch models`
+            })
+          );
+          if (res.error) {
+            throw new Error(res.error);
+          }
+        }
       }
     });
   };
