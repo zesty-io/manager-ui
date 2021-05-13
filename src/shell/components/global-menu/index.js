@@ -15,7 +15,8 @@ import {
   faCog,
   faBullseye,
   faCode,
-  faChevronCircleRight
+  faChevronCircleRight,
+  faChevronCircleLeft
 } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./styles.less";
@@ -42,6 +43,11 @@ export default connect(state => {
 
     return (
       <menu className={styles.GlobalMenu}>
+        <span className={styles.Collapse}>
+          <FontAwesomeIcon icon={faChevronCircleLeft} />
+          Collapse
+        </span>
+
         {props.products.map(product => {
           // Covert dashes to spaces
           // Uppercase first letter of word
