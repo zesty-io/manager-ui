@@ -43,10 +43,10 @@ export default connect(state => {
 
     return (
       <menu className={styles.GlobalMenu}>
-        <span className={styles.Collapse}>
+        <p className={styles.Collapse}>
           <FontAwesomeIcon icon={faChevronCircleLeft} />
-          Collapse
-        </span>
+          <span className={styles.title}>Collapse</span>
+        </p>
 
         {props.products.map(product => {
           // Covert dashes to spaces
