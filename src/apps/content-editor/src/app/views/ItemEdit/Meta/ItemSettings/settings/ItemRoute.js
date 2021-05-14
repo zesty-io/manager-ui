@@ -37,20 +37,31 @@ export const ItemRoute = connect(state => {
 
         return request(`${CONFIG.API_INSTANCE}/search/items?q=${fullPath}`)
           .then(res => {
-            if (!res.data) return;
-            // check list of partial matches for exact path match
-            const matches = res.data.filter(item => {
-              /**
-               * Exclude currently viewed item zuid, as it's currently saved path would match.
-               * Check if other results have a matching path, if so then it is already taken and
-               * can not be used.
-               * Result paths come with leading and trailing slashes
-               */
-              return (
-                item.meta.ZUID !== props.ZUID &&
-                item.web.path === "/" + fullPath + "/"
+            if (red.status === 200) {
+              // check list of partial matches for exact path match
+              const matches = res.data.filter(item => {
+                /**
+                 * Exclude currently viewed item zuid, as it's currently saved path would match.
+                 * Check if other results have a matching path, if so then it is already taken and
+                 * can not be used.
+                 * Result paths come with leading and trailing slashes
+                 */
+                return (
+                  item.meta.ZUID !== props.ZUID &&
+                  item.web.path === "/" + fullPath + "/"
+                );
+              });
+            } else {
+              dispatch(
+                notify({
+                  kind: "warn",
+                  message: `Failed to match path`
+                })
               );
-            });
+              if (res.error) {
+                throw new Error(res.error);
+              }
+            }
 
             if (matches.length) {
               props.dispatch(
