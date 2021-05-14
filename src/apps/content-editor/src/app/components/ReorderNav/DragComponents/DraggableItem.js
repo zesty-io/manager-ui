@@ -3,18 +3,16 @@ import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowsAlt, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
-import { AppLink } from "@zesty-io/core/AppLink";
-
 import styles from "./styles.less";
 export default class DraggableItem extends Component {
   render() {
-    const { ZUID, label, children, handleNestChange } = this.props;
+    const { ZUID, label, children, handleNestChange, ...rest } = this.props;
     return (
-      <li {...this.props}>
+      <li {...rest}>
         <FontAwesomeIcon icon={faArrowsAlt} />
 
         {children.length ? (
-          <AppLink
+          <span
             className={styles.node}
             onClick={evt => {
               evt.preventDefault();
@@ -23,7 +21,7 @@ export default class DraggableItem extends Component {
           >
             {label}
             <FontAwesomeIcon icon={faCaretRight} />
-          </AppLink>
+          </span>
         ) : (
           <span>{label}</span>
         )}
