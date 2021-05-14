@@ -17,9 +17,10 @@ export default class DragList extends Component {
         }}
       >
         {this.props.children.map((item, i) => {
+          const { parentZUID, contentModelZUID, ...rest } = item;
           return (
             <DraggableItem
-              {...item}
+              {...rest}
               key={item.ZUID}
               id={item.ZUID}
               draggable={true}
