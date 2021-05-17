@@ -43,7 +43,6 @@
       border-right: 1px solid #0d1016;
       padding: 0 8px;
       flex-shrink: 0;
-      transition: all 0.3s ease;
 
       //Active tab
       &.active {
@@ -62,6 +61,8 @@
         white-space: nowrap;
         text-shadow: none;
         word-break: keep-all;
+        transition-duration: unset;
+        transition-property: unset;
 
         &:hover {
           color: lighten(@zesty-blue, 15%);

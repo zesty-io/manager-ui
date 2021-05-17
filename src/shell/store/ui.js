@@ -179,7 +179,7 @@ export default uiSlice.reducer;
 
 export const { loadTabsSuccess, setTabs } = uiSlice.actions;
 
-export function loadTabs(instanceZUID, path) {
+export function loadTabs(instanceZUID) {
   return dispatch => {
     return idb.get(`${instanceZUID}:session:routes`).then((tabs = []) => {
       return dispatch(loadTabsSuccess(tabs));

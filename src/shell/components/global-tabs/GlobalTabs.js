@@ -13,6 +13,11 @@ import { closeTab, openTab, loadTabs, rebuildTabs } from "shell/store/ui";
 
 import styles from "./GlobalTabs.less";
 
+const MIN_TAB_WIDTH = 100;
+const MAX_TAB_WIDTH = 200;
+const TAB_PADDING = 16;
+const TAB_BORDER = 1;
+
 export default React.memo(function GlobalTabs() {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -25,9 +30,9 @@ export default React.memo(function GlobalTabs() {
   const content = useSelector(state => state.content);
   const files = useSelector(state => state.files);
   const mediaGroups = useSelector(state => state.mediaGroups);
+  const [tabBarWidth, setTabBarWidth] = useState(0);
 
-  console.log("render GlobalTabs");
-
+  // update state if window is resized (debounced)
   useEffect(() => {
     const debouncedResize = debounce(function handleResize() {
       setWindowWidth(window.innerWidth);
@@ -37,55 +42,54 @@ export default React.memo(function GlobalTabs() {
     return () => window.removeEventListener("resize", debouncedResize);
   }, []);
 
+  // load tabs from Indexeddb
   useEffect(() => {
-    dispatch(loadTabs(instanceZUID, history.location.pathname));
+    dispatch(loadTabs(instanceZUID));
   }, [instanceZUID]);
 
+  // openTab every time path changes
   useEffect(() => {
     if (loadedTabs) {
-      console.log("openTab");
       dispatch(openTab({ path: history.location.pathname, prevPath }));
     }
   }, [loadedTabs, history.location.pathname]);
 
+  // rebuild tabs if any of the store slices changes
+  // slices could include tab.name updates
   useEffect(() => {
     if (loadedTabs) {
-      console.log("rebuildTabs");
       dispatch(rebuildTabs());
     }
   }, [loadedTabs, models, content, files, mediaGroups]);
 
+  // measure the tab bar width and set state
+  // to trigger a synchronous re-render before paint
+  // recalculate tab bar width if window is resized
   const tabContainerRef = useRef(null);
-  const tabRefs = useRef([]);
   useLayoutEffect(() => {
     if (tabContainerRef.current) {
-      console.log(
-        "useLayoutEffect: updating tab widths, numRoutes: ",
-        tabs.length
+      setTabBarWidth(
+        Math.floor(tabContainerRef.current.getBoundingClientRect().width)
       );
-      const { width } = tabContainerRef.current.getBoundingClientRect();
-      const NUM_TABS = tabs.length;
-      const TAB_BAR_WIDTH = Math.floor(width);
-      const MIN_TAB_WIDTH = 100;
-      const MAX_TAB_WIDTH = 200;
-      const TAB_PADDING = 16;
-      const TAB_BORDER = 1;
-      const TAB_WIDTH = Math.floor(
+    }
+  }, [windowWidth]);
+
+  // we want to synchronize tabs.length with tab width
+  // if we used useEffect here, we would get new tabs.length
+  // with old tab width
+  // cheap enough to run every render
+  let tabWidth = 0;
+  if (tabs.length) {
+    tabWidth =
+      Math.floor(
         Math.min(
-          Math.max(TAB_BAR_WIDTH / NUM_TABS, MIN_TAB_WIDTH),
+          Math.max(tabBarWidth / tabs.length, MIN_TAB_WIDTH),
           MAX_TAB_WIDTH
         )
-      );
-      const INNER_TAB_WIDTH = TAB_WIDTH - TAB_PADDING - TAB_BORDER;
-      tabRefs.current.forEach((ref, index) => {
-        // sometimes tabs[index] is stale reference
-        if (tabs[index]) {
-          console.log(tabs[index], ref, INNER_TAB_WIDTH);
-          ref.style.width = `${INNER_TAB_WIDTH}px`;
-        }
-      });
-    }
-  }, [tabs.length, windowWidth]);
+      ) -
+      TAB_PADDING -
+      TAB_BORDER;
+  }
 
   return (
     <nav ref={tabContainerRef} className={styles.QuickLinks}>
@@ -93,11 +97,7 @@ export default React.memo(function GlobalTabs() {
         {tabs.map((tab, i) => (
           <li
             key={i}
-            ref={element => {
-              if (element) {
-                tabRefs.current[i] = element;
-              }
-            }}
+            style={{ width: `${tabWidth}px` }}
             className={cx(
               styles.Route,
               tab.pathname === history.location.pathname ? styles.active : null
