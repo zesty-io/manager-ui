@@ -242,3 +242,14 @@ export function closeTab(path) {
     }
   };
 }
+
+export function rebuildTabs() {
+  return (dispatch, getState) => {
+    const state = getState();
+    const newTabs = state.ui.tabs.map(tab =>
+      createTab(state, parsePath(tab.pathname))
+    );
+    dispatch(setTabs(newTabs));
+    idb.set(`${state.instance.ZUID}:session:routes`, newTabs);
+  };
+}

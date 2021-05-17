@@ -9,7 +9,7 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 
-import { closeTab, openTab, loadTabs } from "shell/store/ui";
+import { closeTab, openTab, loadTabs, rebuildTabs } from "shell/store/ui";
 
 import styles from "./GlobalTabs.less";
 
@@ -46,7 +46,14 @@ export default React.memo(function GlobalTabs() {
       console.log("openTab");
       dispatch(openTab({ path: history.location.pathname, prevPath }));
     }
-  }, [history.location.pathname, loadedTabs, models, content, files, mediaGroups]);
+  }, [loadedTabs, history.location.pathname]);
+
+  useEffect(() => {
+    if (loadedTabs) {
+      console.log("rebuildTabs");
+      dispatch(rebuildTabs());
+    }
+  }, [loadedTabs, models, content, files, mediaGroups]);
 
   const tabContainerRef = useRef(null);
   const tabRefs = useRef([]);
