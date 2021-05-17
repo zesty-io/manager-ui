@@ -5,7 +5,7 @@ import { Sentry } from "utility/sentry";
 
 import AppError from "shell/components/AppError";
 import GlobalSidebar from "shell/components/global-sidebar";
-import GlobalTabs from "shell/components/global-tabs";
+import GlobalTopbar from "shell/components/GlobalTopbar";
 import Welcome from "shell/components/welcome";
 import Missing from "shell/components/missing";
 
@@ -33,7 +33,7 @@ export default connect(state => {
       <section className={styles.Shell}>
         <GlobalSidebar />
         <main className={styles.AppLoader}>
-          <GlobalTabs />
+          <GlobalTopbar />
           <div className={styles.SubApp}>
             <Sentry.ErrorBoundary fallback={() => <AppError />}>
               <Switch>

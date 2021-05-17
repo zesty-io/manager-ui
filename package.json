@@ -42,6 +42,7 @@
     "@sentry/react": "6.2.1",
     "@sentry/tracing": "6.2.1",
     "@tinymce/tinymce-react": "3.8.4",
+    "@welldone-software/why-did-you-render": "^6.1.1",
     "@zesty-io/core": "1.0.11",
     "chart.js": "2.9.3",
     "classnames": "2.2.6",

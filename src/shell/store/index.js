@@ -24,11 +24,11 @@ import { logs } from "./logs";
 import { notifications } from "./notifications";
 import { platform } from "./platform";
 import { headTags } from "./headTags";
-import ui from "./ui";
 
 // RTK
 import media from "./media";
 import { users } from "./users";
+import ui from "./ui";
 
 // Middleware is applied in order of array
 const middlewares = [

@@ -1,8 +1,6 @@
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
-import { createBrowserHistory } from "history";
-
-const history = createBrowserHistory();
+import history from "utility/history";
 
 // window.CONFIG not available so we use the webpack injected variable
 if (["stage", "production"].includes(__CONFIG__?.ENV)) {
@@ -22,4 +20,4 @@ if (["stage", "production"].includes(__CONFIG__?.ENV)) {
   });
 }
 
-export { Sentry, history };
+export { Sentry };
