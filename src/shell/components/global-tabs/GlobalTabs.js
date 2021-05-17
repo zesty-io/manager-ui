@@ -29,7 +29,7 @@ export default React.memo(function GlobalTabs() {
   const models = useSelector(state => state.models);
   const content = useSelector(state => state.content);
   const files = useSelector(state => state.files);
-  const mediaGroups = useSelector(state => state.mediaGroups);
+  const mediaGroups = useSelector(state => state.media.groups);
   const [tabBarWidth, setTabBarWidth] = useState(0);
 
   // update state if window is resized (debounced)

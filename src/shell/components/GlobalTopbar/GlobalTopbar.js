@@ -9,7 +9,7 @@ import styles from "./GlobalTopbar.less";
 
 export function GlobalTopbar() {
   return (
-    <section className={styles.GlobalTopBar}>
+    <section className={styles.GlobalTopbar}>
       <div className={styles.InstanceSearch}>
         <GlobalSearch />
       </div>

@@ -110,7 +110,7 @@ function createTab(state, parsedPath) {
   switch (prefix) {
     case "1":
     case "2":
-      const group = state.mediaGroups[zuid];
+      const group = state.media.groups[zuid];
       if (group) {
         tab.name = group.name;
       }
