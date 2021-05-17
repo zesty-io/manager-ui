@@ -10,6 +10,8 @@ import {
   faFolder
 } from "@fortawesome/free-solid-svg-icons";
 
+const ZUID_REGEX = /[a-zA-Z0-9]{1,5}-[a-zA-Z0-9]{6,10}-[a-zA-Z0-9]{5,35}/;
+
 const uiSlice = createSlice({
   name: "ui",
   initialState: {
@@ -28,8 +30,7 @@ const uiSlice = createSlice({
   }
 });
 
-const ZUID_REGEX = /[a-zA-Z0-9]{1,5}-[a-zA-Z0-9]{6,10}-[a-zA-Z0-9]{5,35}/;
-
+// Thunk helper functions
 function parsePath(path) {
   let parts = path.split("/").filter(part => part);
   let zuid = null;
@@ -56,7 +57,7 @@ function parsePath(path) {
 }
 
 function validatePath(parsedPath) {
-  const { parts, zuid, prefix, contentSection } = parsedPath;
+  const { parts, zuid, contentSection } = parsedPath;
   // don't show root
   if (parts.length === 0) {
     return false;
@@ -178,6 +179,8 @@ function toCapitalCase(string) {
 export default uiSlice.reducer;
 
 export const { loadTabsSuccess, setTabs } = uiSlice.actions;
+
+// Thunks
 
 export function loadTabs(instanceZUID) {
   return dispatch => {
