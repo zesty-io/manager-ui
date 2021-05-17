@@ -37,7 +37,7 @@ export const ItemRoute = connect(state => {
 
         return request(`${CONFIG.API_INSTANCE}/search/items?q=${fullPath}`)
           .then(res => {
-            if (red.status === 200) {
+            if (res.status === 200) {
               // check list of partial matches for exact path match
               const matches = res.data.filter(item => {
                 /**
@@ -51,6 +51,28 @@ export const ItemRoute = connect(state => {
                   item.web.path === "/" + fullPath + "/"
                 );
               });
+
+              if (matches.length) {
+                props.dispatch(
+                  notify({
+                    kind: "warn",
+                    message: (
+                      <p>
+                        URL <strong>{matches[0].web.path}</strong> is
+                        unavailable. Used by&nbsp;
+                        <AppLink
+                          to={`/content/${matches[0].meta.contentModelZUID}/${matches[0].meta.ZUID}`}
+                        >
+                          {matches[0].web.metaLinkText ||
+                            matches[0].web.metaTitle}
+                        </AppLink>
+                      </p>
+                    )
+                  })
+                );
+              }
+
+              setUnique(!matches.length);
             } else {
               dispatch(
                 notify({
@@ -62,28 +84,6 @@ export const ItemRoute = connect(state => {
                 throw new Error(res.error);
               }
             }
-
-            if (matches.length) {
-              props.dispatch(
-                notify({
-                  kind: "warn",
-                  message: (
-                    <p>
-                      URL <strong>{matches[0].web.path}</strong> is unavailable.
-                      Used by&nbsp;
-                      <AppLink
-                        to={`/content/${matches[0].meta.contentModelZUID}/${matches[0].meta.ZUID}`}
-                      >
-                        {matches[0].web.metaLinkText ||
-                          matches[0].web.metaTitle}
-                      </AppLink>
-                    </p>
-                  )
-                })
-              );
-            }
-
-            setUnique(!matches.length);
           })
           .finally(() => setLoading(false));
       }, 500),
