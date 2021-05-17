@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useEffect } from "react";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
+import { searchItems } from "shell/store/content";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -19,6 +20,7 @@ export const ItemRoute = connect(state => {
   };
 })(
   React.memo(function ItemRoute(props) {
+    const dispatch = useDispatch();
     const [pathPart, setPathPart] = useState(props.path_part);
     const [loading, setLoading] = useState(false);
     const [unique, setUnique] = useState(true);
@@ -35,55 +37,43 @@ export const ItemRoute = connect(state => {
 
         setLoading(true);
 
-        return request(`${CONFIG.API_INSTANCE}/search/items?q=${fullPath}`)
+        return request(dispatch(searchItems(fullPath)))
           .then(res => {
-            if (res.status === 200) {
-              // check list of partial matches for exact path match
-              const matches = res.data.filter(item => {
-                /**
-                 * Exclude currently viewed item zuid, as it's currently saved path would match.
-                 * Check if other results have a matching path, if so then it is already taken and
-                 * can not be used.
-                 * Result paths come with leading and trailing slashes
-                 */
-                return (
-                  item.meta.ZUID !== props.ZUID &&
-                  item.web.path === "/" + fullPath + "/"
-                );
-              });
+            // check list of partial matches for exact path match
+            const matches = res.data.filter(item => {
+              /**
+               * Exclude currently viewed item zuid, as it's currently saved path would match.
+               * Check if other results have a matching path, if so then it is already taken and
+               * can not be used.
+               * Result paths come with leading and trailing slashes
+               */
+              return (
+                item.meta.ZUID !== props.ZUID &&
+                item.web.path === "/" + fullPath + "/"
+              );
+            });
 
-              if (matches.length) {
-                props.dispatch(
-                  notify({
-                    kind: "warn",
-                    message: (
-                      <p>
-                        URL <strong>{matches[0].web.path}</strong> is
-                        unavailable. Used by&nbsp;
-                        <AppLink
-                          to={`/content/${matches[0].meta.contentModelZUID}/${matches[0].meta.ZUID}`}
-                        >
-                          {matches[0].web.metaLinkText ||
-                            matches[0].web.metaTitle}
-                        </AppLink>
-                      </p>
-                    )
-                  })
-                );
-              }
-
-              setUnique(!matches.length);
-            } else {
-              dispatch(
+            if (matches.length) {
+              props.dispatch(
                 notify({
                   kind: "warn",
-                  message: `Failed to match path`
+                  message: (
+                    <p>
+                      URL <strong>{matches[0].web.path}</strong> is unavailable.
+                      Used by&nbsp;
+                      <AppLink
+                        to={`/content/${matches[0].meta.contentModelZUID}/${matches[0].meta.ZUID}`}
+                      >
+                        {matches[0].web.metaLinkText ||
+                          matches[0].web.metaTitle}
+                      </AppLink>
+                    </p>
+                  )
                 })
               );
-              if (res.error) {
-                throw new Error(res.error);
-              }
             }
+
+            setUnique(!matches.length);
           })
           .finally(() => setLoading(false));
       }, 500),
