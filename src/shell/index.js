@@ -2,14 +2,17 @@
 // must be setup before starting the store
 window.CONFIG = __CONFIG__;
 
+// import "./wdyr";
+
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import { BrowserRouter } from "react-router-dom";
+import { Router } from "react-router-dom";
 import idb from "utility/idb";
 import observable from "@riotjs/observable";
 
-import { Sentry, history } from "utility/sentry";
+import history from "utility/history";
+import { Sentry } from "utility/sentry";
 import { store, injectReducer } from "shell/store";
 import { navContent } from "../apps/content-editor/src/store/navContent";
 
@@ -108,7 +111,7 @@ MonacoSetup(store);
 const App = Sentry.withProfiler(() => (
   <Provider store={store}>
     <Sentry.ErrorBoundary fallback={() => <AppError />}>
-      <BrowserRouter
+      <Router
         history={history}
         getUserConfirmation={(message, callback) => {
           if (message === "confirm") {
@@ -123,7 +126,7 @@ const App = Sentry.withProfiler(() => (
             <Shell />
           </LoadInstance>
         </PrivateRoute>
-      </BrowserRouter>
+      </Router>
     </Sentry.ErrorBoundary>
   </Provider>
 ));
