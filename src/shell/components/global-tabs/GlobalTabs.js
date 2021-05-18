@@ -13,7 +13,7 @@ import { closeTab, openTab, loadTabs, rebuildTabs } from "shell/store/ui";
 
 import styles from "./GlobalTabs.less";
 
-const MIN_TAB_WIDTH = 100;
+const MIN_TAB_WIDTH = 150;
 const MAX_TAB_WIDTH = 200;
 const TAB_PADDING = 16;
 const TAB_BORDER = 1;
@@ -90,6 +90,8 @@ export default React.memo(function GlobalTabs() {
       TAB_PADDING -
       TAB_BORDER;
   }
+
+  console.log(tabs);
 
   return (
     <nav ref={tabContainerRef} className={styles.QuickLinks}>
