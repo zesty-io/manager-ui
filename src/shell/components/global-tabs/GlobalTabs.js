@@ -91,8 +91,6 @@ export default React.memo(function GlobalTabs() {
       TAB_BORDER;
   }
 
-  console.log(tabs);
-
   return (
     <nav ref={tabContainerRef} className={styles.QuickLinks}>
       <ol className={styles.Links}>
