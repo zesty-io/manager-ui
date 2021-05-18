@@ -131,7 +131,7 @@ function createTab(state, parsedPath) {
         const item = state.content[zuid];
         if (item && item.web) {
           tab.name =
-            item.web.metaTitle || item.web.metaLinkText || item.web.pathPart;
+            item.web.metaLinkText || item.web.metaTitle || item.web.pathPart;
         }
       }
       tab.icon = faEdit;
