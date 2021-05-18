@@ -275,7 +275,7 @@ export function searchItems(
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/search/items?q=${term}&order=${query.order}&dir=${query.dir}&limit=${query.limit}`,
       handler: res => {
-        if (Array.isArray(res.data)) {
+        if (res.status === 200 && Array.isArray(res.data)) {
           dispatch({
             type: "SEARCH_ITEMS_SUCCESS",
             data: res.data.reduce((acc, item) => {
@@ -283,8 +283,14 @@ export function searchItems(
               return acc;
             }, {})
           });
+        } else {
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `Failed to fetch resource. ${res.status}`
+            })
+          );
         }
-
         return res;
       }
     });

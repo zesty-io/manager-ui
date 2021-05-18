@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useEffect } from "react";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
+import { searchItems } from "shell/store/content";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -10,7 +11,6 @@ import { Infotip } from "@zesty-io/core/Infotip";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import { notify } from "shell/store/notifications";
-import { request } from "utility/request";
 
 import styles from "./ItemRoute.less";
 export const ItemRoute = connect(state => {
@@ -19,6 +19,7 @@ export const ItemRoute = connect(state => {
   };
 })(
   React.memo(function ItemRoute(props) {
+    const dispatch = useDispatch();
     const [pathPart, setPathPart] = useState(props.path_part);
     const [loading, setLoading] = useState(false);
     const [unique, setUnique] = useState(true);
@@ -35,7 +36,7 @@ export const ItemRoute = connect(state => {
 
         setLoading(true);
 
-        return request(`${CONFIG.API_INSTANCE}/search/items?q=${fullPath}`)
+        return dispatch(searchItems(fullPath))
           .then(res => {
             // check list of partial matches for exact path match
             const matches = res.data.filter(item => {
