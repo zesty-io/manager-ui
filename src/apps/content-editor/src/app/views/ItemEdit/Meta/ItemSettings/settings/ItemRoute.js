@@ -37,7 +37,7 @@ export const ItemRoute = connect(state => {
 
         setLoading(true);
 
-        return request(dispatch(searchItems(fullPath)))
+        return dispatch(searchItems(fullPath))
           .then(res => {
             // check list of partial matches for exact path match
             const matches = res.data.filter(item => {
