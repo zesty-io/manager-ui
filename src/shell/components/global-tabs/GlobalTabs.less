@@ -2,7 +2,7 @@
 @import "~@zesty-io/core/typography.less";
 
 @media (max-width: 2000px) {
-  .GlobalTopBar {
+  .QuickLinks {
     .Links {
       li {
         a {
@@ -13,113 +13,67 @@
   }
 }
 
-.GlobalTopBar {
-  background-color: @globalMenuBkgColor;
-  box-shadow: 0px 0px 3px @globalMenuBkgColor;
-  height: 54px;
-  display: grid;
-  grid-template-columns: minmax(200px, 20vw) 1fr;
+.QuickLinks {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow-x: scroll;
 
-  .InstanceSearch {
+  .Links {
+    flex: 1;
     display: flex;
-    align-items: center;
-    padding: 0 8px;
-  }
 
-  .InstanceTabs {
-    display: grid;
-    grid-template-columns: 1fr fit-content(350px) 43px 43px;
-    margin-right: 16px;
-
-    .CloseAll {
-      margin: 8px 8px 0 0;
-      align-items: center;
-      justify-content: center;
+    &::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    &::-webkit-scrollbar-track-piece {
+      background-color: lighten(#171b26, 10%);
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: lighten(#171b26, 5%);
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: @zesty-orange;
     }
 
-    .QuickLinks {
+    li {
+      align-items: center;
       display: flex;
-      flex: 1;
-      flex-direction: column;
-      overflow-x: auto;
+      border-right: 1px solid #0d1016;
+      padding: 0 8px;
+      flex-shrink: 0;
 
-      .Links {
-        flex: 1;
-        display: flex;
-
-        &::-webkit-scrollbar {
-          width: 4px;
-          height: 4px;
+      //Active tab
+      &.active {
+        background-color: lighten(@globalMenuBkgColor, 5%);
+        a {
+          color: @zesty-white;
         }
-        &::-webkit-scrollbar-track-piece {
-          background-color: lighten(#171b26, 10%);
+      }
+      a {
+        width: 100%;
+        padding: 12px 6px;
+        display: inline-block;
+        max-width: 300px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        text-shadow: none;
+        word-break: keep-all;
+        transition-duration: unset;
+        transition-property: unset;
+
+        &:hover {
+          color: lighten(@zesty-blue, 15%);
         }
-        &::-webkit-scrollbar-thumb {
-          background-color: lighten(#171b26, 5%);
+
+        svg {
+          margin-right: 2px;
         }
-        &::-webkit-scrollbar-thumb:hover {
-          background-color: @zesty-orange;
-        }
-
-        li {
-          align-items: center;
-          display: flex;
-          // border-bottom: 3px solid #212636;
-          border-right: 1px solid #0d1016;
-          padding: 0 8px;
-          flex-shrink: 0;
-          transition: all 0.3s ease;
-
-          &:hover {
-            // border-bottom: 3px solid @zesty-orange;
-          }
-
-          //Active tab
-          &.active {
-            background-color: lighten(@globalMenuBkgColor, 5%);
-            // border-bottom: 3px solid @zesty-orange;
-            a {
-              color: @zesty-white;
-            }
-          }
-          // Close tab button
-          &:first-child {
-            border-right: none;
-            .Close {
-              visibility: visible;
-            }
-          }
-          &:hover,
-          &:active,
-          &:focus {
-            .Close {
-              visibility: visible;
-            }
-          }
-          a {
-            padding: 12px 6px;
-            display: inline-block;
-            max-width: 300px;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-            text-shadow: none;
-            word-break: keep-all;
-
-            &:hover,
-            &:focus {
-              color: lighten(@zesty-blue, 15%);
-            }
-
-            svg {
-              margin-right: 2px;
-            }
-          }
-          .Close {
-            cursor: pointer;
-            visibility: hidden;
-          }
-        }
+      }
+      .Close {
+        cursor: pointer;
       }
     }
   }

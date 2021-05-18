@@ -166,8 +166,8 @@ export default connect(state => {
         ) : (
           <FontAwesomeIcon icon={faSave} />
         )}
-        Save
-        <span className={styles.HideVersion}>&nbsp;Version&nbsp;</span>
+        Save&nbsp;
+        <span className={styles.HideVersion}>Version&nbsp;</span>
         <small>({props.platform.isMac ? "CMD" : "CTRL"} + S)</small>
       </Button>
     </ButtonGroup>

@@ -10,6 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { deleteGroup } from "shell/store/media";
+import { closeTab } from "shell/store/ui";
 
 import shared from "./MediaShared.less";
 // import styles from "./MediaDeleteGroupModal.less";
@@ -35,12 +36,12 @@ export function MediaDeleteGroupModal(props) {
       <ModalFooter className={shared.ModalFooter}>
         <Button
           kind="save"
-          onClick={() =>
+          onClick={() => {
             dispatch(deleteGroup(props.currentGroup)).then(() => {
               props.onClose();
-              props.setCurrentGroupID(props.currentGroup.group_id);
-            })
-          }
+              dispatch(closeTab(`/media/${props.currentGroup.id}`));
+            });
+          }}
         >
           <FontAwesomeIcon icon={faCheck} />
           <span>Delete</span>
