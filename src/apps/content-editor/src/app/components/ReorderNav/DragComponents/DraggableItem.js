@@ -14,8 +14,7 @@ export default class DraggableItem extends Component {
         {children.length ? (
           <span
             className={styles.node}
-            onClick={evt => {
-              evt.preventDefault();
+            onClick={() => {
               handleNestChange(ZUID);
             }}
           >
