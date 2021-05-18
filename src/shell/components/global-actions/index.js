@@ -23,7 +23,7 @@ export default React.memo(function GlobalActions(props) {
       <div className={styles.GlobalActions}>
         <span className={cx(styles.GlobalAction)}>
           <ActivePreview className={styles.GlobalActionIcon} />
-          Preview
+          <span className={styles.HideTitle}>Preview</span>
         </span>
 
         <span
@@ -37,7 +37,7 @@ export default React.memo(function GlobalActions(props) {
             className={styles.GlobalActionIcon}
           />
           {openMenu && <GlobalHelpMenu />}
-          Help
+          <span className={styles.HideTitle}>Help</span>
         </span>
 
         <Url
@@ -52,7 +52,7 @@ export default React.memo(function GlobalActions(props) {
             width="18px"
             height="18px"
           />
-          <span className={styles.GlobalAction}>Source Code</span>
+          <span className={styles.HideTitle}>Source Code</span>
         </Url>
         <Url
           className={styles.GlobalAction}
@@ -65,7 +65,9 @@ export default React.memo(function GlobalActions(props) {
               icon={faHashtag}
               className={styles.GlobalActionIcon}
             />
-            {CONFIG?.build?.data?.gitCommit}
+            <span className={styles.HideTitle}>
+              {CONFIG?.build?.data?.gitCommit}
+            </span>
           </span>
         </Url>
       </div>
