@@ -16,7 +16,8 @@ if (["stage", "production"].includes(__CONFIG__?.ENV)) {
       "https://2e83c3767c484794a56832affe2d26d9@o162121.ingest.sentry.io/5441698",
     autoSessionTracking: true,
     tracesSampleRate: 1.0,
-    normalizeDepth: 10 // increases depth of redux state tree sent
+    normalizeDepth: 10, // increases depth of redux state tree sent
+    maxBreadcrumbs: 50 // reduce for performance purposes
   });
 }
 
