@@ -1,5 +1,4 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Button } from "@zesty-io/core/Button";
@@ -17,12 +16,10 @@ import shared from "./MediaShared.less";
 
 export function MediaDeleteGroupModal(props) {
   const dispatch = useDispatch();
-  const history = useHistory();
   return (
     <Modal
       className={shared.Modal}
       type="global"
-      // set to true for testing
       open={true}
       onClose={() => props.onClose()}
     >
