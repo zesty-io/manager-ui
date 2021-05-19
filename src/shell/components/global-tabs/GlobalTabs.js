@@ -67,7 +67,7 @@ export default React.memo(function GlobalTabs() {
     if (activeTabRef.current) {
       activeTabRef.current.scrollIntoView();
     }
-  }, [tabs.length]);
+  }, [tabs]);
 
   // measure the tab bar width and set state
   // to trigger a synchronous re-render before paint
