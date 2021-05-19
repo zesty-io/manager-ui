@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { Sentry } from "utility/sentry";
+import cx from "classnames";
 
 import AppError from "shell/components/AppError";
 import GlobalSidebar from "shell/components/global-sidebar";
 import GlobalTopbar from "shell/components/GlobalTopbar";
-import Welcome from "shell/components/welcome";
 import Missing from "shell/components/missing";
 
 import ContentApp from "apps/content-editor/src";
@@ -29,8 +29,15 @@ export default connect(state => {
   };
 })(
   React.memo(function Shell(props) {
+    const [globalNav, setGlobalNav] = useState(false);
+
+    const openNav = () => setGlobalNav(!globalNav);
+
     return (
-      <section className={styles.Shell}>
+      <section
+        onClick={openNav}
+        className={cx(styles.Shell, globalNav ? styles.NavOpen : " ")}
+      >
         <GlobalSidebar />
         <main className={styles.AppLoader}>
           <GlobalTopbar />

@@ -25,10 +25,13 @@
   overflow: hidden;
   display: grid;
   grid-template-columns: 170px 1fr;
-  font-size: 14px;
 
   //CLOSED MENU
-  grid-template-columns: 65px 1fr;
+  &.NavOpen {
+    grid-template-columns: 65px 1fr;
+
+    // font-size: 14px;
+  }
 
   scrollbar-color: @zesty-grey @zesty-light-grey;
   scrollbar-width: thin;
