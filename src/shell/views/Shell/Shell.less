@@ -30,7 +30,25 @@
   &.NavOpen {
     grid-template-columns: 65px 1fr;
 
-    // font-size: 14px;
+    a[href="/content"],
+    a[href="/media"],
+    a[href="/schema"],
+    a[href="/code"],
+    a[href="/leads"],
+    a[href="/analytics"],
+    a[href="/seo"],
+    a[href="/audit-trail"],
+    a[href="/settings"],
+    [title="Help"],
+    [title="Zesty.io"],
+    [title="View source code commit"] {
+      span {
+        display: none;
+      }
+    }
+    [data-icon="eye"] + span {
+      display: none;
+    }
   }
 
   scrollbar-color: @zesty-grey @zesty-light-grey;

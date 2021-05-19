@@ -37,12 +37,12 @@ export default React.memo(function GlobalActions(props) {
             className={styles.GlobalActionIcon}
           />
           {openMenu && <GlobalHelpMenu />}
-          <span className={styles.HideTitle}>Help</span>
+          <span>Help</span>
         </span>
 
         <Url
           href={`https://zesty.io`}
-          title="View source code commit"
+          title="Zesty.io"
           target="_blank"
           className={styles.GlobalAction}
         >
@@ -52,7 +52,7 @@ export default React.memo(function GlobalActions(props) {
             width="18px"
             height="18px"
           />
-          <span className={styles.HideTitle}>Source Code</span>
+          <span>Zesty.io</span>
         </Url>
         <Url
           className={styles.GlobalAction}
@@ -60,15 +60,11 @@ export default React.memo(function GlobalActions(props) {
           title="View source code commit"
           target="_blank"
         >
-          <span className={styles.VersionNumber}>
-            <FontAwesomeIcon
-              icon={faHashtag}
-              className={styles.GlobalActionIcon}
-            />
-            <span className={styles.HideTitle}>
-              {CONFIG?.build?.data?.gitCommit}
-            </span>
-          </span>
+          <FontAwesomeIcon
+            icon={faHashtag}
+            className={styles.GlobalActionIcon}
+          />
+          <span>{CONFIG?.build?.data?.gitCommit}</span>
         </Url>
       </div>
     </div>

@@ -14,9 +14,7 @@ import {
   faHistory,
   faCog,
   faBullseye,
-  faCode,
-  faChevronCircleRight,
-  faChevronCircleLeft
+  faCode
 } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./styles.less";

@@ -3,6 +3,8 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { Sentry } from "utility/sentry";
 import cx from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronCircleLeft } from "@fortawesome/free-solid-svg-icons";
 
 import AppError from "shell/components/AppError";
 import GlobalSidebar from "shell/components/global-sidebar";
@@ -38,6 +40,10 @@ export default connect(state => {
         onClick={openNav}
         className={cx(styles.Shell, globalNav ? styles.NavOpen : " ")}
       >
+        {/* <li onClick={openNav}>
+          <FontAwesomeIcon icon={faChevronCircleLeft} />
+          <span>Collapse</span>
+        </li> */}
         <GlobalSidebar />
         <main className={styles.AppLoader}>
           <GlobalTopbar />
