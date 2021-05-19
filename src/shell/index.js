@@ -37,75 +37,6 @@ window.zestyStore = store;
 const instanceZUID = store.getState().instance.ZUID;
 window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZUID}${window.CONFIG.API_INSTANCE}`;
 
-const loadLocalStorageData = true;
-// Load Local Storage Data
-if (loadLocalStorageData) {
-  try {
-    idb
-      .getMany([
-        `${instanceZUID}:user:selected_lang`,
-        `${instanceZUID}:navContent`,
-        `${instanceZUID}:models`,
-        `${instanceZUID}:fields`,
-        `${instanceZUID}:content`
-      ])
-      .then(results => {
-        const [lang, nav, models, fields, content] = results;
-
-        store.dispatch({
-          type: "LOADED_LOCAL_USER_LANG",
-          payload: {
-            // default to english
-            lang: lang || "en-US"
-          }
-        });
-
-        // FIXME: This is broken because on initial nav fetch we modify
-        // the raw response before entering it into local state so when re-loading
-        // from local db it's not in the shape the redux store expects.
-        // store.dispatch({
-        //   type: "LOADED_LOCAL_CONTENT_NAV",
-        //   raw: nav
-        // });
-
-        store.dispatch({
-          type: "LOADED_LOCAL_MODELS",
-          payload: models
-        });
-
-        store.dispatch({
-          type: "LOADED_LOCAL_FIELDS",
-          payload: fields
-        });
-
-        store.dispatch({
-          type: "LOADED_LOCAL_ITEMS",
-          data: content
-        });
-
-        // if (Array.isArray(itemZUIDs)) {
-        //   const items = itemZUIDs.map(itemZUID =>
-        //     get(`${zesty.instance.ZUID}:content:${itemZUID}`)
-        //   );
-        //
-        //   Promise.all(items).then(itemsArr => {
-        //     const itemsObj = itemsArr.reduce((acc, item) => {
-        //       acc[item.meta.ZUID] = item;
-        //       return acc;
-        //     }, {});
-        //
-        //     store.dispatch({
-        //       type: "LOADED_LOCAL_ITEMS",
-        //       data: itemsObj
-        //     });
-        //   });
-        // }
-      });
-  } catch (err) {
-    console.error("IndexedDB:get:error", err);
-  }
-}
-
 MonacoSetup(store);
 
 const App = Sentry.withProfiler(() => (
@@ -135,4 +66,71 @@ function render() {
   ReactDOM.render(<App />, document.getElementById("root"));
 }
 
-render();
+// Load IndexedDB cache
+try {
+  idb
+    .getMany([
+      `${instanceZUID}:user:selected_lang`,
+      `${instanceZUID}:navContent`,
+      `${instanceZUID}:models`,
+      `${instanceZUID}:fields`,
+      `${instanceZUID}:content`
+    ])
+    .then(results => {
+      const [lang, nav, models, fields, content] = results;
+
+      store.dispatch({
+        type: "LOADED_LOCAL_USER_LANG",
+        payload: {
+          // default to english
+          lang: lang || "en-US"
+        }
+      });
+
+      // FIXME: This is broken because on initial nav fetch we modify
+      // the raw response before entering it into local state so when re-loading
+      // from local db it's not in the shape the redux store expects.
+      // store.dispatch({
+      //   type: "LOADED_LOCAL_CONTENT_NAV",
+      //   raw: nav
+      // });
+
+      store.dispatch({
+        type: "LOADED_LOCAL_MODELS",
+        payload: models
+      });
+
+      store.dispatch({
+        type: "LOADED_LOCAL_FIELDS",
+        payload: fields
+      });
+
+      store.dispatch({
+        type: "LOADED_LOCAL_ITEMS",
+        data: content
+      });
+
+      // Render App once all Cache has been loaded
+      render();
+
+      // if (Array.isArray(itemZUIDs)) {
+      //   const items = itemZUIDs.map(itemZUID =>
+      //     get(`${zesty.instance.ZUID}:content:${itemZUID}`)
+      //   );
+      //
+      //   Promise.all(items).then(itemsArr => {
+      //     const itemsObj = itemsArr.reduce((acc, item) => {
+      //       acc[item.meta.ZUID] = item;
+      //       return acc;
+      //     }, {});
+      //
+      //     store.dispatch({
+      //       type: "LOADED_LOCAL_ITEMS",
+      //       data: itemsObj
+      //     });
+      //   });
+      // }
+    });
+} catch (err) {
+  console.error("IndexedDB:get:error", err);
+}
