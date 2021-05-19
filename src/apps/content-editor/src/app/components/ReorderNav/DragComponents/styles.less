@@ -1,3 +1,4 @@
+@import "~@zesty-io/core/colors.less";
 .sort {
   display: flex;
   flex-direction: column;
@@ -12,6 +13,12 @@
     .node {
       display: flex;
       align-items: center;
+      color: @zesty-blue;
+
+      &:hover,
+      &:focus {
+        color: darken(@zesty-blue, 20%);
+      }
 
       svg {
         margin: 0;

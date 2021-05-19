@@ -125,7 +125,7 @@ export default connect(state => {
                 name="email"
                 label="Email"
                 placeholder="e.g. hello@zesty.io"
-                autofocus
+                autoFocus
               />
               <FieldTypeText
                 type="password"
