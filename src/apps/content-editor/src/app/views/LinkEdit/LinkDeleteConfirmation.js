@@ -27,6 +27,7 @@ export default function LinkDeleteConfirmation({ linkZUID, onClose }) {
       dispatch(notify({ message: "Deleted Link", kind: "save" }));
       dispatch(closeTab(`/content/link/${linkZUID}`));
       dispatch(fetchNav());
+      onClose();
     });
   }
 
