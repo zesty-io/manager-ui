@@ -1,5 +1,5 @@
 import React from "react";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import cx from "classnames";
 
 import { Header } from "./components/Header";
@@ -7,57 +7,17 @@ import { PlanStep } from "./components/PlanStep";
 import { Start } from "./components/Start";
 
 import styles from "./PublishApp.less";
-export default connect(state => {
-  return {};
-})(function PublishApp(props) {
-  const steps = [
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />,
-    <PlanStep />
-  ];
-  // const steps = [];
+export default function PublishApp() {
+  const publishPlan = useSelector(state => state.publishPlan);
+  const content = useSelector(state => state.content);
+  const contentVersions = useSelector(state => state.contentVersions);
+  const languages = useSelector(state => state.languages);
 
   return (
     <section className={cx(styles.PublishApp, styles.bodyText)}>
-      <Header canPublish={steps.length} />
+      <Header canPublish={publishPlan.length} />
       <main>
-        {steps.length ? (
+        {publishPlan.length ? (
           <table className={styles.Plan}>
             <thead>
               <tr>
@@ -71,11 +31,25 @@ export default connect(state => {
                 <th className={cx(styles.subheadline)}>Edit/View/Remove</th>
               </tr>
             </thead>
-            <tbody>{steps.map((step, i) => step)}</tbody>
+            <tbody>
+              {publishPlan.map(step => (
+                <PlanStep
+                  key={step.ZUID}
+                  content={content[step.ZUID]}
+                  versions={contentVersions[step.ZUID]}
+                  languages={languages}
+                  step={step}
+                />
+              ))}
+            </tbody>
             <tfoot>
-              <p>Total plan steps 000</p>
-              <p>Successful steps 000</p>
-              <p>Failed steps 000</p>
+              <tr>
+                <td colSpan={5}>
+                  <div>Total plan steps 000</div>
+                  <div>Successful steps 000</div>
+                  <div>Failed steps 000</div>
+                </td>
+              </tr>
             </tfoot>
           </table>
         ) : (
@@ -84,4 +58,4 @@ export default connect(state => {
       </main>
     </section>
   );
-});
+}
