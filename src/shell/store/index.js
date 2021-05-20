@@ -44,7 +44,7 @@ const middlewares = [
  * Do not log actions in production
  * Improves performance and keeps bug tracking clean
  */
-if (__CONFIG__?.ENV !== "production") {
+if (!["production", "stage"].includes(__CONFIG__?.ENV)) {
   middlewares.push(
     createLogger({
       collapsed: true,

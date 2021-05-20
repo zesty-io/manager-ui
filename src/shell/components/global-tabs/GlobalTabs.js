@@ -62,6 +62,13 @@ export default React.memo(function GlobalTabs() {
     }
   }, [loadedTabs, models, content, files, mediaGroups]);
 
+  const activeTabRef = useRef();
+  useEffect(() => {
+    if (activeTabRef.current) {
+      activeTabRef.current.scrollIntoView();
+    }
+  }, [tabs]);
+
   // measure the tab bar width and set state
   // to trigger a synchronous re-render before paint
   // recalculate tab bar width if window is resized
@@ -94,28 +101,33 @@ export default React.memo(function GlobalTabs() {
   return (
     <nav ref={tabContainerRef} className={styles.QuickLinks}>
       <ol className={styles.Links}>
-        {tabs.map((tab, i) => (
-          <li
-            key={i}
-            style={{ width: `${tabWidth}px` }}
-            className={cx(
-              styles.Route,
-              tab.pathname === history.location.pathname ? styles.active : null
-            )}
-          >
-            <AppLink to={`${tab.pathname}`}>
-              {tab.icon && <FontAwesomeIcon icon={tab.icon} />}
-              &nbsp;
-              {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
-            </AppLink>
-            <span
-              className={styles.Close}
-              onClick={() => dispatch(closeTab(tab.pathname))}
+        {tabs.map((tab, i) => {
+          const isActiveTab = tab.pathname === history.location.pathname;
+          const tabProps = {};
+          if (isActiveTab) {
+            tabProps.ref = activeTabRef;
+          }
+          return (
+            <li
+              {...tabProps}
+              key={i}
+              style={{ width: `${tabWidth}px` }}
+              className={cx(styles.Route, isActiveTab ? styles.active : null)}
             >
-              <FontAwesomeIcon icon={faTimesCircle} />
-            </span>
-          </li>
-        ))}
+              <AppLink to={`${tab.pathname}`}>
+                {tab.icon && <FontAwesomeIcon icon={tab.icon} />}
+                &nbsp;
+                {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
+              </AppLink>
+              <span
+                className={styles.Close}
+                onClick={() => dispatch(closeTab(tab.pathname))}
+              >
+                <FontAwesomeIcon icon={faTimesCircle} />
+              </span>
+            </li>
+          );
+        })}
       </ol>
     </nav>
   );
