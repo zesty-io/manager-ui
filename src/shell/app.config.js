@@ -12,10 +12,10 @@ module.exports = {
 
     SERVICE_AUTH: "https://auth.api.zesty.io",
     SERVICE_EMAIL: "https://email.zesty.io/send",
-    SERVICE_MEDIA_MANAGER: "https://svc.zesty.io/media-manager-service",
-    SERVICE_MEDIA_RESOLVER: "https://svc.zesty.io/media-resolver-service",
-    SERVICE_MEDIA_STORAGE: "https://svc.zesty.io/media-storage-service",
-    SERVICE_MEDIA_MODIFY: "https://svc.zesty.io/media-modify-service",
+    SERVICE_MEDIA_MANAGER: "https://media-manager.api.zesty.io",
+    SERVICE_MEDIA_RESOLVER: "https://media-resolver.api.zesty.io",
+    SERVICE_MEDIA_STORAGE: "https://media-storage.api.zesty.io",
+    SERVICE_MEDIA_MODIFY: "https://media-modify.api.zesty.io",
     SERVICE_REDIS_GATEWAY: "https://cache.zesty.io",
     SERVICE_GOOGLE_ANALYTICS_AUTH:
       "https://us-central1-zesty-prod.cloudfunctions.net/authenticateGoogleAnalytics",
