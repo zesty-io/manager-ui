@@ -3,7 +3,9 @@ import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronCircleLeft,
-  faChevronCircleRight
+  faChevronCircleRight,
+  faChevronLeft,
+  faChevronRight
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./GlobalSidebar.less";
 
@@ -23,11 +25,11 @@ export default connect(state => {
         <Favicon />
         {props.globalNav ? (
           <p className={styles.Collapse} onClick={props.onClick}>
-            <FontAwesomeIcon icon={faChevronCircleRight} />
+            <FontAwesomeIcon icon={faChevronRight} />
           </p>
         ) : (
           <p className={styles.Collapse} onClick={props.onClick}>
-            <FontAwesomeIcon icon={faChevronCircleLeft} />
+            <FontAwesomeIcon icon={faChevronLeft} />
             <span>Collapse</span>
           </p>
         )}
