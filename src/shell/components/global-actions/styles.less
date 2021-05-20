@@ -8,7 +8,6 @@
   width: 100%;
   border-top: 1px solid lighten(@globalMenuBkgColor, 5%);
 
-  align-items: center;
   display: flex;
   flex-direction: column;
 
@@ -56,12 +55,11 @@
     display: flex;
     align-items: center;
 
-    img {
-      margin-right: 8px;
-    }
-
     a {
       margin: 0;
+    }
+    span {
+      font-weight: 400;
     }
 
     svg {
@@ -77,34 +75,3 @@
     }
   }
 }
-
-//CLOSED MENU
-// .GlobalSubMenu {
-//   align-items: initial;
-
-//   .HideTitle {
-//     display: none;
-//   }
-
-//   .GlobalActions {
-//     flex-wrap: initial;
-//     align-content: initial;
-//     flex-direction: row;
-//   }
-
-//   .AppVersion {
-//     a {
-//       flex-direction: row;
-//     }
-//     img {
-//       margin: 0 8px 0 0;
-//     }
-//     .VersionNumber {
-//       margin: 0;
-//       font-size: 14px;
-//     }
-//   }
-//   .Title {
-//     display: none;
-//   }
-// }

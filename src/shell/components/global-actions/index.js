@@ -23,7 +23,7 @@ export default React.memo(function GlobalActions(props) {
       <div className={styles.GlobalActions}>
         <span className={cx(styles.GlobalAction)}>
           <ActivePreview className={styles.GlobalActionIcon} />
-          <span className={styles.HideTitle}>Preview</span>
+          <span>Preview</span>
         </span>
 
         <span
@@ -52,18 +52,16 @@ export default React.memo(function GlobalActions(props) {
             width="18px"
             height="18px"
           />
-          <span>Zesty.io</span>
+          <span className={styles.GlobalAction}>Zesty.io</span>
         </Url>
+
         <Url
           className={styles.GlobalAction}
           href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
           title="View source code commit"
           target="_blank"
         >
-          <FontAwesomeIcon
-            icon={faHashtag}
-            className={styles.GlobalActionIcon}
-          />
+          <FontAwesomeIcon icon={faHashtag} />
           <span>{CONFIG?.build?.data?.gitCommit}</span>
         </Url>
       </div>
