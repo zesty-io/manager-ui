@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory, useParams } from "react-router";
+import { useParams } from "react-router";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -14,10 +14,10 @@ import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 
+import LinkDeleteConfirmation from "./LinkDeleteConfirmation";
 import styles from "./LinkEdit.less";
 
 export default function LinkEdit() {
-  const history = useHistory();
   const dispatch = useDispatch();
   const isMounted = useRef(false);
   const { linkZUID } = useParams();
@@ -45,6 +45,7 @@ export default function LinkEdit() {
     loading: false
   };
   const [state, setState] = useState(INITIAL_STATE);
+  const [linkDeleteConfirmation, setLinkDeleteConfirmation] = useState(false);
 
   useEffect(() => {
     isMounted.current = true;
@@ -205,14 +206,8 @@ export default function LinkEdit() {
     });
   }
 
-  function deleteLink() {
-    return request(`${CONFIG.API_INSTANCE}/content/links/${linkZUID}`, {
-      method: "DELETE",
-      json: true
-    }).then(res => {
-      dispatch(notify({ message: "Deleted Link", kind: "save" }));
-      history.push("/content");
-    });
+  function confirmDelete() {
+    setLinkDeleteConfirmation(true);
   }
 
   return (
@@ -295,16 +290,18 @@ export default function LinkEdit() {
             <Button kind="save" disabled={state.saving} onClick={saveLink}>
               Save Changes
             </Button>
-            {/* <Button
-              kind="warn"
-              disabled={state.saving}
-              onClick={deleteLink}
-            >
+            <Button kind="warn" disabled={state.saving} onClick={confirmDelete}>
               Delete
-            </Button> */}
+            </Button>
           </CardFooter>
         </Card>
       </WithLoader>
+      {linkDeleteConfirmation && (
+        <LinkDeleteConfirmation
+          linkZUID={linkZUID}
+          onClose={() => setLinkDeleteConfirmation(false)}
+        />
+      )}
     </section>
   );
 }
