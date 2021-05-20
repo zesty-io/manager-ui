@@ -31,20 +31,13 @@ export default connect(state => {
   };
 })(
   React.memo(function Shell(props) {
-    const [globalNav, setGlobalNav] = useState(false);
+    const [globalNav, setGlobalNav] = useState(true);
 
     const openNav = () => setGlobalNav(!globalNav);
 
     return (
-      <section
-        onClick={openNav}
-        className={cx(styles.Shell, globalNav ? styles.NavOpen : " ")}
-      >
-        {/* <li onClick={openNav}>
-          <FontAwesomeIcon icon={faChevronCircleLeft} />
-          <span>Collapse</span>
-        </li> */}
-        <GlobalSidebar />
+      <section className={cx(styles.Shell, globalNav ? styles.NavOpen : " ")}>
+        <GlobalSidebar onClick={openNav} globalNav={globalNav} />
         <main className={styles.AppLoader}>
           <GlobalTopbar />
           <div className={styles.SubApp}>

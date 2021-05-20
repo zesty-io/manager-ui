@@ -5,14 +5,23 @@
 
   .topMenu {
     //MENU Closed
-    grid-auto-rows: 46px 1fr max-content;
+    grid-auto-rows: 46px min-content 1fr max-content;
     padding: 8px 10px;
 
     display: grid;
     align-items: flex-start;
     grid-auto-flow: row;
-    // grid-auto-rows: 80px 1fr max-content;
-    // padding: 8px 22px;
+  }
+  .Collapse {
+    color: #c7d4ea;
+    letter-spacing: 1px;
+    padding: 8px;
+    svg {
+      margin-right: 8px;
+    }
+    &:hover {
+      cursor: pointer;
+    }
   }
   .subMenu {
     position: absolute;
