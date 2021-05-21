@@ -46,7 +46,10 @@ export default connect((state, props) => {
       return tagA.sort > tagB.sort ? 1 : -1;
     });
 
-  const lang = state.languages.find(lang => lang.ID === item.meta.langID);
+  let lang;
+  if (item) {
+    lang = state.languages.find(lang => lang.ID === item.meta.langID);
+  }
 
   return {
     platform: state.platform,
@@ -84,8 +87,11 @@ export default connect((state, props) => {
     componentDidMount() {
       this._isMounted = true;
 
+      // select lang based on content lang
+      if (this.props.lang) {
+        this.props.dispatch(selectLang(this.props.lang.code));
+      }
       this.onLoad(this.props.modelZUID, this.props.itemZUID);
-      this.props.dispatch(selectLang(this.props.lang.code));
       window.addEventListener("keydown", this.handleSave);
     }
     componentWillUnmount() {
@@ -97,7 +103,11 @@ export default connect((state, props) => {
       }
       window.removeEventListener("keydown", this.handleSave);
     }
-    componentDidUpdate() {
+    componentDidUpdate(prevProps) {
+      // whenever language changes, select lang based on content lang
+      if (this.props.lang && prevProps.lang !== this.props.lang) {
+        this.props.dispatch(selectLang(this.props.lang.code));
+      }
       if (
         this.props.modelZUID !== this.state.modelZUID ||
         this.props.itemZUID !== this.state.itemZUID
@@ -108,7 +118,6 @@ export default connect((state, props) => {
         }
 
         this.onLoad(this.props.modelZUID, this.props.itemZUID);
-        this.props.dispatch(selectLang(this.props.lang.code));
       }
     }
 
