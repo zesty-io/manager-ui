@@ -50,7 +50,7 @@ export default connect(state => {
       props.dispatch(detectPlatform());
       props.dispatch(fetchInstances());
       props.dispatch(fetchLangauges("enabled"));
-      //prevent flash on initial render
+      //Prevent Navbar flash on initial render
       props.dispatch(loadOpenNav());
     }, []);
 

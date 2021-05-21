@@ -3,10 +3,9 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { Sentry } from "utility/sentry";
 import cx from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronCircleLeft } from "@fortawesome/free-solid-svg-icons";
+
 import { useDispatch, useSelector } from "react-redux";
-import { loadOpenNav, toggleNav } from "../../store/ui";
+import { toggleNav } from "../../store/ui";
 
 import AppError from "shell/components/AppError";
 import GlobalSidebar from "shell/components/global-sidebar";
@@ -34,20 +33,15 @@ export default connect(state => {
 })(
   React.memo(function Shell(props) {
     const dispatch = useDispatch();
-    const nav = useSelector(state => state.ui.openNav);
+    const navBar = useSelector(state => state.ui.openNav);
 
     const openNav = () => {
       dispatch(toggleNav());
     };
 
-    //calling from load-instace.js to avoid flash on initial load
-    // useEffect(() => {
-    //   dispatch(loadOpenNav());
-    // }, []);
-
     return (
-      <section className={cx(styles.Shell, nav ? styles.NavClosed : " ")}>
-        <GlobalSidebar onClick={openNav} globalNav={nav} />
+      <section className={cx(styles.Shell, navBar ? styles.NavClosed : " ")}>
+        <GlobalSidebar onClick={openNav} globalNav={navBar} />
         <main className={styles.AppLoader}>
           <GlobalTopbar />
           <div className={styles.SubApp}>
