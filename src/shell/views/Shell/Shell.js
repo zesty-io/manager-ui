@@ -6,7 +6,7 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronCircleLeft } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { setNav } from "../../store/ui";
+import { loadOpenNav, toggleNav } from "../../store/ui";
 
 import AppError from "shell/components/AppError";
 import GlobalSidebar from "shell/components/global-sidebar";
@@ -34,20 +34,20 @@ export default connect(state => {
 })(
   React.memo(function Shell(props) {
     const dispatch = useDispatch();
-    const Nav = useSelector(state => state.ui.openNav);
-    console.log("🚀 ~ file: Shell.js ~ line 38 ~ Shell ~ Nav", Nav);
+    const nav = useSelector(state => state.ui.openNav);
 
     const openNav = () => {
-      dispatch(setNav(!Nav));
+      dispatch(toggleNav());
     };
 
+    //calling from load-instace.js to avoid flash on initial load
     // useEffect(() => {
-    //   dispatch(setNav(Nav));
-    // }, [Nav]);
+    //   dispatch(loadOpenNav());
+    // }, []);
 
     return (
-      <section className={cx(styles.Shell, Nav ? styles.NavClosed : " ")}>
-        <GlobalSidebar onClick={openNav} globalNav={Nav} />
+      <section className={cx(styles.Shell, nav ? styles.NavClosed : " ")}>
+        <GlobalSidebar onClick={openNav} globalNav={nav} />
         <main className={styles.AppLoader}>
           <GlobalTopbar />
           <div className={styles.SubApp}>

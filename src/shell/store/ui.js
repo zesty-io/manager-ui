@@ -28,6 +28,7 @@ const uiSlice = createSlice({
     setTabs(state, action) {
       state.tabs = action.payload;
     },
+
     setNav(state, action) {
       state.openNav = action.payload;
     }
@@ -185,6 +186,23 @@ export default uiSlice.reducer;
 export const { loadTabsSuccess, setTabs, setNav } = uiSlice.actions;
 
 // Thunks
+
+export function loadOpenNav() {
+  return dispatch => {
+    return idb.get("openNav").then(openNav => {
+      return dispatch(setNav(openNav));
+    });
+  };
+}
+
+export function toggleNav() {
+  return (dispatch, getState) => {
+    const openNav = !getState().ui.openNav;
+    return idb.set("openNav", openNav).then(() => {
+      return dispatch(setNav(openNav));
+    });
+  };
+}
 
 export function loadTabs(instanceZUID) {
   return dispatch => {
