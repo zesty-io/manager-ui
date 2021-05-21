@@ -7,7 +7,12 @@ import {
   faBan
 } from "@fortawesome/free-solid-svg-icons";
 
-import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
+import {
+  Modal,
+  ModalHeader,
+  ModalContent,
+  ModalFooter
+} from "@zesty-io/core/Modal";
 import { Button } from "@zesty-io/core/Button";
 
 import { deleteGroup } from "shell/store/media";
@@ -23,13 +28,13 @@ export function MediaDeleteGroupModal(props) {
       open={true}
       onClose={() => props.onClose()}
     >
-      <ModalContent className={styles.headline}>
+      <ModalHeader className={styles.headline}>
         <FontAwesomeIcon icon={faExclamationTriangle} />
         &nbsp;Are you sure?
-      </ModalContent>
+      </ModalHeader>
       <ModalContent className={styles.Content}>
         <p className={styles.subheadline}>
-          Deleting this group will also delete all subgroups and files.
+          Deleting this group will also delete all sub groups and files.
         </p>
       </ModalContent>
       <ModalFooter className={styles.Footer}>
