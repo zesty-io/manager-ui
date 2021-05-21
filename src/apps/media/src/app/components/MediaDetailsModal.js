@@ -4,9 +4,9 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCopy,
-  faExclamationCircle,
   faLink,
-  faSave
+  faSave,
+  faTrash
 } from "@fortawesome/free-solid-svg-icons";
 import { Url } from "@zesty-io/core/Url";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
@@ -77,7 +77,6 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
           <label className={styles.CopyLabel}>
             <Button
               ref={copyButton}
-              kind="secondary"
               className={styles.CopyButton}
               onClick={copyURL}
             >
@@ -92,7 +91,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
             />
           </label>
           <FieldTypeText
-            className={styles.ModalLabels}
+            className={styles.Field}
             name="title"
             value={title}
             label={
@@ -105,7 +104,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
             onChange={val => setTitle(val)}
           />
           <FieldTypeText
-            className={styles.ModalLabels}
+            className={styles.Field}
             name="filename"
             value={filename}
             label={
@@ -118,7 +117,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
             onChange={val => setFilename(val)}
           />
           {/* <FieldTypeText
-            className={styles.ModalLabels}
+            className={styles.Field}
             name="alt"
             label={
               <label>
@@ -141,7 +140,9 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
           </dl>
         </div>
         <div className={styles.ImageContainer}>
-          <figure className={cx(shared.Checkered, shared.Cmodal)}>
+          <figure
+            className={cx(styles.Picture, shared.Checkered, shared.Cmodal)}
+          >
             <Url
               target="_blank"
               title="Select to download original image in new page"
@@ -150,11 +151,14 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
               <MediaImage file={props.file} params={"?w=350&type=fit"} />
             </Url>
           </figure>
-          <Url target="_blank" title="Original Image" href={props.file.url}>
-            <Button className={styles.OriginalButton} kind="kind">
-              <FontAwesomeIcon icon={faLink} />
-              <span>View Original File</span>
-            </Button>
+          <Url
+            className={styles.ViewOriginal}
+            target="_blank"
+            title="Original Image"
+            href={props.file.url}
+          >
+            <FontAwesomeIcon icon={faLink} />
+            &nbsp;View Original File
           </Url>
         </div>
       </ModalContent>
@@ -165,8 +169,12 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
         </Button>
         {/* hide for Contributor */
         userRole.name !== "Contributor" ? (
-          <Button kind="warn" onClick={props.showDeleteFileModal}>
-            <FontAwesomeIcon icon={faExclamationCircle} />
+          <Button
+            kind="warn"
+            onClick={props.showDeleteFileModal}
+            className={styles.Delete}
+          >
+            <FontAwesomeIcon icon={faTrash} />
             <span>Delete</span>
           </Button>
         ) : null}

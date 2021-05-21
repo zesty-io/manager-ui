@@ -3,11 +3,7 @@ import { useSelector } from "react-redux";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEdit,
-  faExclamationCircle,
-  faPlus
-} from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
 import { MediaCreateGroupModal } from "./MediaCreateGroupModal";
@@ -76,7 +72,7 @@ export const MediaHeader = React.memo(function MediaHeader(props) {
               aria-label="Delete"
               onClick={props.showDeleteGroupModal}
             >
-              <FontAwesomeIcon icon={faExclamationCircle} />
+              <FontAwesomeIcon icon={faTrash} />
               <span>Delete</span>
             </Button>
           ) : null}

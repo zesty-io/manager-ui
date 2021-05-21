@@ -18,22 +18,25 @@
     grid-template-columns: minmax(450px, 1fr) minmax(350px, 1fr);
     gap: 16px;
     justify-content: center;
-    align-items: center;
     background-color: white;
     padding: 16px;
 
-    img {
-      display: block;
-      margin: auto;
-      max-width: 100%;
-      min-width: 350px;
-    }
-    .FieldsContainer {
-      padding-right: 8px;
+    .Picture {
+      margin-bottom: 8px;
+      img {
+        display: block;
+        margin: auto;
+        max-width: 100%;
+        min-width: 350px;
+      }
     }
 
-    .ModalLabels {
-      padding-bottom: 8px;
+    .Field input {
+      margin-bottom: 12px;
+    }
+
+    .Delete {
+      margin-top: 12px;
     }
 
     .DescriptionList {
@@ -51,15 +54,11 @@
       }
     }
 
-    .OriginalButton {
-      margin-top: 8px;
-    }
-
     .CopyLabel {
       display: flex;
       border-radius: 3px;
       border: solid 1px rgba(26, 32, 44, 0.12);
-      margin-bottom: 8px;
+      margin-bottom: 12px;
 
       input {
         width: 100%;
