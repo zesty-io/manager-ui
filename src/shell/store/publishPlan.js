@@ -38,16 +38,31 @@ export function addStep(step) {
 export function removeStep(removeStep) {
   return (dispatch, getState) => {
     const state = getState();
-    const removeStepIndex = state.publishPlan.findByIndex(
-      step =>
-        step.ZUID === removeStep.ZUID && step.version === removeStep.version
+    const removeStepIndex = state.publishPlan.findIndex(
+      step => step.ZUID === removeStep.ZUID
     );
     if (removeStepIndex !== -1) {
       const newPlan = [...state.publishPlan];
-      newPlan.splice(step, 1);
+      newPlan.splice(removeStepIndex, 1);
 
       dispatch(actions.addStep(newPlan));
       idb.set(`${state.instance.ZUID}:publishPlan`, newPlan);
     }
+  };
+}
+
+export function updateStep(updateStep) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const newPlan = [...state.publishPlan];
+    const updateStepIndex = newPlan.findIndex(
+      step => step.ZUID === updateStep.ZUID
+    );
+    const newStep = { ...newPlan[updateStepIndex] };
+    newStep.version = updateStep.version;
+    newPlan[updateStepIndex] = newStep;
+
+    dispatch(actions.updateStep(newPlan));
+    idb.set(`${state.instance.ZUID}:publishPlan`, newPlan);
   };
 }

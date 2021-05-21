@@ -2,8 +2,8 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
-
 import { addStep } from "shell/store/publishPlan";
+import { fetchVersions } from "shell/store/contentVersions";
 import { Button } from "@zesty-io/core/Button";
 import ContentSearch from "shell/components/ContentSearch";
 import styles from "./Header.less";
@@ -19,6 +19,7 @@ export function Header(props) {
           dispatch(
             addStep({ ZUID: item.meta.ZUID, version: item.meta.version })
           );
+          dispatch(fetchVersions(item.meta.contentModelZUID, item.meta.ZUID));
         }}
       />
       <Button kind="alt" disabled={!props.canPublish && "disabled"}>
