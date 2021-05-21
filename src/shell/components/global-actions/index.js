@@ -23,7 +23,6 @@ export default React.memo(function GlobalActions(props) {
       <div className={styles.GlobalActions}>
         <span className={cx(styles.GlobalAction)}>
           <ActivePreview className={styles.GlobalActionIcon} />
-          <span>Preview</span>
         </span>
 
         <span
