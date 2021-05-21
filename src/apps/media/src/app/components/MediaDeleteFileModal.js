@@ -24,11 +24,11 @@ export function MediaDeleteFileModal(props) {
       className={styles.Modal}
       type="global"
       open={true}
-      onClose={() => props.onClose()}
+      onClose={props.onClose}
     >
       <ModalHeader className={styles.headline}>
         <FontAwesomeIcon icon={faExclamationTriangle} />
-        &nbsp;Are you sure?
+        &nbsp;Delete File?
       </ModalHeader>
       <ModalContent className={styles.Content}>
         <p className={styles.subheadline}>
@@ -37,7 +37,7 @@ export function MediaDeleteFileModal(props) {
         </p>
       </ModalContent>
       <ModalFooter className={styles.Footer}>
-        <Button kind="cancel" onClick={() => props.onClose()}>
+        <Button kind="cancel" onClick={props.onClose}>
           <FontAwesomeIcon icon={faBan} />
           <span>Cancel</span>
         </Button>
