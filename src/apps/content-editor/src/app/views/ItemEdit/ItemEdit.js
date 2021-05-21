@@ -13,6 +13,7 @@ import {
   lock,
   unlock
 } from "shell/store/content";
+import { selectLang } from "shell/store/user";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -45,6 +46,8 @@ export default connect((state, props) => {
       return tagA.sort > tagB.sort ? 1 : -1;
     });
 
+  const lang = state.languages.find(lang => lang.ID === item.meta.langID);
+
   return {
     platform: state.platform,
     modelZUID,
@@ -53,6 +56,7 @@ export default connect((state, props) => {
     item,
     tags,
     fields,
+    lang,
     user: state.user,
     userRole: state.userRole,
     logs: state.logs, // TODO filter logs to those for this item,
@@ -81,6 +85,7 @@ export default connect((state, props) => {
       this._isMounted = true;
 
       this.onLoad(this.props.modelZUID, this.props.itemZUID);
+      this.props.dispatch(selectLang(this.props.lang.code));
       window.addEventListener("keydown", this.handleSave);
     }
     componentWillUnmount() {
@@ -103,6 +108,7 @@ export default connect((state, props) => {
         }
 
         this.onLoad(this.props.modelZUID, this.props.itemZUID);
+        this.props.dispatch(selectLang(this.props.lang.code));
       }
     }
 
