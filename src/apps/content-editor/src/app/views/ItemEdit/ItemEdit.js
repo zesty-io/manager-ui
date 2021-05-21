@@ -46,11 +46,6 @@ export default connect((state, props) => {
       return tagA.sort > tagB.sort ? 1 : -1;
     });
 
-  let lang;
-  if (item) {
-    lang = state.languages.find(lang => lang.ID === item.meta.langID);
-  }
-
   return {
     platform: state.platform,
     modelZUID,
@@ -59,7 +54,7 @@ export default connect((state, props) => {
     item,
     tags,
     fields,
-    lang,
+    languages: state.languages,
     user: state.user,
     userRole: state.userRole,
     logs: state.logs, // TODO filter logs to those for this item,
@@ -87,10 +82,6 @@ export default connect((state, props) => {
     componentDidMount() {
       this._isMounted = true;
 
-      // select lang based on content lang
-      if (this.props.lang) {
-        this.props.dispatch(selectLang(this.props.lang.code));
-      }
       this.onLoad(this.props.modelZUID, this.props.itemZUID);
       window.addEventListener("keydown", this.handleSave);
     }
@@ -103,11 +94,7 @@ export default connect((state, props) => {
       }
       window.removeEventListener("keydown", this.handleSave);
     }
-    componentDidUpdate(prevProps) {
-      // whenever language changes, select lang based on content lang
-      if (this.props.lang && prevProps.lang !== this.props.lang) {
-        this.props.dispatch(selectLang(this.props.lang.code));
-      }
+    componentDidUpdate() {
       if (
         this.props.modelZUID !== this.state.modelZUID ||
         this.props.itemZUID !== this.state.itemZUID
@@ -185,11 +172,26 @@ export default connect((state, props) => {
           });
         });
 
-      Promise.all([
-        this.props.dispatch(fetchFields(modelZUID)),
-        this.props.dispatch(fetchItem(modelZUID, itemZUID)),
-        this.props.dispatch(fetchItemPublishing(modelZUID, itemZUID))
-      ])
+      this.props
+        .dispatch(fetchItem(modelZUID, itemZUID))
+        // select lang based on content lang
+        .then(res => {
+          this.props.dispatch(
+            selectLang(
+              this.props.languages.find(
+                lang => lang.ID === res.data.meta.langID
+              ).code
+            )
+          );
+        })
+        // once we selectLang we can fetchFields
+        // which triggers middleware which depends on lang
+        .then(() =>
+          Promise.all([
+            this.props.dispatch(fetchFields(modelZUID)),
+            this.props.dispatch(fetchItemPublishing(modelZUID, itemZUID))
+          ])
+        )
         .then(() => {
           if (this._isMounted) {
             this.setState({
