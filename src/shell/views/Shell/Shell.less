@@ -24,10 +24,12 @@
   height: 100vh;
   overflow: hidden;
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 160px 1fr;
 
   //CLOSED MENU
   &.NavClosed {
+    grid-template-columns: 60px 1fr;
+
     a[href="/content"],
     a[href="/media"],
     a[href="/schema"],
