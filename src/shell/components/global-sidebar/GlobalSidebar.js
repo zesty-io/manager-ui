@@ -21,6 +21,8 @@ export default connect(state => {
     <aside className={styles.GlobalSidebar}>
       <div className={styles.topMenu}>
         <Favicon />
+        <GlobalMenu />
+        <GlobalActions hash={props.instance.randomHashID} />
         {props.globalNav ? (
           <p className={styles.Collapse} onClick={props.onClick}>
             <FontAwesomeIcon icon={faChevronRight} />
@@ -31,9 +33,6 @@ export default connect(state => {
             <span>Collapse</span>
           </p>
         )}
-
-        <GlobalMenu />
-        <GlobalActions hash={props.instance.randomHashID} />
       </div>
     </aside>
   );

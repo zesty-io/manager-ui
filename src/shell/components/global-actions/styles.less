@@ -4,7 +4,7 @@
 .GlobalSubMenu {
   background-color: @globalMenuBkgColor;
   margin: 0;
-  padding: 16px 0;
+  padding: 8px 0;
   width: 100%;
   border-top: 1px solid lighten(@globalMenuBkgColor, 5%);
 
@@ -14,23 +14,50 @@
     padding: 8px 0;
   }
 
+  .AppVersion {
+    margin: 4px;
+    .VersionNumber {
+      word-break: break-all;
+      font-family: monospace;
+      font-size: 12px;
+      line-height: 10px;
+      display: inline-block;
+    }
+
+    a {
+      color: inherit;
+      text-shadow: none;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+    a:hover {
+      color: @zesty-orange;
+    }
+    svg {
+      margin-right: 8px;
+      font-size: 18px;
+    }
+  }
+
   .GlobalAction {
     cursor: pointer;
     width: 100%;
     text-align: left;
-    color: @zesty-field-blue;
     position: relative;
     text-shadow: none;
-    padding: 8px;
+    padding: 4px;
+    color: @zesty-field-blue;
 
-    a {
-      margin: 0;
-    }
     span {
       font-weight: 400;
+      &:hover {
+        color: @zesty-orange;
+      }
     }
     img {
       vertical-align: middle;
+      margin-right: 4px;
     }
 
     svg {
@@ -38,7 +65,7 @@
       height: 16px;
       margin-right: 8px;
     }
-    &:hover,
+
     .GlobalActionIcon:hover,
     .GlobalActionIcon:focus,
     .GlobalActionIcon:active {

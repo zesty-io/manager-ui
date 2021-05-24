@@ -48,21 +48,24 @@ export default React.memo(function GlobalActions(props) {
           <img
             src="https://brand.zesty.io/zesty-io-logo.svg"
             alt={`Zesty.io`}
-            width="18px"
-            height="18px"
+            width="16px"
+            height="16px"
           />
           <span className={styles.GlobalAction}>Zesty.io</span>
         </Url>
 
-        <Url
-          className={styles.GlobalAction}
-          href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
-          title="View source code commit"
-          target="_blank"
-        >
-          <FontAwesomeIcon icon={faHashtag} />
-          <span>{CONFIG?.build?.data?.gitCommit}</span>
-        </Url>
+        <div className={styles.AppVersion}>
+          <Url
+            href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
+            title="View source code commit"
+            target="_blank"
+          >
+            <FontAwesomeIcon icon={faHashtag} />
+            <span className={styles.VersionNumber}>
+              {CONFIG?.build?.data?.gitCommit}
+            </span>
+          </Url>
+        </div>
       </div>
     </div>
   );
