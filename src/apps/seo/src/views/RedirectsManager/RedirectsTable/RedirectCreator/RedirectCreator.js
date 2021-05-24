@@ -26,6 +26,8 @@ export function RedirectCreator(props) {
         code: code === 1 ? 301 : 302 // API expects a 301/302 value
       })
     );
+    setFrom("");
+    setTo("");
   };
 
   return (
@@ -36,6 +38,7 @@ export function RedirectCreator(props) {
           name="redirectFrom"
           type="text"
           placeholder="URL path to redirect from"
+          value={from}
           onChange={evt => setFrom(evt.target.value)}
         />
       </span>
