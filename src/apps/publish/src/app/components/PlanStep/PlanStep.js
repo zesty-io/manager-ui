@@ -88,8 +88,8 @@ export function PlanStep({ step, item, versions, lang }) {
         {/* Preview link should include specific selected version */}
         <Url
           target="_blank"
-          title={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${item.meta.version}`}
-          href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${item.meta.version}`}
+          title={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${step.version}`}
+          href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${step.version}`}
         >
           <FontAwesomeIcon icon={faEye} />
         </Url>
