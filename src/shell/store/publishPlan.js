@@ -5,74 +5,100 @@ import { publish } from "shell/store/content";
 
 const { actions, reducer } = createSlice({
   name: "publishPlan",
-  initialState: [],
+  initialState: { data: [], status: "idle" },
   reducers: {
     loadedPlan(state, action) {
-      return action.payload;
+      state.data = action.payload.data;
+      state.status = "loaded";
     },
     addStep(state, action) {
-      return action.payload;
+      state.data.push(action.payload);
+      state.status = "loaded";
     },
     removeStep(state, action) {
-      return action.payload;
+      const removeStepIndex = state.data.findIndex(
+        step => step.ZUID === action.payload.ZUID
+      );
+      if (removeStepIndex !== -1) {
+        state.data.splice(removeStepIndex, 1);
+      }
     },
     updateStep(state, action) {
-      return action.payload;
+      const updateStep = state.data.find(
+        step => step.ZUID === action.payload.ZUID
+      );
+      if (updateStep) {
+        updateStep.version = action.payload.version;
+      }
+    },
+    publishLoading(state, action) {
+      const step = state.data.find(step => step.ZUID === action.payload);
+      if (step) {
+        step.status = "pending";
+      }
+    },
+    publishSuccess(state, action) {
+      const removeStepIndex = state.data.findIndex(
+        step => step.ZUID === action.payload
+      );
+      if (removeStepIndex !== -1) {
+        state.data.splice(removeStepIndex, 1);
+      }
+    },
+    publishFailure(state, action) {
+      const step = state.data.find(step => step.ZUID === action.payload.ZUID);
+      if (step) {
+        step.status = "error";
+        step.error = action.payload.error;
+      }
+    },
+    publishPlanSuccess(state, action) {
+      state.status = "success";
+    },
+    publishPlanFailure(state, action) {
+      state.status = "error";
     }
   }
 });
 
-export const { loadedPlan } = actions;
+export const {
+  loadedPlan,
+  publishLoading,
+  publishSuccess,
+  publishFailure,
+  publishPlanSuccess,
+  publishPlanFailure
+} = actions;
 
 export default reducer;
 
 export function addStep(step) {
   return (dispatch, getState) => {
+    dispatch(actions.addStep(step));
     const state = getState();
-    const newPlan = [...state.publishPlan];
-    newPlan.push(step);
-
-    dispatch(actions.addStep(newPlan));
-    idb.set(`${state.instance.ZUID}:publishPlan`, newPlan);
+    return idb.set(`${state.instance.ZUID}:publishPlan`, state.publishPlan);
   };
 }
 
-export function removeStep(removeStep) {
+export function removeStep(step) {
   return (dispatch, getState) => {
+    dispatch(actions.removeStep(step));
     const state = getState();
-    const removeStepIndex = state.publishPlan.findIndex(
-      step => step.ZUID === removeStep.ZUID
-    );
-    if (removeStepIndex !== -1) {
-      const newPlan = [...state.publishPlan];
-      newPlan.splice(removeStepIndex, 1);
-
-      dispatch(actions.removeStep(newPlan));
-      idb.set(`${state.instance.ZUID}:publishPlan`, newPlan);
-    }
+    return idb.set(`${state.instance.ZUID}:publishPlan`, state.publishPlan);
   };
 }
 
-export function updateStep(updateStep) {
+export function updateStep(step) {
   return (dispatch, getState) => {
+    dispatch(actions.updateStep(step));
     const state = getState();
-    const newPlan = [...state.publishPlan];
-    const updateStepIndex = newPlan.findIndex(
-      step => step.ZUID === updateStep.ZUID
-    );
-    const newStep = { ...newPlan[updateStepIndex] };
-    newStep.version = updateStep.version;
-    newPlan[updateStepIndex] = newStep;
-
-    dispatch(actions.updateStep(newPlan));
-    idb.set(`${state.instance.ZUID}:publishPlan`, newPlan);
+    return idb.set(`${state.instance.ZUID}:publishPlan`, state.publishPlan);
   };
 }
 
 function batchAsync(chunkedData, fn) {
   return chunkedData.reduce((promise, batch) => {
     return promise.then(results => {
-      console.log("batch: ", batch);
       return Promise.allSettled(batch.map(fn)).then(data => {
         results.push(data);
         return results;
@@ -84,19 +110,32 @@ function batchAsync(chunkedData, fn) {
 export function publishAll() {
   return (dispatch, getState) => {
     const { content, publishPlan } = getState();
-    batchAsync(chunk(publishPlan, 2), step => {
-      console.log(step);
+    return batchAsync(chunk(publishPlan.data, 2), step => {
+      dispatch(publishLoading(step.ZUID));
       return dispatch(
         publish(content[step.ZUID].meta.contentModelZUID, step.ZUID, {
           version: step.version
         })
       )
-        .then(res => {
-          console.log("publish succeeded for: ", step);
+        .then(() => {
+          dispatch(publishSuccess(step.ZUID));
+          const state = getState();
+          idb.set(`${state.instance.ZUID}:publishPlan`, state.publishPlan);
         })
-        .catch(res => {
-          console.error(res);
+        .catch(err => {
+          console.error(err);
+          dispatch(publishFailure({ ZUID: step.ZUID, error: err.message }));
         });
-    }).then(() => console.log("publish complete"));
+    }).then(() => {
+      const state = getState();
+      if (
+        state.publishPlan.data.filter(step => step.status === "success")
+          .length === state.publishPlan.data.length
+      ) {
+        dispatch(publishPlanSuccess());
+      } else {
+        dispatch(publishPlanFailure());
+      }
+    });
   };
 }

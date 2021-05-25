@@ -553,6 +553,11 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
         }
       }
     )
+      .then(res => {
+        if (res.status >= 400) {
+          return Promise.reject(new Error(res.error));
+        }
+      })
       .then(() => {
         const message = data.publishAt
           ? `Scheduled ${title} to publish on ${meta.localTime} in the ${meta.localTimezone} timezone`

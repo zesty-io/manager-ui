@@ -3,10 +3,12 @@
 .PlanStep {
   align-items: center;
   background-color: @white;
+  border-left: 4px solid @white;
   display: flex;
 
   &:nth-of-type(odd) {
     background: lighten(@zesty-light-blue, 15%);
+    border-left: 4px solid lighten(@zesty-light-blue, 15%);
   }
 
   &:hover,
@@ -16,6 +18,7 @@
   &:nth-of-type(odd):focus,
   &:nth-of-type(odd):active {
     background-color: lighten(@zesty-field-blue, 10%);
+    border-left: 4px solid lighten(@zesty-field-blue, 10%);
   }
 
   td {
@@ -31,5 +34,13 @@
   .actions {
     display: flex;
     justify-content: space-around;
+  }
+  &.error {
+    border-left: 4px solid red;
+    &:hover,
+    &:focus,
+    &:active {
+      border-left: 4px solid red;
+    }
   }
 }

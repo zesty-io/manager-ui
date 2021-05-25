@@ -1,5 +1,6 @@
 import { applyMiddleware, combineReducers, createStore } from "redux";
 import { createLogger } from "redux-logger";
+import { composeWithDevTools } from "redux-devtools-extension";
 
 import thunkMiddleware from "redux-thunk";
 import createSentryMiddleware from "redux-sentry-middleware";
@@ -120,7 +121,7 @@ function configureStore(initialState = {}) {
   const store = createStore(
     createReducer(),
     initialState,
-    applyMiddleware(...middlewares)
+    composeWithDevTools(applyMiddleware(...middlewares))
   );
 
   // Keep a reference of injected reducers

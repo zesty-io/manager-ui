@@ -37,13 +37,19 @@ export function PlanStep({ step, content, versions, languages }) {
 
   const onUpdateVersion = useCallback(
     version => {
-      dispatch(updateStep({ ...step, version }));
+      dispatch(updateStep({ ...step, version: +version }));
     },
     [dispatch, step]
   );
 
   return (
-    <tr className={cx(styles.bodyText, styles.PlanStep)}>
+    <tr
+      className={cx(
+        styles.bodyText,
+        styles.PlanStep,
+        step.status === "error" ? styles.error : null
+      )}
+    >
       <td>{itemLanguage}</td>
 
       <td>

@@ -12,7 +12,13 @@ export function Header(props) {
   const dispatch = useDispatch();
   const onSelect = useCallback(
     item => {
-      dispatch(addStep({ ZUID: item.meta.ZUID, version: item.meta.version }));
+      dispatch(
+        addStep({
+          ZUID: item.meta.ZUID,
+          version: item.meta.version,
+          status: "idle"
+        })
+      );
       dispatch(fetchVersions(item.meta.contentModelZUID, item.meta.ZUID));
     },
     [dispatch]
