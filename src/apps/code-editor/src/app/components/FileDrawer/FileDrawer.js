@@ -51,7 +51,7 @@ export const FileDrawer = React.memo(function FileDrawer(props) {
 
         // Logs should always exist
         setLogs(
-          logs.data
+          logs?.data
             .sort((a, b) => {
               // Latest log descending
               return moment(a.createdAt).unix() > moment(b.createdAt).unix()
