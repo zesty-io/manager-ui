@@ -78,7 +78,7 @@ export function createRedirect(redirect) {
           dispatch(
             notify({
               kind: "success",
-              message: `Created new redirect`
+              message: `Created redirect`
             })
           );
 
@@ -94,7 +94,7 @@ export function createRedirect(redirect) {
           dispatch(
             notify({
               kind: "error",
-              message: "Failed to create SEO redirect"
+              message: "Failed creating redirect"
             })
           );
         }
@@ -103,7 +103,7 @@ export function createRedirect(redirect) {
         dispatch(
           notify({
             kind: "error",
-            message: "Failed to create SEO redirect"
+            message: "Failed creating redirect"
           })
         );
       });
