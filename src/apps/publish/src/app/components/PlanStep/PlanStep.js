@@ -65,11 +65,15 @@ export function PlanStep({ step, item, versions, lang }) {
       </td>
 
       <td>
-        {/* Use icon matched to items model type */}
-        <FontAwesomeIcon icon={faDatabase} />
-        {/* Use meta title. Show warning with link to edit if meta title is missing. */}
-        &nbsp;
-        {item.web.metaTitle ? item.web.metaTitle : "Missing Item Meta Title"}
+        <AppLink
+          to={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
+        >
+          {/* Use icon matched to items model type */}
+          <FontAwesomeIcon icon={faDatabase} />
+          {/* Use meta title. Show warning with link to edit if meta title is missing. */}
+          &nbsp;
+          {item.web.metaTitle ? item.web.metaTitle : "Missing Item Meta Title"}
+        </AppLink>
       </td>
 
       <td>
@@ -80,13 +84,7 @@ export function PlanStep({ step, item, versions, lang }) {
           : "Never published"}
       </td>
 
-      <td className={styles.actions}>
-        <AppLink
-          to={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
-        >
-          <FontAwesomeIcon icon={faEdit} />
-        </AppLink>
-
+      <td>
         {/* Preview link should include specific selected version */}
         <Url
           target="_blank"
@@ -95,7 +93,8 @@ export function PlanStep({ step, item, versions, lang }) {
         >
           <FontAwesomeIcon icon={faEye} />
         </Url>
-
+      </td>
+      <td>
         <Button onClick={onRemove}>
           <FontAwesomeIcon icon={faTimes} />
         </Button>

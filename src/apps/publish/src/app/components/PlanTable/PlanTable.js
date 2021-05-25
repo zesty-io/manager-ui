@@ -18,7 +18,8 @@ export function PlanTable({ plan }) {
           <th className={styles.subheadline}>Title</th>
 
           <th className={styles.subheadline}>Last Publish</th>
-          <th className={styles.subheadline}>Edit/View/Remove</th>
+          <th className={styles.subheadline}>Preview</th>
+          <th className={styles.subheadline}></th>
         </tr>
       </thead>
       <tbody>
@@ -37,7 +38,7 @@ export function PlanTable({ plan }) {
       </tbody>
       <tfoot>
         <tr>
-          <td colSpan={5}>
+          <td colSpan={6}>
             <div>
               Published {plan.successes}/{plan.successes + plan.data.length}
             </div>
