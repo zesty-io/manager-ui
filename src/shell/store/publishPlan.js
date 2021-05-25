@@ -3,7 +3,7 @@ import chunk from "lodash/chunk";
 import idb from "utility/idb";
 import { publish } from "shell/store/content";
 
-function batchAsync(chunkedData, fn) {
+function asyncBatch(chunkedData, fn) {
   return chunkedData.reduce((promise, batch) => {
     return promise.then(results => {
       return Promise.allSettled(batch.map(fn)).then(data => {
@@ -18,7 +18,21 @@ const { actions, reducer } = createSlice({
   name: "publishPlan",
   initialState: {
     data: [], // [{ZUID, version, status}] idle/pending/error
-    status: "idle" // idle/loaded/pending/success/error
+    status:
+      "idle" /*
+    idle - initial state
+    loaded - data loaded from indexeddb
+    pending - publish pending
+    success - publish total success
+    error - publish error
+
+    Valid Transitions
+    idle->loaded
+    loaded->pending
+    pending->{success,error}
+    error->pending
+    success->loaded
+    */
   },
   reducers: {
     loadedPlan(state, action) {
@@ -26,9 +40,12 @@ const { actions, reducer } = createSlice({
       state.status = "loaded";
     },
     addStep(state, action) {
+      // prevent duplicate ZUIDs
       if (!state.data.find(step => step.ZUID === action.payload.ZUID)) {
         state.data.push(action.payload);
-        state.status = "loaded";
+        if (state.status === "success") {
+          state.status = "loaded";
+        }
       }
     },
     removeStep(state, action) {
@@ -80,63 +97,49 @@ const { actions, reducer } = createSlice({
   }
 });
 
-export const { loadedPlan } = actions;
+export const {
+  loadedPlan,
+  addStep,
+  removeStep,
+  updateStep,
+  publishPending,
+  publishSuccess,
+  publishFailure,
+  publishPlanPending,
+  publishPlanSuccess,
+  publishPlanFailure
+} = actions;
 
 export default reducer;
 
-export function addStep(step) {
-  return (dispatch, getState) => {
-    dispatch(actions.addStep(step));
-    const state = getState();
-    return idb.set(`${state.instance.ZUID}:publishPlan`, state.publishPlan);
-  };
-}
-
-export function removeStep(step) {
-  return (dispatch, getState) => {
-    dispatch(actions.removeStep(step));
-    const state = getState();
-    return idb.set(`${state.instance.ZUID}:publishPlan`, state.publishPlan);
-  };
-}
-
-export function updateStep(step) {
-  return (dispatch, getState) => {
-    dispatch(actions.updateStep(step));
-    const state = getState();
-    return idb.set(`${state.instance.ZUID}:publishPlan`, state.publishPlan);
-  };
-}
-
+// Publish content in batches, marking all
+// successes/failures until all batches processed
 export function publishAll() {
+  const PUBLISH_BATCH_SIZE = 2;
   return (dispatch, getState) => {
     const { content, publishPlan } = getState();
-    dispatch(publishPlanPending());
-    return batchAsync(chunk(publishPlan.data, 2), step => {
-      dispatch(publishPending(step.ZUID));
+    dispatch(actions.publishPlanPending());
+    return asyncBatch(chunk(publishPlan.data, PUBLISH_BATCH_SIZE), step => {
+      dispatch(actions.publishPending(step.ZUID));
       return dispatch(
         publish(content[step.ZUID].meta.contentModelZUID, step.ZUID, {
           version: step.version
         })
       )
         .then(() => {
-          dispatch(publishSuccess(step.ZUID));
-          const state = getState();
-          idb.set(`${state.instance.ZUID}:publishPlan`, state.publishPlan);
+          dispatch(actions.publishSuccess(step.ZUID));
         })
         .catch(err => {
-          console.error(err);
-          dispatch(publishFailure({ ZUID: step.ZUID, error: err.message }));
+          dispatch(
+            actions.publishFailure({ ZUID: step.ZUID, error: err.message })
+          );
         });
     }).then(() => {
       const state = getState();
-      if (
-        state.publishPlan.data.filter(step => step.status === "success")
-          .length === state.publishPlan.data.length
-      ) {
-        dispatch(publishPlanSuccess());
+      if (!state.publishPlan.data.length) {
+        dispatch(actions.publishPlanSuccess());
       } else {
-        dispatch(publishPlanFailure());
+        dispatch(actions.publishPlanFailure());
       }
     });
   };
