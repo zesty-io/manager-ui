@@ -1,5 +1,6 @@
 import idb from "utility/idb";
 import {
+  resetPlan,
   addStep,
   removeStep,
   updateStep,
@@ -17,6 +18,7 @@ export const localStorage = store => next => action => {
     const state = store.getState();
 
     switch (action.type) {
+      case `${resetPlan}`:
       case `${addStep}`:
       case `${removeStep}`:
       case `${updateStep}`:

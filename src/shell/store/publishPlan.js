@@ -32,12 +32,19 @@ const { actions, reducer } = createSlice({
     pending->{success,error}
     error->pending
     success->loaded
-    */
+    */,
+    successes: 0,
+    failures: 0
   },
   reducers: {
     loadedPlan(state, action) {
-      state.data = action.payload.data;
+      return action.payload;
+    },
+    resetPlan(state) {
+      state.data = [];
       state.status = "loaded";
+      state.successes = 0;
+      state.failures = 0;
     },
     addStep(state, action) {
       // prevent duplicate ZUIDs
@@ -76,6 +83,7 @@ const { actions, reducer } = createSlice({
       );
       if (removeStepIndex !== -1) {
         state.data.splice(removeStepIndex, 1);
+        state.successes++;
       }
     },
     publishFailure(state, action) {
@@ -83,15 +91,18 @@ const { actions, reducer } = createSlice({
       if (step) {
         step.status = "error";
         step.error = action.payload.error;
+        state.errors++;
       }
     },
-    publishPlanPending(state, action) {
+    publishPlanPending(state) {
       state.status = "pending";
+      // reset errors on start of publish
+      state.errors = 0;
     },
-    publishPlanSuccess(state, action) {
+    publishPlanSuccess(state) {
       state.status = "success";
     },
-    publishPlanFailure(state, action) {
+    publishPlanFailure(state) {
       state.status = "error";
     }
   }
@@ -99,6 +110,7 @@ const { actions, reducer } = createSlice({
 
 export const {
   loadedPlan,
+  resetPlan,
   addStep,
   removeStep,
   updateStep,

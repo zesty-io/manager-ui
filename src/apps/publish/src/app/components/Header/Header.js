@@ -29,18 +29,22 @@ export function Header(props) {
   return (
     <header className={styles.Header}>
       <h1 className={styles.display}>Publish Plan</h1>
-      <ContentSearch
-        placeholder="Search for items to include in your publish plan"
-        onSelect={onSelect}
-      />
-      <Button
-        kind="alt"
-        disabled={!props.canPublish && "disabled"}
-        onClick={onPublishAll}
-      >
-        <FontAwesomeIcon icon={faCloudUploadAlt} />
-        Publish All
-      </Button>
+      {props.showSearch ? (
+        <ContentSearch
+          placeholder="Search for items to include in your publish plan"
+          onSelect={onSelect}
+        />
+      ) : null}
+      {props.showPublishAll ? (
+        <Button
+          kind="alt"
+          disabled={!props.canPublish && "disabled"}
+          onClick={onPublishAll}
+        >
+          <FontAwesomeIcon icon={faCloudUploadAlt} />
+          Publish All
+        </Button>
+      ) : null}
     </header>
   );
 }

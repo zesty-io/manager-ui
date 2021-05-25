@@ -30,6 +30,8 @@ export default function PublishApp() {
     <section className={cx(styles.PublishApp, styles.bodyText)}>
       <Header
         canPublish={publishPlan.status !== "pending" && publishPlan.data.length}
+        showSearch={publishPlan.status !== "success"}
+        showPublishAll={publishPlan.status !== "success"}
       />
       <main>
         {(publishPlan.status === "loaded" ||

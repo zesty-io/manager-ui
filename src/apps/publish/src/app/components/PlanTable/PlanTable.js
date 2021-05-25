@@ -35,9 +35,9 @@ export function PlanTable({ plan }) {
       <tfoot>
         <tr>
           <td colSpan={5}>
-            <div>Total plan steps 000</div>
-            <div>Successful steps 000</div>
-            <div>Failed steps 000</div>
+            <div>
+              Published {plan.successes}/{plan.successes + plan.data.length}
+            </div>
           </td>
         </tr>
       </tfoot>
