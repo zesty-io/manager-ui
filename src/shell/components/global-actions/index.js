@@ -47,7 +47,7 @@ export default React.memo(function GlobalActions(props) {
         >
           <img
             src="https://brand.zesty.io/zesty-io-logo.svg"
-            alt={`Zesty.io`}
+            alt="Zesty.io"
             width="16px"
             height="16px"
           />
