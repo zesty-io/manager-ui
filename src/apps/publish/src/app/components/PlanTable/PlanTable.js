@@ -22,15 +22,18 @@ export function PlanTable({ plan }) {
         </tr>
       </thead>
       <tbody>
-        {plan.data.map(step => (
-          <PlanStep
-            key={step.ZUID}
-            content={content[step.ZUID]}
-            versions={contentVersions[step.ZUID]}
-            languages={languages}
-            step={step}
-          />
-        ))}
+        {plan.data.map(step => {
+          const item = content[step.ZUID];
+          return (
+            <PlanStep
+              key={step.ZUID}
+              item={item}
+              versions={contentVersions[step.ZUID]}
+              lang={languages.find(l => l.ID === item.meta.langID).code}
+              step={step}
+            />
+          );
+        })}
       </tbody>
       <tfoot>
         <tr>

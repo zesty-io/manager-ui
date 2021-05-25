@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import moment from "moment-timezone";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,12 +12,13 @@ import {
 import { removeStep, updateStep } from "shell/store/publishPlan";
 import { Select, Option } from "@zesty-io/core/Select";
 import { AppLink } from "@zesty-io/core/AppLink";
+import { Url } from "@zesty-io/core/Url";
 import { Button } from "@zesty-io/core/Button";
 import styles from "./PlanStep.less";
 
-export function PlanStep({ step, content, versions, languages }) {
+export function PlanStep({ step, item, versions, lang }) {
   const dispatch = useDispatch();
-  const itemLanguage = languages.find(l => l.ID === content.meta.langID).code;
+  const instanceID = useSelector(state => state.instance.randomHashID);
   const options = versions
     ? versions.map(content => {
         return {
@@ -52,7 +53,7 @@ export function PlanStep({ step, content, versions, languages }) {
         step.status === "pending" ? styles.pending : null
       )}
     >
-      <td>{itemLanguage}</td>
+      <td>{lang}</td>
 
       <td>
         {/* Update preview link when version is changed */}
@@ -68,32 +69,32 @@ export function PlanStep({ step, content, versions, languages }) {
         <FontAwesomeIcon icon={faDatabase} />
         {/* Use meta title. Show warning with link to edit if meta title is missing. */}
         &nbsp;
-        {content.web.metaTitle
-          ? content.web.metaTitle
-          : "Missing Item Meta Title"}
+        {item.web.metaTitle ? item.web.metaTitle : "Missing Item Meta Title"}
       </td>
 
       <td>
-        {content.publishing?.isPublished
-          ? `Version ${content.publishing.version} was published ${moment(
-              content.publishing.publishAt
+        {item.publishing?.isPublished
+          ? `Version ${item.publishing.version} was published ${moment(
+              item.publishing.publishAt
             ).fromNow()}`
           : "Never published"}
       </td>
 
       <td className={styles.actions}>
         <AppLink
-          to={`/content/${content.meta.contentModelZUID}/${content.meta.ZUID}`}
+          to={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
         >
           <FontAwesomeIcon icon={faEdit} />
         </AppLink>
 
         {/* Preview link should include specific selected version */}
-        <AppLink
-          to={`/content/${content.meta.contentModelZUID}/${content.meta.ZUID}`}
+        <Url
+          target="_blank"
+          title={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${item.meta.version}`}
+          href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${item.meta.version}`}
         >
           <FontAwesomeIcon icon={faEye} />
-        </AppLink>
+        </Url>
 
         <Button onClick={onRemove}>
           <FontAwesomeIcon icon={faTimes} />
