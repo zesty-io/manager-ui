@@ -38,7 +38,12 @@ const { actions, reducer } = createSlice({
   },
   reducers: {
     loadedPlan(state, action) {
-      return action.payload;
+      // no cache, initial load
+      if (!action.payload) {
+        state.status = "loaded";
+      } else {
+        return action.payload;
+      }
     },
     resetPlan(state) {
       state.data = [];
