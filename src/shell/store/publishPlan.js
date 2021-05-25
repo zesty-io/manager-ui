@@ -3,17 +3,33 @@ import chunk from "lodash/chunk";
 import idb from "utility/idb";
 import { publish } from "shell/store/content";
 
+function batchAsync(chunkedData, fn) {
+  return chunkedData.reduce((promise, batch) => {
+    return promise.then(results => {
+      return Promise.allSettled(batch.map(fn)).then(data => {
+        results.push(data);
+        return results;
+      });
+    });
+  }, Promise.resolve([]));
+}
+
 const { actions, reducer } = createSlice({
   name: "publishPlan",
-  initialState: { data: [], status: "idle" },
+  initialState: {
+    data: [], // [{ZUID, version, status}] idle/pending/error
+    status: "idle" // idle/loaded/pending/success/error
+  },
   reducers: {
     loadedPlan(state, action) {
       state.data = action.payload.data;
       state.status = "loaded";
     },
     addStep(state, action) {
-      state.data.push(action.payload);
-      state.status = "loaded";
+      if (!state.data.find(step => step.ZUID === action.payload.ZUID)) {
+        state.data.push(action.payload);
+        state.status = "loaded";
+      }
     },
     removeStep(state, action) {
       const removeStepIndex = state.data.findIndex(
@@ -31,7 +47,7 @@ const { actions, reducer } = createSlice({
         updateStep.version = action.payload.version;
       }
     },
-    publishLoading(state, action) {
+    publishPending(state, action) {
       const step = state.data.find(step => step.ZUID === action.payload);
       if (step) {
         step.status = "pending";
@@ -52,6 +68,9 @@ const { actions, reducer } = createSlice({
         step.error = action.payload.error;
       }
     },
+    publishPlanPending(state, action) {
+      state.status = "pending";
+    },
     publishPlanSuccess(state, action) {
       state.status = "success";
     },
@@ -61,14 +80,7 @@ const { actions, reducer } = createSlice({
   }
 });
 
-export const {
-  loadedPlan,
-  publishLoading,
-  publishSuccess,
-  publishFailure,
-  publishPlanSuccess,
-  publishPlanFailure
-} = actions;
+export const { loadedPlan } = actions;
 
 export default reducer;
 
@@ -96,22 +108,12 @@ export function updateStep(step) {
   };
 }
 
-function batchAsync(chunkedData, fn) {
-  return chunkedData.reduce((promise, batch) => {
-    return promise.then(results => {
-      return Promise.allSettled(batch.map(fn)).then(data => {
-        results.push(data);
-        return results;
-      });
-    });
-  }, Promise.resolve([]));
-}
-
 export function publishAll() {
   return (dispatch, getState) => {
     const { content, publishPlan } = getState();
+    dispatch(publishPlanPending());
     return batchAsync(chunk(publishPlan.data, 2), step => {
-      dispatch(publishLoading(step.ZUID));
+      dispatch(publishPending(step.ZUID));
       return dispatch(
         publish(content[step.ZUID].meta.contentModelZUID, step.ZUID, {
           version: step.version

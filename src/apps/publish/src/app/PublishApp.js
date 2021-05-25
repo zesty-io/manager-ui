@@ -29,11 +29,12 @@ export default function PublishApp() {
   return (
     <section className={cx(styles.PublishApp, styles.bodyText)}>
       <Header
-        canPublish={publishPlan.status === "loaded" && publishPlan.data.length}
+        canPublish={publishPlan.status !== "pending" && publishPlan.data.length}
       />
       <main>
         {(publishPlan.status === "loaded" ||
-          publishPlan.status === "pending") &&
+          publishPlan.status === "pending" ||
+          publishPlan.status === "error") &&
         publishPlan.data.length ? (
           <PlanTable plan={publishPlan} />
         ) : null}
@@ -41,7 +42,7 @@ export default function PublishApp() {
           <Start />
         ) : null}
         {publishPlan.status === "success" ? (
-          <Completed plan={publishPlan.data} />
+          <Completed plan={publishPlan} />
         ) : null}
       </main>
     </section>

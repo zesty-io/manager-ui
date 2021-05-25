@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import cx from "classnames";
+import moment from "moment-timezone";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faDatabase,
@@ -47,7 +48,8 @@ export function PlanStep({ step, content, versions, languages }) {
       className={cx(
         styles.bodyText,
         styles.PlanStep,
-        step.status === "error" ? styles.error : null
+        step.status === "error" ? styles.error : null,
+        step.status === "pending" ? styles.pending : null
       )}
     >
       <td>{itemLanguage}</td>
@@ -73,8 +75,10 @@ export function PlanStep({ step, content, versions, languages }) {
 
       <td>
         {content.publishing?.isPublished
-          ? `Last publish was version ${content.publishing.version} at ${content.publishing.publishAt}`
-          : "Unpublished"}
+          ? `Version ${content.publishing.version} was published ${moment(
+              content.publishing.publishAt
+            ).fromNow()}`
+          : "Never published"}
       </td>
 
       <td className={styles.actions}>
