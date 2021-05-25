@@ -61,14 +61,18 @@ export const resolveFieldOptions = store => next => (action = {}) => {
               store.dispatch(fetchFields(field.relatedModelZUID));
             }
 
-            const itemsExist = Object.keys(state.content).find(
+            const zuid = Object.keys(state.content).find(
               itemZUID =>
                 state.content[itemZUID].meta.contentModelZUID ===
                 field.relatedModelZUID
             );
 
-            if (!itemsExist) {
-              store.dispatch(fetchItems(field.relatedModelZUID));
+            if (!zuid || state.content[zuid].meta.ZUID) {
+              store.dispatch(
+                fetchItems(field.relatedModelZUID, {
+                  lang: state.user.selected_lang
+                })
+              );
             }
 
             // TODO dispatch web worker background fetch relationship
