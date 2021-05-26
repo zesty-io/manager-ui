@@ -21,7 +21,7 @@ export default connect(state => {
     <aside className={styles.GlobalSidebar}>
       <div className={styles.topMenu}>
         <Favicon />
-        <GlobalMenu />
+        <GlobalMenu openNav={props.ui.openNav} />
         <GlobalActions hash={props.instance.randomHashID} />
         {props.openNav ? (
           <p className={styles.Collapse} onClick={props.onClick}>
