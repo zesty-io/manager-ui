@@ -53,8 +53,6 @@ export default connect(state => {
       props.dispatch(fetchLangauges("enabled"));
       // Used in Publish Plan and Content sections
       props.dispatch(fetchItemPublishings());
-      //Prevent Navbar flash on initial render
-      props.dispatch(loadOpenNav());
     }, []);
 
     return (

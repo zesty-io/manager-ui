@@ -23,14 +23,14 @@ export default connect(state => {
         <Favicon />
         <GlobalMenu />
         <GlobalActions hash={props.instance.randomHashID} />
-        {props.globalNav ? (
-          <p className={styles.Collapse} onClick={props.onClick}>
-            <FontAwesomeIcon icon={faChevronRight} />
-          </p>
-        ) : (
+        {props.openNav ? (
           <p className={styles.Collapse} onClick={props.onClick}>
             <FontAwesomeIcon icon={faChevronLeft} />
             <span>Collapse</span>
+          </p>
+        ) : (
+          <p className={styles.Collapse} onClick={props.onClick}>
+            <FontAwesomeIcon icon={faChevronRight} />
           </p>
         )}
       </div>

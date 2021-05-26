@@ -17,7 +17,7 @@ const uiSlice = createSlice({
   initialState: {
     loadedTabs: false,
     tabs: [],
-    openNav: false
+    openNav: true
   },
   reducers: {
     loadTabsSuccess(state, action) {
@@ -28,9 +28,13 @@ const uiSlice = createSlice({
     setTabs(state, action) {
       state.tabs = action.payload;
     },
-
-    setNav(state, action) {
-      state.openNav = action.payload;
+    loadedUI(state, action) {
+      if (action.payload) {
+        state.openNav = action.payload.openNav;
+      }
+    },
+    toggleNav(state) {
+      state.openNav = !state.openNav;
     }
   }
 });
@@ -183,26 +187,14 @@ function toCapitalCase(string) {
 
 export default uiSlice.reducer;
 
-export const { loadTabsSuccess, setTabs, setNav } = uiSlice.actions;
+export const {
+  loadTabsSuccess,
+  setTabs,
+  loadedUI,
+  toggleNav
+} = uiSlice.actions;
 
 // Thunks
-
-export function loadOpenNav() {
-  return dispatch => {
-    return idb.get("openNav").then(openNav => {
-      return dispatch(setNav(openNav));
-    });
-  };
-}
-
-export function toggleNav() {
-  return (dispatch, getState) => {
-    const openNav = !getState().ui.openNav;
-    return idb.set("openNav", openNav).then(() => {
-      return dispatch(setNav(openNav));
-    });
-  };
-}
 
 export function loadTabs(instanceZUID) {
   return dispatch => {
