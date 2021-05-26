@@ -25,6 +25,8 @@
   overflow: hidden;
   display: grid;
   grid-template-columns: 160px 1fr;
+  scrollbar-color: @zesty-grey @zesty-light-grey;
+  scrollbar-width: thin;
 
   //CLOSED MENU
   &.NavClosed {
@@ -51,10 +53,18 @@
     [data-icon="hashtag"] {
       display: none;
     }
-  }
 
-  scrollbar-color: @zesty-grey @zesty-light-grey;
-  scrollbar-width: thin;
+    //Favicon
+    img[alt*="Favicon"] {
+      width: 30px;
+      height: 30px;
+    }
+    [data-icon="globe"],
+    [data-icon="file-image"] {
+      width: 20px;
+      height: 20px;
+    }
+  }
 
   .AppLoader {
     flex: 2;
@@ -78,6 +88,11 @@
           overflow: initial;
         }
       }
+    }
+  }
+  @media (min-width: 2000px) {
+    & {
+      font-size: 14px;
     }
   }
 }
