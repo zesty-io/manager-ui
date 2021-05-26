@@ -1,5 +1,16 @@
 import idb from "utility/idb";
-
+import {
+  resetPlan,
+  addStep,
+  removeStep,
+  updateStep,
+  publishPending,
+  publishSuccess,
+  publishFailure,
+  publishPlanPending,
+  publishPlanSuccess,
+  publishPlanFailure
+} from "../publishPlan";
 export const localStorage = store => next => action => {
   const result = next(action);
 
@@ -7,31 +18,22 @@ export const localStorage = store => next => action => {
     const state = store.getState();
 
     switch (action.type) {
+      case `${resetPlan}`:
+      case `${addStep}`:
+      case `${removeStep}`:
+      case `${updateStep}`:
+      case `${publishPending}`:
+      case `${publishSuccess}`:
+      case `${publishFailure}`:
+      case `${publishPlanPending}`:
+      case `${publishPlanSuccess}`:
+      case `${publishPlanFailure}`:
+        idb.set(`${state.instance.ZUID}:publishPlan`, state.publishPlan);
+        break;
       case "FETCH_ITEM_SUCCESS":
       case "FETCH_ITEMS_SUCCESS":
       case "SEARCH_ITEMS_SUCCESS":
         idb.set(`${state.instance.ZUID}:content`, state.content);
-        // // Write Item data to IndexedDB
-        // const items = store.getState().content;
-        // Object.keys(items).forEach(itemZUID => {
-        //   idb.set(
-        //     `${zesty.instance.ZUID}:content:${itemZUID}`,
-        //     items[itemZUID]
-        //   );
-        // });
-        //
-        // // Merge existing IndexedDB keys with incoming item keys
-        // let currentKeys = get(`${zesty.instance.ZUID}:content`).then(
-        //   currentKeys => {
-        //     if (!Array.isArray(currentKeys)) {
-        //       currentKeys = [];
-        //     }
-        //     let keys = new Set(currentKeys);
-        //     Object.keys(items).forEach(key => keys.add(key));
-        //
-        //     idb.set(`${zesty.instance.ZUID}:content`, Array.from(keys));
-        //   }
-        // );
         break;
 
       case "FETCH_FIELD_SUCCESS":

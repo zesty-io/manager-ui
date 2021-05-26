@@ -11,6 +11,7 @@ import { fetchProducts } from "shell/store/products";
 import { detectPlatform } from "shell/store/platform";
 import { fetchInstances } from "shell/store/instances";
 import { fetchLangauges } from "shell/store/languages";
+import { fetchItemPublishings } from "shell/store/content";
 import { loadOpenNav } from "../../store/ui";
 
 import styles from "./LoadInstance.less";
@@ -50,6 +51,8 @@ export default connect(state => {
       props.dispatch(detectPlatform());
       props.dispatch(fetchInstances());
       props.dispatch(fetchLangauges("enabled"));
+      // Used in Publish Plan and Content sections
+      props.dispatch(fetchItemPublishings());
       //Prevent Navbar flash on initial render
       props.dispatch(loadOpenNav());
     }, []);

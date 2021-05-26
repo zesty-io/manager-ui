@@ -15,6 +15,7 @@ import history from "utility/history";
 import { Sentry } from "utility/sentry";
 import { store, injectReducer } from "shell/store";
 import { navContent } from "../apps/content-editor/src/store/navContent";
+import { loadedPlan } from "shell/store/publishPlan";
 
 import AppError from "shell/components/AppError";
 import PrivateRoute from "./components/private-route";
@@ -47,10 +48,11 @@ if (loadLocalStorageData) {
         `${instanceZUID}:navContent`,
         `${instanceZUID}:models`,
         `${instanceZUID}:fields`,
-        `${instanceZUID}:content`
+        `${instanceZUID}:content`,
+        `${instanceZUID}:publishPlan`
       ])
       .then(results => {
-        const [lang, nav, models, fields, content] = results;
+        const [lang, nav, models, fields, content, publishPlan] = results;
 
         store.dispatch({
           type: "LOADED_LOCAL_USER_LANG",
@@ -82,6 +84,8 @@ if (loadLocalStorageData) {
           type: "LOADED_LOCAL_ITEMS",
           data: content
         });
+
+        store.dispatch(loadedPlan(publishPlan));
 
         // if (Array.isArray(itemZUIDs)) {
         //   const items = itemZUIDs.map(itemZUID =>
