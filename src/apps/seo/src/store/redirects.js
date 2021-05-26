@@ -68,13 +68,20 @@ export function createRedirect(redirect) {
     dispatch({
       type: "REDIRECT_CREATE"
     });
-    request(`${CONFIG.API_INSTANCE}/web/redirects`, {
+    return request(`${CONFIG.API_INSTANCE}/web/redirects`, {
       method: "POST",
       json: "true",
       body: redirect
     })
       .then(json => {
         if (!json.error) {
+          dispatch(
+            notify({
+              kind: "success",
+              message: `Created redirect`
+            })
+          );
+
           dispatch({
             type: "REDIRECT_CREATE_SUCCESS",
             redirect: {
@@ -87,7 +94,7 @@ export function createRedirect(redirect) {
           dispatch(
             notify({
               kind: "error",
-              message: "Failed to create SEO redirect"
+              message: "Failed creating redirect"
             })
           );
         }
@@ -96,7 +103,7 @@ export function createRedirect(redirect) {
         dispatch(
           notify({
             kind: "error",
-            message: "Failed to create SEO redirect"
+            message: "Failed creating redirect"
           })
         );
       });
