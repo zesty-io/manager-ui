@@ -24,17 +24,37 @@
   height: 100vh;
   overflow: hidden;
   display: grid;
-  grid-template-columns: 60px 1fr;
+  grid-template-columns: 160px 1fr;
+
+  //CLOSED MENU
+  &.NavClosed {
+    grid-template-columns: 60px 1fr;
+
+    a[href="/content"],
+    a[href="/media"],
+    a[href="/schema"],
+    a[href="/code"],
+    a[href="/leads"],
+    a[href="/analytics"],
+    a[href="/seo"],
+    a[href="/audit-trail"],
+    a[href="/settings"],
+    [title="Help"],
+    [title="Zesty.io"] {
+      span {
+        display: none;
+      }
+    }
+    [data-icon="eye"] + span {
+      display: none;
+    }
+    [data-icon="hashtag"] {
+      display: none;
+    }
+  }
 
   scrollbar-color: @zesty-grey @zesty-light-grey;
   scrollbar-width: thin;
-
-  @media (min-width: 2000px) {
-    & {
-      grid-template-columns: 170px 1fr;
-      font-size: 14px;
-    }
-  }
 
   .AppLoader {
     flex: 2;
@@ -57,11 +77,6 @@
         @supports (-webkit-appearance: none) {
           overflow: initial;
         }
-      }
-
-      width: calc(100vw - 60px);
-      @media (min-width: 2000px) {
-        width: calc(100vw - 170px);
       }
     }
   }

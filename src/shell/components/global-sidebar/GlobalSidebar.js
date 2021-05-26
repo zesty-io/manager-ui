@@ -1,5 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronLeft,
+  faChevronRight
+} from "@fortawesome/free-solid-svg-icons";
 import styles from "./GlobalSidebar.less";
 
 import Favicon from "shell/components/favicon";
@@ -18,6 +23,16 @@ export default connect(state => {
         <Favicon />
         <GlobalMenu />
         <GlobalActions hash={props.instance.randomHashID} />
+        {props.globalNav ? (
+          <p className={styles.Collapse} onClick={props.onClick}>
+            <FontAwesomeIcon icon={faChevronRight} />
+          </p>
+        ) : (
+          <p className={styles.Collapse} onClick={props.onClick}>
+            <FontAwesomeIcon icon={faChevronLeft} />
+            <span>Collapse</span>
+          </p>
+        )}
       </div>
     </aside>
   );
