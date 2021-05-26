@@ -11,6 +11,7 @@ import {
   publishPlanSuccess,
   publishPlanFailure
 } from "../publishPlan";
+import { toggleNav } from "../ui";
 export const localStorage = store => next => action => {
   const result = next(action);
 
@@ -18,6 +19,13 @@ export const localStorage = store => next => action => {
     const state = store.getState();
 
     switch (action.type) {
+      case `${toggleNav}`:
+        const ui = { ...state.ui };
+        // we already store tabs separately
+        delete ui.tabs;
+        delete ui.loadedTabs;
+        idb.set(`${state.instance.ZUID}:ui`, ui);
+        break;
       case `${resetPlan}`:
       case `${addStep}`:
       case `${removeStep}`:

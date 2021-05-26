@@ -23,6 +23,7 @@ import LoadInstance from "./components/load-instance";
 import Shell from "./views/Shell";
 
 import { MonacoSetup } from "../apps/code-editor/src/app/components/Editor/components/MemoizedEditor/MonacoSetup";
+import { loadedUI } from "./store/ui";
 
 // needed for Breadcrumbs in Shell
 injectReducer(store, "navContent", navContent);
@@ -49,10 +50,11 @@ if (loadLocalStorageData) {
         `${instanceZUID}:models`,
         `${instanceZUID}:fields`,
         `${instanceZUID}:content`,
-        `${instanceZUID}:publishPlan`
+        `${instanceZUID}:publishPlan`,
+        `${instanceZUID}:ui`
       ])
       .then(results => {
-        const [lang, nav, models, fields, content, publishPlan] = results;
+        const [lang, nav, models, fields, content, publishPlan, ui] = results;
 
         store.dispatch({
           type: "LOADED_LOCAL_USER_LANG",
@@ -84,6 +86,7 @@ if (loadLocalStorageData) {
           type: "LOADED_LOCAL_ITEMS",
           data: content
         });
+        store.dispatch(loadedUI(ui));
 
         store.dispatch(loadedPlan(publishPlan));
 

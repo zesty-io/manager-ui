@@ -5,7 +5,7 @@ import { Sentry } from "utility/sentry";
 import cx from "classnames";
 
 import { useDispatch, useSelector } from "react-redux";
-import { toggleNav } from "../../store/ui";
+import { toggleNav } from "shell/store/ui";
 
 import AppError from "shell/components/AppError";
 import GlobalSidebar from "shell/components/global-sidebar";
@@ -32,15 +32,16 @@ export default connect(state => {
 })(
   React.memo(function Shell(props) {
     const dispatch = useDispatch();
-    const navBar = useSelector(state => state.ui.openNav);
-
-    const openNav = () => {
-      dispatch(toggleNav());
-    };
+    const openNav = useSelector(state => state.ui.openNav);
 
     return (
-      <section className={cx(styles.Shell, navBar ? styles.NavClosed : " ")}>
-        <GlobalSidebar onClick={openNav} globalNav={navBar} />
+      <section className={cx(styles.Shell, openNav ? null : styles.NavClosed)}>
+        <GlobalSidebar
+          onClick={() => {
+            dispatch(toggleNav());
+          }}
+          openNav={openNav}
+        />
         <main className={styles.AppLoader}>
           <GlobalTopbar />
           <div className={styles.SubApp}>
