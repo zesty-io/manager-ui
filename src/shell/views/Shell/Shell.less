@@ -25,6 +25,8 @@
   overflow: hidden;
   display: grid;
   grid-template-columns: 160px 1fr;
+  scrollbar-color: @zesty-grey @zesty-light-grey;
+  scrollbar-width: thin;
 
   //CLOSED MENU
   &.NavClosed {
@@ -52,9 +54,6 @@
       display: none;
     }
   }
-
-  scrollbar-color: @zesty-grey @zesty-light-grey;
-  scrollbar-width: thin;
 
   .AppLoader {
     flex: 2;
