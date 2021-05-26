@@ -132,7 +132,7 @@ export default reducer;
 // Publish content in batches, marking all
 // successes/failures until all batches processed
 export function publishAll() {
-  const PUBLISH_BATCH_SIZE = 2;
+  const PUBLISH_BATCH_SIZE = 15;
   return (dispatch, getState) => {
     const { content, publishPlan } = getState();
     dispatch(actions.publishPlanPending());

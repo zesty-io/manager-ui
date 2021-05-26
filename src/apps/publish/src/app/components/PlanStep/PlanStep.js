@@ -5,9 +5,10 @@ import moment from "moment-timezone";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faDatabase,
-  faEdit,
   faEye,
-  faTimes
+  faSpinner,
+  faTimes,
+  faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 import { removeStep, updateStep } from "shell/store/publishPlan";
 import { Select, Option } from "@zesty-io/core/Select";
@@ -45,14 +46,15 @@ export function PlanStep({ step, item, versions, lang }) {
   );
 
   return (
-    <tr
-      className={cx(
-        styles.bodyText,
-        styles.PlanStep,
-        step.status === "error" ? styles.error : null,
-        step.status === "pending" ? styles.pending : null
-      )}
-    >
+    <tr className={cx(styles.bodyText, styles.PlanStep)}>
+      <td>
+        {step.status === "error" ? (
+          <FontAwesomeIcon style={{ color: "red" }} icon={faTimesCircle} />
+        ) : null}
+        {step.status === "pending" ? (
+          <FontAwesomeIcon icon={faSpinner} spin />
+        ) : null}
+      </td>
       <td>{lang}</td>
 
       <td>
@@ -95,7 +97,7 @@ export function PlanStep({ step, item, versions, lang }) {
         </Url>
       </td>
       <td>
-        <Button onClick={onRemove}>
+        <Button disabled={step.status === "pending"} onClick={onRemove}>
           <FontAwesomeIcon icon={faTimes} />
         </Button>
       </td>
