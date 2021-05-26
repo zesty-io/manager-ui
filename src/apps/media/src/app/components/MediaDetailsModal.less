@@ -4,7 +4,6 @@
   margin: 1% auto 0;
 
   @media only screen and (min-width: 2000px) {
-    max-width: 50%;
     margin: 5% auto 0;
     padding: 32px;
   }
@@ -14,26 +13,30 @@
     @media only screen and (max-width: 1280px) {
       display: flex;
     }
+
     display: grid;
-    grid-template-columns: minmax(450px, 1fr) minmax(350px, 1fr);
+    grid-template-columns: 350px 500px;
     gap: 16px;
     justify-content: center;
-    align-items: center;
     background-color: white;
     padding: 16px;
 
-    img {
-      display: block;
-      margin: auto;
-      max-width: 100%;
-      min-width: 350px;
-    }
-    .FieldsContainer {
-      padding-right: 8px;
+    .Picture {
+      margin-bottom: 8px;
+      img {
+        display: block;
+        margin: auto;
+        max-width: 100%;
+        min-width: 350px;
+      }
     }
 
-    .ModalLabels {
-      padding-bottom: 8px;
+    .Field input {
+      margin-bottom: 16px;
+    }
+
+    .Delete {
+      margin-top: 16px;
     }
 
     .DescriptionList {
@@ -51,15 +54,11 @@
       }
     }
 
-    .OriginalButton {
-      margin-top: 8px;
-    }
-
     .CopyLabel {
       display: flex;
       border-radius: 3px;
       border: solid 1px rgba(26, 32, 44, 0.12);
-      margin-bottom: 8px;
+      margin-bottom: 16px;
 
       input {
         width: 100%;
@@ -116,6 +115,12 @@
           content: "Copied!";
         }
       }
+    }
+  }
+
+  .ButtonGroup {
+    button {
+      margin-left: 16px;
     }
   }
 }

@@ -2,17 +2,28 @@
 .GlobalSidebar {
   display: flex;
   background-color: @globalMenuBkgColor;
+  font-size: 14px;
 
   .topMenu {
-    display: grid;
-    align-items: flex-start;
-    grid-auto-flow: row;
-    grid-auto-rows: 46px 1fr 155px;
+    grid-auto-rows: 46px min-content 1fr max-content;
     padding: 8px 10px;
 
-    @media (min-width: 2000px) {
-      grid-auto-rows: 80px 1fr 90px;
-      padding: 8px 22px;
+    display: grid;
+    align-items: flex-end;
+    grid-auto-flow: row;
+  }
+  .Collapse {
+    border-top: 1px solid #212636;
+    color: @zesty-field-blue;
+    letter-spacing: 1px;
+    padding: 8px;
+    svg {
+      font-size: 16px;
+      margin-right: 8px;
+    }
+    &:hover {
+      cursor: pointer;
+      color: @zesty-orange;
     }
   }
   .subMenu {

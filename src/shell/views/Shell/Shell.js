@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { Sentry } from "utility/sentry";
+import cx from "classnames";
+
+import { useDispatch, useSelector } from "react-redux";
+import { toggleNav } from "../../store/ui";
 
 import AppError from "shell/components/AppError";
 import GlobalSidebar from "shell/components/global-sidebar";
 import GlobalTopbar from "shell/components/GlobalTopbar";
-import Welcome from "shell/components/welcome";
 import Missing from "shell/components/missing";
 
 import ContentApp from "apps/content-editor/src";
@@ -28,9 +31,16 @@ export default connect(state => {
   };
 })(
   React.memo(function Shell(props) {
+    const dispatch = useDispatch();
+    const navBar = useSelector(state => state.ui.openNav);
+
+    const openNav = () => {
+      dispatch(toggleNav());
+    };
+
     return (
-      <section className={styles.Shell}>
-        <GlobalSidebar />
+      <section className={cx(styles.Shell, navBar ? styles.NavClosed : " ")}>
+        <GlobalSidebar onClick={openNav} globalNav={navBar} />
         <main className={styles.AppLoader}>
           <GlobalTopbar />
           <div className={styles.SubApp}>

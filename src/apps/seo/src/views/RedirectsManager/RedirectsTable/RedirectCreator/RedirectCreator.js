@@ -18,14 +18,19 @@ export function RedirectCreator(props) {
   const [code, setCode] = useState(1); // Toggle defaults to 301
 
   const handleCreateRedirect = () => {
-    props.dispatch(
-      createRedirect({
-        path: from,
-        targetType: "path",
-        target: to,
-        code: code === 1 ? 301 : 302 // API expects a 301/302 value
-      })
-    );
+    props
+      .dispatch(
+        createRedirect({
+          path: from,
+          targetType: "path",
+          target: to,
+          code: code === 1 ? 301 : 302 // API expects a 301/302 value
+        })
+      )
+      .then(() => {
+        setFrom("");
+        setTo("");
+      });
   };
 
   return (
@@ -35,6 +40,7 @@ export function RedirectCreator(props) {
           className={styles.from}
           name="redirectFrom"
           type="text"
+          value={from}
           placeholder="URL path to redirect from"
           onChange={evt => setFrom(evt.target.value)}
         />
