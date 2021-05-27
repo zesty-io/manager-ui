@@ -5,6 +5,7 @@ import {
   faChevronLeft,
   faChevronRight
 } from "@fortawesome/free-solid-svg-icons";
+import cx from "classnames";
 import styles from "./GlobalSidebar.less";
 
 import Favicon from "shell/components/favicon";
@@ -24,7 +25,10 @@ export default connect(state => {
         <GlobalMenu openNav={props.ui.openNav} />
         <GlobalActions hash={props.instance.randomHashID} />
         {props.openNav ? (
-          <p className={styles.Collapse} onClick={props.onClick}>
+          <p
+            className={cx(styles.Collapse, styles.Open)}
+            onClick={props.onClick}
+          >
             <FontAwesomeIcon icon={faChevronLeft} />
             <span>Collapse</span>
           </p>

@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import useOnclickOutside from "react-cool-onclickoutside";
 import cx from "classnames";
 
+import { useDispatch, useSelector } from "react-redux";
+import { toggleNav } from "shell/store/ui";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHashtag, faQuestion } from "@fortawesome/free-solid-svg-icons";
 
@@ -12,6 +15,8 @@ import { ActivePreview } from "./components/ActivePreview";
 
 import styles from "./styles.less";
 export default React.memo(function GlobalActions(props) {
+  const dispatch = useDispatch();
+  const openNav = useSelector(state => state.ui.openNav);
   const [openMenu, setOpenMenu] = useState(false);
 
   const ref = useOnclickOutside(() => {
@@ -19,7 +24,7 @@ export default React.memo(function GlobalActions(props) {
   });
 
   return (
-    <div className={styles.GlobalSubMenu}>
+    <div className={cx(styles.GlobalSubMenu, openNav ? styles.NavOpen : null)}>
       <div className={styles.GlobalActions}>
         <span className={cx(styles.GlobalAction)}>
           <ActivePreview className={styles.GlobalActionIcon} />

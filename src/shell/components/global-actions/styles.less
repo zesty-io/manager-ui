@@ -7,21 +7,59 @@
   padding: 8px 0;
   width: 100%;
   border-top: 1px solid lighten(@globalMenuBkgColor, 5%);
+  align-items: center;
+  display: flex;
+  flex-direction: column;
 
   .GlobalActions {
-    display: grid;
-    grid-gap: 12px;
-    padding: 8px 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    flex-direction: column;
   }
 
+  .GlobalAction {
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    text-shadow: none;
+    padding: 8px;
+    color: @zesty-grey;
+
+    span {
+      font-weight: 400;
+      &:hover {
+        color: @zesty-orange;
+      }
+    }
+    img {
+      vertical-align: bottom;
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+
+      vertical-align: bottom;
+    }
+
+    .GlobalActionIcon:hover,
+    .GlobalActionIcon:focus,
+    .GlobalActionIcon:active {
+      color: @zesty-orange;
+    }
+  }
   .AppVersion {
-    margin: 4px 0px 0px 8px;
+    padding: 8px;
     .VersionNumber {
       word-break: break-all;
       font-family: monospace;
       font-size: 12px;
       line-height: 10px;
       display: inline-block;
+      width: 30px;
+      margin: 0 auto;
     }
 
     a {
@@ -41,38 +79,18 @@
       vertical-align: middle;
     }
   }
-
-  .GlobalAction {
-    cursor: pointer;
-    width: 100%;
-    text-align: left;
-    position: relative;
-    text-shadow: none;
-    padding: 4px 0px 0px 8px;
-    color: @zesty-grey;
-    line-height: 10px;
-
-    span {
-      font-weight: 400;
-      &:hover {
-        color: @zesty-orange;
+  &.NavOpen {
+    .GlobalAction {
+      text-align: left;
+      svg {
+        margin-right: 8px;
       }
     }
-    img {
-      vertical-align: middle;
-    }
-
-    svg {
-      width: 16px;
-      height: 16px;
-      margin-right: 8px;
-      vertical-align: middle;
-    }
-
-    .GlobalActionIcon:hover,
-    .GlobalActionIcon:focus,
-    .GlobalActionIcon:active {
-      color: @zesty-orange;
+    .AppVersion {
+      .VersionNumber {
+        width: auto;
+        margin: initial;
+      }
     }
   }
 }
