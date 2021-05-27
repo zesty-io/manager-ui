@@ -17,13 +17,20 @@
     color: @zesty-field-blue;
     letter-spacing: 1px;
     padding: 8px;
+    text-align: center;
     svg {
       font-size: 16px;
-      margin-right: 8px;
     }
     &:hover {
       cursor: pointer;
       color: @zesty-orange;
+    }
+    &.Open {
+      text-align: left;
+      margin-left: 6px;
+      svg {
+        margin-right: 8px;
+      }
     }
   }
   .subMenu {
