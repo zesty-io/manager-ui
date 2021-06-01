@@ -209,6 +209,7 @@ export default connect((state, props) => {
               loading: false
             });
           }
+          throw err;
         });
     };
 
