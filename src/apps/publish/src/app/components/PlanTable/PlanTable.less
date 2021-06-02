@@ -1,0 +1,42 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+.PlanTable {
+  margin-top: 8px;
+  width: 100%;
+
+  tbody {
+    border: 1px solid @zesty-light-blue;
+    border-radius: 4px 4px 0 0;
+
+    // Structure
+    max-height: calc(100vh - 225px);
+    // overflow-y: scroll; // enforce scrollbar so thead can position with it in mind
+    display: block;
+  }
+
+  thead {
+    tr {
+      margin-right: 10px; // account for the table overflow scrollbar
+    }
+  }
+
+  thead,
+  tbody {
+    tr {
+      display: grid;
+      grid-template-columns: 24px 60px 200px 1fr minmax(auto, 400px) 100px 90px;
+      column-gap: 16px;
+      padding: 12px;
+
+      th {
+        text-align: left;
+      }
+    }
+  }
+  tfoot {
+    display: flex;
+    p {
+      margin: 0 16px 0 0;
+    }
+  }
+}

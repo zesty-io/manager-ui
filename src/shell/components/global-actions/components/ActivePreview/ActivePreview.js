@@ -120,11 +120,13 @@ export default connect(state => {
   }, [location.pathname]);
 
   return (
-    <FontAwesomeIcon
-      className={props.className}
-      onClick={open}
-      icon={faEye}
-      title="Preview"
-    />
+    <span onClick={open}>
+      <FontAwesomeIcon
+        className={props.className}
+        icon={faEye}
+        title="Preview"
+      />
+      <span>Preview</span>
+    </span>
   );
 });

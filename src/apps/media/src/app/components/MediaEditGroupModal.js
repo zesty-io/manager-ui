@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faSave } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
 import { Modal, ModalContent } from "@zesty-io/core/Modal";
@@ -29,7 +29,7 @@ export function MediaEditGroupModal(props) {
       className={styles.Modal}
       type="global"
       open={true}
-      onClose={() => props.onClose()}
+      onClose={props.onClose}
     >
       <ModalContent>
         <form className={styles.SearchForm}>
@@ -43,8 +43,8 @@ export function MediaEditGroupModal(props) {
             onChange={event => setName(event.target.value)}
           />
           <Button kind="save" onClick={handleEditGroup}>
-            <FontAwesomeIcon icon={faEdit} />
-            <span>Edit</span>
+            <FontAwesomeIcon icon={faSave} />
+            <span>Save</span>
           </Button>
         </form>
       </ModalContent>

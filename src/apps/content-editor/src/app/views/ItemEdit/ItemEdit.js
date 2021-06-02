@@ -13,6 +13,7 @@ import {
   lock,
   unlock
 } from "shell/store/content";
+import { selectLang } from "shell/store/user";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -53,6 +54,7 @@ export default connect((state, props) => {
     item,
     tags,
     fields,
+    languages: state.languages,
     user: state.user,
     userRole: state.userRole,
     logs: state.logs, // TODO filter logs to those for this item,
@@ -170,11 +172,26 @@ export default connect((state, props) => {
           });
         });
 
-      Promise.all([
-        this.props.dispatch(fetchFields(modelZUID)),
-        this.props.dispatch(fetchItem(modelZUID, itemZUID)),
-        this.props.dispatch(fetchItemPublishing(modelZUID, itemZUID))
-      ])
+      this.props
+        .dispatch(fetchItem(modelZUID, itemZUID))
+        // select lang based on content lang
+        .then(res => {
+          this.props.dispatch(
+            selectLang(
+              this.props.languages.find(
+                lang => lang.ID === res.data.meta.langID
+              ).code
+            )
+          );
+        })
+        // once we selectLang we can fetchFields
+        // which triggers middleware which depends on lang
+        .then(() =>
+          Promise.all([
+            this.props.dispatch(fetchFields(modelZUID)),
+            this.props.dispatch(fetchItemPublishing(modelZUID, itemZUID))
+          ])
+        )
         .then(() => {
           if (this._isMounted) {
             this.setState({
