@@ -49,9 +49,11 @@ export const FileDrawer = React.memo(function FileDrawer(props) {
       .then(res => {
         const [logs, fields, items] = res;
 
+        if (logs.status !== 200) throw new Error(`${logs.status}`);
+
         // Logs should always exist
         setLogs(
-          logs?.data
+          logs.data
             .sort((a, b) => {
               // Latest log descending
               return moment(a.createdAt).unix() > moment(b.createdAt).unix()
