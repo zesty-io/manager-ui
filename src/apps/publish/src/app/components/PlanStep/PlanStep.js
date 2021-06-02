@@ -7,8 +7,7 @@ import {
   faDatabase,
   faEye,
   faSpinner,
-  faTimes,
-  faTimesCircle
+  faTimes
 } from "@fortawesome/free-solid-svg-icons";
 import { removeStep, updateStep } from "shell/store/publishPlan";
 import { Select, Option } from "@zesty-io/core/Select";
@@ -46,15 +45,13 @@ export function PlanStep({ step, item, versions, lang }) {
   );
 
   return (
-    <tr className={cx(styles.bodyText, styles.PlanStep)}>
-      <td>
-        {step.status === "error" ? (
-          <FontAwesomeIcon style={{ color: "red" }} icon={faTimesCircle} />
-        ) : null}
-        {step.status === "pending" ? (
-          <FontAwesomeIcon icon={faSpinner} spin />
-        ) : null}
-      </td>
+    <tr
+      className={cx(
+        styles.bodyText,
+        styles.PlanStep,
+        step.status === "error" ? styles.error : null
+      )}
+    >
       <td>{lang}</td>
 
       <td>
@@ -97,9 +94,13 @@ export function PlanStep({ step, item, versions, lang }) {
         </Url>
       </td>
       <td>
-        <Button disabled={step.status === "pending"} onClick={onRemove}>
-          <FontAwesomeIcon icon={faTimes} />
-        </Button>
+        {step.status === "pending" ? (
+          <FontAwesomeIcon icon={faSpinner} spin />
+        ) : (
+          <Button onClick={onRemove}>
+            <FontAwesomeIcon icon={faTimes} />
+          </Button>
+        )}
       </td>
     </tr>
   );
