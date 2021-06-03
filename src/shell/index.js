@@ -36,7 +36,7 @@ if (window.zesty == null) {
 window.zestyStore = store;
 
 // Update urls in config to include the current instance zuid
-const instanceZUID = store.getState().instance.ZUID;
+const instanceZUID = window.location.host.split(".")[0];
 window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZUID}${window.CONFIG.API_INSTANCE}`;
 
 const loadLocalStorageData = true;

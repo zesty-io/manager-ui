@@ -21,7 +21,16 @@ export const accountsApi = createApi({
   endpoints: builder => ({
     getDomains: builder.query({
       query: () => `instances/${instanceZuid}/domains`,
-      transformResponse: getResponseData
+      transformResponse: response =>
+        response.data.sort((a, b) => {
+          const dateA = new Date(a.createdAt);
+          const dateB = new Date(b.createdAt);
+
+          const epochA = dateA.valueOf();
+          const epochB = dateB.valueOf();
+
+          return epochA - epochB;
+        })
     }),
     getInstance: builder.query({
       query: () => `instances/${instanceZuid}`,

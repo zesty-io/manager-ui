@@ -6,6 +6,7 @@ import {
   faChevronRight
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
+import { useGetInstanceQuery } from "shell/services/accounts";
 import styles from "./GlobalSidebar.less";
 
 import Favicon from "shell/components/favicon";
@@ -14,16 +15,16 @@ import GlobalActions from "shell/components/global-actions";
 
 export default connect(state => {
   return {
-    ui: state.ui,
-    instance: state.instance
+    ui: state.ui
   };
 })(function GlobalSidebar(props) {
+  const { data: instance } = useGetInstanceQuery();
   return (
     <aside className={styles.GlobalSidebar}>
       <div className={styles.topMenu}>
         <Favicon />
         <GlobalMenu openNav={props.ui.openNav} />
-        <GlobalActions hash={props.instance.randomHashID} />
+        <GlobalActions hash={instance?.randomHashID} />
         {props.openNav ? (
           <p
             className={cx(styles.Collapse, styles.Open)}

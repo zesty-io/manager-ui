@@ -10,7 +10,6 @@ import { auth } from "./auth";
 import { products } from "./products";
 import { user } from "./user";
 import { userRole } from "./userRole";
-import { instance } from "./instance";
 import { languages } from "./languages";
 import { models } from "./models";
 import { fields } from "./fields";
@@ -77,7 +76,6 @@ function createReducer(asyncReducers) {
     users: users.reducer,
     userRole,
     products,
-    instance,
     languages,
     models,
     fields,
