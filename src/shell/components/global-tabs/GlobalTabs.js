@@ -8,7 +8,6 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import { closeTab, openTab, loadTabs, rebuildTabs } from "shell/store/ui";
-import { useGetInstanceQuery } from "shell/services/accounts";
 import styles from "./GlobalTabs.less";
 
 const MIN_TAB_WIDTH = 150;
@@ -17,7 +16,6 @@ const TAB_PADDING = 16;
 const TAB_BORDER = 1;
 
 export default React.memo(function GlobalTabs() {
-  const { data: instance } = useGetInstanceQuery();
   const history = useHistory();
   const dispatch = useDispatch();
   const tabs = useSelector(state => state.ui.tabs);
@@ -42,8 +40,8 @@ export default React.memo(function GlobalTabs() {
 
   // load tabs from Indexeddb
   useEffect(() => {
-    dispatch(loadTabs(instance.ZUID));
-  }, [instance.ZUID]);
+    dispatch(loadTabs());
+  }, []);
 
   // openTab every time path changes
   useEffect(() => {

@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 import { createApi, fetchBaseQuery } from "@rtk-incubator/rtk-query/react";
+import instanceZuid from "utility/instanceZuid";
 
-const instanceZuid = window.location.host.split(".")[0];
 const getResponseData = response => response.data;
 
 // Define a service using a base URL and expected endpoints

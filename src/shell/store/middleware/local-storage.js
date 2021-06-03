@@ -1,4 +1,5 @@
 import idb from "utility/idb";
+import instanceZuid from "utility/instanceZuid";
 import {
   resetPlan,
   addStep,
@@ -36,26 +37,26 @@ export const localStorage = store => next => action => {
       case `${publishPlanPending}`:
       case `${publishPlanSuccess}`:
       case `${publishPlanFailure}`:
-        idb.set(`${state.instance.ZUID}:publishPlan`, state.publishPlan);
+        idb.set(`${instanceZuid}:publishPlan`, state.publishPlan);
         break;
       case "FETCH_ITEM_SUCCESS":
       case "FETCH_ITEMS_SUCCESS":
       case "SEARCH_ITEMS_SUCCESS":
-        idb.set(`${state.instance.ZUID}:content`, state.content);
+        idb.set(`${instanceZuid}:content`, state.content);
         break;
 
       case "FETCH_FIELD_SUCCESS":
       case "FETCH_FIELDS_SUCCESS":
-        idb.set(`${state.instance.ZUID}:fields`, state.fields);
+        idb.set(`${instanceZuid}:fields`, state.fields);
         break;
 
       case "FETCH_MODEL_SUCCESS":
       case "FETCH_MODELS_SUCCESS":
-        idb.set(`${state.instance.ZUID}:models`, state.models);
+        idb.set(`${instanceZuid}:models`, state.models);
         break;
 
       case "FETCH_CONTENT_NAV_SUCCESS":
-        idb.set(`${state.instance.ZUID}:navContent`, state.navContent.raw);
+        idb.set(`${instanceZuid}:navContent`, state.navContent.raw);
         break;
     }
   } catch (err) {
