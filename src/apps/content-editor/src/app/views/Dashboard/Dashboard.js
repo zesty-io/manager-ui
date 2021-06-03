@@ -52,20 +52,6 @@ function getFavoriteModels(items) {
   return sorted.slice(0, 3);
 }
 
-// function getLastEditedItems(items) {
-//   return [...items]
-//     .sort((a, b) => {
-//       if (a.meta.updatedAt < b.meta.updatedAt) {
-//         return 1;
-//       }
-//       if (a.meta.updatedAt > b.meta.updatedAt) {
-//         return -1;
-//       }
-//       return 0;
-//     })
-//     .slice(0, 5);
-// }
-
 const selectModelsByZuid = createSelector(
   state => state.models,
   models =>
@@ -86,7 +72,6 @@ export default React.memo(function Dashboard() {
   const headTags = useSelector(state => state.headTags);
   const logs = useSelector(state => state.logs);
   const modelsByZuid = useSelector(selectModelsByZuid);
-  // const [recentlyEditedItems, setRecentlyEditedItems] = useState([]);
   const [favoriteModels, setFavoriteModels] = useState([]);
   const dispatch = useDispatch();
 
@@ -97,8 +82,6 @@ export default React.memo(function Dashboard() {
 
     dispatch(fetchRecentItems(user.ZUID, start)).then(res => {
       if (res && res.data) {
-        // unused?
-        // setRecentlyEditedItems(getLastEditedItems(res.data));
         setFavoriteModels(getFavoriteModels(res.data));
       }
     });
