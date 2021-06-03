@@ -66,24 +66,26 @@ function getFavoriteModels(items) {
 //     .slice(0, 5);
 // }
 
+const selectModelsByZuid = createSelector(
+  state => state.models,
+  models =>
+    Object.keys(models).reduce((acc, modelZUID) => {
+      if (
+        models[modelZUID] &&
+        models[modelZUID].label !== "Dashboard Widgets"
+      ) {
+        acc[modelZUID] = models[modelZUID];
+      }
+      return acc;
+    }, {})
+);
+
 export default React.memo(function Dashboard() {
   const user = useSelector(state => state.user);
   const instance = useSelector(state => state.instance);
   const headTags = useSelector(state => state.headTags);
   const logs = useSelector(state => state.logs);
-  const models = createSelector(
-    state => state.models,
-    models =>
-      Object.keys(models).reduce((acc, modelZUID) => {
-        if (
-          models[modelZUID] &&
-          models[modelZUID].label !== "Dashboard Widgets"
-        ) {
-          acc[modelZUID] = models[modelZUID];
-        }
-        return acc;
-      }, {})
-  );
+  const modelsByZuid = useSelector(selectModelsByZuid);
   // const [recentlyEditedItems, setRecentlyEditedItems] = useState([]);
   const [favoriteModels, setFavoriteModels] = useState([]);
   const dispatch = useDispatch();
@@ -165,7 +167,7 @@ export default React.memo(function Dashboard() {
       <section className={styles.RecentActivities}>
         {favoriteModels.map((arr, i) => {
           const [contentModelZUID, items] = arr;
-          const model = models[contentModelZUID];
+          const model = modelsByZuid[contentModelZUID];
 
           return (
             <Card className={styles.Card} key={i}>
