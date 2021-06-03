@@ -16,7 +16,6 @@ import {
 import { selectLang } from "shell/store/user";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import { NotFound } from "shell/components/NotFound";
 
 import { PendingEditsModal } from "../../components/PendingEditsModal";
 import { LockedItem } from "../../components/LockedItem";
@@ -77,8 +76,7 @@ export default connect((state, props) => {
       lock: {},
       checkingLock: false,
       loading: true,
-      saving: false,
-      notFound: false
+      saving: false
     };
 
     componentDidMount() {
@@ -178,11 +176,8 @@ export default connect((state, props) => {
         .dispatch(fetchItem(modelZUID, itemZUID))
         // select lang based on content lang
         .then(res => {
-          if (res.status >= 400 && res.status <= 499) {
-            this.setState({
-              notFound: true
-            });
-            return;
+          if (res.status === 404) {
+            throw new Error(res.message);
           }
           this.props.dispatch(
             selectLang(
@@ -293,14 +288,6 @@ export default connect((state, props) => {
     };
 
     render() {
-      if (this.state.notFound) {
-        return (
-          <NotFound
-            message={`Content ZUID "${this.props.itemZUID}" not found`}
-          />
-        );
-      }
-
       return (
         <WithLoader
           condition={
