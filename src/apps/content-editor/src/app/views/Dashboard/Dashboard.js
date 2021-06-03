@@ -1,8 +1,8 @@
-import React from "react";
-import { connect } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { createSelector } from "@reduxjs/toolkit";
 import moment from "moment-timezone";
 import { useHistory } from "react-router-dom";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
@@ -12,218 +12,201 @@ import {
   faHistory,
   faClock
 } from "@fortawesome/free-solid-svg-icons";
-
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
-
 import { AccountInfo } from "./components/AccountInfo";
 import { ChartDashboard } from "./components/ChartDashboard";
 import { UserLatest } from "./components/UserLatest";
 import { InstanceActivity } from "./components/InstanceActivity";
 import { QuickJumps } from "./components/QuickJumps";
-
 import { fetchRecentItems, getUserLogs } from "shell/store/user";
-
 import styles from "./Dashboard.less";
-export default connect(function(state) {
-  return {
-    user: state.user,
-    instance: state.instance,
-    headTags: state.headTags,
-    logs: state.logs,
-    contentModels: Object.keys(state.models).reduce((acc, modelZUID) => {
-      if (
-        state.models[modelZUID] &&
-        state.models[modelZUID].label !== "Dashboard Widgets"
-      ) {
-        acc[modelZUID] = state.models[modelZUID];
-      }
-      return acc;
-    }, {})
-  };
-})(
-  class Dashboard extends React.PureComponent {
-    state = {
-      recentlyEditedItems: [],
-      favoriteModels: [],
-      loading: true
-    };
 
-    componentDidMount() {
-      const start = moment()
-        .subtract(120, "days")
-        .format("YYYY-MM-DD");
-
-      this.props
-        .dispatch(fetchRecentItems(this.props.user.ZUID, start))
-        .then(res => {
-          if (res && res.data) {
-            this.setState({
-              recentlyEditedItems: this.getLastEditedItems(res.data),
-              favoriteModels: this.getFavoriteModels(res.data),
-              loading: false
-            });
-          } else {
-            this.setState({
-              loading: false
-            });
-          }
-        });
-
-      this.props.dispatch(getUserLogs());
+function getFavoriteModels(items) {
+  const grouped = items.reduce((acc, item) => {
+    if (acc[item.meta.contentModelZUID]) {
+      acc[item.meta.contentModelZUID].push(item);
+    } else {
+      acc[item.meta.contentModelZUID] = [item];
     }
+    return acc;
+  }, {});
 
-    getFavoriteModels(items) {
-      const grouped = items.reduce((acc, item) => {
-        if (acc[item.meta.contentModelZUID]) {
-          acc[item.meta.contentModelZUID].push(item);
-        } else {
-          acc[item.meta.contentModelZUID] = [item];
+  const sorted = Object.keys(grouped)
+    .filter(item => grouped[item][0].web.metaTitle)
+    .map(contentModelZUID => {
+      return [contentModelZUID, grouped[contentModelZUID].slice(0, 3)];
+    })
+    .sort((a, b) => {
+      if (a[1].length < b[1].length) {
+        return 1;
+      }
+      if (a[1].length > b[1].length) {
+        return -1;
+      }
+      return 0;
+    });
+
+  // Top three most edited models
+  return sorted.slice(0, 3);
+}
+
+// function getLastEditedItems(items) {
+//   return [...items]
+//     .sort((a, b) => {
+//       if (a.meta.updatedAt < b.meta.updatedAt) {
+//         return 1;
+//       }
+//       if (a.meta.updatedAt > b.meta.updatedAt) {
+//         return -1;
+//       }
+//       return 0;
+//     })
+//     .slice(0, 5);
+// }
+
+export default React.memo(function Dashboard() {
+  const user = useSelector(state => state.user);
+  const instance = useSelector(state => state.instance);
+  const headTags = useSelector(state => state.headTags);
+  const logs = useSelector(state => state.logs);
+  const models = createSelector(
+    state => state.models,
+    models =>
+      Object.keys(models).reduce((acc, modelZUID) => {
+        if (
+          models[modelZUID] &&
+          models[modelZUID].label !== "Dashboard Widgets"
+        ) {
+          acc[modelZUID] = models[modelZUID];
         }
         return acc;
-      }, {});
+      }, {})
+  );
+  // const [recentlyEditedItems, setRecentlyEditedItems] = useState([]);
+  const [favoriteModels, setFavoriteModels] = useState([]);
+  const dispatch = useDispatch();
 
-      const sorted = Object.keys(grouped)
-        .filter(item => grouped[item][0].web.metaTitle)
-        .map(contentModelZUID => {
-          return [contentModelZUID, grouped[contentModelZUID].slice(0, 3)];
-        })
-        .sort((a, b) => {
-          if (a[1].length < b[1].length) {
-            return 1;
-          }
-          if (a[1].length > b[1].length) {
-            return -1;
-          }
-          return 0;
-        });
+  useEffect(() => {
+    const start = moment()
+      .subtract(120, "days")
+      .format("YYYY-MM-DD");
 
-      // Top three most edited models
-      return sorted.slice(0, 3);
-    }
+    dispatch(fetchRecentItems(user.ZUID, start)).then(res => {
+      if (res && res.data) {
+        // unused?
+        // setRecentlyEditedItems(getLastEditedItems(res.data));
+        setFavoriteModels(getFavoriteModels(res.data));
+      }
+    });
 
-    getLastEditedItems(items) {
-      return [...items]
-        .sort((a, b) => {
-          if (a.meta.updatedAt < b.meta.updatedAt) {
-            return 1;
-          }
-          if (a.meta.updatedAt > b.meta.updatedAt) {
-            return -1;
-          }
-          return 0;
-        })
-        .slice(0, 5);
-    }
+    dispatch(getUserLogs());
+  }, [user.ZUID]);
+  return (
+    <section className={styles.Dashboard}>
+      <section className={styles.LinkOuts}>
+        <div className={styles.Cards}>
+          <AccountInfo
+            instanceZUID={instance.ZUID}
+            randomHashID={instance.randomHashID}
+            headTags={headTags}
+            instanceName={instance.name}
+          />
 
-    render() {
-      return (
-        <section className={styles.Dashboard}>
-          <section className={styles.LinkOuts}>
-            <div className={styles.Cards}>
-              <AccountInfo
-                instanceZUID={this.props.instance.ZUID}
-                randomHashID={this.props.instance.randomHashID}
-                headTags={this.props.headTags}
-                instanceName={this.props.instance.name}
+          <QuickJumps
+            cardTitle={"Code"}
+            image={faCode}
+            docsTitle={"Read Docs"}
+            docsLink={"https://zesty.org/services/manager-ui/editor"}
+            quickJump={"code"}
+          />
+          <QuickJumps
+            cardTitle={"Schema"}
+            image={faDatabase}
+            docsTitle={"Read Docs"}
+            docsLink={"https://zesty.org/services/manager-ui/schema"}
+            quickJump={"schema"}
+          />
+          <QuickJumps
+            cardTitle={"AuditTrail"}
+            image={faHistory}
+            docsTitle={"Read Docs"}
+            docsLink={"https://zesty.org/services/manager-ui/audit-trail"}
+            quickJump={"audit-trail"}
+          />
+          <QuickJumps
+            cardTitle={"Settings"}
+            image={faCog}
+            docsTitle={"Read Docs"}
+            docsLink={"https://zesty.org/services/manager-ui/settings"}
+            quickJump={"settings"}
+          />
+        </div>
+      </section>
+      <section className={styles.LatestActivity}>
+        <UserLatest
+          cardTitle="Your Latest Edits"
+          logs={logs}
+          user={user}
+          action="2"
+        />
+        <UserLatest
+          cardTitle="Your Latest Publishes"
+          logs={logs}
+          user={user}
+          action="4"
+        />
+      </section>
+      <section className={styles.Chart}>
+        <InstanceActivity logs={logs} user={user} />
+        <ChartDashboard logs={logs} />
+      </section>
+      <section className={styles.RecentActivities}>
+        {favoriteModels.map((arr, i) => {
+          const [contentModelZUID, items] = arr;
+          const model = models[contentModelZUID];
+
+          return (
+            <Card className={styles.Card} key={i}>
+              <CardHeader>
+                <h4 className={styles.columns}>
+                  <div className={styles.column}>
+                    <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
+                    Recent{" "}
+                    <AppLink to={`/content/${contentModelZUID}`}>
+                      {model && model.label}
+                    </AppLink>{" "}
+                    Edits
+                  </div>
+                </h4>
+              </CardHeader>
+              <CardContent>
+                <ul>
+                  {items.map((item, i) => {
+                    return (
+                      <li key={i}>
+                        <AppLink
+                          to={`/content/${contentModelZUID}/${item.meta.ZUID}`}
+                        >
+                          {item.web.metaTitle}
+                        </AppLink>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </CardContent>
+              <DashboardCardFooter
+                model={model}
+                contentModelZUID={contentModelZUID}
               />
-
-              <QuickJumps
-                cardTitle={"Code"}
-                image={faCode}
-                docsTitle={"Read Docs"}
-                docsLink={"https://zesty.org/services/manager-ui/editor"}
-                quickJump={"code"}
-              />
-              <QuickJumps
-                cardTitle={"Schema"}
-                image={faDatabase}
-                docsTitle={"Read Docs"}
-                docsLink={"https://zesty.org/services/manager-ui/schema"}
-                quickJump={"schema"}
-              />
-              <QuickJumps
-                cardTitle={"AuditTrail"}
-                image={faHistory}
-                docsTitle={"Read Docs"}
-                docsLink={"https://zesty.org/services/manager-ui/audit-trail"}
-                quickJump={"audit-trail"}
-              />
-              <QuickJumps
-                cardTitle={"Settings"}
-                image={faCog}
-                docsTitle={"Read Docs"}
-                docsLink={"https://zesty.org/services/manager-ui/settings"}
-                quickJump={"settings"}
-              />
-            </div>
-          </section>
-          <section className={styles.LatestActivity}>
-            <UserLatest
-              cardTitle="Your Latest Edits"
-              logs={this.props.logs}
-              user={this.props.user}
-              action="2"
-            />
-            <UserLatest
-              cardTitle="Your Latest Publishes"
-              logs={this.props.logs}
-              user={this.props.user}
-              action="4"
-            />
-          </section>
-          <section className={styles.Chart}>
-            <InstanceActivity logs={this.props.logs} user={this.props.user} />
-            <ChartDashboard logs={this.props.logs} />
-          </section>
-          <section className={styles.RecentActivities}>
-            {this.state.favoriteModels.map((arr, i) => {
-              const [contentModelZUID, items] = arr;
-              const model = this.props.contentModels[contentModelZUID];
-
-              return (
-                <Card className={styles.Card} key={i}>
-                  <CardHeader>
-                    <h4 className={styles.columns}>
-                      <div className={styles.column}>
-                        <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
-                        Recent{" "}
-                        <AppLink to={`/content/${contentModelZUID}`}>
-                          {model && model.label}
-                        </AppLink>{" "}
-                        Edits
-                      </div>
-                    </h4>
-                  </CardHeader>
-                  <CardContent>
-                    <ul>
-                      {items.map((item, i) => {
-                        return (
-                          <li key={i}>
-                            <AppLink
-                              to={`/content/${contentModelZUID}/${item.meta.ZUID}`}
-                            >
-                              {item.web.metaTitle}
-                            </AppLink>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </CardContent>
-                  <DashboardCardFooter
-                    model={model}
-                    contentModelZUID={contentModelZUID}
-                  />
-                </Card>
-              );
-            })}
-          </section>
-        </section>
-      );
-    }
-  }
-);
+            </Card>
+          );
+        })}
+      </section>
+    </section>
+  );
+});
 
 function DashboardCardFooter(props) {
   const history = useHistory();
