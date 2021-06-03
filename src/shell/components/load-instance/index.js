@@ -1,44 +1,57 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
-
 import { WithLoader } from "@zesty-io/core/WithLoader";
-
-import { fetchInstance, fetchDomains } from "shell/store/instance";
 import { fetchUser } from "shell/store/user";
 import { fetchUserRole } from "shell/store/userRole";
-import { fetchUsers } from "shell/store/users";
 import { fetchProducts } from "shell/store/products";
 import { detectPlatform } from "shell/store/platform";
-import { fetchInstances } from "shell/store/instances";
 import { fetchLangauges } from "shell/store/languages";
 import { fetchItemPublishings } from "shell/store/content";
-import { loadOpenNav } from "../../store/ui";
-
+import {
+  useGetDomainsQuery,
+  useGetInstanceQuery,
+  useGetInstancesQuery,
+  useGetUsersQuery
+} from "shell/services/accounts";
 import styles from "./LoadInstance.less";
+
+// TODO: update all references to state.instances, state.instance,
+// state.domains, state.users to use new hooks
 
 export default connect(state => {
   return {
-    instance: state.instance,
     user: state.user,
     products: state.products,
     languages: state.languages
   };
 })(
   React.memo(function LoadInstance(props) {
-    const [error, setError] = useState("");
-    useEffect(() => {
-      props
-        .dispatch(fetchInstance())
-        .then(res => {
-          document.title = `Manager - ${res.data.name} - Zesty`;
-          CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data.randomHashID}${CONFIG.URL_PREVIEW}`;
-        })
-        .catch(res => {
-          if (res.status === 403) {
-            setError("You do not have permission to access to this instance");
-          }
-        });
+    const domainsQuery = useGetDomainsQuery();
+    const instanceQuery = useGetInstanceQuery();
+    const instancesQuery = useGetInstancesQuery();
+    const usersQuery = useGetUsersQuery();
 
+    let errorMessage = "";
+    if (instanceQuery.error?.status === 403) {
+      errorMessage = "You do not have permission to access this instance";
+    } else if (domainsQuery.error) {
+      errorMessage = "Failed loading domains";
+    } else if (instanceQuery.error) {
+      errorMessage = "Failed loading instance";
+    } else if (instancesQuery.error) {
+      errorMessage = "Failed loading instances";
+    } else if (usersQuery.error) {
+      errorMessage = "Failed loading users";
+    }
+
+    useEffect(() => {
+      if (instanceQuery.data) {
+        document.title = `Manager - ${instanceQuery.data.name} - Zesty`;
+        CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${instanceQuery.data.randomHashID}${CONFIG.URL_PREVIEW}`;
+      }
+    }, [instanceQuery.data]);
+
+    useEffect(() => {
       Promise.all([
         props.dispatch(fetchUser(props.user.ZUID)),
         props.dispatch(fetchUserRole())
@@ -46,10 +59,7 @@ export default connect(state => {
         props.dispatch(fetchProducts());
       });
 
-      props.dispatch(fetchDomains());
-      props.dispatch(fetchUsers());
       props.dispatch(detectPlatform());
-      props.dispatch(fetchInstances());
       props.dispatch(fetchLangauges("enabled"));
       // Used in Publish Plan and Content sections
       props.dispatch(fetchItemPublishings());
@@ -57,18 +67,20 @@ export default connect(state => {
 
     return (
       <>
-        {error ? (
+        {errorMessage ? (
           <div className={styles.ErrorMessage}>
-            <h1>{error}</h1>
+            <h1>{errorMessage}</h1>
           </div>
         ) : (
           <WithLoader
             condition={
               props.products &&
               props.instance.ID &&
-              props.instance.domains &&
               props.user.ID &&
-              props.languages.length
+              props.languages.length &&
+              !domainsQuery.isLoading &&
+              !instancesQuery.isLoading &&
+              !usersQuery.isLoading
             }
             message="Loading Instance"
             width="100vw"

@@ -25,6 +25,7 @@ import media from "./media";
 import { users } from "./users";
 import ui from "./ui";
 import publishPlan from "./publishPlan";
+import { accountsApi } from "../services/accounts";
 
 // Middleware is applied in order of array
 const middlewares = [
@@ -65,6 +66,8 @@ middlewares.push(
   })
 );
 
+middlewares.push(accountsApi.middleware);
+
 function createReducer(asyncReducers) {
   let initialReducers = {
     noop: () => {
@@ -76,7 +79,6 @@ function createReducer(asyncReducers) {
     userRole,
     products,
     instance,
-    instances,
     languages,
     models,
     fields,
@@ -88,7 +90,8 @@ function createReducer(asyncReducers) {
     platform,
     headTags,
     ui,
-    publishPlan
+    publishPlan,
+    [accountsApi.reducerPath]: accountsApi.reducer
   };
 
   return combineReducers({

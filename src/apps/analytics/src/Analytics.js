@@ -17,6 +17,7 @@ import shelldata from "./shelldata";
 
 import styles from "./Analytics.less";
 
+// TODO: Convert to functional component for use with useDomain and useQuery hooks
 export default connect(function(state) {
   return {
     user: state.user,

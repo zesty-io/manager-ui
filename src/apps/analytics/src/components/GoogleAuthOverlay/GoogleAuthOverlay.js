@@ -7,6 +7,7 @@ import { Button } from "@zesty-io/core/Button";
 import GaAuthenticate from "./GaAuthenticate";
 import styles from "./GoogleAuthOverlay.less";
 
+// TODO: Convert to functional component for use with useDomain and useQuery hooks
 export class GoogleAuthOverlay extends React.Component {
   state = {
     titles: {

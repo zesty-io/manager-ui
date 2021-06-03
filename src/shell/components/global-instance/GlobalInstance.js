@@ -1,11 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
-import { usePermission } from "shell/hooks/use-permissions";
-
-import { Button } from "@zesty-io/core/Button";
-
-import { request } from "utility/request";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
@@ -13,26 +8,28 @@ import {
   faExclamationCircle,
   faSpinner
 } from "@fortawesome/free-solid-svg-icons";
-
 import { Select, Option } from "@zesty-io/core/Select";
 import { Url } from "@zesty-io/core/Url";
-
+import { Button } from "@zesty-io/core/Button";
+import { request } from "utility/request";
+import { usePermission } from "shell/hooks/use-permissions";
 import { useDomain } from "shell/hooks/use-domain";
-import { notify } from "shell/store/notifications";
-
+import { useGetDomainsQuery } from "shell/services/accounts";
 import styles from "./GlobalInstance.less";
 
-export default connect(state => {
-  return {
-    instance: state.instance,
-    instances: state.instances
-  };
-})(function GlobalInstance(props) {
+export default function GlobalInstance(props) {
   const ref = useRef();
   const domain = useDomain();
+  const domainsQuery = useGetDomainsQuery();
+  const instanceQuery = useGetInstanceQuery();
+  const instancesQuery = useGetInstancesQuery();
   const [open, setOpen] = useState(false);
   const [purge, setPurge] = useState(false);
   const canPurge = usePermission("PUBLISH");
+
+  const domains = domainsQuery.data;
+  const instance = instanceQuery.data;
+  const instances = instancesQuery.data;
 
   useEffect(() => {
     const handleGlobalClick = evt => {
@@ -64,17 +61,17 @@ export default connect(state => {
             setOpen(!open);
           }}
         >
-          {props.instance.name} <FontAwesomeIcon icon={faCaretDown} />
+          {instance?.name} <FontAwesomeIcon icon={faCaretDown} />
         </button>
       </menu>
 
       <main className={cx(styles.Instance, open ? null : styles.hide)}>
         <p className={cx(styles.bodyText, styles.zuid)}>
-          ZUID: {props.instance.ZUID}
+          ZUID: {instance?.ZUID}
         </p>
 
-        <Select name="instance" value={props.instance.ZUID}>
-          {props.instances.map(instance => (
+        <Select name="instance" value={instance?.ZUID}>
+          {instances?.map(instance => (
             <Option
               key={instance.ZUID}
               value={instance.ZUID}
@@ -86,9 +83,9 @@ export default connect(state => {
           ))}
         </Select>
 
-        {props.instance.screenshotURL && (
+        {instance?.screenshotURL && (
           <img
-            src={props.instance.screenshotURL}
+            src={instance?.screenshotURL}
             loading="lazy"
             width="356px"
             height="200px"
@@ -103,7 +100,7 @@ export default connect(state => {
               onClick={() => {
                 setPurge(true);
                 return request(
-                  `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${props.instance.ZUID}`
+                  `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${instance?.ZUID}`
                 )
                   .catch(err => {
                     dispatch({
@@ -127,7 +124,7 @@ export default connect(state => {
           </div>
         )}
         <ul className={styles.Domains}>
-          {props.instance.domains.map(domain => (
+          {domains?.map(domain => (
             <li key={domain.domain}>
               <Url
                 title={`http://${domain.domain}`}
@@ -143,4 +140,4 @@ export default connect(state => {
       </main>
     </section>
   );
-});
+}

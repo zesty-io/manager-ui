@@ -1,22 +1,20 @@
-"use strict";
-
-import { useStore } from "react-redux";
+import { useGetDomainsQuery } from "shell/services/accounts";
 
 export function useDomain() {
-  const store = useStore();
-  const state = store.getState();
+  const domainsQuery = useGetDomainsQuery();
+  const domains = domainsQuery.data;
 
   // Let WebEngine figure out https & www settings
   const format = domain => `http://${domain}`;
 
-  if (Array.isArray(state.instance.domains) && state.instance.domains.length) {
+  if (Array.isArray(domains) && domains.length) {
     /**
      * By default when an instance is created it gets a .zesty.dev domain
      * linked to the 'dev' branch. We look for a domain record which is neither.
      * That is most likely the primary domain.
      */
 
-    const prodDomains = state.instance.domains
+    const prodDomains = domains
       .filter(domain => domain.branch !== "dev")
       .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
