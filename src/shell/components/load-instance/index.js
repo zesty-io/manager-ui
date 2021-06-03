@@ -75,10 +75,10 @@ export default connect(state => {
           <WithLoader
             condition={
               props.products &&
-              props.instance.ID &&
               props.user.ID &&
               props.languages.length &&
               !domainsQuery.isLoading &&
+              !instanceQuery.isLoading &&
               !instancesQuery.isLoading &&
               !usersQuery.isLoading
             }

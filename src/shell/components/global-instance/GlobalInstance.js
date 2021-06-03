@@ -14,7 +14,11 @@ import { Button } from "@zesty-io/core/Button";
 import { request } from "utility/request";
 import { usePermission } from "shell/hooks/use-permissions";
 import { useDomain } from "shell/hooks/use-domain";
-import { useGetDomainsQuery } from "shell/services/accounts";
+import {
+  useGetDomainsQuery,
+  useGetInstanceQuery,
+  useGetInstancesQuery
+} from "shell/services/accounts";
 import styles from "./GlobalInstance.less";
 
 export default function GlobalInstance(props) {

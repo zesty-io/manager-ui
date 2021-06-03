@@ -1,6 +1,5 @@
 import Cookies from "js-cookie";
 import { createApi, fetchBaseQuery } from "@rtk-incubator/rtk-query/react";
-import { notify } from "shell/store/notifications";
 
 const instanceZuid = window.location.host.split(".")[0];
 const getResponseData = response => response.data;
@@ -20,24 +19,16 @@ export const accountsApi = createApi({
   }),
   // always use the instanceZuid from the URL
   endpoints: builder => ({
-    getInstances: builder.query({
-      query: () => "instances",
+    getDomains: builder.query({
+      query: () => `instances/${instanceZuid}/domains`,
       transformResponse: getResponseData
     }),
     getInstance: builder.query({
-      query: () => `instances/${instanceZuid}1`,
-      transformResponse: getResponseData,
-      onError: (_, { dispatch }, error) => {
-        dispatch(
-          notify({
-            kind: "warn",
-            message: "Failed to load instance"
-          })
-        );
-      }
+      query: () => `instances/${instanceZuid}`,
+      transformResponse: getResponseData
     }),
-    getDomains: builder.query({
-      query: () => `instances/${instanceZuid}/domains`,
+    getInstances: builder.query({
+      query: () => "instances",
       transformResponse: getResponseData
     }),
     getUsers: builder.query({
