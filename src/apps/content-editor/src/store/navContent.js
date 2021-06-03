@@ -8,6 +8,7 @@ import {
   faLink,
   faHome
 } from "@fortawesome/free-solid-svg-icons";
+import instanceZuid from "utility/instanceZuid";
 
 const ICONS = {
   templateset: faFile,
@@ -55,11 +56,11 @@ export function fetchNav() {
         if (
           roles.length &&
           roles.find(role => {
-            return role.entityZUID === getState().instance.ZUID;
+            return role.entityZUID === instanceZuid;
           })
         ) {
           const currentRoleZUID = roles.find(role => {
-            return role.entityZUID === getState().instance.ZUID;
+            return role.entityZUID === instanceZuid;
           }).ZUID;
 
           return request(

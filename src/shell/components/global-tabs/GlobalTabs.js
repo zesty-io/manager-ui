@@ -4,13 +4,10 @@ import { useHistory } from "react-router-dom";
 import cx from "classnames";
 import usePrevious from "react-use/lib/usePrevious";
 import debounce from "lodash/debounce";
-
 import { AppLink } from "@zesty-io/core/AppLink";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
-
 import { closeTab, openTab, loadTabs, rebuildTabs } from "shell/store/ui";
-
 import styles from "./GlobalTabs.less";
 
 const MIN_TAB_WIDTH = 150;
@@ -22,7 +19,6 @@ export default React.memo(function GlobalTabs() {
   const history = useHistory();
   const dispatch = useDispatch();
   const tabs = useSelector(state => state.ui.tabs);
-  const instanceZUID = useSelector(state => state.instance.ZUID);
   const loadedTabs = useSelector(state => state.ui.loadedTabs);
   const prevPath = usePrevious(history.location.pathname);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -44,8 +40,8 @@ export default React.memo(function GlobalTabs() {
 
   // load tabs from Indexeddb
   useEffect(() => {
-    dispatch(loadTabs(instanceZUID));
-  }, [instanceZUID]);
+    dispatch(loadTabs());
+  }, []);
 
   // openTab every time path changes
   useEffect(() => {

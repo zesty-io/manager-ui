@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import idb from "utility/idb";
 import history from "utility/history";
+import instanceZuid from "utility/instanceZuid";
 
 import {
   faCode,
@@ -196,9 +197,9 @@ export const {
 
 // Thunks
 
-export function loadTabs(instanceZUID) {
+export function loadTabs() {
   return dispatch => {
-    return idb.get(`${instanceZUID}:session:routes`).then((tabs = []) => {
+    return idb.get(`${instanceZuid}:session:routes`).then((tabs = []) => {
       return dispatch(loadTabsSuccess(tabs));
     });
   };
@@ -223,7 +224,7 @@ export function openTab({ path, prevPath }) {
         // Maximum of 20 route records
         newTabs = newTabs.slice(0, 20);
         dispatch(setTabs(newTabs));
-        idb.set(`${state.instance.ZUID}:session:routes`, newTabs);
+        idb.set(`${instanceZuid}:session:routes`, newTabs);
       }
     }
   };
@@ -255,7 +256,7 @@ export function closeTab(path) {
       }
 
       dispatch(setTabs(newTabs));
-      idb.set(`${state.instance.ZUID}:session:routes`, newTabs);
+      idb.set(`${instanceZuid}:session:routes`, newTabs);
     }
   };
 }
@@ -267,6 +268,6 @@ export function rebuildTabs() {
       createTab(state, parsePath(tab.pathname))
     );
     dispatch(setTabs(newTabs));
-    idb.set(`${state.instance.ZUID}:session:routes`, newTabs);
+    idb.set(`${instanceZuid}:session:routes`, newTabs);
   };
 }
