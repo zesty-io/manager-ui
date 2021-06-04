@@ -33,6 +33,7 @@ export const ItemParent = connect(state => {
         if (term) {
           setLoading(true);
           props.dispatch(searchItems(term)).then(res => {
+            console.log(res);
             setLoading(false);
             setParents(
               parentOptions(props.path, {
