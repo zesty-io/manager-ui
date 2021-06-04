@@ -8,7 +8,7 @@ export function PlanTable({ plan }) {
   const contentVersions = useSelector(state => state.contentVersions);
   const languages = useSelector(state => state.languages);
   return (
-    <table className={styles.PlanTable}>
+    <table>
       <thead>
         <tr>
           <th className={styles.subheadline}>Lang</th>
@@ -19,7 +19,7 @@ export function PlanTable({ plan }) {
 
           <th className={styles.subheadline}>Last Publish</th>
           <th className={styles.subheadline}>Preview</th>
-          <th className={styles.subheadline}></th>
+          <th className={styles.subheadline}>Remove</th>
         </tr>
       </thead>
       <tbody>
