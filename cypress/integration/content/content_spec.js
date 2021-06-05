@@ -1,7 +1,7 @@
 describe("Content Specs", () => {
   before(() => {
     cy.login();
-    cy.visit("//content/6-556370-8sh47g/7-b939a4-457q19");
+    cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
   });
 
   const TIMESTAMP = Date.now();
@@ -222,7 +222,7 @@ describe("Content Specs", () => {
         .should("exist")
         .find("input[type='number']")
         .clear()
-        .type("12");
+        .type("{rightArrow}12");
 
       cy.get("#12-4e1914-kcqznz")
         .find("button")
@@ -269,9 +269,10 @@ describe("Content Specs", () => {
       cy.get('[href="/content/6-675028-84dq4s/7-480ab4-wg7x7j"]').should(
         "exist"
       );
-      cy.get('[href="/content/6-675028-84dq4s/7-480ab4-wg7x7j"]')
-        .siblings("svg")
-        .click({ timeout: 3000 });
+      cy.get('#12-269a28-1bkm34 [data-icon="times-circle"]').click();
+      cy.contains("Select tags to associate them with your item.").should(
+        "exist"
+      );
     });
 
     it("One to one Field", () => {

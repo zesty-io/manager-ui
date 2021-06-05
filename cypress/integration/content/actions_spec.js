@@ -9,26 +9,26 @@ describe("Actions in content editor", () => {
 
   it("not save when missing required Field", () => {
     // TODO: update field ZUID to be correct synced ZUID when prod syncs down
-    cy.visit("/schema/6-556370-8sh47g/field/12-f09cdae7b3-zmw28n");
+    cy.visit("/schema/6-556370-8sh47g");
+    cy.contains("required field 1").click();
     cy.contains("Reactivate").click();
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     cy.get("input[type=text]")
       .first()
       .type("{selectall}{backspace}test" + timestamp);
     cy.get("#SaveItemButton").click();
-    cy.contains("missing data in required field 1", { timeout: 5000 }).should(
-      "exist"
-    );
+    cy.contains("missing data in required field 1").should("exist");
   });
   it("save when missing required deactivated field", () => {
-    // TODO: update field ZUID to be correct synced ZUID when prod syncs down
-    cy.visit("/schema/6-556370-8sh47g/field/12-f09cdae7b3-zmw28n");
+    cy.visit("/schema/6-556370-8sh47g");
+    cy.contains("required field 1").click();
     cy.contains("Deactivate").click();
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     cy.get("input[type=text]")
       .first()
       .type("{selectall}{backspace}test" + timestamp);
     cy.get("#SaveItemButton").click();
+    cy.contains("Saved a new test version").should("exist");
   });
   it("Saves homepage item metadata", () => {
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
@@ -45,7 +45,8 @@ describe("Actions in content editor", () => {
     cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
   });
 
-  it("Publishes an item", () => {
+  // TODO: get publishing working in Dev environment
+  it.skip("Publishes an item", () => {
     cy.get("#PublishButton").click();
     cy.contains("Published version", { timeout: 5000 }).should("exist");
     cy.get("#PublishButton").should("be.disabled");
@@ -54,7 +55,8 @@ describe("Actions in content editor", () => {
     // cy.get("#PublishScheduleButton").should("be.disabled");
   });
 
-  it("Unpublishes an item", () => {
+  // TODO: get publishing working in Dev environment
+  it.skip("Unpublishes an item", () => {
     // go to Content Tab
     cy.get("[data-cy=content]").click();
     cy.get("article.Unpublish").click();

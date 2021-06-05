@@ -1,19 +1,21 @@
-Cypress.Commands.add("login", (eml, pass) => {
+Cypress.Commands.add("login", () => {
   const formBody = new FormData();
 
-  formBody.append("email", eml || Cypress.env("validEmail"));
-  formBody.append("password", pass || Cypress.env("validPassword"));
+  formBody.append("email", Cypress.env("validEmail"));
+  formBody.append("password", Cypress.env("validPassword"));
 
-  fetch(`${Cypress.env("API_AUTH")}/login`, {
-    method: "POST",
-    credentials: "include",
-    body: formBody
-  })
-    .then(res => res.json())
-    .then(json => {
+  return cy
+    .request({
+      url: `${Cypress.env("API_AUTH")}/login`,
+      method: "POST",
+      credentials: "include",
+      body: formBody
+    })
+    .then(async res => {
+      const response = await new Response(res.body).json();
       // We need the cookie value returned reset so it is unsecure and
       // accessible by javascript
-      cy.setCookie(Cypress.env("COOKIE_NAME"), json.meta.token);
+      cy.setCookie(Cypress.env("COOKIE_NAME"), response.meta.token);
     });
 });
 

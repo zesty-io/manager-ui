@@ -1,52 +1,31 @@
-describe("Code Editor: Create File", () => {
+describe("Code Editor", () => {
   before(() => {
     cy.login();
     cy.visit("/code");
   });
 
-  it("Create File", () => {
-    cy.get(".CreateFileBtn--2qcds").click();
-    cy.get(".CreateFile--tzV8A")
-      .get(".Select")
-      .get(".selections")
-      .get("li", { force: true });
-
-    cy.get('input[type="text"]').type("mySnnipet");
-
-    cy.get('button[kind="save"]').click();
-  });
-});
-
-describe("Code Editor: Publish files", () => {
-  before(() => {
-    cy.login();
-    cy.visit("/code");
+  it.skip("Create File", () => {
+    cy.contains("Create File").click();
+    cy.get(".Select")
+      .eq(1)
+      .click();
+    cy.get(".Select li")
+      .eq(1)
+      .click();
+    cy.get('input[type="text"]').type("mySnippet");
+    cy.get('button[kind="save"]')
+      .eq(1)
+      .click();
   });
 
-  it("Select file tu publish", () => {
-    cy.get("#Navigation")
-      .get("ul")
-      .first()
-      .get("article")
-      .first()
-      .get("ul")
-      .first()
-      .get("article")
-      .first()
+  it("Navigate to file", () => {
+    cy.get("#Navigation > article")
+      .eq(1)
       .click();
-
-    cy.get('button[kind="secondary"]')
-      .get(".fa-cloud-upload-alt")
-      .click();
-
+  });
+  it("Publish file", () => {
+    cy.get('button[kind="secondary"] .fa-cloud-upload-alt').click();
     cy.contains("Published", { timeout: 5000 }).should("exist");
-  });
-});
-
-describe("Code Editor: Sort resources", () => {
-  before(() => {
-    cy.login();
-    cy.visit("/code");
   });
 
   it("Sort resources", () => {
@@ -54,7 +33,10 @@ describe("Code Editor: Sort resources", () => {
       .contains("Order")
       .click();
 
-    cy.get('[data-index="0"]').trigger("mousedown", { which: 1, force: true });
+    cy.get('[data-index="0"]').trigger("mousedown", {
+      which: 1,
+      force: true
+    });
     cy.get('[data-index="1"]')
       .trigger("mousemove", { which: 1, force: true })
       .trigger("mouseup", { force: true });
@@ -67,31 +49,9 @@ describe("Code Editor: Sort resources", () => {
       "exist"
     );
   });
-});
-
-describe("Code Editor: Diffing files", () => {
-  before(() => {
-    cy.login();
-    cy.visit("/code");
-  });
 
   it("Compare files", () => {
-    cy.get("#Navigation")
-      .get("ul")
-      .first()
-      .get("article")
-      .first()
-      .get("ul")
-      .first()
-      .get("article")
-      .first()
-      .get("ul")
-      .first()
-      .get("article")
-      .first()
-      .click();
-
-    cy.get(".Link--2YRl2").click();
+    cy.get('a[title="Diff Versions"]').click();
     cy.get(".original").should("exist");
     cy.get(".modified").should("exist");
   });
