@@ -1,11 +1,11 @@
-import uniqby from "lodash/uniqby";
+import uniqBy from "lodash/uniqBy";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 
 export function auditTrail(state = [], action) {
   switch (action.type) {
     case "FETCH_FILE_AUDIT_TRAIL_SUCCESS":
-      return uniqby([...state, ...action.payload], "ZUID");
+      return uniqBy([...state, ...action.payload], "ZUID");
 
     default:
       return state;
