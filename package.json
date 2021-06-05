@@ -17,7 +17,8 @@
     "start:stage": "npm run serve:webpack -- --env.NODE_ENV=stage --mode=development",
     "task:clean": "rimraf build",
     "task:webpack": "webpack --progress --config src/shell/webpack.config.js",
-    "test": "cypress run"
+    "test": "cypress run",
+    "test:open": "cypress open"
   },
   "author": "Zesty.io<developers@zesty.io>",
   "contributors": [

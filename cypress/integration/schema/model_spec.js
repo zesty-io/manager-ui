@@ -1,7 +1,8 @@
 describe("Schema", () => {
   before(() => {
     cy.login();
-    cy.gotoSchema();
+    cy.visit("/schema");
+    cy.get(".SchemaNav", { timeout: 10000 }).should("exist");
   });
 
   const timestamp = Date.now();
