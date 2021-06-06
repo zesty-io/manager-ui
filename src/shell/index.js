@@ -11,6 +11,7 @@ import { Router } from "react-router-dom";
 import idb from "utility/idb";
 import observable from "@riotjs/observable";
 
+import instanceZuid from "utility/instanceZuid";
 import history from "utility/history";
 import { Sentry } from "utility/sentry";
 import { store, injectReducer } from "shell/store";
@@ -36,8 +37,7 @@ if (window.zesty == null) {
 window.zestyStore = store;
 
 // Update urls in config to include the current instance zuid
-const instanceZUID = window.location.host.split(".")[0];
-window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZUID}${window.CONFIG.API_INSTANCE}`;
+window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZuid}${window.CONFIG.API_INSTANCE}`;
 
 const loadLocalStorageData = true;
 // Load Local Storage Data
@@ -45,13 +45,13 @@ if (loadLocalStorageData) {
   try {
     idb
       .getMany([
-        `${instanceZUID}:user:selected_lang`,
-        `${instanceZUID}:navContent`,
-        `${instanceZUID}:models`,
-        `${instanceZUID}:fields`,
-        `${instanceZUID}:content`,
-        `${instanceZUID}:publishPlan`,
-        `${instanceZUID}:ui`
+        `${instanceZuid}:user:selected_lang`,
+        `${instanceZuid}:navContent`,
+        `${instanceZuid}:models`,
+        `${instanceZuid}:fields`,
+        `${instanceZuid}:content`,
+        `${instanceZuid}:publishPlan`,
+        `${instanceZuid}:ui`
       ])
       .then(results => {
         const [lang, nav, models, fields, content, publishPlan, ui] = results;

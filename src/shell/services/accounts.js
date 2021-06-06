@@ -1,36 +1,22 @@
-import Cookies from "js-cookie";
-import { createApi, fetchBaseQuery } from "@rtk-incubator/rtk-query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import instanceZuid from "utility/instanceZuid";
-
-const getResponseData = response => response.data;
+import { getResponseData, prepareHeaders } from "./util";
 
 // Define a service using a base URL and expected endpoints
 export const accountsApi = createApi({
   reducerPath: "accountsApi",
   baseQuery: fetchBaseQuery({
     baseUrl: `${__CONFIG__.API_ACCOUNTS}/`,
-    prepareHeaders: headers => {
-      const token = Cookies.get(__CONFIG__.COOKIE_NAME);
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    }
+    prepareHeaders
   }),
   // always use the instanceZuid from the URL
   endpoints: builder => ({
     getDomains: builder.query({
       query: () => `instances/${instanceZuid}/domains`,
       transformResponse: response =>
-        response.data.sort((a, b) => {
-          const dateA = new Date(a.createdAt);
-          const dateB = new Date(b.createdAt);
-
-          const epochA = dateA.valueOf();
-          const epochB = dateB.valueOf();
-
-          return epochA - epochB;
-        })
+        response.data.sort(
+          (a, b) => +new Date(a.createdAt) - +new Date(b.createdAt)
+        )
     }),
     getInstance: builder.query({
       query: () => `instances/${instanceZuid}`,
