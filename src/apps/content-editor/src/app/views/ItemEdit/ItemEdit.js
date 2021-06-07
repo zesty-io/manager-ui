@@ -179,7 +179,7 @@ export default connect((state, props) => {
           if (res.status >= 400 && res.status <= 499) {
             this.props.dispatch(
               notify({
-                message: `Not Found: ${res.error}`,
+                message: `Error: ${res.error}`,
                 kind: "error"
               })
             );
