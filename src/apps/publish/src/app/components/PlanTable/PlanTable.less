@@ -3,6 +3,7 @@
 .PlanTable {
   margin-top: 8px;
   width: 100%;
+  padding-right: 16px;
 
   tbody {
     border: 1px solid @zesty-light-blue;
@@ -10,13 +11,12 @@
 
     // Structure
     max-height: calc(100vh - 225px);
-    // overflow-y: scroll; // enforce scrollbar so thead can position with it in mind
+
     display: block;
   }
 
   thead {
     tr {
-      margin-right: 10px; // account for the table overflow scrollbar
       border-left: 4px solid @appBkgColor;
     }
   }
@@ -35,9 +35,7 @@
     }
   }
   tfoot {
-    display: flex;
-    p {
-      margin: 0 16px 0 0;
-    }
+    position: absolute;
+    bottom: 16px;
   }
 }
