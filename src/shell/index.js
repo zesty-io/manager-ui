@@ -116,26 +116,28 @@ if (loadLocalStorageData) {
 MonacoSetup(store);
 
 const App = Sentry.withProfiler(() => (
-  <Provider store={store}>
-    <Sentry.ErrorBoundary fallback={() => <AppError />}>
-      <Router
-        history={history}
-        getUserConfirmation={(message, callback) => {
-          if (message === "confirm") {
-            window.openNavigationModal(callback);
-          } else {
-            callback(true);
-          }
-        }}
-      >
-        <PrivateRoute>
-          <LoadInstance>
-            <Shell />
-          </LoadInstance>
-        </PrivateRoute>
-      </Router>
-    </Sentry.ErrorBoundary>
-  </Provider>
+  <React.StrictMode>
+    <Provider store={store}>
+      <Sentry.ErrorBoundary fallback={() => <AppError />}>
+        <Router
+          history={history}
+          getUserConfirmation={(message, callback) => {
+            if (message === "confirm") {
+              window.openNavigationModal(callback);
+            } else {
+              callback(true);
+            }
+          }}
+        >
+          <PrivateRoute>
+            <LoadInstance>
+              <Shell />
+            </LoadInstance>
+          </PrivateRoute>
+        </Router>
+      </Sentry.ErrorBoundary>
+    </Provider>
+  </React.StrictMode>
 ));
 
 function render() {
