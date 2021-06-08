@@ -35,7 +35,7 @@ export default React.forwardRef((props, providedRef) => {
   const [refs, setRefs] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [hasSelected, setHasSelected] = useState(true);
+  const [showResults, setShowResults] = useState(false);
 
   // Allow for consumer to externally update term
   useEffect(() => {
@@ -72,7 +72,7 @@ export default React.forwardRef((props, providedRef) => {
   function handleKeyUp(evt) {
     // NOTE: Must happen before switch
     // If user starts typing into input reset hasSelected
-    setHasSelected(false);
+    setShowResults(true);
 
     switch (evt.key) {
       case "ArrowUp":
@@ -108,15 +108,17 @@ export default React.forwardRef((props, providedRef) => {
   }
 
   function handleFocus(evt) {
-    setHasSelected(false);
+    setShowResults(true);
   }
 
   function handleSelect(option) {
     props.onSelect(option);
 
-    // Clear term to close options list
-    setTerm("");
-    setHasSelected(true);
+    // optionally, clear term and close results list
+    if (!props.keepResultsOnSelect) {
+      setTerm("");
+      setShowResults(false);
+    }
   }
 
   // clear search results if user clicks outside of results list
@@ -124,7 +126,7 @@ export default React.forwardRef((props, providedRef) => {
   useEffect(() => {
     function handleClickOutside(evt) {
       if (searchRef.current && !searchRef.current.contains(evt.target)) {
-        setHasSelected(true);
+        setShowResults(false);
       }
     }
 
@@ -145,7 +147,7 @@ export default React.forwardRef((props, providedRef) => {
         ref={providedRef}
         value={term}
       />
-      {term && !hasSelected && (
+      {term && showResults && (
         <List
           term={term}
           loading={loading}
