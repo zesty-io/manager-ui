@@ -71,7 +71,7 @@ export default React.forwardRef((props, providedRef) => {
 
   function handleKeyUp(evt) {
     // NOTE: Must happen before switch
-    // If user starts typing into input reset hasSelected
+    // If user starts typing into input reset showResults
     setShowResults(true);
 
     switch (evt.key) {
