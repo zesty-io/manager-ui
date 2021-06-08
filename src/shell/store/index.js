@@ -1,14 +1,11 @@
 import { applyMiddleware, combineReducers, createStore } from "redux";
-import { createLogger } from "redux-logger";
-
 import thunkMiddleware from "redux-thunk";
 import createSentryMiddleware from "redux-sentry-middleware";
+import { composeWithDevTools } from "redux-devtools-extension";
 import { fetchResource, resolveFieldOptions } from "./middleware/api";
 import { localStorage } from "./middleware/local-storage";
 import { session } from "./middleware/session";
-
 import { Sentry } from "utility/sentry";
-
 import { auth } from "./auth";
 import { products } from "./products";
 import { user } from "./user";
@@ -24,11 +21,10 @@ import { logs } from "./logs";
 import { notifications } from "./notifications";
 import { platform } from "./platform";
 import { headTags } from "./headTags";
-
-// RTK
 import media from "./media";
 import { users } from "./users";
 import ui from "./ui";
+import publishPlan from "./publishPlan";
 
 // Middleware is applied in order of array
 const middlewares = [
@@ -38,20 +34,6 @@ const middlewares = [
   resolveFieldOptions,
   thunkMiddleware
 ];
-
-/**
- * Do not log actions in production
- * Improves performance and keeps bug tracking clean
- */
-if (__CONFIG__?.ENV !== "production") {
-  middlewares.push(
-    createLogger({
-      collapsed: true,
-      duration: true,
-      diff: false
-    })
-  );
-}
 
 /**
  * Setup bug tracking
@@ -105,7 +87,8 @@ function createReducer(asyncReducers) {
     notifications,
     platform,
     headTags,
-    ui
+    ui,
+    publishPlan
   };
 
   return combineReducers({
@@ -118,7 +101,7 @@ function configureStore(initialState = {}) {
   const store = createStore(
     createReducer(),
     initialState,
-    applyMiddleware(...middlewares)
+    composeWithDevTools(applyMiddleware(...middlewares))
   );
 
   // Keep a reference of injected reducers

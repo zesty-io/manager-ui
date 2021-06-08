@@ -15,6 +15,7 @@ import history from "utility/history";
 import { Sentry } from "utility/sentry";
 import { store, injectReducer } from "shell/store";
 import { navContent } from "../apps/content-editor/src/store/navContent";
+import { loadedPlan } from "shell/store/publishPlan";
 
 import AppError from "shell/components/AppError";
 import PrivateRoute from "./components/private-route";
@@ -22,6 +23,7 @@ import LoadInstance from "./components/load-instance";
 import Shell from "./views/Shell";
 
 import { MonacoSetup } from "../apps/code-editor/src/app/components/Editor/components/MemoizedEditor/MonacoSetup";
+import { loadedUI } from "./store/ui";
 
 // needed for Breadcrumbs in Shell
 injectReducer(store, "navContent", navContent);
@@ -74,10 +76,12 @@ try {
       `${instanceZUID}:navContent`,
       `${instanceZUID}:models`,
       `${instanceZUID}:fields`,
-      `${instanceZUID}:content`
+      `${instanceZUID}:content`,
+      `${instanceZUID}:publishPlan`,
+      `${instanceZUID}:ui`
     ])
     .then(results => {
-      const [lang, nav, models, fields, content] = results;
+      const [lang, nav, models, fields, content, publishPlan, ui] = results;
 
       store.dispatch({
         type: "LOADED_LOCAL_USER_LANG",
@@ -109,24 +113,9 @@ try {
         type: "LOADED_LOCAL_ITEMS",
         data: content
       });
+      store.dispatch(loadedUI(ui));
 
-      // if (Array.isArray(itemZUIDs)) {
-      //   const items = itemZUIDs.map(itemZUID =>
-      //     get(`${zesty.instance.ZUID}:content:${itemZUID}`)
-      //   );
-      //
-      //   Promise.all(items).then(itemsArr => {
-      //     const itemsObj = itemsArr.reduce((acc, item) => {
-      //       acc[item.meta.ZUID] = item;
-      //       return acc;
-      //     }, {});
-      //
-      //     store.dispatch({
-      //       type: "LOADED_LOCAL_ITEMS",
-      //       data: itemsObj
-      //     });
-      //   });
-      // }
+      store.dispatch(loadedPlan(publishPlan));
     });
 } catch (err) {
   console.error("IndexedDB:get:error", err);

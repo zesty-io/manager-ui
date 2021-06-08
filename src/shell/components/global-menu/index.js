@@ -40,7 +40,9 @@ export default connect(state => {
     };
 
     return (
-      <menu className={styles.GlobalMenu}>
+      <menu
+        className={cx(styles.GlobalMenu, props.openNav ? styles.OpenNav : "")}
+      >
         {props.products.map(product => {
           // Covert dashes to spaces
           // Uppercase first letter of word

@@ -17,7 +17,8 @@
     "start:stage": "npm run serve:webpack -- --env.NODE_ENV=stage --mode=development",
     "task:clean": "rimraf build",
     "task:webpack": "webpack --progress --config src/shell/webpack.config.js",
-    "test": "cypress run"
+    "test": "cypress run",
+    "test:open": "cypress open"
   },
   "author": "Zesty.io<developers@zesty.io>",
   "contributors": [
@@ -78,6 +79,7 @@
     "react-virtualized-sticky-tree": "^2.1.30",
     "react-window": "1.8.5",
     "redux": "4.0.5",
+    "redux-devtools-extension": "^2.13.9",
     "redux-sentry-middleware": "^0.2.2",
     "redux-thunk": "2.3.0",
     "regenerator-runtime": "0.13.5",
@@ -105,7 +107,7 @@
     "copy-webpack-plugin": "^6.0.3",
     "cross-env": "^7.0.2",
     "css-loader": "3.4.2",
-    "cypress": "^4.11.0",
+    "cypress": "^7.4.0",
     "cypress-iframe": "^1.0.1",
     "dotenv": "8.2.0",
     "extract-loader": "^5.1.0",

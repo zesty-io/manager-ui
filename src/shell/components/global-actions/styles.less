@@ -1,12 +1,12 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
 
 .GlobalSubMenu {
   background-color: @globalMenuBkgColor;
   margin: 0;
-  padding: 16px 0;
+  padding: 8px 0;
   width: 100%;
   border-top: 1px solid lighten(@globalMenuBkgColor, 5%);
-
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -18,47 +18,30 @@
     flex-direction: column;
   }
 
-  .AppVersion {
-    margin: 6px;
-    .VersionNumber {
-      word-break: break-all;
-      font-family: monospace;
-
-      font-size: 10px;
-      line-height: 10px;
-      display: inline-block;
-    }
-
-    a {
-      color: inherit;
-      text-shadow: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    a:hover {
-      color: @zesty-white;
-    }
-    img {
-      margin-bottom: 4px;
-    }
-  }
-
   .GlobalAction {
     cursor: pointer;
-    padding: 8px;
     width: 100%;
     text-align: center;
-
     position: relative;
+    text-shadow: none;
+    padding: 8px;
+    color: @zesty-grey;
 
-    a {
-      margin: 0;
+    span {
+      font-weight: 400;
+      &:hover {
+        color: @zesty-orange;
+      }
+    }
+    img {
+      vertical-align: bottom;
     }
 
     svg {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
+
+      vertical-align: bottom;
     }
 
     .GlobalActionIcon:hover,
@@ -67,28 +50,46 @@
       color: @zesty-orange;
     }
   }
-}
-
-@media (min-width: 2000px) {
-  .GlobalSubMenu {
-    align-items: initial;
-
-    .GlobalActions {
-      flex-wrap: initial;
-      align-content: initial;
-      flex-direction: row;
+  .AppVersion {
+    padding: 8px;
+    .VersionNumber {
+      word-break: break-all;
+      font-family: monospace;
+      font-size: 12px;
+      line-height: 10px;
+      display: inline-block;
+      width: 30px;
+      margin: 0 auto;
     }
 
+    a {
+      color: inherit;
+      text-shadow: none;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+    a:hover {
+      color: @zesty-orange;
+    }
+    svg {
+      margin-right: 8px;
+      width: 16px;
+      height: 16px;
+      vertical-align: middle;
+    }
+  }
+  &.NavOpen {
+    .GlobalAction {
+      text-align: left;
+      svg {
+        margin-right: 8px;
+      }
+    }
     .AppVersion {
-      a {
-        flex-direction: row;
-      }
-      img {
-        margin: 0 8px 0 0;
-      }
       .VersionNumber {
-        margin: 0;
-        font-size: 14px;
+        width: auto;
+        margin: initial;
       }
     }
   }

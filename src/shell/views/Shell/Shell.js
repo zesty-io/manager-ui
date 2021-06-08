@@ -1,18 +1,20 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { Sentry } from "utility/sentry";
+import cx from "classnames";
+
+import { useDispatch, useSelector } from "react-redux";
+import { toggleNav } from "shell/store/ui";
 
 import AppError from "shell/components/AppError";
 import GlobalSidebar from "shell/components/global-sidebar";
 import GlobalTopbar from "shell/components/GlobalTopbar";
-import Welcome from "shell/components/welcome";
 import Missing from "shell/components/missing";
 
 import ContentApp from "apps/content-editor/src";
-
 import DamApp from "apps/media/src";
-
+import PublishApp from "apps/publish/src";
 import AuditTrailApp from "apps/audit-trail/src";
 import AnalyticsApp from "apps/analytics/src";
 import CodeApp from "apps/code-editor/src";
@@ -29,17 +31,28 @@ export default connect(state => {
   };
 })(
   React.memo(function Shell(props) {
+    const dispatch = useDispatch();
+    const openNav = useSelector(state => state.ui.openNav);
+
     return (
-      <section className={styles.Shell}>
-        <GlobalSidebar />
+      <section className={cx(styles.Shell, openNav ? null : styles.NavClosed)}>
+        <GlobalSidebar
+          onClick={() => {
+            dispatch(toggleNav());
+          }}
+          openNav={openNav}
+        />
         <main className={styles.AppLoader}>
           <GlobalTopbar />
           <div className={styles.SubApp}>
             <Sentry.ErrorBoundary fallback={() => <AppError />}>
               <Switch>
+                <Route path="/publish" component={PublishApp} />
+
                 <Route path="/media/:groupID/file/:fileID" component={DamApp} />
                 <Route path="/media/:groupID" component={DamApp} />
                 <Route path="/media" component={DamApp} />
+
                 {props.products.map(product => {
                   switch (product) {
                     case "content":

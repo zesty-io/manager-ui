@@ -36,6 +36,13 @@ A redux store is used to manage state across all of the potential sub-apps. The 
 
 - Node.js version 12 LTS
 - Web browser: Chrome / Firefox / Edge / Safari (latest)
+- Redux DevTools Extension - https://github.com/zalmoxisus/redux-devtools-extension
+
+## Using Redux DevTools Extension
+
+1. Install Redux DevTools Extension
+2. Click on Redux DevTools icon in browser (or right click and open in new window)
+3. View sequence of Redux Actions and other features like state diffs and rewind.
 
 ## Modify your hosts file
 

@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 
 import { fetchModels } from "shell/store/models";
-import { fetchItemPublishings } from "shell/store/content";
 import { fetchNav } from "../store/navContent";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -34,7 +33,6 @@ export default connect(state => {
       // to decrease time to first interaction
       this.props.dispatch(fetchNav());
       this.props.dispatch(fetchModels());
-      this.props.dispatch(fetchItemPublishings());
     }
     render() {
       return (

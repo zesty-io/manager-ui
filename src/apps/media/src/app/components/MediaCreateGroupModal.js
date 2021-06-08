@@ -37,14 +37,14 @@ export function MediaCreateGroupModal(props) {
             className={shared.Input}
             autoFocus
             type="text"
-            placeholder="Create Group"
+            placeholder="Name your group"
             name="group"
             value={groupName}
             onChange={event => setGroupName(event.target.value)}
           />
           <Button kind="save" onClick={handleCreateGroup}>
             <FontAwesomeIcon icon={faPlus} />
-            <span>Save</span>
+            <span>Create</span>
           </Button>
         </form>
       </ModalContent>

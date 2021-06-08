@@ -307,10 +307,14 @@ export function fetchItems(modelZUID, options = {}) {
   options.limit = options.limit || 100;
   options.page = options.page || 1;
 
-  return dispatch => {
+  return (dispatch, getState) => {
     // TODO load items for selected lang
     // const state = getState();
-    // const lang = state.user.selected_lang || "en-US";
+    // const lang = state.user.selected_lang;
+
+    // if (!options.lang) {
+    //   options.lang = lang;
+    // }
 
     const params = new URLSearchParams(options).toString();
 
@@ -553,6 +557,11 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
         }
       }
     )
+      .then(res => {
+        if (res.status >= 400) {
+          return Promise.reject(new Error(res.error));
+        }
+      })
       .then(() => {
         const message = data.publishAt
           ? `Scheduled ${title} to publish on ${meta.localTime} in the ${meta.localTimezone} timezone`

@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import useOnclickOutside from "react-cool-onclickoutside";
+import cx from "classnames";
+
+import { useDispatch, useSelector } from "react-redux";
+import { toggleNav } from "shell/store/ui";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { faHashtag, faQuestion } from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "@zesty-io/core/Url";
 
@@ -11,6 +15,8 @@ import { ActivePreview } from "./components/ActivePreview";
 
 import styles from "./styles.less";
 export default React.memo(function GlobalActions(props) {
+  const dispatch = useDispatch();
+  const openNav = useSelector(state => state.ui.openNav);
   const [openMenu, setOpenMenu] = useState(false);
 
   const ref = useOnclickOutside(() => {
@@ -18,9 +24,9 @@ export default React.memo(function GlobalActions(props) {
   });
 
   return (
-    <div className={styles.GlobalSubMenu}>
+    <div className={cx(styles.GlobalSubMenu, openNav ? styles.NavOpen : null)}>
       <div className={styles.GlobalActions}>
-        <span className={styles.GlobalAction}>
+        <span className={cx(styles.GlobalAction)}>
           <ActivePreview className={styles.GlobalActionIcon} />
         </span>
 
@@ -35,32 +41,36 @@ export default React.memo(function GlobalActions(props) {
             className={styles.GlobalActionIcon}
           />
           {openMenu && <GlobalHelpMenu />}
+          <span>Help</span>
         </span>
 
         <Url
           href={`https://zesty.io`}
-          title="View source code commit"
+          title="Zesty.io"
           target="_blank"
           className={styles.GlobalAction}
         >
           <img
             src="https://brand.zesty.io/zesty-io-logo.svg"
-            alt={`Zesty.io`}
-            width="18px"
-            height="18px"
+            alt="Zesty.io"
+            width="16px"
+            height="16px"
           />
+          <span className={styles.GlobalAction}>Zesty.io</span>
         </Url>
-      </div>
-      <div className={styles.AppVersion}>
-        <Url
-          href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
-          title="View source code commit"
-          target="_blank"
-        >
-          <span className={styles.VersionNumber}>
-            {CONFIG?.build?.data?.gitCommit}
-          </span>
-        </Url>
+
+        <div className={styles.AppVersion}>
+          <Url
+            href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
+            title="View source code commit"
+            target="_blank"
+          >
+            <FontAwesomeIcon icon={faHashtag} />
+            <span className={styles.VersionNumber}>
+              {CONFIG?.build?.data?.gitCommit}
+            </span>
+          </Url>
+        </div>
       </div>
     </div>
   );
