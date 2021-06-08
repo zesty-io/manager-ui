@@ -176,10 +176,18 @@ export default connect((state, props) => {
         .dispatch(fetchItem(modelZUID, itemZUID))
         // select lang based on content lang
         .then(res => {
-          if (res.status >= 400 && res.status <= 499) {
+          if (res.status === 400) {
             this.props.dispatch(
               notify({
-                message: `Error: ${res.error}`,
+                message: `Failure to edit item: ${res.error}`,
+                kind: "error"
+              })
+            );
+          }
+          if (res.status === 404) {
+            this.props.dispatch(
+              notify({
+                message: `Not Found: ${res.error}`,
                 kind: "error"
               })
             );
