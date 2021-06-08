@@ -179,7 +179,7 @@ export default connect((state, props) => {
           if (res.status === 400) {
             this.props.dispatch(
               notify({
-                message: `Failure to edit item: ${res.error}`,
+                message: `Failed saving item: ${res.error}`,
                 kind: "error"
               })
             );
