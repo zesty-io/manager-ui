@@ -40,7 +40,9 @@ export function PlanTable({ plan }) {
         <tr>
           <td>
             <div>
-              Published {plan.successes}/{plan.successes + plan.data.length}
+              <strong>
+                Published {plan.successes}/{plan.successes + plan.data.length}
+              </strong>
             </div>
           </td>
         </tr>
