@@ -37,7 +37,7 @@ export const ItemParent = connect(state => {
             setParents(
               parentOptions(props.path, {
                 ...props.content,
-                ...res.data
+                ...res?.data
               })
             );
           });
