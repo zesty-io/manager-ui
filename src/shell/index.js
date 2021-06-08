@@ -110,9 +110,6 @@ try {
         data: content
       });
 
-      // Render App once all Cache has been loaded
-      render();
-
       // if (Array.isArray(itemZUIDs)) {
       //   const items = itemZUIDs.map(itemZUID =>
       //     get(`${zesty.instance.ZUID}:content:${itemZUID}`)
@@ -133,4 +130,7 @@ try {
     });
 } catch (err) {
   console.error("IndexedDB:get:error", err);
+} finally {
+  // Render App once all Cache has been loaded or failed
+  render();
 }
