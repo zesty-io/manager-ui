@@ -7,7 +7,7 @@ window.CONFIG = __CONFIG__;
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import { Router } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import idb from "utility/idb";
 import observable from "@riotjs/observable";
 
@@ -118,7 +118,7 @@ MonacoSetup(store);
 const App = Sentry.withProfiler(() => (
   <Provider store={store}>
     <Sentry.ErrorBoundary fallback={() => <AppError />}>
-      <Router
+      <BrowserRouter
         history={history}
         getUserConfirmation={(message, callback) => {
           if (message === "confirm") {
@@ -133,7 +133,7 @@ const App = Sentry.withProfiler(() => (
             <Shell />
           </LoadInstance>
         </PrivateRoute>
-      </Router>
+      </BrowserRouter>
     </Sentry.ErrorBoundary>
   </Provider>
 ));
