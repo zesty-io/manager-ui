@@ -177,7 +177,12 @@ export default connect((state, props) => {
         // select lang based on content lang
         .then(res => {
           if (res.status === 404) {
-            throw new Error(res.message);
+            this.props.dispatch(
+              notify({
+                message: `Not Found: ${res.error}`,
+                kind: "error"
+              })
+            );
           }
           this.props.dispatch(
             selectLang(
