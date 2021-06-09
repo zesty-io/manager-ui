@@ -176,14 +176,6 @@ export default connect((state, props) => {
         .dispatch(fetchItem(modelZUID, itemZUID))
         // select lang based on content lang
         .then(res => {
-          if (res.status === 400) {
-            this.props.dispatch(
-              notify({
-                message: `Failed fetching item: ${res.error}`,
-                kind: "error"
-              })
-            );
-          }
           if (res.status === 404) {
             this.props.dispatch(
               notify({
