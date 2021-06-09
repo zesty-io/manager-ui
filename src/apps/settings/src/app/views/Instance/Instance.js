@@ -12,10 +12,12 @@ import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { Select, Option } from "@zesty-io/core/Select";
 import { Button } from "@zesty-io/core/Button";
 import { notify } from "shell/store/notifications";
+import { Notice } from "@zesty-io/core/Notice";
 
 import { updateSettings } from "../../../store/settings";
 
 import styles from "./SettingsStyles.less";
+
 export default connect(state => {
   return {
     catInstance: state.settings.catInstance,
@@ -123,6 +125,30 @@ export default connect(state => {
                     </Select>
                   </div>
                 </div>
+              );
+            } else if (field.key === "preferred_domain_prefix") {
+              return (
+                <>
+                  <Notice>
+                    <p>
+                      {" "}
+                      Activating the <strong>WWW</strong> setting may have
+                      unintended consequences if the fully qualified domain of
+                      www.sub-domain.example.org does not have proper DNS and
+                      SSL setup.
+                    </p>
+                  </Notice>
+                  <FieldTypeBinary
+                    key={field.ZUID}
+                    name={field.key}
+                    value={fieldValues[field.key]}
+                    label={field.keyFriendly}
+                    tooltip={field.tips}
+                    onValue="On"
+                    offValue="Off"
+                    onChange={setValue}
+                  />
+                </>
               );
             } else {
               return (
