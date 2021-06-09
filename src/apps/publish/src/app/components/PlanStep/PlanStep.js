@@ -98,7 +98,7 @@ export function PlanStep({ step, item, versions, lang }) {
           <FontAwesomeIcon icon={faSpinner} spin />
         ) : (
           <Button onClick={onRemove}>
-            <FontAwesomeIcon icon={faTimes} />
+            <FontAwesomeIcon title="Remove" icon={faTimes} />
           </Button>
         )}
       </td>
