@@ -179,10 +179,11 @@ export default connect((state, props) => {
           if (res.status === 404) {
             this.props.dispatch(
               notify({
-                message: `Not Found: ${res.error}`,
+                message: res.message,
                 kind: "error"
               })
             );
+            throw new Error(res.message);
           }
           this.props.dispatch(
             selectLang(
