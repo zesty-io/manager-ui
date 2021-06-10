@@ -1,4 +1,4 @@
-import uniqBy from "lodash.uniqby";
+import uniqBy from "lodash/uniqBy";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { connect, useDispatch } from "react-redux";
 import moment from "moment-timezone";
-import debounce from "lodash.debounce";
+import debounce from "lodash/debounce";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
