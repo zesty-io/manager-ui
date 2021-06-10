@@ -197,6 +197,10 @@ module.exports = async env => {
               "@babel/plugin-transform-runtime"
             ]
           }
+        },
+        {
+          test: /\.ttf$/,
+          use: ["file-loader"]
         }
       ]
     }
