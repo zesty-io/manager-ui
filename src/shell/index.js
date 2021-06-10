@@ -118,16 +118,7 @@ MonacoSetup(store);
 const App = Sentry.withProfiler(() => (
   <Provider store={store}>
     <Sentry.ErrorBoundary fallback={() => <AppError />}>
-      <Router
-        history={history}
-        getUserConfirmation={(message, callback) => {
-          if (message === "confirm") {
-            window.openNavigationModal(callback);
-          } else {
-            callback(true);
-          }
-        }}
-      >
+      <Router history={history}>
         <PrivateRoute>
           <LoadInstance>
             <Shell />
