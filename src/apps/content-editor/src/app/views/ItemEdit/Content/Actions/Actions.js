@@ -80,6 +80,7 @@ export function Actions(props) {
           dispatch={props.dispatch}
           itemZUID={props.itemZUID}
           modelZUID={props.modelZUID}
+          instanceZUID={props.instance.ZUID}
         />
       )}
       {canPublish && (
