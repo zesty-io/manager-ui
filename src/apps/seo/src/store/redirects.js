@@ -64,6 +64,7 @@ export function fetchRedirects() {
 }
 
 export function createRedirect(redirect) {
+  console.log(redirect.path);
   return dispatch => {
     dispatch({
       type: "REDIRECT_CREATE"
@@ -94,7 +95,7 @@ export function createRedirect(redirect) {
           dispatch(
             notify({
               kind: "error",
-              message: "Failed creating redirect"
+              message: `Failed creating redirect from ${redirect.path}. Must be a relative path.`
             })
           );
         }
