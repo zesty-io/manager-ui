@@ -96,7 +96,7 @@ export default function GlobalInstance(props) {
             alt="Instance Image"
           />
         )}
-        {canPurge && (
+        {instance && canPurge && (
           <div>
             <Button
               className={styles.Button}
@@ -104,7 +104,7 @@ export default function GlobalInstance(props) {
               onClick={() => {
                 setPurge(true);
                 return request(
-                  `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${instance?.ZUID}`
+                  `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${instance.ZUID}&instance=${instance.ZUID}`
                 )
                   .catch(err => {
                     dispatch({

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import debounce from "lodash.debounce";
+import debounce from "lodash/debounce";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { Infotip } from "@zesty-io/core/Infotip";
@@ -37,7 +37,7 @@ export const ItemParent = connect(state => {
             setParents(
               parentOptions(props.path, {
                 ...props.content,
-                ...res.data
+                ...res?.data
               })
             );
           });

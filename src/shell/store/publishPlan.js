@@ -39,10 +39,21 @@ const { actions, reducer } = createSlice({
   reducers: {
     loadedPlan(state, action) {
       // no cache, initial load
-      if (!action.payload) {
+      const plan = action.payload;
+      if (!plan) {
         state.status = "loaded";
       } else {
-        return action.payload;
+        // If user refreshed page and had pending operation,
+        // let's reset statuses so they can start over
+        if (plan.status === "pending") {
+          plan.status = "loaded";
+        }
+        plan.data.forEach(step => {
+          if (step.status === "pending") {
+            step.status = "idle";
+          }
+        });
+        return plan;
       }
     },
     resetPlan(state) {

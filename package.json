@@ -17,7 +17,8 @@
     "start:stage": "npm run serve:webpack -- --env.NODE_ENV=stage --mode=development",
     "task:clean": "rimraf build",
     "task:webpack": "webpack --progress --config src/shell/webpack.config.js",
-    "test": "cypress run"
+    "test": "cypress run",
+    "test:open": "cypress open"
   },
   "author": "Zesty.io<developers@zesty.io>",
   "contributors": [
@@ -55,12 +56,8 @@
     "js-cookie": "2.2.1",
     "json-to-csv-export": "1.0.2",
     "lodash": "^4.17.20",
-    "lodash.clonedeep": "4.5.0",
-    "lodash.debounce": "4.0.8",
-    "lodash.uniqby": "^4.7.0",
     "moment-timezone": "0.5.28",
     "monaco-editor": "0.18.1",
-    "prop-types": "15.7.2",
     "react": "16.13.0",
     "react-chartjs-2": "2.9.0",
     "react-codemirror2": "7.0.0",
@@ -106,7 +103,7 @@
     "copy-webpack-plugin": "^6.0.3",
     "cross-env": "^7.0.2",
     "css-loader": "3.4.2",
-    "cypress": "^4.11.0",
+    "cypress": "^7.4.0",
     "cypress-iframe": "^1.0.1",
     "dotenv": "8.2.0",
     "extract-loader": "^5.1.0",

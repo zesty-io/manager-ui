@@ -21,7 +21,12 @@ export default connect(state => {
   const { data: instance } = useGetInstanceQuery();
   return (
     <aside className={styles.GlobalSidebar}>
-      <div className={styles.topMenu}>
+      <div
+        className={cx(
+          styles.topMenu,
+          props.ui.openNav ? styles.OpenTopMenu : null
+        )}
+      >
         <Favicon />
         <GlobalMenu openNav={props.ui.openNav} />
         <GlobalActions hash={instance?.randomHashID} />
