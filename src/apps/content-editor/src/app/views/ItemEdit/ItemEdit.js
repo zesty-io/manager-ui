@@ -86,9 +86,16 @@ export default function ItemEdit() {
     };
   }, []);
 
-  function releaseLock(itemZUID) {
-    if (lockState.userZUID === user.user_zuid) {
-      dispatch(unlock(itemZUID));
+  function handleSaveKeyboardShortcut(event) {
+    if (
+      ((platform.isMac && event.metaKey) ||
+        (!platform.isMac && event.ctrlKey)) &&
+      event.key == "s"
+    ) {
+      event.preventDefault();
+      if (item && item.dirty) {
+        save();
+      }
     }
   }
 
@@ -109,27 +116,6 @@ export default function ItemEdit() {
     } finally {
       setCheckingLock(false);
     }
-  }
-
-  function handleSaveKeyboardShortcut(event) {
-    if (
-      ((platform.isMac && event.metaKey) ||
-        (!platform.isMac && event.ctrlKey)) &&
-      event.key == "s"
-    ) {
-      event.preventDefault();
-      if (item && item.dirty) {
-        save();
-      }
-    }
-  }
-
-  function forceUnlock() {
-    // Transfer item lock to current session user
-    dispatch(unlock(itemZUID)).then(() => {
-      dispatch(lock(itemZUID));
-    });
-    setLockState({ userZUID: user.user_zuid });
   }
 
   // Fetch item, fields, publishing
@@ -168,6 +154,20 @@ export default function ItemEdit() {
         setLoading(false);
       }
     }
+  }
+
+  function releaseLock(itemZUID) {
+    if (lockState.userZUID === user.user_zuid) {
+      dispatch(unlock(itemZUID));
+    }
+  }
+
+  function forceUnlock() {
+    // Transfer item lock to current session user
+    dispatch(unlock(itemZUID)).then(() => {
+      dispatch(lock(itemZUID));
+    });
+    setLockState({ userZUID: user.user_zuid });
   }
 
   async function save() {
