@@ -22,12 +22,12 @@ import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Input } from "@zesty-io/core/Input";
 import { Url } from "@zesty-io/core/Url";
-
 import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
-
 import styles from "./styles.less";
-export default React.forwardRef((props, providedRef) => {
+import { useGetUsersQuery } from "shell/services/accounts";
+
+export default React.forwardRef(function ContentSearch(props, providedRef) {
   const dispatch = useDispatch();
 
   const [term, setTerm] = useState(props.value);
@@ -164,10 +164,10 @@ export default React.forwardRef((props, providedRef) => {
 const List = connect(state => {
   return {
     languages: state.languages,
-    users: state.users,
     models: state.models
   };
 })(props => {
+  const { data: users } = useGetUsersQuery();
   const [sortType, setSortType] = useState("default");
   const [filterTerm, setFilterTerm] = useState("");
 
@@ -295,7 +295,7 @@ const List = connect(state => {
             optRef={props.refs[i]}
             selectedIndex={props.selectedIndex}
             index={i}
-            users={props.users}
+            users={users}
             languages={props.languages}
             models={props.models}
           />

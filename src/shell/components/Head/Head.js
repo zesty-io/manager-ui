@@ -1,46 +1,43 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { Notice } from "@zesty-io/core/Notice";
 import { Button } from "@zesty-io/core/Button";
-
 import { HeadTag } from "./HeadTag";
 import { Preview } from "./Preview";
-
 import { fetchHeadTags, addHeadTag } from "shell/store/headTags";
 import { useDomain } from "shell/hooks/use-domain";
-
 import styles from "./Head.less";
+import { useGetInstanceQuery } from "shell/services/accounts";
+
 export default connect((state, props) => {
-  let item;
-  if (props.resourceZUID) {
-    // TODO: model level tags. Currently not supported by API
-    if (props.resourceZUID.charAt(0) === "6") {
-    }
-
-    // item level tags
-    if (props.resourceZUID.charAt(0) === "7") {
-      item = state.content[props.resourceZUID];
-    }
-    // instance level tags
-    if (props.resourceZUID.charAt(0) === "8") {
-      item = state.instance;
-    }
-  }
-
   return {
     item,
-    instanceName: state.instance.name,
     tags: Object.values(state.headTags)
       .filter(tag => tag.resourceZUID === props.resourceZUID)
       .sort((a, b) => a.sort > b.sort)
   };
-})(function Head(props) {
+})(function Head({ resourceZUID }) {
   const domain = useDomain();
+  const { data: instance } = useGetInstanceQuery();
+  let item;
+  if (resourceZUID) {
+    // TODO: model level tags. Currently not supported by API
+    if (resourceZUID.charAt(0) === "6") {
+    }
+
+    // item level tags
+    if (resourceZUID.charAt(0) === "7") {
+      item = state.content[resourceZUID];
+    }
+    // instance level tags
+    if (resourceZUID.charAt(0) === "8") {
+      item = instance;
+    }
+  }
 
   useEffect(() => {
     props.dispatch(fetchHeadTags());
@@ -77,8 +74,8 @@ export default connect((state, props) => {
       </main>
 
       <Preview
-        item={props.item}
-        instanceName={props.instanceName}
+        item={item}
+        instanceName={instance.name}
         domain={domain}
         tags={props.tags}
       />

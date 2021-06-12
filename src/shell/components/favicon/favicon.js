@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCog,
@@ -11,7 +10,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { request } from "utility/request";
-
 import {
   Modal,
   ModalContent,
@@ -22,17 +20,14 @@ import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { AppLink } from "@zesty-io/core/AppLink";
-
 import MediaApp from "../../../apps/media/src/app/MediaApp";
-
 import { fetchHeadTags, createHeadTag } from "shell/store/headTags";
-
 import styles from "./favicon.less";
 import MediaStyles from "../../../apps/media/src/app/MediaAppModal.less";
+import instanceZUID from "utility/instanceZUID";
 
 export default connect(state => {
   return {
-    instance: state.instance,
     headTags: state.headTags
   };
 })(function favicon(props) {
@@ -85,7 +80,7 @@ export default connect(state => {
       .dispatch(
         createHeadTag({
           type: "link",
-          resourceZUID: props.instance.ZUID,
+          resourceZUID: instanceZUID,
           attributes: {
             rel: "icon",
             type: "image/png",

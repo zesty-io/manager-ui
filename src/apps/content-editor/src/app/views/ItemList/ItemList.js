@@ -28,6 +28,7 @@ import { notify } from "shell/store/notifications";
 import { findFields, findItems } from "./findUtils";
 
 import styles from "./ItemList.less";
+import { useGetInstanceQuery } from "shell/services/accounts";
 
 const PAGE_SIZE = 5000;
 const DEFAULT_FILTER = {
@@ -55,7 +56,6 @@ export default connect((state, props) => {
     modelZUID,
     user: state.user,
     filters: state.listFilters,
-    instance: state.instance,
     allItems: state.content,
     allFields: state.fields,
     dirtyItems: Object.keys(state.content).filter(
@@ -69,6 +69,8 @@ export default connect((state, props) => {
 })(function ItemList(props) {
   const history = useHistory();
   const _isMounted = useRef(false);
+
+  const { data: instance } = useGetInstanceQuery();
 
   // table, list dimensions
   const table = useRef();
@@ -635,7 +637,7 @@ export default connect((state, props) => {
         resetSort={() => onSort(null)}
         filterTerm={filter.filterTerm}
         status={filter.status}
-        instance={props.instance}
+        instance={instance}
       />
 
       {!initialLoading && items.length === 1 ? (

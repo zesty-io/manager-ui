@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import cx from "classnames";
 import moment from "moment-timezone";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,10 +15,11 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import { Url } from "@zesty-io/core/Url";
 import { Button } from "@zesty-io/core/Button";
 import styles from "./PlanStep.less";
+import { useGetInstanceQuery } from "shell/services/accounts";
 
 export function PlanStep({ step, item, versions, lang }) {
   const dispatch = useDispatch();
-  const instanceID = useSelector(state => state.instance.randomHashID);
+  const { data: instance } = useGetInstanceQuery();
   const options = versions
     ? versions.map(content => {
         return {
@@ -87,8 +88,8 @@ export function PlanStep({ step, item, versions, lang }) {
         {/* Preview link should include specific selected version */}
         <Url
           target="_blank"
-          title={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${step.version}`}
-          href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${step.version}`}
+          title={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${step.version}`}
+          href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${step.version}`}
         >
           <FontAwesomeIcon icon={faEye} />
         </Url>
