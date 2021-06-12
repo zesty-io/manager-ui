@@ -12,7 +12,6 @@ import SharedWidgetStyles from "../SharedWidget.less";
 
 export default connect((state, props) => {
   return {
-    instanceZUID: state.instance.ZUID,
     logs:
       state.logs[props.itemZUID] && state.logs[props.itemZUID].auditTrailDraft
         ? state.logs[props.itemZUID].auditTrailDraft

@@ -4,14 +4,11 @@ import { connect } from "react-redux";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { SettingsNav } from "./components/Nav";
-
 import { Instance } from "./views/Instance";
 import { Styles } from "./views/Styles";
 import { Browse, Installed } from "./views/Fonts";
 import { Robots } from "./views/Robots";
-
 import { Head } from "shell/components/Head";
-
 import {
   fetchSettings,
   fetchStylesVariables,
@@ -19,10 +16,10 @@ import {
   fetchFonts,
   fetchFontsInstalled
 } from "../store/settings";
-
 import styles from "./App.less";
+import instanceZUID from "utility/instanceZUID";
+
 export default connect(state => ({
-  instance: state.instance,
   settings: state.settings
 }))(function SettingsApp(props) {
   useEffect(() => {
@@ -70,7 +67,7 @@ export default connect(state => ({
                   path="/settings/head"
                   render={() => (
                     <div className={styles.InstanceHeadTags}>
-                      <Head resourceZUID={props.instance.ZUID} />
+                      <Head resourceZUID={instanceZUID} />
                     </div>
                   )}
                 />

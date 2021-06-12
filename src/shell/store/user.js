@@ -1,6 +1,7 @@
 import idb from "utility/idb";
 import { request } from "utility/request";
 import { Sentry } from "utility/sentry";
+import instanceZUID from "utility/instanceZUID";
 
 export function user(
   state = {
@@ -63,7 +64,7 @@ export function selectLang(lang) {
   return (dispatch, getState) => {
     const state = getState();
 
-    idb.set(`${state.instance.ZUID}:user:selected_lang`, lang);
+    idb.set(`${instanceZUID}:user:selected_lang`, lang);
 
     dispatch({
       type: "USER_SELECTED_LANG",

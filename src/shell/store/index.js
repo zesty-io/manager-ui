@@ -58,7 +58,7 @@ middlewares.push(
         products: state.products,
         platform: state.platform,
         notifications: state.notifications,
-        instance: state.instance
+        instance: state.accountsApi.queries["getInstance(undefined)"]
       };
     }
   })

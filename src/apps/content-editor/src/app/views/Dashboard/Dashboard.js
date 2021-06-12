@@ -12,6 +12,7 @@ import {
   faHistory,
   faClock
 } from "@fortawesome/free-solid-svg-icons";
+
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -22,6 +23,7 @@ import { InstanceActivity } from "./components/InstanceActivity";
 import { QuickJumps } from "./components/QuickJumps";
 import { fetchRecentItems, getUserLogs } from "shell/store/user";
 import styles from "./Dashboard.less";
+import { useGetInstanceQuery } from "shell/services/accounts";
 
 function getFavoriteModels(items) {
   const grouped = items.reduce((acc, item) => {
@@ -68,7 +70,7 @@ const selectModelsByZuid = createSelector(
 
 export default React.memo(function Dashboard() {
   const user = useSelector(state => state.user);
-  const instance = useSelector(state => state.instance);
+  const { data: instance } = useGetInstanceQuery();
   const headTags = useSelector(state => state.headTags);
   const logs = useSelector(state => state.logs);
   const modelsByZuid = useSelector(selectModelsByZuid);
@@ -88,6 +90,7 @@ export default React.memo(function Dashboard() {
 
     dispatch(getUserLogs());
   }, [user.ZUID]);
+
   return (
     <section className={styles.Dashboard}>
       <section className={styles.LinkOuts}>

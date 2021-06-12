@@ -12,8 +12,7 @@ import SharedWidgetStyles from "../SharedWidget.less";
 
 export default connect(state => {
   return {
-    logs: state.logs,
-    instanceZUID: state.instance.ZUID
+    logs: state.logs
   };
 })(
   React.memo(function WidgetPublishHistory(props) {

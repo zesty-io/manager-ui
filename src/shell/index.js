@@ -11,7 +11,7 @@ import { Router } from "react-router-dom";
 import idb from "utility/idb";
 import observable from "@riotjs/observable";
 
-import instanceZuid from "utility/instanceZuid";
+import instanceZUID from "utility/instanceZUID";
 import history from "utility/history";
 import { Sentry } from "utility/sentry";
 import { store, injectReducer } from "shell/store";
@@ -37,7 +37,7 @@ if (window.zesty == null) {
 window.zestyStore = store;
 
 // Update urls in config to include the current instance zuid
-window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZuid}${window.CONFIG.API_INSTANCE}`;
+window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZUID}${window.CONFIG.API_INSTANCE}`;
 
 MonacoSetup(store);
 

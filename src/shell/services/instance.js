@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import instanceZuid from "utility/instanceZuid";
+import instanceZUID from "utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
 
 const normalizeContent = response =>
@@ -12,7 +12,7 @@ const normalizeContent = response =>
 export const instanceApi = createApi({
   reducerPath: "instanceApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `${__CONFIG__.API_INSTANCE_PROTOCOL}${instanceZuid}${__CONFIG__.API_INSTANCE}`,
+    baseUrl: `${__CONFIG__.API_INSTANCE_PROTOCOL}${instanceZUID}${__CONFIG__.API_INSTANCE}`,
     prepareHeaders
   }),
   endpoints: builder => ({

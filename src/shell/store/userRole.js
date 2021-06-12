@@ -1,6 +1,6 @@
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
-import instanceZuid from "utility/instanceZuid";
+import instanceZUID from "utility/instanceZUID";
 
 export function userRole(
   state = {
@@ -23,7 +23,7 @@ export function fetchUserRole() {
 
     return request(`${CONFIG.API_ACCOUNTS}/users/${state.user.ZUID}/roles`)
       .then(roles => {
-        const role = roles.data.find(role => role.entityZUID === instanceZuid);
+        const role = roles.data.find(role => role.entityZUID === instanceZUID);
 
         if (role) {
           dispatch({

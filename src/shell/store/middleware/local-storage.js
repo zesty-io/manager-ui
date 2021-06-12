@@ -1,5 +1,5 @@
 import idb from "utility/idb";
-import instanceZuid from "utility/instanceZuid";
+import instanceZUID from "utility/instanceZUID";
 import {
   resetPlan,
   addStep,
@@ -25,7 +25,7 @@ export const localStorage = store => next => action => {
         // we already store tabs separately
         delete ui.tabs;
         delete ui.loadedTabs;
-        idb.set(`${state.instance.ZUID}:ui`, ui);
+        idb.set(`${instanceZUID}:ui`, ui);
         break;
       case `${resetPlan}`:
       case `${addStep}`:
@@ -37,26 +37,26 @@ export const localStorage = store => next => action => {
       case `${publishPlanPending}`:
       case `${publishPlanSuccess}`:
       case `${publishPlanFailure}`:
-        idb.set(`${instanceZuid}:publishPlan`, state.publishPlan);
+        idb.set(`${instanceZUID}:publishPlan`, state.publishPlan);
         break;
       case "FETCH_ITEM_SUCCESS":
       case "FETCH_ITEMS_SUCCESS":
       case "SEARCH_ITEMS_SUCCESS":
-        idb.set(`${instanceZuid}:content`, state.content);
+        idb.set(`${instanceZUID}:content`, state.content);
         break;
 
       case "FETCH_FIELD_SUCCESS":
       case "FETCH_FIELDS_SUCCESS":
-        idb.set(`${instanceZuid}:fields`, state.fields);
+        idb.set(`${instanceZUID}:fields`, state.fields);
         break;
 
       case "FETCH_MODEL_SUCCESS":
       case "FETCH_MODELS_SUCCESS":
-        idb.set(`${instanceZuid}:models`, state.models);
+        idb.set(`${instanceZUID}:models`, state.models);
         break;
 
       case "FETCH_CONTENT_NAV_SUCCESS":
-        idb.set(`${instanceZuid}:navContent`, state.navContent.raw);
+        idb.set(`${instanceZUID}:navContent`, state.navContent.raw);
         break;
     }
   } catch (err) {

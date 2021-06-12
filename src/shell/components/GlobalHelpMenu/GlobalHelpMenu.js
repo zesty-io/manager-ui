@@ -10,6 +10,7 @@ import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
 
 import styles from "./styles.less";
+import { useGetInstanceQuery } from "shell/services/accounts";
 
 const defaultLinks = [
   {
@@ -144,17 +145,14 @@ const linkMap = {
   ]
 };
 
-export default connect(state => {
-  return {
-    instance: state.instance
-  };
-})(function GlobalHelpMenu(props) {
+export default function GlobalHelpMenu() {
+  const { data: instance } = useGetInstanceQuery();
   const section = location.pathname.split("/")[1];
   const links = section ? linkMap[section] : defaultLinks;
   return (
     <section className={styles.helpMenu}>
       <header>
-        {props.instance.planID && (
+        {instance.planID && (
           <Url target="_blank" href="mailto:support@zesty.io">
             <Button className={styles.Button} kind="" title="Support">
               <FontAwesomeIcon icon={faEnvelope} />
@@ -259,4 +257,4 @@ export default connect(state => {
       </div>
     </section>
   );
-});
+}
