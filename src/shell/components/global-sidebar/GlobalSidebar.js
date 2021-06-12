@@ -29,7 +29,7 @@ export default connect(state => {
       >
         <Favicon />
         <GlobalMenu openNav={props.ui.openNav} />
-        <GlobalActions hash={instance?.randomHashID} />
+        <GlobalActions hash={instance.randomHashID} />
         {props.openNav ? (
           <p
             className={cx(styles.Collapse, styles.Open)}

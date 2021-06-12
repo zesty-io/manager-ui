@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import cx from "classnames";
-import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
@@ -21,19 +20,15 @@ import {
 } from "shell/services/accounts";
 import styles from "./GlobalInstance.less";
 
-export default function GlobalInstance(props) {
+export default function GlobalInstance() {
   const ref = useRef();
   const domain = useDomain();
-  const domainsQuery = useGetDomainsQuery();
-  const instanceQuery = useGetInstanceQuery();
-  const instancesQuery = useGetInstancesQuery();
+  const { data: domains } = useGetDomainsQuery();
+  const { data: instance } = useGetInstanceQuery();
+  const { data: instances } = useGetInstancesQuery();
   const [open, setOpen] = useState(false);
   const [purge, setPurge] = useState(false);
   const canPurge = usePermission("PUBLISH");
-
-  const domains = domainsQuery.data;
-  const instance = instanceQuery.data;
-  const instances = instancesQuery.data;
 
   useEffect(() => {
     const handleGlobalClick = evt => {
@@ -65,17 +60,17 @@ export default function GlobalInstance(props) {
             setOpen(!open);
           }}
         >
-          {instance?.name} <FontAwesomeIcon icon={faCaretDown} />
+          {instance.name} <FontAwesomeIcon icon={faCaretDown} />
         </button>
       </menu>
 
       <main className={cx(styles.Instance, open ? null : styles.hide)}>
         <p className={cx(styles.bodyText, styles.zuid)}>
-          ZUID: {instance?.ZUID}
+          ZUID: {instance.ZUID}
         </p>
 
-        <Select name="instance" value={instance?.ZUID}>
-          {instances?.map(instance => (
+        <Select name="instance" value={instance.ZUID}>
+          {instances.map(instance => (
             <Option
               key={instance.ZUID}
               value={instance.ZUID}
@@ -87,16 +82,16 @@ export default function GlobalInstance(props) {
           ))}
         </Select>
 
-        {instance?.screenshotURL && (
+        {instance.screenshotURL && (
           <img
-            src={instance?.screenshotURL}
+            src={instance.screenshotURL}
             loading="lazy"
             width="356px"
             height="200px"
             alt="Instance Image"
           />
         )}
-        {instance && canPurge && (
+        {canPurge && (
           <div>
             <Button
               className={styles.Button}
@@ -128,7 +123,7 @@ export default function GlobalInstance(props) {
           </div>
         )}
         <ul className={styles.Domains}>
-          {domains?.map(domain => (
+          {domains.map(domain => (
             <li key={domain.domain}>
               <Url
                 title={`http://${domain.domain}`}
