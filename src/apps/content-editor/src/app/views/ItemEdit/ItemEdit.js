@@ -82,10 +82,9 @@ export default function ItemEdit() {
     lockItem(itemZUID);
     load(modelZUID, itemZUID);
     return () => {
-      console.log("releasing lock on component unmount", itemZUID);
       releaseLock(itemZUID);
     };
-  }, [itemZUID]);
+  }, []);
 
   function releaseLock(itemZUID) {
     if (lockState.userZUID === user.user_zuid) {
@@ -133,10 +132,10 @@ export default function ItemEdit() {
     setLockState({ userZUID: user.user_zuid });
   }
 
+  // Fetch item, fields, publishing
   async function load(modelZUID, itemZUID) {
     setLoading(true);
 
-    // Fetch item, fields, publishing
     try {
       const itemResponse = await dispatch(fetchItem(modelZUID, itemZUID));
       if (itemResponse.status === 404) {
