@@ -52,15 +52,6 @@ export default function ItemEdit() {
   const history = useHistory();
   const isMounted = useIsMounted();
   const { modelZUID, itemZUID } = useParams();
-
-  const prevItemZUID = usePrevious(itemZUID);
-
-  // Track our itemZUID so we can determine
-  // if a new item has been loaded and request item data.
-  // We also have to track modelZUID to determine
-  // when switching between new model creation views.
-  // const [modelZUID, setModelZUID] = useState(params.modelZUID);
-  // const [itemZUID, setItemZUID] = useState(params.itemZUID);
   const item = useSelector(state => state.content[itemZUID]);
   const items = useSelector(state => state.content);
   const model = useSelector(state => state.models[modelZUID]);
@@ -88,12 +79,6 @@ export default function ItemEdit() {
   }, []);
 
   useEffect(() => {
-    // release old lock before loading new item
-    // if (prevItemZUID && itemZUID !== prevItemZUID) {
-    //   console.log("releasing previously held lock on update", prevItemZUID);
-    //   releaseLock(prevItemZUID);
-    // }
-
     lockItem(itemZUID);
     load(modelZUID, itemZUID);
     return () => {
