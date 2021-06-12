@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
-import usePrevious from "react-use/lib/usePrevious";
+import { createSelector } from "@reduxjs/toolkit";
 
 import { notify } from "shell/store/notifications";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
@@ -29,23 +29,31 @@ import { Content } from "./Content";
 import { Meta } from "./Meta";
 import { ItemHead } from "./ItemHead";
 
-const selectSortedModelFields = (state, modelZUID) =>
-  Object.keys(state.fields)
-    .filter(fieldZUID => state.fields[fieldZUID].contentModelZUID === modelZUID)
-    .map(fieldZUID => state.fields[fieldZUID])
-    .sort((a, b) => a.sort - b.sort);
+const selectSortedModelFields = createSelector(
+  state => state.fields,
+  (_, modelZUID) => modelZUID,
+  (fields, modelZUID) =>
+    Object.keys(fields)
+      .filter(fieldZUID => fields[fieldZUID].contentModelZUID === modelZUID)
+      .map(fieldZUID => fields[fieldZUID])
+      .sort((a, b) => a.sort - b.sort)
+);
 
-const selectItemHeadTags = (state, itemZUID) =>
-  Object.keys(state.headTags)
-    .reduce((acc, id) => {
-      if (state.headTags[id].resourceZUID === itemZUID) {
-        acc.push(state.headTags[id]);
-      }
-      return acc;
-    }, [])
-    .sort((tagA, tagB) => {
-      return tagA.sort > tagB.sort ? 1 : -1;
-    });
+const selectItemHeadTags = createSelector(
+  state => state.headTags,
+  (_, itemZUID) => itemZUID,
+  (headTags, itemZUID) =>
+    Object.keys(headTags)
+      .reduce((acc, id) => {
+        if (headTags[id].resourceZUID === itemZUID) {
+          acc.push(headTags[id]);
+        }
+        return acc;
+      }, [])
+      .sort((tagA, tagB) => {
+        return tagA.sort > tagB.sort ? 1 : -1;
+      })
+);
 
 export default function ItemEdit() {
   const dispatch = useDispatch();
