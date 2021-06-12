@@ -15,7 +15,6 @@ import { useGetInstanceQuery } from "shell/services/accounts";
 
 export default connect((state, props) => {
   return {
-    item,
     tags: Object.values(state.headTags)
       .filter(tag => tag.resourceZUID === props.resourceZUID)
       .sort((a, b) => a.sort > b.sort)
