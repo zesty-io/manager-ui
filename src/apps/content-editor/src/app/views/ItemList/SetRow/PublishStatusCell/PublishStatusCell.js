@@ -19,10 +19,12 @@ export const PublishStatusCell = React.memo(function PublishStatusCell(props) {
       </AppLink>
     );
   }
-  const url = `/content/${props.modelZUID}/${props.itemZUID}`;
   if (props.type === "dataset") {
     return (
-      <AppLink className={cx(styles.PublishStatusCell)} to={`${props.url}`}>
+      <AppLink
+        className={cx(styles.PublishStatusCell)}
+        to={`/content/${props.modelZUID}/${props.itemZUID}`}
+      >
         {props.item &&
         props.item.scheduling &&
         props.item.scheduling.isScheduled ? (
