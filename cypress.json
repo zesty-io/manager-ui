@@ -1,0 +1,11 @@
+{
+  "projectId": "manager-ui",
+  "viewportWidth": 1920,
+  "viewportHeight": 1080,
+  "baseUrl": "http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080/",
+  "video": false,
+  "env": {
+    "API_AUTH": "https://auth.api.dev.zesty.io",
+    "COOKIE_NAME": "DEV_APP_SID"
+  }
+}

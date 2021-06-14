@@ -1,104 +1,119 @@
 describe("Settings Actions", () => {
   before(() => {
     cy.login();
+    cy.visit("/settings");
+  });
+  const SAVED_MESSAGE = "Settings Saved";
+
+  it("Body Colors & Spacing", () => {
+    cy.get("[data-cy=SettingsNav]")
+      .contains("Body Colors & Spacing")
+      .click();
+    cy.get("input[name='container-large-desktop']")
+      .first()
+      .clear()
+      .type("1180px");
+    cy.get("#SaveSettings").click();
+    cy.contains(SAVED_MESSAGE).should("exist");
   });
 
-  it("Edits settings input", () => {
-    cy.visit("/settings/styles/1");
-    cy.get("input")
+  it("Typography", () => {
+    cy.get("[data-cy=SettingsNav]")
+      .contains("Typography")
+      .click();
+    cy.get("[data-cy=SubApp] .Select")
       .first()
-      .type("1180px", { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
+      .click();
+    cy.get("[data-cy=SubApp] .Select .selections li")
+      .first()
+      .click();
     cy.get("#SaveSettings").click();
-    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
+    cy.contains(SAVED_MESSAGE).should("exist");
   });
 
-  it("Edits typography", () => {
-    cy.visit("/settings/styles/2");
-    cy.get("ul")
+  it("Links", () => {
+    cy.get("[data-cy=SettingsNav]")
+      .contains("Links")
+      .click();
+    cy.get("[data-cy=SubApp] .Select")
       .first()
-      .get("li", { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
+      .click();
+    cy.get("[data-cy=SubApp] .Select .selections li")
+      .first()
+      .click();
     cy.get("#SaveSettings").click();
-    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
+    cy.contains(SAVED_MESSAGE).should("exist");
   });
 
-  it("Edits link over decoration", () => {
-    cy.visit("/settings/styles/3");
-    cy.get("ul")
+  it("Navigation", () => {
+    cy.get("[data-cy=SettingsNav]")
+      .contains("Navigation")
+      .click();
+    cy.get("[data-cy=SubApp] input[type=text]")
       .first()
-      .get("li", { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
+      .clear()
+      .type("40px");
     cy.get("#SaveSettings").click();
-    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
+    cy.contains(SAVED_MESSAGE).should("exist");
   });
 
-  it("Edits navigation background", () => {
-    cy.visit("/settings/styles/4");
-    cy.get("input")
+  it("Buttons", () => {
+    cy.get("[data-cy=SettingsNav]")
+      .contains("Buttons")
+      .click();
+    cy.get("[data-cy=SubApp] input[type=text]")
       .first()
-      .type("#000", { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
+      .clear()
+      .type("normal");
     cy.get("#SaveSettings").click();
-    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
+    cy.contains(SAVED_MESSAGE).should("exist");
   });
 
-  it("Button font color", () => {
-    cy.visit("/settings/styles/6");
-    cy.get("input")
+  it("HTML Elements", () => {
+    cy.get("[data-cy=SettingsNav]")
+      .contains("HTML Elements")
+      .click();
+    cy.get("[data-cy=SubApp] input[type=text]")
       .first()
-      .type("#000", { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
+      .clear()
+      .type("8px");
     cy.get("#SaveSettings").click();
-    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
+    cy.contains(SAVED_MESSAGE).should("exist");
   });
 
-  it("Edits legend border color", () => {
-    cy.visit("/settings/styles/7");
-    cy.get("input")
+  it("Responsive Grid", () => {
+    cy.get("[data-cy=SettingsNav]")
+      .contains("HTML Elements")
+      .click();
+    cy.get("[data-cy=SubApp] input[type=text]")
       .first()
-      .type("#000", { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
+      .clear()
+      .type("10px");
     cy.get("#SaveSettings").click();
-    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
+    cy.contains(SAVED_MESSAGE).should("exist");
   });
 
-  it("Edits grid gutter width", () => {
-    cy.visit("/settings/styles/8");
-    cy.get("input")
+  it("Interactive Elements", () => {
+    cy.get("[data-cy=SettingsNav]")
+      .contains("Interactive Elements")
+      .click();
+    cy.get("[data-cy=SubApp] input[type=text]")
       .first()
-      .type("10px", { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
+      .clear()
+      .type("300px");
     cy.get("#SaveSettings").click();
-    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
+    cy.contains(SAVED_MESSAGE).should("exist");
   });
 
-  it("Button font color", () => {
-    cy.visit("/settings/styles/9");
-    cy.get("input")
+  it("Forms", () => {
+    cy.get("[data-cy=SettingsNav]")
+      .contains("Forms")
+      .click();
+    cy.get("[data-cy=SubApp] input[type=text]")
       .first()
-      .type("300px", { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
+      .clear()
+      .type("15px");
     cy.get("#SaveSettings").click();
-    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
-  });
-
-  it("Form input background", () => {
-    cy.visit("/settings/styles/10");
-    cy.get("input")
-      .first()
-      .type("#000", { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
-    cy.get("#SaveSettings").click();
-    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
-  });
-
-  it("Progress backgrouund", () => {
-    cy.get("input")
-      .first()
-      .type("#000", { force: true });
-    cy.get("#SaveSettings").should("not.be.disabled");
-    cy.get("#SaveSettings").click();
-    cy.contains("Data has been updated", { timeout: 5000 }).should("exist");
+    cy.contains(SAVED_MESSAGE).should("exist");
   });
 });

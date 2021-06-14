@@ -127,10 +127,10 @@ describe("Content Specs", () => {
         .should("exist")
         .find(".Select")
         .click()
-        .find('[data-value="7-b939a4-457q19"]')
+        .find('[data-value="7-bedfc8c9c4-fspprt"]')
         .click();
 
-      cy.contains("#12-10741c-s5jkwg .Select", "/newpathpart/");
+      cy.contains("#12-10741c-s5jkwg .Select", "/asdf/");
 
       // cy.get("#SaveItemButton").click({ force: true });
       // cy.contains("Saved a new ", { timeout: 3000 }).should("exist");

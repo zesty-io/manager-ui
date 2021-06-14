@@ -1,31 +1,30 @@
-describe("Browse fonts", () => {
+describe("Fonts", () => {
   before(() => {
     cy.login();
-    cy.visit("/settings/fonts/browse");
+    cy.visit("/settings");
   });
 
   it("Install font", () => {
-    cy.get('[type="checkbox"]')
+    cy.get("[data-cy=SettingsNav]")
+      .contains("Browse fonts")
+      .click();
+    cy.get("[data-cy=SubApp] input[type=checkbox]")
       .first()
       .check();
 
     cy.get("#InstallFont").click();
 
-    cy.contains("Font installed", { timeout: 5000 }).should("exist");
-  });
-});
-
-describe("Fonts installed", () => {
-  before(() => {
-    cy.login();
-    cy.visit("/settings/fonts/installed");
+    cy.contains("Font installed").should("exist");
   });
 
   it("Removes a font", () => {
+    cy.get("[data-cy=SettingsNav]")
+      .contains("Installed fonts")
+      .click();
     cy.get("#RemoveFont")
       .first()
       .click();
 
-    cy.contains("Font has been removed", { timeout: 5000 }).should("exist");
+    cy.contains("Font has been removed").should("exist");
   });
 });

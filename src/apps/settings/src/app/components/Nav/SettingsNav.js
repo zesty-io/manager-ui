@@ -51,7 +51,7 @@ export default connect(state => {
     }
   ];
   return (
-    <nav className={cx(styles.SettingsNav)}>
+    <nav className={cx(styles.SettingsNav)} data-cy="SettingsNav">
       <div className={styles.ModelList}>
         <Nav
           className={styles.PageSets}
