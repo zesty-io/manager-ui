@@ -64,7 +64,6 @@ export function fetchRedirects() {
 }
 
 export function createRedirect(redirect) {
-  console.log(redirect.path);
   return dispatch => {
     dispatch({
       type: "REDIRECT_CREATE"
