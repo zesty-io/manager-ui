@@ -15,27 +15,6 @@ import { createItem, generateItem, fetchItem } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 import styles from "./ItemCreate.less";
 
-// export default connect((state, props) => {
-//   const { modelZUID } = props.match.params;
-//   const itemZUID = `new:${modelZUID}`;
-
-//   return {
-//     platform: state.platform,
-//     itemZUID,
-//     modelZUID,
-//     model: state.models[modelZUID] || {},
-//     item: state.content[itemZUID] || {},
-//     instance: state.instance,
-//     content: state.content,
-//     fields: Object.keys(state.fields)
-//       .filter(
-//         fieldZUID => state.fields[fieldZUID].contentModelZUID === modelZUID
-//       )
-//       .map(fieldZUID => state.fields[fieldZUID])
-//       .sort((a, b) => a.sort - b.sort)
-//   };
-// })(
-
 const selectSortedModelFields = (state, modelZUID) =>
   Object.keys(state.fields)
     .filter(fieldZUID => state.fields[fieldZUID].contentModelZUID === modelZUID)
