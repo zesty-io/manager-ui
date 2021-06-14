@@ -34,7 +34,7 @@ export default memo(function WorkflowRequest({ itemTitle, fields }) {
     if (checked) {
       setSelectedFields([...selectedFields, name]);
     } else {
-      setSelectedFields(selectedFields.filter(user => user !== name));
+      setSelectedFields(selectedFields.filter(field => field !== name));
     }
   }
 
