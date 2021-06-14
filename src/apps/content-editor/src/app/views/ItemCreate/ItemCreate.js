@@ -93,7 +93,9 @@ export default function ItemCreate() {
           );
 
           // scroll to required field
-          setActive(res.missingRequired[0].ZUID);
+          if (isMounted.current) {
+            setActive(res.missingRequired[0].ZUID);
+          }
         }
         if (res.error) {
           dispatch(
@@ -141,7 +143,6 @@ export default function ItemCreate() {
           model={model}
           saving={saving}
           isDirty={item?.dirty}
-          makeActive={setActive}
         />
         <main className={styles.ItemCreate}>
           <div className={styles.Editor}>
