@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import useIsMounted from "ismounted";
 import { useParams } from "react-router-dom";
 import isEmpty from "lodash/isEmpty";
+import { createSelector } from "@reduxjs/toolkit";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { Divider } from "@zesty-io/core/Divider";
@@ -15,11 +16,15 @@ import { createItem, generateItem, fetchItem } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 import styles from "./ItemCreate.less";
 
-const selectSortedModelFields = (state, modelZUID) =>
-  Object.keys(state.fields)
-    .filter(fieldZUID => state.fields[fieldZUID].contentModelZUID === modelZUID)
-    .map(fieldZUID => state.fields[fieldZUID])
-    .sort((a, b) => a.sort - b.sort);
+const selectSortedModelFields = createSelector(
+  state => state.fields,
+  (_, modelZUID) => modelZUID,
+  (fields, modelZUID) =>
+    Object.keys(fields)
+      .filter(fieldZUID => fields[fieldZUID].contentModelZUID === modelZUID)
+      .map(fieldZUID => fields[fieldZUID])
+      .sort((a, b) => a.sort - b.sort)
+);
 
 export default function ItemCreate() {
   const isMounted = useIsMounted();
