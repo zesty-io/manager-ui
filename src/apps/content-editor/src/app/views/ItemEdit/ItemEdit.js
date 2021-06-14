@@ -112,17 +112,23 @@ export default function ItemEdit() {
     try {
       const lockResponse = await dispatch(checkLock(itemZUID));
       // If no one has a lock then give lock to current user
-      if (!lockResponse.userZUID) {
-        dispatch(lock(itemZUID));
-        setLockState({ userZUID: user.user_zuid });
-      } else {
-        setLockState(lockResponse);
+      if (isMounted.current) {
+        if (!lockResponse.userZUID) {
+          dispatch(lock(itemZUID));
+          setLockState({ userZUID: user.user_zuid });
+        } else {
+          setLockState(lockResponse);
+        }
       }
     } catch (err) {
       // If service is unavailable allow all users ownership
-      setLockState({ userZUID: user.user_zuid });
+      if (isMounted.current) {
+        setLockState({ userZUID: user.user_zuid });
+      }
     } finally {
-      setCheckingLock(false);
+      if (isMounted.current) {
+        setCheckingLock(false);
+      }
     }
   }
 
