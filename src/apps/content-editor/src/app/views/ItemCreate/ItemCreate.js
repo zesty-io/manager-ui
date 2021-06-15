@@ -50,12 +50,17 @@ export default function ItemCreate() {
     };
   }, []);
 
+  // on mount and update modelZUID, load item fields
   useEffect(() => {
-    load(modelZUID);
+    loadItemFields(modelZUID);
+  }, [modelZUID]);
+
+  // if item doesn't exist, generate a new one
+  useEffect(() => {
     if (isEmpty(item)) {
       dispatch(generateItem(modelZUID));
     }
-  }, []);
+  }, [modelZUID, item]);
 
   function handleSave(event) {
     if (
@@ -68,7 +73,7 @@ export default function ItemCreate() {
     }
   }
 
-  async function load(modelZUID) {
+  async function loadItemFields(modelZUID) {
     setLoading(true);
     try {
       await dispatch(fetchFields(modelZUID));
