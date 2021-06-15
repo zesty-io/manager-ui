@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useIsMounted from "ismounted";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import isEmpty from "lodash/isEmpty";
 import { createSelector } from "@reduxjs/toolkit";
 
@@ -27,6 +27,7 @@ const selectSortedModelFields = createSelector(
 );
 
 export default function ItemCreate() {
+  const history = useHistory();
   const isMounted = useIsMounted();
   const dispatch = useDispatch();
   const { modelZUID } = useParams();
