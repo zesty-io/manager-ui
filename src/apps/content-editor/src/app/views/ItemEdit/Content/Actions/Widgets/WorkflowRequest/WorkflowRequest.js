@@ -6,6 +6,7 @@ import {
   faEnvelope
 } from "@fortawesome/free-solid-svg-icons";
 import useIsMounted from "ismounted";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   CollapsibleCard,
@@ -19,6 +20,7 @@ import { notify } from "shell/store/notifications";
 import styles from "./WorkflowRequests.less";
 
 export default memo(function WorkflowRequest({ itemTitle, fields }) {
+  const dispatch = useDispatch();
   const isMounted = useIsMounted();
   const user = useSelector(state => state.user);
   const users = useSelector(state => state.users);
