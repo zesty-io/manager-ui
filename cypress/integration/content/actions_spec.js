@@ -58,7 +58,7 @@ describe("Actions in content editor", () => {
   // TODO: get publishing working in Dev environment
   it.skip("Unpublishes an item", () => {
     // go to Content Tab
-    cy.get("[data-cy=content]").click();
+    cy.get("[data-cy=SubApp]").click();
     cy.get("article.Unpublish").click();
     // TODO: fix race condition so unpublish will not be disabled
     // cy.get("#UnpublishItemButton").should.not("be.disabled");
