@@ -87,12 +87,15 @@ export default function ItemEdit() {
   }, []);
 
   useEffect(() => {
+    // on mount and modelZUID/itemZUID update,
+    // lock item and load all item data
     lockItem(itemZUID);
     load(modelZUID, itemZUID);
+    // on unmount, release lock
     return () => {
       releaseLock(itemZUID);
     };
-  }, []);
+  }, [modelZUID, itemZUID]);
 
   function handleSaveKeyboardShortcut(event) {
     if (
