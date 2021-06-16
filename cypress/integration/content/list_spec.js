@@ -1,4 +1,4 @@
-describe("List View CRUD", () => {
+describe("Content List", () => {
   before(() => {
     //initial login to set the cookie
     cy.login();
@@ -19,7 +19,7 @@ describe("List View CRUD", () => {
       .contains("Parent pre selection with fast typing");
 
     cy.get(".ItemList .SortBy")
-      .last()
+      .eq(1)
       .click();
     cy.get(".ItemList article")
       .first()

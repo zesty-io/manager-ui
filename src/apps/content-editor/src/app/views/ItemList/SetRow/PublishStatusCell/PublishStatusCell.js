@@ -9,9 +9,22 @@ import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./PublishStatusCell.less";
 export const PublishStatusCell = React.memo(function PublishStatusCell(props) {
+  if (props.itemZUID.slice(0, 3) === "new") {
+    return (
+      <AppLink
+        className={styles.PublishStatusCell}
+        to={`/content/${props.modelZUID}/new`}
+      >
+        <FontAwesomeIcon icon={faCircle} className={styles.Unpublished} />
+      </AppLink>
+    );
+  }
   if (props.type === "dataset") {
     return (
-      <AppLink className={cx(styles.PublishStatusCell)} to={`${props.url}`}>
+      <AppLink
+        className={cx(styles.PublishStatusCell)}
+        to={`/content/${props.modelZUID}/${props.itemZUID}`}
+      >
         {props.item &&
         props.item.scheduling &&
         props.item.scheduling.isScheduled ? (

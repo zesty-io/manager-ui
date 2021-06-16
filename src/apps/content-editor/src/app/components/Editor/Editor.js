@@ -102,7 +102,7 @@ export default class Editor extends PureComponent {
   };
 
   render() {
-    const { item, makeActive, model, fields, onSave } = this.props;
+    const { item, active, model, fields, onSave } = this.props;
     return (
       <div className={styles.Fields}>
         {this.props.item.meta && this.props.item.meta.ZUID && (
@@ -122,7 +122,7 @@ export default class Editor extends PureComponent {
                   <Field
                     ZUID={field.ZUID}
                     contentModelZUID={field.contentModelZUID}
-                    active={makeActive === field.ZUID}
+                    active={active === field.ZUID}
                     name={field.name}
                     label={field.label}
                     description={field.description}

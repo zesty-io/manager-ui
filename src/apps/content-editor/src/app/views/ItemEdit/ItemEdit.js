@@ -1,6 +1,14 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { Switch, Route, Redirect } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import {
+  Switch,
+  Route,
+  Redirect,
+  useParams,
+  useHistory
+} from "react-router-dom";
+import useIsMounted from "ismounted";
+import { useDispatch, useSelector } from "react-redux";
+import { createSelector } from "@reduxjs/toolkit";
 
 import { notify } from "shell/store/notifications";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
@@ -14,392 +22,320 @@ import {
   unlock
 } from "shell/store/content";
 import { selectLang } from "shell/store/user";
-
 import { WithLoader } from "@zesty-io/core/WithLoader";
-
 import { PendingEditsModal } from "../../components/PendingEditsModal";
 import { LockedItem } from "../../components/LockedItem";
-
 import { Content } from "./Content";
 import { Meta } from "./Meta";
-// import { Head } from "./Head";
 import { ItemHead } from "./ItemHead";
 
-export default connect((state, props) => {
-  const { modelZUID, itemZUID } = props.match.params;
+const selectSortedModelFields = createSelector(
+  state => state.fields,
+  (_, modelZUID) => modelZUID,
+  (fields, modelZUID) =>
+    Object.keys(fields)
+      .filter(fieldZUID => fields[fieldZUID].contentModelZUID === modelZUID)
+      .map(fieldZUID => fields[fieldZUID])
+      .sort((a, b) => a.sort - b.sort)
+);
 
-  const item = state.content[itemZUID];
-  const model = state.models[modelZUID];
-  const fields = Object.keys(state.fields)
-    .filter(fieldZUID => state.fields[fieldZUID].contentModelZUID === modelZUID)
-    .map(fieldZUID => state.fields[fieldZUID])
-    .sort((a, b) => a.sort - b.sort);
-
-  const tags = Object.keys(state.headTags)
-    .reduce((acc, id) => {
-      if (state.headTags[id].resourceZUID === itemZUID) {
-        acc.push(state.headTags[id]);
-      }
-      return acc;
-    }, [])
-    .sort((tagA, tagB) => {
-      return tagA.sort > tagB.sort ? 1 : -1;
-    });
-
-  return {
-    platform: state.platform,
-    modelZUID,
-    model,
-    itemZUID,
-    item,
-    tags,
-    fields,
-    languages: state.languages,
-    user: state.user,
-    userRole: state.userRole,
-    logs: state.logs, // TODO filter logs to those for this item,
-    instanceZUID: state.instance.ZUID,
-    instance: state.instance,
-    items: state.content
-  };
-})(
-  class ItemEdit extends Component {
-    _isMounted = false;
-
-    // Track our itemZUID so we can determine
-    // if a new item has been loaded and request item data.
-    // We also have to track modelZUID to determine
-    // when switching between new model creation views.
-    state = {
-      itemZUID: this.props.itemZUID,
-      modelZUID: this.props.modelZUID,
-      lock: {},
-      checkingLock: false,
-      loading: true,
-      saving: false
-    };
-
-    componentDidMount() {
-      this._isMounted = true;
-
-      this.onLoad(this.props.modelZUID, this.props.itemZUID);
-      window.addEventListener("keydown", this.handleSave);
-    }
-    componentWillUnmount() {
-      this._isMounted = false;
-
-      // release lock when unmounting
-      if (this.state.lock.userZUID === this.props.user.user_zuid) {
-        this.props.dispatch(unlock(this.state.itemZUID));
-      }
-      window.removeEventListener("keydown", this.handleSave);
-    }
-    componentDidUpdate() {
-      if (
-        this.props.modelZUID !== this.state.modelZUID ||
-        this.props.itemZUID !== this.state.itemZUID
-      ) {
-        // Release previous item lock before loading next
-        if (this.state.lock.userZUID === this.props.user.user_zuid) {
-          this.props.dispatch(unlock(this.state.itemZUID));
+const selectItemHeadTags = createSelector(
+  state => state.headTags,
+  (_, itemZUID) => itemZUID,
+  (headTags, itemZUID) =>
+    Object.keys(headTags)
+      .reduce((acc, id) => {
+        if (headTags[id].resourceZUID === itemZUID) {
+          acc.push(headTags[id]);
         }
+        return acc;
+      }, [])
+      .sort((tagA, tagB) => {
+        return tagA.sort > tagB.sort ? 1 : -1;
+      })
+);
 
-        this.onLoad(this.props.modelZUID, this.props.itemZUID);
+export default function ItemEdit() {
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const isMounted = useIsMounted();
+  const { modelZUID, itemZUID } = useParams();
+  const item = useSelector(state => state.content[itemZUID]);
+  const items = useSelector(state => state.content);
+  const model = useSelector(state => state.models[modelZUID]);
+  const fields = useSelector(state =>
+    selectSortedModelFields(state, modelZUID)
+  );
+  const tags = useSelector(state => selectItemHeadTags(state, itemZUID));
+  const platform = useSelector(state => state.platform);
+  const languages = useSelector(state => state.languages);
+  const user = useSelector(state => state.user);
+  const userRole = useSelector(state => state.userRole);
+  const instance = useSelector(state => state.instance);
+
+  const [lockState, setLockState] = useState({});
+  const [checkingLock, setCheckingLock] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  // handle keyboard shortcut save
+  useEffect(() => {
+    window.addEventListener("keydown", handleSaveKeyboardShortcut);
+    return () => {
+      window.removeEventListener("keydown", handleSaveKeyboardShortcut);
+    };
+  }, []);
+
+  useEffect(() => {
+    // on mount and modelZUID/itemZUID update,
+    // lock item and load all item data
+    lockItem(itemZUID);
+    load(modelZUID, itemZUID);
+    // on unmount, release lock
+    return () => {
+      releaseLock(itemZUID);
+    };
+  }, [modelZUID, itemZUID]);
+
+  function handleSaveKeyboardShortcut(event) {
+    if (
+      ((platform.isMac && event.metaKey) ||
+        (!platform.isMac && event.ctrlKey)) &&
+      event.key == "s"
+    ) {
+      event.preventDefault();
+      if (item && item.dirty) {
+        save();
       }
-    }
-
-    forceUnlock = () => {
-      // Transfer item lock to current session user
-      this.props.dispatch(unlock(this.state.itemZUID)).then(() => {
-        this.props.dispatch(lock(this.state.itemZUID));
-      });
-      this.setState({
-        lock: {
-          userZUID: this.props.user.user_zuid
-        }
-      });
-    };
-
-    handleSave = evt => {
-      if (
-        ((this.props.platform.isMac && evt.metaKey) ||
-          (!this.props.platform.isMac && evt.ctrlKey)) &&
-        evt.key == "s"
-      ) {
-        evt.preventDefault();
-        if (this.props.item && this.props.item.dirty) {
-          this.onSave();
-        }
-      }
-    };
-
-    onLoad = (modelZUID, itemZUID) => {
-      this.setState({
-        loading: true,
-        checkingLock: true,
-        itemZUID,
-        modelZUID
-      });
-
-      this.props
-        .dispatch(checkLock(itemZUID))
-        .then(res => {
-          // If no one has a lock then give lock to current user
-          if (!res.userZUID) {
-            this.props.dispatch(lock(itemZUID));
-            this.setState({
-              checkingLock: false,
-              lock: {
-                userZUID: this.props.user.user_zuid
-              }
-            });
-          } else {
-            // Capture lock information locally to make
-            // locking/unlocking decisions
-            this.setState({
-              checkingLock: false,
-              lock: res
-            });
-          }
-        })
-        .catch(() => {
-          // If service is unavailable allow all users ownership
-          this.setState({
-            checkingLock: false,
-            lock: {
-              userZUID: this.props.user.user_zuid
-            }
-          });
-        });
-
-      this.props
-        .dispatch(fetchItem(modelZUID, itemZUID))
-        // select lang based on content lang
-        .then(res => {
-          if (res.status === 404) {
-            this.props.dispatch(
-              notify({
-                message: res.message,
-                kind: "error"
-              })
-            );
-            throw new Error(res.message);
-          }
-          this.props.dispatch(
-            selectLang(
-              this.props.languages.find(
-                lang => lang.ID === res.data.meta.langID
-              ).code
-            )
-          );
-        })
-        // once we selectLang we can fetchFields
-        // which triggers middleware which depends on lang
-        .then(() =>
-          Promise.all([
-            this.props.dispatch(fetchFields(modelZUID)),
-            this.props.dispatch(fetchItemPublishing(modelZUID, itemZUID))
-          ])
-        )
-        .then(() => {
-          if (this._isMounted) {
-            this.setState({
-              loading: false
-            });
-          }
-        })
-        .catch(err => {
-          console.error("ItemEdit:load:error", err);
-          if (this._isMounted) {
-            this.setState({
-              loading: false
-            });
-          }
-          throw err;
-        });
-    };
-
-    onSave = () => {
-      this.setState({
-        saving: true
-      });
-
-      // Continue promise chain
-      return this.props
-        .dispatch(saveItem(this.props.itemZUID))
-        .then(res => {
-          if (this._isMounted) {
-            this.setState({
-              saving: false
-            });
-          }
-          if (res.err === "MISSING_REQUIRED") {
-            // scroll to required field
-            this.setState({
-              makeActive: res.missingRequired[0].ZUID
-            });
-            return this.props.dispatch(
-              notify({
-                message: `You are missing data in ${res.missingRequired.map(
-                  f => f.label + " "
-                )}`,
-                kind: "error"
-              })
-            );
-          } else if (res.status === 400) {
-            this.props.dispatch(
-              notify({
-                message: `Failed to save new version: ${res.error}`,
-                kind: "error"
-              })
-            );
-          } else {
-            this.props.dispatch(
-              notify({
-                message: `Saved a new ${
-                  this.props.item && this.props.item.web.metaLinkText
-                    ? this.props.item.web.metaLinkText
-                    : ""
-                } version`,
-                kind: "save"
-              })
-            );
-          }
-          // fetch new draft history
-          this.props.dispatch(fetchAuditTrailDrafting(this.props.itemZUID));
-        })
-        .catch(() => {
-          if (this._isMounted) {
-            this.setState({
-              saving: false
-            });
-          }
-          // we need to set the item to dirty again because the save failed
-          this.props.dispatch({
-            type: "MARK_ITEM_DIRTY",
-            itemZUID: this.props.itemZUID
-          });
-        });
-    };
-
-    onDiscard = () => {
-      this.props.dispatch({
-        type: "UNMARK_ITEMS_DIRTY",
-        items: [this.props.itemZUID]
-      });
-      // Keep promise chain
-      return this.props.dispatch(
-        fetchItem(this.props.modelZUID, this.props.itemZUID)
-      );
-    };
-
-    render() {
-      return (
-        <WithLoader
-          condition={
-            !this.state.loading &&
-            this.props.item &&
-            Object.keys(this.props.item).length
-          }
-          message={
-            this.props.model && this.props.model.label
-              ? `Loading ${this.props.model && this.props.model.label} Content`
-              : "Loading Content"
-          }
-        >
-          {!this.state.checkingLock &&
-            this.state.lock.userZUID !== this.props.user.user_zuid && (
-              <LockedItem
-                timestamp={this.state.lock.timestamp}
-                userFirstName={this.state.lock.firstName}
-                userLastName={this.state.lock.lastName}
-                userEmail={this.state.lock.email}
-                itemName={
-                  this.props.item &&
-                  this.props.item.web &&
-                  this.props.item.web.metaLinkText
-                }
-                handleUnlock={this.forceUnlock}
-                goBack={() => this.props.history.goBack()}
-              />
-            )}
-
-          <PendingEditsModal
-            show={this.props.item && Boolean(this.props.item.dirty)}
-            title="Unsaved Changes"
-            message="You have unsaved changes that will be lost if you leave this page."
-            loading={this.state.saving}
-            onSave={this.onSave}
-            onDiscard={this.onDiscard}
-          />
-
-          <section>
-            <Switch>
-              <Route
-                exact
-                path="/content/:modelZUID/:itemZUID/head"
-                render={({ match }) => {
-                  // All roles except contributor are allowed to edit the document head
-                  return this.props.userRole.name !== "Contributor" ? (
-                    <ItemHead
-                      instance={this.props.instance}
-                      modelZUID={this.props.modelZUID}
-                      model={this.props.model}
-                      itemZUID={this.props.itemZUID}
-                      item={this.props.item}
-                      tags={this.props.tags}
-                      dispatch={this.props.dispatch}
-                    />
-                  ) : (
-                    <Redirect
-                      to={`/content/${match.params.modelZUID}/${match.params.itemZUID}`}
-                    />
-                  );
-                }}
-              />
-              <Route
-                exact
-                path="/content/:modelZUID/:itemZUID/meta"
-                render={() => (
-                  <Meta
-                    instance={this.props.instance}
-                    modelZUID={this.props.modelZUID}
-                    model={this.props.model}
-                    itemZUID={this.props.itemZUID}
-                    item={this.props.item}
-                    items={this.props.items}
-                    fields={this.props.fields}
-                    user={this.props.user}
-                    onSave={this.onSave}
-                    dispatch={this.props.dispatch}
-                    saving={this.state.saving}
-                  />
-                )}
-              />
-              <Route
-                exact
-                path="/content/:modelZUID/:itemZUID"
-                render={() => (
-                  <Content
-                    instance={this.props.instance}
-                    modelZUID={this.props.modelZUID}
-                    model={this.props.model}
-                    itemZUID={this.props.itemZUID}
-                    item={this.props.item}
-                    items={this.props.items}
-                    fields={this.props.fields}
-                    user={this.props.user}
-                    onSave={this.onSave}
-                    dispatch={this.props.dispatch}
-                    loading={this.state.loading}
-                    saving={this.state.saving}
-                  />
-                )}
-              />
-            </Switch>
-          </section>
-        </WithLoader>
-      );
     }
   }
-);
+
+  async function lockItem() {
+    setCheckingLock(true);
+    try {
+      const lockResponse = await dispatch(checkLock(itemZUID));
+      // If no one has a lock then give lock to current user
+      if (isMounted.current) {
+        if (!lockResponse.userZUID) {
+          dispatch(lock(itemZUID));
+          setLockState({ userZUID: user.user_zuid });
+        } else {
+          setLockState(lockResponse);
+        }
+      }
+    } catch (err) {
+      // If service is unavailable allow all users ownership
+      if (isMounted.current) {
+        setLockState({ userZUID: user.user_zuid });
+      }
+    } finally {
+      if (isMounted.current) {
+        setCheckingLock(false);
+      }
+    }
+  }
+
+  // Fetch item, fields, publishing
+  async function load(modelZUID, itemZUID) {
+    setLoading(true);
+
+    try {
+      const itemResponse = await dispatch(fetchItem(modelZUID, itemZUID));
+      if (itemResponse.status === 404) {
+        dispatch(
+          notify({
+            message: itemResponse.message,
+            kind: "error"
+          })
+        );
+        throw new Error(itemResponse.message);
+      }
+      // select lang based on content lang
+      dispatch(
+        selectLang(
+          languages.find(lang => lang.ID === itemResponse.data.meta.langID).code
+        )
+      );
+
+      // once we selectLang we can fetchFields
+      // which triggers middleware which depends on lang
+      await Promise.all([
+        dispatch(fetchFields(modelZUID)),
+        dispatch(fetchItemPublishing(modelZUID, itemZUID))
+      ]);
+    } catch (err) {
+      console.error("ItemEdit:load:error", err);
+      throw err;
+    } finally {
+      if (isMounted.current) {
+        setLoading(false);
+      }
+    }
+  }
+
+  function releaseLock(itemZUID) {
+    if (lockState.userZUID === user.user_zuid) {
+      dispatch(unlock(itemZUID));
+    }
+  }
+
+  function forceUnlock() {
+    // Transfer item lock to current session user
+    dispatch(unlock(itemZUID)).then(() => {
+      dispatch(lock(itemZUID));
+    });
+    setLockState({ userZUID: user.user_zuid });
+  }
+
+  async function save() {
+    setSaving(true);
+    try {
+      const res = await dispatch(saveItem(itemZUID));
+      if (res.err === "MISSING_REQUIRED") {
+        dispatch(
+          notify({
+            message: `You are missing data in ${res.missingRequired.map(
+              f => f.label + " "
+            )}`,
+            kind: "error"
+          })
+        );
+        return;
+      }
+      if (res.status === 400) {
+        dispatch(
+          notify({
+            message: `Failed to save new version: ${res.error}`,
+            kind: "error"
+          })
+        );
+        return;
+      }
+      dispatch(
+        notify({
+          message: `Saved a new ${
+            item && item.web.metaLinkText ? item.web.metaLinkText : ""
+          } version`,
+          kind: "save"
+        })
+      );
+      // fetch new draft history
+      dispatch(fetchAuditTrailDrafting(itemZUID));
+    } catch (err) {
+      // we need to set the item to dirty again because the save failed
+      dispatch({
+        type: "MARK_ITEM_DIRTY",
+        itemZUID
+      });
+    } finally {
+      if (isMounted.current) {
+        setSaving(false);
+      }
+    }
+  }
+
+  function discard() {
+    dispatch({
+      type: "UNMARK_ITEMS_DIRTY",
+      items: [itemZUID]
+    });
+    // Keep promise chain
+    return dispatch(fetchItem(modelZUID, itemZUID));
+  }
+
+  return (
+    <WithLoader
+      condition={!loading && item && Object.keys(item).length}
+      message={
+        model?.label ? `Loading ${model.label} Content` : "Loading Content"
+      }
+    >
+      {!checkingLock && lockState.userZUID !== user.user_zuid && (
+        <LockedItem
+          timestamp={lockState.timestamp}
+          userFirstName={lockState.firstName}
+          userLastName={lockState.lastName}
+          userEmail={lockState.email}
+          itemName={item?.web?.metaLinkText}
+          handleUnlock={forceUnlock}
+          goBack={() => history.goBack()}
+        />
+      )}
+
+      <PendingEditsModal
+        show={item?.dirty}
+        title="Unsaved Changes"
+        message="You have unsaved changes that will be lost if you leave this page."
+        loading={saving}
+        onSave={save}
+        onDiscard={discard}
+      />
+
+      <section>
+        <Switch>
+          <Route
+            exact
+            path="/content/:modelZUID/:itemZUID/head"
+            render={({ match }) => {
+              // All roles except contributor are allowed to edit the document head
+              return userRole.name !== "Contributor" ? (
+                <ItemHead
+                  instance={instance}
+                  modelZUID={modelZUID}
+                  model={model}
+                  itemZUID={itemZUID}
+                  item={item}
+                  tags={tags}
+                  dispatch={dispatch}
+                />
+              ) : (
+                <Redirect
+                  to={`/content/${match.params.modelZUID}/${match.params.itemZUID}`}
+                />
+              );
+            }}
+          />
+          <Route
+            exact
+            path="/content/:modelZUID/:itemZUID/meta"
+            render={() => (
+              <Meta
+                instance={instance}
+                modelZUID={modelZUID}
+                model={model}
+                itemZUID={itemZUID}
+                item={item}
+                items={items}
+                fields={fields}
+                user={user}
+                onSave={save}
+                dispatch={dispatch}
+                saving={saving}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/content/:modelZUID/:itemZUID"
+            render={() => (
+              <Content
+                instance={instance}
+                modelZUID={modelZUID}
+                model={model}
+                itemZUID={itemZUID}
+                item={item}
+                items={items}
+                fields={fields}
+                user={user}
+                onSave={save}
+                dispatch={dispatch}
+                loading={loading}
+                saving={saving}
+              />
+            )}
+          />
+        </Switch>
+      </section>
+    </WithLoader>
+  );
+}
