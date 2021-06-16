@@ -15,6 +15,7 @@ import { fetchFields } from "shell/store/fields";
 import { createItem, generateItem, fetchItem } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 import styles from "./ItemCreate.less";
+import { useGetInstanceQuery } from "shell/services/accounts";
 
 const selectSortedModelFields = createSelector(
   state => state.fields,
@@ -30,11 +31,11 @@ export default function ItemCreate() {
   const history = useHistory();
   const isMounted = useIsMounted();
   const dispatch = useDispatch();
+  const { data: instance } = useGetInstanceQuery();
   const { modelZUID } = useParams();
   const itemZUID = `new:${modelZUID}`;
   const model = useSelector(state => state.models[modelZUID]);
   const item = useSelector(state => state.content[itemZUID]);
-  const instance = useSelector(state => state.instance);
   const content = useSelector(state => state.content);
   const platform = useSelector(state => state.platform);
   const fields = useSelector(state =>

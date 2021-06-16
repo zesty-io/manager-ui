@@ -28,6 +28,7 @@ import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
 import { Meta } from "./Meta";
 import { ItemHead } from "./ItemHead";
+import { useGetInstanceQuery } from "shell/services/accounts";
 
 const selectSortedModelFields = createSelector(
   state => state.fields,
@@ -59,6 +60,7 @@ export default function ItemEdit() {
   const dispatch = useDispatch();
   const history = useHistory();
   const isMounted = useIsMounted();
+  const { data: instance } = useGetInstanceQuery();
   const { modelZUID, itemZUID } = useParams();
   const item = useSelector(state => state.content[itemZUID]);
   const items = useSelector(state => state.content);
@@ -71,7 +73,6 @@ export default function ItemEdit() {
   const languages = useSelector(state => state.languages);
   const user = useSelector(state => state.user);
   const userRole = useSelector(state => state.userRole);
-  const instance = useSelector(state => state.instance);
 
   const [lockState, setLockState] = useState({});
   const [checkingLock, setCheckingLock] = useState(false);
