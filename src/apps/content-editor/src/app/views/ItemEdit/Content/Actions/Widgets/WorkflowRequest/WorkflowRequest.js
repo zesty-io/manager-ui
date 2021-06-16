@@ -18,13 +18,15 @@ import { Textarea } from "@zesty-io/core/Textarea";
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 import styles from "./WorkflowRequests.less";
+import { useGetInstanceQuery, useGetUsersQuery } from "shell/services/accounts";
 
 export default memo(function WorkflowRequest({ itemTitle, fields }) {
   const dispatch = useDispatch();
   const isMounted = useIsMounted();
+  const { data: users } = useGetUsersQuery();
+  const { data: instance } = useGetInstanceQuery();
+
   const user = useSelector(state => state.user);
-  const users = useSelector(state => state.users);
-  const instance = useSelector(state => state.instance);
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState("");
   const [selectedFields, setSelectedFields] = useState([]);
