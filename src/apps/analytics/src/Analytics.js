@@ -15,8 +15,10 @@ import { fetchRecentItems } from "shell/store/user";
 import shelldata from "./shelldata";
 
 import styles from "./Analytics.less";
+import useIsMounted from "ismounted";
 
 export default React.memo(function Analytics() {
+  const isMounted = useIsMounted();
   const [recentlyEditedItems, setRecentlyEditedItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [gaLegacyAuth, setGaLegacyAuth] = useState(false); // we need response body from cloud function could change this
@@ -50,10 +52,12 @@ export default React.memo(function Analytics() {
       .format("YYYY-MM-DD");
 
     dispatch(fetchRecentItems(user.ZUID, start)).then(res => {
-      if (res && res.data) {
-        setRecentlyEditedItems(getLastEditedItems(res.data));
+      if (isMounted.current) {
+        if (res && res.data) {
+          setRecentlyEditedItems(getLastEditedItems(res.data));
+        }
+        setLoading(false);
       }
-      setLoading(false);
     });
   }, []);
 
