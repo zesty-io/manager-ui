@@ -198,6 +198,11 @@ export default connect(state => {
           required={required}
           value={value}
           onChange={onChange}
+          subLabel={
+            <>
+              <span className={styles.dataType}>{datatype}: </span> {name}
+            </>
+          }
         />
       );
 
@@ -212,6 +217,11 @@ export default connect(state => {
           value={value}
           onChange={onChange}
           type="url"
+          subLabel={
+            <>
+              <span className={styles.dataType}>{datatype}: </span> {name}
+            </>
+          }
         />
       );
 
@@ -227,6 +237,11 @@ export default connect(state => {
           required={required}
           value={value}
           onChange={onChange} // Is used to set the UUID value on new item creation
+          subLabel={
+            <>
+              <span className={styles.dataType}>{datatype}: </span> {name}
+            </>
+          }
         />
       );
 
@@ -241,6 +256,11 @@ export default connect(state => {
           value={value}
           onChange={onChange}
           maxLength="16000"
+          subLabel={
+            <>
+              <span className={styles.dataType}>{datatype}: </span> {name}
+            </>
+          }
         />
       );
     case "wysiwyg_advanced":
@@ -257,6 +277,11 @@ export default connect(state => {
             onChange={onChange}
             onSave={onSave}
             type={datatype}
+            subLabel={
+              <>
+                <span className={styles.dataType}>{datatype}: </span> {name}
+              </>
+            }
             maxLength="16000"
             skin="oxide"
             skinURL="/vendors/tinymce/skins/ui/oxide"
@@ -287,6 +312,11 @@ export default connect(state => {
             value={value}
             onChange={onChange}
             type={datatype}
+            subLabel={
+              <>
+                <span className={styles.dataType}>{datatype}: </span> {name}
+              </>
+            }
             maxLength="16000"
             mediaBrowser={opts => {
               setImageModal(opts);
@@ -315,6 +345,11 @@ export default connect(state => {
             tooltip={settings.tooltip}
             required={required}
             limit={(settings && settings.limit) || 1}
+            subLabel={
+              <>
+                <span className={styles.dataType}>{datatype}: </span> {name}
+              </>
+            }
             locked={Boolean(
               settings && settings.group_id && settings.group_id != "0"
             )}
@@ -363,6 +398,11 @@ export default connect(state => {
             onChange={onChange}
             offValue={binaryFieldOpts[0]}
             onValue={binaryFieldOpts[1]}
+            subLabel={
+              <>
+                <span className={styles.dataType}>{datatype}: </span> {name}
+              </>
+            }
           />
         );
       } else {
@@ -400,6 +440,11 @@ export default connect(state => {
           value={value}
           onChange={onChange}
           options={dropdownOptions}
+          subLabel={
+            <>
+              <span className={styles.dataType}>{datatype}: </span> {name}
+            </>
+          }
         />
       );
 
@@ -476,6 +521,11 @@ export default connect(state => {
           onChange={onChange}
           onSearch={onInternalLinkSearch}
           options={internalLinkOptions}
+          subLabel={
+            <>
+              <span className={styles.dataType}>{datatype}: </span> {name}
+            </>
+          }
         />
       );
 
@@ -552,6 +602,11 @@ export default connect(state => {
           onChange={onChange}
           options={oneToOneOptions}
           onOpen={onOneToOneOpen}
+          subLabel={
+            <>
+              <span className={styles.dataType}>{datatype}: </span> {name}
+            </>
+          }
         />
       );
 
@@ -614,6 +669,11 @@ export default connect(state => {
           relatedModelZUID={relatedModelZUID}
           options={oneToManyOptions}
           onOpen={onOneToManyOpen}
+          subLabel={
+            <>
+              <span className={styles.dataType}>{datatype}: </span> {name}
+            </>
+          }
         />
       );
 
@@ -627,6 +687,11 @@ export default connect(state => {
           required={required}
           value={value}
           onChange={onChange}
+          subLabel={
+            <>
+              <span className={styles.dataType}>{datatype}: </span> {name}
+            </>
+          }
         />
       );
 
@@ -640,6 +705,11 @@ export default connect(state => {
           required={required}
           value={Number(value) ? Number(value) : 0}
           onChange={onChange}
+          subLabel={
+            <>
+              <span className={styles.dataType}>{datatype}: </span> {name}
+            </>
+          }
         />
       );
 
@@ -654,6 +724,11 @@ export default connect(state => {
           required={required}
           value={value}
           onChange={onChange}
+          subLabel={
+            <>
+              <span className={styles.dataType}>{datatype}: </span> {name}
+            </>
+          }
         />
       );
 
@@ -684,6 +759,11 @@ export default connect(state => {
           required={required}
           value={value}
           onChange={onDateChange}
+          subLabel={
+            <>
+              <span className={styles.dataType}>{datatype}: </span> {name}
+            </>
+          }
         />
       );
 
@@ -697,6 +777,11 @@ export default connect(state => {
           required={required}
           value={value}
           onChange={onChange}
+          subLabel={
+            <>
+              <span className={styles.dataType}>{datatype}: </span> {name}
+            </>
+          }
         />
       );
 
