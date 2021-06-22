@@ -605,9 +605,9 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
     }
 
     return request(
-      `${CONFIG.LEGACY_SITES_SERVICE}/${instance.ZUID}/content/items/${itemZUID}/publish-schedule/${publishZUID}`,
+      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}`,
       {
-        method: "PATCH",
+        method: "POST",
         json: true,
         body: {
           take_offline_at: moment().format("YYYY-MM-DD HH:mm:ss")
@@ -615,6 +615,7 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
       }
     )
       .then(res => {
+        console.log("UNPUBLISHED: ", res);
         if (res.error) {
           throw res.error;
         }
