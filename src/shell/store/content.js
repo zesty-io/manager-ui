@@ -546,7 +546,7 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
     }
 
     return request(
-      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings`,
+      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings?publishing_version=2`,
       {
         method: "POST",
         json: true,
