@@ -594,7 +594,6 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
 
 export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
   return (dispatch, getState) => {
-    const instance = getState().instance;
     const item = getState().content[itemZUID];
     let title;
 
