@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useHistory } from "react-router";
+import { Link } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -92,7 +93,10 @@ export function ContentNav(props) {
       </div>
 
       <div className={styles.NavWrap}>
-        <h1 className={styles.NavTitle}>Content</h1>
+        <h1 className={styles.NavTitle}>
+          Content <Link to="/content">Dashboard</Link>
+        </h1>
+
         <Nav
           id="MainNavigation"
           className={styles.Nav}
