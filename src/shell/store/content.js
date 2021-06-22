@@ -609,7 +609,7 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
         method: "POST",
         json: true,
         body: {
-          take_offline_at: moment().format("YYYY-MM-DD HH:mm:ss")
+          unpublish: moment().format("YYYY-MM-DD HH:mm:ss")
         }
       }
     )
