@@ -615,7 +615,6 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
       }
     )
       .then(res => {
-        console.log("UNPUBLISHED: ", res);
         if (res.error) {
           throw res.error;
         }
