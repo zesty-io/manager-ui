@@ -17,7 +17,6 @@ import { Select, Option } from "@zesty-io/core/Select";
 import { Search } from "@zesty-io/core/Search";
 
 import { collapseNavItem, hideNavItem } from "../../../store/navContent";
-import { FilterFiles } from "./../../../../../code-editor/src/app/components/FileList/FileList";
 
 import styles from "./ContentNav.less";
 export function ContentNav(props) {
@@ -28,6 +27,49 @@ export function ContentNav(props) {
   const [selected, setSelected] = useState(location.pathname);
   const [reorderOpen, setReorderOpen] = useState(false);
   const [hiddenOpen, setHiddenOpen] = useState(false);
+
+  // filter
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [searchResults, setSearchResults] = React.useState([]);
+
+  const modelNames = props.nav.raw.map(f => f.label);
+
+  const SearchItems = () => {
+    <Search
+      name="filterItems"
+      placeholder="Filter name, zuid or path"
+      onChange={term => {
+        term = term.trim().toLowerCase();
+        if (term) {
+          props.setShownFiles(
+            props.nav.raw.filter(f => {
+              return (
+                f.fileName.toLowerCase().includes(term) ||
+                f.contentModelZUID === term ||
+                f.contentModelType === term ||
+                f.version === term ||
+                f.ZUID === term
+              );
+            })
+          );
+        } else {
+          props.setShownFiles(props.nav.tree);
+        }
+      }}
+    />;
+  };
+
+  const handleChange = event => {
+    setSearchTerm(event.target.value);
+  };
+
+  useEffect(() => {
+    const results = modelNames.filter(term =>
+      term.toLowerCase().includes(searchTerm)
+    );
+    setSearchResults(results);
+    console.log("SEARCH RESULTS", searchResults);
+  }, [searchTerm]);
 
   useEffect(() => {
     setSelected(location.pathname);
@@ -60,10 +102,11 @@ export function ContentNav(props) {
   return (
     <React.Fragment>
       {/* <FilterFiles  /> */}
-      <Search
+      <input
         className={styles.SearchModels}
-        name="filter_schema"
+        name="filter_model"
         placeholder="Filter"
+        onChange={handleChange}
       />
       <div className={styles.Actions}>
         <Select
