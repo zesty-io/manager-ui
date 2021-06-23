@@ -14,8 +14,10 @@ import { ReorderNav } from "../ReorderNav";
 import { Nav } from "@zesty-io/core/Nav";
 import { Button } from "@zesty-io/core/Button";
 import { Select, Option } from "@zesty-io/core/Select";
+import { Search } from "@zesty-io/core/Search";
 
 import { collapseNavItem, hideNavItem } from "../../../store/navContent";
+import { FilterFiles } from "./../../../../../code-editor/src/app/components/FileList/FileList";
 
 import styles from "./ContentNav.less";
 export function ContentNav(props) {
@@ -57,6 +59,12 @@ export function ContentNav(props) {
 
   return (
     <React.Fragment>
+      {/* <FilterFiles  /> */}
+      <Search
+        className={styles.SearchModels}
+        name="filter_schema"
+        placeholder="Filter"
+      />
       <div className={styles.Actions}>
         <Select
           name="createItemFromModel"
@@ -93,9 +101,12 @@ export function ContentNav(props) {
       </div>
 
       <div className={styles.NavWrap}>
-        <h1 className={styles.NavTitle}>
-          Content <Link to="/content">Dashboard</Link>
-        </h1>
+        <div className={styles.NavTitle}>
+          <h1>Content</h1>
+          <h1 className={styles.DashLink}>
+            <Link to="/content">Dashboard</Link>
+          </h1>
+        </div>
 
         <Nav
           id="MainNavigation"
