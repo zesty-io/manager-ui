@@ -20,14 +20,12 @@ import { collapseNavItem, hideNavItem } from "../../../store/navContent";
 import styles from "./ContentNav.less";
 
 const ItemsFilter = props => {
-  console.log(props);
   return (
     <Search
       className={styles.SearchModels}
       name="itemsFilter"
       placeholder="Filter name, zuid or path"
       onChange={term => {
-        console.log("TERM", term);
         term = term.trim().toLowerCase();
         if (term) {
           props.setFilteredItems(
@@ -41,7 +39,7 @@ const ItemsFilter = props => {
             })
           );
         } else {
-          props.setFilteredItems(props.nav.raw);
+          props.setFilteredItems(props.nav.nav.raw);
         }
       }}
     />
@@ -57,8 +55,7 @@ export function ContentNav(props) {
   const [reorderOpen, setReorderOpen] = useState(false);
   const [hiddenOpen, setHiddenOpen] = useState(false);
 
-  console.log("content nav props", props);
-
+  console.log(props);
   const [filteredItems, setFilteredItems] = useState(
     props.nav.raw.sort(byLabel)
   );
