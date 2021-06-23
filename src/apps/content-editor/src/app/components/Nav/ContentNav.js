@@ -17,8 +17,37 @@ import { Select, Option } from "@zesty-io/core/Select";
 import { Search } from "@zesty-io/core/Search";
 
 import { collapseNavItem, hideNavItem } from "../../../store/navContent";
-
 import styles from "./ContentNav.less";
+
+const ItemsFilter = props => {
+  console.log(props);
+  return (
+    <Search
+      className={styles.SearchModels}
+      name="itemsFilter"
+      placeholder="Filter name, zuid or path"
+      onChange={term => {
+        console.log("TERM", term);
+        term = term.trim().toLowerCase();
+        if (term) {
+          props.setFilteredItems(
+            props.nav.nav.raw.filter(f => {
+              return (
+                f.label === term ||
+                f.contentModelZUID === term ||
+                f.path === term ||
+                f.ZUID === term
+              );
+            })
+          );
+        } else {
+          props.setFilteredItems(props.nav.raw);
+        }
+      }}
+    />
+  );
+};
+
 export function ContentNav(props) {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -28,48 +57,15 @@ export function ContentNav(props) {
   const [reorderOpen, setReorderOpen] = useState(false);
   const [hiddenOpen, setHiddenOpen] = useState(false);
 
-  // filter
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [searchResults, setSearchResults] = React.useState([]);
+  console.log("content nav props", props);
 
-  const modelNames = props.nav.raw.map(f => f.label);
-
-  const SearchItems = () => {
-    <Search
-      name="filterItems"
-      placeholder="Filter name, zuid or path"
-      onChange={term => {
-        term = term.trim().toLowerCase();
-        if (term) {
-          props.setShownFiles(
-            props.nav.raw.filter(f => {
-              return (
-                f.fileName.toLowerCase().includes(term) ||
-                f.contentModelZUID === term ||
-                f.contentModelType === term ||
-                f.version === term ||
-                f.ZUID === term
-              );
-            })
-          );
-        } else {
-          props.setShownFiles(props.nav.tree);
-        }
-      }}
-    />;
-  };
-
-  const handleChange = event => {
-    setSearchTerm(event.target.value);
-  };
+  const [filteredItems, setFilteredItems] = useState(
+    props.nav.raw.sort(byLabel)
+  );
 
   useEffect(() => {
-    const results = modelNames.filter(term =>
-      term.toLowerCase().includes(searchTerm)
-    );
-    setSearchResults(results);
-    console.log("SEARCH RESULTS", searchResults);
-  }, [searchTerm]);
+    setFilteredItems(props.nav.raw.sort(byLabel));
+  }, [props.nav]);
 
   useEffect(() => {
     setSelected(location.pathname);
@@ -101,13 +97,7 @@ export function ContentNav(props) {
 
   return (
     <React.Fragment>
-      {/* <FilterFiles  /> */}
-      <input
-        className={styles.SearchModels}
-        name="filter_model"
-        placeholder="Filter"
-        onChange={handleChange}
-      />
+      <ItemsFilter setFilteredItems={setFilteredItems} nav={props} />
       <div className={styles.Actions}>
         <Select
           name="createItemFromModel"
@@ -197,3 +187,17 @@ export function ContentNav(props) {
     </React.Fragment>
   );
 }
+
+const byLabel = (a, b) => {
+  let labelA = a.label.toLowerCase().trim(); // ignore upper and lowercase
+  let labelB = b.label.toLowerCase().trim(); // ignore upper and lowercase
+  if (labelA < labelB) {
+    return -1;
+  }
+  if (labelA > labelB) {
+    return 1;
+  }
+
+  // names must be equal
+  return 0;
+};
