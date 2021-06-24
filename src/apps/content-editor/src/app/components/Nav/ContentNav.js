@@ -6,9 +6,11 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowsAlt,
+  faBan,
   faCaretDown,
   faCaretLeft,
-  faEyeSlash
+  faEyeSlash,
+  faHome
 } from "@fortawesome/free-solid-svg-icons";
 import { ReorderNav } from "../ReorderNav";
 import { Nav } from "@zesty-io/core/Nav";
@@ -20,15 +22,6 @@ import { collapseNavItem, hideNavItem } from "../../../store/navContent";
 
 import styles from "./ContentNav.less";
 
-const filterByTerm = term => f => {
-  return (
-    f.label.toLowerCase().includes(term) ||
-    f.path.toLowerCase().includes(term) ||
-    f.contentModelZUID === term ||
-    f.ZUID === term
-  );
-};
-
 const ItemsFilter = props => {
   return (
     <Search
@@ -37,14 +30,20 @@ const ItemsFilter = props => {
       placeholder="Filter items by name, zuid or path"
       onChange={term => {
         term = term.trim().toLowerCase();
+        props.setSearchTerm(term);
         if (term) {
-          props.setFilteredItems(props.nav.nav.filter(filterByTerm(term)));
-          props.setFilteredHeadlessItems(
-            props.nav.headless.filter(filterByTerm(term))
+          props.setFilteredItems(
+            props.nav.raw.filter(f => {
+              return (
+                f.label.includes(term) ||
+                f.contentModelZUID === term ||
+                f.path.includes(term) ||
+                f.ZUID === term
+              );
+            })
           );
         } else {
           props.setFilteredItems(props.nav.nav);
-          props.setFilteredHeadlessItems(props.nav.headless);
         }
       }}
     />
@@ -60,16 +59,14 @@ export function ContentNav(props) {
   const [reorderOpen, setReorderOpen] = useState(false);
   const [hiddenOpen, setHiddenOpen] = useState(false);
 
+  const [searchTerm, setSearchTerm] = useState(false);
+
   const [filteredItems, setFilteredItems] = useState(
     props.nav.nav.sort(byLabel)
-  );
-  const [filteredHeadlessItems, setFilteredHeadlessItems] = useState(
-    props.nav.headless.sort(byLabel)
   );
 
   useEffect(() => {
     setFilteredItems(props.nav.nav.sort(byLabel));
-    setFilteredHeadlessItems(props.nav.headless.sort(byLabel));
   }, [props.nav]);
 
   useEffect(() => {
@@ -104,9 +101,10 @@ export function ContentNav(props) {
     <React.Fragment>
       <ItemsFilter
         setFilteredItems={setFilteredItems}
-        setFilteredHeadlessItems={setFilteredHeadlessItems}
         nav={props.nav}
+        setSearchTerm={setSearchTerm}
       />
+
       <div className={styles.Actions}>
         <Select
           name="createItemFromModel"
@@ -145,30 +143,58 @@ export function ContentNav(props) {
       <div className={styles.NavWrap}>
         <div className={styles.NavTitle}>
           <h1>Content</h1>
-          <h1 className={styles.DashLink}>
-            <Link to="/content">Dashboard</Link>
-          </h1>
+
+          <h1 className={styles.DashLink}></h1>
+
+          <Link to="/content">
+            {" "}
+            <Button>
+              <FontAwesomeIcon icon={faHome} title="Dashboard" />
+            </Button>
+          </Link>
         </div>
-
-        <Nav
-          id="MainNavigation"
-          className={styles.Nav}
-          tree={filteredItems}
-          selected={selected}
-          collapseNode={collapseNode}
-          actions={actions}
-        />
-
+        {searchTerm && filteredItems.length === 0 && (
+          <>
+            <h1 className={styles.NavTitle}>
+              {" "}
+              No Search Results for "{searchTerm}"{" "}
+            </h1>
+            <Button onClick={() => setSearchTerm(false)}>
+              <FontAwesomeIcon icon={faBan} title="Clear Search" /> CLEAR
+            </Button>
+          </>
+        )}
+        {searchTerm && (
+          <Nav
+            id="MainNavigation"
+            className={styles.Nav}
+            tree={filteredItems}
+            selected={selected}
+            collapseNode={collapseNode}
+            actions={actions}
+          />
+        )}
+        {!searchTerm && (
+          <Nav
+            id="MainNavigation"
+            className={styles.Nav}
+            tree={props.nav.nav}
+            selected={selected}
+            collapseNode={collapseNode}
+            actions={actions}
+          />
+        )}
         <h1 className={styles.NavTitle}>Headless Content Models</h1>
-        <Nav
-          id="HeadlessNavigation"
-          className={styles.Nav}
-          tree={filteredHeadlessItems}
-          selected={selected}
-          collapseNode={collapseNode}
-          actions={actions}
-        />
-
+        {!searchTerm && (
+          <Nav
+            id="HeadlessNavigation"
+            className={styles.Nav}
+            tree={props.nav.headless}
+            selected={selected}
+            collapseNode={collapseNode}
+            actions={actions}
+          />
+        )}
         <div className={styles.HiddenNav}>
           <h1
             className={styles.NavTitle}
