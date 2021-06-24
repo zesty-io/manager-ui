@@ -17,7 +17,17 @@ import { Select, Option } from "@zesty-io/core/Select";
 import { Search } from "@zesty-io/core/Search";
 
 import { collapseNavItem, hideNavItem } from "../../../store/navContent";
+
 import styles from "./ContentNav.less";
+
+const filterByTerm = term => f => {
+  return (
+    f.label.toLowerCase().includes(term) ||
+    f.path.toLowerCase().includes(term) ||
+    f.contentModelZUID === term ||
+    f.ZUID === term
+  );
+};
 
 const ItemsFilter = props => {
   return (
@@ -28,18 +38,13 @@ const ItemsFilter = props => {
       onChange={term => {
         term = term.trim().toLowerCase();
         if (term) {
-          props.setFilteredItems(
-            props.nav.nav.raw.filter(f => {
-              return (
-                f.label.includes(term) ||
-                f.contentModelZUID === term ||
-                f.path.includes(term) ||
-                f.ZUID === term
-              );
-            })
+          props.setFilteredItems(props.nav.nav.filter(filterByTerm(term)));
+          props.setFilteredHeadlessItems(
+            props.nav.headless.filter(filterByTerm(term))
           );
         } else {
           props.setFilteredItems(props.nav.nav);
+          props.setFilteredHeadlessItems(props.nav.headless);
         }
       }}
     />
@@ -56,11 +61,15 @@ export function ContentNav(props) {
   const [hiddenOpen, setHiddenOpen] = useState(false);
 
   const [filteredItems, setFilteredItems] = useState(
-    props.nav.raw.sort(byLabel)
+    props.nav.nav.sort(byLabel)
+  );
+  const [filteredHeadlessItems, setFilteredHeadlessItems] = useState(
+    props.nav.headless.sort(byLabel)
   );
 
   useEffect(() => {
-    setFilteredItems(props.nav.raw.sort(byLabel));
+    setFilteredItems(props.nav.nav.sort(byLabel));
+    setFilteredHeadlessItems(props.nav.headless.sort(byLabel));
   }, [props.nav]);
 
   useEffect(() => {
@@ -93,7 +102,11 @@ export function ContentNav(props) {
 
   return (
     <React.Fragment>
-      <ItemsFilter setFilteredItems={setFilteredItems} nav={props} />
+      <ItemsFilter
+        setFilteredItems={setFilteredItems}
+        setFilteredHeadlessItems={setFilteredHeadlessItems}
+        nav={props.nav}
+      />
       <div className={styles.Actions}>
         <Select
           name="createItemFromModel"
@@ -150,7 +163,7 @@ export function ContentNav(props) {
         <Nav
           id="HeadlessNavigation"
           className={styles.Nav}
-          tree={filteredItems}
+          tree={filteredHeadlessItems}
           selected={selected}
           collapseNode={collapseNode}
           actions={actions}
@@ -171,7 +184,7 @@ export function ContentNav(props) {
           <Nav
             id="HiddenNav"
             className={(styles.Nav, hiddenOpen ? "" : styles.HiddenNavClosed)}
-            tree={filteredItems}
+            tree={props.nav.hidden}
             selected={selected}
             collapseNode={collapseNode}
             actions={actions}
