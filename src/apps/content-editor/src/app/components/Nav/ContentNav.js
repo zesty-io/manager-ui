@@ -39,7 +39,7 @@ const ItemsFilter = props => {
             })
           );
         } else {
-          props.setFilteredItems(props.nav.nav.raw);
+          props.setFilteredItems(props.nav.nav);
         }
       }}
     />
@@ -55,7 +55,6 @@ export function ContentNav(props) {
   const [reorderOpen, setReorderOpen] = useState(false);
   const [hiddenOpen, setHiddenOpen] = useState(false);
 
-  console.log(props);
   const [filteredItems, setFilteredItems] = useState(
     props.nav.raw.sort(byLabel)
   );
@@ -141,7 +140,7 @@ export function ContentNav(props) {
         <Nav
           id="MainNavigation"
           className={styles.Nav}
-          tree={props.nav.nav}
+          tree={filteredItems}
           selected={selected}
           collapseNode={collapseNode}
           actions={actions}
@@ -151,7 +150,7 @@ export function ContentNav(props) {
         <Nav
           id="HeadlessNavigation"
           className={styles.Nav}
-          tree={props.nav.headless}
+          tree={filteredItems}
           selected={selected}
           collapseNode={collapseNode}
           actions={actions}
@@ -172,7 +171,7 @@ export function ContentNav(props) {
           <Nav
             id="HiddenNav"
             className={(styles.Nav, hiddenOpen ? "" : styles.HiddenNavClosed)}
-            tree={props.nav.hidden}
+            tree={filteredItems}
             selected={selected}
             collapseNode={collapseNode}
             actions={actions}
