@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useHistory } from "react-router";
 import { Link } from "react-router-dom";
+import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -144,8 +145,6 @@ export function ContentNav(props) {
         <div className={styles.NavTitle}>
           <h1>Content</h1>
 
-          <h1 className={styles.DashLink}></h1>
-
           <Link to="/content">
             {" "}
             <Button>
@@ -155,7 +154,7 @@ export function ContentNav(props) {
         </div>
         {searchTerm && filteredItems.length === 0 && (
           <>
-            <h1 className={styles.NavTitle}>
+            <h1 className={cx(styles.NavTitle, styles.NoResults)}>
               {" "}
               No Search Results for "{searchTerm}"{" "}
             </h1>
