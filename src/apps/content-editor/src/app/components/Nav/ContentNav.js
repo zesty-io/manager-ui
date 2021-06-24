@@ -24,16 +24,16 @@ const ItemsFilter = props => {
     <Search
       className={styles.SearchModels}
       name="itemsFilter"
-      placeholder="Filter name, zuid or path"
+      placeholder="Filter items by name, zuid or path"
       onChange={term => {
         term = term.trim().toLowerCase();
         if (term) {
           props.setFilteredItems(
             props.nav.nav.raw.filter(f => {
               return (
-                f.label === term ||
+                f.label.includes(term) ||
                 f.contentModelZUID === term ||
-                f.path === term ||
+                f.path.includes(term) ||
                 f.ZUID === term
               );
             })
