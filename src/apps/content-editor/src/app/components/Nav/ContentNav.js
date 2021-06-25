@@ -29,7 +29,7 @@ const ItemsFilter = props => {
       className={styles.SearchModels}
       name="itemsFilter"
       placeholder="Filter items by name, zuid or path"
-      value={props.searchTerm}
+      defaultValue={props.searchTerm}
       onChange={term => {
         term = term.trim().toLowerCase();
         props.setSearchTerm(term);
