@@ -36,9 +36,9 @@ const ItemsFilter = props => {
           props.setFilteredItems(
             props.nav.raw.filter(f => {
               return (
-                f.label.includes(term) ||
+                f.label.toLowerCase().includes(term) ||
+                f.path.toLowerCase().includes(term) ||
                 f.contentModelZUID === term ||
-                f.path.includes(term) ||
                 f.ZUID === term
               );
             })
