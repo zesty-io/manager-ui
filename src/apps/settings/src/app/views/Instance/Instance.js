@@ -182,7 +182,13 @@ export default connect(state => {
                 name={field.key}
                 label={field.keyFriendly}
                 description={field.description}
-                options={[{ value: "", text: "Selected" }]}
+                options={field.options.split(",").map((option, index) => {
+                  let val = option.split(":");
+                  return {
+                    value: val[0],
+                    text: val[1]
+                  };
+                })}
                 callback={setValue}
               />
             );
