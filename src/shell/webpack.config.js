@@ -1,13 +1,14 @@
 "use strict";
 
 const path = require("path");
+const process = require("process");
 
 const webpack = require("webpack");
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
-const CleanupStatsPlugin = require("./CleanupStatsPlugin");
 const MomentLocalesPlugin = require("moment-locales-webpack-plugin");
 const mkdirp = require("mkdirp");
 
@@ -18,12 +19,21 @@ module.exports = async env => {
   // create build/ dir
   mkdirp.sync(path.resolve(__dirname, "../../build/"));
   // Attach release info onto config to connect with bug tracking software
-  CONFIG[env.NODE_ENV].build = await release(env.NODE_ENV);
+  CONFIG[process.env.NODE_ENV].build = await release(process.env.NODE_ENV);
 
-  console.log("SELECTED", env);
-  console.log("CONFIG", CONFIG[env.NODE_ENV]);
+  console.log("CONFIG", CONFIG[process.env.NODE_ENV]);
 
   return {
+    cache:
+      process.env.NODE_ENV === "development"
+        ? // enables 5 second build times from cache instead of 30 seconds
+          {
+            type: "filesystem",
+            buildDependencies: {
+              config: [__filename]
+            }
+          }
+        : false,
     devServer: {
       host: "0.0.0.0",
       compress: true,
@@ -32,15 +42,19 @@ module.exports = async env => {
       historyApiFallback: true
     },
     devtool:
-      env.NODE_ENV !== "development" ? "source-map" : "cheap-module-source-map",
-    mode: env.NODE_ENV !== "development" ? "production" : "development",
+      process.env.NODE_ENV !== "development"
+        ? "source-map"
+        : "cheap-module-source-map",
+    mode: process.env.NODE_ENV !== "development" ? "production" : "development",
     entry: {
       main: path.resolve(__dirname, "./index.js"),
       activePreview: path.resolve(__dirname, "../apps/active-preview/index.js")
     },
     output: {
       filename:
-        env.NODE_ENV !== "development" ? "[name].[hash].js" : "[name].js",
+        process.env.NODE_ENV !== "development"
+          ? "[name].[contenthash].js"
+          : "[name].js",
       path: path.resolve(__dirname, "../../build/"),
       publicPath: "/"
     },
@@ -53,11 +67,16 @@ module.exports = async env => {
       }
     },
     plugins: [
+      new NodePolyfillPlugin({
+        excludeAliases: ["console"]
+      }),
       new MomentLocalesPlugin(),
       new MiniCssExtractPlugin({
         ignoreOrder: true,
         filename:
-          env.NODE_ENV !== "development" ? "[name].[hash].css" : "[name].css"
+          process.env.NODE_ENV !== "development"
+            ? "[name].[contenthash].css"
+            : "[name].css"
       }),
 
       new MonacoWebpackPlugin({
@@ -141,10 +160,8 @@ module.exports = async env => {
 
       // Inject app config into bundle based on env
       new webpack.DefinePlugin({
-        __CONFIG__: JSON.stringify(CONFIG[env.NODE_ENV])
-      }),
-
-      new CleanupStatsPlugin()
+        __CONFIG__: JSON.stringify(CONFIG[process.env.NODE_ENV])
+      })
     ],
     optimization: {
       splitChunks: {
@@ -163,16 +180,13 @@ module.exports = async env => {
           test: /\.less$/,
           use: [
             {
-              loader: MiniCssExtractPlugin.loader,
-              options: {
-                hmr: env.NODE_ENV === "development"
-              }
+              loader: MiniCssExtractPlugin.loader
             },
             {
               loader: "css-loader",
               options: {
                 modules: {
-                  localIdentName: "[local]--[hash:base64:5]"
+                  localIdentName: "[local]--[contenthash:base64:5]"
                 }
               }
             },
@@ -188,14 +202,18 @@ module.exports = async env => {
         {
           test: /\.js$/,
           exclude: /(node_modules)/,
-          loader: "babel-loader",
-          query: {
-            presets: ["@babel/preset-env", "@babel/preset-react"],
-            plugins: [
-              ["@babel/plugin-proposal-class-properties", { loose: false }],
-              "@babel/plugin-proposal-optional-chaining",
-              "@babel/plugin-transform-runtime"
-            ]
+          use: {
+            loader: "babel-loader",
+            options: {
+              cacheCompression: false,
+              cacheDirectory: true,
+              presets: ["@babel/preset-env", "@babel/preset-react"],
+              plugins: [
+                ["@babel/plugin-proposal-class-properties", { loose: false }],
+                "@babel/plugin-proposal-optional-chaining",
+                "@babel/plugin-transform-runtime"
+              ]
+            }
           }
         },
         {

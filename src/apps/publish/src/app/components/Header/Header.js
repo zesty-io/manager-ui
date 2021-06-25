@@ -36,6 +36,7 @@ export function Header({ plan }) {
         <ContentSearch
           placeholder="Search for items to include in your publish plan"
           onSelect={onSelect}
+          keepResultsOnSelect={true}
         />
       ) : null}
       {showPublishAll ? (

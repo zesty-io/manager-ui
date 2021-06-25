@@ -15,7 +15,7 @@ export const LanguageSelector = connect((state, props) => {
   if (props.itemZUID) {
     const item = state.content[props.itemZUID];
 
-    siblings = item.siblings || {};
+    siblings = item?.siblings || {};
     selectedLang = Object.keys(siblings).find(
       code => siblings[code] === props.itemZUID
     );

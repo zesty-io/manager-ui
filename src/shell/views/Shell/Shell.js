@@ -44,7 +44,7 @@ export default connect(state => {
         />
         <main className={styles.AppLoader}>
           <GlobalTopbar />
-          <div className={styles.SubApp}>
+          <div className={styles.SubApp} data-cy="SubApp">
             <Sentry.ErrorBoundary fallback={() => <AppError />}>
               <Switch>
                 <Route path="/publish" component={PublishApp} />

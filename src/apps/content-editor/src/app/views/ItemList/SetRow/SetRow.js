@@ -40,7 +40,8 @@ export default connect()(function SetRow(props) {
       <PublishStatusCell
         type={props.model && props.model.type ? props.model.type : null}
         item={item}
-        url={`/content/${props.modelZUID}/${props.itemZUID}`}
+        modelZUID={props.modelZUID}
+        itemZUID={props.itemZUID}
       />
       <div className={styles.Cells} onClick={selectRow}>
         {props.fields.map(field => {

@@ -103,7 +103,7 @@ export default connect(state => {
               onClick={() => {
                 setPurge(true);
                 return request(
-                  `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${props.instance.ZUID}`
+                  `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${props.instance.ZUID}&instance=${props.instance.ZUID}`
                 )
                   .catch(err => {
                     dispatch({

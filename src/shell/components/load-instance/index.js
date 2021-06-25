@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 import { fetchInstance, fetchDomains } from "shell/store/instance";
 import { fetchUser } from "shell/store/user";
@@ -12,6 +14,7 @@ import { detectPlatform } from "shell/store/platform";
 import { fetchInstances } from "shell/store/instances";
 import { fetchLangauges } from "shell/store/languages";
 import { fetchItemPublishings } from "shell/store/content";
+import { Url } from "@zesty-io/core/Url";
 import { loadOpenNav } from "../../store/ui";
 
 import styles from "./LoadInstance.less";
@@ -60,6 +63,14 @@ export default connect(state => {
         {error ? (
           <div className={styles.ErrorMessage}>
             <h1>{error}</h1>
+            <Url
+              className={styles.AccountLink}
+              title="Zesty Account"
+              href={`${CONFIG.URL_ACCOUNTS}/instances`}
+            >
+              <FontAwesomeIcon icon={faUser} />
+              &nbsp; Go to Accounts
+            </Url>
           </div>
         ) : (
           <WithLoader
