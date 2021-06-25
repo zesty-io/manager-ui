@@ -51,6 +51,20 @@ const ItemsFilter = props => {
   );
 };
 
+const byLabel = (a, b) => {
+  let labelA = a.label.toLowerCase().trim(); // ignore upper and lowercase
+  let labelB = b.label.toLowerCase().trim(); // ignore upper and lowercase
+  if (labelA < labelB) {
+    return -1;
+  }
+  if (labelA > labelB) {
+    return 1;
+  }
+
+  // names must be equal
+  return 0;
+};
+
 export function ContentNav(props) {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -163,7 +177,7 @@ export function ContentNav(props) {
               kind="secondary"
               onClick={() => setSearchTerm(false)}
             >
-              <FontAwesomeIcon icon={faBan} title="Clear Search" /> CLEAR Filter
+              <FontAwesomeIcon icon={faBan} title="Clear Search" /> clear filter
             </Button>
           </>
         )}
@@ -225,17 +239,3 @@ export function ContentNav(props) {
     </React.Fragment>
   );
 }
-
-const byLabel = (a, b) => {
-  let labelA = a.label.toLowerCase().trim(); // ignore upper and lowercase
-  let labelB = b.label.toLowerCase().trim(); // ignore upper and lowercase
-  if (labelA < labelB) {
-    return -1;
-  }
-  if (labelA > labelB) {
-    return 1;
-  }
-
-  // names must be equal
-  return 0;
-};
