@@ -167,6 +167,8 @@ module.exports = async env => {
       })
     ],
     optimization: {
+      moduleIds: "deterministic",
+      runtimeChunk: "single",
       splitChunks: {
         cacheGroups: {
           commons: {
