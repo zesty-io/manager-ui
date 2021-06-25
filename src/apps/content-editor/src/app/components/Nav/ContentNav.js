@@ -29,6 +29,7 @@ const ItemsFilter = props => {
       className={styles.SearchModels}
       name="itemsFilter"
       placeholder="Filter items by name, zuid or path"
+      value={props.searchTerm}
       onChange={term => {
         term = term.trim().toLowerCase();
         props.setSearchTerm(term);
@@ -74,7 +75,7 @@ export function ContentNav(props) {
   const [reorderOpen, setReorderOpen] = useState(false);
   const [hiddenOpen, setHiddenOpen] = useState(false);
 
-  const [searchTerm, setSearchTerm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [filteredItems, setFilteredItems] = useState(
     props.nav.nav.sort(byLabel)
@@ -118,6 +119,7 @@ export function ContentNav(props) {
         setFilteredItems={setFilteredItems}
         nav={props.nav}
         setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
       />
 
       <div className={styles.Actions}>
@@ -175,7 +177,7 @@ export function ContentNav(props) {
             <Button
               className={styles.ButtonClear}
               kind="secondary"
-              onClick={() => setSearchTerm(false)}
+              onClick={() => setSearchTerm("")}
             >
               <FontAwesomeIcon icon={faBan} title="Clear Search" /> clear filter
             </Button>
