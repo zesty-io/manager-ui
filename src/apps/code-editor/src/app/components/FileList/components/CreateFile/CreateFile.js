@@ -48,6 +48,16 @@ export const CreateFile = React.memo(function CreateFile(props) {
       return;
     }
 
+    if (type === "ajax-json" && name.charAt(0) !== "/") {
+      props.dispatch(
+        notify({
+          kind: "warn",
+          message: `Please add leading slash in file path EX: /${name}`
+        })
+      );
+      return;
+    }
+
     setLoading(true);
 
     props
@@ -146,10 +156,10 @@ export const CreateFile = React.memo(function CreateFile(props) {
               <p className={styles.description}>
                 Parsley accessible file for creating endpoints or custom
                 experiences. These files need to be named with a full path with
-                an extension like /my/file/path.json. The file is accessible at
-                hash-dev.preview.zesty.io/my/file/path.json. File types that can
-                be used: css, html, json, js, xml, csv, tsv, xml, yaml, md, svg,
-                rss, ics, vcf, xhtml.
+                an extension like <strong> /my/file/path.json.</strong> The file
+                is accessible at hash-dev.preview.zesty.io/my/file/path.json.
+                File types that can be used: css, html, json, js, xml, csv, tsv,
+                xml, yaml, md, svg, rss, ics, vcf, xhtml.
               </p>
             )}
             <FieldTypeText
