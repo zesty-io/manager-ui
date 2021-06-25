@@ -24,6 +24,7 @@ module.exports = async env => {
   console.log("CONFIG", CONFIG[process.env.NODE_ENV]);
 
   return {
+    snapshot: { managedPaths: [] },
     cache:
       process.env.NODE_ENV === "development"
         ? // enables 5 second build times from cache instead of 30 seconds
