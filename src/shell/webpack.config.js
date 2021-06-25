@@ -4,6 +4,7 @@ const path = require("path");
 const process = require("process");
 
 const webpack = require("webpack");
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -63,15 +64,12 @@ module.exports = async env => {
         shell: path.resolve(__dirname, "../shell"),
         utility: path.resolve(__dirname, "../utility"),
         apps: path.resolve(__dirname, "../apps")
-      },
-      fallback: {
-        // Polyfills for Node Globals
-        stream: require.resolve("stream-browserify"),
-        buffer: require.resolve("buffer/"),
-        util: require.resolve("util/")
       }
     },
     plugins: [
+      new NodePolyfillPlugin({
+        excludeAliases: ["console"]
+      }),
       new MomentLocalesPlugin(),
       new MiniCssExtractPlugin({
         ignoreOrder: true,
@@ -162,15 +160,7 @@ module.exports = async env => {
 
       // Inject app config into bundle based on env
       new webpack.DefinePlugin({
-        __CONFIG__: JSON.stringify(CONFIG[process.env.NODE_ENV]),
-        // polyfill used for `util` which is required by other packages
-        // used instead of importing `process` package
-        "process.env.NODE_DEBUG": JSON.stringify(process.env.NODE_DEBUG)
-      }),
-
-      // Polyfill missing node Buffer
-      new webpack.ProvidePlugin({
-        Buffer: ["buffer", "Buffer"]
+        __CONFIG__: JSON.stringify(CONFIG[process.env.NODE_ENV])
       })
     ],
     optimization: {
