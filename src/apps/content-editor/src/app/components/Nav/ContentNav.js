@@ -158,8 +158,12 @@ export function ContentNav(props) {
               {" "}
               No Search Results for "{searchTerm}"{" "}
             </h1>
-            <Button onClick={() => setSearchTerm(false)}>
-              <FontAwesomeIcon icon={faBan} title="Clear Search" /> CLEAR
+            <Button
+              className={styles.ButtonClear}
+              kind="secondary"
+              onClick={() => setSearchTerm(false)}
+            >
+              <FontAwesomeIcon icon={faBan} title="Clear Search" /> CLEAR Filter
             </Button>
           </>
         )}
