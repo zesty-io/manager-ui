@@ -1,22 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useHistory } from "react-router";
+import { Link } from "react-router-dom";
+import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowsAlt,
+  faBan,
   faCaretDown,
   faCaretLeft,
-  faEyeSlash
+  faEyeSlash,
+  faHome
 } from "@fortawesome/free-solid-svg-icons";
 import { ReorderNav } from "../ReorderNav";
 import { Nav } from "@zesty-io/core/Nav";
 import { Button } from "@zesty-io/core/Button";
 import { Select, Option } from "@zesty-io/core/Select";
 
+import ItemsFilter from "./ItemsFilter";
 import { collapseNavItem, hideNavItem } from "../../../store/navContent";
 
 import styles from "./ContentNav.less";
+
 export function ContentNav(props) {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -25,6 +31,16 @@ export function ContentNav(props) {
   const [selected, setSelected] = useState(location.pathname);
   const [reorderOpen, setReorderOpen] = useState(false);
   const [hiddenOpen, setHiddenOpen] = useState(false);
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const [filteredItems, setFilteredItems] = useState(
+    props.nav.nav.sort(byLabel)
+  );
+
+  useEffect(() => {
+    setFilteredItems(props.nav.nav.sort(byLabel));
+  }, [props.nav]);
 
   useEffect(() => {
     setSelected(location.pathname);
@@ -56,6 +72,13 @@ export function ContentNav(props) {
 
   return (
     <React.Fragment>
+      <ItemsFilter
+        setFilteredItems={setFilteredItems}
+        nav={props.nav}
+        setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
+      />
+
       <div className={styles.Actions}>
         <Select
           name="createItemFromModel"
@@ -92,26 +115,62 @@ export function ContentNav(props) {
       </div>
 
       <div className={styles.NavWrap}>
-        <h1 className={styles.NavTitle}>Content</h1>
-        <Nav
-          id="MainNavigation"
-          className={styles.Nav}
-          tree={props.nav.nav}
-          selected={selected}
-          collapseNode={collapseNode}
-          actions={actions}
-        />
+        <div className={styles.NavTitle}>
+          <h1>Content</h1>
 
+          <Link to="/content">
+            {" "}
+            <Button>
+              <FontAwesomeIcon icon={faHome} title="Dashboard" />
+            </Button>
+          </Link>
+        </div>
+        {searchTerm && filteredItems.length === 0 && (
+          <>
+            <h1 className={cx(styles.NavTitle, styles.NoResults)}>
+              {" "}
+              No Search Results for "{searchTerm}"{" "}
+            </h1>
+            <Button
+              className={styles.ButtonClear}
+              kind="secondary"
+              onClick={() => setSearchTerm("")}
+            >
+              <FontAwesomeIcon icon={faBan} title="Clear Search" /> clear filter
+            </Button>
+          </>
+        )}
+        {searchTerm && (
+          <Nav
+            id="MainNavigation"
+            className={styles.Nav}
+            tree={filteredItems}
+            selected={selected}
+            collapseNode={collapseNode}
+            actions={actions}
+          />
+        )}
+        {!searchTerm && (
+          <Nav
+            id="MainNavigation"
+            className={styles.Nav}
+            tree={props.nav.nav}
+            selected={selected}
+            collapseNode={collapseNode}
+            actions={actions}
+          />
+        )}
         <h1 className={styles.NavTitle}>Headless Content Models</h1>
-        <Nav
-          id="HeadlessNavigation"
-          className={styles.Nav}
-          tree={props.nav.headless}
-          selected={selected}
-          collapseNode={collapseNode}
-          actions={actions}
-        />
-
+        {!searchTerm && (
+          <Nav
+            id="HeadlessNavigation"
+            className={styles.Nav}
+            tree={props.nav.headless}
+            selected={selected}
+            collapseNode={collapseNode}
+            actions={actions}
+          />
+        )}
         <div className={styles.HiddenNav}>
           <h1
             className={styles.NavTitle}
@@ -139,3 +198,17 @@ export function ContentNav(props) {
     </React.Fragment>
   );
 }
+
+const byLabel = (a, b) => {
+  let labelA = a.label.toLowerCase().trim(); // ignore upper and lowercase
+  let labelB = b.label.toLowerCase().trim(); // ignore upper and lowercase
+  if (labelA < labelB) {
+    return -1;
+  }
+  if (labelA > labelB) {
+    return 1;
+  }
+
+  // names must be equal
+  return 0;
+};
