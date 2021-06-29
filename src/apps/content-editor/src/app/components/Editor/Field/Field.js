@@ -37,6 +37,17 @@ import { FieldTypeOneToMany } from "@zesty-io/core/FieldTypeOneToMany";
 import styles from "./Field.less";
 import MediaStyles from "../../../../../../media/src/app/MediaAppModal.less";
 
+const FieldLabel = props => {
+  return (
+    <>
+      <span className={styles.MainLabel}>{props.label}&nbsp;</span>
+      <span className={styles.SubLabel}>
+        {props.datatype}: {props.name}
+      </span>
+    </>
+  );
+};
+
 // NOTE: Componetized so it can be memoized for input/render perf
 const RelatedOption = React.memo(props => {
   return (
@@ -57,14 +68,14 @@ const RelatedOption = React.memo(props => {
 // NOTE: Componetized so it can be memoized for input/render perf
 const LinkOption = React.memo(props => {
   return (
-    <React.Fragment>
+    <>
       <FontAwesomeIcon icon={faExclamationTriangle} />
       &nbsp;
       <AppLink to={`/content/${props.modelZUID}/${props.itemZUID}`}>
         {props.itemZUID}
       </AppLink>
       <strong>&nbsp;is missing a meta title</strong>
-    </React.Fragment>
+    </>
   );
 });
 
@@ -192,15 +203,7 @@ export default connect(state => {
       return (
         <FieldTypeText
           name={name}
-          label={
-            <>
-              {" "}
-              <span className={styles.MainLabel}>{label}</span>{" "}
-              <span className={styles.SubLabel}>
-                {datatype}: {name}
-              </span>
-            </>
-          }
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -213,15 +216,7 @@ export default connect(state => {
       return (
         <FieldTypeText
           name={name}
-          label={
-            <>
-              {" "}
-              <span className={styles.MainLabel}>{label}</span>{" "}
-              <span className={styles.SubLabel}>
-                {datatype}: {name}
-              </span>
-            </>
-          }
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -236,15 +231,7 @@ export default connect(state => {
       return (
         <FieldTypeUUID
           name={name}
-          label={
-            <>
-              {" "}
-              <span className={styles.MainLabel}>{label}</span>{" "}
-              <span className={styles.SubLabel}>
-                {datatype}: {name}
-              </span>
-            </>
-          }
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           placeholder="UUID field values are auto-generated"
@@ -258,15 +245,7 @@ export default connect(state => {
       return (
         <FieldTypeTextarea
           name={name}
-          label={
-            <>
-              {" "}
-              <span className={styles.MainLabel}>{label}</span>{" "}
-              <span className={styles.SubLabel}>
-                {datatype}: {name}
-              </span>
-            </>
-          }
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -281,15 +260,7 @@ export default connect(state => {
         <div className={styles.WYSIWYGFieldType}>
           <FieldTypeTinyMCE
             name={name}
-            label={
-              <>
-                {" "}
-                <span className={styles.MainLabel}>{label}</span>{" "}
-                <span className={styles.SubLabel}>
-                  {datatype}: {name}
-                </span>
-              </>
-            }
+            label={<FieldLabel label={label} name={name} datatype={datatype} />}
             description={description}
             tooltip={settings.tooltip}
             required={required}
@@ -320,15 +291,7 @@ export default connect(state => {
         <div className={styles.WYSIWYGFieldType}>
           <FieldTypeEditor
             name={name}
-            label={
-              <>
-                {" "}
-                <span className={styles.MainLabel}>{label}</span>{" "}
-                <span className={styles.SubLabel}>
-                  {datatype}: {name}
-                </span>
-              </>
-            }
+            label={<FieldLabel label={label} name={name} datatype={datatype} />}
             description={description}
             tooltip={settings.tooltip}
             required={required}
@@ -358,15 +321,7 @@ export default connect(state => {
           <FieldTypeImage
             images={images}
             name={name}
-            label={
-              <>
-                {" "}
-                <span className={styles.MainLabel}>{label}</span>{" "}
-                <span className={styles.SubLabel}>
-                  {datatype}: {name}
-                </span>
-              </>
-            }
+            label={<FieldLabel label={label} name={name} datatype={datatype} />}
             description={description}
             tooltip={settings.tooltip}
             required={required}
@@ -411,15 +366,7 @@ export default connect(state => {
         return (
           <FieldTypeBinary
             name={name}
-            label={
-              <>
-                {" "}
-                <span className={styles.MainLabel}>{label}</span>{" "}
-                <span className={styles.SubLabel}>
-                  {datatype}: {name}
-                </span>
-              </>
-            }
+            label={<FieldLabel label={label} name={name} datatype={datatype} />}
             description={description}
             tooltip={settings.tooltip}
             required={required}
@@ -459,15 +406,7 @@ export default connect(state => {
           description={description}
           tooltip={settings.tooltip}
           name={name}
-          label={
-            <>
-              {" "}
-              <span className={styles.MainLabel}>{label}</span>{" "}
-              <span className={styles.SubLabel}>
-                {datatype}: {name}
-              </span>
-            </>
-          }
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           required={required}
           value={value}
           onChange={onChange}
@@ -540,15 +479,7 @@ export default connect(state => {
       return (
         <FieldTypeInternalLink
           name={name}
-          label={
-            <>
-              {" "}
-              <span className={styles.MainLabel}>{label}</span>{" "}
-              <span className={styles.SubLabel}>
-                {datatype}: {name}
-              </span>
-            </>
-          }
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -624,15 +555,7 @@ export default connect(state => {
         <FieldTypeOneToOne
           className={styles.FieldTypeOneToOne}
           name={name}
-          label={
-            <>
-              {" "}
-              <span className={styles.MainLabel}>{label}</span>{" "}
-              <span className={styles.SubLabel}>
-                {datatype}: {name}
-              </span>
-            </>
-          }
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -693,15 +616,7 @@ export default connect(state => {
         <FieldTypeOneToMany
           className={styles.FieldTypeOneToMany}
           name={name}
-          label={
-            <>
-              {" "}
-              <span className={styles.MainLabel}>{label}</span>{" "}
-              <span className={styles.SubLabel}>
-                {datatype}: {name}
-              </span>
-            </>
-          }
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -717,15 +632,7 @@ export default connect(state => {
       return (
         <FieldTypeColor
           name={name}
-          label={
-            <>
-              {" "}
-              <span className={styles.MainLabel}>{label}</span>{" "}
-              <span className={styles.SubLabel}>
-                {datatype}: {name}
-              </span>
-            </>
-          }
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -738,15 +645,7 @@ export default connect(state => {
       return (
         <FieldTypeNumber
           name={name}
-          label={
-            <>
-              {" "}
-              <span className={styles.MainLabel}>{label}</span>{" "}
-              <span className={styles.SubLabel}>
-                {datatype}: {name}
-              </span>
-            </>
-          }
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -759,15 +658,7 @@ export default connect(state => {
       return (
         <FieldTypeCurrency
           name={name}
-          label={
-            <>
-              {" "}
-              <span className={styles.MainLabel}>{label}</span>{" "}
-              <span className={styles.SubLabel}>
-                {datatype}: {name}
-              </span>
-            </>
-          }
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           placeholder="0.00"
@@ -797,15 +688,7 @@ export default connect(state => {
       return (
         <FieldTypeDate
           name={name}
-          label={
-            <>
-              {" "}
-              <span className={styles.MainLabel}>{label}</span>{" "}
-              <span className={styles.SubLabel}>
-                {datatype}: {name}
-              </span>
-            </>
-          }
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           datatype={datatype}
@@ -819,15 +702,7 @@ export default connect(state => {
       return (
         <FieldTypeSort
           name={name}
-          label={
-            <>
-              {" "}
-              <span className={styles.MainLabel}>{label}</span>{" "}
-              <span className={styles.SubLabel}>
-                {datatype}: {name}
-              </span>
-            </>
-          }
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
