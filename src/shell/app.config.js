@@ -31,7 +31,7 @@ module.exports = {
 
     URL_MANAGER: ".manager.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
-    URL_PREVIEW: "-dev.preview.zesty.io",
+    URL_PREVIEW: "-dev.webengine.zesty.io",
     URL_PREVIEW_PROTOCOL: "https://",
     URL_ACCOUNTS: "https://accounts.zesty.io",
 

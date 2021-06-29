@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import cx from "classnames";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import { usePermission } from "shell/hooks/use-permissions";
 
 import { Button } from "@zesty-io/core/Button";
@@ -11,7 +11,8 @@ import {
   faCaretDown,
   faExternalLinkAlt,
   faExclamationCircle,
-  faSpinner
+  faSpinner,
+  faEye
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Select, Option } from "@zesty-io/core/Select";
@@ -22,12 +23,9 @@ import { notify } from "shell/store/notifications";
 
 import styles from "./GlobalInstance.less";
 
-export default connect(state => {
-  return {
-    instance: state.instance,
-    instances: state.instances
-  };
-})(function GlobalInstance(props) {
+export default function GlobalInstance(props) {
+  const instance = useSelector(state => state.instance);
+  const instances = useSelector(state => state.instances);
   const ref = useRef();
   const domain = useDomain();
   const [open, setOpen] = useState(false);
@@ -64,17 +62,17 @@ export default connect(state => {
             setOpen(!open);
           }}
         >
-          {props.instance.name} <FontAwesomeIcon icon={faCaretDown} />
+          {instance.name} <FontAwesomeIcon icon={faCaretDown} />
         </button>
       </menu>
 
       <main className={cx(styles.Instance, open ? null : styles.hide)}>
         <p className={cx(styles.bodyText, styles.zuid)}>
-          ZUID: {props.instance.ZUID}
+          ZUID: {instance.ZUID}
         </p>
 
-        <Select name="instance" value={props.instance.ZUID}>
-          {props.instances.map(instance => (
+        <Select className={styles.Select} name="instance" value={instance.ZUID}>
+          {instances.map(instance => (
             <Option
               key={instance.ZUID}
               value={instance.ZUID}
@@ -85,16 +83,24 @@ export default connect(state => {
             />
           ))}
         </Select>
-
-        {props.instance.screenshotURL && (
+        <Url
+          target="_blank"
+          title={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}`}
+          href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}`}
+        >
+          <FontAwesomeIcon icon={faEye} />
+          &nbsp;View WebEngine Preview
+        </Url>
+        {instance.screenshotURL && (
           <img
-            src={props.instance.screenshotURL}
+            src={instance.screenshotURL}
             loading="lazy"
             width="356px"
             height="200px"
             alt="Instance Image"
           />
         )}
+
         {canPurge && (
           <div>
             <Button
@@ -103,7 +109,7 @@ export default connect(state => {
               onClick={() => {
                 setPurge(true);
                 return request(
-                  `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${props.instance.ZUID}&instance=${props.instance.ZUID}`
+                  `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${instance.ZUID}&instance=${instance.ZUID}`
                 )
                   .catch(err => {
                     dispatch({
@@ -127,7 +133,7 @@ export default connect(state => {
           </div>
         )}
         <ul className={styles.Domains}>
-          {props.instance.domains.map(domain => (
+          {instance.domains.map(domain => (
             <li key={domain.domain}>
               <Url
                 title={`http://${domain.domain}`}
@@ -143,4 +149,4 @@ export default connect(state => {
       </main>
     </section>
   );
-});
+}

@@ -177,14 +177,28 @@ export default connect(state => {
             );
           case "dropdown":
             return (
-              <FieldTypeDropDown
-                key={field.ZUID}
-                name={field.key}
-                label={field.keyFriendly}
-                description={field.description}
-                options={[{ value: "", text: "Selected" }]}
-                callback={setValue}
-              />
+              <div key={field.ZUID}>
+                <FieldLabel label={field.keyFriendly} />
+                <div className={styles.selectProtocol}>
+                  <Select
+                    name={field.key}
+                    onSelect={setValue}
+                    value={fieldValues[field.key]}
+                  >
+                    {field.options.split(";").map((option, index) => {
+                      let val = option.split(":");
+                      return (
+                        <Option
+                          key={index}
+                          value={val[0]}
+                          text={val[1]}
+                          selected={fieldValues[field.key] === val[0]}
+                        />
+                      );
+                    })}
+                  </Select>
+                </div>
+              </div>
             );
           default:
             return (

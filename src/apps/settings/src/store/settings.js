@@ -129,6 +129,14 @@ export function fetchSettings() {
   return dispatch => {
     return request(`${CONFIG.API_INSTANCE}/env/settings`)
       .then(res => {
+        res.data.forEach(data => {
+          // this make the legacy key:value,key:value option values work by fixing it to key:value;key:value
+          // we cleaing the data before it goes to the memory store which allows it to be saved correctly
+          if (data.dataType === "dropdown") {
+            data.options = data.options.replaceAll(",", ";");
+          }
+        });
+
         dispatch({
           type: "FETCH_SETTINGS_SUCCESS",
           payload: res.data.sort(sortNav)
