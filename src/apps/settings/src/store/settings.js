@@ -136,7 +136,7 @@ export function fetchSettings() {
             data.options = data.options.replaceAll(",", ";");
           }
         });
-        console.log(res.data);
+
         dispatch({
           type: "FETCH_SETTINGS_SUCCESS",
           payload: res.data.sort(sortNav)
