@@ -1,5 +1,12 @@
 @import "~@zesty-io/core/colors.less";
 
+.SearchModels {
+  margin: 8px 8px 0;
+  input {
+    flex: 1;
+  }
+}
+
 .Actions {
   display: flex;
   background-color: #4b5468; // @zesty-tab-blue;// #5b667d;
@@ -14,7 +21,8 @@
 }
 
 .NavWrap {
-  height: calc(100vh - 54px - 55px);
+  // height: calc(100vh - 54px - 55px);
+  height: calc(100vh - 54px - 100px);
   margin: 0;
   overflow-y: auto;
   background: #404759;
@@ -28,6 +36,15 @@
 
     display: flex;
     align-items: center;
+    justify-content: space-between;
+
+    &.NoResults {
+      color: @zesty-yellow;
+      word-break: break-word;
+    }
+  }
+  .ButtonClear {
+    margin: 8px;
   }
 
   .HiddenNav {
