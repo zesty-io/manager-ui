@@ -25,7 +25,7 @@ module.exports = async env => {
 
   return {
     snapshot: {
-      managedPaths: [path.resolve(__dirname, "../node_modules/@zesty-io")]
+      managedPaths: [path.resolve(__dirname, "../../node_modules/@zesty-io")]
     },
     cache:
       process.env.NODE_ENV === "development"
