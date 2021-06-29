@@ -24,6 +24,9 @@ module.exports = async env => {
   console.log("CONFIG", CONFIG[process.env.NODE_ENV]);
 
   return {
+    snapshot: {
+      managedPaths: [path.resolve(__dirname, "../../node_modules/@zesty-io")]
+    },
     cache:
       process.env.NODE_ENV === "development"
         ? // enables 5 second build times from cache instead of 30 seconds
@@ -164,6 +167,8 @@ module.exports = async env => {
       })
     ],
     optimization: {
+      moduleIds: "deterministic",
+      runtimeChunk: "single",
       splitChunks: {
         cacheGroups: {
           commons: {
