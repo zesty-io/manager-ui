@@ -4,7 +4,7 @@ window.CONFIG = __CONFIG__;
 
 // import "./wdyr";
 
-import React from "react";
+import React, { StrictMode } from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
@@ -42,17 +42,19 @@ window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZU
 MonacoSetup(store);
 
 const App = Sentry.withProfiler(() => (
-  <Provider store={store}>
-    <Sentry.ErrorBoundary fallback={() => <AppError />}>
-      <Router history={history}>
-        <PrivateRoute>
-          <LoadInstance>
-            <Shell />
-          </LoadInstance>
-        </PrivateRoute>
-      </Router>
-    </Sentry.ErrorBoundary>
-  </Provider>
+  <StrictMode>
+    <Provider store={store}>
+      <Sentry.ErrorBoundary fallback={() => <AppError />}>
+        <Router history={history}>
+          <PrivateRoute>
+            <LoadInstance>
+              <Shell />
+            </LoadInstance>
+          </PrivateRoute>
+        </Router>
+      </Sentry.ErrorBoundary>
+    </Provider>
+  </StrictMode>
 ));
 
 function render() {
