@@ -17,54 +17,11 @@ import { ReorderNav } from "../ReorderNav";
 import { Nav } from "@zesty-io/core/Nav";
 import { Button } from "@zesty-io/core/Button";
 import { Select, Option } from "@zesty-io/core/Select";
-import { Search } from "@zesty-io/core/Search";
 
+import ItemsFilter from "./ItemsFilter";
 import { collapseNavItem, hideNavItem } from "../../../store/navContent";
 
 import styles from "./ContentNav.less";
-
-const ItemsFilter = props => {
-  return (
-    <Search
-      className={styles.SearchModels}
-      name="itemsFilter"
-      placeholder="Filter items by name, zuid or path"
-      defaultValue={props.searchTerm}
-      onChange={term => {
-        term = term.trim().toLowerCase();
-        props.setSearchTerm(term);
-        if (term) {
-          props.setFilteredItems(
-            props.nav.raw.filter(f => {
-              return (
-                f.label.toLowerCase().includes(term) ||
-                f.path.toLowerCase().includes(term) ||
-                f.contentModelZUID === term ||
-                f.ZUID === term
-              );
-            })
-          );
-        } else {
-          props.setFilteredItems(props.nav.nav);
-        }
-      }}
-    />
-  );
-};
-
-const byLabel = (a, b) => {
-  let labelA = a.label.toLowerCase().trim(); // ignore upper and lowercase
-  let labelB = b.label.toLowerCase().trim(); // ignore upper and lowercase
-  if (labelA < labelB) {
-    return -1;
-  }
-  if (labelA > labelB) {
-    return 1;
-  }
-
-  // names must be equal
-  return 0;
-};
 
 export function ContentNav(props) {
   const dispatch = useDispatch();
@@ -241,3 +198,17 @@ export function ContentNav(props) {
     </React.Fragment>
   );
 }
+
+const byLabel = (a, b) => {
+  let labelA = a.label.toLowerCase().trim(); // ignore upper and lowercase
+  let labelB = b.label.toLowerCase().trim(); // ignore upper and lowercase
+  if (labelA < labelB) {
+    return -1;
+  }
+  if (labelA > labelB) {
+    return 1;
+  }
+
+  // names must be equal
+  return 0;
+};
