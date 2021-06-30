@@ -168,6 +168,7 @@ function resolveNavData(file) {
     // Instant api
     "ajax-json": faBolt,
     "ajax-html": faBolt,
+    "ajax-parsley": faBolt,
 
     // JavaScript
     "text/js": faJs,
