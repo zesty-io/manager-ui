@@ -28,17 +28,11 @@ export default connect(state => {
     setting => setting.key === "basic_content_api_enabled"
   );
 
-  console.log("PROPS", props);
-
   const fieldsZUID = props.fields.map(fieldZUID => fieldZUID.contentModelZUID);
-
-  console.log("fieldsZUID:", fieldsZUID[0]);
 
   const filesZUID = props.files
     .filter(file => file.contentModelZUID)
     .filter(fileZUID => fileZUID.contentModelZUID === fieldsZUID[0]);
-
-  console.log("FIles ZUID", filesZUID);
 
   const codePath =
     filesZUID.length === 0 ? `/code` : `/code/file/views/${filesZUID[0].ZUID}`;
