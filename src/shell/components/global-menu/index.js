@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 
@@ -24,9 +24,8 @@ export default connect(state => {
   };
 })(
   React.memo(function GlobalMenu(props) {
-    const history = useHistory();
-
-    const slug = history.location.pathname.split("/")[1];
+    const location = useLocation();
+    const slug = location.pathname.split("/")[1];
     const icons = {
       content: faEdit,
       media: faImage,

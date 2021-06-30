@@ -220,6 +220,10 @@ module.exports = async env => {
               ]
             }
           }
+        },
+        {
+          test: /\.ttf$/,
+          use: ["file-loader"]
         }
       ]
     }
