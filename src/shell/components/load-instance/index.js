@@ -14,6 +14,8 @@ import { detectPlatform } from "shell/store/platform";
 import { fetchInstances } from "shell/store/instances";
 import { fetchLangauges } from "shell/store/languages";
 import { fetchItemPublishings } from "shell/store/content";
+import { fetchFiles } from "../../../apps/code-editor/src/store/files";
+
 import { Url } from "@zesty-io/core/Url";
 import { loadOpenNav } from "../../store/ui";
 
@@ -24,7 +26,8 @@ export default connect(state => {
     instance: state.instance,
     user: state.user,
     products: state.products,
-    languages: state.languages
+    languages: state.languages,
+    files: state.files
   };
 })(
   React.memo(function LoadInstance(props) {
@@ -56,6 +59,10 @@ export default connect(state => {
       props.dispatch(fetchLangauges("enabled"));
       // Used in Publish Plan and Content sections
       props.dispatch(fetchItemPublishings());
+      //Code Editor
+      props.dispatch(fetchFiles("views"));
+      props.dispatch(fetchFiles("stylesheets"));
+      props.dispatch(fetchFiles("scripts"));
     }, []);
 
     return (
@@ -79,7 +86,8 @@ export default connect(state => {
               props.instance.ID &&
               props.instance.domains &&
               props.user.ID &&
-              props.languages.length
+              props.languages.length &&
+              props.files
             }
             message="Loading Instance"
             width="100vw"

@@ -17,14 +17,32 @@ import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./Info.less";
+
 export default connect(state => {
   return {
+    files: state.files,
     settings: state.settings
   };
 })(function Info(props) {
   const instantJSON = props.settings.instance.find(
     setting => setting.key === "basic_content_api_enabled"
   );
+
+  console.log("PROPS", props);
+
+  const fieldsZUID = props.fields.map(fieldZUID => fieldZUID.contentModelZUID);
+
+  console.log("fieldsZUID:", fieldsZUID[0]);
+
+  const filesZUID = props.files
+    .filter(file => file.contentModelZUID)
+    .filter(fileZUID => fileZUID.contentModelZUID === fieldsZUID[0]);
+
+  console.log("FIles ZUID", filesZUID);
+
+  const codePath =
+    filesZUID.length === 0 ? `/code` : `/code/file/views/${filesZUID[0].ZUID}`;
+
   return (
     <Card className={styles.ModelInfo}>
       <CardHeader>
@@ -119,7 +137,7 @@ export default connect(state => {
             </AppLink>
           </li>
           <li>
-            <AppLink to={`/code`}>
+            <AppLink to={codePath}>
               <FontAwesomeIcon icon={faCode} />
               &nbsp;Edit Code
             </AppLink>

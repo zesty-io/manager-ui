@@ -7,8 +7,6 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import { FileList } from "../../components/FileList";
 import { Workspace } from "../../components/Workspace/";
 
-import { fetchFiles } from "../../../store/files";
-
 import styles from "./CodeEditor.less";
 export default connect(state => {
   return {
@@ -18,13 +16,6 @@ export default connect(state => {
   };
 })(function CodeEditor(props) {
   const match = useRouteMatch("/code/file/:fileType/:fileZUID");
-
-  // On initial render load files: Templates, Stylesheets, Scripts
-  useEffect(() => {
-    props.dispatch(fetchFiles("views"));
-    props.dispatch(fetchFiles("stylesheets"));
-    props.dispatch(fetchFiles("scripts"));
-  }, []);
 
   useEffect(() => {
     const handleEditorClose = evt => {

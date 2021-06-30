@@ -13,11 +13,7 @@ import { CardContent, CardFooter } from "@zesty-io/core/Card";
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
 import { AppLink } from "@zesty-io/core/AppLink";
 
-import {
-  publishFile,
-  resolvePathPart,
-  fetchFiles
-} from "../../../../../store/files";
+import { publishFile, resolvePathPart } from "../../../../../store/files";
 
 import { notify } from "shell/store/notifications";
 
@@ -57,10 +53,6 @@ export default connect(state => {
       })
       .finally(() => {
         setLoading(false);
-
-        props.dispatch(fetchFiles("views"));
-        props.dispatch(fetchFiles("stylesheets"));
-        props.dispatch(fetchFiles("scripts"));
       });
   };
 
