@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import { useFilePath } from "shell/hooks/use-filePath";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -28,14 +29,16 @@ export default connect(state => {
     setting => setting.key === "basic_content_api_enabled"
   );
 
-  const fieldsZUID = props.fields.map(fieldZUID => fieldZUID.contentModelZUID);
+  // const fieldsZUID = props.fields.map(fieldZUID => fieldZUID.contentModelZUID);
 
-  const filesZUID = props.files
-    .filter(file => file.contentModelZUID)
-    .filter(fileZUID => fileZUID.contentModelZUID === fieldsZUID[0]);
+  // const filesZUID = props.files
+  //   .filter(file => file.contentModelZUID)
+  //   .filter(fileZUID => fileZUID.contentModelZUID === fieldsZUID[0]);
 
-  const codePath =
-    filesZUID.length === 0 ? `/code` : `/code/file/views/${filesZUID[0].ZUID}`;
+  // const codePath =
+  //   filesZUID.length === 0 ? `/code` : `/code/file/views/${filesZUID[0].ZUID}`;
+  console.log(props);
+  const codePath = useFilePath(files);
 
   return (
     <Card className={styles.ModelInfo}>
