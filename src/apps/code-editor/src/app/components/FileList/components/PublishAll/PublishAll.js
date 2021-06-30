@@ -20,7 +20,11 @@ import {
 } from "@zesty-io/core/Modal";
 
 import { notify } from "shell/store/notifications";
-import { publishFile, resolvePathPart } from "../../../../../store/files";
+import {
+  publishFile,
+  resolvePathPart,
+  fetchFiles
+} from "../../../../../store/files";
 
 import styles from "./PublishAll.less";
 export default connect(state => {
@@ -68,6 +72,10 @@ export default connect(state => {
         })
         .finally(() => {
           setLoading(false);
+
+          props.dispatch(fetchFiles("views"));
+          props.dispatch(fetchFiles("stylesheets"));
+          props.dispatch(fetchFiles("scripts"));
         });
     };
 

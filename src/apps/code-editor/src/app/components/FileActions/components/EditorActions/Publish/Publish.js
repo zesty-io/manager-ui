@@ -5,7 +5,7 @@ import { faCloudUploadAlt, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
 
-import { publishFile } from "../../../../../../store/files";
+import { publishFile, fetchFiles } from "../../../../../../store/files";
 
 import styles from "../EditorActions.less";
 
@@ -22,6 +22,10 @@ export const Publish = React.memo(function Publish(props) {
           .dispatch(publishFile(props.fileZUID, props.status))
           .finally(() => {
             setPublishing(false);
+
+            props.dispatch(fetchFiles("views"));
+            props.dispatch(fetchFiles("stylesheets"));
+            props.dispatch(fetchFiles("scripts"));
           });
       }}
     >
