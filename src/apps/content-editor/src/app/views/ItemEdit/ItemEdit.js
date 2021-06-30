@@ -80,11 +80,23 @@ export default function ItemEdit() {
 
   // handle keyboard shortcut save
   useEffect(() => {
+    const handleSaveKeyboardShortcut = event => {
+      if (
+        ((platform.isMac && event.metaKey) ||
+          (!platform.isMac && event.ctrlKey)) &&
+        event.key == "s"
+      ) {
+        event.preventDefault();
+        if (item && item.dirty) {
+          save();
+        }
+      }
+    };
     window.addEventListener("keydown", handleSaveKeyboardShortcut);
     return () => {
       window.removeEventListener("keydown", handleSaveKeyboardShortcut);
     };
-  }, []);
+  }, [item]);
 
   useEffect(() => {
     // on mount and modelZUID/itemZUID update,
@@ -96,19 +108,6 @@ export default function ItemEdit() {
       releaseLock(itemZUID);
     };
   }, [modelZUID, itemZUID]);
-
-  function handleSaveKeyboardShortcut(event) {
-    if (
-      ((platform.isMac && event.metaKey) ||
-        (!platform.isMac && event.ctrlKey)) &&
-      event.key == "s"
-    ) {
-      event.preventDefault();
-      if (item && item.dirty) {
-        save();
-      }
-    }
-  }
 
   async function lockItem() {
     setCheckingLock(true);
