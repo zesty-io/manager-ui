@@ -25,7 +25,7 @@ export const QuickView = React.memo(function QuickView(props) {
   const isScheduled = props.scheduling && props.scheduling.isScheduled;
 
   const codeAccess = usePermission("CODE");
-  console.log(props);
+
   const codePath = useFilePath(props.modelZUID);
 
   return (
