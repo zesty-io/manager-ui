@@ -27,9 +27,7 @@ const FileType = props => {
       return ` ${props.fileName}.html`;
     }
   }
-  if (props.fileType === "snippet") {
-    return `snippet`;
-  }
+
   if (props.fileType === "404") {
     return `404`;
   } else {
@@ -55,17 +53,17 @@ export default function FileStatus(props) {
               <em className={styles.ZUID}>{props.file.contentModelZUID}</em>
             </li>
           )}
-          {props.file.fileName && (
-            <li>
-              File Link:&nbsp;
-              <Url
-                className={styles.FileLink}
-                href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}/${props.file.fileName}`}
-                target="_blank"
-                title="Webengine link"
-              >{`${props.file.fileName}`}</Url>
-            </li>
-          )}
+
+          <li>
+            File Link:&nbsp;
+            <Url
+              className={styles.FileLink}
+              href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}/${props.file.fileName}`}
+              target="_blank"
+              title="Webengine link"
+            >{`${props.file.fileName}`}</Url>
+          </li>
+
           <li>
             File ZUID: <em className={styles.ZUID}>{props.file.ZUID}</em>
           </li>
