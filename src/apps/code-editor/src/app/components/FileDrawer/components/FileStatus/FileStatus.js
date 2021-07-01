@@ -8,6 +8,7 @@ import { faBolt, faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
+import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./FileStatus.less";
 import shared from "../../FileDrawer.less";
@@ -21,10 +22,11 @@ const FileType = props => {
     return `Model View`;
   }
   if (props.fileType === "ajax-json" || props.fileType === "ajax-html") {
-    if (props.fileName.includes("html")) {
-      return ` ${props.fileName.slice(0, -5)}.html`;
+    if (props.fileName.includes("/")) {
+      let extension = props.fileName.split(".").slice(-1);
+      return `Custom File Type (${extension})`;
     } else {
-      return ` ${props.fileName}.html`;
+      return `Legacy File`;
     }
   }
 
@@ -50,18 +52,81 @@ export default function FileStatus(props) {
           {props.file.contentModelZUID && (
             <li>
               Model ZUID:&nbsp;
-              <em className={styles.ZUID}>{props.file.contentModelZUID}</em>
+              <AppLink
+                className={styles.FileLink}
+                to={`/schema/${props.file.contentModelZUID}`}
+                title="Edit Related Model"
+              >
+                {props.file.contentModelZUID}
+              </AppLink>
             </li>
           )}
 
           <li>
-            File Link:&nbsp;
-            <Url
-              className={styles.FileLink}
-              href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}/${props.file.fileName}`}
-              target="_blank"
-              title="Webengine link"
-            >{`${props.file.fileName}`}</Url>
+            WebEngine Link:&nbsp;
+            {!props.file.fileName.includes("/") &&
+              props.file.type.includes("ajax-html") && (
+                <Url
+                  className={styles.FileLink}
+                  href={`${CONFIG.URL_PREVIEW_FULL}/-/ajax/${props.file.fileName}/`}
+                  target="_blank"
+                  title="Preview Item Webpage"
+                >
+                  <em>/-/ajax/{props.file.fileName}/</em>
+                </Url>
+              )}
+            {!props.file.fileName.includes("/") &&
+              props.file.type.includes("ajax-json") && (
+                <Url
+                  className={styles.FileLink}
+                  href={`${CONFIG.URL_PREVIEW_FULL}/-/custom/${props.file.fileName}/`}
+                  target="_blank"
+                  title="Preview Item Webpage"
+                >
+                  <em>/-/custom/{props.file.fileName}/</em>
+                </Url>
+              )}
+            {props.file.ZUID.includes("10-") &&
+              props.file.type.includes("javascript") && (
+                <Url
+                  className={styles.FileLink}
+                  href={`${CONFIG.URL_PREVIEW_FULL}/site.js`}
+                  target="_blank"
+                  title="Preview Item Webpage"
+                >
+                  <em>Compiles to /site.js</em>
+                </Url>
+              )}
+            {props.file.ZUID.includes("10-") &&
+              !props.file.type.includes("javascript") && (
+                <Url
+                  className={styles.FileLink}
+                  href={`${CONFIG.URL_PREVIEW_FULL}/site.css`}
+                  target="_blank"
+                  title="Preview Item Webpage"
+                >
+                  <em>Compiles to /site.css</em>
+                </Url>
+              )}
+            {props.file.contentModelZUID && props.items.length !== 0 && (
+              <Url
+                className={styles.FileLink}
+                href={`${CONFIG.URL_PREVIEW_FULL}${props.items[0].web.path}`}
+                target="_blank"
+                title="Preview Item Webpage"
+              >
+                <em>{props.items[0].web.path}</em>
+              </Url>
+            )}
+            {!props.file.contentModelZUID &&
+              props.file.fileName.includes("/") && (
+                <Url
+                  className={styles.FileLink}
+                  href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}/${props.file.fileName}`}
+                  target="_blank"
+                  title="Webengine link"
+                >{`${props.file.fileName}`}</Url>
+              )}
           </li>
 
           <li>

@@ -106,7 +106,7 @@ export const FileDrawer = React.memo(function FileDrawer(props) {
           height="100px"
           message="Loading file information"
         >
-          <FileStatus file={props.file || {}} />
+          <FileStatus file={props.file || {}} items={items || []} />
           <AuditTrail file={props.file || {}} logs={logs} />
           {props.file.contentModelZUID && (
             <LinkedContent file={props.file || {}} items={items} />
