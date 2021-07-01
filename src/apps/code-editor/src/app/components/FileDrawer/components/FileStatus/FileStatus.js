@@ -44,7 +44,7 @@ export default function FileStatus(props) {
     <Card className={cx(styles.FileStatus, shared.DrawerStyles)}>
       <CardHeader>
         <h1>
-          <FontAwesomeIcon icon={faCodeBranch} /> Code File
+          <FontAwesomeIcon icon={faCodeBranch} /> File Information
         </h1>
       </CardHeader>
       <CardContent>
