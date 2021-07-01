@@ -21,7 +21,6 @@ import styles from "./Info.less";
 
 export default connect(state => {
   return {
-    files: state.files,
     settings: state.settings
   };
 })(function Info(props) {
@@ -29,16 +28,7 @@ export default connect(state => {
     setting => setting.key === "basic_content_api_enabled"
   );
 
-  // const fieldsZUID = props.fields.map(fieldZUID => fieldZUID.contentModelZUID);
-
-  // const filesZUID = props.files
-  //   .filter(file => file.contentModelZUID)
-  //   .filter(fileZUID => fileZUID.contentModelZUID === fieldsZUID[0]);
-
-  // const codePath =
-  //   filesZUID.length === 0 ? `/code` : `/code/file/views/${filesZUID[0].ZUID}`;
-  console.log(props);
-  const codePath = useFilePath(files);
+  const codePath = useFilePath(props.model.ZUID);
 
   return (
     <Card className={styles.ModelInfo}>

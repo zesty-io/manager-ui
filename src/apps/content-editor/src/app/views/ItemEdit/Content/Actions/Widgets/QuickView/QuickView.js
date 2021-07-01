@@ -1,4 +1,5 @@
 import React, { Fragment } from "react";
+import { useFilePath } from "shell/hooks/use-filePath";
 import moment from "moment-timezone";
 import cx from "classnames";
 
@@ -24,6 +25,8 @@ export const QuickView = React.memo(function QuickView(props) {
   const isScheduled = props.scheduling && props.scheduling.isScheduled;
 
   const codeAccess = usePermission("CODE");
+  console.log(props);
+  const codePath = useFilePath(props.modelZUID);
 
   return (
     <Fragment>
@@ -101,7 +104,7 @@ export const QuickView = React.memo(function QuickView(props) {
                 <FontAwesomeIcon icon={faDatabase} />
                 &nbsp;Edit Schema
               </AppLink>
-              <AppLink to="/code/">
+              <AppLink to={codePath}>
                 <FontAwesomeIcon icon={faCode} />
                 &nbsp;Edit Code
               </AppLink>

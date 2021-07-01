@@ -1,5 +1,6 @@
 import zuid from "zuid";
 import { useSelector } from "react-redux";
+import { createSelector } from "reselect";
 
 export function useFilePath(ZUID = "") {
   const getFiles = state => state.files;
@@ -11,16 +12,20 @@ export function useFilePath(ZUID = "") {
 
   switch (Number(ZUID.split("-")[0])) {
     case zuid.prefix.SITE_CONTENT_SET:
-      let file = files.find(file => file.contentModelZUID === ZUID);
-      if (file) {
-        return `/code/file/views/${file.ZUID}`;
+      let findfile = files.find(file => file.contentModelZUID === ZUID);
+      if (findfile) {
+        return `/code/file/views/${findfile.ZUID}`;
       } else {
         return "/code";
       }
 
-    //place holder content item logic
-    // case zuid.prefix.SITE_CONTENT_ITEM:
-    //   return;
+    case zuid.prefix.SITE_CONTENT_ITEM:
+      let findFile = files.find(file => file.modelZUID === ZUID);
+      if (findFile) {
+        return `/code/file/views/${findFile.ZUID}`;
+      } else {
+        return "/code";
+      }
 
     case zuid.prefix.SITE_RESOURCE:
       const callBack = file => file.ZUID === ZUID;
