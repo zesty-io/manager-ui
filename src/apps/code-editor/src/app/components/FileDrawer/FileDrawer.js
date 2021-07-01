@@ -38,6 +38,7 @@ export const FileDrawer = React.memo(function FileDrawer(props) {
 
     if (props.file.contentModelZUID) {
       fields = dispatch(fetchFields(props.file.contentModelZUID));
+
       items = dispatch(
         fetchItems(props.file.contentModelZUID, {
           limit: 3
@@ -63,8 +64,12 @@ export const FileDrawer = React.memo(function FileDrawer(props) {
             .slice(0, 10)
         );
 
-        if (fields && fields.data) {
-          setFields(fields.data);
+        if (fields && fields.payload) {
+          let tempArray = [];
+          Object.keys(fields.payload).forEach(field =>
+            tempArray.push(fields.payload[field])
+          );
+          setFields(tempArray);
         }
         if (items && items.data) {
           setItems(items.data.slice(0, 3));
@@ -107,13 +112,13 @@ export const FileDrawer = React.memo(function FileDrawer(props) {
           message="Loading file information"
         >
           <FileStatus file={props.file || {}} items={items || []} />
-          <AuditTrail file={props.file || {}} logs={logs} />
-          {props.file.contentModelZUID && (
-            <LinkedContent file={props.file || {}} items={items} />
-          )}
           {props.file.contentModelZUID && (
             <LinkedSchema file={props.file || {}} fields={fields} />
           )}
+          {props.file.contentModelZUID && (
+            <LinkedContent file={props.file || {}} items={items} />
+          )}
+          <AuditTrail file={props.file || {}} logs={logs} />
         </WithLoader>
       </DrawerContent>
     </Drawer>

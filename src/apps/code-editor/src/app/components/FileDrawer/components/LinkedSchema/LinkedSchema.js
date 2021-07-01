@@ -11,6 +11,8 @@ import styles from "./LinkedSchema.less";
 import shared from "../../FileDrawer.less";
 
 export default function LinkedSchema(props) {
+  // console.log("lInked schema", props)
+  console.log("lInked schema", props.fields);
   return (
     <Card className={cx(styles.LinkedSchema, shared.DrawerStyles)}>
       <CardHeader>
