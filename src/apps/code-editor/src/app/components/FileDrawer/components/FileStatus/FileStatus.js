@@ -70,7 +70,7 @@ export default function FileStatus(props) {
                   className={styles.FileLink}
                   href={`${CONFIG.URL_PREVIEW_FULL}/-/ajax/${props.file.fileName}/`}
                   target="_blank"
-                  title="Preview Item Webpage"
+                  title={`Preview ${props.file.fileName} Webpage`}
                 >
                   <em>/-/ajax/{props.file.fileName}/</em>
                 </Url>
@@ -81,7 +81,7 @@ export default function FileStatus(props) {
                   className={styles.FileLink}
                   href={`${CONFIG.URL_PREVIEW_FULL}/-/custom/${props.file.fileName}/`}
                   target="_blank"
-                  title="Preview Item Webpage"
+                  title={`Preview ${props.file.fileName} Webpage`}
                 >
                   <em>/-/custom/{props.file.fileName}/</em>
                 </Url>
@@ -92,7 +92,7 @@ export default function FileStatus(props) {
                   className={styles.FileLink}
                   href={`${CONFIG.URL_PREVIEW_FULL}/site.js`}
                   target="_blank"
-                  title="Preview Item Webpage"
+                  title="Preview Javascript Webpage"
                 >
                   <em>Compiles to /site.js</em>
                 </Url>
@@ -103,7 +103,7 @@ export default function FileStatus(props) {
                   className={styles.FileLink}
                   href={`${CONFIG.URL_PREVIEW_FULL}/site.css`}
                   target="_blank"
-                  title="Preview Item Webpage"
+                  title="Preview CSS Webpage"
                 >
                   <em>Compiles to /site.css</em>
                 </Url>
@@ -113,7 +113,7 @@ export default function FileStatus(props) {
                 className={styles.FileLink}
                 href={`${CONFIG.URL_PREVIEW_FULL}${props.items[0].web.path}`}
                 target="_blank"
-                title="Preview Item Webpage"
+                title={`Preview ${props.items[0].web.path} Webpage `}
               >
                 <em>{props.items[0].web.path}</em>
               </Url>
@@ -124,7 +124,7 @@ export default function FileStatus(props) {
                   className={styles.FileLink}
                   href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}/${props.file.fileName}`}
                   target="_blank"
-                  title="Webengine link"
+                  title={`"WebEngine ${props.file.fileName} Link"`}
                 >{`${props.file.fileName}`}</Url>
               )}
           </li>
@@ -157,7 +157,7 @@ export default function FileStatus(props) {
                 className={styles.FileLink}
                 href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.file.contentModelZUID}.json`}
                 target="_blank"
-                title="Preview JSON"
+                title={`Preview ${props.file.contentModelZUID} JSON`}
               >
                 <FontAwesomeIcon icon={faBolt} /> Instant JSON API
               </Url>
