@@ -3,10 +3,13 @@ import useOnclickOutside from "react-cool-onclickoutside";
 import cx from "classnames";
 
 import { useDispatch, useSelector } from "react-redux";
-import { toggleNav } from "shell/store/ui";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHashtag, faQuestion } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBook,
+  faHashtag,
+  faQuestion
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "@zesty-io/core/Url";
 
@@ -57,6 +60,15 @@ export default React.memo(function GlobalActions(props) {
             height="16px"
           />
           <span className={styles.GlobalAction}>Zesty.io</span>
+        </Url>
+        <Url
+          href={`https://zesty.org`}
+          title="Zesty.org"
+          target="_blank"
+          className={styles.GlobalAction}
+        >
+          <FontAwesomeIcon icon={faBook} className={styles.GlobalActionIcon} />
+          <span>Docs</span>
         </Url>
 
         <div className={styles.AppVersion}>
