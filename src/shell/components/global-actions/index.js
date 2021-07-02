@@ -39,12 +39,9 @@ export default React.memo(function GlobalActions(props) {
           className={styles.GlobalAction}
           title="Help"
         >
-          <FontAwesomeIcon
-            icon={faQuestion}
-            className={styles.GlobalActionIcon}
-          />
+          <FontAwesomeIcon icon={faBook} className={styles.GlobalActionIcon} />
           {openMenu && <GlobalHelpMenu />}
-          <span>Help</span>
+          <span>Docs</span>
         </span>
 
         <Url
@@ -60,15 +57,6 @@ export default React.memo(function GlobalActions(props) {
             height="16px"
           />
           <span className={styles.GlobalAction}>Zesty.io</span>
-        </Url>
-        <Url
-          href={`https://zesty.org`}
-          title="Zesty.org"
-          target="_blank"
-          className={styles.GlobalAction}
-        >
-          <FontAwesomeIcon icon={faBook} className={styles.GlobalActionIcon} />
-          <span>Docs</span>
         </Url>
 
         <div className={styles.AppVersion}>
