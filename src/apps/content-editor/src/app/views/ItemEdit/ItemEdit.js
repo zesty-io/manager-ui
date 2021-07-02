@@ -4,7 +4,7 @@ import {
   Route,
   Redirect,
   useParams,
-  useHistory
+  useHistory,
 } from "react-router-dom";
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,7 +19,7 @@ import {
   fetchItemPublishing,
   checkLock,
   lock,
-  unlock
+  unlock,
 } from "shell/store/content";
 import { selectLang } from "shell/store/user";
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -30,17 +30,17 @@ import { Meta } from "./Meta";
 import { ItemHead } from "./ItemHead";
 
 const selectSortedModelFields = createSelector(
-  state => state.fields,
+  (state) => state.fields,
   (_, modelZUID) => modelZUID,
   (fields, modelZUID) =>
     Object.keys(fields)
-      .filter(fieldZUID => fields[fieldZUID].contentModelZUID === modelZUID)
-      .map(fieldZUID => fields[fieldZUID])
+      .filter((fieldZUID) => fields[fieldZUID].contentModelZUID === modelZUID)
+      .map((fieldZUID) => fields[fieldZUID])
       .sort((a, b) => a.sort - b.sort)
 );
 
 const selectItemHeadTags = createSelector(
-  state => state.headTags,
+  (state) => state.headTags,
   (_, itemZUID) => itemZUID,
   (headTags, itemZUID) =>
     Object.keys(headTags)
@@ -60,18 +60,18 @@ export default function ItemEdit() {
   const history = useHistory();
   const isMounted = useIsMounted();
   const { modelZUID, itemZUID } = useParams();
-  const item = useSelector(state => state.content[itemZUID]);
-  const items = useSelector(state => state.content);
-  const model = useSelector(state => state.models[modelZUID]);
-  const fields = useSelector(state =>
+  const item = useSelector((state) => state.content[itemZUID]);
+  const items = useSelector((state) => state.content);
+  const model = useSelector((state) => state.models[modelZUID]);
+  const fields = useSelector((state) =>
     selectSortedModelFields(state, modelZUID)
   );
-  const tags = useSelector(state => selectItemHeadTags(state, itemZUID));
-  const platform = useSelector(state => state.platform);
-  const languages = useSelector(state => state.languages);
-  const user = useSelector(state => state.user);
-  const userRole = useSelector(state => state.userRole);
-  const instance = useSelector(state => state.instance);
+  const tags = useSelector((state) => selectItemHeadTags(state, itemZUID));
+  const platform = useSelector((state) => state.platform);
+  const languages = useSelector((state) => state.languages);
+  const user = useSelector((state) => state.user);
+  const userRole = useSelector((state) => state.userRole);
+  const instance = useSelector((state) => state.instance);
 
   const [lockState, setLockState] = useState({});
   const [checkingLock, setCheckingLock] = useState(false);
@@ -80,7 +80,7 @@ export default function ItemEdit() {
 
   // handle keyboard shortcut save
   useEffect(() => {
-    const handleSaveKeyboardShortcut = event => {
+    const handleSaveKeyboardShortcut = (event) => {
       if (
         ((platform.isMac && event.metaKey) ||
           (!platform.isMac && event.ctrlKey)) &&
@@ -144,7 +144,7 @@ export default function ItemEdit() {
         dispatch(
           notify({
             message: itemResponse.message,
-            kind: "error"
+            kind: "error",
           })
         );
         throw new Error(itemResponse.message);
@@ -152,7 +152,8 @@ export default function ItemEdit() {
       // select lang based on content lang
       dispatch(
         selectLang(
-          languages.find(lang => lang.ID === itemResponse.data.meta.langID).code
+          languages.find((lang) => lang.ID === itemResponse.data.meta.langID)
+            .code
         )
       );
 
@@ -160,7 +161,7 @@ export default function ItemEdit() {
       // which triggers middleware which depends on lang
       await Promise.all([
         dispatch(fetchFields(modelZUID)),
-        dispatch(fetchItemPublishing(modelZUID, itemZUID))
+        dispatch(fetchItemPublishing(modelZUID, itemZUID)),
       ]);
     } catch (err) {
       console.error("ItemEdit:load:error", err);
@@ -194,9 +195,9 @@ export default function ItemEdit() {
         dispatch(
           notify({
             message: `You are missing data in ${res.missingRequired.map(
-              f => f.label + " "
+              (f) => f.label + " "
             )}`,
-            kind: "error"
+            kind: "error",
           })
         );
         return;
@@ -205,7 +206,7 @@ export default function ItemEdit() {
         dispatch(
           notify({
             message: `Failed to save new version: ${res.error}`,
-            kind: "error"
+            kind: "error",
           })
         );
         return;
@@ -215,7 +216,7 @@ export default function ItemEdit() {
           message: `Saved a new ${
             item && item.web.metaLinkText ? item.web.metaLinkText : ""
           } version`,
-          kind: "save"
+          kind: "save",
         })
       );
       // fetch new draft history
@@ -224,7 +225,7 @@ export default function ItemEdit() {
       // we need to set the item to dirty again because the save failed
       dispatch({
         type: "MARK_ITEM_DIRTY",
-        itemZUID
+        itemZUID,
       });
     } finally {
       if (isMounted.current) {
@@ -236,7 +237,7 @@ export default function ItemEdit() {
   function discard() {
     dispatch({
       type: "UNMARK_ITEMS_DIRTY",
-      items: [itemZUID]
+      items: [itemZUID],
     });
     // Keep promise chain
     return dispatch(fetchItem(modelZUID, itemZUID));

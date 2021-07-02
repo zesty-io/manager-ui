@@ -11,7 +11,7 @@ import {
   faUpload,
   faDatabase,
   faBolt,
-  faSync
+  faSync,
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 import { Search } from "@zesty-io/core/Search";

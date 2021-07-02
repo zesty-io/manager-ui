@@ -4,10 +4,10 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
 
-const getUser = state => state.user;
-const getRole = state => state.userRole;
-const selectUser = createSelector([getUser], user => user);
-const selectRole = createSelector([getRole], role => role);
+const getUser = (state) => state.user;
+const getRole = (state) => state.userRole;
+const selectUser = createSelector([getUser], (user) => user);
+const selectRole = createSelector([getRole], (role) => role);
 
 /**
  * TODO given a specific ZUID, determine whether that user is allowed to do a certain action

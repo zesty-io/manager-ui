@@ -48,7 +48,7 @@ export default function Content(props) {
             {...props}
             site={{}}
             set={{
-              type: props.model.type
+              type: props.model.type,
             }}
           />
         </div>

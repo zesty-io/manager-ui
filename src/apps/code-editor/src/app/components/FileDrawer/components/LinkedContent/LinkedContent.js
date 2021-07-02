@@ -25,7 +25,7 @@ export default function LinkedContent(props) {
         </p>
 
         <ul>
-          {props.items.map(item => {
+          {props.items.map((item) => {
             return (
               <li key={item.meta.ZUID}>
                 <p>

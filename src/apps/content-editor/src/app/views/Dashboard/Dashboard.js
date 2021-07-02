@@ -10,7 +10,7 @@ import {
   faCog,
   faDatabase,
   faHistory,
-  faClock
+  faClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Button } from "@zesty-io/core/Button";
@@ -34,8 +34,8 @@ function getFavoriteModels(items) {
   }, {});
 
   const sorted = Object.keys(grouped)
-    .filter(item => grouped[item][0].web.metaTitle)
-    .map(contentModelZUID => {
+    .filter((item) => grouped[item][0].web.metaTitle)
+    .map((contentModelZUID) => {
       return [contentModelZUID, grouped[contentModelZUID].slice(0, 3)];
     })
     .sort((a, b) => {
@@ -53,8 +53,8 @@ function getFavoriteModels(items) {
 }
 
 const selectModelsByZuid = createSelector(
-  state => state.models,
-  models =>
+  (state) => state.models,
+  (models) =>
     Object.keys(models).reduce((acc, modelZUID) => {
       if (
         models[modelZUID] &&
@@ -67,20 +67,18 @@ const selectModelsByZuid = createSelector(
 );
 
 export default React.memo(function Dashboard() {
-  const user = useSelector(state => state.user);
-  const instance = useSelector(state => state.instance);
-  const headTags = useSelector(state => state.headTags);
-  const logs = useSelector(state => state.logs);
+  const user = useSelector((state) => state.user);
+  const instance = useSelector((state) => state.instance);
+  const headTags = useSelector((state) => state.headTags);
+  const logs = useSelector((state) => state.logs);
   const modelsByZuid = useSelector(selectModelsByZuid);
   const [favoriteModels, setFavoriteModels] = useState([]);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const start = moment()
-      .subtract(120, "days")
-      .format("YYYY-MM-DD");
+    const start = moment().subtract(120, "days").format("YYYY-MM-DD");
 
-    dispatch(fetchRecentItems(user.ZUID, start)).then(res => {
+    dispatch(fetchRecentItems(user.ZUID, start)).then((res) => {
       if (res && res.data) {
         setFavoriteModels(getFavoriteModels(res.data));
       }

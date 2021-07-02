@@ -6,7 +6,7 @@ import {
   faSave,
   faTrash,
   faSpinner,
-  faBan
+  faBan,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
@@ -15,7 +15,7 @@ import {
   Modal,
   ModalHeader,
   ModalContent,
-  ModalFooter
+  ModalFooter,
 } from "@zesty-io/core/Modal";
 
 import styles from "./PendingEditsModal.less";
@@ -29,7 +29,7 @@ export default React.memo(function PendingEditsModal(props) {
   // Expose globals so external components can invoke
   // NOTE: Should this be a portal?
   useEffect(() => {
-    window.openNavigationModal = callback => {
+    window.openNavigationModal = (callback) => {
       setOpen(true);
       setAnswer(() => callback);
     };
@@ -39,7 +39,7 @@ export default React.memo(function PendingEditsModal(props) {
     };
   }, []);
 
-  const handler = evt => {
+  const handler = (evt) => {
     switch (evt.currentTarget.attributes["kind"].value) {
       case "save":
         setLoading(true);

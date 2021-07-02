@@ -9,7 +9,7 @@ import { DATE_PRESETS } from "./TableDateFilter.model";
 import {
   setFilterEndDate,
   setFilterDateRange,
-  setFilterStartDate
+  setFilterStartDate,
 } from "../../../../store/filter";
 
 import styles from "./TableDateFilter.less";
@@ -19,19 +19,19 @@ const datePresets = [
   { value: DATE_PRESETS.THIRTY, text: "30 Days" },
   { value: DATE_PRESETS.SIXTY, text: "60 Days" },
   { value: DATE_PRESETS.NINETY, text: "90 Days" },
-  { value: DATE_PRESETS.CUSTOM, text: "Custom" }
+  { value: DATE_PRESETS.CUSTOM, text: "Custom" },
 ];
 
-export default connect(state => {
+export default connect((state) => {
   return {
-    filter: state.filter
+    filter: state.filter,
   };
 })(
   class TableDateFilter extends React.Component {
     state = {
       endDate: this.props.endDate,
       startDate: this.props.startDate,
-      datePickerIsVisible: false
+      datePickerIsVisible: false,
     };
 
     /**
@@ -39,7 +39,7 @@ export default connect(state => {
      * Dispatches the Set Filter End Date action
      * @param {event} The date input's On Change event
      */
-    setEndDate = value => {
+    setEndDate = (value) => {
       this.props.dispatch(setFilterEndDate(moment(value).format("YYYY-MM-DD")));
     };
 
@@ -48,7 +48,7 @@ export default connect(state => {
      * Dispatches the Set Filter Start Date action
      * @param {event} The date input's On Change event
      */
-    setStartDate = value => {
+    setStartDate = (value) => {
       this.props.dispatch(
         setFilterStartDate(moment(value).format("YYYY-MM-DD"))
       );
@@ -59,10 +59,10 @@ export default connect(state => {
      *
      * Emits the SetFilterEndDate and SetFilterStartDate for each case
      */
-    onDateRangeChange = value => {
+    onDateRangeChange = (value) => {
       // Hide the datepicker by default
       this.setState({
-        datePickerIsVisible: false
+        datePickerIsVisible: false,
       });
       switch (value) {
         case DATE_PRESETS.THIRTY:
@@ -70,9 +70,7 @@ export default connect(state => {
           this.props.dispatch(setFilterEndDate(moment().format("YYYY-MM-DD")));
           this.props.dispatch(
             setFilterStartDate(
-              moment()
-                .subtract(30, "days")
-                .format("YYYY-MM-DD")
+              moment().subtract(30, "days").format("YYYY-MM-DD")
             )
           );
           break;
@@ -81,9 +79,7 @@ export default connect(state => {
           this.props.dispatch(setFilterEndDate(moment().format("YYYY-MM-DD")));
           this.props.dispatch(
             setFilterStartDate(
-              moment()
-                .subtract(60, "days")
-                .format("YYYY-MM-DD")
+              moment().subtract(60, "days").format("YYYY-MM-DD")
             )
           );
           break;
@@ -92,9 +88,7 @@ export default connect(state => {
           this.props.dispatch(setFilterEndDate(moment().format("YYYY-MM-DD")));
           this.props.dispatch(
             setFilterStartDate(
-              moment()
-                .subtract(90, "days")
-                .format("YYYY-MM-DD")
+              moment().subtract(90, "days").format("YYYY-MM-DD")
             )
           );
           break;
@@ -108,7 +102,7 @@ export default connect(state => {
           this.props.dispatch(setFilterEndDate(new Date()));
           this.props.dispatch(setFilterStartDate(new Date()));
           this.setState({
-            datePickerIsVisible: true
+            datePickerIsVisible: true,
           });
           break;
         default:

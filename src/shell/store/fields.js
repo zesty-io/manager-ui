@@ -20,8 +20,8 @@ export function fields(state = {}, action) {
           // Update field value
           [action.payload.key]: action.payload.value,
           // Mark as updated
-          dirty: true
-        }
+          dirty: true,
+        },
       };
 
     case "SET_FIELD_SETTING":
@@ -34,12 +34,12 @@ export function fields(state = {}, action) {
           // Update field options
           settings: {
             ...state[action.payload.fieldZUID].settings,
-            [action.payload.key]: action.payload.value
+            [action.payload.key]: action.payload.value,
           },
 
           // Mark as updated
-          dirty: true
-        }
+          dirty: true,
+        },
       };
 
     case "SAVE_FIELD_SUCCESS":
@@ -47,8 +47,8 @@ export function fields(state = {}, action) {
         ...state,
         [action.payload.fieldZUID]: {
           ...state[action.payload.fieldZUID],
-          dirty: false
-        }
+          dirty: false,
+        },
       };
 
     default:
@@ -63,23 +63,23 @@ export function updateField(fieldZUID, key, value) {
 
   return {
     type: "SET_FIELD_VALUE",
-    payload: { fieldZUID, key, value }
+    payload: { fieldZUID, key, value },
   };
 }
 
 export function updateFieldSetting(fieldZUID, key, value) {
   return {
     type: "SET_FIELD_SETTING",
-    payload: { fieldZUID, key, value }
+    payload: { fieldZUID, key, value },
   };
 }
 
 export function fetchFields(modelZUID) {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/fields?showDeleted=true`,
-      handler: res => {
+      handler: (res) => {
         if (Array.isArray(res.data)) {
           return dispatch({
             type: "FETCH_FIELDS_SUCCESS",
@@ -90,28 +90,28 @@ export function fetchFields(modelZUID) {
                 acc[field.ZUID].settings.list || false;
 
               return acc;
-            }, {})
+            }, {}),
           });
         }
-      }
+      },
     });
   };
 }
 
 export function fetchField(modelZUID, fieldZUID) {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/fields/${fieldZUID}`,
-      handler: res => {
+      handler: (res) => {
         return dispatch({
           type: "FETCH_FIELD_SUCCESS",
           payload: {
             fieldZUID,
-            data: res.data
-          }
+            data: res.data,
+          },
         });
-      }
+      },
     });
   };
 }
@@ -142,12 +142,12 @@ export function saveField(modelZUID, fieldZUID, payload) {
       {
         method: "PUT",
         json: true,
-        body: modifedField
+        body: modifedField,
       }
-    ).then(res => {
+    ).then((res) => {
       dispatch({
         type: "SAVE_FIELD_SUCCESS",
-        payload: { modelZUID, fieldZUID }
+        payload: { modelZUID, fieldZUID },
       });
 
       // dispatch(fetchField(modelZUID, fieldZUID));
@@ -157,25 +157,25 @@ export function saveField(modelZUID, fieldZUID, payload) {
 }
 
 export function createField(modelZUID, payload) {
-  return dispatch => {
+  return (dispatch) => {
     return request(
       `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/fields`,
       {
         method: "POST",
         json: true,
-        body: payload
+        body: payload,
       }
     )
-      .then(res => {
+      .then((res) => {
         dispatch(fetchFields(modelZUID));
         return res;
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Failed creating field", err);
         dispatch(
           notify({
             kind: "warn",
-            message: `Failed to create field. ${err.message}`
+            message: `Failed to create field. ${err.message}`,
           })
         );
       });
@@ -188,9 +188,9 @@ export function deactivateField(modelZUID, fieldZUID) {
     return request(
       `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/fields/${fieldZUID}`,
       {
-        method: "DELETE"
+        method: "DELETE",
       }
-    ).then(res => {
+    ).then((res) => {
       dispatch(fetchFields(modelZUID));
       return res;
     });
@@ -198,13 +198,13 @@ export function deactivateField(modelZUID, fieldZUID) {
 }
 
 export function activateField(modelZUID, fieldZUID) {
-  return dispatch => {
+  return (dispatch) => {
     return request(
       `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/fields/${fieldZUID}?action=undelete`,
       {
-        method: "PUT"
+        method: "PUT",
       }
-    ).then(res => {
+    ).then((res) => {
       dispatch(fetchFields(modelZUID));
       return res;
     });

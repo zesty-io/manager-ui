@@ -7,10 +7,10 @@ import styles from "./RedirectFilter.less";
 export function RedirectFilter(props) {
   const [filter, setFilter] = useState("");
 
-  const handleFilter = val => {
+  const handleFilter = (val) => {
     props.dispatch({
       type: "REDIRECT_FILTER",
-      filter: val
+      filter: val,
     });
     setFilter(val);
   };

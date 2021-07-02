@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBell,
   faExclamationTriangle,
-  faCheckCircle
+  faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Drawer, DrawerContent } from "@zesty-io/core/Drawer";
@@ -16,9 +16,9 @@ import { Divider } from "@zesty-io/core/Divider";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./GlobalNotifications.less";
-export default connect(state => {
+export default connect((state) => {
   return {
-    notifications: state.notifications
+    notifications: state.notifications,
   };
 })(
   React.memo(function GlobalNotifications(props) {
@@ -48,7 +48,7 @@ export default connect(state => {
       setInitialRender(false);
     }, [props.notifications.length]);
 
-    const msgIcon = kind => {
+    const msgIcon = (kind) => {
       let icon;
 
       switch (kind) {

@@ -5,7 +5,7 @@ import {
   faBan,
   faCheckCircle,
   faCloudUploadAlt,
-  faSpinner
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Notice } from "@zesty-io/core/Notice";
@@ -16,20 +16,20 @@ import {
   Modal,
   ModalHeader,
   ModalContent,
-  ModalFooter
+  ModalFooter,
 } from "@zesty-io/core/Modal";
 
 import { notify } from "shell/store/notifications";
 import {
   publishFile,
   resolvePathPart,
-  fetchFiles
+  fetchFiles,
 } from "../../../../../store/files";
 
 import styles from "./PublishAll.less";
-export default connect(state => {
+export default connect((state) => {
   return {
-    files: state.files.filter(file => file.isLive === false)
+    files: state.files.filter((file) => file.isLive === false),
   };
 })(
   React.memo(function PublishAll(props) {
@@ -39,34 +39,34 @@ export default connect(state => {
     const handlePublishAll = () => {
       setLoading(true);
 
-      const requests = props.files.map(file => {
+      const requests = props.files.map((file) => {
         return props.dispatch(publishFile(file.ZUID, file.status));
       });
 
       Promise.all(requests)
-        .then(responses => {
-          if (responses.find(res => res.status !== 200)) {
+        .then((responses) => {
+          if (responses.find((res) => res.status !== 200)) {
             props.dispatch(
               notify({
                 kind: "warn",
-                message: "We were unable to publish one or more files"
+                message: "We were unable to publish one or more files",
               })
             );
           } else {
             props.dispatch(
               notify({
                 kind: "success",
-                message: "All files has been published"
+                message: "All files has been published",
               })
             );
             setOpen(false);
           }
         })
-        .catch(err => {
+        .catch((err) => {
           props.dispatch(
             notify({
               kind: "warn",
-              message: err.message
+              message: err.message,
             })
           );
         })
@@ -103,7 +103,7 @@ export default connect(state => {
 
           <ModalContent className={styles.ModalContent}>
             <ul>
-              {props.files.map(file => (
+              {props.files.map((file) => (
                 <li key={file.ZUID}>
                   Version {file.version}&nbsp;&mdash;&nbsp;
                   <AppLink

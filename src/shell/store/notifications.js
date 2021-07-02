@@ -4,7 +4,7 @@ export function notifications(state = [], action) {
       return [action.data, ...state];
 
     case "REMOVE_NOTIFICATION":
-      return state.map(notification => {
+      return state.map((notification) => {
         if (notification.epoch === action.epoch) {
           notification.active = false;
         }
@@ -29,8 +29,8 @@ export function notify(data) {
     data: {
       ...data,
       active: true,
-      epoch: Date.now()
-    }
+      epoch: Date.now(),
+    },
   };
 }
 
@@ -40,6 +40,6 @@ export function remove(epoch) {
   }
   return {
     type: "REMOVE_NOTIFICATION",
-    epoch
+    epoch,
   };
 }

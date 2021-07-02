@@ -44,7 +44,7 @@ export default connect()(function SetRow(props) {
         itemZUID={props.itemZUID}
       />
       <div className={styles.Cells} onClick={selectRow}>
-        {props.fields.map(field => {
+        {props.fields.map((field) => {
           switch (field.datatype) {
             case "one_to_one":
               return (

@@ -13,7 +13,7 @@ import {
   faBan,
   faCheckCircle,
   faExclamationCircle,
-  faSpinner
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 export const Delete = React.memo(function Delete(props) {
   const [open, setOpen] = useState(false);
@@ -55,14 +55,14 @@ export const Delete = React.memo(function Delete(props) {
               setDeleting(true);
               props
                 .dispatch(deleteFile(props.fileZUID, props.status))
-                .then(res => {
+                .then((res) => {
                   setDeleting(false);
                   if (res.status === 200) {
                     setOpen(false);
                     history.push("/code");
                   }
                 })
-                .catch(err => {
+                .catch((err) => {
                   setDeleting(false);
                 });
             }}

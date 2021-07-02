@@ -10,10 +10,10 @@ import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { DATE_PRESETS } from "../TableDateFilter/TableDateFilter.model";
 import * as FilterService from "../../../views/Leads/LeadFilter.service";
 
-export default connect(state => {
+export default connect((state) => {
   return {
     filter: state.filter,
-    leads: state.leads
+    leads: state.leads,
   };
 })(
   class DownloadCSVButton extends React.Component {
@@ -32,7 +32,7 @@ export default connect(state => {
       );
       leads = FilterService.filterByDate(leads, this.props.filter);
       leads = FilterService.filterByFuzzyText(leads, this.props.filter);
-      const forms = leads.map(lead => lead.formData).filter(lead => lead);
+      const forms = leads.map((lead) => lead.formData).filter((lead) => lead);
 
       // Set the file name in this format: FORMGROUP_DATERANGE
       let filename = ``;
@@ -55,7 +55,7 @@ export default connect(state => {
       if (this.props.filter.dateRange === DATE_PRESETS.ALL) {
         let earliestDate = moment();
         let latestDate = moment();
-        this.props.leads.forEach(lead => {
+        this.props.leads.forEach((lead) => {
           if (moment(lead.dateCreated).isBefore(earliestDate)) {
             earliestDate = lead.dateCreated;
           } else if (moment(lead.dateCreated).isAfter(latestDate)) {

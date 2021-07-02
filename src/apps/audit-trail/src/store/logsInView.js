@@ -13,16 +13,16 @@ export function logsInView(state = {}, action) {
 
 // Actions
 export function getLogs() {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({
-      type: "FETCHING_LOGS"
+      type: "FETCHING_LOGS",
     });
 
     return request(`${CONFIG.API_INSTANCE}/env/audits`)
-      .then(json => {
+      .then((json) => {
         // Normalize logs by zuid
         let data = {};
-        json.data.forEach(log => {
+        json.data.forEach((log) => {
           data[log.ZUID] = log;
         });
 
@@ -31,13 +31,13 @@ export function getLogs() {
 
         dispatch({
           type: "FETCH_LOGS_SUCCESS",
-          data: data
+          data: data,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch({
           type: "FETCH_LOGS_ERROR",
-          err
+          err,
         });
       });
   };

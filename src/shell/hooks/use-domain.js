@@ -7,7 +7,7 @@ export function useDomain() {
   const state = store.getState();
 
   // Let WebEngine figure out https & www settings
-  const format = domain => `http://${domain}`;
+  const format = (domain) => `http://${domain}`;
 
   if (Array.isArray(state.instance.domains) && state.instance.domains.length) {
     /**
@@ -17,11 +17,11 @@ export function useDomain() {
      */
 
     const prodDomains = state.instance.domains
-      .filter(domain => domain.branch !== "dev")
+      .filter((domain) => domain.branch !== "dev")
       .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
     const customDomain = prodDomains.find(
-      domain => !domain.domain.includes(".zesty.dev")
+      (domain) => !domain.domain.includes(".zesty.dev")
     );
 
     if (customDomain) {

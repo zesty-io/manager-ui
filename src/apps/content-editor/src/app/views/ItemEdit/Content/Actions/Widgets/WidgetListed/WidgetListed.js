@@ -35,7 +35,7 @@ export const WidgetListed = React.memo(function WidgetListed(props) {
               type: "SET_ITEM_META",
               itemZUID: props.itemZUID,
               key: "listed",
-              value: !props.listed // flip and emit boolean value
+              value: !props.listed, // flip and emit boolean value
             });
           }}
         />
@@ -54,7 +54,7 @@ export const WidgetListed = React.memo(function WidgetListed(props) {
               type: "SET_ITEM_META",
               itemZUID: props.itemZUID,
               key: name,
-              value: value
+              value: value,
             });
           }}
         />

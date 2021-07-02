@@ -10,9 +10,9 @@ import { saveFile } from "../../../../../../store/files";
 
 import styles from "../EditorActions.less";
 
-export default connect(state => {
+export default connect((state) => {
   return {
-    platform: state.platform
+    platform: state.platform,
   };
 })(
   React.memo(function Save(props) {
@@ -22,14 +22,14 @@ export default connect(state => {
       setSaving(true);
       props
         .dispatch(saveFile(props.fileZUID, props.status))
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
         })
         .finally(() => {
           setSaving(false);
         });
     };
-    const onKeydownSave = evt => {
+    const onKeydownSave = (evt) => {
       if (
         ((props.platform.isMac && evt.metaKey) ||
           (!props.platform.isMac && evt.ctrlKey)) &&

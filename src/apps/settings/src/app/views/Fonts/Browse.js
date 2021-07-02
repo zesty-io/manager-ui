@@ -14,9 +14,9 @@ import { notify } from "shell/store/notifications";
 import { fetchFontsInstalled, installSiteFont } from "../../../store/settings";
 
 import styles from "./Fonts.less";
-export default connect(state => {
+export default connect((state) => {
   return {
-    fonts: state.settings.fonts
+    fonts: state.settings.fonts,
   };
 })(function Browse(props) {
   const [previewText, setPreviewText] = useState("");
@@ -27,7 +27,7 @@ export default connect(state => {
     end: 10,
     current: 1,
     total: 0,
-    data: []
+    data: [],
   });
   const [variantsSelected, setVariants] = useState({});
   const [saving, setSaving] = useState(false);
@@ -38,11 +38,11 @@ export default connect(state => {
     setPagination({
       ...pagination,
       data: props.fonts.slice(pagination.start, pagination.end),
-      total: Math.ceil(props.fonts.length / 10)
+      total: Math.ceil(props.fonts.length / 10),
     });
     injectFontTags(props.fonts);
     setTags(
-      props.fonts.map(font => {
+      props.fonts.map((font) => {
         return `@import url('https://fonts.googleapis.com/css?family=${font.family.replace(
           /\s/g,
           "+"
@@ -53,7 +53,7 @@ export default connect(state => {
 
   function injectFontTags(fonts) {
     if (Array.isArray(fonts)) {
-      fonts.slice(0, 10).forEach(font => {
+      fonts.slice(0, 10).forEach((font) => {
         const style = document.createElement("style");
         const att = document.createAttribute("id");
         att.value = "googlefont";
@@ -80,7 +80,7 @@ export default connect(state => {
   }
 
   function parseVariants(variants) {
-    return variants.map(variant => {
+    return variants.map((variant) => {
       if (variant.split("").includes("i") && variant.split("")[0] !== "4") {
         const arrVariant = variant.split("");
         arrVariant.pop();
@@ -101,20 +101,20 @@ export default connect(state => {
   function filterFontsInstalled(font, variants) {
     let copyData = pagination.data;
     const fontFound = pagination.data.find(
-      f => f.family === font.replace("+", " ")
+      (f) => f.family === font.replace("+", " ")
     );
     const newVariants = fontFound.variants.filter(
-      variant => variants.indexOf(variant) === -1
+      (variant) => variants.indexOf(variant) === -1
     );
     fontFound.variants = newVariants;
     if (newVariants.length) {
       const pos = pagination.data
-        .map(element => element.family)
+        .map((element) => element.family)
         .indexOf(font.replace("+", ""));
       copyData[pos] = fontFound;
     } else {
       copyData = copyData.filter(
-        element => element.family !== font.replace("+", " ")
+        (element) => element.family !== font.replace("+", " ")
       );
     }
     setPagination({ ...pagination, data: copyData });
@@ -125,16 +125,13 @@ export default connect(state => {
 
     props
       .dispatch(installSiteFont(font, variantsSelected[font]))
-      .then(res => {
+      .then((res) => {
         setSaving(false);
 
         filterFontsInstalled(
           res.attributes.href.split("=")[1].split(":")[0],
           parseVariants(
-            res.attributes.href
-              .split("=")[1]
-              .split(":")[1]
-              .split(",")
+            res.attributes.href.split("=")[1].split(":")[1].split(",")
           )
         );
 
@@ -144,20 +141,20 @@ export default connect(state => {
         props.dispatch(
           notify({
             kind: "success",
-            message: "Font installed"
+            message: "Font installed",
           })
         );
       })
       .then(() => {
         props.dispatch(fetchFontsInstalled());
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         setSaving(false);
         props.dispatch(
           notify({
             kind: "success",
-            message: err.message
+            message: err.message,
           })
         );
       });
@@ -187,21 +184,21 @@ export default connect(state => {
       if (Object.keys(variantsSelected).includes(font)) {
         newVariants = {
           ...variantsSelected,
-          [font]: [...variantsSelected[font], variantValidation(e.target.name)]
+          [font]: [...variantsSelected[font], variantValidation(e.target.name)],
         };
       } else {
         newVariants = {
           ...variantsSelected,
-          [font]: [variantValidation(e.target.name)]
+          [font]: [variantValidation(e.target.name)],
         };
       }
     } else {
       const fontVariants = variantsSelected[font].filter(
-        variant => variant !== variantValidation(e.target.name)
+        (variant) => variant !== variantValidation(e.target.name)
       );
 
       newVariants = {
-        ...variantsSelected
+        ...variantsSelected,
       };
       if (fontVariants.length) {
         newVariants[font] = fontVariants;
@@ -225,7 +222,7 @@ export default connect(state => {
                     <li key={`${itemFont.family}-${item}`}>
                       <input
                         type="checkbox"
-                        onChange={e => selectFontVariant(itemFont.family, e)}
+                        onChange={(e) => selectFontVariant(itemFont.family, e)}
                         name={item}
                         id={`${item}-${itemFont.family}-${index}`}
                       />{" "}
@@ -272,7 +269,7 @@ export default connect(state => {
 
   function removeTagsInHead() {
     const tags = document.getElementsByTagName("style");
-    Array.from(tags).forEach(tag => {
+    Array.from(tags).forEach((tag) => {
       if (tag.id === "googlefont") {
         document.head.removeChild(tag);
       }
@@ -280,7 +277,7 @@ export default connect(state => {
   }
 
   function setStyleTags(start, end) {
-    styleTags.slice(start, end).forEach(tag => {
+    styleTags.slice(start, end).forEach((tag) => {
       const style = document.createElement("style");
       const att = document.createAttribute("id");
       att.value = "googlefont";
@@ -308,7 +305,7 @@ export default connect(state => {
         action === "next" ? pagination.current + 1 : pagination.current - 1,
       data: props.fonts.slice(start, end),
       start: start,
-      end: end
+      end: end,
     });
   }
 
@@ -317,9 +314,9 @@ export default connect(state => {
     debouncedSearch(value);
   }
   const debouncedSearch = useCallback(
-    debounce(term => {
+    debounce((term) => {
       const fontResult = props.fonts.find(
-        font => font.family.toLowerCase() === term.toLowerCase()
+        (font) => font.family.toLowerCase() === term.toLowerCase()
       );
       if (fontResult) {
         setPagination({ ...pagination, data: [fontResult] });
@@ -343,14 +340,14 @@ export default connect(state => {
           className={styles.search}
           placeholder="Search font"
           // onSubmit={onSearch}
-          onKeyUp={e => onSearch(e.target.value)}
+          onKeyUp={(e) => onSearch(e.target.value)}
         />
         <FieldTypeText
           placeholder="Type something to preview"
           className={styles.previewField}
           name="previewText"
           value={previewText}
-          onChange={value => setPreviewText(value)}
+          onChange={(value) => setPreviewText(value)}
         />
       </header>
       {renderFontsList()}

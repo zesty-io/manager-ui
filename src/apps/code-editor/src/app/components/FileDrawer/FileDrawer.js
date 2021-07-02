@@ -40,13 +40,13 @@ export const FileDrawer = React.memo(function FileDrawer(props) {
       fields = dispatch(fetchFields(props.file.contentModelZUID));
       items = dispatch(
         fetchItems(props.file.contentModelZUID, {
-          limit: 3
+          limit: 3,
         })
       );
     }
 
     Promise.all([logs, fields, items])
-      .then(res => {
+      .then((res) => {
         const [logs, fields, items] = res;
 
         if (logs.status !== 200) throw new Error(`${logs.status}`);

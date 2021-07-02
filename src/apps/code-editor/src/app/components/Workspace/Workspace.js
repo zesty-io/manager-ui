@@ -15,7 +15,7 @@ export const Workspace = React.memo(function Workspace(props) {
         </Route>
         <Route
           path="/code/file/:fileType/:fileZUID"
-          render={routeProps => {
+          render={(routeProps) => {
             return (
               <FileViewer
                 {...routeProps}

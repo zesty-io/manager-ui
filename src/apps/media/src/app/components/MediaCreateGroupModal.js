@@ -17,7 +17,7 @@ export function MediaCreateGroupModal(props) {
   function handleCreateGroup(event) {
     event.preventDefault();
     dispatch(createGroup(groupName, props.currentBin, props.currentGroup)).then(
-      res => {
+      (res) => {
         props.onClose();
         props.setCurrentGroupID(res.data[0].id);
       }
@@ -40,7 +40,7 @@ export function MediaCreateGroupModal(props) {
             placeholder="Name your group"
             name="group"
             value={groupName}
-            onChange={event => setGroupName(event.target.value)}
+            onChange={(event) => setGroupName(event.target.value)}
           />
           <Button kind="save" onClick={handleCreateGroup}>
             <FontAwesomeIcon icon={faPlus} />

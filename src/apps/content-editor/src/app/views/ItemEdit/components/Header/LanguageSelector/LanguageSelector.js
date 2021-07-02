@@ -17,20 +17,20 @@ export const LanguageSelector = connect((state, props) => {
 
     siblings = item?.siblings || {};
     selectedLang = Object.keys(siblings).find(
-      code => siblings[code] === props.itemZUID
+      (code) => siblings[code] === props.itemZUID
     );
   }
 
   return {
     languages: state.languages,
     selectedLang,
-    siblings
+    siblings,
   };
-})(props => {
+})((props) => {
   const location = useLocation();
   const history = useHistory();
 
-  const handleSelect = val => {
+  const handleSelect = (val) => {
     props.dispatch(selectLang(val));
 
     // If we are at a content item level then reload newly selected language item
@@ -51,7 +51,7 @@ export const LanguageSelector = connect((state, props) => {
           value={props.selectedLang}
           onSelect={handleSelect}
         >
-          {props.languages.map(lang => (
+          {props.languages.map((lang) => (
             <Option key={lang.code} text={lang.code} value={lang.code} />
           ))}
         </Select>

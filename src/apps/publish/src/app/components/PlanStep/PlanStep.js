@@ -7,7 +7,7 @@ import {
   faDatabase,
   faEye,
   faSpinner,
-  faTimes
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { removeStep, updateStep } from "shell/store/publishPlan";
 import { Select, Option } from "@zesty-io/core/Select";
@@ -18,19 +18,19 @@ import styles from "./PlanStep.less";
 
 export function PlanStep({ step, item, versions, lang }) {
   const dispatch = useDispatch();
-  const instanceID = useSelector(state => state.instance.randomHashID);
+  const instanceID = useSelector((state) => state.instance.randomHashID);
   const options = versions
-    ? versions.map(content => {
+    ? versions.map((content) => {
         return {
           text: `Version ${content.meta.version}`,
-          value: content.meta.version
+          value: content.meta.version,
         };
       })
     : [
         {
           text: `Version ${step.version}`,
-          value: step.version
-        }
+          value: step.version,
+        },
       ];
 
   const onRemove = useCallback(() => {
@@ -38,7 +38,7 @@ export function PlanStep({ step, item, versions, lang }) {
   }, [dispatch, step]);
 
   const onUpdateVersion = useCallback(
-    version => {
+    (version) => {
       dispatch(updateStep({ ...step, version: +version }));
     },
     [dispatch, step]
@@ -57,7 +57,7 @@ export function PlanStep({ step, item, versions, lang }) {
       <td>
         {/* Update preview link when version is changed */}
         <Select onSelect={onUpdateVersion} name="version" value={step.version}>
-          {options.map(opt => (
+          {options.map((opt) => (
             <Option key={opt.value} value={opt.value} text={opt.text} />
           ))}
         </Select>

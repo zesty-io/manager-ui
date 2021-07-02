@@ -18,7 +18,7 @@ export default class RedirectImportTableRow extends React.Component {
     super(props);
 
     this.state = {
-      code: 1
+      code: 1,
     };
 
     this.handleCode = this.handleCode.bind(this);
@@ -51,7 +51,7 @@ export default class RedirectImportTableRow extends React.Component {
               className={styles.selector}
               onSelect={this.handlePageTarget}
             >
-              {Object.keys(this.props.paths).map(key => {
+              {Object.keys(this.props.paths).map((key) => {
                 let path = this.props.paths[key];
 
                 if (path.path_full !== this.props.target) {
@@ -93,7 +93,7 @@ export default class RedirectImportTableRow extends React.Component {
   }
   handleCode(value) {
     this.setState({
-      code: value
+      code: value,
     });
   }
   handlePageTarget(evt) {
@@ -115,7 +115,7 @@ export default class RedirectImportTableRow extends React.Component {
         query_string: this.props.query_string,
         targetType: this.props.target_type,
         target: this.props.target_zuid || this.props.target,
-        code: this.state.code === 1 ? 301 : 302
+        code: this.state.code === 1 ? 301 : 302,
       })
     );
   }

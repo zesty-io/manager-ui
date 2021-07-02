@@ -9,11 +9,11 @@ import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./OneToManyCell.less";
 export class OneToManyCell extends PureComponent {
-  onRemove = itemZUID => {
+  onRemove = (itemZUID) => {
     this.props.onRemove(
       this.props.value
         .split(",")
-        .filter(item => item !== itemZUID)
+        .filter((item) => item !== itemZUID)
         .join(","),
       this.props.name
     );
@@ -39,9 +39,11 @@ export class OneToManyCell extends PureComponent {
         </span>
       );
     } else {
-      const relatedItemZUIDs = this.props.value.split(",").filter(ZUID => ZUID);
+      const relatedItemZUIDs = this.props.value
+        .split(",")
+        .filter((ZUID) => ZUID);
       const relatedItems = relatedItemZUIDs.map(
-        ZUID => this.props.allItems[ZUID]
+        (ZUID) => this.props.allItems[ZUID]
       );
 
       if (!relatedItems.length) {
@@ -50,9 +52,8 @@ export class OneToManyCell extends PureComponent {
           <span className={cx(this.props.className, styles.OneToManyCell)} />
         );
       } else {
-        const relatedField = this.props.allFields[
-          this.props.field.relatedFieldZUID
-        ];
+        const relatedField =
+          this.props.allFields[this.props.field.relatedFieldZUID];
 
         // NOTE: user WithLoader and show loading message with related field name
 
@@ -61,7 +62,7 @@ export class OneToManyCell extends PureComponent {
             <span className={cx(this.props.className, styles.OneToManyCell)}>
               {relatedItems.length &&
                 relatedItems
-                  .filter(item => item)
+                  .filter((item) => item)
                   .map((item, i) => (
                     <Tag
                       key={i}

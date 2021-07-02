@@ -6,7 +6,7 @@ import { Infotip } from "@zesty-io/core/Infotip";
 import styles from "./MetaTitle.less";
 export const MetaTitle = React.memo(function MetaTitle({
   meta_title,
-  onChange
+  onChange,
 }) {
   return (
     <article className={styles.MetaTitle} data-cy="metaTitle">

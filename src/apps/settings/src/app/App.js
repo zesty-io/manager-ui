@@ -17,13 +17,13 @@ import {
   fetchStylesVariables,
   fetchStylesCategories,
   fetchFonts,
-  fetchFontsInstalled
+  fetchFontsInstalled,
 } from "../store/settings";
 
 import styles from "./App.less";
-export default connect(state => ({
+export default connect((state) => ({
   instance: state.instance,
-  settings: state.settings
+  settings: state.settings,
 }))(function SettingsApp(props) {
   useEffect(() => {
     props.dispatch(fetchSettings());

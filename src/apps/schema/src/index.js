@@ -16,10 +16,10 @@ import { SchemaBuilder } from "./app";
 injectReducer(store, "navSchema", navSchema);
 injectReducer(store, "parents", parents);
 
-export default connect(state => {
+export default connect((state) => {
   return {
     settings: state.settings,
-    models: state.models
+    models: state.models,
   };
 })(function SchemaApp(props) {
   useEffect(() => {

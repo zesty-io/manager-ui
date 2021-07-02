@@ -7,9 +7,9 @@ import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { fetchAllBins, fetchAllGroups } from "shell/store/media";
 
 import styles from "./ImageOptions.less";
-export default connect(state => {
+export default connect((state) => {
   return {
-    media: state.media
+    media: state.media,
   };
 })(function ImageOptions(props) {
   const [groups, setGroups] = useState([]);
@@ -25,12 +25,12 @@ export default connect(state => {
     setGroups(
       Object.keys(props.media.groups)
         // filter out root nodes
-        .filter(id => id !== "0" && id !== "1")
-        .map(id => {
+        .filter((id) => id !== "0" && id !== "1")
+        .map((id) => {
           const group = props.media.groups[id];
           return {
             value: group.id,
-            text: group.name
+            text: group.name,
           };
         })
     );

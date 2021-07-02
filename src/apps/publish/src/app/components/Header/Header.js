@@ -14,12 +14,12 @@ export function Header({ plan }) {
   const showSearch = plan.status !== "success";
   const showPublishAll = plan.status !== "success";
   const onSelect = useCallback(
-    item => {
+    (item) => {
       dispatch(
         addStep({
           ZUID: item.meta.ZUID,
           version: item.meta.version,
-          status: "idle"
+          status: "idle",
         })
       );
       dispatch(fetchVersions(item.meta.contentModelZUID, item.meta.ZUID));

@@ -4,7 +4,7 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
-  faChevronRight
+  faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
@@ -64,7 +64,9 @@ export function Wizard(props) {
                   {step < props.children.length - 1 && (
                     <div
                       className={cx(styles.WizardFooter, {
-                        [styles.CenteredFooter]: !showBack(child.props.showBack)
+                        [styles.CenteredFooter]: !showBack(
+                          child.props.showBack
+                        ),
                       })}
                     >
                       {showBack(child.props.showBack) && (

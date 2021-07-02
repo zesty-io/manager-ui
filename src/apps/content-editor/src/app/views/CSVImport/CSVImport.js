@@ -40,8 +40,8 @@ class CSVImport extends Component {
       parentZUID: "0", // this should validate that the mapped col contains ZUIDs
       pathPart: "",
       sitemapPriority: -1,
-      canonicalTagMode: 0
-    }
+      canonicalTagMode: 0,
+    },
   };
 
   chunkSize = 30;
@@ -63,20 +63,20 @@ class CSVImport extends Component {
     }
   }
 
-  handleFile = evt => {
+  handleFile = (evt) => {
     evt.preventDefault();
     const csvToParse = evt.target.files[0];
     // make sure we have a csv and throw an error if we dont
     if (csvToParse.name.slice(-3).toLowerCase() !== "csv") {
       return this.setState({
-        warn: "You selected a file that is not a CSV"
+        warn: "You selected a file that is not a CSV",
       });
     }
     this.setState({ warn: "" });
     // takes the file object and reads it
     // as a text string into local state
     const reader = new FileReader();
-    reader.onload = evt => {
+    reader.onload = (evt) => {
       this.setState({ csv: evt.target.result }, () => {
         // after the text string is set to state
         // we can run our parse to get the records
@@ -86,10 +86,10 @@ class CSVImport extends Component {
     reader.readAsText(csvToParse);
   };
 
-  parseCSV = csv => {
+  parseCSV = (csv) => {
     const records = parse(csv, {
       skip_empty_lines: true,
-      skip_lines_with_empty_values: true
+      skip_lines_with_empty_values: true,
     });
 
     // build an array of object to reference data across columns
@@ -104,7 +104,7 @@ class CSVImport extends Component {
 
     this.setState({
       cols: records[0],
-      records: columnsWithValues
+      records: columnsWithValues,
     });
   };
 
@@ -125,7 +125,7 @@ class CSVImport extends Component {
       // map the association
       this.setState(
         {
-          fieldMaps: { ...this.state.fieldMaps, [csvCol]: fieldName }
+          fieldMaps: { ...this.state.fieldMaps, [csvCol]: fieldName },
         },
         () => {
           this.mapFieldsToCols();
@@ -140,7 +140,7 @@ class CSVImport extends Component {
 
     // for each record create an item with the corresponding
     // data matched to the field name from the model
-    const mappedItems = this.state.records.map(rec => {
+    const mappedItems = this.state.records.map((rec) => {
       let data = Object.keys(rec).reduce((acc, key, i) => {
         if (this.state.fieldMaps[key]) {
           if (acc[this.state.fieldMaps[key]]) {
@@ -167,12 +167,12 @@ class CSVImport extends Component {
     this.setState({
       webMaps: {
         ...this.state.webMaps,
-        [webKey]: csvCol === "none" ? "" : csvCol
-      }
+        [webKey]: csvCol === "none" ? "" : csvCol,
+      },
     });
   };
 
-  addFailure = index => {
+  addFailure = (index) => {
     // add the failed index to the array of failed items
     this.setState({ failure: [...this.state.failure, index] });
   };
@@ -183,7 +183,7 @@ class CSVImport extends Component {
       return this.props.dispatch(
         notify({
           message: "You must select a column for Path Part",
-          kind: "warn"
+          kind: "warn",
         })
       );
     }
@@ -191,7 +191,7 @@ class CSVImport extends Component {
       return this.props.dispatch(
         notify({
           message: "You must resolve duplicate column conflicts",
-          kind: "warn"
+          kind: "warn",
         })
       );
     }
@@ -234,12 +234,12 @@ class CSVImport extends Component {
             : "",
           parentZUID: this.state.records[i][this.state.webMaps.parentZUID],
           pathPart,
-          sitemapPriority: this.state.webMaps.sitemapPriority
+          sitemapPriority: this.state.webMaps.sitemapPriority,
         },
         meta: {
           contentModelZUID: this.props.modelZUID,
-          createdByUserZUID: this.props.userZUID
-        }
+          createdByUserZUID: this.props.userZUID,
+        },
       };
     });
 
@@ -259,15 +259,15 @@ class CSVImport extends Component {
           {
             method: "POST",
             json: true,
-            body: item
+            body: item,
           }
         )
-          .then(res => {
+          .then((res) => {
             if (res.status === 400) {
               this.props.dispatch(
                 notify({
                   message: `Failure creating item: ${res.error}`,
-                  kind: "error"
+                  kind: "error",
                 })
               );
               this.addFailure(index * this.chunkSize + i);
@@ -279,7 +279,7 @@ class CSVImport extends Component {
               return res;
             }
           })
-          .catch(err => {
+          .catch((err) => {
             this.addFailure(index * this.chunkSize + i);
           });
       })
@@ -290,8 +290,8 @@ class CSVImport extends Component {
     const chunkedItems = chunk(this.state.mappedMetaItems, this.chunkSize);
 
     return chunkedItems.reduce((promise, batch, index) => {
-      return promise.then(results => {
-        return this.createBatchItems(batch, index).then(data => {
+      return promise.then((results) => {
+        return this.createBatchItems(batch, index).then((data) => {
           results.push(data);
           return results;
         });
@@ -311,9 +311,9 @@ class CSVImport extends Component {
       {
         fields: this.state.fields,
         cols: this.state.cols,
-        handleMap: this.handleFieldToCSVMap
+        handleMap: this.handleFieldToCSVMap,
       },
-      ...records
+      ...records,
     ];
 
     return (
@@ -377,9 +377,9 @@ class CSVImport extends Component {
           itemData={{
             data: recordsWithColumns,
             // if import is complete, records shown are errors only
-            error: this.state.complete
+            error: this.state.complete,
           }}
-          itemSize={index => (index === 0 ? 71 : 61)}
+          itemSize={(index) => (index === 0 ? 71 : 61)}
           height={this.state.height}
           width="100%"
         >
@@ -408,7 +408,7 @@ class Row extends PureComponent {
         style={{ ...this.props.style, width: "auto" }}
         className={cx(styles.wrap, { [styles.failure]: this.props.data.error })}
       >
-        {Object.keys(item).map(key => {
+        {Object.keys(item).map((key) => {
           return (
             <div key={key} className={styles.column}>
               <span key={item[key]} className={styles.Cell}>
@@ -426,13 +426,15 @@ export default connect((state, props) => {
   const { modelZUID } = props.match.params;
   const model = state.models[modelZUID];
   const fields = Object.keys(state.fields)
-    .filter(fieldZUID => state.fields[fieldZUID].contentModelZUID === modelZUID)
-    .map(fieldZUID => state.fields[fieldZUID])
+    .filter(
+      (fieldZUID) => state.fields[fieldZUID].contentModelZUID === modelZUID
+    )
+    .map((fieldZUID) => state.fields[fieldZUID])
     .sort((a, b) => a.sort - b.sort);
   return {
     modelZUID,
     model,
     fields,
-    userZUID: state.user.user_zuid
+    userZUID: state.user.user_zuid,
   };
 })(CSVImport);

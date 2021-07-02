@@ -5,8 +5,8 @@ import { publish } from "shell/store/content";
 
 function asyncBatch(chunkedData, fn) {
   return chunkedData.reduce((promise, batch) => {
-    return promise.then(results => {
-      return Promise.allSettled(batch.map(fn)).then(data => {
+    return promise.then((results) => {
+      return Promise.allSettled(batch.map(fn)).then((data) => {
         results.push(data);
         return results;
       });
@@ -18,8 +18,7 @@ const { actions, reducer } = createSlice({
   name: "publishPlan",
   initialState: {
     data: [], // [{ZUID, version, status}] idle/pending/error
-    status:
-      "idle" /*
+    status: "idle" /*
     idle - initial state
     loaded - data loaded from indexeddb
     pending - publish pending
@@ -34,7 +33,7 @@ const { actions, reducer } = createSlice({
     success->loaded
     */,
     successes: 0,
-    failures: 0
+    failures: 0,
   },
   reducers: {
     loadedPlan(state, action) {
@@ -48,7 +47,7 @@ const { actions, reducer } = createSlice({
         if (plan.status === "pending") {
           plan.status = "loaded";
         }
-        plan.data.forEach(step => {
+        plan.data.forEach((step) => {
           if (step.status === "pending") {
             step.status = "idle";
           }
@@ -64,7 +63,7 @@ const { actions, reducer } = createSlice({
     },
     addStep(state, action) {
       // prevent duplicate ZUIDs
-      if (!state.data.find(step => step.ZUID === action.payload.ZUID)) {
+      if (!state.data.find((step) => step.ZUID === action.payload.ZUID)) {
         state.data.push(action.payload);
         if (state.status === "success") {
           state.status = "loaded";
@@ -73,7 +72,7 @@ const { actions, reducer } = createSlice({
     },
     removeStep(state, action) {
       const removeStepIndex = state.data.findIndex(
-        step => step.ZUID === action.payload.ZUID
+        (step) => step.ZUID === action.payload.ZUID
       );
       if (removeStepIndex !== -1) {
         state.data.splice(removeStepIndex, 1);
@@ -81,21 +80,21 @@ const { actions, reducer } = createSlice({
     },
     updateStep(state, action) {
       const updateStep = state.data.find(
-        step => step.ZUID === action.payload.ZUID
+        (step) => step.ZUID === action.payload.ZUID
       );
       if (updateStep) {
         updateStep.version = action.payload.version;
       }
     },
     publishPending(state, action) {
-      const step = state.data.find(step => step.ZUID === action.payload);
+      const step = state.data.find((step) => step.ZUID === action.payload);
       if (step) {
         step.status = "pending";
       }
     },
     publishSuccess(state, action) {
       const removeStepIndex = state.data.findIndex(
-        step => step.ZUID === action.payload
+        (step) => step.ZUID === action.payload
       );
       if (removeStepIndex !== -1) {
         state.data.splice(removeStepIndex, 1);
@@ -103,7 +102,7 @@ const { actions, reducer } = createSlice({
       }
     },
     publishFailure(state, action) {
-      const step = state.data.find(step => step.ZUID === action.payload.ZUID);
+      const step = state.data.find((step) => step.ZUID === action.payload.ZUID);
       if (step) {
         step.status = "error";
         step.error = action.payload.error;
@@ -120,8 +119,8 @@ const { actions, reducer } = createSlice({
     },
     publishPlanFailure(state) {
       state.status = "error";
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -135,7 +134,7 @@ export const {
   publishFailure,
   publishPlanPending,
   publishPlanSuccess,
-  publishPlanFailure
+  publishPlanFailure,
 } = actions;
 
 export default reducer;
@@ -147,17 +146,17 @@ export function publishAll() {
   return (dispatch, getState) => {
     const { content, publishPlan } = getState();
     dispatch(actions.publishPlanPending());
-    return asyncBatch(chunk(publishPlan.data, PUBLISH_BATCH_SIZE), step => {
+    return asyncBatch(chunk(publishPlan.data, PUBLISH_BATCH_SIZE), (step) => {
       dispatch(actions.publishPending(step.ZUID));
       return dispatch(
         publish(content[step.ZUID].meta.contentModelZUID, step.ZUID, {
-          version: step.version
+          version: step.version,
         })
       )
         .then(() => {
           dispatch(actions.publishSuccess(step.ZUID));
         })
-        .catch(err => {
+        .catch((err) => {
           dispatch(
             actions.publishFailure({ ZUID: step.ZUID, error: err.message })
           );

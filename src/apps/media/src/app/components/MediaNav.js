@@ -9,7 +9,7 @@ export function MediaNav(props) {
   return (
     <Measure
       bounds={true}
-      onResize={contentRect => {
+      onResize={(contentRect) => {
         setNavWidth(contentRect.bounds.width);
         setNavHeight(contentRect.bounds.height);
       }}

@@ -13,18 +13,18 @@ export function headers(state = [], action) {
 }
 
 export function fetchHeaders() {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/web/headers`,
-      handler: res => {
+      handler: (res) => {
         dispatch({
           type: "FETCH_HEADERS_SUCCESS",
-          payload: res.data
+          payload: res.data,
         });
 
         return res;
-      }
+      },
     });
   };
 }
@@ -36,44 +36,44 @@ export function saveSort(type, headers) {
 
   const pathPart = resolvePathPart(type);
 
-  return dispatch => {
-    const body = headers.map(header => {
+  return (dispatch) => {
+    const body = headers.map((header) => {
       return {
         ZUID: header.ZUID,
-        sort: header.sort
+        sort: header.sort,
       };
     });
 
     return request(`${CONFIG.API_INSTANCE}/web/${pathPart}?action=updateSort`, {
       method: "PUT",
       json: true,
-      body
+      body,
     })
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           dispatch(
             notify({
               kind: "save",
-              message: "File sort order has been saved"
+              message: "File sort order has been saved",
             })
           );
         } else {
           dispatch(
             notify({
               kind: "warn",
-              message: res.error
+              message: res.error,
             })
           );
         }
 
         return res;
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(
           notify({
             kind: "error",
             message:
-              "We ran into an error saving the file sort order. This is most likely an issue on our end."
+              "We ran into an error saving the file sort order. This is most likely an issue on our end.",
           })
         );
 

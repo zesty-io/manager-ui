@@ -11,18 +11,18 @@ export function instances(state = [], action) {
 }
 
 export function fetchInstances() {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({
-      type: "FETCHING_INSTANCES"
+      type: "FETCHING_INSTANCES",
     });
 
-    return request(`${CONFIG.API_ACCOUNTS}/instances`).then(res => {
+    return request(`${CONFIG.API_ACCOUNTS}/instances`).then((res) => {
       if (res.status === 200) {
         dispatch({
           type: "FETCHING_INSTANCES_SUCCESS",
           payload: {
-            data: res.data
-          }
+            data: res.data,
+          },
         });
       }
 
@@ -30,7 +30,7 @@ export function fetchInstances() {
         dispatch(
           notify({
             kind: "warn",
-            messages: "There was an issue loading your instances list"
+            messages: "There was an issue loading your instances list",
           })
         );
       }
@@ -39,7 +39,7 @@ export function fetchInstances() {
         dispatch(
           notify({
             kind: "warn",
-            messages: "You are forbidden from loading an instances list"
+            messages: "You are forbidden from loading an instances list",
           })
         );
       }

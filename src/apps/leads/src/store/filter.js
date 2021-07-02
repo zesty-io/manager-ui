@@ -9,7 +9,7 @@ export function filter(
     endDate: "",
     fuzzyText: "",
     formGroup: "",
-    startDate: ""
+    startDate: "",
   },
   action
 ) {
@@ -17,27 +17,27 @@ export function filter(
     case "SET_FILTER_DATE_RANGE":
       return {
         ...state,
-        dateRange: action.payload
+        dateRange: action.payload,
       };
     case "SET_FILTER_END_DATE":
       return {
         ...state,
-        endDate: action.payload
+        endDate: action.payload,
       };
     case "SET_FILTER_FORM_GROUP":
       return {
         ...state,
-        formGroup: action.payload
+        formGroup: action.payload,
       };
     case "SET_FILTER_START_DATE":
       return {
         ...state,
-        startDate: action.payload
+        startDate: action.payload,
       };
     case "SET_FILTER_TEXT":
       return {
         ...state,
-        fuzzyText: action.payload
+        fuzzyText: action.payload,
       };
     default:
       return state;
@@ -52,7 +52,7 @@ export function filter(
 export function setFilterDateRange(data) {
   return {
     type: "SET_FILTER_DATE_RANGE",
-    payload: data
+    payload: data,
   };
 }
 
@@ -64,7 +64,7 @@ export function setFilterDateRange(data) {
 export function setFilterEndDate(data) {
   return {
     type: "SET_FILTER_END_DATE",
-    payload: data
+    payload: data,
   };
 }
 
@@ -76,7 +76,7 @@ export function setFilterEndDate(data) {
 export function setFilterFormGroup(data) {
   return {
     type: "SET_FILTER_FORM_GROUP",
-    payload: data
+    payload: data,
   };
 }
 
@@ -88,7 +88,7 @@ export function setFilterFormGroup(data) {
 export function setFilterStartDate(data) {
   return {
     type: "SET_FILTER_START_DATE",
-    payload: data
+    payload: data,
   };
 }
 
@@ -101,6 +101,6 @@ export function setFilterStartDate(data) {
 export function setFilterText(data) {
   return {
     type: "SET_FILTER_TEXT",
-    payload: data
+    payload: data,
   };
 }

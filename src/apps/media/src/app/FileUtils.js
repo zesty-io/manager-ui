@@ -1,8 +1,5 @@
 export function fileExtension(url) {
-  return url
-    .split(".")
-    .pop()
-    .toLowerCase();
+  return url.split(".").pop().toLowerCase();
 }
 
 export function isImage(file) {
