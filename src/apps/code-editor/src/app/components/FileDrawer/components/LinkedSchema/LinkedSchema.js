@@ -15,7 +15,8 @@ export default function LinkedSchema(props) {
     <Card className={cx(styles.LinkedSchema, shared.DrawerStyles)}>
       <CardHeader>
         <h1>
-          <FontAwesomeIcon icon={faDatabase} /> Linked Schema
+          <FontAwesomeIcon icon={faDatabase} /> {props.file.fileName}'s Related
+          Model Schema
         </h1>
       </CardHeader>
       <CardContent>
