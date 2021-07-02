@@ -59,7 +59,7 @@ export default connect(state => {
       props.dispatch(fetchLangauges("enabled"));
       // Used in Publish Plan and Content sections
       props.dispatch(fetchItemPublishings());
-      //Code Editor
+      // Used in Code Editor, Publish, PublishAll, useFilePath hook
       props.dispatch(fetchFiles("views"));
       props.dispatch(fetchFiles("stylesheets"));
       props.dispatch(fetchFiles("scripts"));
