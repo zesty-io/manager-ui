@@ -17,7 +17,7 @@
     "start": "npm run serve:webpack -- --node-env development",
     "start:stage": "npm run serve:webpack -- --node-env stage --mode=development",
     "task:clean": "rimraf build",
-    "task:webpack": "webpack --progress --config src/shell/webpack.config.js",
+    "task:webpack": "cross-env NODE_OPTIONS='--max_old_space_size=4096' webpack --progress --config src/shell/webpack.config.js",
     "test": "cypress run",
     "test:open": "cypress open"
   },
