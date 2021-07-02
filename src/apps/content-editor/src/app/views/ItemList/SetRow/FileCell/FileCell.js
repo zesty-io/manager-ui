@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import cx from "classnames";
 
 import { request } from "utility/request";
@@ -12,38 +12,38 @@ export class FileCell extends Component {
   state = {
     filename: null,
     filetype: "file-o",
-    loading: false
+    loading: false,
   };
   componentDidMount() {
     this.setState({
-      loading: true
+      loading: true,
     });
     request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${this.props.data}`)
-      .then(res => {
+      .then((res) => {
         this.setState({ loading: false });
         if (res.status === 400) {
           this.props.dispatch(
             notify({
               message: `Failure fetching filename: ${res.error}`,
-              kind: "error"
+              kind: "error",
             })
           );
         } else {
           const filename = res.data[0].filename;
           this.setState({
             filetype: this.resolveFileType(filename.split(".")[1]),
-            filename
+            filename,
           });
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("FileCell:componentDidMount", err);
         this.setState({
-          loading: false
+          loading: false,
         });
       });
   }
-  resolveFileType = filesuffix => {
+  resolveFileType = (filesuffix) => {
     switch (filesuffix.toLowerCase()) {
       case "jpg":
       case "png":

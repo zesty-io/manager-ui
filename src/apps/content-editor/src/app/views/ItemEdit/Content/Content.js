@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Editor } from "../../../components/Editor";
 import { Header } from "../components/Header";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
@@ -48,7 +46,7 @@ export default function Content(props) {
             {...props}
             site={{}}
             set={{
-              type: props.model.type
+              type: props.model.type,
             }}
           />
         </div>

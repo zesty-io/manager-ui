@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 import cx from "classnames";
 
 import { Search } from "@zesty-io/core/Search";
@@ -6,20 +6,20 @@ import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 
 import styles from "./styles.less";
-export default React.memo(function AuditControls(props) {
+export default memo(function AuditControls(props) {
   return (
     <header className={styles.auditControls}>
       <Search
         className={styles.SearchLogs}
         placeholder="Search AuditTrail Logs"
-        onChange={value => {
+        onChange={(value) => {
           props.setSearch(value.trim().toLowerCase());
         }}
       />
       <ButtonGroup className={styles.btnGroup}>
         <Button
           className={cx(styles.child, {
-            [styles.selected]: props.filter === 1
+            [styles.selected]: props.filter === 1,
           })}
           onClick={() => {
             if (props.filter === 1) {
@@ -33,7 +33,7 @@ export default React.memo(function AuditControls(props) {
         </Button>
         <Button
           className={cx(styles.child, {
-            [styles.selected]: props.filter === 7
+            [styles.selected]: props.filter === 7,
           })}
           onClick={() => {
             if (props.filter === 7) {
@@ -47,7 +47,7 @@ export default React.memo(function AuditControls(props) {
         </Button>
         <Button
           className={cx(styles.child, {
-            [styles.selected]: props.filter === 30
+            [styles.selected]: props.filter === 30,
           })}
           onClick={() => {
             if (props.filter === 30) {

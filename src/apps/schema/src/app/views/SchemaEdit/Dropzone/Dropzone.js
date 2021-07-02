@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { Children, cloneElement, useState, useEffect } from "react";
 import cx from "classnames";
 
 import styles from "./Dropzone.less";
@@ -19,14 +19,13 @@ export function Dropzone(props) {
    * to describe what happens when the children are sorted.
    */
 
-  const [children, setChildren] = useState(
-    React.Children.toArray(props.children)
-  );
+  const [children, setChildren] = useState(Children.toArray(props.children));
 
   // Update state when props change
-  useEffect(() => setChildren(React.Children.toArray(props.children)), [
-    props.children
-  ]);
+  useEffect(
+    () => setChildren(Children.toArray(props.children)),
+    [props.children]
+  );
 
   const arrayMove = (array, from, to) => {
     const arr = [...array];
@@ -35,28 +34,28 @@ export function Dropzone(props) {
   };
 
   // NOTE: this function seems uneccessary
-  const onDragEnd = evt => {
+  const onDragEnd = (evt) => {
     // Reset
     setSourceIndex(null);
-    setChildren(React.Children.toArray(props.children));
+    setChildren(Children.toArray(props.children));
   };
 
-  const onDragEnter = evt => {
+  const onDragEnter = (evt) => {
     // Required to make a drop zone
     evt.preventDefault();
   };
 
-  const onDragOver = evt => {
+  const onDragOver = (evt) => {
     // Required to make drop zone
     evt.preventDefault();
   };
 
-  const onOver = index => {
+  const onOver = (index) => {
     setChildren(arrayMove(children, sourceIndex, index));
     setSourceIndex(index);
   };
 
-  const onDrop = evt => {
+  const onDrop = (evt) => {
     // Prevent page from unloading
     evt.preventDefault();
 
@@ -74,10 +73,10 @@ export function Dropzone(props) {
       onDrop={onDrop}
     >
       {children.map((child, index) => {
-        return React.cloneElement(child, {
+        return cloneElement(child, {
           index,
           onOver,
-          drag: setSourceIndex
+          drag: setSourceIndex,
         });
       })}
     </div>

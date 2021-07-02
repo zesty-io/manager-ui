@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,9 +12,9 @@ import { notify } from "shell/store/notifications";
 import { updateSiteFont, deleteSiteFont } from "../../../store/settings";
 
 import styles from "./Fonts.less";
-export default connect(state => {
+export default connect((state) => {
   return {
-    fontsInstalled: state.settings.fontsInstalled
+    fontsInstalled: state.settings.fontsInstalled,
   };
 })(function Installed(props) {
   const [defaultFonts, setDefaultFonts] = useState([]);
@@ -22,29 +22,26 @@ export default connect(state => {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const arrFonts = props.fontsInstalled.map(tag => {
+    const arrFonts = props.fontsInstalled.map((tag) => {
       const url = tag.attributes.href;
       return {
         ZUID: tag.ZUID,
         href: tag.attributes.href,
-        font: url
-          .split("=")[1]
-          .split(":")[0]
-          .replace("+", " "),
+        font: url.split("=")[1].split(":")[0].replace("+", " "),
         variants: url.split("=")[1].split(":")[1]
           ? url
               .split("=")[1]
               .split(":")[1]
               .split(",")
-              .map(variant => ({ label: variant, value: "1" }))
-          : []
+              .map((variant) => ({ label: variant, value: "1" }))
+          : [],
       };
     });
 
     setFonts(arrFonts);
     setDefaultFonts(arrFonts);
 
-    props.fontsInstalled.forEach(tag => {
+    props.fontsInstalled.forEach((tag) => {
       const style = document.createElement("style");
       const att = document.createAttribute("id");
       att.value = "googlefont";
@@ -85,11 +82,11 @@ export default connect(state => {
     setSearch(value);
     setTimeout(() => {
       const fontFounded = fonts.find(
-        font => font.font.toLowerCase() === value.toLowerCase()
+        (font) => font.font.toLowerCase() === value.toLowerCase()
       );
       if (fontFounded) {
         const element = fonts.filter(
-          font => font.font.toLowerCase() === value.toLowerCase()
+          (font) => font.font.toLowerCase() === value.toLowerCase()
         );
         setFonts(element);
       } else {
@@ -103,10 +100,10 @@ export default connect(state => {
   }
 
   function uninstallFont(font) {
-    const fontToUpdate = fonts.find(f => f.font === font);
+    const fontToUpdate = fonts.find((f) => f.font === font);
     const updateVariants = fontToUpdate.variants
-      .filter(variant => variant.value === "1")
-      .map(variant => variant.label)
+      .filter((variant) => variant.value === "1")
+      .map((variant) => variant.label)
       .join();
 
     let request;
@@ -123,19 +120,19 @@ export default connect(state => {
     }
 
     request
-      .then(res => {
+      .then((res) => {
         props.dispatch(
           notify({
             kind: "success",
-            message: "Font has been removed"
+            message: "Font has been removed",
           })
         );
       })
-      .catch(err => {
+      .catch((err) => {
         props.dispatch(
           notify({
             kind: "warn",
-            message: err.message
+            message: err.message,
           })
         );
       });
@@ -144,19 +141,19 @@ export default connect(state => {
   function toggleEnableFont(variant, value, font) {
     if (window.confirm("Do you really want to uninstall this font?")) {
       const copyFonts = fonts
-        .map(f => {
+        .map((f) => {
           if (f.font === font) {
-            const pos = f.variants.map(v => v.label).indexOf(variant);
+            const pos = f.variants.map((v) => v.label).indexOf(variant);
             // handle broken installed fonts with no variants
             if (pos !== -1) {
               f.variants[pos].value = value.toString();
             }
-            f.variants = f.variants.filter(variant => variant.value === "1");
+            f.variants = f.variants.filter((variant) => variant.value === "1");
           }
           return f;
         })
         .filter(
-          f => f.variants.filter(variant => variant.value === "1").length
+          (f) => f.variants.filter((variant) => variant.value === "1").length
         );
       setFonts(copyFonts);
       uninstallFont(font);
@@ -178,7 +175,7 @@ export default connect(state => {
                 <p
                   className={styles.ParagraphFontInstalled}
                   style={{
-                    fontFamily: font.font.replace("+", " ")
+                    fontFamily: font.font.replace("+", " "),
                   }}
                 >
                   All their equipment and instruments are alive.
@@ -203,7 +200,7 @@ export default connect(state => {
                   style={{
                     fontFamily: font.font.replace("+", " "),
                     fontWeight: parseWeight(variant.label),
-                    fontStyle: parseFontStyle(variant.label)
+                    fontStyle: parseFontStyle(variant.label),
                   }}
                 >
                   All their equipment and instruments are alive.
@@ -245,7 +242,7 @@ export default connect(state => {
         <Search
           className={styles.search}
           placeholder="Search font"
-          onKeyUp={e => onSearch(e.target.value)}
+          onKeyUp={(e) => onSearch(e.target.value)}
         />
       </header>
       {renderFontsList()}

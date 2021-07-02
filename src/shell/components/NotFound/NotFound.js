@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "./NotFound.less";
 
 export default function NotFound(props) {

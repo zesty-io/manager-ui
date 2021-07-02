@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
@@ -10,9 +10,9 @@ import {
   faFacebookSquare,
   faLinkedinIn,
   faRedditSquare,
-  faTwitterSquare
+  faTwitterSquare,
 } from "@fortawesome/free-brands-svg-icons";
-export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
+export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
   const handleOpen = (evt, url) => {
     window.open(
       url,
@@ -36,7 +36,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
         <ButtonGroup className={styles.ShareLinks}>
           <span
             className="twitter"
-            onClick={evt =>
+            onClick={(evt) =>
               handleOpen(
                 evt,
                 `https://twitter.com/share?url=${encodeURIComponent(
@@ -50,7 +50,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
           </span>
           <span
             className="facebook"
-            onClick={evt =>
+            onClick={(evt) =>
               handleOpen(
                 evt,
                 `http://www.facebook.com/sharer.php?u=${encodeURIComponent(
@@ -64,7 +64,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
           </span>
           <span
             className="linkedin"
-            onClick={evt =>
+            onClick={(evt) =>
               handleOpen(
                 evt,
                 `http://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(
@@ -78,7 +78,7 @@ export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
           </span>
           <span
             className="reddit"
-            onClick={evt =>
+            onClick={(evt) =>
               handleOpen(
                 evt,
                 `http://reddit.com/submit?url=${encodeURIComponent(

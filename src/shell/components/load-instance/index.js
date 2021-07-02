@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -19,24 +19,24 @@ import { loadOpenNav } from "../../store/ui";
 
 import styles from "./LoadInstance.less";
 
-export default connect(state => {
+export default connect((state) => {
   return {
     instance: state.instance,
     user: state.user,
     products: state.products,
-    languages: state.languages
+    languages: state.languages,
   };
 })(
-  React.memo(function LoadInstance(props) {
+  memo(function LoadInstance(props) {
     const [error, setError] = useState("");
     useEffect(() => {
       props
         .dispatch(fetchInstance())
-        .then(res => {
+        .then((res) => {
           document.title = `Manager - ${res.data.name} - Zesty`;
           CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data.randomHashID}${CONFIG.URL_PREVIEW}`;
         })
-        .catch(res => {
+        .catch((res) => {
           if (res.status === 403) {
             setError("You do not have permission to access to this instance");
           }
@@ -44,7 +44,7 @@ export default connect(state => {
 
       Promise.all([
         props.dispatch(fetchUser(props.user.ZUID)),
-        props.dispatch(fetchUserRole())
+        props.dispatch(fetchUserRole()),
       ]).then(() => {
         props.dispatch(fetchProducts());
       });

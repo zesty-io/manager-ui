@@ -1,9 +1,8 @@
-import React from "react";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSortAlphaDown,
-  faSortAlphaUp
+  faSortAlphaUp,
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./RedirectsTableHeader.less";
 

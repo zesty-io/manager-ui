@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import { fetchVersions } from "shell/store/contentVersions";
@@ -10,13 +10,13 @@ import styles from "./PublishApp.less";
 
 export default function PublishApp() {
   const dispatch = useDispatch();
-  const publishPlan = useSelector(state => state.publishPlan);
-  const content = useSelector(state => state.content);
+  const publishPlan = useSelector((state) => state.publishPlan);
+  const content = useSelector((state) => state.content);
 
   // load versions for all ZUIDs
   // possibly can lazy load these when you open select
   useEffect(() => {
-    publishPlan.data.forEach(step => {
+    publishPlan.data.forEach((step) => {
       dispatch(
         fetchVersions(
           content[step.ZUID].meta.contentModelZUID,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { Fragment, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -6,7 +6,7 @@ import { faTrash, faBan } from "@fortawesome/free-solid-svg-icons";
 import {
   CollapsibleCard,
   CardContent,
-  CardFooter
+  CardFooter,
 } from "@zesty-io/core/CollapsibleCard";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 import { Button } from "@zesty-io/core/Button";
@@ -33,10 +33,10 @@ export default function Delete(props) {
 
 function Header() {
   return (
-    <React.Fragment>
+    <Fragment>
       <FontAwesomeIcon icon={faTrash} />
       &nbsp;Delete Model
-    </React.Fragment>
+    </Fragment>
   );
 }
 
@@ -45,7 +45,7 @@ function Footer(props) {
   const history = useHistory();
 
   return (
-    <React.Fragment>
+    <Fragment>
       <CardFooter>
         <Button kind="warn" onClick={() => setIsOpen(true)}>
           <FontAwesomeIcon icon={faTrash} />
@@ -66,7 +66,7 @@ function Footer(props) {
               .then(() => {
                 history.push("/schema");
               })
-              .catch(err => {
+              .catch((err) => {
                 console.error(err);
                 setIsOpen(false);
                 props.dispatch(
@@ -74,7 +74,7 @@ function Footer(props) {
                     kind: "warn",
                     message:
                       err.message ||
-                      `Failed to delete model: ${props.model.label}`
+                      `Failed to delete model: ${props.model.label}`,
                   })
                 );
               });
@@ -92,6 +92,6 @@ function Footer(props) {
           Cancel
         </Button>
       </ConfirmDialog>
-    </React.Fragment>
+    </Fragment>
   );
 }

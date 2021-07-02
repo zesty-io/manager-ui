@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { memo, Fragment, useState, useEffect } from "react";
 import { connect } from "react-redux";
 import debounce from "lodash/debounce";
 
@@ -10,34 +10,34 @@ import { faHome } from "@fortawesome/free-solid-svg-icons";
 import { searchItems } from "shell/store/content";
 
 import styles from "./ItemParent.less";
-export const ItemParent = connect(state => {
+export const ItemParent = connect((state) => {
   return {
-    nav: state.navContent.raw
+    nav: state.navContent.raw,
   };
 })(
-  React.memo(
+  memo(
     function ItemParent(props) {
       const [loading, setLoading] = useState(false);
       const [parent, setParent] = useState({
         meta: {
           ZUID: "0", // "0" = root level route
-          path: "/"
-        }
+          path: "/",
+        },
       });
 
       const [parents, setParents] = useState(
         parentOptions(props.path, props.content)
       );
 
-      const onSearch = debounce(term => {
+      const onSearch = debounce((term) => {
         if (term) {
           setLoading(true);
-          props.dispatch(searchItems(term)).then(res => {
+          props.dispatch(searchItems(term)).then((res) => {
             setLoading(false);
             setParents(
               parentOptions(props.path, {
                 ...props.content,
-                ...res?.data
+                ...res?.data,
               })
             );
           });
@@ -51,7 +51,7 @@ export const ItemParent = connect(state => {
        */
       const findNavParent = (zuid, count = 0) => {
         count++;
-        const navEntry = props.nav.find(el => el.ZUID === zuid);
+        const navEntry = props.nav.find((el) => el.ZUID === zuid);
         if (navEntry) {
           // This first item should be the model we are resolving for so
           // continue on up the nav tree
@@ -93,7 +93,7 @@ export const ItemParent = connect(state => {
           if (item && item.meta && item.meta.ZUID && item.meta.path) {
             setParent(item);
           } else {
-            props.dispatch(searchItems(parentZUID)).then(res => {
+            props.dispatch(searchItems(parentZUID)).then((res) => {
               setParent(res.data[0]);
 
               /**
@@ -107,7 +107,7 @@ export const ItemParent = connect(state => {
               setParents(
                 parentOptions(props.path, {
                   ...props.content,
-                  [res.data[0].meta.ZUID]: res.data[0]
+                  [res.data[0].meta.ZUID]: res.data[0],
                 })
               );
             });
@@ -143,13 +143,13 @@ export const ItemParent = connect(state => {
               <Option
                 value="0"
                 component={
-                  <React.Fragment>
+                  <Fragment>
                     <FontAwesomeIcon icon={faHome} />
                     &nbsp;/
-                  </React.Fragment>
+                  </Fragment>
                 }
               />
-              {parents.map(item => (
+              {parents.map((item) => (
                 <Option key={item.value} value={item.value} text={item.text} />
               ))}
             </Select>
@@ -161,7 +161,7 @@ export const ItemParent = connect(state => {
       let isEqual = true;
 
       // Shallow compare all props
-      Object.keys(prevProps).forEach(key => {
+      Object.keys(prevProps).forEach((key) => {
         // ignore content, we'll check it seperately after
         if (key !== "content") {
           if (prevProps[key] !== nextProps[key]) {
@@ -188,7 +188,7 @@ function parentOptions(path, items) {
     Object.keys(items)
       // Filter items into list of zuids
       .filter(
-        itemZUID =>
+        (itemZUID) =>
           itemZUID.slice(0, 3) !== "new" && // Exclude new items
           items[itemZUID].meta &&
           items[itemZUID].meta.ZUID && // must have a ZUID
@@ -199,7 +199,7 @@ function parentOptions(path, items) {
       )
       // De-dupe list of zuids & convert to item objects
       .reduce((acc, zuid) => {
-        let exists = acc.find(el => el.meta.ZUID === zuid);
+        let exists = acc.find((el) => el.meta.ZUID === zuid);
 
         if (!exists) {
           acc.push(items[zuid]);
@@ -208,10 +208,10 @@ function parentOptions(path, items) {
         return acc;
       }, [])
       // Convert items to options object
-      .map(item => {
+      .map((item) => {
         return {
           value: item.meta.ZUID,
-          text: item.web.path
+          text: item.web.path,
         };
       })
       // Put items in alphabetical descending order

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave } from "@fortawesome/free-solid-svg-icons";
@@ -40,7 +40,7 @@ export function MediaEditGroupModal(props) {
             placeholder="Edit Group"
             name="group"
             value={name}
-            onChange={event => setName(event.target.value)}
+            onChange={(event) => setName(event.target.value)}
           />
           <Button kind="save" onClick={handleEditGroup}>
             <FontAwesomeIcon icon={faSave} />

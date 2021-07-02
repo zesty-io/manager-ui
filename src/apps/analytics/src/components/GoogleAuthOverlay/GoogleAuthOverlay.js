@@ -1,4 +1,4 @@
-import React from "react";
+import { Component, Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe, faKey, faPlug } from "@fortawesome/free-solid-svg-icons";
 
@@ -7,12 +7,12 @@ import { Button } from "@zesty-io/core/Button";
 import GaAuthenticate from "./GaAuthenticate";
 import styles from "./GoogleAuthOverlay.less";
 
-export class GoogleAuthOverlay extends React.Component {
+export class GoogleAuthOverlay extends Component {
   state = {
     titles: {
       noDomain: "Please Setup a Domain before Authenticating",
       notAuthenticated: "Please Authenticate Google Analytics",
-      legacyAuthentication: "Google needs to be Re-authenticated"
+      legacyAuthentication: "Google needs to be Re-authenticated",
     },
     descriptions: {
       noDomain:
@@ -20,13 +20,13 @@ export class GoogleAuthOverlay extends React.Component {
       notAuthenticated:
         "Someone in your organization with Google Analytics access needs to authenticate this Zesty.io instance. Before authenticating, the domain associated with this instance needs to be registed in Google Analytics.",
       legacyAuthentication:
-        "Traffic is being tracked, but your Google Authentication is from Legacy Zesty.io and needs to be re-authenticated to access new metrics. Someone in your organization with Google Analytics access needs to do this."
+        "Traffic is being tracked, but your Google Authentication is from Legacy Zesty.io and needs to be re-authenticated to access new metrics. Someone in your organization with Google Analytics access needs to do this.",
     },
     generalDescription:
-      "Authenticating Google Analytics will automate GA tags in your Web Engine renders pages. If you use Zesty.io purely headlessly, Google Analytics will on provide value on rendered web views."
+      "Authenticating Google Analytics will automate GA tags in your Web Engine renders pages. If you use Zesty.io purely headlessly, Google Analytics will on provide value on rendered web views.",
   };
 
-  createAnalyticsPopup = evt => {
+  createAnalyticsPopup = (evt) => {
     var address = encodeURI(
       CONFIG.SERVICE_GOOGLE_ANALYTICS_AUTH +
         "?user_id=" +
@@ -71,24 +71,24 @@ export class GoogleAuthOverlay extends React.Component {
         </div>
 
         {this.props.domainSet ? (
-          <React.Fragment>
+          <Fragment>
             {this.props.gaLegacyAuth ? (
-              <React.Fragment>
+              <Fragment>
                 <h2>{this.state.titles.legacyAuthentication}</h2>
                 <p>{this.state.descriptions.legacyAuthentication}</p>
-              </React.Fragment>
+              </Fragment>
             ) : (
-              <React.Fragment>
+              <Fragment>
                 <h2>{this.state.titles.notAuthenticated}</h2>
                 <p>{this.state.descriptions.notAuthenticated}</p>
-              </React.Fragment>
+              </Fragment>
             )}
 
             {/* Exported this button in order to utilize usePermission hook */}
             <GaAuthenticate onClick={this.createAnalyticsPopup} />
-          </React.Fragment>
+          </Fragment>
         ) : (
-          <React.Fragment>
+          <Fragment>
             <h2>{this.state.titles.noDomain}</h2>
             <p>{this.state.descriptions.noDomain}</p>
             <div className={styles.buttonHolder}>
@@ -102,7 +102,7 @@ export class GoogleAuthOverlay extends React.Component {
                 Click here to Setup Your Domain
               </Button>
             </div>
-          </React.Fragment>
+          </Fragment>
         )}
 
         <p className={styles.generalDescription}>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
 
@@ -36,8 +36,8 @@ export default connect((state, props) => {
     item,
     instanceName: state.instance.name,
     tags: Object.values(state.headTags)
-      .filter(tag => tag.resourceZUID === props.resourceZUID)
-      .sort((a, b) => a.sort > b.sort)
+      .filter((tag) => tag.resourceZUID === props.resourceZUID)
+      .sort((a, b) => a.sort > b.sort),
   };
 })(function Head(props) {
   const domain = useDomain();

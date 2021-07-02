@@ -1,4 +1,4 @@
-import React from "react";
+import { PureComponent } from "react";
 
 import { Doughnut } from "react-chartjs-2";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
@@ -7,16 +7,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartPie } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./InboundTraffic.less";
-export class InboundTraffic extends React.PureComponent {
+export class InboundTraffic extends PureComponent {
   state = {
-    data: this.props.data
+    data: this.props.data,
   };
   componentDidMount() {
     if (this.props.domainSet) {
-      this.getInboundTraffic().then(json => {
+      this.getInboundTraffic().then((json) => {
         if (json && json.chartJSData) {
           this.setState({
-            data: json.chartJSData
+            data: json.chartJSData,
           });
         } else if (json && json.status === 400) {
           this.props.setGALegacyStatus(true);
@@ -31,7 +31,7 @@ export class InboundTraffic extends React.PureComponent {
         method: "POST",
         credentials: "omit",
         headers: {
-          "Content-Type": "plain/text"
+          "Content-Type": "plain/text",
         },
         body: JSON.stringify({
           gaRequest: {
@@ -47,16 +47,16 @@ export class InboundTraffic extends React.PureComponent {
                       {
                         dimensionName: "ga:medium",
                         not: true,
-                        expressions: ["(not set)"]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+                        expressions: ["(not set)"],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
-          type: "pie"
-        })
+          type: "pie",
+        }),
       }
     );
   }
@@ -86,8 +86,8 @@ export class InboundTraffic extends React.PureComponent {
               maintainAspectRatio: false,
               legend: {
                 display: true,
-                position: "left"
-              }
+                position: "left",
+              },
             }}
           />
         </CardContent>

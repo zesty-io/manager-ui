@@ -15,7 +15,7 @@ const mkdirp = require("mkdirp");
 const release = require("../../etc/release");
 const CONFIG = require("./app.config");
 
-module.exports = async env => {
+module.exports = async (env) => {
   // create build/ dir
   mkdirp.sync(path.resolve(__dirname, "../../build/"));
   // Attach release info onto config to connect with bug tracking software
@@ -25,7 +25,7 @@ module.exports = async env => {
 
   return {
     snapshot: {
-      managedPaths: []
+      managedPaths: [],
     },
     cache:
       process.env.NODE_ENV === "development"
@@ -33,8 +33,8 @@ module.exports = async env => {
           {
             type: "filesystem",
             buildDependencies: {
-              config: [__filename]
-            }
+              config: [__filename],
+            },
           }
         : false,
     devServer: {
@@ -42,7 +42,7 @@ module.exports = async env => {
       compress: true,
       contentBase: path.resolve(__dirname, "../../build"),
       disableHostCheck: true,
-      historyApiFallback: true
+      historyApiFallback: true,
     },
     devtool:
       process.env.NODE_ENV !== "development"
@@ -51,7 +51,7 @@ module.exports = async env => {
     mode: process.env.NODE_ENV !== "development" ? "production" : "development",
     entry: {
       main: path.resolve(__dirname, "./index.js"),
-      activePreview: path.resolve(__dirname, "../apps/active-preview/index.js")
+      activePreview: path.resolve(__dirname, "../apps/active-preview/index.js"),
     },
     output: {
       filename:
@@ -59,19 +59,19 @@ module.exports = async env => {
           ? "[name].[contenthash].js"
           : "[name].js",
       path: path.resolve(__dirname, "../../build/"),
-      publicPath: "/"
+      publicPath: "/",
     },
     resolve: {
       symlinks: false, // Used for development with npm link
       alias: {
         shell: path.resolve(__dirname, "../shell"),
         utility: path.resolve(__dirname, "../utility"),
-        apps: path.resolve(__dirname, "../apps")
-      }
+        apps: path.resolve(__dirname, "../apps"),
+      },
     },
     plugins: [
       new NodePolyfillPlugin({
-        excludeAliases: ["console"]
+        excludeAliases: ["console"],
       }),
       new MomentLocalesPlugin(),
       new MiniCssExtractPlugin({
@@ -79,7 +79,7 @@ module.exports = async env => {
         filename:
           process.env.NODE_ENV !== "development"
             ? "[name].[contenthash].css"
-            : "[name].css"
+            : "[name].css",
       }),
 
       new MonacoWebpackPlugin({
@@ -97,7 +97,7 @@ module.exports = async env => {
           // "pug",
           "scss",
           "typescript",
-          "xml"
+          "xml",
           // "yaml"
         ],
         features: [
@@ -140,31 +140,31 @@ module.exports = async env => {
           "!transpose",
           "wordHighlighter",
           "wordOperations",
-          "wordPartOperations"
-        ]
+          "wordPartOperations",
+        ],
       }),
 
       new CopyPlugin({
-        patterns: ["public"]
+        patterns: ["public"],
       }),
 
       new HtmlWebpackPlugin({
         inject: false,
         chunks: ["main"],
         template: "src/index.html",
-        filename: "index.html"
+        filename: "index.html",
       }),
 
       new HtmlWebpackPlugin({
         chunks: ["activePreview"],
         template: "src/apps/active-preview/index.html",
-        filename: "activePreview.html"
+        filename: "activePreview.html",
       }),
 
       // Inject app config into bundle based on env
       new webpack.DefinePlugin({
-        __CONFIG__: JSON.stringify(CONFIG[process.env.NODE_ENV])
-      })
+        __CONFIG__: JSON.stringify(CONFIG[process.env.NODE_ENV]),
+      }),
     ],
     optimization: {
       moduleIds: "deterministic",
@@ -174,10 +174,10 @@ module.exports = async env => {
           commons: {
             test: /[\\/]node_modules[\\/]/,
             name: "vendors",
-            chunks: "all"
-          }
-        }
-      }
+            chunks: "all",
+          },
+        },
+      },
     },
     module: {
       rules: [
@@ -185,24 +185,24 @@ module.exports = async env => {
           test: /\.less$/,
           use: [
             {
-              loader: MiniCssExtractPlugin.loader
+              loader: MiniCssExtractPlugin.loader,
             },
             {
               loader: "css-loader",
               options: {
                 modules: {
-                  localIdentName: "[local]--[contenthash:base64:5]"
-                }
-              }
+                  localIdentName: "[local]--[contenthash:base64:5]",
+                },
+              },
             },
             {
-              loader: "less-loader"
-            }
-          ]
+              loader: "less-loader",
+            },
+          ],
         },
         {
           test: /\.css$/,
-          use: ["style-loader", "css-loader"]
+          use: ["style-loader", "css-loader"],
         },
         {
           test: /\.js$/,
@@ -212,20 +212,23 @@ module.exports = async env => {
             options: {
               cacheCompression: false,
               cacheDirectory: true,
-              presets: ["@babel/preset-env", "@babel/preset-react"],
+              presets: [
+                "@babel/preset-env",
+                ["@babel/preset-react", { runtime: "automatic" }],
+              ],
               plugins: [
                 ["@babel/plugin-proposal-class-properties", { loose: false }],
                 "@babel/plugin-proposal-optional-chaining",
-                "@babel/plugin-transform-runtime"
-              ]
-            }
-          }
+                "@babel/plugin-transform-runtime",
+              ],
+            },
+          },
         },
         {
           test: /\.ttf$/,
-          use: ["file-loader"]
-        }
-      ]
-    }
+          use: ["file-loader"],
+        },
+      ],
+    },
   };
 };

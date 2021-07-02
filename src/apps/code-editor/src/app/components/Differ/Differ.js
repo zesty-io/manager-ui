@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { memo, useState } from "react";
 import { MonacoDiffEditor } from "react-monaco-editor";
 
 import { resolveMonacoLang } from "../../../store/files";
@@ -13,7 +13,7 @@ import { FileActions } from "../FileActions";
  * But we still want to broadcast store updates `onChange`
  */
 import styles from "./Differ.less";
-export const Differ = React.memo(
+export const Differ = memo(
   function Differ(props) {
     const [loading, setLoading] = useState(false);
     const [versionCodeLeft, setVersionCodeLeft] = useState(
@@ -48,7 +48,7 @@ export const Differ = React.memo(
               value={versionCodeRight}
               language={resolveMonacoLang(props.fileName)}
               options={{
-                selectOnLineNumbers: true
+                selectOnLineNumbers: true,
               }}
             />
           </div>

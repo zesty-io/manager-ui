@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import { PureComponent } from "react";
 
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 
@@ -11,15 +11,15 @@ export default class Editor extends PureComponent {
     super(props);
     this.state = {
       firstTextField: this.props.fields.find(
-        field => field.datatype === "text"
+        (field) => field.datatype === "text"
       ),
       firstContentField: this.props.fields.find(
-        field =>
+        (field) =>
           field.datatype === "textarea" ||
           field.datatype === "article_writer" ||
           field.datatype === "markdown" ||
           field.datatype.includes("wysiwyg")
-      )
+      ),
     };
   }
 
@@ -29,7 +29,7 @@ export default class Editor extends PureComponent {
     }
   }
 
-  scrollToField = fieldZUID => {
+  scrollToField = (fieldZUID) => {
     const node = document.getElementById(fieldZUID);
     if (node) {
       node.scrollIntoView({ behavior: "auto", block: "start" });
@@ -50,7 +50,7 @@ export default class Editor extends PureComponent {
       type: "SET_ITEM_DATA",
       itemZUID: this.props.itemZUID,
       key: name,
-      value: value
+      value: value,
     });
 
     // If we are working with a new item
@@ -63,13 +63,13 @@ export default class Editor extends PureComponent {
           type: "SET_ITEM_WEB",
           itemZUID: this.props.itemZUID,
           key: "metaLinkText",
-          value: value
+          value: value,
         });
         this.props.dispatch({
           type: "SET_ITEM_WEB",
           itemZUID: this.props.itemZUID,
           key: "metaTitle",
-          value: value
+          value: value,
         });
 
         // Datasets do not get path parts
@@ -82,7 +82,7 @@ export default class Editor extends PureComponent {
               .trim()
               .toLowerCase()
               .replace(/\&/g, "and")
-              .replace(/[^a-zA-Z0-9]/g, "-")
+              .replace(/[^a-zA-Z0-9]/g, "-"),
           });
         }
       }
@@ -95,7 +95,7 @@ export default class Editor extends PureComponent {
           type: "SET_ITEM_WEB",
           itemZUID: this.props.itemZUID,
           key: "metaDescription",
-          value: value.replace(/<[^>]*>/g, "").slice(0, 160)
+          value: value.replace(/<[^>]*>/g, "").slice(0, 160),
         });
       }
     }
@@ -111,8 +111,8 @@ export default class Editor extends PureComponent {
 
         {fields.length ? (
           fields
-            .filter(field => !field.deletedAt)
-            .map(field => {
+            .filter((field) => !field.deletedAt)
+            .map((field) => {
               return (
                 <div
                   key={`${field.ZUID}`}

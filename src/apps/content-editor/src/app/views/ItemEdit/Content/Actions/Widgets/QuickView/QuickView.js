@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { memo, Fragment } from "react";
 import moment from "moment-timezone";
 import cx from "classnames";
 
@@ -7,7 +7,7 @@ import {
   faCodeBranch,
   faBolt,
   faDatabase,
-  faCode
+  faCode,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
@@ -19,7 +19,7 @@ import { useDomain } from "shell/hooks/use-domain";
 
 import SharedWidgetStyles from "../SharedWidget.less";
 import styles from "./QuickView.less";
-export const QuickView = React.memo(function QuickView(props) {
+export const QuickView = memo(function QuickView(props) {
   const isPublished = props.publishing && props.publishing.isPublished;
   const isScheduled = props.scheduling && props.scheduling.isScheduled;
 
@@ -63,7 +63,7 @@ export const QuickView = React.memo(function QuickView(props) {
               <strong>Language:</strong>&nbsp;
               <span>
                 {Object.keys(props.siblings || {}).find(
-                  lang => props.siblings[lang] === props.itemZUID
+                  (lang) => props.siblings[lang] === props.itemZUID
                 )}
               </span>
             </li>

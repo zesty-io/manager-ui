@@ -1,4 +1,4 @@
-import React from "react";
+import { Component } from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,7 +12,7 @@ import ImportTableRowDisabled from "./ImportTableRowDisabled";
 import { createRedirect } from "../../../store/redirects";
 import { cancelImports } from "../../../store/imports";
 
-export default class RedirectImportTable extends React.Component {
+export default class RedirectImportTable extends Component {
   constructor(props) {
     super(props);
 
@@ -49,7 +49,7 @@ export default class RedirectImportTable extends React.Component {
           <span className={styles.Cell} style={{ flexBasis: "6rem" }}></span>
         </div>
         <main className={styles.TableBody}>
-          {Object.keys(this.props.imports).map(key => {
+          {Object.keys(this.props.imports).map((key) => {
             if (this.props.imports[key].canImport) {
               return (
                 <RedirectImportTableRow
@@ -77,7 +77,7 @@ export default class RedirectImportTable extends React.Component {
     this.props.dispatch(cancelImports());
   }
   handleAddAllRedirects() {
-    Object.keys(this.props.imports).forEach(path => {
+    Object.keys(this.props.imports).forEach((path) => {
       const redirect = this.props.imports[path];
       if (redirect.canImport) {
         this.props.dispatch(
@@ -86,7 +86,7 @@ export default class RedirectImportTable extends React.Component {
             query_string: redirect.query_string,
             targetType: redirect.target_type,
             target: redirect.target_zuid || redirect.target,
-            code: +redirect.code
+            code: +redirect.code,
           })
         );
       }

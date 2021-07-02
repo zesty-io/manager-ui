@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import { memo, useCallback, useRef } from "react";
 import cx from "classnames";
 import { createSelector } from "reselect";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,17 +16,17 @@ import { MediaWorkspaceItem } from "./MediaWorkspaceItem";
 import styles from "./MediaWorkspace.less";
 
 const selectGroupFiles = createSelector(
-  state => state.media.files,
+  (state) => state.media.files,
   (_, currentGroup) => currentGroup,
   (files, currentGroup) =>
-    files.filter(file => file.group_id === currentGroup.id).reverse()
+    files.filter((file) => file.group_id === currentGroup.id).reverse()
 );
 
-export const MediaWorkspace = React.memo(function MediaWorkspace(props) {
+export const MediaWorkspace = memo(function MediaWorkspace(props) {
   const ref = useRef();
   const hiddenInputRef = useRef();
-  const search = useSelector(state => state.media.search);
-  const files = useSelector(state => {
+  const search = useSelector((state) => state.media.search);
+  const files = useSelector((state) => {
     if (search.term) {
       return state.media.search.files;
     }
@@ -43,11 +43,11 @@ export const MediaWorkspace = React.memo(function MediaWorkspace(props) {
   }
 
   function uploadFiles(files) {
-    files.forEach(file => {
+    files.forEach((file) => {
       const fileToUpload = {
         file,
         bin_id: props.currentBin.id,
-        group_id: props.currentGroup.id
+        group_id: props.currentGroup.id,
       };
       dispatch(uploadFile(fileToUpload, props.currentBin));
     });
@@ -58,10 +58,10 @@ export const MediaWorkspace = React.memo(function MediaWorkspace(props) {
     drop(item, monitor) {
       uploadFiles(monitor.getItem().files);
     },
-    collect: monitor => ({
+    collect: (monitor) => ({
       isOver: monitor.isOver(),
-      canDrop: monitor.canDrop()
-    })
+      canDrop: monitor.canDrop(),
+    }),
   });
   const isDragActive = canDrop && isOver;
 
@@ -107,11 +107,11 @@ export const MediaWorkspace = React.memo(function MediaWorkspace(props) {
             )}
             {files.length ? (
               <section className={styles.WorkspaceGrid}>
-                {files.map(file => {
+                {files.map((file) => {
                   const itemProps = {};
                   if (props.selected) {
                     itemProps.selected = props.selected.find(
-                      selectedFile => selectedFile.id === file.id
+                      (selectedFile) => selectedFile.id === file.id
                     );
                   }
                   if (props.toggleSelected) {

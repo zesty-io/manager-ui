@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { connect } from "react-redux";
 
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
@@ -6,10 +6,14 @@ import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { fetchFields } from "shell/store/fields";
 
 import styles from "./RelatedOptions.less";
-export default connect(state => {
+export default connect((state) => {
   return {
-    models: Object.keys(state.models).map(modelZUID => state.models[modelZUID]),
-    fields: Object.keys(state.fields).map(fieldZUID => state.fields[fieldZUID])
+    models: Object.keys(state.models).map(
+      (modelZUID) => state.models[modelZUID]
+    ),
+    fields: Object.keys(state.fields).map(
+      (fieldZUID) => state.fields[fieldZUID]
+    ),
   };
 })(function RelatedOptions(props) {
   const [loading, setLoading] = useState(false);
@@ -22,11 +26,11 @@ export default connect(state => {
 
   const fieldOptions = useMemo(() => {
     return props.fields
-      .filter(f => f.contentModelZUID === selectedModel)
-      .map(f => {
+      .filter((f) => f.contentModelZUID === selectedModel)
+      .map((f) => {
         return {
           value: f.ZUID,
-          text: f.label
+          text: f.label,
         };
       });
   }, [props.fields]);
@@ -59,10 +63,10 @@ export default connect(state => {
 
               props.updateValue(val, name);
             }}
-            options={props.models.map(m => {
+            options={props.models.map((m) => {
               return {
                 value: m.ZUID,
-                text: m.label
+                text: m.label,
               };
             })}
           />

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import cx from "classnames";
 import { useSelector } from "react-redux";
 import { usePermission } from "shell/hooks/use-permissions";
@@ -12,7 +12,7 @@ import {
   faExternalLinkAlt,
   faExclamationCircle,
   faSpinner,
-  faEye
+  faEye,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Select, Option } from "@zesty-io/core/Select";
@@ -24,8 +24,8 @@ import { notify } from "shell/store/notifications";
 import styles from "./GlobalInstance.less";
 
 export default function GlobalInstance(props) {
-  const instance = useSelector(state => state.instance);
-  const instances = useSelector(state => state.instances);
+  const instance = useSelector((state) => state.instance);
+  const instances = useSelector((state) => state.instances);
   const ref = useRef();
   const domain = useDomain();
   const [open, setOpen] = useState(false);
@@ -33,7 +33,7 @@ export default function GlobalInstance(props) {
   const canPurge = usePermission("PUBLISH");
 
   useEffect(() => {
-    const handleGlobalClick = evt => {
+    const handleGlobalClick = (evt) => {
       if (ref && ref.current.contains(evt.target)) {
         setOpen(true);
       } else {
@@ -57,7 +57,7 @@ export default function GlobalInstance(props) {
 
         <button
           className={cx(styles.InstanceOpen)}
-          onClick={evt => {
+          onClick={(evt) => {
             // evt.stopPropagation();
             setOpen(!open);
           }}
@@ -72,7 +72,7 @@ export default function GlobalInstance(props) {
         </p>
 
         <Select className={styles.Select} name="instance" value={instance.ZUID}>
-          {instances.map(instance => (
+          {instances.map((instance) => (
             <Option
               key={instance.ZUID}
               value={instance.ZUID}
@@ -111,11 +111,11 @@ export default function GlobalInstance(props) {
                 return request(
                   `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${instance.ZUID}&instance=${instance.ZUID}`
                 )
-                  .catch(err => {
+                  .catch((err) => {
                     dispatch({
                       kind: "warn",
                       message: err.message,
-                      err
+                      err,
                     });
                   })
                   .finally(() => {
@@ -133,7 +133,7 @@ export default function GlobalInstance(props) {
           </div>
         )}
         <ul className={styles.Domains}>
-          {instance.domains.map(domain => (
+          {instance.domains.map((domain) => (
             <li key={domain.domain}>
               <Url
                 title={`http://${domain.domain}`}

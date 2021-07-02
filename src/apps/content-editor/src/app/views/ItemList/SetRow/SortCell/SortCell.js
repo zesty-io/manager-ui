@@ -1,10 +1,10 @@
-import React from "react";
+import { memo } from "react";
 import cx from "classnames";
 
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
 
 import styles from "./SortCell.less";
-export const SortCell = React.memo(function SortCell(props) {
+export const SortCell = memo(function SortCell(props) {
   return (
     <span className={cx(props.className, styles.SortCell)}>
       <FieldTypeSort

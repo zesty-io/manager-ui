@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { Children, cloneElement, useRef } from "react";
 
 // import styles from "./Draggable.less";
 export function Draggable(props) {
@@ -14,16 +14,16 @@ export function Draggable(props) {
         props.onOver(props.index);
       }}
     >
-      {React.Children.map(props.children, child =>
-        React.cloneElement(child, {
-          onDragStart: evt => {
+      {Children.map(props.children, (child) =>
+        cloneElement(child, {
+          onDragStart: (evt) => {
             props.drag(props.index);
 
             // Required in Firefox to initiate drag/drop
             evt.dataTransfer.setData(
               "text",
               JSON.stringify({
-                index: props.index
+                index: props.index,
               })
             );
 
@@ -35,7 +35,7 @@ export function Draggable(props) {
             );
 
             evt.dataTransfer.dropEffect = "move";
-          }
+          },
         })
       )}
     </div>

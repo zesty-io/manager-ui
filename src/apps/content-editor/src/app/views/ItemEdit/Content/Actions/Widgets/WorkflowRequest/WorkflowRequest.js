@@ -1,9 +1,9 @@
-import React, { memo, useState } from "react";
+import { memo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSave,
   faSpinner,
-  faEnvelope
+  faEnvelope,
 } from "@fortawesome/free-solid-svg-icons";
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   CollapsibleCard,
   CardContent,
-  CardFooter
+  CardFooter,
 } from "@zesty-io/core/CollapsibleCard";
 import { Button } from "@zesty-io/core/Button";
 import { Textarea } from "@zesty-io/core/Textarea";
@@ -22,9 +22,9 @@ import styles from "./WorkflowRequests.less";
 export default memo(function WorkflowRequest({ itemTitle, fields }) {
   const dispatch = useDispatch();
   const isMounted = useIsMounted();
-  const user = useSelector(state => state.user);
-  const users = useSelector(state => state.users);
-  const instance = useSelector(state => state.instance);
+  const user = useSelector((state) => state.user);
+  const users = useSelector((state) => state.users);
+  const instance = useSelector((state) => state.instance);
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState("");
   const [selectedFields, setSelectedFields] = useState([]);
@@ -36,7 +36,7 @@ export default memo(function WorkflowRequest({ itemTitle, fields }) {
     if (checked) {
       setSelectedFields([...selectedFields, name]);
     } else {
-      setSelectedFields(selectedFields.filter(field => field !== name));
+      setSelectedFields(selectedFields.filter((field) => field !== name));
     }
   }
 
@@ -46,15 +46,15 @@ export default memo(function WorkflowRequest({ itemTitle, fields }) {
     if (checked) {
       setSelectedMembers([...selectedMembers, name]);
     } else {
-      setSelectedMembers(selectedMembers.filter(user => user !== name));
+      setSelectedMembers(selectedMembers.filter((user) => user !== name));
     }
   }
 
   function handleSend() {
     const body = `
-<p><strong>${user.firstName +
-      " " +
-      user.lastName}</strong> has sent you a workflow request for <a href="${
+<p><strong>${
+      user.firstName + " " + user.lastName
+    }</strong> has sent you a workflow request for <a href="${
       window.location.href
     }">${itemTitle}</a> on ${instance.name}.</p>
 
@@ -68,7 +68,7 @@ ${
   selectedFields.length
     ? `<p>Fields to review:</p>
   <ul>
-  ${selectedFields.map(field => `<li>${field}</li>`).join("")}
+  ${selectedFields.map((field) => `<li>${field}</li>`).join("")}
   </ul>`
     : ""
 }
@@ -88,17 +88,17 @@ ${
       body: {
         body,
         subject,
-        to
-      }
+        to,
+      },
     })
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           dispatch(
             notify({
               message: `Sent workflow request on ${itemTitle} to ${selectedMembers.join(
                 ", "
               )}`,
-              kind: "save"
+              kind: "save",
             })
           );
         } else {
@@ -107,7 +107,7 @@ ${
               message: `Failed sending workflow request on ${itemTitle} to ${selectedMembers.join(
                 ", "
               )}`,
-              kind: "warn"
+              kind: "warn",
             })
           );
         }
@@ -132,7 +132,7 @@ ${
       <CardContent>
         <h3 className={styles.subheadline}>Select team members</h3>
         <ul>
-          {users.map(user => (
+          {users.map((user) => (
             <li className={styles.Checkboxes} key={user.ZUID}>
               <label onClick={handleSelectUser}>
                 <input type="checkbox" name={user.email} />
@@ -144,7 +144,7 @@ ${
 
         <h3 className={styles.subheadline}>Select fields for review</h3>
         <ul>
-          {fields.map(field => (
+          {fields.map((field) => (
             <li className={styles.Checkboxes} key={field.ZUID}>
               <label onClick={handleSelectField}>
                 <input type="checkbox" name={field.name} />
@@ -158,7 +158,7 @@ ${
           name="message"
           placeholder="Workflow request message"
           value={message}
-          onChange={evt => setMessage(evt.target.value)}
+          onChange={(evt) => setMessage(evt.target.value)}
         />
       </CardContent>
       <CardFooter>

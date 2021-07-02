@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import { memo, Fragment, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBan,
   faCheckCircle,
   faPlus,
-  faSpinner
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
@@ -19,7 +19,7 @@ import { notify } from "shell/store/notifications";
 import { createFile } from "../../../../../store/files";
 
 import styles from "./CreateFile.less";
-export const CreateFile = React.memo(function CreateFile(props) {
+export const CreateFile = memo(function CreateFile(props) {
   const history = useHistory();
 
   const [loading, setLoading] = useState(false);
@@ -32,7 +32,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
       props.dispatch(
         notify({
           kind: "warn",
-          message: "You must select a file type to create a new file"
+          message: "You must select a file type to create a new file",
         })
       );
       return;
@@ -41,7 +41,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
       props.dispatch(
         notify({
           kind: "warn",
-          message: "You must provide a name for the new file"
+          message: "You must provide a name for the new file",
         })
       );
       return;
@@ -51,7 +51,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
       props.dispatch(
         notify({
           kind: "warn",
-          message: `Please add leading slash in file path EX: /${name}`
+          message: `Please add leading slash in file path EX: /${name}`,
         })
       );
       return;
@@ -61,13 +61,13 @@ export const CreateFile = React.memo(function CreateFile(props) {
 
     props
       .dispatch(createFile(name, type))
-      .then(res => {
+      .then((res) => {
         if (res.status === 201) {
           setOpen(false);
           history.push(`/code/file/${res.pathPart}/${res.data.ZUID}`);
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
       })
       .finally(() => {
@@ -76,7 +76,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       <Button
         className={styles.CreateFileBtn}
         onClick={() => setOpen(true)}
@@ -99,7 +99,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
               className={styles.FileType}
               label="File Type"
               defaultOptText="-- choose a file type --"
-              onChange={value => {
+              onChange={(value) => {
                 setType(value);
               }}
             >
@@ -164,7 +164,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
             <FieldTypeText
               name="file_name"
               label="File Name"
-              onChange={value => setName(value)}
+              onChange={(value) => setName(value)}
             />
           </ModalContent>
           <ModalFooter>
@@ -196,6 +196,6 @@ export const CreateFile = React.memo(function CreateFile(props) {
           </ModalFooter>
         </Modal>
       )}
-    </React.Fragment>
+    </Fragment>
   );
 });

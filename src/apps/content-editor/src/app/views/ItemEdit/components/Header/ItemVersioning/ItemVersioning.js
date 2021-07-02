@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,7 +8,7 @@ import {
   faCalendar,
   faCheckCircle,
   faCloudUploadAlt,
-  faMinusCircle
+  faMinusCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
@@ -22,9 +22,9 @@ import { usePermission } from "shell/hooks/use-permissions";
 import { useDomain } from "shell/hooks/use-domain";
 
 import styles from "./ItemVersioning.less";
-export default connect(state => {
+export default connect((state) => {
   return {
-    platform: state.platform
+    platform: state.platform,
   };
 })(function ItemVersioning(props) {
   const canPublish = usePermission("PUBLISH");
@@ -39,8 +39,8 @@ export default connect(state => {
       fetch(
         `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/getHeaders?url=${domain}${props.item.web.path}`
       )
-        .then(res => res.json())
-        .then(json => {
+        .then((res) => res.json())
+        .then((json) => {
           const isOk = json["x-status"] === 200;
           // include 10 second gap as the URL could be experiencing significant traffic during a publish action
           const isBusted = Number(json.age) <= 10;
@@ -56,7 +56,7 @@ export default connect(state => {
     props
       .dispatch(
         publish(props.modelZUID, props.itemZUID, {
-          version: props.item.meta.version
+          version: props.item.meta.version,
         })
       )
       // fetch new publish history

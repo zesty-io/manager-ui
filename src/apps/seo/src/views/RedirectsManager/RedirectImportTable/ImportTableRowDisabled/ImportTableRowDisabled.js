@@ -1,4 +1,3 @@
-import React from "react";
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
 
 import styles from "./ImportTableRowDisabled.less";
@@ -8,7 +7,7 @@ export default function ImportTableRowDisabled({
   code,
   target,
   query_string,
-  created
+  created,
 }) {
   return (
     <div className={styles.ImportTableRowDisabled}>

@@ -1,4 +1,4 @@
-import React from "react";
+import { Component } from "react";
 import styles from "./RedirectTable.less";
 import cx from "classnames";
 
@@ -8,7 +8,7 @@ import { RedirectCreator } from "./RedirectCreator";
 import RedirectsTableHeader from "./RedirectsTableHeader";
 import RedirectsTableRow from "./RedirectsTableRow";
 
-export default class RedirectTable extends React.Component {
+export default class RedirectTable extends Component {
   constructor(props) {
     super(props);
 
@@ -16,7 +16,7 @@ export default class RedirectTable extends React.Component {
       redirects: this.props.redirects,
       redirectsOrder: Object.keys(this.props.redirects),
       sortBy: "",
-      sortDirection: ""
+      sortDirection: "",
     };
   }
   componentWillReceiveProps(nextProps) {
@@ -27,7 +27,7 @@ export default class RedirectTable extends React.Component {
           nextProps.redirects,
           this.state.sortBy,
           this.state.sortDirection
-        )
+        ),
       });
     }
   }
@@ -56,7 +56,7 @@ export default class RedirectTable extends React.Component {
     var order = [...this.state.redirectsOrder];
 
     if (filter) {
-      order = order.filter(key => {
+      order = order.filter((key) => {
         const redirect = this.props.redirects[key];
         if (
           redirect.path.indexOf(filter) !== -1 ||
@@ -72,7 +72,7 @@ export default class RedirectTable extends React.Component {
     }
 
     if (order.length) {
-      return order.map(key => {
+      return order.map((key) => {
         const redirect = this.props.redirects[key];
         const callback = this.handleRemoveRedirect.bind(this, redirect.ZUID);
 
@@ -102,24 +102,20 @@ export default class RedirectTable extends React.Component {
     this.setState({
       sortBy: by,
       sortDirection: direction,
-      redirectsOrder: this.sort(this.state.redirects, by, direction)
+      redirectsOrder: this.sort(this.state.redirects, by, direction),
     });
   }
   sort(redirects, by, direction) {
     const mapping = {
       type: "code",
       from: "path",
-      to: "path"
+      to: "path",
     };
 
     if (direction === "desc") {
       return Object.keys(redirects).sort((a, b) => {
-        const prev = String(redirects[a][mapping[by]])
-          ?.toLowerCase()
-          .trim();
-        const next = String(redirects[b][mapping[by]])
-          ?.toLowerCase()
-          .trim();
+        const prev = String(redirects[a][mapping[by]])?.toLowerCase().trim();
+        const next = String(redirects[b][mapping[by]])?.toLowerCase().trim();
 
         if (prev > next) {
           return -1;
@@ -131,12 +127,8 @@ export default class RedirectTable extends React.Component {
       });
     } else if (direction === "asc") {
       return Object.keys(redirects).sort((a, b) => {
-        const prev = String(redirects[a][mapping[by]])
-          ?.toLowerCase()
-          .trim();
-        const next = String(redirects[b][mapping[by]])
-          ?.toLowerCase()
-          .trim();
+        const prev = String(redirects[a][mapping[by]])?.toLowerCase().trim();
+        const next = String(redirects[b][mapping[by]])?.toLowerCase().trim();
 
         if (prev < next) {
           return -1;

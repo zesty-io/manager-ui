@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { memo, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudUploadAlt, faSpinner } from "@fortawesome/free-solid-svg-icons";
@@ -9,7 +9,7 @@ import { publishFile, fetchFiles } from "../../../../../../store/files";
 
 import styles from "../EditorActions.less";
 
-export const Publish = React.memo(function Publish(props) {
+export const Publish = memo(function Publish(props) {
   const [publishing, setPublishing] = useState(false);
 
   return (

@@ -1,4 +1,3 @@
-import React from "react";
 import { useDispatch } from "react-redux";
 
 import { notify } from "shell/store/notifications";
@@ -11,7 +10,7 @@ import { Button } from "@zesty-io/core/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationCircle,
-  faCheck
+  faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./LinkDeleteConfirmation.less";
@@ -22,7 +21,7 @@ export default function LinkDeleteConfirmation({ linkZUID, onClose }) {
   function deleteLink() {
     return request(`${CONFIG.API_INSTANCE}/content/links/${linkZUID}`, {
       method: "DELETE",
-      json: true
+      json: true,
     }).then(() => {
       dispatch(notify({ message: "Deleted Link", kind: "save" }));
       dispatch(closeTab(`/content/link/${linkZUID}`));

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { memo, useState, useEffect, useCallback } from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 import cx from "classnames";
@@ -18,10 +18,10 @@ export default connect((state, props) => {
 
   return {
     versions,
-    latestVersionNum
+    latestVersionNum,
   };
 })(
-  React.memo(function VersionSelector(props) {
+  memo(function VersionSelector(props) {
     const [loading, setLoading] = useState(true);
     const [selectedVersionNum, setSelectedVersionNum] = useState(
       props.latestVersionNum
@@ -42,16 +42,16 @@ export default connect((state, props) => {
     }, [props.latestVersionNum]);
 
     // Set item editing view to selected version
-    const onSelect = versionNumber => {
+    const onSelect = (versionNumber) => {
       const version = props.versions.find(
-        version => version.meta.version == versionNumber
+        (version) => version.meta.version == versionNumber
       );
 
       if (version) {
         props.dispatch({
           type: "LOAD_ITEM_VERSION",
           itemZUID: props.itemZUID,
-          data: version
+          data: version,
         });
 
         setSelectedVersionNum(version.meta.version);
@@ -72,7 +72,7 @@ export default connect((state, props) => {
         onSelect={onSelect}
       >
         {Array.isArray(props.versions) &&
-          props.versions.map(item => (
+          props.versions.map((item) => (
             <Option
               key={`${item.meta?.ZUID}-${item.meta?.version}`}
               className={styles.VersionOption}

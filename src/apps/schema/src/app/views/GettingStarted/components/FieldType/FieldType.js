@@ -1,11 +1,10 @@
-import React from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAlignLeft,
   faFileImage,
-  faFont
+  faFont,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Card } from "@zesty-io/core/Card";
@@ -23,7 +22,7 @@ export function FieldType(props) {
       <div className={styles.Cards}>
         <Card
           className={cx(styles.Option, {
-            [styles.Selected]: props.fieldType === "text"
+            [styles.Selected]: props.fieldType === "text",
           })}
           onClick={() => props.setFieldType("text")}
         >
@@ -33,9 +32,9 @@ export function FieldType(props) {
         </Card>
         <Card
           className={cx(styles.Option, {
-            [styles.Selected]: props.fieldType === "textarea"
+            [styles.Selected]: props.fieldType === "textarea",
           })}
-          onClick={e => props.setFieldType("textarea")}
+          onClick={(e) => props.setFieldType("textarea")}
         >
           <FontAwesomeIcon className={styles.icon} icon={faAlignLeft} />
           <h2 className={styles.OptionTitle}>Rich text</h2>
@@ -45,7 +44,7 @@ export function FieldType(props) {
         </Card>
         <Card
           className={cx(styles.Option, {
-            [styles.Selected]: props.fieldType === "images"
+            [styles.Selected]: props.fieldType === "images",
           })}
           onClick={() => props.setFieldType("images")}
         >

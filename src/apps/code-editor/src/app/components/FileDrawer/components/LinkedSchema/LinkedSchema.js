@@ -1,4 +1,3 @@
-import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase, faLink } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
@@ -33,7 +32,7 @@ export default function LinkedSchema(props) {
         </p>
 
         <ul>
-          {props.fields.map(field => (
+          {props.fields.map((field) => (
             <li key={field.ZUID}>
               <span className={styles.ParsleyRef}>
                 <span className={styles.Brace}>{"{{"}</span>

@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef } from "react";
+import { memo, useCallback, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -7,7 +7,7 @@ import {
   faCaretLeft,
   faEyeSlash,
   faFolder,
-  faSearch
+  faSearch,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import { Button } from "@zesty-io/core/Button";
@@ -17,16 +17,16 @@ import {
   closeGroup,
   hideGroup,
   searchFiles,
-  clearSearch
+  clearSearch,
 } from "shell/store/media";
 import shared from "./MediaShared.less";
 import styles from "./MediaSidebar.less";
 import { MediaNav } from "./MediaNav";
 
-export const MediaSidebar = React.memo(function MediaSidebar(props) {
+export const MediaSidebar = memo(function MediaSidebar(props) {
   const dispatch = useDispatch();
 
-  const groups = useSelector(state => state.media.groups);
+  const groups = useSelector((state) => state.media.groups);
 
   const [hiddenOpen, setHiddenOpen] = useState(false);
   const hiddenFileInput = useRef(null);
@@ -46,33 +46,33 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
   }
 
   function handleFileInputChange(event) {
-    Array.from(event.target.files).forEach(file => {
+    Array.from(event.target.files).forEach((file) => {
       const fileToUpload = {
         file,
         bin_id: props.currentBin.id,
-        group_id: props.currentGroup.id
+        group_id: props.currentGroup.id,
       };
       dispatch(uploadFile(fileToUpload, props.currentBin));
     });
   }
 
-  const getVisibleChildren = id => {
+  const getVisibleChildren = (id) => {
     const group = groups[id];
     if (!group.closed && group.children) {
       // filter out hidden unless we are at hidden nav root
       const children =
         id === 1
           ? group.children
-          : group.children.filter(id => !groups[id].hidden);
-      return children.map(id => ({
+          : group.children.filter((id) => !groups[id].hidden);
+      return children.map((id) => ({
         id,
-        height: 32
+        height: 32,
       }));
     }
   };
 
-  const collapseNode = useCallback(id => dispatch(closeGroup(id)), []);
-  const hideNode = useCallback(id => dispatch(hideGroup(id)), []);
+  const collapseNode = useCallback((id) => dispatch(closeGroup(id)), []);
+  const hideNode = useCallback((id) => dispatch(hideGroup(id)), []);
 
   const rowRenderer = ({ id, style }) => {
     const group = groups[id];
@@ -90,7 +90,7 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
         <p className={styles.NavRowText}>{group.name}</p>
         <FontAwesomeIcon
           className={styles.hide}
-          onClick={event => {
+          onClick={(event) => {
             event.stopPropagation();
             hideNode(id);
           }}
@@ -99,7 +99,7 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
         {group.children.length ? (
           <FontAwesomeIcon
             className={styles.collapse}
-            onClick={event => {
+            onClick={(event) => {
               event.stopPropagation();
               collapseNode(id);
             }}
@@ -119,7 +119,7 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
             className={shared.Input}
             placeholder="Search your files"
             value={props.searchTerm}
-            onChange={event => props.setSearchTerm(event.target.value)}
+            onChange={(event) => props.setSearchTerm(event.target.value)}
           />
           <button type="submit" aria-label="Search">
             <FontAwesomeIcon icon={faSearch} />

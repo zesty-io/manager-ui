@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import { connect } from "react-redux";
 
 import { Button } from "@zesty-io/core/Button";
@@ -56,4 +56,4 @@ class Pagination extends Component {
   }
 }
 
-export default connect(state => state)(Pagination);
+export default connect((state) => state)(Pagination);

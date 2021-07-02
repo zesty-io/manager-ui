@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import { memo, useState, Fragment } from "react";
 import cx from "classnames";
 import { useHistory } from "react-router-dom";
 
@@ -7,19 +7,19 @@ import {
   faBan,
   faSpinner,
   faTrash,
-  faTrashAlt
+  faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 import {
   CollapsibleCard,
   CardContent,
-  CardFooter
+  CardFooter,
 } from "@zesty-io/core/CollapsibleCard";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
 import { deleteItem } from "shell/store/content";
 
-export const WidgetDeleteItem = React.memo(function WidgetDeleteItem(props) {
+export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
   const history = useHistory();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -72,7 +72,7 @@ export const WidgetDeleteItem = React.memo(function WidgetDeleteItem(props) {
 
             props
               .dispatch(deleteItem(props.modelZUID, props.itemZUID))
-              .then(res => {
+              .then((res) => {
                 if (res.status === 200) {
                   history.push("/content/" + props.modelZUID);
                 } else {

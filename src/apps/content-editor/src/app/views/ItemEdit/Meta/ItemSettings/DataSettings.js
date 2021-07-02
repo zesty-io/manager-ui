@@ -1,4 +1,4 @@
-import React from "react";
+import { Component } from "react";
 import cx from "classnames";
 
 import { MetaTitle } from "./settings/MetaTitle";
@@ -7,7 +7,7 @@ import { MetaKeywords } from "./settings/MetaKeywords";
 import { MetaLinkText } from "./settings/MetaLinkText";
 
 import styles from "./ItemSettings.less";
-export class DataSettings extends React.Component {
+export class DataSettings extends Component {
   onChange = (value, name) => {
     if (!name) {
       throw new Error("Input is missing name attribute");
@@ -16,7 +16,7 @@ export class DataSettings extends React.Component {
       type: "SET_ITEM_WEB",
       itemZUID: this.props.item.meta.ZUID,
       key: name,
-      value: value
+      value: value,
     });
   };
 

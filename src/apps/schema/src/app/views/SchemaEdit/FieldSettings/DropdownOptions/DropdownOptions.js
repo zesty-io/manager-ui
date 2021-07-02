@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -15,15 +15,15 @@ export function DropdownOptions(props) {
       Object.keys(props.field.settings.options).reduce((acc, key) => {
         acc.push({
           key,
-          value: props.field.settings.options[key]
+          value: props.field.settings.options[key],
         });
         return acc;
       }, [])
     : [
         {
           key: "option_1",
-          value: "Option One"
-        }
+          value: "Option One",
+        },
       ];
 
   const [options, setOptions] = useState(initialState);
@@ -33,7 +33,7 @@ export function DropdownOptions(props) {
     let newOptions = [...options];
     newOptions.splice(i, 1, {
       key: formatName(val),
-      value: name === "key" ? option.value : val
+      value: name === "key" ? option.value : val,
     });
     setOptions(newOptions);
 

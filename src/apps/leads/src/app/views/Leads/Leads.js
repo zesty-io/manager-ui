@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Route } from "react-router-dom";
 
@@ -10,7 +10,7 @@ import { GetStarted } from "../GetStarted";
 import { fetchLeads } from "../../../store/leads";
 
 import styles from "./Leads.less";
-export default connect(state => state)(function Leads(props) {
+export default connect((state) => state)(function Leads(props) {
   const [loading, setLoading] = useState();
 
   useEffect(() => {

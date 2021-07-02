@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,7 +12,7 @@ import styles from "./MetaDescription.less";
 export default connect()(function MetaDescription({
   meta_description,
   onChange,
-  dispatch
+  dispatch,
 }) {
   const [error, setError] = useState("");
 
@@ -48,7 +48,7 @@ export default connect()(function MetaDescription({
     dispatch(
       notify({
         kind: "warn",
-        message: error
+        message: error,
       })
     );
   }

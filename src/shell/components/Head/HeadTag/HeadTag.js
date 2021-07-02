@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { notify } from "shell/store/notifications";
 
@@ -10,7 +10,7 @@ import {
   deleteTagAttribute,
   updateTagAttribute,
   updateTagSort,
-  updateTagType
+  updateTagType,
 } from "shell/store/headTags";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,7 +18,7 @@ import {
   faPlus,
   faSave,
   faSpinner,
-  faTrash
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
@@ -28,7 +28,7 @@ import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
 
 import styles from "./HeadTag.less";
-export const HeadTag = props => {
+export const HeadTag = (props) => {
   const [saving, setSaving] = useState(false);
 
   const onCreate = () => {
@@ -41,14 +41,14 @@ export const HeadTag = props => {
           attributes: props.tag.attributes.reduce((acc, attr) => {
             acc[attr.key] = attr.value;
             return acc;
-          }, {})
+          }, {}),
         })
       )
-      .then(res => {
+      .then((res) => {
         props.dispatch(
           notify({
             message: res.data.error ? res.data.error : "New head tag created",
-            kind: res.data.error ? "warn" : "success"
+            kind: res.data.error ? "warn" : "success",
           })
         );
 
@@ -68,16 +68,16 @@ export const HeadTag = props => {
           attributes: props.tag.attributes.reduce((acc, attr) => {
             acc[attr.key] = attr.value;
             return acc;
-          }, {})
+          }, {}),
         })
       )
-      .then(res => {
+      .then((res) => {
         props.dispatch(
           notify({
             message: res.error
               ? `Failed to update head tag. ${res.status}`
               : "Successfully updated head tag",
-            kind: res.error ? "warn" : "success"
+            kind: res.error ? "warn" : "success",
           })
         );
 
@@ -86,11 +86,11 @@ export const HeadTag = props => {
   };
 
   const onDelete = () => {
-    props.dispatch(deleteHeadTag(props.tag.ZUID)).then(res => {
+    props.dispatch(deleteHeadTag(props.tag.ZUID)).then((res) => {
       props.dispatch(
         notify({
           message: res.data.error ? res.data.error : "Head tag deleted",
-          kind: res.data.error ? "warn" : "success"
+          kind: res.data.error ? "warn" : "success",
         })
       );
     });
@@ -99,7 +99,7 @@ export const HeadTag = props => {
   const onCancel = () => {
     props.dispatch({
       type: "DELETE_HEADTAG",
-      id: props.tag.ZUID
+      id: props.tag.ZUID,
     });
   };
 
@@ -111,12 +111,12 @@ export const HeadTag = props => {
           className={styles.DropDown}
           name={tag.ZUID}
           label="Tag"
-          onChange={value => dispatch(updateTagType(tag.ZUID, value))}
+          onChange={(value) => dispatch(updateTagType(tag.ZUID, value))}
           value={tag.type}
           options={[
             { text: "Script", value: "script" },
             { text: "Meta", value: "meta" },
-            { text: "Link", value: "link" }
+            { text: "Link", value: "link" },
           ]}
         />
         <FieldTypeSort
@@ -124,7 +124,7 @@ export const HeadTag = props => {
           name={tag.ZUID}
           label="Sort"
           className={styles.Sort}
-          onChange={value => dispatch(updateTagSort(tag.ZUID, value))}
+          onChange={(value) => dispatch(updateTagSort(tag.ZUID, value))}
         />
         <Button
           kind="primary"
@@ -159,11 +159,11 @@ export const HeadTag = props => {
                 name={`tag-${tag.ZUID}-${index}-attr`}
                 value={attr.key}
                 disabled={attr.key === "custom"}
-                onChange={newKey =>
+                onChange={(newKey) =>
                   dispatch(
                     updateTagAttribute(tag.ZUID, index, {
                       key: newKey,
-                      value: attr.value
+                      value: attr.value,
                     })
                   )
                 }
@@ -174,11 +174,11 @@ export const HeadTag = props => {
                 name={`tag-${tag.ZUID}-${index}-val`}
                 value={attr.value}
                 disabled={attr.key === "custom"}
-                onChange={value =>
+                onChange={(value) =>
                   dispatch(
                     updateTagAttribute(tag.ZUID, index, {
                       key: attr.key,
-                      value: value
+                      value: value,
                     })
                   )
                 }

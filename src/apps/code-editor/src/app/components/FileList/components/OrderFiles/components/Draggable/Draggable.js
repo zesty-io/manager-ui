@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import cx from "classnames";
 
 export function Draggable(props) {
@@ -13,7 +13,7 @@ export function Draggable(props) {
         // Communicate to the parent <DropZone> that the this child is being dragged over
         props.onOver(props.index);
       }}
-      onDragStart={evt => {
+      onDragStart={(evt) => {
         // Tell parent Dropzone which child is being dragged
         props.setSourceIndex(props.index);
 
@@ -21,7 +21,7 @@ export function Draggable(props) {
         evt.dataTransfer.setData(
           "text",
           JSON.stringify({
-            index: props.index
+            index: props.index,
           })
         );
 

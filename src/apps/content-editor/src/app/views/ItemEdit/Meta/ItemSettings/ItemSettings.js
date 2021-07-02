@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import { memo, Fragment, useCallback } from "react";
 
 import { MetaTitle } from "./settings/MetaTitle";
 import MetaDescription from "./settings/MetaDescription";
@@ -12,7 +12,7 @@ import { useDomain } from "shell/hooks/use-domain";
 
 import styles from "./ItemSettings.less";
 
-export const ItemSettings = React.memo(
+export const ItemSettings = memo(
   function ItemSettings(props) {
     const domain = useDomain();
     let { data, meta, web } = props.item;
@@ -30,7 +30,7 @@ export const ItemSettings = React.memo(
           type: "SET_ITEM_WEB",
           itemZUID: meta.ZUID,
           key: name,
-          value: value
+          value: value,
         });
       },
       [meta.ZUID]
@@ -40,7 +40,7 @@ export const ItemSettings = React.memo(
       <section className={styles.Meta}>
         <main className={styles.Settings}>
           {web.pathPart !== "zesty_home" && (
-            <React.Fragment>
+            <Fragment>
               <ItemParent
                 itemZUID={meta.ZUID}
                 modelZUID={props.modelZUID}
@@ -56,7 +56,7 @@ export const ItemSettings = React.memo(
                 path_part={web.pathPart}
                 path_to={web.path}
               />
-            </React.Fragment>
+            </Fragment>
           )}
           <MetaLinkText meta_link_text={web.metaLinkText} onChange={onChange} />
           <MetaTitle meta_title={web.metaTitle} onChange={onChange} />

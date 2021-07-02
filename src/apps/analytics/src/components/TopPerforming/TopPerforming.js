@@ -1,4 +1,4 @@
-import React from "react";
+import { PureComponent } from "react";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -6,22 +6,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowCircleUp } from "@fortawesome/free-solid-svg-icons";
 import { request } from "utility/request";
 
-export class TopPerforming extends React.PureComponent {
+export class TopPerforming extends PureComponent {
   state = {
     headers: [],
     data: [],
-    loading: true
+    loading: true,
   };
 
   componentDidMount() {
-    this.getTopTenContent().then(json => {
+    this.getTopTenContent().then((json) => {
       if (json && json.tableData) {
         // find the numbers that are long
         // truncate at 2 decimal places
         // this is highly dependant on the format
         // that the fetch returns ex: [[path, number, number, number], ...]
-        const truncatedData = json.tableData.data.map(row => {
-          return row.map(col => {
+        const truncatedData = json.tableData.data.map((row) => {
+          return row.map((col) => {
             // will not attempt conversion on a path
             if (Number(col)) {
               return Number(Math.round(col + "e" + 2) + "e-" + 2);
@@ -33,11 +33,11 @@ export class TopPerforming extends React.PureComponent {
         this.setState({
           headers: json.tableData.headers,
           data: truncatedData,
-          loading: false
+          loading: false,
         });
       } else {
         this.setState({
-          loading: false
+          loading: false,
         });
       }
     });
@@ -50,7 +50,7 @@ export class TopPerforming extends React.PureComponent {
         method: "POST",
         credentials: "omit",
         headers: {
-          "content-type": "plain/text"
+          "content-type": "plain/text",
         },
         body: JSON.stringify({
           gaRequest: {
@@ -61,21 +61,21 @@ export class TopPerforming extends React.PureComponent {
                 metrics: [
                   { expression: "ga:sessions" },
                   { expression: "ga:avgSessionDuration" },
-                  { expression: "ga:bounceRate" }
+                  { expression: "ga:bounceRate" },
                 ],
                 dimensions: [{ name: "ga:pagePath" }],
                 orderBys: [
                   {
                     fieldName: "ga:sessions",
-                    sortOrder: "DESCENDING"
-                  }
+                    sortOrder: "DESCENDING",
+                  },
                 ],
-                pageSize: 10
-              }
-            ]
+                pageSize: 10,
+              },
+            ],
           },
-          type: "bar"
-        })
+          type: "bar",
+        }),
       }
     );
   }
@@ -96,13 +96,13 @@ export class TopPerforming extends React.PureComponent {
             {this.state.headers.length && this.state.data.length ? (
               <table>
                 <tr>
-                  {this.state.headers.map(item => (
+                  {this.state.headers.map((item) => (
                     <th>{item}</th>
                   ))}
                 </tr>
-                {this.state.data.map(data => (
+                {this.state.data.map((data) => (
                   <tr>
-                    {data.map(field => (
+                    {data.map((field) => (
                       <td>{field}</td>
                     ))}
                   </tr>

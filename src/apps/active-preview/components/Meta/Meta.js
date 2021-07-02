@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Modal, ModalHeader, ModalContent } from "@zesty-io/core/Modal";
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -10,16 +10,16 @@ export function Meta(props) {
   const [loading, setLoading] = useState(false);
   const [item, setItem] = useState({
     meta: {},
-    web: {}
+    web: {},
   });
 
   useEffect(() => {
     const URL = `${CONFIG.API_INSTANCE_PROTOCOL}${props.instanceZUID}${CONFIG.API_INSTANCE}`;
 
     setLoading(true);
-    api(`${URL}/search/items?q=${props.route}&limit=1`).then(json => {
+    api(`${URL}/search/items?q=${props.route}&limit=1`).then((json) => {
       const item = json.data.find(
-        item => item.web && item.web.path === props.route
+        (item) => item.web && item.web.path === props.route
       );
       if (item) {
         setItem(item);

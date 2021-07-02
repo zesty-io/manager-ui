@@ -1,4 +1,3 @@
-import React from "react";
 import { useDispatch } from "react-redux";
 import cx from "classnames";
 
@@ -20,10 +19,10 @@ export function LeadExporter() {
           className={styles.Search}
           name="text-filter"
           placeholder="Search across all of your leads"
-          onChange={value => {
+          onChange={(value) => {
             dispatch(setFilterText(value));
           }}
-          onSubmit={value => {
+          onSubmit={(value) => {
             dispatch(setFilterText(value));
           }}
         />

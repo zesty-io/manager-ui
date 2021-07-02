@@ -1,16 +1,16 @@
-import React, { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import cx from "classnames";
 import { NodeDraggableMemo } from "../NodeDraggable";
 import styles from "./NavDraggable.less";
 import { editFile, editGroup, highlightGroup } from "shell/store/media";
 
-export const NavDraggable = React.memo(function NavDraggable(props) {
+export const NavDraggable = memo(function NavDraggable(props) {
   const dispatch = useDispatch();
   const [prevID, setPrevID] = useState();
 
   const highlightTarget = useCallback(
-    id => {
+    (id) => {
       if (prevID === id) {
         return;
       }
@@ -37,7 +37,7 @@ export const NavDraggable = React.memo(function NavDraggable(props) {
       id={props.id || "Navigation"}
       className={cx(styles.Nav, props.className)}
     >
-      {props.tree.map(item => (
+      {props.tree.map((item) => (
         <NodeDraggableMemo
           {...item}
           key={item.path}

@@ -1,13 +1,10 @@
-import React from "react";
+import { memo } from "react";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { Infotip } from "@zesty-io/core/Infotip";
 
 import styles from "./MetaTitle.less";
-export const MetaTitle = React.memo(function MetaTitle({
-  meta_title,
-  onChange
-}) {
+export const MetaTitle = memo(function MetaTitle({ meta_title, onChange }) {
   return (
     <article className={styles.MetaTitle} data-cy="metaTitle">
       <FieldTypeText

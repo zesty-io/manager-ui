@@ -1,12 +1,12 @@
-import React from "react";
+import { memo } from "react";
 
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { Infotip } from "@zesty-io/core/Infotip";
 
 import styles from "./MetaKeywords.less";
-export const MetaKeywords = React.memo(function MetaKeywords({
+export const MetaKeywords = memo(function MetaKeywords({
   meta_keywords,
-  onChange
+  onChange,
 }) {
   return (
     <article className={styles.MetaKeywords} data-cy="metaKeywords">

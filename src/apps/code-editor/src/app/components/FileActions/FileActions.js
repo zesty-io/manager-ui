@@ -1,4 +1,4 @@
-import React from "react";
+import { memo, Fragment } from "react";
 import cx from "classnames";
 import { Switch, Route, useRouteMatch } from "react-router";
 
@@ -10,7 +10,7 @@ import {
   faEdit,
   faFileCode,
   faHistory,
-  faPlus
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
@@ -24,7 +24,7 @@ import { EditorActions } from "./components/EditorActions";
 import { Delete } from "./components/Delete";
 
 import styles from "./FileActions.less";
-export const FileActions = React.memo(function FileActions(props) {
+export const FileActions = memo(function FileActions(props) {
   const match = useRouteMatch("/code/file/:fileType/:fileZUID");
 
   return (
@@ -47,7 +47,7 @@ export const FileActions = React.memo(function FileActions(props) {
           <Route path={`${match.url}`}>
             <div className={styles.QuickLinks}>
               {props.contentModelZUID && (
-                <React.Fragment>
+                <Fragment>
                   <AppLink
                     className={styles.Link}
                     to={`/content/${props.contentModelZUID}`}
@@ -67,7 +67,7 @@ export const FileActions = React.memo(function FileActions(props) {
                       <FontAwesomeIcon icon={faDatabase} />
                     </Button>
                   </AppLink>
-                </React.Fragment>
+                </Fragment>
               )}
 
               <AppLink

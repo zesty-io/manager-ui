@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Search } from "@zesty-io/core/Search";
 
 import styles from "./FilterFiles.less";
@@ -9,11 +7,11 @@ export function FilterFiles(props) {
       name="filterFiles"
       placeholder="Filter file list by name, zuid or code"
       className={styles.FilterFiles}
-      onChange={term => {
+      onChange={(term) => {
         term = term.trim().toLowerCase();
         if (term) {
           props.setShownFiles(
-            props.nav.raw.filter(f => {
+            props.nav.raw.filter((f) => {
               return (
                 f.fileName.toLowerCase().includes(term) ||
                 f.contentModelZUID === term ||

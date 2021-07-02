@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,10 +19,10 @@ import { saveStyleVariable } from "../../../store/settings";
 import styles from "./Styles.less";
 import MediaStyles from "../../../../../media/src/app/MediaAppModal.less";
 
-export default connect(state => {
+export default connect((state) => {
   return {
     styles: state.settings.styles,
-    fontsInstalled: state.settings.fontsInstalled
+    fontsInstalled: state.settings.fontsInstalled,
   };
 })(function Styles(props) {
   const [saving, setSaving] = useState(false);
@@ -39,10 +39,10 @@ export default connect(state => {
       : 4;
 
     const fieldsByCategory = props.styles.filter(
-      item => item.category == category
+      (item) => item.category == category
     );
     let newState = {};
-    fieldsByCategory.forEach(field => {
+    fieldsByCategory.forEach((field) => {
       if (field.type === "font_picker") {
         newState[field.referenceName] = parseFamily(field.value);
       } else {
@@ -58,14 +58,14 @@ export default connect(state => {
     // inject all installed fonts
     props.fontsInstalled.forEach(injectFontImport);
     setFonts(
-      props.fontsInstalled.map(headTag => {
+      props.fontsInstalled.map((headTag) => {
         const url = headTag.attributes.href;
         const fontVariants = url.split("=")[1];
         const font = fontVariants.split(":")[0];
         const variants = fontVariants.split(":")[1];
         const fontOption = {
           label: font.replace("+", " "),
-          family: font.replace("+", " ")
+          family: font.replace("+", " "),
         };
         if (variants) {
           const variantsArr = variants.split(",");
@@ -99,12 +99,12 @@ export default connect(state => {
     setSaving(true);
 
     const requests = fields
-      .filter(field => {
-        if (dirtyFields.some(item => field.referenceName === item)) {
+      .filter((field) => {
+        if (dirtyFields.some((item) => field.referenceName === item)) {
           return field;
         }
       })
-      .map(field => {
+      .map((field) => {
         return props.dispatch(
           saveStyleVariable(field.ZUID, {
             ZUID: field.ZUID,
@@ -114,7 +114,7 @@ export default connect(state => {
             value: fieldValues[field.referenceName],
             options: field.options,
             tips: field.tips,
-            type: field.type
+            type: field.type,
           })
         );
       });
@@ -126,16 +126,16 @@ export default connect(state => {
         props.dispatch(
           notify({
             kind: "success",
-            message: "Settings Saved"
+            message: "Settings Saved",
           })
         );
       })
-      .catch(err => {
+      .catch((err) => {
         setSaving(false);
         props.dispatch(
           notify({
             kind: "warn",
-            message: err.message
+            message: err.message,
           })
         );
       });
@@ -166,12 +166,7 @@ export default connect(state => {
       if (font.split(":").length < 2) {
         return "";
       }
-      if (
-        font
-          .split(":")[1]
-          .split()
-          .includes("i")
-      ) {
+      if (font.split(":")[1].split().includes("i")) {
         return "italic";
       }
       return "";
@@ -200,9 +195,9 @@ export default connect(state => {
             value={fieldValues[field.referenceName]}
             onChange={setValue}
             description={field.description}
-            options={Object.keys(field.options).map(option => ({
+            options={Object.keys(field.options).map((option) => ({
               value: option,
-              text: field.options[option]
+              text: field.options[option],
             }))}
           />
         );
@@ -241,7 +236,7 @@ export default connect(state => {
                     fontSize: "1.4rem",
                     fontFamily: parseFamily(fieldValues[field.referenceName]),
                     fontStyle: parseStyle(fieldValues[field.referenceName]),
-                    fontWeight: parseWeight(fieldValues[field.referenceName])
+                    fontWeight: parseWeight(fieldValues[field.referenceName]),
                   }}
                 >
                   This is a text example
@@ -253,7 +248,7 @@ export default connect(state => {
       case "image":
         const images = (fieldValues[field.referenceName] || "")
           .split(",")
-          .filter(el => el);
+          .filter((el) => el);
         return (
           <>
             <FieldTypeImage
@@ -271,7 +266,7 @@ export default connect(state => {
               resolveImage={(zuid, width, height) =>
                 `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
               }
-              mediaBrowser={opts => {
+              mediaBrowser={(opts) => {
                 setImageModal(opts);
               }}
             />
@@ -285,7 +280,7 @@ export default connect(state => {
                 <MediaApp
                   limitSelected={imageModal.limit - images.length}
                   modal={true}
-                  addImages={images => {
+                  addImages={(images) => {
                     imageModal.callback(images);
                     setImageModal();
                   }}
@@ -311,7 +306,7 @@ export default connect(state => {
 
   return (
     <>
-      {fields.map(field => (
+      {fields.map((field) => (
         <div key={field.ZUID} className={styles.variableContainer}>
           <div className={styles.variable}>{renderField(field)}</div>
           <div className={styles.reference}>@{field.referenceName}</div>

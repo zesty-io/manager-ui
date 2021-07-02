@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,26 +10,26 @@ import { saveFile } from "../../../../../../store/files";
 
 import styles from "../EditorActions.less";
 
-export default connect(state => {
+export default connect((state) => {
   return {
-    platform: state.platform
+    platform: state.platform,
   };
 })(
-  React.memo(function Save(props) {
+  memo(function Save(props) {
     const [saving, setSaving] = useState(false);
 
     const onSave = () => {
       setSaving(true);
       props
         .dispatch(saveFile(props.fileZUID, props.status))
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
         })
         .finally(() => {
           setSaving(false);
         });
     };
-    const onKeydownSave = evt => {
+    const onKeydownSave = (evt) => {
       if (
         ((props.platform.isMac && evt.metaKey) ||
           (!props.platform.isMac && evt.ctrlKey)) &&

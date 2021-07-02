@@ -1,11 +1,11 @@
-import React, { PureComponent } from "react";
+import { PureComponent } from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronUp,
   faChevronDown,
-  faQuestionCircle
+  faQuestionCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { Loader } from "@zesty-io/core/Loader";
 
@@ -28,8 +28,8 @@ export class SetColumns extends PureComponent {
           </span>
           {this.props.fields ? (
             this.props.fields
-              .filter(field => field.settings && field.settings.list == 1)
-              .map(field => {
+              .filter((field) => field.settings && field.settings.list == 1)
+              .map((field) => {
                 return (
                   <span
                     key={field.ZUID}

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, PureComponent } from "react";
+import { useRef, useState, useEffect, PureComponent } from "react";
 import { connect } from "react-redux";
 import { VariableSizeList as List } from "react-window";
 import { useHistory } from "react-router-dom";
@@ -21,7 +21,7 @@ import {
   fetchItem,
   fetchItems,
   searchItems,
-  saveItem
+  saveItem,
 } from "shell/store/content";
 import { fetchFields } from "shell/store/fields";
 import { notify } from "shell/store/notifications";
@@ -35,7 +35,7 @@ const DEFAULT_FILTER = {
   reverseSort: false,
   status: "all",
   filterTerm: "",
-  colType: null
+  colType: null,
 };
 
 export default connect((state, props) => {
@@ -43,7 +43,8 @@ export default connect((state, props) => {
   const model = state.models[modelZUID];
 
   const selectedLang = state.languages
-    ? state.languages.find(lang => lang.code === state.user.selected_lang) || {}
+    ? state.languages.find((lang) => lang.code === state.user.selected_lang) ||
+      {}
     : {};
 
   const userSelectedLang = state.user.selected_lang;
@@ -59,12 +60,12 @@ export default connect((state, props) => {
     allItems: state.content,
     allFields: state.fields,
     dirtyItems: Object.keys(state.content).filter(
-      item =>
+      (item) =>
         state.content[item].meta &&
         state.content[item].meta.contentModelZUID === modelZUID &&
         state.content[item].dirty &&
         state.content[item].meta.ZUID.slice(0, 3) !== "new" // Don't include new items
-    )
+    ),
   };
 })(function ItemList(props) {
   const history = useHistory();
@@ -197,9 +198,9 @@ export default connect((state, props) => {
           fetchItems(modelZUID, {
             limit: PAGE_SIZE,
             page: 1,
-            lang
+            lang,
           })
-        )
+        ),
       ]);
       if (_isMounted.current) {
         // render 1st page of results
@@ -265,19 +266,19 @@ export default connect((state, props) => {
   function saveItems() {
     setSaving(true);
     return Promise.all(
-      props.dirtyItems.map(itemZUID => props.dispatch(saveItem(itemZUID)))
+      props.dirtyItems.map((itemZUID) => props.dispatch(saveItem(itemZUID)))
     )
-      .then(results => {
+      .then((results) => {
         setSaving(false);
         let success = false;
         // display notification for each missing required field on each item
-        results.forEach(result => {
+        results.forEach((result) => {
           if (result.err === "MISSING_REQUIRED") {
-            result.missingRequired.forEach(field => {
+            result.missingRequired.forEach((field) => {
               props.dispatch(
                 notify({
                   message: `Missing required field "${field.label}" on ${field.ZUID}`,
-                  kind: "warn"
+                  kind: "warn",
                 })
               );
             });
@@ -290,18 +291,18 @@ export default connect((state, props) => {
           props.dispatch(
             notify({
               message: `All ${props.model.label} changes saved`,
-              kind: "save"
+              kind: "save",
             })
           );
         }
       })
-      .catch(err => {
+      .catch((err) => {
         setSaving(false);
         console.error("ItemList:saveItems:error", err);
         props.dispatch(
           notify({
             message: `There was an issue saving these changes`,
-            kind: "warn"
+            kind: "warn",
           })
         );
       });
@@ -313,18 +314,18 @@ export default connect((state, props) => {
       type: "SET_ITEM_DATA",
       itemZUID,
       key,
-      value
+      value,
     });
     setItems(
-      items.map(item => {
+      items.map((item) => {
         if (item.meta && item.meta.ZUID === itemZUID) {
           return {
             ...item,
             data: {
               ...item.data,
-              [key]: value
+              [key]: value,
             },
-            dirty: true
+            dirty: true,
           };
         }
         return item;
@@ -341,7 +342,7 @@ export default connect((state, props) => {
       props.dispatch({
         type: "PERSIST_LIST_FILTERS",
         modelZUID: props.modelZUID,
-        filters: filter
+        filters: filter,
       });
     }
   }
@@ -354,18 +355,18 @@ export default connect((state, props) => {
     switch (status) {
       case "scheduled":
         return items.filter(
-          item => item.scheduling && item.scheduling.isScheduled
+          (item) => item.scheduling && item.scheduling.isScheduled
         );
       case "published":
         return items.filter(
-          item =>
+          (item) =>
             item.publishing &&
             item.publishing.isPublished &&
             (!item.scheduling || !item.scheduling.isScheduled)
         );
       case "unpublished":
         return items.filter(
-          item =>
+          (item) =>
             (!item.publishing || !item.publishing.isPublished) &&
             (!item.scheduling || !item.scheduling.isScheduled)
         );
@@ -434,28 +435,24 @@ export default connect((state, props) => {
 
     // Only calculate this once
     const fieldsWithRelatedFields = newFields.filter(
-      field => field.settings && field.settings.relatedField
+      (field) => field.settings && field.settings.relatedField
     );
 
     const relatedFields = newFields.filter(
-      field => field.relatedFieldZUID && field.relatedModelZUID
+      (field) => field.relatedFieldZUID && field.relatedModelZUID
     );
 
     const { filterTerm } = filter;
 
-    filteredItems = filteredItems.filter(item => {
+    filteredItems = filteredItems.filter((item) => {
       // first check items data
-      const itemData = Object.values(item.data)
-        .join(" ")
-        .toLowerCase();
+      const itemData = Object.values(item.data).join(" ").toLowerCase();
       if (itemData.includes(filterTerm)) {
         return true;
       }
 
       // Second check item web
-      const itemWeb = Object.values(item.web)
-        .join(" ")
-        .toLowerCase();
+      const itemWeb = Object.values(item.web).join(" ").toLowerCase();
       if (itemWeb.includes(filterTerm)) {
         return true;
       }
@@ -467,12 +464,12 @@ export default connect((state, props) => {
             values that we can match the users search term against
           **/
       const relatedItemsData = fieldsWithRelatedFields
-        .map(field => {
+        .map((field) => {
           let data = [];
 
           if (item.data[field.name]) {
             const relatedField = props.allFields[field.settings.relatedField];
-            data = item.data[field.name].split(",").map(relatedItemZUID => {
+            data = item.data[field.name].split(",").map((relatedItemZUID) => {
               const relatedItem = props.allItems[relatedItemZUID];
               if (relatedItem && relatedField) {
                 return relatedItem.data[relatedField.name];
@@ -493,7 +490,7 @@ export default connect((state, props) => {
       }
 
       // check related fields values
-      const filteredRelatedFields = relatedFields.filter(field => {
+      const filteredRelatedFields = relatedFields.filter((field) => {
         const relatedZUID = item.data[field.name];
         const relatedFieldItem = props.allItems[relatedZUID];
         if (relatedFieldItem) {
@@ -532,7 +529,8 @@ export default connect((state, props) => {
       sortItems(filteredItems, {
         reverse: filter.reverseSort,
         col: filter.sortedBy,
-        type: newFields.find(field => field.name === filter.sortedBy).datatype
+        type: newFields.find((field) => field.name === filter.sortedBy)
+          .datatype,
       });
     }
 
@@ -561,7 +559,8 @@ export default connect((state, props) => {
       sortItems(filteredItems, {
         reverse: filter.reverseSort,
         col: filter.sortedBy,
-        type: newFields.find(field => field.name === filter.sortedBy).datatype
+        type: newFields.find((field) => field.name === filter.sortedBy)
+          .datatype,
       });
     }
 
@@ -578,7 +577,7 @@ export default connect((state, props) => {
       ...filter,
       sortedBy: col,
       colType: type,
-      reverseSort
+      reverseSort,
     });
   }
   function runSort() {
@@ -597,7 +596,7 @@ export default connect((state, props) => {
       sortItems(sortedItems, {
         reverse: reverseSort,
         col: sortedBy,
-        type: colType
+        type: colType,
       });
     } else {
       sortedItems.sort((a, b) => b.meta.createdAt - a.meta.createdAt);
@@ -643,9 +642,9 @@ export default connect((state, props) => {
           <div className={styles.TableWrap}>
             <SetColumns fields={fields} />
             <div className={styles.FiltersDisplay}>
-              <h1>{`No ${props.model &&
-                props.model
-                  .label} items are displayed, filters are in place. `}</h1>
+              <h1>{`No ${
+                props.model && props.model.label
+              } items are displayed, filters are in place. `}</h1>
               <Button kind="secondary" onClick={clearFilters}>
                 <FontAwesomeIcon icon={faTimes} />
                 Clear Filters
@@ -655,8 +654,9 @@ export default connect((state, props) => {
         ) : (
           <div className={styles.TableWrap}>
             <SetColumns fields={fields} />
-            <h1 className={styles.Display}>{`No ${props.model &&
-              props.model.label} items have been created`}</h1>
+            <h1 className={styles.Display}>{`No ${
+              props.model && props.model.label
+            } items have been created`}</h1>
           </div>
         )
       ) : (
@@ -675,7 +675,7 @@ export default connect((state, props) => {
               onDiscard={() => {
                 props.dispatch({
                   type: "UNMARK_ITEMS_DIRTY",
-                  items: props.dirtyItems
+                  items: props.dirtyItems,
                 });
                 return Promise.resolve();
               }}
@@ -700,7 +700,7 @@ export default connect((state, props) => {
                   searchItem,
                   sortedBy: filter.sortedBy,
                   onSort,
-                  reverseSort: filter.reverseSort
+                  reverseSort: filter.reverseSort,
                 }}
                 height={height}
                 width={width}
@@ -728,7 +728,7 @@ class RowRender extends PureComponent {
       loadItem,
       searchItem,
       sortedBy,
-      reverseSort
+      reverseSort,
     } = this.props.data;
 
     const item = items[this.props.index];

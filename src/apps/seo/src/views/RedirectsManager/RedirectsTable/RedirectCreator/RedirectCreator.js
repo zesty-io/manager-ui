@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -24,7 +24,7 @@ export function RedirectCreator(props) {
           path: from,
           targetType: "path",
           target: to,
-          code: code === 1 ? 301 : 302 // API expects a 301/302 value
+          code: code === 1 ? 301 : 302, // API expects a 301/302 value
         })
       )
       .then(() => {
@@ -42,7 +42,7 @@ export function RedirectCreator(props) {
           type="text"
           value={from}
           placeholder="URL path to redirect from"
-          onChange={evt => setFrom(evt.target.value)}
+          onChange={(evt) => setFrom(evt.target.value)}
         />
       </span>
       <span className={styles.RedirectCreatorCell}>
@@ -52,18 +52,18 @@ export function RedirectCreator(props) {
           value={code}
           offValue="302"
           onValue="301"
-          onChange={val => setCode(Number(val))}
+          onChange={(val) => setCode(Number(val))}
         />
       </span>
       <span className={styles.RedirectCreatorCell} style={{ flex: "1" }}>
         <ContentSearch
           className={styles.SearchBar}
           placeholder="Search for item"
-          onSelect={item => {
+          onSelect={(item) => {
             setTo(item.web.path);
           }}
-          filterResults={results =>
-            results.filter(result => result.web.path !== null)
+          filterResults={(results) =>
+            results.filter((result) => result.web.path !== null)
           }
           value={to}
         />

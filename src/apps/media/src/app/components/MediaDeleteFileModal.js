@@ -1,17 +1,16 @@
-import React from "react";
 import { useDispatch } from "react-redux";
 import {
   Modal,
   ModalHeader,
   ModalContent,
-  ModalFooter
+  ModalFooter,
 } from "@zesty-io/core/Modal";
 import { Button } from "@zesty-io/core/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBan,
   faCheck,
-  faExclamationTriangle
+  faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { deleteFile } from "shell/store/media";

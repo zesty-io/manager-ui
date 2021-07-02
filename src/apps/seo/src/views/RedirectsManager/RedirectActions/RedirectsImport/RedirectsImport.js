@@ -1,5 +1,3 @@
-import React from "react";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
@@ -12,7 +10,7 @@ export default function RedirectsImport(props) {
       <input
         type="file"
         className={styles.hidden}
-        ref={input => (fileInput = input)}
+        ref={(input) => (fileInput = input)}
         onChange={props.onChange}
       />
       <Button

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import { connect } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 
@@ -21,10 +21,10 @@ import { CSVImport } from "./views/CSVImport";
 import "@zesty-io/core/vendor.css";
 
 import styles from "./ContentEditor.less";
-export default connect(state => {
+export default connect((state) => {
   return {
     contentModels: state.models,
-    navContent: state.navContent
+    navContent: state.navContent,
   };
 })(
   class ContentEditor extends Component {

@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import { PureComponent } from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -40,9 +40,8 @@ export class OneToOneCell extends PureComponent {
       );
     }
 
-    const relatedField = this.props.allFields[
-      this.props.field.relatedFieldZUID
-    ];
+    const relatedField =
+      this.props.allFields[this.props.field.relatedFieldZUID];
     if (!relatedField) {
       // TODO: if not relatedField, load specific field?
       return (

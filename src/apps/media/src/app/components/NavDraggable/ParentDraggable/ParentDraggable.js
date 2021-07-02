@@ -1,10 +1,10 @@
-import React, { useRef } from "react";
+import { memo, useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import omit from "lodash/omit";
 import { NodeDraggable } from "../NodeDraggable";
 import styles from "./ParentDraggable.less";
 
-export const ParentDraggable = React.memo(function ParentDraggable(props) {
+export const ParentDraggable = memo(function ParentDraggable(props) {
   // track recursion depth and pass it as a prop to the node component
   const depth = props.depth + 1 || 1;
   const ref = useRef(null);
@@ -28,11 +28,11 @@ export const ParentDraggable = React.memo(function ParentDraggable(props) {
       }
       if (item.type === "group") {
         props.dropGroup(item.id, {
-          group_id: props.id
+          group_id: props.id,
         });
       } else if (item.type === "file") {
         props.dropFile(item.id, {
-          group_id: props.id
+          group_id: props.id,
         });
       }
     },
@@ -61,7 +61,7 @@ export const ParentDraggable = React.memo(function ParentDraggable(props) {
       }
 
       return true;
-    }
+    },
   });
 
   const [{ isDragging }, drag] = useDrag({
@@ -70,17 +70,17 @@ export const ParentDraggable = React.memo(function ParentDraggable(props) {
       id: props.id,
       bin_id: props.bin_id,
       parent: props.parent,
-      children: props.children
+      children: props.children,
     },
-    collect: monitor => ({
-      isDragging: monitor.isDragging()
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
     }),
     canDrag() {
       if (props.type === "bin") {
         return false;
       }
       return true;
-    }
+    },
   });
 
   drop(drag(ref));
@@ -99,29 +99,31 @@ export const ParentDraggable = React.memo(function ParentDraggable(props) {
           parent={props.parent}
           onPathChange={props.onPathChange}
         />
-        {// if the item has children
-        // render the item and then it's children
-        Array.isArray(props.children) && props.children.length
-          ? props.children.map(child => (
-              <ParentDraggable
-                {...child}
-                // If the current node is closed then
-                // tell child nodes to not display
-                isClosed={props.closed}
-                key={child.path}
-                selectedPath={props.selectedPath}
-                depth={depth}
-                collapseNode={props.collapseNode}
-                actions={props.actions}
-                find={props.find}
-                highlightTarget={props.highlightTarget}
-                dropGroup={props.dropGroup}
-                dropFile={props.dropFile}
-                parent={props.id}
-                onPathChange={props.onPathChange}
-              />
-            ))
-          : null}
+        {
+          // if the item has children
+          // render the item and then it's children
+          Array.isArray(props.children) && props.children.length
+            ? props.children.map((child) => (
+                <ParentDraggable
+                  {...child}
+                  // If the current node is closed then
+                  // tell child nodes to not display
+                  isClosed={props.closed}
+                  key={child.path}
+                  selectedPath={props.selectedPath}
+                  depth={depth}
+                  collapseNode={props.collapseNode}
+                  actions={props.actions}
+                  find={props.find}
+                  highlightTarget={props.highlightTarget}
+                  dropGroup={props.dropGroup}
+                  dropFile={props.dropFile}
+                  parent={props.id}
+                  onPathChange={props.onPathChange}
+                />
+              ))
+            : null
+        }
       </ul>
     </article>
   );

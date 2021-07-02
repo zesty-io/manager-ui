@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
   faUpload,
   faChevronDown,
-  faChevronUp
+  faChevronUp,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
@@ -65,7 +65,7 @@ export function MediaSelected(props) {
 
             <DrawerContent className={styles.DrawerContent}>
               <aside className={styles.MediaSelected}>
-                {props.selected.map(file => {
+                {props.selected.map((file) => {
                   return (
                     <Card
                       key={file.id}

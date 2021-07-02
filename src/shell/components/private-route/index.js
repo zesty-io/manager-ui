@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { memo, useEffect } from "react";
 import { connect } from "react-redux";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -8,19 +8,19 @@ import Login from "shell/components/login";
 import { notify } from "shell/store/notifications";
 import { verify } from "shell/store/auth";
 
-export default connect(state => {
+export default connect((state) => {
   return {
-    auth: state.auth
+    auth: state.auth,
   };
 })(
-  React.memo(function PrivateRoute(props) {
+  memo(function PrivateRoute(props) {
     useEffect(() => {
       const checkSession = () => {
         props.dispatch(verify()).catch(() => {
           props.dispatch(
             notify({
               kind: "warn",
-              message: "Failed to authenticate your account"
+              message: "Failed to authenticate your account",
             })
           );
         });
@@ -40,7 +40,7 @@ export default connect(state => {
         props.dispatch(
           notify({
             kind: "warn",
-            message: "Internet connection is off"
+            message: "Internet connection is off",
           })
         );
       };
@@ -57,7 +57,7 @@ export default connect(state => {
         props.dispatch(
           notify({
             kind: "success",
-            message: "Internet connection is restored"
+            message: "Internet connection is restored",
           })
         );
       };

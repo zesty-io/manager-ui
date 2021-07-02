@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
 
@@ -8,17 +8,17 @@ import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { Url } from "@zesty-io/core/Url";
 
 import styles from "./GlobalAccount.less";
-export default connect(state => {
+export default connect((state) => {
   return {
     user: state.user,
-    userRole: state.userRole
+    userRole: state.userRole,
   };
 })(function GlobalAccount(props) {
   const [open, setOpen] = useState(false);
   const ref = useRef();
 
   useEffect(() => {
-    const handleGlobalClick = evt => {
+    const handleGlobalClick = (evt) => {
       if (ref && ref.current.contains(evt.target)) {
         setOpen(true);
       } else {
@@ -39,7 +39,7 @@ export default connect(state => {
         src={`https://www.gravatar.com/avatar/${props.user.emailHash}?d=mm&s=40`}
         height="30px"
         width="30px"
-        onClick={evt => {
+        onClick={(evt) => {
           // evt.stopPropagation();
           setOpen(!open);
         }}

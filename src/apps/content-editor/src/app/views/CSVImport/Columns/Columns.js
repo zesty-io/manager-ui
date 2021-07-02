@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import { PureComponent } from "react";
 import cx from "classnames";
 
 import { Select, Option } from "@zesty-io/core";
@@ -19,13 +19,13 @@ export class Columns extends PureComponent {
                 <span className={cx(styles.Cell)}>{col.toUpperCase()}</span>
                 <Select
                   name={colName}
-                  onSelect={value => {
+                  onSelect={(value) => {
                     this.props.handleMap(value, col);
                   }}
                   value="none"
                 >
                   <Option text="none" value="none" />
-                  {this.props.fields.map(field => (
+                  {this.props.fields.map((field) => (
                     <Option
                       key={field.name}
                       text={field.label}

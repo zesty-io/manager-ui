@@ -1,4 +1,4 @@
-import React from "react";
+import { forwardRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFile,
@@ -10,13 +10,13 @@ import {
   faFilePdf,
   faFilePowerpoint,
   faFileVideo,
-  faFileWord
+  faFileWord,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { fileExtension } from "../FileUtils";
 import styles from "./MediaImage.less";
 
-export const MediaImage = React.forwardRef(function MediaImage(props, ref) {
+export const MediaImage = forwardRef(function MediaImage(props, ref) {
   if (props.file.url.indexOf("blob:") !== -1) {
     return <img ref={ref} src={encodeURI(props.file.url)} />;
   }
@@ -30,7 +30,7 @@ export const MediaImage = React.forwardRef(function MediaImage(props, ref) {
       const src = `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${props.file.id}/getimage/${props.params}`;
       const options = {
         "data-src": props.lazy ? src : null,
-        src: props.lazy ? "/images/FFFFFF-0.png" : src
+        src: props.lazy ? "/images/FFFFFF-0.png" : src,
       };
       return <img {...options} ref={ref} alt={props.file.title} />;
     case "html":

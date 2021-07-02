@@ -1,11 +1,11 @@
-import React from "react";
+import { memo } from "react";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { FieldLabel } from "@zesty-io/core/FieldLabel";
 import { Infotip } from "@zesty-io/core/Infotip";
 
 import styles from "./SitemapPriority.less";
-export const SitemapPriority = React.memo(function SitemapPriority(props) {
+export const SitemapPriority = memo(function SitemapPriority(props) {
   return (
     <article className={styles.SitemapPriority} data-cy="sitemapPriority">
       <FieldLabel

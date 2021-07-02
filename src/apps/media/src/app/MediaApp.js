@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import cx from "classnames";
 import usePrevious from "react-use/lib/usePrevious";
 import { useHistory, useParams } from "react-router-dom";
@@ -18,13 +18,13 @@ import {
   fetchBinFiles,
   fetchGroupFiles,
   selectGroup,
-  clearSearch
+  clearSearch,
 } from "shell/store/media";
 import styles from "./MediaApp.less";
 
-export default connect(state => {
+export default connect((state) => {
   return {
-    media: state.media
+    media: state.media,
   };
 })(function MediaApp(props) {
   const history = useHistory();
@@ -34,8 +34,8 @@ export default connect(state => {
   const [currentFileID, setCurrentFileID] = useState(params.fileID);
   const currentFile = useMemo(() => {
     return (
-      props.media.files.find(file => file.id === currentFileID) ||
-      props.media.search.files.find(file => file.id === currentFileID)
+      props.media.files.find((file) => file.id === currentFileID) ||
+      props.media.search.files.find((file) => file.id === currentFileID)
     );
   }, [currentFileID, props.media.files, props.media.search.files]);
   useEffect(() => {
@@ -135,7 +135,7 @@ export default connect(state => {
 
   function toggleSelected(file) {
     const fileIndex = selected.findIndex(
-      selectedFile => selectedFile.id === file.id
+      (selectedFile) => selectedFile.id === file.id
     );
     if (fileIndex !== -1) {
       const newSelected = [...selected];
@@ -147,7 +147,7 @@ export default connect(state => {
   }
 
   // update currentGroupID on Nav path change
-  const onPathChange = useCallback(path => {
+  const onPathChange = useCallback((path) => {
     setCurrentGroupID(path.split("/")[2]);
     // clear search in redux and local state
     props.dispatch(clearSearch());
@@ -193,18 +193,20 @@ export default connect(state => {
         height="calc(100vh - 54px)"
       >
         <DndProvider backend={HTML5Backend}>
-          {// hide sidebar if we are locked to a group
-          !props.groupID && (
-            <MediaSidebar
-              nav={props.media.nav}
-              hiddenNav={props.media.hiddenNav}
-              currentBin={currentBin}
-              currentGroup={currentGroup}
-              onPathChange={onPathChange}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-            />
-          )}
+          {
+            // hide sidebar if we are locked to a group
+            !props.groupID && (
+              <MediaSidebar
+                nav={props.media.nav}
+                hiddenNav={props.media.hiddenNav}
+                currentBin={currentBin}
+                currentGroup={currentGroup}
+                onPathChange={onPathChange}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+              />
+            )
+          }
           <div
             className={cx(
               styles.WorkspaceContainer,
@@ -220,15 +222,17 @@ export default connect(state => {
               modal={props.modal}
               setCurrentGroupID={setCurrentGroupID}
             />
-            {// only show selected strip in modal context
-            props.modal && (
-              <MediaSelected
-                selected={selected}
-                limitSelected={props.limitSelected}
-                toggleSelected={toggleSelected}
-                addImages={props.addImages}
-              />
-            )}
+            {
+              // only show selected strip in modal context
+              props.modal && (
+                <MediaSelected
+                  selected={selected}
+                  limitSelected={props.limitSelected}
+                  toggleSelected={toggleSelected}
+                  addImages={props.addImages}
+                />
+              )
+            }
           </div>
           {currentFileID && currentFile && (
             <MediaDetailsModal

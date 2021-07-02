@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
 
@@ -12,7 +12,7 @@ import Log from "../../components/log";
 import { getLogs } from "../../store/logsInView";
 
 import styles from "./styles.less";
-export default connect(state => state)(function AuditTrail(props) {
+export default connect((state) => state)(function AuditTrail(props) {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterByDays, setFilterByDays] = useState(-1);
@@ -23,12 +23,12 @@ export default connect(state => state)(function AuditTrail(props) {
       .then(() => {
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         setLoading(false);
         props.dispatch(
           notify({
             kind: "warn",
-            message: "Failed to load AuditTrail logs"
+            message: "Failed to load AuditTrail logs",
           })
         );
       });
@@ -37,12 +37,12 @@ export default connect(state => state)(function AuditTrail(props) {
   let logs = Object.values(props.logsInView);
   if (search) {
     logs = logs.filter(
-      log => log.meta.message.toLowerCase().indexOf(search) !== -1
+      (log) => log.meta.message.toLowerCase().indexOf(search) !== -1
     );
   }
   if (filterByDays !== -1) {
     const subtractDays = +moment().subtract(filterByDays, "days");
-    logs = logs.filter(log => +moment(log.createdAt) > subtractDays);
+    logs = logs.filter((log) => +moment(log.createdAt) > subtractDays);
   }
   logs.sort(
     (a, b) => moment(b.createdAt).valueOf() - moment(a.createdAt).valueOf()
@@ -59,7 +59,7 @@ export default connect(state => state)(function AuditTrail(props) {
         />
         <section className={styles.logList}>
           {logs.length ? (
-            logs.map(log => <Log log={log} key={log.ZUID} />)
+            logs.map((log) => <Log log={log} key={log.ZUID} />)
           ) : (
             <h1 className={styles.noLogs}>No Logs Found</h1>
           )}

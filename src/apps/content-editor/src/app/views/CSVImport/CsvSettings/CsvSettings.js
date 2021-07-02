@@ -1,8 +1,8 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import { Select, Option, Input } from "@zesty-io/core";
 
 import styles from "./CsvSettings.less";
-export const CsvSettings = props => {
+export const CsvSettings = (props) => {
   return (
     <section className={styles.CsvSettings}>
       <article className={styles.Setting}>
@@ -99,40 +99,40 @@ class CanonicalTag extends Component {
       {
         key: 0,
         value: 0,
-        text: "Off"
+        text: "Off",
       },
       {
         key: 1,
         value: 1,
-        text: "On (Ignores query parameters)"
+        text: "On (Ignores query parameters)",
       },
       {
         key: 2,
         value: 2,
-        text: "On - Allow certain parameters"
+        text: "On - Allow certain parameters",
       },
       {
         key: 3,
         value: 3,
-        text: "On - Custom Path or Custom URL"
-      }
+        text: "On - Custom Path or Custom URL",
+      },
     ],
     whitelist: "",
-    custom: ""
+    custom: "",
   };
 
-  handleWhitelist = evt => {
+  handleWhitelist = (evt) => {
     this.props.onChange(evt.target.value, evt.target.name);
     this.setState({
-      whitelist: evt.target.value
+      whitelist: evt.target.value,
     });
   };
 
-  handleCustom = evt => {
+  handleCustom = (evt) => {
     //   basil.change_detected = true
     this.props.onChange(evt.target.value, evt.target.name);
     this.setState({
-      custom: evt.target.value
+      custom: evt.target.value,
     });
   };
 
@@ -165,7 +165,7 @@ class CanonicalTag extends Component {
               }
               options={this.state.canonicalOptions}
             >
-              {this.state.canonicalOptions.map(opt => {
+              {this.state.canonicalOptions.map((opt) => {
                 return (
                   <Option key={opt.key} value={opt.value} text={opt.text} />
                 );

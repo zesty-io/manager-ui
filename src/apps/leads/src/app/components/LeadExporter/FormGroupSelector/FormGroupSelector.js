@@ -1,4 +1,4 @@
-import React from "react";
+import { Component } from "react";
 import { connect } from "react-redux";
 
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
@@ -6,19 +6,19 @@ import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { setFilterFormGroup } from "../../../../store/filter";
 import { FORM_GROUP_PRESETS } from "./FormGroupSelector.model";
 
-export default connect(state => {
+export default connect((state) => {
   return {
     filter: state.filter,
-    leads: state.leads
+    leads: state.leads,
   };
 })(
-  class DownloadCSVButton extends React.Component {
+  class DownloadCSVButton extends Component {
     constructor(props) {
       super(props);
 
       this.props = props;
       this.state = {
-        groups: this.generateFormGroups(props.leads)
+        groups: this.generateFormGroups(props.leads),
       };
     }
 
@@ -28,16 +28,16 @@ export default connect(state => {
      * @param {Lead[]} leads A list of leads
      */
     generateFormGroups(leads) {
-      let uniqueGroups = [...new Set(leads.map(lead => lead.form))];
-      return uniqueGroups.map(group => {
+      let uniqueGroups = [...new Set(leads.map((lead) => lead.form))];
+      return uniqueGroups.map((group) => {
         return {
           value: group,
-          text: group
+          text: group,
         };
       });
     }
 
-    onGroupFilterChange = value => {
+    onGroupFilterChange = (value) => {
       this.props.dispatch(setFilterFormGroup(value));
     };
 

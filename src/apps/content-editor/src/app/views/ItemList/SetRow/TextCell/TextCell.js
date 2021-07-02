@@ -1,9 +1,9 @@
-import React from "react";
+import { memo } from "react";
 import cx from "classnames";
 
 import styles from "./TextCell.less";
 
-export const TextCell = React.memo(function TextCell(props) {
+export const TextCell = memo(function TextCell(props) {
   return (
     <span className={cx(props.className, styles.TextCell)}>
       {props.value && props.value.substr(0, 160)}

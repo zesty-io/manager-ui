@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { useLocation } from "react-router";
 import { faCog, faFont } from "@fortawesome/free-solid-svg-icons";
@@ -7,11 +7,11 @@ import cx from "classnames";
 import { Nav } from "@zesty-io/core/Nav";
 
 import styles from "./SettingsNav.less";
-export default connect(state => {
+export default connect((state) => {
   return {
     instanceNav: state.settings.catInstance,
     stylesNav: state.settings.catStyles,
-    fontsNav: state.settings.catFonts
+    fontsNav: state.settings.catFonts,
   };
 })(function SettingsNav(props) {
   const location = useLocation();
@@ -25,30 +25,30 @@ export default connect(state => {
       label: "Instance",
       children: props.instanceNav,
       path: "/settings/instance",
-      icon: faCog
+      icon: faCog,
     },
     {
       label: "Styles",
       children: props.stylesNav,
       path: "/settings/styles",
-      icon: faCog
+      icon: faCog,
     },
     {
       label: "Fonts",
       children: props.fontsNav,
       path: "/settings/fonts",
-      icon: faFont
+      icon: faFont,
     },
     {
       label: "Robots.txt",
       path: "/settings/robots",
-      icon: faCog
+      icon: faCog,
     },
     {
       label: "Head Tags",
       path: "/settings/head",
-      icon: faCog
-    }
+      icon: faCog,
+    },
   ];
   return (
     <nav className={cx(styles.SettingsNav)} data-cy="SettingsNav">

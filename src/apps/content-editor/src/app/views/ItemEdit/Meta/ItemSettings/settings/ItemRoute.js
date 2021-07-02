@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import { memo, Fragment, useCallback, useState, useEffect } from "react";
 import { connect, useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import { searchItems } from "shell/store/content";
@@ -13,19 +13,19 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import { notify } from "shell/store/notifications";
 
 import styles from "./ItemRoute.less";
-export const ItemRoute = connect(state => {
+export const ItemRoute = connect((state) => {
   return {
-    content: state.content
+    content: state.content,
   };
 })(
-  React.memo(function ItemRoute(props) {
+  memo(function ItemRoute(props) {
     const dispatch = useDispatch();
     const [pathPart, setPathPart] = useState(props.path_part);
     const [loading, setLoading] = useState(false);
     const [unique, setUnique] = useState(true);
 
     const validate = useCallback(
-      debounce(path => {
+      debounce((path) => {
         if (!path) {
           setUnique(false);
           return;
@@ -37,9 +37,9 @@ export const ItemRoute = connect(state => {
         setLoading(true);
 
         return dispatch(searchItems(fullPath))
-          .then(res => {
+          .then((res) => {
             // check list of partial matches for exact path match
-            const matches = res.data.filter(item => {
+            const matches = res.data.filter((item) => {
               /**
                * Exclude currently viewed item zuid, as it's currently saved path would match.
                * Check if other results have a matching path, if so then it is already taken and
@@ -67,7 +67,7 @@ export const ItemRoute = connect(state => {
                           matches[0].web.metaTitle}
                       </AppLink>
                     </p>
-                  )
+                  ),
                 })
               );
             }
@@ -79,7 +79,7 @@ export const ItemRoute = connect(state => {
       [props.parentZUID]
     );
 
-    const onChange = evt => {
+    const onChange = (evt) => {
       // All URLs are lowercased
       // Replace ampersand characters with 'and'
       // Only allow alphanumeric characters
@@ -96,7 +96,7 @@ export const ItemRoute = connect(state => {
         type: "SET_ITEM_WEB",
         itemZUID: props.ZUID,
         key: "pathPart",
-        value: path
+        value: path,
       });
     };
 
@@ -122,7 +122,7 @@ export const ItemRoute = connect(state => {
               &nbsp;Homepage
             </h1>
           ) : (
-            <React.Fragment>
+            <Fragment>
               <Input
                 type={"text"}
                 name="pathPart"
@@ -148,7 +148,7 @@ export const ItemRoute = connect(state => {
                   <FontAwesomeIcon icon={faTimes} />
                 </InputIcon>
               )}
-            </React.Fragment>
+            </Fragment>
           )}
         </div>
       </article>

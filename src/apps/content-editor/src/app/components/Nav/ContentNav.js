@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useHistory } from "react-router";
 import { Link } from "react-router-dom";
@@ -11,7 +11,7 @@ import {
   faCaretDown,
   faCaretLeft,
   faEyeSlash,
-  faHome
+  faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import { ReorderNav } from "../ReorderNav";
 import { Nav } from "@zesty-io/core/Nav";
@@ -46,11 +46,11 @@ export function ContentNav(props) {
     setSelected(location.pathname);
   }, [location]);
 
-  const collapseNode = nodeProps => {
+  const collapseNode = (nodeProps) => {
     dispatch(collapseNavItem(nodeProps.path));
   };
 
-  const handleCreateSelect = ZUID => {
+  const handleCreateSelect = (ZUID) => {
     if (ZUID && ZUID != "0") {
       history.push(`/content/${ZUID}/new`);
     }
@@ -60,10 +60,10 @@ export function ContentNav(props) {
     <FontAwesomeIcon
       title="Hide from nav"
       icon={faEyeSlash}
-      onClick={props => {
+      onClick={(props) => {
         dispatch(hideNavItem(props.path));
       }}
-    />
+    />,
   ];
 
   const toggleModal = () => {
@@ -71,7 +71,7 @@ export function ContentNav(props) {
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       <ItemsFilter
         setFilteredItems={setFilteredItems}
         nav={props.nav}
@@ -89,7 +89,7 @@ export function ContentNav(props) {
           <Option value="0" text="— Create Item —" />
           <Option value="link" text="Internal/External Link" />
           {Object.keys(props.models)
-            .filter(modelZUID => {
+            .filter((modelZUID) => {
               // exclude these special models from the create item list
               return !["widgets", "clippings", "globals"].includes(
                 props?.models[modelZUID]?.name.toLowerCase()
@@ -98,7 +98,7 @@ export function ContentNav(props) {
             .sort((a, b) => {
               return props.models[a].label >= props.models[b].label ? 1 : -1;
             })
-            .map(modelZUID => (
+            .map((modelZUID) => (
               <Option
                 key={modelZUID}
                 value={modelZUID}
@@ -195,7 +195,7 @@ export function ContentNav(props) {
       </div>
 
       <ReorderNav isOpen={reorderOpen} toggleOpen={toggleModal} />
-    </React.Fragment>
+    </Fragment>
   );
 }
 

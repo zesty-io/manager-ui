@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import moment from "moment";
 import uniqBy from "lodash/uniqBy";
@@ -25,13 +25,13 @@ export function UserLatest(props) {
   useEffect(() => {
     // Filter logs to actions by the session user
     let userLogs = Object.keys(props.logs)
-      .filter(logZUID => {
+      .filter((logZUID) => {
         return (
           props.logs[logZUID].actionByUserZUID === props.user.ZUID &&
           props.logs[logZUID].action == props.action
         );
       })
-      .map(zuid => props.logs[zuid])
+      .map((zuid) => props.logs[zuid])
       .sort((loga, logb) => {
         return moment(logb.createdAt) - moment(loga.createdAt);
       });
@@ -46,11 +46,11 @@ export function UserLatest(props) {
       // Clean up log messages
       // Based on the ZUID prefix request differing endpoints to resolve affected record data
       Promise.all(
-        affectedUserLogs.map(log => {
+        affectedUserLogs.map((log) => {
           switch (Number(log.affectedZUID.split("-")[0])) {
             // Display content item meta title
             case zuid.prefix.SITE_CONTENT_ITEM:
-              return dispatch(searchItems(log.affectedZUID)).then(item => {
+              return dispatch(searchItems(log.affectedZUID)).then((item) => {
                 if (item?.data[0]?.web?.metaTitle) {
                   if (log.action === 2) {
                     log.recentTitle = `You Modified Content Item ${
@@ -68,7 +68,7 @@ export function UserLatest(props) {
 
             // Display model labels
             case zuid.prefix.SITE_CONTENT_SET:
-              return dispatch(fetchModel(log.affectedZUID)).then(model => {
+              return dispatch(fetchModel(log.affectedZUID)).then((model) => {
                 if (model?.payload?.label) {
                   log.recentTitle = `You Modified Schema ${
                     model.payload.label
@@ -82,10 +82,10 @@ export function UserLatest(props) {
               // NOTE: Can not use fetchField action because we do not have the field model ZUID on hand
               return request(
                 `${CONFIG.API_INSTANCE}${log.meta.uri.slice(3)}` // strip api version from uri
-              ).then(field => {
+              ).then((field) => {
                 return request(
                   `${CONFIG.API_INSTANCE}/content/models/${field.data.contentModelZUID}`
-                ).then(model => {
+                ).then((model) => {
                   if (field?.data?.label && model?.data?.label) {
                     if (log.action === 2) {
                       log.recentTitle = `You Modified ${
@@ -115,7 +115,7 @@ export function UserLatest(props) {
           }
         })
       )
-        .then(logs => {
+        .then((logs) => {
           setLatest(logs);
         })
         .finally(() => setLoading(false));
@@ -146,10 +146,7 @@ export function UserLatest(props) {
               let url = "";
 
               if (log.meta?.url) {
-                url = log.meta.url
-                  .split("/")
-                  .slice(3)
-                  .join("/");
+                url = log.meta.url.split("/").slice(3).join("/");
               }
 
               return (

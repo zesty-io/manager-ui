@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import MonacoEditor from "react-monaco-editor";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { resolveMonacoLang, updateFileCode } from "../../../../../store/files";
@@ -8,7 +8,7 @@ import { resolveMonacoLang, updateFileCode } from "../../../../../store/files";
  * This is done for performance reasons. Constantly re-rendering slows down the editor typing experience.
  * But we still want to broadcast store updates `onChange`
  */
-export const MemoizedEditor = React.memo(
+export const MemoizedEditor = memo(
   function MemoizedEditor(props) {
     const ref = useRef();
 
@@ -20,7 +20,7 @@ export const MemoizedEditor = React.memo(
         scheme: "file",
         path: `${props.fileName}`,
         // attach contentModelZUID to monaco model for lookup within completion provider
-        query: `contentModelZUID=${props.contentModelZUID}&fileZUID=${props.fileZUID}`
+        query: `contentModelZUID=${props.contentModelZUID}&fileZUID=${props.fileZUID}`,
       });
       const model =
         monaco.editor.getModel(filenameURI) ||
@@ -35,9 +35,9 @@ export const MemoizedEditor = React.memo(
         theme="vs-dark"
         options={{
           selectOnLineNumbers: true,
-          wordWrap: "on"
+          wordWrap: "on",
         }}
-        onChange={newValue => {
+        onChange={(newValue) => {
           props.dispatch(
             updateFileCode(props.fileZUID, props.status, newValue)
           );
@@ -59,7 +59,7 @@ export const MemoizedEditor = React.memo(
           }
 
           editor.updateOptions({
-            theme: "parsleyDark"
+            theme: "parsleyDark",
           });
         }}
       />

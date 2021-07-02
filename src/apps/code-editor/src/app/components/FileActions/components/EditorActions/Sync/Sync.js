@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import { memo, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBan,
   faCheckCircle,
   faSpinner,
-  faSync
+  faSync,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Notice } from "@zesty-io/core/Notice";
@@ -16,7 +16,7 @@ import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { fetchFile } from "../../../../../../store/files";
 
 import styles from "./Sync.less";
-export const Sync = React.memo(function Sync(props) {
+export const Sync = memo(function Sync(props) {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -25,10 +25,10 @@ export const Sync = React.memo(function Sync(props) {
     props
       .dispatch(
         fetchFile(props.fileZUID, props.fileType, {
-          forceSync: true
+          forceSync: true,
         })
       )
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
       })
       .finally(() => {

@@ -1,4 +1,3 @@
-import React from "react";
 import moment from "moment-timezone";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -17,7 +16,7 @@ export const LockedItem = ({
   userEmail,
   itemName,
   handleUnlock,
-  goBack
+  goBack,
 }) => {
   return (
     <div className={styles.Wrapper}>

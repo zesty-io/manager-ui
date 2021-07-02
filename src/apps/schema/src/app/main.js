@@ -1,4 +1,3 @@
-import React from "react";
 import { connect } from "react-redux";
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 
@@ -10,7 +9,7 @@ import { SchemaEdit } from "./views/SchemaEdit";
 import { GettingStarted } from "./views/GettingStarted";
 
 import styles from "./main.less";
-export default connect(state => {
+export default connect((state) => {
   return { navSchema: state.navSchema };
 })(function SchemaBuilder(props) {
   const match = useRouteMatch("/schema/start");

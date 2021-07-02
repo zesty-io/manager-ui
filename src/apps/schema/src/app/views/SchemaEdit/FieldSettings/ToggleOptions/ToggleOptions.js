@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 
@@ -7,12 +7,12 @@ export function ToggleOptions(props) {
   let initialState = [
     {
       key: 0,
-      value: "No"
+      value: "No",
     },
     {
       key: 1,
-      value: "Yes"
-    }
+      value: "Yes",
+    },
   ];
 
   if (props.field.settings && props.field.settings.options) {
@@ -22,7 +22,7 @@ export function ToggleOptions(props) {
         (acc, key) => {
           acc.push({
             key,
-            value: props.field.settings.options[key]
+            value: props.field.settings.options[key],
           });
           return acc;
         },
@@ -38,7 +38,7 @@ export function ToggleOptions(props) {
     let newOptions = [...options];
     newOptions[i] = {
       ...newOptions[i],
-      [name]: val // override with new value
+      [name]: val, // override with new value
     };
     setOptions(newOptions);
 

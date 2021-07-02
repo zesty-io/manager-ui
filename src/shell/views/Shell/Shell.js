@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { Sentry } from "utility/sentry";
@@ -25,14 +25,14 @@ import SettingsApp from "apps/settings/src";
 
 import styles from "./Shell.less";
 
-export default connect(state => {
+export default connect((state) => {
   return {
-    products: state.products
+    products: state.products,
   };
 })(
-  React.memo(function Shell(props) {
+  memo(function Shell(props) {
     const dispatch = useDispatch();
-    const openNav = useSelector(state => state.ui.openNav);
+    const openNav = useSelector((state) => state.ui.openNav);
 
     return (
       <section className={cx(styles.Shell, openNav ? null : styles.NavClosed)}>
@@ -53,7 +53,7 @@ export default connect(state => {
                 <Route path="/media/:groupID" component={DamApp} />
                 <Route path="/media" component={DamApp} />
 
-                {props.products.map(product => {
+                {props.products.map((product) => {
                   switch (product) {
                     case "content":
                       return (

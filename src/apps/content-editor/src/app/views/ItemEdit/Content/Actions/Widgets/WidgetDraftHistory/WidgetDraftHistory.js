@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 
@@ -16,7 +16,7 @@ export default connect((state, props) => {
     logs:
       state.logs[props.itemZUID] && state.logs[props.itemZUID].auditTrailDraft
         ? state.logs[props.itemZUID].auditTrailDraft
-        : []
+        : [],
   };
 })(function WidgetDraftHistory(props) {
   const [loading, setLoading] = useState(false);
@@ -47,7 +47,7 @@ export default connect((state, props) => {
           <p>Loading Logs</p>
         ) : props.logs.length ? (
           <ul className="logs">
-            {props.logs.map(log => (
+            {props.logs.map((log) => (
               <li className="log" key={log.ZUID}>
                 <strong>
                   {log.firstName} {log.lastName}

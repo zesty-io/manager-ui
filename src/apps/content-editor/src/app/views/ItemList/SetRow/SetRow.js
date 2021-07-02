@@ -1,4 +1,3 @@
-import React from "react";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
 import { connect } from "react-redux";
@@ -44,7 +43,7 @@ export default connect()(function SetRow(props) {
         itemZUID={props.itemZUID}
       />
       <div className={styles.Cells} onClick={selectRow}>
-        {props.fields.map(field => {
+        {props.fields.map((field) => {
           switch (field.datatype) {
             case "one_to_one":
               return (

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 
@@ -21,14 +21,14 @@ export default function LinkEdit() {
   const dispatch = useDispatch();
   const isMounted = useRef(false);
   const { linkZUID } = useParams();
-  const content = useSelector(state => state.content);
+  const content = useSelector((state) => state.content);
   const internalLinkOptions = useMemo(() => {
     return Object.keys(content)
-      .filter(key => content[key].web.path)
-      .map(key => {
+      .filter((key) => content[key].web.path)
+      .map((key) => {
         return {
           value: content[key].meta.ZUID,
-          text: content[key].web.path
+          text: content[key].web.path,
         };
       });
   }, [content]);
@@ -42,7 +42,7 @@ export default function LinkEdit() {
     relNoFollow: false,
     targetBlank: false,
     linkZUID,
-    loading: false
+    loading: false,
   };
   const [state, setState] = useState(INITIAL_STATE);
   const [linkDeleteConfirmation, setLinkDeleteConfirmation] = useState(false);
@@ -67,19 +67,19 @@ export default function LinkEdit() {
   }, [linkZUID]);
 
   function fetchLink(linkZUID) {
-    setState(s => ({
+    setState((s) => ({
       ...s,
-      loading: true
+      loading: true,
     }));
 
     return request(`${CONFIG.API_INSTANCE}/content/links/${linkZUID}`)
-      .then(res => {
+      .then((res) => {
         if (res.error) {
           throw res.error;
         }
         return res;
       })
-      .then(res => {
+      .then((res) => {
         if (isMounted.current) {
           // 0 indicates a top level menu link, nothing to resolve
           // otherwise if a parent zuid value exists resolve it's data
@@ -101,7 +101,7 @@ export default function LinkEdit() {
 
           let relNoFollow = false;
           let targetBlank = false;
-          res.data.source.split(";").forEach(sourceField => {
+          res.data.source.split(";").forEach((sourceField) => {
             if (sourceField === "rel:true") {
               relNoFollow = true;
             } else if (sourceField === "target:_blank") {
@@ -109,7 +109,7 @@ export default function LinkEdit() {
             }
           });
 
-          setState(s => {
+          setState((s) => {
             return {
               ...s,
               loading: false,
@@ -120,22 +120,22 @@ export default function LinkEdit() {
               metaTitle: res.data.metaTitle || res.data.label,
               targetBlank,
               relNoFollow,
-              target: res.data.target
+              target: res.data.target,
             };
           });
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         dispatch(
           notify({
             message: "Failed loading link",
-            kind: "error"
+            kind: "error",
           })
         );
         setState({
           ...state,
-          loading: false
+          loading: false,
         });
       });
   }
@@ -158,15 +158,15 @@ export default function LinkEdit() {
       label: state.label,
       metaTitle: state.metaTitle,
       source: source.join(";"),
-      target: state.target
+      target: state.target,
     };
 
     return request(`${CONFIG.API_INSTANCE}/content/links/${params.ZUID}`, {
       method: "PUT",
       json: true,
-      body: params
+      body: params,
     })
-      .then(res => {
+      .then((res) => {
         if (res.error) {
           setState({ ...state, saving: false });
           let message = "";
@@ -184,7 +184,7 @@ export default function LinkEdit() {
           dispatch(
             notify({
               message: `Error saving link: ${message}`,
-              kind: "error"
+              kind: "error",
             })
           );
         } else {
@@ -192,7 +192,7 @@ export default function LinkEdit() {
           dispatch(notify({ message: "Saved link", kind: "save" }));
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         setState({ ...state, saving: false });
         dispatch(notify({ message: "Error saving link", kind: "error" }));
@@ -202,7 +202,7 @@ export default function LinkEdit() {
   function onChange(value, name) {
     setState({
       ...state,
-      [name]: value
+      [name]: value,
     });
   }
 
@@ -226,7 +226,7 @@ export default function LinkEdit() {
               value={state.parentZUID}
               options={internalLinkOptions}
               onChange={onChange}
-              onSearch={term => dispatch(searchItems(term))}
+              onSearch={(term) => dispatch(searchItems(term))}
             />
 
             {state.type === "internal" ? (
@@ -237,7 +237,7 @@ export default function LinkEdit() {
                 value={state.target}
                 options={internalLinkOptions}
                 onChange={onChange}
-                onSearch={term => dispatch(searchItems(term))}
+                onSearch={(term) => dispatch(searchItems(term))}
               />
             ) : (
               <FieldTypeUrl
@@ -255,11 +255,11 @@ export default function LinkEdit() {
               label="Link title"
               name="metaTitle"
               value={state.metaTitle}
-              onChange={value => {
+              onChange={(value) => {
                 setState({
                   ...state,
                   label: value,
-                  metaTitle: value
+                  metaTitle: value,
                 });
               }}
             />
@@ -268,7 +268,7 @@ export default function LinkEdit() {
                 type="checkbox"
                 name="targetBlank"
                 checked={state.targetBlank}
-                onClick={evt => {
+                onClick={(evt) => {
                   onChange(evt.target.checked, "targetBlank");
                 }}
               />
@@ -279,7 +279,7 @@ export default function LinkEdit() {
                 type="checkbox"
                 name="rel"
                 checked={state.relNoFollow}
-                onClick={evt => {
+                onClick={(evt) => {
                   onChange(evt.target.checked, "relNoFollow");
                 }}
               />

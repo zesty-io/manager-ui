@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 
@@ -11,7 +11,7 @@ import {
   faUpload,
   faDatabase,
   faBolt,
-  faSync
+  faSync,
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 import { Search } from "@zesty-io/core/Search";

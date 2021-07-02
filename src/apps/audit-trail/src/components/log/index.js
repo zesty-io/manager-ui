@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
 
@@ -57,4 +57,4 @@ class Log extends Component {
   }
 }
 
-export default connect(state => state)(Log);
+export default connect((state) => state)(Log);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { memo, useState } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
 
@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSignInAlt,
   faCheckCircle,
-  faSpinner
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Modal, ModalContent } from "@zesty-io/core/Modal";
@@ -20,24 +20,24 @@ import { login, verifyTwoFactor, pollTwoFactor } from "shell/store/auth";
 import { notify } from "shell/store/notifications";
 
 import styles from "./Login.less";
-export default connect(state => {
+export default connect((state) => {
   return {
     auth: state.auth,
-    user: state.user
+    user: state.user,
   };
 })(
-  React.memo(function Login(props) {
+  memo(function Login(props) {
     const [loading, setLoading] = useState(false);
     const [twoFactor, setTwoFactor] = useState(false);
     const [error, setError] = useState("");
 
-    const handleLogin = evt => {
+    const handleLogin = (evt) => {
       evt.preventDefault();
       setLoading(true);
 
       props
         .dispatch(login(evt.target.email.value, evt.target.password.value))
-        .then(res => {
+        .then((res) => {
           if (res.status === 202) {
             setTwoFactor(true);
 
@@ -48,21 +48,21 @@ export default connect(state => {
             setLoading(false);
           }
         })
-        .catch(err => {
+        .catch((err) => {
           setLoading(false);
           setError("There was a problem signing you in");
         });
     };
 
-    const handleTwoFactor = evt => {
+    const handleTwoFactor = (evt) => {
       evt.preventDefault();
 
       props
         .dispatch(verifyTwoFactor(evt.target.token.value))
-        .then(res => {
+        .then((res) => {
           setError(res.message);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     };

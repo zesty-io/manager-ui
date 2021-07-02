@@ -2,9 +2,7 @@
 // must be setup before starting the store
 window.CONFIG = __CONFIG__;
 
-// import "./wdyr";
-
-import React, { StrictMode } from "react";
+import { StrictMode } from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
@@ -71,17 +69,17 @@ try {
       `${instanceZUID}:fields`,
       `${instanceZUID}:content`,
       `${instanceZUID}:publishPlan`,
-      `${instanceZUID}:ui`
+      `${instanceZUID}:ui`,
     ])
-    .then(results => {
+    .then((results) => {
       const [lang, nav, models, fields, content, publishPlan, ui] = results;
 
       store.dispatch({
         type: "LOADED_LOCAL_USER_LANG",
         payload: {
           // default to english
-          lang: lang || "en-US"
-        }
+          lang: lang || "en-US",
+        },
       });
 
       // FIXME: This is broken because on initial nav fetch we modify
@@ -94,17 +92,17 @@ try {
 
       store.dispatch({
         type: "LOADED_LOCAL_MODELS",
-        payload: models
+        payload: models,
       });
 
       store.dispatch({
         type: "LOADED_LOCAL_FIELDS",
-        payload: fields
+        payload: fields,
       });
 
       store.dispatch({
         type: "LOADED_LOCAL_ITEMS",
-        data: content
+        data: content,
       });
       store.dispatch(loadedUI(ui));
 

@@ -1,4 +1,12 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import {
+  forwardRef,
+  createRef,
+  Fragment,
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+} from "react";
 import { connect, useDispatch } from "react-redux";
 import moment from "moment-timezone";
 import debounce from "lodash/debounce";
@@ -13,7 +21,7 @@ import {
   faSort,
   faSortAlphaDown,
   faUser,
-  faEye
+  faEye,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Search } from "@zesty-io/core/Search";
@@ -27,7 +35,7 @@ import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 
 import styles from "./styles.less";
-export default React.forwardRef((props, providedRef) => {
+export default forwardRef((props, providedRef) => {
   const dispatch = useDispatch();
 
   const [term, setTerm] = useState(props.value);
@@ -43,22 +51,22 @@ export default React.forwardRef((props, providedRef) => {
   }, [props.value]);
 
   const debouncedSearch = useCallback(
-    debounce(term => {
+    debounce((term) => {
       if (term) {
         dispatch(searchItems(term))
-          .then(res => {
+          .then((res) => {
             if (res.status === 200) {
               let results = res.data;
               if (props.filterResults) {
                 results = props.filterResults(results);
               }
-              setRefs(results.map(() => React.createRef()));
+              setRefs(results.map(() => createRef()));
               setSearchResults(results);
             } else {
               dispatch(
                 notify({
                   kind: "warn",
-                  message: `Error searching for term: ${term}`
+                  message: `Error searching for term: ${term}`,
                 })
               );
             }
@@ -88,7 +96,7 @@ export default React.forwardRef((props, providedRef) => {
           if (optionRef?.current) {
             optionRef.current.scrollIntoView({
               block: "center",
-              inline: "nearest"
+              inline: "nearest",
             });
           }
 
@@ -142,7 +150,7 @@ export default React.forwardRef((props, providedRef) => {
         className={styles.Search}
         placeholder={props.placeholder}
         onKeyUp={handleKeyUp}
-        onChange={val => setTerm(val)}
+        onChange={(val) => setTerm(val)}
         onFocus={handleFocus}
         ref={providedRef}
         value={term}
@@ -161,13 +169,13 @@ export default React.forwardRef((props, providedRef) => {
   );
 });
 
-const List = connect(state => {
+const List = connect((state) => {
   return {
     languages: state.languages,
     users: state.users,
-    models: state.models
+    models: state.models,
   };
-})(props => {
+})((props) => {
   const [sortType, setSortType] = useState("default");
   const [filterTerm, setFilterTerm] = useState("");
 
@@ -216,13 +224,13 @@ const List = connect(state => {
         return 1;
       }
       return 0;
-    }
+    },
   };
 
-  const filter = opt => {
+  const filter = (opt) => {
     if (filterTerm) {
       const lang = props.languages.find(
-        lang => lang.ID === props.opt?.meta?.langID
+        (lang) => lang.ID === props.opt?.meta?.langID
       );
 
       if (
@@ -268,7 +276,7 @@ const List = connect(state => {
 
         <div className={styles.FilterBy}>
           <p className={styles.Title}>Filter By</p>
-          <Input onChange={evt => setFilterTerm(evt.target.value)} />
+          <Input onChange={(evt) => setFilterTerm(evt.target.value)} />
         </div>
       </li>
 
@@ -304,13 +312,13 @@ const List = connect(state => {
   );
 });
 
-const ListOption = props => {
+const ListOption = (props) => {
   const createdBy = props.users.find(
-    user => user.ZUID === props.opt?.web?.createdByUserZUID
+    (user) => user.ZUID === props.opt?.web?.createdByUserZUID
   );
 
   const lang = props.languages.find(
-    lang => lang.ID === props.opt?.meta?.langID
+    (lang) => lang.ID === props.opt?.meta?.langID
   );
 
   let modelIcon;
@@ -346,15 +354,15 @@ const ListOption = props => {
       <p className={styles.ItemName}>
         <span className={styles.subheadline}>
           {props.opt?.web?.metaTitle ? (
-            <React.Fragment>
+            <Fragment>
               {modelIcon}
               {props.opt.web.metaTitle}
-            </React.Fragment>
+            </Fragment>
           ) : (
-            <React.Fragment>
+            <Fragment>
               <FontAwesomeIcon icon={faExclamationTriangle} /> Item missing meta
               title
-            </React.Fragment>
+            </Fragment>
           )}
         </span>
 

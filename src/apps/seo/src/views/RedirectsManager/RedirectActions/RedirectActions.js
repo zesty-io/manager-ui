@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "./RedirectActions.less";
 
 import { RedirectFilter } from "./RedirectFilter";
@@ -13,7 +12,7 @@ export default function RedirectActions(props) {
       <div className={styles.actions}>
         <RedirectFilter dispatch={props.dispatch} />
         <RedirectsImport
-          onChange={evt => {
+          onChange={(evt) => {
             props.dispatch(CSVImporter(evt));
           }}
         />

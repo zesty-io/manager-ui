@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
@@ -18,18 +18,18 @@ const MAX_TAB_WIDTH = 200;
 const TAB_PADDING = 16;
 const TAB_BORDER = 1;
 
-export default React.memo(function GlobalTabs() {
+export default memo(function GlobalTabs() {
   const history = useHistory();
   const dispatch = useDispatch();
-  const tabs = useSelector(state => state.ui.tabs);
-  const instanceZUID = useSelector(state => state.instance.ZUID);
-  const loadedTabs = useSelector(state => state.ui.loadedTabs);
+  const tabs = useSelector((state) => state.ui.tabs);
+  const instanceZUID = useSelector((state) => state.instance.ZUID);
+  const loadedTabs = useSelector((state) => state.ui.loadedTabs);
   const prevPath = usePrevious(history.location.pathname);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const models = useSelector(state => state.models);
-  const content = useSelector(state => state.content);
-  const files = useSelector(state => state.files);
-  const mediaGroups = useSelector(state => state.media.groups);
+  const models = useSelector((state) => state.models);
+  const content = useSelector((state) => state.content);
+  const files = useSelector((state) => state.files);
+  const mediaGroups = useSelector((state) => state.media.groups);
   const [tabBarWidth, setTabBarWidth] = useState(0);
 
   // update state if window is resized (debounced)

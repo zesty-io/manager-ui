@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
 
@@ -14,139 +14,133 @@ import styles from "./styles.less";
 const defaultLinks = [
   {
     name: "Introduction",
-    url: "https://zesty.org/"
+    url: "https://zesty.org/",
   },
   {
     name: "Getting Started",
-    url: "https://zesty.org/getting-started"
+    url: "https://zesty.org/getting-started",
   },
   {
     name: "Guides",
-    url: "https://zesty.org/guides"
-  }
+    url: "https://zesty.org/guides",
+  },
 ];
 const linkMap = {
   content: [
     {
       name: "Content Overview",
-      url: "https://zesty.org/services/manager-ui/content"
+      url: "https://zesty.org/services/manager-ui/content",
     },
     {
       name: "Content Entry, Drafts, and Publishing",
-      url: "https://zesty.org/guides/content-entry-drafts-and-publishing"
+      url: "https://zesty.org/guides/content-entry-drafts-and-publishing",
     },
     {
       name: "Adding and Managing Content",
-      url:
-        "https://zesty.org/services/manager-ui/content/adding-and-managing-content"
-    }
+      url: "https://zesty.org/services/manager-ui/content/adding-and-managing-content",
+    },
   ],
   media: [
     {
       name: "Media Overview",
-      url: "https://zesty.org/services/manager-ui/media"
+      url: "https://zesty.org/services/manager-ui/media",
     },
     {
       name: "Adding Image Alt Text",
-      url: "https://zesty.org/guides/adding-image-alt-text"
+      url: "https://zesty.org/guides/adding-image-alt-text",
     },
     {
       name: "How to upload multiple images",
-      url:
-        "https://zesty.org/services/manager-ui/media/how-to-upload-multiple-images"
-    }
+      url: "https://zesty.org/services/manager-ui/media/how-to-upload-multiple-images",
+    },
   ],
   schema: [
     {
       name: "Schema Overview",
-      url: "https://zesty.org/services/manager-ui/schema"
+      url: "https://zesty.org/services/manager-ui/schema",
     },
     {
       name: "Building The Schema",
-      url: "https://zesty.org/guides/building-the-schema-and-selecting-fields"
+      url: "https://zesty.org/guides/building-the-schema-and-selecting-fields",
     },
     {
       name: "Schema, Content, and Code",
-      url:
-        "https://zesty.org/guides/the-connection-between-schema-content-and-code"
-    }
+      url: "https://zesty.org/guides/the-connection-between-schema-content-and-code",
+    },
   ],
   code: [
     {
       name: "Code Overview",
-      url: "https://zesty.org/services/manager-ui/editor"
+      url: "https://zesty.org/services/manager-ui/editor",
     },
     {
       name: "Editor and Coding Basics",
-      url: "https://zesty.org/guides/editor-and-coding-basics"
+      url: "https://zesty.org/guides/editor-and-coding-basics",
     },
     {
       name: "Schema, Content, and Code",
-      url:
-        "https://zesty.org/guides/the-connection-between-schema-content-and-code"
-    }
+      url: "https://zesty.org/guides/the-connection-between-schema-content-and-code",
+    },
   ],
   leads: [
     {
       name: "Leads Overview",
-      url: "https://zesty.org/services/manager-ui/leads"
+      url: "https://zesty.org/services/manager-ui/leads",
     },
     {
       name: "Creating a Lead Form",
-      url: "https://zesty.org/guides/how-to-create-a-lead-form"
+      url: "https://zesty.org/guides/how-to-create-a-lead-form",
     },
     {
       name: "Capturing form data to Leads",
-      url:
-        "https://zesty.org/services/web-engine/forms-and-form-webhooks#capturing-form-data-to-an-instances-leads-feature"
-    }
+      url: "https://zesty.org/services/web-engine/forms-and-form-webhooks#capturing-form-data-to-an-instances-leads-feature",
+    },
   ],
   analytics: [
     {
       name: "Analytics Setup",
-      url: "https://zesty.org/services/web-engine/analytics"
+      url: "https://zesty.org/services/web-engine/analytics",
     },
     {
       name: "Analytics Settings",
-      url:
-        "https://zesty.org/services/manager-ui/settings/instance-settings#analytics"
-    }
+      url: "https://zesty.org/services/manager-ui/settings/instance-settings#analytics",
+    },
   ],
   seo: [
     {
       name: "SEO Overview",
-      url: "https://zesty.org/services/manager-ui/health"
+      url: "https://zesty.org/services/manager-ui/health",
     },
     {
       name: "Manage Redirects",
-      url: "https://zesty.org/services/manager-ui/health#manage-redirects"
+      url: "https://zesty.org/services/manager-ui/health#manage-redirects",
     },
     {
       name: "SEO Redirects",
-      url: "https://zesty.org/services/manager-ui/health/redirects"
-    }
+      url: "https://zesty.org/services/manager-ui/health/redirects",
+    },
   ],
   "audit-trail": [
     {
       name: "Audit Trail Overview",
-      url: "https://zesty.org/services/manager-ui/audit-trail"
-    }
+      url: "https://zesty.org/services/manager-ui/audit-trail",
+    },
   ],
   settings: [
     {
       name: "Settings Overview",
-      url: "https://zesty.org/services/manager-ui/settings"
+      url: "https://zesty.org/services/manager-ui/settings",
     },
     {
       name: "Instance Settings",
-      url: "https://zesty.org/services/manager-ui/settings/instance-settings"
-    }
-  ]
+      url: "https://zesty.org/services/manager-ui/settings/instance-settings",
+    },
+  ],
 };
 
-export default connect(state => {
+export default connect((state) => {
   return {
-    instance: state.instance
+    instance: state.instance,
   };
 })(function GlobalHelpMenu(props) {
   const section = location.pathname.split("/")[1];
@@ -176,7 +170,7 @@ export default connect(state => {
           <CardHeader className={styles.subheadline}>zesty.org</CardHeader>
           <CardContent>
             <ul className={styles.helpBox}>
-              {links.map(link => (
+              {links.map((link) => (
                 <li key={link.name} className={styles.bodyText}>
                   <Url title={link.url} target="_blank" href={link.url}>
                     {link.name}

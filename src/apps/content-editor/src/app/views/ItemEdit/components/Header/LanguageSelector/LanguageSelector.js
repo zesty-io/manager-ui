@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
@@ -17,20 +17,20 @@ export const LanguageSelector = connect((state, props) => {
 
     siblings = item?.siblings || {};
     selectedLang = Object.keys(siblings).find(
-      code => siblings[code] === props.itemZUID
+      (code) => siblings[code] === props.itemZUID
     );
   }
 
   return {
     languages: state.languages,
     selectedLang,
-    siblings
+    siblings,
   };
-})(props => {
+})((props) => {
   const location = useLocation();
   const history = useHistory();
 
-  const handleSelect = val => {
+  const handleSelect = (val) => {
     props.dispatch(selectLang(val));
 
     // If we are at a content item level then reload newly selected language item
@@ -43,7 +43,7 @@ export const LanguageSelector = connect((state, props) => {
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       {props.languages.length > 1 ? (
         <Select
           name="LanguageSelector"
@@ -51,11 +51,11 @@ export const LanguageSelector = connect((state, props) => {
           value={props.selectedLang}
           onSelect={handleSelect}
         >
-          {props.languages.map(lang => (
+          {props.languages.map((lang) => (
             <Option key={lang.code} text={lang.code} value={lang.code} />
           ))}
         </Select>
       ) : null}
-    </React.Fragment>
+    </Fragment>
   );
 });

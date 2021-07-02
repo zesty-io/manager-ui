@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { StickyTree } from "react-virtualized-sticky-tree";
 import Measure from "react-measure";
 
@@ -9,7 +9,7 @@ export function MediaNav(props) {
   return (
     <Measure
       bounds={true}
-      onResize={contentRect => {
+      onResize={(contentRect) => {
         setNavWidth(contentRect.bounds.width);
         setNavHeight(contentRect.bounds.height);
       }}

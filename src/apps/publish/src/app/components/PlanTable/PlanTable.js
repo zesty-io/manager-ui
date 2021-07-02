@@ -1,12 +1,11 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import { PlanStep } from "../PlanStep";
 import styles from "./PlanTable.less";
 
 export function PlanTable({ plan }) {
-  const content = useSelector(state => state.content);
-  const contentVersions = useSelector(state => state.contentVersions);
-  const languages = useSelector(state => state.languages);
+  const content = useSelector((state) => state.content);
+  const contentVersions = useSelector((state) => state.contentVersions);
+  const languages = useSelector((state) => state.languages);
   return (
     <table className={styles.PlanTable}>
       <thead>
@@ -23,14 +22,14 @@ export function PlanTable({ plan }) {
         </tr>
       </thead>
       <tbody>
-        {plan.data.map(step => {
+        {plan.data.map((step) => {
           const item = content[step.ZUID];
           return (
             <PlanStep
               key={step.ZUID}
               item={item}
               versions={contentVersions[step.ZUID]}
-              lang={languages.find(l => l.ID === item.meta.langID).code}
+              lang={languages.find((l) => l.ID === item.meta.langID).code}
               step={step}
             />
           );

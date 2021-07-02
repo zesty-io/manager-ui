@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -6,7 +6,7 @@ import {
   faEye,
   faUser,
   faGlobeAmericas,
-  faCog
+  faCog,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
@@ -19,13 +19,13 @@ export function AccountInfo(props) {
   const domain = useDomain();
 
   useEffect(() => {
-    const tag = Object.values(props.headTags).find(tag =>
+    const tag = Object.values(props.headTags).find((tag) =>
       tag.attributes.find(
-        attr => attr.key === "sizes" && attr.value === "196x196"
+        (attr) => attr.key === "sizes" && attr.value === "196x196"
       )
     );
     if (tag) {
-      const attr = tag.attributes.find(attr => attr.key === "href");
+      const attr = tag.attributes.find((attr) => attr.key === "href");
       setFaviconURL(attr.value);
     }
   }, [props.headTags]);

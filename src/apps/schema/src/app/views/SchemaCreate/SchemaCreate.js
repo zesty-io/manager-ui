@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react";
+import { Fragment, useState, useEffect, useReducer } from "react";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
@@ -11,7 +11,7 @@ import {
   faDatabase,
   faFile,
   faListAlt,
-  faPlus
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
@@ -29,43 +29,43 @@ const SCHEMA_TYPES = [
   {
     value: "templateset",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faFile} />
         &nbsp;Single Page Model
-      </React.Fragment>
-    )
+      </Fragment>
+    ),
   },
   {
     value: "pageset",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faListAlt} />
         &nbsp;Multi Page Model
-      </React.Fragment>
-    )
+      </Fragment>
+    ),
   },
   {
     value: "dataset",
 
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faDatabase} />
         &nbsp;Headless Data Model
-      </React.Fragment>
-    )
-  }
+      </Fragment>
+    ),
+  },
 ];
 
 import styles from "./SchemaCreate.less";
-export default connect(state => {
+export default connect((state) => {
   return {
     user: state.user,
-    parents: state.parents.map(p => {
+    parents: state.parents.map((p) => {
       return {
         value: p.ZUID,
-        text: p.label
+        text: p.label,
       };
-    })
+    }),
   };
 })(function SchemaCreate(props) {
   let history = useHistory();
@@ -93,7 +93,7 @@ export default connect(state => {
               ? state.multiple
                 ? "pageset"
                 : "templateset"
-              : "dataset"
+              : "dataset",
           };
         case "multiple":
           return {
@@ -103,7 +103,7 @@ export default connect(state => {
               ? action.payload
                 ? "pageset"
                 : "templateset"
-              : "dataset"
+              : "dataset",
           };
         case "type":
           return { ...state, type: action.payload };
@@ -114,7 +114,7 @@ export default connect(state => {
     {
       url: 0,
       multiple: 0,
-      type: "dataset"
+      type: "dataset",
     }
   );
 
@@ -162,10 +162,10 @@ export default connect(state => {
                 offValue={"No"}
                 onValue={"Yes"}
                 value={url}
-                onChange={val =>
+                onChange={(val) =>
                   setType({
                     type: "url",
-                    payload: val
+                    payload: val,
                   })
                 }
               />
@@ -178,10 +178,10 @@ export default connect(state => {
                 offValue={"No"}
                 onValue={"Yes"}
                 value={multiple}
-                onChange={val =>
+                onChange={(val) =>
                   setType({
                     type: "multiple",
-                    payload: val
+                    payload: val,
                   })
                 }
               />
@@ -192,10 +192,10 @@ export default connect(state => {
               name="type"
               label="Selected Model Type"
               value={type}
-              onChange={val =>
+              onChange={(val) =>
                 setType({
                   type: "type",
-                  payload: val
+                  payload: val,
                 })
               }
               options={SCHEMA_TYPES}
@@ -294,7 +294,7 @@ export default connect(state => {
               placeholder=""
               value={label}
               maxLength="100"
-              onChange={value => {
+              onChange={(value) => {
                 setLabel(value);
                 // When changing the label update the reference name as well
                 setName(formatName(value));
@@ -310,7 +310,7 @@ export default connect(state => {
               placeholder=""
               value={name}
               maxLength="100"
-              onChange={value => setName(formatName(value))}
+              onChange={(value) => setName(formatName(value))}
               error={errors["name"]}
             />
 
@@ -321,7 +321,7 @@ export default connect(state => {
               description="A description of this model is shown to content editors. It can be helpful to provide context and explain what this model is used for."
               value={description}
               maxLength={500}
-              onChange={value => setDescription(value)}
+              onChange={(value) => setDescription(value)}
             />
           </section>
 
@@ -335,7 +335,7 @@ export default connect(state => {
             <FieldTypeDropDown
               name="parent"
               label="Select this model's parent"
-              onChange={value => setParent(value)}
+              onChange={(value) => setParent(value)}
               options={props.parents}
             />
 
@@ -386,15 +386,15 @@ export default connect(state => {
                     label,
                     description,
                     listed,
-                    type
+                    type,
                   })
                 )
-                .then(res => {
+                .then((res) => {
                   if (res.status === 200) {
                     props.dispatch(
                       notify({
                         kind: "save",
-                        message: `Created ${label} model`
+                        message: `Created ${label} model`,
                       })
                     );
 
@@ -413,13 +413,13 @@ export default connect(state => {
                                 metaLinkText: label,
                                 metaTitle: label,
                                 pathPart: pathPart,
-                                parentZUID: parent
+                                parentZUID: parent,
                               },
                               meta: {
                                 contentModelZUID: res.data.ZUID,
-                                createdByUserZUID: props.user.user_zuid
-                              }
-                            }
+                                createdByUserZUID: props.user.user_zuid,
+                              },
+                            },
                           }
                         );
                       }
@@ -429,7 +429,7 @@ export default connect(state => {
                       props.dispatch(
                         notify({
                           kind: "error",
-                          message: `Model ${label} is missing ZUID.`
+                          message: `Model ${label} is missing ZUID.`,
                         })
                       );
                     }
@@ -437,17 +437,17 @@ export default connect(state => {
                     props.dispatch(
                       notify({
                         kind: "error",
-                        message: `Failed creating ${label} model. ${res.error}`
+                        message: `Failed creating ${label} model. ${res.error}`,
                       })
                     );
                   }
                 })
-                .catch(err => {
+                .catch((err) => {
                   console.error(err);
                   props.dispatch(
                     notify({
                       kind: "error",
-                      message: `Network error occured. Failed to create ${label} model.`
+                      message: `Network error occured. Failed to create ${label} model.`,
                     })
                   );
                 });
