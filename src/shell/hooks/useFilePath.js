@@ -1,26 +1,22 @@
 import zuid from "zuid";
 import { useSelector } from "react-redux";
+import { createSelector } from "reselect";
 
 export function useFilePath(ZUID = "") {
   const getFiles = state => state.files;
-  const files = useSelector(getFiles);
+  const selectFiles = createSelector([getFiles], files => files);
+  const files = useSelector(selectFiles);
   if (!ZUID) {
     throw new Error("Required ZUID argument was not provided");
   }
 
+  //Currently accepting model zuids, view, stylesheet, javascript zuids
+  // There is no place where this method is called by a content item zuid, if there was we would need to reference all items.
   switch (Number(ZUID.split("-")[0])) {
     case zuid.prefix.SITE_CONTENT_SET:
       let findfile = files.find(file => file.contentModelZUID === ZUID);
       if (findfile) {
         return `/code/file/views/${findfile.ZUID}`;
-      } else {
-        return "/code";
-      }
-
-    case zuid.prefix.SITE_CONTENT_ITEM:
-      let findFile = files.find(file => file.modelZUID === ZUID);
-      if (findFile) {
-        return `/code/file/views/${findFile.ZUID}`;
       } else {
         return "/code";
       }
