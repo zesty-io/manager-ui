@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { useFilePath } from "shell/hooks/use-filePath";
+import { useFilePath } from "shell/hooks/useFilePath";
 import moment from "moment-timezone";
 import cx from "classnames";
 

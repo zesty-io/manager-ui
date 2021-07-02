@@ -87,7 +87,7 @@ export default connect(state => {
               props.instance.domains &&
               props.user.ID &&
               props.languages.length &&
-              props.files
+              props.files.length
             }
             message="Loading Instance"
             width="100vw"

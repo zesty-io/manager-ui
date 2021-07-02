@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { useFilePath } from "shell/hooks/use-filePath";
+import { useFilePath } from "shell/hooks/useFilePath";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {

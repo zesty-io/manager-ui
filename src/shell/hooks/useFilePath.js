@@ -1,11 +1,9 @@
 import zuid from "zuid";
 import { useSelector } from "react-redux";
-import { createSelector } from "reselect";
 
 export function useFilePath(ZUID = "") {
   const getFiles = state => state.files;
-  const selectFiles = createSelector([getFiles], files => files);
-  const files = useSelector(selectFiles);
+  const files = useSelector(getFiles);
   if (!ZUID) {
     throw new Error("Required ZUID argument was not provided");
   }
