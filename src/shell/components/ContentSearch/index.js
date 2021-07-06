@@ -47,6 +47,7 @@ export default React.forwardRef((props, providedRef) => {
       if (term) {
         dispatch(searchItems(term))
           .then((res) => {
+            if (res.status !== 200) return;
             if (res.status === 200) {
               let results = res.data;
               if (props.filterResults) {
