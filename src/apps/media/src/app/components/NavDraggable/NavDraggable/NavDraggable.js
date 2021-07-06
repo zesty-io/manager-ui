@@ -10,7 +10,7 @@ export const NavDraggable = React.memo(function NavDraggable(props) {
   const [prevID, setPrevID] = useState();
 
   const highlightTarget = useCallback(
-    id => {
+    (id) => {
       if (prevID === id) {
         return;
       }
@@ -37,7 +37,7 @@ export const NavDraggable = React.memo(function NavDraggable(props) {
       id={props.id || "Navigation"}
       className={cx(styles.Nav, props.className)}
     >
-      {props.tree.map(item => (
+      {props.tree.map((item) => (
         <NodeDraggableMemo
           {...item}
           key={item.path}

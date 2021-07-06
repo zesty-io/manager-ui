@@ -6,7 +6,7 @@ import { faTrash, faBan } from "@fortawesome/free-solid-svg-icons";
 import {
   CollapsibleCard,
   CardContent,
-  CardFooter
+  CardFooter,
 } from "@zesty-io/core/CollapsibleCard";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 import { Button } from "@zesty-io/core/Button";
@@ -66,7 +66,7 @@ function Footer(props) {
               .then(() => {
                 history.push("/schema");
               })
-              .catch(err => {
+              .catch((err) => {
                 console.error(err);
                 setIsOpen(false);
                 props.dispatch(
@@ -74,7 +74,7 @@ function Footer(props) {
                     kind: "warn",
                     message:
                       err.message ||
-                      `Failed to delete model: ${props.model.label}`
+                      `Failed to delete model: ${props.model.label}`,
                   })
                 );
               });

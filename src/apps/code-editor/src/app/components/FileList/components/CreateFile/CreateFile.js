@@ -4,9 +4,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBan,
   faCheckCircle,
-  faPlug,
   faPlus,
-  faSpinner
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
@@ -33,7 +32,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
       props.dispatch(
         notify({
           kind: "warn",
-          message: "You must select a file type to create a new file"
+          message: "You must select a file type to create a new file",
         })
       );
       return;
@@ -42,7 +41,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
       props.dispatch(
         notify({
           kind: "warn",
-          message: "You must provide a name for the new file"
+          message: "You must provide a name for the new file",
         })
       );
       return;
@@ -52,7 +51,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
       props.dispatch(
         notify({
           kind: "warn",
-          message: `Please add leading slash in file path EX: /${name}`
+          message: `Please add leading slash in file path EX: /${name}`,
         })
       );
       return;
@@ -62,13 +61,13 @@ export const CreateFile = React.memo(function CreateFile(props) {
 
     props
       .dispatch(createFile(name, type))
-      .then(res => {
+      .then((res) => {
         if (res.status === 201) {
           setOpen(false);
           history.push(`/code/file/${res.pathPart}/${res.data.ZUID}`);
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
       })
       .finally(() => {
@@ -100,7 +99,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
               className={styles.FileType}
               label="File Type"
               defaultOptText="-- choose a file type --"
-              onChange={value => {
+              onChange={(value) => {
                 setType(value);
               }}
             >
@@ -165,7 +164,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
             <FieldTypeText
               name="file_name"
               label="File Name"
-              onChange={value => setName(value)}
+              onChange={(value) => setName(value)}
             />
           </ModalContent>
           <ModalFooter>

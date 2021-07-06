@@ -4,14 +4,14 @@ export function sets(state = {}, action) {
       // return state
       return {
         xxxx1: {
-          name: "Page Set"
+          name: "Page Set",
         },
         xxxx2: {
-          name: "Template Set"
+          name: "Template Set",
         },
         xxxx3: {
-          name: "Data Set"
-        }
+          name: "Data Set",
+        },
       };
   }
 }

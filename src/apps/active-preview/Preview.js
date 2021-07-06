@@ -13,7 +13,7 @@ import {
   faExternalLinkAlt,
   faSync,
   faEllipsisV,
-  faMobileAlt
+  faMobileAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Meta } from "./components/Meta";
@@ -72,13 +72,13 @@ export function Preview(props) {
   // fetch domain
   useEffect(() => {
     api(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`)
-      .then(json => {
+      .then((json) => {
         setInstance(json.data);
         setDomain(
           `${CONFIG.URL_PREVIEW_PROTOCOL}${json.data.randomHashID}${CONFIG.URL_PREVIEW}`
         );
       })
-      .catch(err => {
+      .catch((err) => {
         if (err.message === "unauthenticated") {
           setAuthenticated(false);
           setDomain("");
@@ -112,7 +112,7 @@ export function Preview(props) {
         height: "100%",
         width: "100%",
         overflow: "hidden",
-        position: "relative"
+        position: "relative",
       }}
     >
       <iframe
@@ -170,7 +170,7 @@ export function Preview(props) {
               <FontAwesomeIcon
                 icon={faMobileAlt}
                 style={{
-                  transform: `rotate(${rotate ? "-90deg" : "0deg"})`
+                  transform: `rotate(${rotate ? "-90deg" : "0deg"})`,
                 }}
               />
             </Button>
@@ -178,7 +178,7 @@ export function Preview(props) {
               className={styles.Select}
               name="device"
               value="fullscreen"
-              onSelect={val => setDevice(val)}
+              onSelect={(val) => setDevice(val)}
             >
               <Option value="fullscreen" text="Desktop" />
 
@@ -234,7 +234,7 @@ export function Preview(props) {
               <div className={styles.center}>
                 {templates[device].template({
                   iFrame,
-                  orientation: rotate ? "landscape" : "portrait"
+                  orientation: rotate ? "landscape" : "portrait",
                 })}
               </div>
             )
@@ -260,7 +260,7 @@ const templates = {
       <div className={styles.NoDomain}>
         <h1 className={styles.headline}>No template selected</h1>
       </div>
-    )
+    ),
   },
 
   /**
@@ -271,7 +271,7 @@ const templates = {
    */
   Iphone5: {
     option: `<span>iPhone 5 <small>320x568px</small></span>`,
-    template: props => {
+    template: (props) => {
       return (
         <div className={`marvel-device iphone5s silver ${props.orientation}`}>
           <div className="top-bar"></div>
@@ -285,11 +285,11 @@ const templates = {
           <div className="bottom-bar"></div>
         </div>
       );
-    }
+    },
   },
   Iphone8: {
     option: `<span>iPhone 8 <small>375x667px</small></span>`,
-    template: props => (
+    template: (props) => (
       <div className={`marvel-device iphone8 black ${props.orientation}`}>
         <div className="top-bar"></div>
         <div className="sleep"></div>
@@ -301,11 +301,11 @@ const templates = {
         <div className="home"></div>
         <div className="bottom-bar"></div>
       </div>
-    )
+    ),
   },
   IphoneX: {
     option: `<span>iPhone X <small>375x812px</small></span>`,
-    template: props => (
+    template: (props) => (
       <div className={`marvel-device iphone-x ${props.orientation}`}>
         <div className="notch">
           <div className="camera"></div>
@@ -324,21 +324,21 @@ const templates = {
         <div className="inner-shadow"></div>
         <div className="screen">{props.iFrame()}</div>
       </div>
-    )
+    ),
   },
   iPadMini: {
     option: `<span>iPad Mini <small>576x768px</small></span>`,
-    template: props => (
+    template: (props) => (
       <div className={`marvel-device ipad silver ${props.orientation}`}>
         <div className="camera"></div>
         <div className="screen">{props.iFrame()}</div>
         <div className="home"></div>
       </div>
-    )
+    ),
   },
   Note8: {
     option: `<span>Note 8 <small>400x822px</small></span>`,
-    template: props => (
+    template: (props) => (
       <div className={`marvel-device note8 ${props.orientation}`}>
         <div className="inner"></div>
         <div className="overflow">
@@ -352,11 +352,11 @@ const templates = {
         <div className="camera"></div>
         <div className="screen">{props.iFrame()}</div>
       </div>
-    )
+    ),
   },
   Nexus5: {
     option: `<span>Nexus 5 <small>320x568px</small></span>`,
-    template: props => (
+    template: (props) => (
       <div class={`marvel-device nexus5 ${props.orientation}`}>
         <div class="top-bar"></div>
         <div class="sleep"></div>
@@ -364,11 +364,11 @@ const templates = {
         <div class="camera"></div>
         <div class="screen">{props.iFrame()}</div>
       </div>
-    )
+    ),
   },
   HTCOne: {
     option: `<span>HTCOne <small>320x568px</small></span>`,
-    template: props => (
+    template: (props) => (
       <div class={`marvel-device htc-one ${props.orientation}`}>
         <div class="top-bar"></div>
         <div class="camera"></div>
@@ -376,11 +376,11 @@ const templates = {
         <div class="speaker"></div>
         <div class="screen">{props.iFrame()}</div>
       </div>
-    )
+    ),
   },
   Lumina920: {
     option: `<span>Lumina 920 <small>320x553px</small></span>`,
-    template: props => (
+    template: (props) => (
       <div class={`marvel-device lumia920 black ${props.orientation}`}>
         <div class="top-bar"></div>
         <div class="volume"></div>
@@ -388,6 +388,6 @@ const templates = {
         <div class="speaker"></div>
         <div class="screen">{props.iFrame()}</div>
       </div>
-    )
-  }
+    ),
+  },
 };

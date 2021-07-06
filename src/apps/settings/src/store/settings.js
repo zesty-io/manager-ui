@@ -5,7 +5,7 @@ import {
   faCog,
   faEnvelope,
   faFont,
-  faTools
+  faTools,
 } from "@fortawesome/free-solid-svg-icons";
 
 export function settings(
@@ -17,14 +17,14 @@ export function settings(
         label: "Installed fonts",
         value: "installed_fonts",
         path: "/settings/fonts/installed",
-        icon: faFont
+        icon: faFont,
       },
       {
         label: "Browse fonts",
         value: "browse_fonts",
         path: "/settings/fonts/browse",
-        icon: faFont
-      }
+        icon: faFont,
+      },
     ],
     fonts: [],
     fontsInstalled: [],
@@ -33,7 +33,7 @@ export function settings(
     instance: [],
 
     catStyles: [],
-    styles: []
+    styles: [],
   },
   action
 ) {
@@ -46,29 +46,31 @@ export function settings(
         // derived from instance settings
         catInstance: action.payload
           .filter((item, index, self) => {
-            return index === self.findIndex(t => t.category === item.category);
+            return (
+              index === self.findIndex((t) => t.category === item.category)
+            );
           })
-          .map(item => {
+          .map((item) => {
             return {
               label: item.category.replace(/_|-/g, " "),
               value: item.category,
               path: `/settings/instance/${item.category}`,
-              icon: ICONS[item.category] || faCog
+              icon: ICONS[item.category] || faCog,
             };
-          })
+          }),
       };
 
     case "FETCH_STYLES_CATEGORIES_SUCCESS":
       return {
         ...state,
-        catStyles: action.payload.map(item => {
+        catStyles: action.payload.map((item) => {
           return {
             label: item.name,
             value: item.ID,
             path: `/settings/styles/${item.ID}`,
-            icon: ICONS[item.icon] || faCog
+            icon: ICONS[item.icon] || faCog,
           };
-        })
+        }),
       };
 
     case "FETCH_STYLES_VARIABLES":
@@ -83,21 +85,21 @@ export function settings(
     case "UPDATE_SETTINGS_SUCCESS":
       const arrInstances = state.instance;
       arrInstances[
-        arrInstances.map(item => item.ZUID).indexOf(action.payload.ZUID)
+        arrInstances.map((item) => item.ZUID).indexOf(action.payload.ZUID)
       ] = action.payload;
       return {
         ...state,
-        instance: arrInstances
+        instance: arrInstances,
       };
     case "UPDATE_STYLES_SUCCESS":
       const styles = state.styles;
       const styleIndex = styles
-        .map(item => item.ZUID)
+        .map((item) => item.ZUID)
         .indexOf(action.payload.ZUID);
       styles[styleIndex] = action.payload;
       return {
         ...state,
-        styles
+        styles,
       };
 
     default:
@@ -108,7 +110,7 @@ export function settings(
 const ICONS = {
   general: faCog,
   tools: faTools,
-  contact: faEnvelope
+  contact: faEnvelope,
 };
 
 const sortNav = (a, b) => {
@@ -126,10 +128,10 @@ const sortNav = (a, b) => {
 };
 
 export function fetchSettings() {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/env/settings`)
-      .then(res => {
-        res.data.forEach(data => {
+      .then((res) => {
+        res.data.forEach((data) => {
           // this make the legacy key:value,key:value option values work by fixing it to key:value;key:value
           // we cleaing the data before it goes to the memory store which allows it to be saved correctly
           if (data.dataType === "dropdown") {
@@ -139,15 +141,15 @@ export function fetchSettings() {
 
         dispatch({
           type: "FETCH_SETTINGS_SUCCESS",
-          payload: res.data.sort(sortNav)
+          payload: res.data.sort(sortNav),
         });
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         dispatch(
           notify({
             kind: "warn",
-            message: err.message
+            message: err.message,
           })
         );
       });
@@ -155,22 +157,22 @@ export function fetchSettings() {
 }
 
 export function fetchStylesCategories() {
-  return dispatch => {
+  return (dispatch) => {
     return request(
       `${CONFIG.API_INSTANCE}/web/stylesheets/variables/categories`
     )
-      .then(res => {
+      .then((res) => {
         dispatch({
           type: "FETCH_STYLES_CATEGORIES_SUCCESS",
-          payload: res.data.sort(sortNav)
+          payload: res.data.sort(sortNav),
         });
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         dispatch(
           notify({
             kind: "warn",
-            message: err.message
+            message: err.message,
           })
         );
       });
@@ -178,21 +180,21 @@ export function fetchStylesCategories() {
 }
 
 export function fetchStylesVariables() {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/web/stylesheets/variables`)
-      .then(res => {
+      .then((res) => {
         dispatch({
           type: "FETCH_STYLES_VARIABLES",
           // payload: dummy.variables
-          payload: res.data
+          payload: res.data,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         dispatch(
           notify({
             kind: "warn",
-            message: err.message
+            message: err.message,
           })
         );
       });
@@ -200,55 +202,55 @@ export function fetchStylesVariables() {
 }
 
 export function saveStyleVariable(zuid, data) {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/web/stylesheets/variables/${zuid}`, {
       method: "PUT",
       json: true,
-      body: data
+      body: data,
     })
-      .then(res => {
+      .then((res) => {
         if (res) {
           dispatch({
             type: "UPDATE_STYLES_SUCCESS",
-            payload: data
+            payload: data,
           });
         }
       })
-      .catch(err => console.log("err", err));
+      .catch((err) => console.log("err", err));
   };
 }
 
 export function updateSettings(zuid, data) {
-  return dispatch => {
+  return (dispatch) => {
     request(`${CONFIG.API_INSTANCE}/env/settings/${zuid}`, {
       method: "PUT",
       json: true,
-      body: data
+      body: data,
     })
-      .then(res => {
+      .then((res) => {
         if (res) {
           dispatch({
             type: "UPDATE_SETTINGS_SUCCESS",
-            payload: data
+            payload: data,
           });
         }
       })
-      .catch(err => err);
+      .catch((err) => err);
   };
 }
 
 export function fetchFonts() {
-  return dispatch => {
+  return (dispatch) => {
     request(
       "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyAWGIDvIvAF69UQZR9vIOtz88s55deGs8Y"
     )
-      .then(res => {
+      .then((res) => {
         dispatch({
           type: "FETCH_FONTS_SUCCESS",
-          payload: res.items
+          payload: res.items,
         });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 }
 
@@ -264,14 +266,14 @@ export function installSiteFont(font, variants) {
         type: "link",
         attributes: {
           rel: "stylesheet",
-          href: `https://fonts.googleapis.com/css?family=${font}:${variants}`
+          href: `https://fonts.googleapis.com/css?family=${font}:${variants}`,
         },
         sort: 1,
-        resourceZUID: getState().instance.ZUID
-      }
+        resourceZUID: getState().instance.ZUID,
+      },
     })
-      .then(res => res.data)
-      .catch(err => {
+      .then((res) => res.data)
+      .catch((err) => {
         console.log(err);
         return err;
       });
@@ -279,21 +281,21 @@ export function installSiteFont(font, variants) {
 }
 
 export function fetchFontsInstalled() {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/web/headtags`)
-      .then(res => {
+      .then((res) => {
         return dispatch({
           type: "FETCH_FONTS_INSTALLED",
           payload: res.data.filter(
-            item =>
+            (item) =>
               item.type === "link" &&
               item.attributes.href &&
               item.attributes.href.indexOf("https://fonts.googleapis.com/") ===
                 0
-          )
+          ),
         });
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
       });
   };
@@ -308,12 +310,12 @@ export function updateSiteFont(zuid, href) {
       sort: 1,
       attributes: {
         rel: "stylesheet",
-        href: href
-      }
-    }
+        href: href,
+      },
+    },
   })
-    .then(res => res.data)
-    .catch(err => {
+    .then((res) => res.data)
+    .catch((err) => {
       console.error(err);
       return err;
     });
@@ -321,10 +323,10 @@ export function updateSiteFont(zuid, href) {
 
 export function deleteSiteFont(zuid) {
   return request(`${CONFIG.API_INSTANCE}/web/headtags/${zuid}`, {
-    method: "DELETE"
+    method: "DELETE",
   })
-    .then(res => res.data)
-    .catch(err => {
+    .then((res) => res.data)
+    .catch((err) => {
       console.error(err);
       return err;
     });

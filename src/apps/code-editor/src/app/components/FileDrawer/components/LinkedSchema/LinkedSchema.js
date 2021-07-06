@@ -15,7 +15,8 @@ export default function LinkedSchema(props) {
     <Card className={cx(styles.LinkedSchema, shared.DrawerStyles)}>
       <CardHeader>
         <h1>
-          <FontAwesomeIcon icon={faDatabase} /> Linked Schema
+          <FontAwesomeIcon icon={faDatabase} /> {props.file.fileName}'s Related
+          Model Schema
         </h1>
       </CardHeader>
       <CardContent>
@@ -33,7 +34,7 @@ export default function LinkedSchema(props) {
         </p>
 
         <ul>
-          {props.fields.map(field => (
+          {props.fields.map((field) => (
             <li key={field.ZUID}>
               <span className={styles.ParsleyRef}>
                 <span className={styles.Brace}>{"{{"}</span>

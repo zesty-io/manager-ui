@@ -6,7 +6,7 @@ export function auth(
   state = {
     checking: true,
     valid: false,
-    sessionEnding: false
+    sessionEnding: false,
   },
   action
 ) {
@@ -18,7 +18,7 @@ export function auth(
       if (action.payload.meta.token) {
         Cookies.set(CONFIG.COOKIE_NAME, action.payload.meta.token, {
           path: "/",
-          domain: CONFIG.COOKIE_DOMAIN
+          domain: CONFIG.COOKIE_DOMAIN,
         });
       }
 
@@ -27,7 +27,7 @@ export function auth(
         checking: false,
         sessionEnding: false,
         valid: action.payload.code === 200,
-        token: action.payload.meta.token
+        token: action.payload.meta.token,
       };
 
     case "FETCH_AUTH_ERROR":
@@ -46,7 +46,7 @@ export function auth(
     case "LOGOUT":
       Cookies.remove(CONFIG.COOKIE_NAME, {
         path: "/",
-        domain: CONFIG.COOKIE_DOMAIN
+        domain: CONFIG.COOKIE_DOMAIN,
       });
       return { ...state, checking: false, valid: false };
 
@@ -60,7 +60,7 @@ export function endSession() {
     const state = getState();
 
     dispatch({
-      type: "SESSION_ENDING"
+      type: "SESSION_ENDING",
     });
 
     // Track session ending to avoid mutliple notifications
@@ -69,7 +69,7 @@ export function endSession() {
       dispatch(
         notify({
           kind: "warn",
-          message: "Your session ended. Redirecting to login."
+          message: "Your session ended. Redirecting to login.",
         })
       );
 
@@ -77,7 +77,7 @@ export function endSession() {
       // switching someone to the login screen
       setTimeout(() => {
         dispatch({
-          type: "SESSION_INVALID"
+          type: "SESSION_INVALID",
         });
       }, 5000);
     }
@@ -85,60 +85,60 @@ export function endSession() {
 }
 
 export function verify() {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.SERVICE_AUTH}/verify`)
-      .then(json => {
+      .then((json) => {
         dispatch({
           type: "VERIFY_SUCCESS",
-          payload: json
+          payload: json,
         });
 
         return json;
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch({
           type: "VERIFY_ERROR",
           payload: { auth: false },
-          err
+          err,
         });
       });
   };
 }
 
 export function verifyTwoFactor(token) {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.SERVICE_AUTH}/verify-2fa`, {
       body: {
-        token
-      }
+        token,
+      },
     })
-      .then(json => {
+      .then((json) => {
         dispatch({
           type: "VERIFY_2FA_SUCCESS",
-          payload: json
+          payload: json,
         });
 
         return json;
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch({
           type: "VERIFY_2FA_ERROR",
           payload: { auth: false },
-          err
+          err,
         });
       });
   };
 }
 
 export function pollTwoFactor() {
-  return dispatch => {
+  return (dispatch) => {
     const poll = (count = 0) => {
       count++;
 
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           request(`${CONFIG.SERVICE_AUTH}/verify-2fa`)
-            .then(json => {
+            .then((json) => {
               if (json.code === 202) {
                 // Builds recursive promise chain until polling fails or is accepted
                 resolve(poll(count));
@@ -164,7 +164,7 @@ export function pollTwoFactor() {
                 );
               }
             })
-            .catch(err => {
+            .catch((err) => {
               console.log("recursive request catch", err);
               reject(
                 new Error(
@@ -177,17 +177,17 @@ export function pollTwoFactor() {
     };
 
     return poll()
-      .then(json => {
+      .then((json) => {
         dispatch({
           type: "POLL_2FA_SUCCESS",
-          payload: json
+          payload: json,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(
           notify({
             kind: "warn",
-            message: err.message
+            message: err.message,
           })
         );
 
@@ -198,26 +198,26 @@ export function pollTwoFactor() {
 }
 
 export function login(email, password) {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.SERVICE_AUTH}/login`, {
       body: {
         email,
-        password
-      }
+        password,
+      },
     })
-      .then(json => {
+      .then((json) => {
         dispatch({
           type: "FETCH_LOGIN_SUCCESS",
-          payload: json
+          payload: json,
         });
 
         return json;
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch({
           type: "FETCH_LOGIN_ERROR",
           payload: { auth: false },
-          err
+          err,
         });
         throw err;
       });
@@ -225,17 +225,17 @@ export function login(email, password) {
 }
 
 export function logout() {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.SERVICE_AUTH}/logout`)
       .then(() => {
         window.location = `${CONFIG.URL_ACCOUNTS}/login`;
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         dispatch({
           type: "FETCH_AUTH_ERROR",
           payload: { auth: false },
-          err
+          err,
         });
       });
   };

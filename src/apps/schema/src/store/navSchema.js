@@ -4,7 +4,7 @@ import {
   faDatabase,
   faExternalLinkSquareAlt,
   faLink,
-  faHome
+  faHome,
 } from "@fortawesome/free-solid-svg-icons";
 
 const ICONS = {
@@ -15,7 +15,7 @@ const ICONS = {
   internal: faLink,
   item: faFile,
   homepage: faHome,
-  socialfeed: faDatabase
+  socialfeed: faDatabase,
 };
 
 const sortNav = (a, b) => {
@@ -36,11 +36,11 @@ export function navSchema(state = [], action) {
   switch (action.type) {
     case "FETCH_MODELS_SUCCESS":
       return Object.keys(action.payload)
-        .map(modelZUID => {
+        .map((modelZUID) => {
           return {
             ...action.payload[modelZUID],
             path: `/schema/${modelZUID}`,
-            icon: ICONS[action.payload[modelZUID].type]
+            icon: ICONS[action.payload[modelZUID].type],
           };
         })
         .sort(sortNav);
@@ -52,8 +52,8 @@ export function navSchema(state = [], action) {
         {
           ...action.payload,
           path: `/schema/${action.payload.ZUID}`,
-          icon: action.payload.type
-        }
+          icon: action.payload.type,
+        },
       ].sort(sortNav);
 
     default:

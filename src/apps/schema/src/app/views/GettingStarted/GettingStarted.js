@@ -12,7 +12,7 @@ import { FieldSuccess } from "./components/FieldSuccess";
 import { createModel } from "shell/store/models";
 import { createField } from "shell/store/fields";
 
-export default connect(state => state)(function GettingStarted(props) {
+export default connect((state) => state)(function GettingStarted(props) {
   const initialField = {
     contentModelZUID: "",
     datatype: "0",
@@ -21,10 +21,10 @@ export default connect(state => state)(function GettingStarted(props) {
     description: "",
     locked: false,
     settings: {
-      list: true
+      list: true,
     },
     sort: 10000,
-    dirty: false
+    dirty: false,
   };
 
   const [step, setStep] = useState(null);
@@ -33,7 +33,7 @@ export default connect(state => state)(function GettingStarted(props) {
   const [model, setModel] = useState({
     type: "",
     label: "",
-    name: ""
+    name: "",
   });
 
   function handleAddField() {
@@ -43,7 +43,7 @@ export default connect(state => state)(function GettingStarted(props) {
   function handleCreateField() {
     props
       .dispatch(createField(modelZUID, field))
-      .then(res => {
+      .then((res) => {
         if (res.status === 201) {
           setField(initialField);
           setStep(null);
@@ -51,7 +51,7 @@ export default connect(state => state)(function GettingStarted(props) {
           console.log("ERR", res);
         }
       })
-      .catch(err => {
+      .catch((err) => {
         throw err;
       });
   }
@@ -65,10 +65,10 @@ export default connect(state => state)(function GettingStarted(props) {
           label: model.label,
           description: "",
           listed: true,
-          type: model.type
+          type: model.type,
         })
       )
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           setModelZUID(res.data.ZUID);
           setField({ ...field, contentModelZUID: res.data.ZUID });
@@ -78,12 +78,12 @@ export default connect(state => state)(function GettingStarted(props) {
           props.dispatch(
             notify({
               kind: "error",
-              message: res.error
+              message: res.error,
             })
           );
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.log("CATCH", err);
       });
   }
@@ -101,7 +101,7 @@ export default connect(state => state)(function GettingStarted(props) {
       >
         <ModelType
           modelType={model.type}
-          setModelType={type => setModel({ ...model, type })}
+          setModelType={(type) => setModel({ ...model, type })}
         />
       </WizardStep>
 
@@ -119,7 +119,7 @@ export default connect(state => state)(function GettingStarted(props) {
               setModel({
                 ...model,
                 label: value,
-                name: value.replace(/ /g, "-").toLowerCase()
+                name: value.replace(/ /g, "-").toLowerCase(),
               });
             } else {
               setModel({ ...model, label: value });
@@ -136,7 +136,7 @@ export default connect(state => state)(function GettingStarted(props) {
       >
         <FieldType
           fieldType={field.datatype}
-          setFieldType={value => setField({ ...field, datatype: value })}
+          setFieldType={(value) => setField({ ...field, datatype: value })}
           modelLabel={model.label}
         />
       </WizardStep>
@@ -157,7 +157,7 @@ export default connect(state => state)(function GettingStarted(props) {
               setField({
                 ...field,
                 label: value,
-                name: value.replace(/ /g, "-").toLowerCase()
+                name: value.replace(/ /g, "-").toLowerCase(),
               });
             } else {
               setField({ ...field, label: value });

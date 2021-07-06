@@ -13,30 +13,30 @@ export function auditTrail(state = [], action) {
 }
 
 export function fetchAuditTrail(fileZUID) {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/env/audits?affectedZUID=${fileZUID}`)
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           dispatch({
             type: "FETCH_FILE_AUDIT_TRAIL_SUCCESS",
-            payload: res.data
+            payload: res.data,
           });
         } else {
           dispatch(
             notify({
               kind: "warn",
-              message: `Unable to load file versions. ${res.status}`
+              message: `Unable to load file versions. ${res.status}`,
             })
           );
         }
         return res;
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         dispatch(
           notify({
             kind: "warn",
-            message: "API Error loading file versions"
+            message: "API Error loading file versions",
           })
         );
       });

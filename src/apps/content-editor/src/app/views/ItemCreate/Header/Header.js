@@ -6,16 +6,16 @@ import {
   faHome,
   faAngleRight,
   faSpinner,
-  faSave
+  faSave,
 } from "@fortawesome/free-solid-svg-icons";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./Header.less";
-export default connect(state => {
+export default connect((state) => {
   return {
-    platform: state.platform
+    platform: state.platform,
   };
 })(function Header(props) {
   return (

@@ -18,7 +18,7 @@ export const DropdownCell = React.memo(function DropdownCell(props) {
       <span className={cx(props.className, styles.DropdownCell)}>
         <AppLink
           to={`/schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`}
-          onClick={event => event.stopPropagation()}
+          onClick={(event) => event.stopPropagation()}
         >
           <FontAwesomeIcon icon={faExclamationTriangle} />
           &nbsp;Missing dropdown options.

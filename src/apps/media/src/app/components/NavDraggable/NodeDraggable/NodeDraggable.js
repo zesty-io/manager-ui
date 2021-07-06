@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretLeft,
   faCaretDown,
-  faFolder
+  faFolder,
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./NodeDraggable.less";
 
@@ -28,9 +28,10 @@ function find(id, items) {
 
 export const NodeDraggableMemo = React.memo(function NodeDraggable(props) {
   const depth = props.depth + 1 || 1;
-  const collapseNode = useCallback(() => props.collapseNode(props.id), [
-    props.id
-  ]);
+  const collapseNode = useCallback(
+    () => props.collapseNode(props.id),
+    [props.id]
+  );
   const ref = useRef(null);
   const [, drop] = useDrop({
     accept: ["group", "file"],
@@ -54,11 +55,11 @@ export const NodeDraggableMemo = React.memo(function NodeDraggable(props) {
       }
       if (item.type === "group") {
         props.dropGroup(item.id, {
-          group_id: props.id
+          group_id: props.id,
         });
       } else if (item.type === "file") {
         props.dropFile(item.id, {
-          group_id: props.id
+          group_id: props.id,
         });
       }
     },
@@ -87,7 +88,7 @@ export const NodeDraggableMemo = React.memo(function NodeDraggable(props) {
       }
 
       return true;
-    }
+    },
   });
 
   const [{ isDragging }, drag] = useDrag({
@@ -97,17 +98,17 @@ export const NodeDraggableMemo = React.memo(function NodeDraggable(props) {
       bin_id: props.bin_id,
       parent: props.parent,
       children: props.children,
-      hidden: props.hidden
+      hidden: props.hidden,
     },
-    collect: monitor => ({
-      isDragging: monitor.isDragging()
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
     }),
     canDrag() {
       if (props.type === "bin") {
         return false;
       }
       return true;
-    }
+    },
   });
 
   drop(drag(ref));
@@ -127,7 +128,7 @@ export const NodeDraggableMemo = React.memo(function NodeDraggable(props) {
         {props.onPathChange ? (
           <a
             href="#"
-            onClick={event => {
+            onClick={(event) => {
               event.preventDefault();
               props.onPathChange(props.path);
             }}

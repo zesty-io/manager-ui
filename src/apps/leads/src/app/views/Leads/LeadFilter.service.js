@@ -18,12 +18,12 @@ export function filterByDate(leads, filter) {
   const maximumDate = filter.endDate;
   const minimumDate = filter.startDate;
   return leads
-    .filter(lead =>
+    .filter((lead) =>
       maximumDate
         ? moment(lead.dateCreated).isSameOrBefore(maximumDate, "day")
         : true
     )
-    .filter(lead =>
+    .filter((lead) =>
       minimumDate
         ? moment(lead.dateCreated).isSameOrAfter(minimumDate, "day")
         : true
@@ -41,7 +41,7 @@ export function filterByFormGroup(leads, filter) {
   if (filter.formGroup === FORM_GROUP_PRESETS.ALL) {
     return leads;
   }
-  return leads.filter(lead =>
+  return leads.filter((lead) =>
     filter.formGroup ? lead.form === filter.formGroup : true
   );
 }
@@ -55,7 +55,7 @@ export function filterByFormGroup(leads, filter) {
  */
 export function filterByFuzzyText(leads, filter) {
   let fuzzyTextFilter = filter.fuzzyText;
-  return leads.filter(lead => {
+  return leads.filter((lead) => {
     if (!fuzzyTextFilter) {
       return true;
     }

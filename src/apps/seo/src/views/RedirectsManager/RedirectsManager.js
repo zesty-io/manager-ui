@@ -18,11 +18,11 @@ export default function RedirectManager(props) {
       .then(() => {
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         props.dispatch(
           notify({
             kind: "warn",
-            message: "Failed to load redirects data"
+            message: "Failed to load redirects data",
           })
         );
         setLoading(false);

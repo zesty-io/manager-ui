@@ -14,16 +14,16 @@ export function Draggable(props) {
         props.onOver(props.index);
       }}
     >
-      {React.Children.map(props.children, child =>
+      {React.Children.map(props.children, (child) =>
         React.cloneElement(child, {
-          onDragStart: evt => {
+          onDragStart: (evt) => {
             props.drag(props.index);
 
             // Required in Firefox to initiate drag/drop
             evt.dataTransfer.setData(
               "text",
               JSON.stringify({
-                index: props.index
+                index: props.index,
               })
             );
 
@@ -35,7 +35,7 @@ export function Draggable(props) {
             );
 
             evt.dataTransfer.dropEffect = "move";
-          }
+          },
         })
       )}
     </div>

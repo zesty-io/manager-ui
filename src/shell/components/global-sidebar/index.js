@@ -1,2 +1,2 @@
-import GlobalSidebar from './GlobalSidebar'
-export default GlobalSidebar
+import GlobalSidebar from "./GlobalSidebar";
+export default GlobalSidebar;

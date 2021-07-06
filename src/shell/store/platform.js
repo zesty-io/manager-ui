@@ -3,7 +3,7 @@ export function platform(state = {}, action) {
     case "DETECT_PLATFORM":
       return {
         ...state,
-        isMac: action.payload.isMac
+        isMac: action.payload.isMac,
       };
 
     default:
@@ -12,12 +12,12 @@ export function platform(state = {}, action) {
 }
 
 export function detectPlatform() {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "DETECT_PLATFORM",
       payload: {
-        isMac: navigator.platform.toUpperCase().indexOf("MAC") >= 0
-      }
+        isMac: navigator.platform.toUpperCase().indexOf("MAC") >= 0,
+      },
     });
   };
 }

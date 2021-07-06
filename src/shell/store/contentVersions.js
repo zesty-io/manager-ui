@@ -13,7 +13,7 @@ export function contentVersions(state = {}, action) {
           [action.itemZUID]: [action.data, ...existingVersions].reduce(
             (acc, item) => {
               if (item?.meta?.version) {
-                if (!acc.find(el => el.meta.version === item.meta.version)) {
+                if (!acc.find((el) => el.meta.version === item.meta.version)) {
                   acc.push(item);
                 }
               }
@@ -21,7 +21,7 @@ export function contentVersions(state = {}, action) {
               return acc;
             },
             []
-          )
+          ),
         };
       } else {
         return state;
@@ -36,20 +36,20 @@ export function contentVersions(state = {}, action) {
 }
 
 export function fetchVersions(modelZUID, itemZUID) {
-  return dispatch => {
+  return (dispatch) => {
     return request(
       `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/versions`
     )
-      .then(res => {
+      .then((res) => {
         dispatch({
           type: "FETCH_ITEM_VERSIONS_SUCCESS",
           itemZUID,
-          versions: res.data
+          versions: res.data,
         });
 
         return res;
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
       });
   };

@@ -75,7 +75,7 @@ export function GettingStarted(props) {
           <div className={styles.Topic}>
             <h2 className={styles.subheadline}>Latest Saved Files</h2>
             <ul>
-              {files.map(file => (
+              {files.map((file) => (
                 <li key={file.ZUID}>
                   <AppLink
                     to={`/code/file/${resolvePathPart(file.type)}/${file.ZUID}`}

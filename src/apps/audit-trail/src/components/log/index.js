@@ -57,4 +57,4 @@ class Log extends Component {
   }
 }
 
-export default connect(state => state)(Log);
+export default connect((state) => state)(Log);

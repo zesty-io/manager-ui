@@ -10,11 +10,11 @@ import { Workspace } from "../../components/Workspace/";
 import { fetchFiles } from "../../../store/files";
 
 import styles from "./CodeEditor.less";
-export default connect(state => {
+export default connect((state) => {
   return {
     files: state.files,
     navCode: state.navCode,
-    status: "dev"
+    status: "dev",
   };
 })(function CodeEditor(props) {
   const match = useRouteMatch("/code/file/:fileType/:fileZUID");
@@ -27,8 +27,8 @@ export default connect(state => {
   }, []);
 
   useEffect(() => {
-    const handleEditorClose = evt => {
-      if (props.files.find(f => f.dirty)) {
+    const handleEditorClose = (evt) => {
+      if (props.files.find((f) => f.dirty)) {
         // Cancel the event
         evt.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
         // Chrome requires returnValue to be set

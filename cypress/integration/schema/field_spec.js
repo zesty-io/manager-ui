@@ -20,20 +20,18 @@ describe("Fields", () => {
 
     // Find the newly created field
     cy.contains(".Fields article header h1", fieldLabel, {
-      timeout: 10000
+      timeout: 10000,
     }).should("exist");
   });
 
   it("Edit", () => {
     // Open the collapsed field
-    cy.get(".Fields .Draggable")
-      .last()
-      .click();
+    cy.get(".Fields .Draggable").last().click();
 
     cy.get('.Fields article input[name="label"]')
       .last()
       .invoke("val")
-      .then(value => {
+      .then((value) => {
         cy.get('.Fields article input[name="label"]')
           .last()
           .should("have.value", value);
@@ -44,9 +42,7 @@ describe("Fields", () => {
           .clear()
           .type(newFieldLabel);
 
-        cy.get('.Fields article footer button[kind="save"]')
-          .last()
-          .click();
+        cy.get('.Fields article footer button[kind="save"]').last().click();
 
         cy.get('.Fields article input[name="label"]')
           .last()
@@ -55,11 +51,9 @@ describe("Fields", () => {
   });
 
   it("Deactivate", () => {
-    cy.get(".Fields article footer button.deactivate")
-      .last()
-      .click({
-        timeout: 10000
-      });
+    cy.get(".Fields article footer button.deactivate").last().click({
+      timeout: 10000,
+    });
   });
 
   it("Create:textarea", () => {
@@ -75,7 +69,7 @@ describe("Fields", () => {
 
     // Find the newly created field
     cy.contains(".Fields article header h1", fieldLabel, {
-      timeout: 10000
+      timeout: 10000,
     }).should("exist");
   });
 
@@ -94,7 +88,7 @@ describe("Fields", () => {
 
     // Find the newly created field
     cy.contains(".Fields article header h1", fieldLabel, {
-      timeout: 10000
+      timeout: 10000,
     }).should("exist");
   });
 });

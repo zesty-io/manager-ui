@@ -46,7 +46,7 @@ export const WidgetPurgeItem = React.memo(function WidgetPurgeItem(props) {
                   props.dispatch(
                     notify({
                       message: "The item has been purged from the CDN cache",
-                      kind: "save"
+                      kind: "save",
                     })
                   );
                 })
@@ -56,7 +56,7 @@ export const WidgetPurgeItem = React.memo(function WidgetPurgeItem(props) {
                     notify({
                       message:
                         "There was an issue trying to purge the CDN cache",
-                      kind: "warn"
+                      kind: "warn",
                     })
                   );
                 });

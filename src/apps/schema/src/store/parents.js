@@ -11,9 +11,9 @@ export function parents(state = [], action) {
 }
 
 export function fetchParents() {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/env/nav`)
-      .then(res => {
+      .then((res) => {
         res.data.sort((a, b) => {
           if (a.label.toLowerCase() > b.label.toLowerCase()) {
             return 1;
@@ -26,15 +26,15 @@ export function fetchParents() {
 
         dispatch({
           type: "FETCH_PARENTS_SUCCESS",
-          payload: res.data
+          payload: res.data,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         dispatch(
           notify({
             kind: "warn",
-            message: err.message
+            message: err.message,
           })
         );
       });

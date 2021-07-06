@@ -64,7 +64,7 @@ describe("Actions in content editor", () => {
     // cy.get("#UnpublishItemButton").should.not("be.disabled");
     cy.get("#UnpublishItemButton").click({ force: true });
     cy.contains("Unpublished Item", {
-      timeout: 5000
+      timeout: 5000,
     }).should("exist");
   });
 
@@ -74,9 +74,7 @@ describe("Actions in content editor", () => {
     cy.reload();
     cy.get("#PublishScheduleButton").click();
     // select date and time
-    cy.get(".form-control")
-      .first()
-      .click();
+    cy.get(".form-control").first().click();
     cy.get(".flatpickr-calendar.open .flatpickr-next-month").click();
     cy.get(".flatpickr-calendar.open .flatpickr-day:not(.prevMonthDay)")
       .first()
@@ -126,9 +124,7 @@ describe("Actions in content editor", () => {
 
   // TODO: Workflow request doesn't work
   it.skip("Makes a workflow request", () => {
-    cy.get("#MainNavigation")
-      .contains("Homepage")
-      .click({ force: true });
+    cy.get("#MainNavigation").contains("Homepage").click({ force: true });
     cy.get("#WorkflowRequestButton").click();
     cy.contains("Grant Test").click();
     cy.get("#WorkflowRequestSendButton").click();

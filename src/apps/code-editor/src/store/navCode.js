@@ -7,13 +7,13 @@ import {
   faFileCode,
   faBolt,
   faDirections,
-  faLock
+  faLock,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faJs,
   faCss3Alt,
   faLess,
-  faSass
+  faSass,
 } from "@fortawesome/free-brands-svg-icons";
 
 import { resolvePathPart } from "./files";
@@ -21,7 +21,7 @@ import { resolvePathPart } from "./files";
 export function navCode(
   state = {
     raw: [],
-    tree: []
+    tree: [],
   },
   action
 ) {
@@ -38,7 +38,7 @@ export function navCode(
        * the reduce.
        */
       let map = [...action.payload.files, ...state.raw]
-        .filter(file => file.status === "dev")
+        .filter((file) => file.status === "dev")
         .reduce((acc, file) => {
           acc[file.ZUID] = file;
           return acc;
@@ -49,20 +49,20 @@ export function navCode(
 
       return {
         raw: files,
-        tree: buildNavTree(files)
+        tree: buildNavTree(files),
       };
 
     // blend header sort data into our nav
     case "FETCH_HEADERS_SUCCESS":
       const headersMap = action.payload
-        .filter(header => header.resourceZUID) // must have a resourceZUID
+        .filter((header) => header.resourceZUID) // must have a resourceZUID
         .reduce((acc, header) => {
           acc[header.resourceZUID] = header;
           return acc;
         }, {}); // convert to map for easy lookups
 
       // Add sort value to resource label
-      files = state.raw.map(file => {
+      files = state.raw.map((file) => {
         if (headersMap[file.ZUID]) {
           file.sort = headersMap[file.ZUID].sort;
         }
@@ -71,11 +71,11 @@ export function navCode(
 
       return {
         raw: files,
-        tree: buildNavTree(files)
+        tree: buildNavTree(files),
       };
 
     case "COLLAPSE_DIRECTORY":
-      let files = state.raw.map(node => {
+      let files = state.raw.map((node) => {
         if (node.fileName.includes(action.payload.path)) {
           node.closed = !node.closed;
         }
@@ -85,23 +85,23 @@ export function navCode(
       // Store files which are collapsed locally
       idb.set(
         `${action.payload.instanceZUID}:openFiles`,
-        files.filter(file => file.open || file.closed)
+        files.filter((file) => file.open || file.closed)
       );
 
       return {
         raw: files,
-        tree: buildNavTree(files)
+        tree: buildNavTree(files),
       };
 
     case "SAVE_FILE_SUCCESS":
-      files = state.raw.map(file => {
+      files = state.raw.map((file) => {
         if (file.ZUID === action.payload.file.ZUID) {
           return {
             ...file,
             version: 1 + action.payload.file.version,
             synced: true,
             dirty: false,
-            isLive: false
+            isLive: false,
           };
         }
         return file;
@@ -109,15 +109,15 @@ export function navCode(
 
       return {
         raw: files,
-        tree: buildNavTree(files)
+        tree: buildNavTree(files),
       };
 
     case "PUBLISH_FILE_SUCCESS":
-      files = state.raw.map(file => {
+      files = state.raw.map((file) => {
         if (file.ZUID === action.payload.fileZUID) {
           return {
             ...file,
-            isLive: true
+            isLive: true,
           };
         }
         return file;
@@ -125,11 +125,11 @@ export function navCode(
 
       return {
         raw: files,
-        tree: buildNavTree(files)
+        tree: buildNavTree(files),
       };
 
     case "DELETE_FILE_SUCCESS":
-      files = state.raw.filter(file => {
+      files = state.raw.filter((file) => {
         if (file.ZUID !== action.payload.fileZUID) {
           return file;
         }
@@ -137,7 +137,7 @@ export function navCode(
 
       return {
         raw: files,
-        tree: buildNavTree(files)
+        tree: buildNavTree(files),
       };
 
     default:
@@ -151,8 +151,8 @@ export function collapseNavItem(path) {
       type: "COLLAPSE_DIRECTORY",
       payload: {
         path,
-        instanceZUID: getState().instance.ZUID
-      }
+        instanceZUID: getState().instance.ZUID,
+      },
     });
   };
 }
@@ -168,6 +168,7 @@ function resolveNavData(file) {
     // Instant api
     "ajax-json": faBolt,
     "ajax-html": faBolt,
+    "ajax-parsley": faBolt,
 
     // JavaScript
     "text/js": faJs,
@@ -179,7 +180,7 @@ function resolveNavData(file) {
     "text/scss": faSass,
     "text/sass": faSass,
 
-    "404": faDirections
+    404: faDirections,
   };
 
   const pathPart = resolvePathPart(file.type);
@@ -188,7 +189,7 @@ function resolveNavData(file) {
     ...file,
     label: file.sort ? `(${file.sort}) ${file.fileName}` : file.fileName,
     path: `/code/file/${pathPart}/${file.ZUID}`,
-    icon: file.fileName === "loader" ? faLock : ICONS[file.type]
+    icon: file.fileName === "loader" ? faLock : ICONS[file.type],
   };
 
   // Remove this prop to ensure we don't accidentially
@@ -198,7 +199,7 @@ function resolveNavData(file) {
   return node;
 }
 
-export const buildNavTree = nodes => {
+export const buildNavTree = (nodes) => {
   const tree = [];
 
   let map = nodes.reduce((acc, node) => {
@@ -212,7 +213,7 @@ export const buildNavTree = nodes => {
 
           // if this was a string split by "/" use the last part as the label
           label: fileNameParts.length > 1 ? part : node.label,
-          parentZUID: prevParts // previous path parts
+          parentZUID: prevParts, // previous path parts
         };
         acc[node.ZUID].children = [];
       } else {
@@ -228,7 +229,7 @@ export const buildNavTree = nodes => {
           label: part, // current file name part
           path: combinedParts, // previous parent parts combined with current part
           parentZUID: prevParts, // previous path parts
-          children: []
+          children: [],
         };
 
         return combinedParts;
@@ -238,7 +239,7 @@ export const buildNavTree = nodes => {
     return acc;
   }, {});
 
-  Object.keys(map).forEach(key => {
+  Object.keys(map).forEach((key) => {
     const node = { ...map[key] };
 
     if (node.parentZUID && map[node.parentZUID]) {

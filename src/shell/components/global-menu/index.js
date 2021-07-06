@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 
@@ -14,19 +14,18 @@ import {
   faHistory,
   faCog,
   faBullseye,
-  faCode
+  faCode,
 } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./styles.less";
-export default connect(state => {
+export default connect((state) => {
   return {
-    products: state.products
+    products: state.products,
   };
 })(
   React.memo(function GlobalMenu(props) {
-    const history = useHistory();
-
-    const slug = history.location.pathname.split("/")[1];
+    const location = useLocation();
+    const slug = location.pathname.split("/")[1];
     const icons = {
       content: faEdit,
       media: faImage,
@@ -36,19 +35,19 @@ export default connect(state => {
       analytics: faChartLine,
       seo: faBullseye,
       "audit-trail": faHistory,
-      settings: faCog
+      settings: faCog,
     };
 
     return (
       <menu
         className={cx(styles.GlobalMenu, props.openNav ? styles.OpenNav : "")}
       >
-        {props.products.map(product => {
+        {props.products.map((product) => {
           // Covert dashes to spaces
           // Uppercase first letter of word
           let name = product
             .split("-")
-            .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+            .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
             .join(" ");
 
           if (product === "seo") {

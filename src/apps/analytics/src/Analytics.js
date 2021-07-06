@@ -17,7 +17,7 @@ import shelldata from "./shelldata";
 
 import styles from "./Analytics.less";
 
-export default connect(function(state) {
+export default connect(function (state) {
   return {
     user: state.user,
     instanceZUID: state.instance.ZUID,
@@ -31,7 +31,7 @@ export default connect(function(state) {
         acc[modelZUID] = state.models[modelZUID];
       }
       return acc;
-    }, {})
+    }, {}),
   };
 })(
   class Analytics extends React.PureComponent {
@@ -41,34 +41,32 @@ export default connect(function(state) {
       loading: true,
       webEngineOn: true, // in the future this will be a boolean pulled off the account, it will change the dash
       gaAuthenticated: Boolean(this.props.instance.google_profile_id),
-      gaLegacyAuth: false // we need response body from cloud function could change this
+      gaLegacyAuth: false, // we need response body from cloud function could change this
     };
 
     componentDidMount() {
       // if (this.props.instance.google_profile_id) {
-      const start = moment()
-        .subtract(120, "days")
-        .format("YYYY-MM-DD");
+      const start = moment().subtract(120, "days").format("YYYY-MM-DD");
 
       this.props
         .dispatch(fetchRecentItems(this.props.user.ZUID, start))
-        .then(res => {
+        .then((res) => {
           if (res && res.data) {
             this.setState({
               recentlyEditedItems: this.getLastEditedItems(res.data),
               favoriteModels: this.getFavoriteModels(res.data),
-              loading: false
+              loading: false,
             });
           } else {
             this.setState({
-              loading: false
+              loading: false,
             });
           }
         });
       // }
     }
 
-    setGALegacyStatus = status => {
+    setGALegacyStatus = (status) => {
       this.setState({ gaLegacyAuth: status });
     };
     /**
@@ -88,8 +86,8 @@ export default connect(function(state) {
       }, {});
 
       const sorted = Object.keys(grouped)
-        .filter(item => grouped[item][0].web.metaTitle)
-        .map(contentModelZUID => {
+        .filter((item) => grouped[item][0].web.metaTitle)
+        .map((contentModelZUID) => {
           return [contentModelZUID, grouped[contentModelZUID].slice(0, 3)];
         })
         .sort((a, b) => {

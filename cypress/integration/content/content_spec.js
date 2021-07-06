@@ -42,10 +42,7 @@ describe("Content Specs", () => {
     });
 
     it("Date Field", () => {
-      cy.get("#12-63ab04-0nkwcc")
-        .should("exist")
-        .find("input")
-        .click();
+      cy.get("#12-63ab04-0nkwcc").should("exist").find("input").click();
 
       cy.get(
         '.flatpickr-calendar:not(.hasTime) [aria-label="March 5, 2019"]'
@@ -150,16 +147,12 @@ describe("Content Specs", () => {
 
     // TODO: Need to confirm toggling of value
     it("Yes/No Field", () => {
-      cy.get("#12-575f7c-trw1w3")
-        .find("button")
-        .click();
+      cy.get("#12-575f7c-trw1w3").find("button").click();
     });
 
     // TODO: Need to confirm toggling of value
     it("Yes/No Field: Custom Options", () => {
-      cy.get("#12-8178cc-z37vq1")
-        .find("button")
-        .click();
+      cy.get("#12-8178cc-z37vq1").find("button").click();
     });
 
     it("Fontawesome Field", () => {
@@ -224,19 +217,13 @@ describe("Content Specs", () => {
         .clear()
         .type("{rightArrow}12");
 
-      cy.get("#12-4e1914-kcqznz")
-        .find("button")
-        .first()
-        .click();
+      cy.get("#12-4e1914-kcqznz").find("button").first().click();
 
       cy.get("#12-4e1914-kcqznz")
         .find("input[type='number']")
         .should("have.value", "13");
 
-      cy.get("#12-4e1914-kcqznz")
-        .find("button")
-        .last()
-        .click();
+      cy.get("#12-4e1914-kcqznz").find("button").last().click();
 
       cy.get("#12-4e1914-kcqznz")
         .find("input[type='number']")
@@ -251,18 +238,12 @@ describe("Content Specs", () => {
         .type(`## Editing in the markdown field type _${TIMESTAMP}_`);
       cy.get("#SaveItemButton").click();
       cy.contains("Saved a new ").should("exist");
-      cy.get("#12-796b3c-8n93rc")
-        .find("textarea")
-        .should("contain", TIMESTAMP);
+      cy.get("#12-796b3c-8n93rc").find("textarea").should("contain", TIMESTAMP);
     });
 
     it("One to many Field", () => {
-      cy.get("#12-269a28-1bkm34")
-        .find(".Select")
-        .click();
-      cy.get('[data-value="7-480ab4-wg7x7j"]')
-        .last()
-        .click({ timeout: 3000 });
+      cy.get("#12-269a28-1bkm34").find(".Select").click();
+      cy.get('[data-value="7-480ab4-wg7x7j"]').last().click({ timeout: 3000 });
       cy.get("#SaveItemButton").click();
       cy.contains("Saved a new ", { timeout: 3000 }).should("exist");
       // testing tag deletion
@@ -276,9 +257,7 @@ describe("Content Specs", () => {
     });
 
     it("One to one Field", () => {
-      cy.get("#12-edee00-6zb866")
-        .find(".Select")
-        .click();
+      cy.get("#12-edee00-6zb866").find(".Select").click();
       //allow relationships to load
       cy.get("#12-edee00-6zb866")
         .find(".Select")

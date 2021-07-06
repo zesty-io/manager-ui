@@ -8,7 +8,7 @@ export default function ImportTableRowDisabled({
   code,
   target,
   query_string,
-  created
+  created,
 }) {
   return (
     <div className={styles.ImportTableRowDisabled}>

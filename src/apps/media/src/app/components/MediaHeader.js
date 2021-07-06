@@ -12,7 +12,7 @@ import { MediaEditGroupModal } from "./MediaEditGroupModal";
 import styles from "./MediaHeader.less";
 
 export const MediaHeader = React.memo(function MediaHeader(props) {
-  const userRole = useSelector(state => state.userRole);
+  const userRole = useSelector((state) => state.userRole);
   const [createGroupModal, setCreateGroupModal] = useState(false);
   const [editGroupModal, setEditGroupModal] = useState(false);
 

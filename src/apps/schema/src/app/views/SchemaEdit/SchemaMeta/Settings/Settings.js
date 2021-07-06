@@ -6,12 +6,12 @@ import {
   faSpinner,
   faSave,
   faClone,
-  faCog
+  faCog,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   CollapsibleCard,
   CardContent,
-  CardFooter
+  CardFooter,
 } from "@zesty-io/core/CollapsibleCard";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
@@ -117,26 +117,26 @@ function Footer(props) {
     setLoading(true);
     props
       .dispatch(duplicateModel(props.model.ZUID))
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           history.pushState(`/schema/${res.data.ZUID}/`);
         } else {
           props.dispatch(
             notify({
               kind: "warn",
-              message: res.error
+              message: res.error,
             })
           );
         }
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Settings:duplicate:catch", err);
         props.dispatch(
           notify({
             kind: "warn",
             message:
-              err.message || `Failed to duplicate model: ${props.model.label}`
+              err.message || `Failed to duplicate model: ${props.model.label}`,
           })
         );
         setLoading(false);
@@ -153,12 +153,12 @@ function Footer(props) {
             setLoading(true);
             props
               .dispatch(saveModel(props.model.ZUID, props.model))
-              .then(res => {
+              .then((res) => {
                 if (res.status === 200) {
                   props.dispatch(
                     notify({
                       kind: "save",
-                      message: `Save ${props.model.label} changes`
+                      message: `Save ${props.model.label} changes`,
                     })
                   );
                 } else {
@@ -166,18 +166,18 @@ function Footer(props) {
                   props.dispatch(
                     notify({
                       kind: "warn",
-                      message: `${res.error}`
+                      message: `${res.error}`,
                     })
                   );
                 }
                 setLoading(false);
               })
-              .catch(err => {
+              .catch((err) => {
                 console.err(err);
                 props.dispatch(
                   notify({
                     kind: "warn",
-                    message: `Failed saving ${props.model.label} changes. ${err.message}`
+                    message: `Failed saving ${props.model.label} changes. ${err.message}`,
                   })
                 );
                 setLoading(false);

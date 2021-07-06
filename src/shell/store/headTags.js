@@ -23,8 +23,8 @@ export function headTags(state = [], action) {
         ...state,
         [action.id]: {
           ...state[action.id],
-          sort: action.sort
-        }
+          sort: action.sort,
+        },
       };
 
     case "UPDATE_TAG_TYPE":
@@ -35,8 +35,8 @@ export function headTags(state = [], action) {
           type: action.value,
 
           // When changing types change with new type attributes
-          attributes: [...action.attributes]
-        }
+          attributes: [...action.attributes],
+        },
       };
 
     case "ADD_TAG_ATTRIBUTE":
@@ -44,8 +44,8 @@ export function headTags(state = [], action) {
         ...state,
         [action.id]: {
           ...state[action.id],
-          attributes: [...state[action.id].attributes, action.attr]
-        }
+          attributes: [...state[action.id].attributes, action.attr],
+        },
       };
 
     case "DELETE_TAG_ATTRIBUTE":
@@ -56,8 +56,8 @@ export function headTags(state = [], action) {
         ...state,
         [action.id]: {
           ...state[action.id],
-          attributes: attrs
-        }
+          attributes: attrs,
+        },
       };
 
     case "UPDATE_TAG_ATTRIBUTE":
@@ -65,8 +65,8 @@ export function headTags(state = [], action) {
         ...state,
         [action.id]: {
           ...state[action.id],
-          attributes: [...state[action.id].attributes]
-        }
+          attributes: [...state[action.id].attributes],
+        },
       };
 
       tags[action.id].attributes[action.index] = action.attr;
@@ -81,20 +81,20 @@ export function headTags(state = [], action) {
 // Transform attributes into an array structure.
 // Also helpful for maintaining order
 function transformAttributes(attrs) {
-  return Object.keys(attrs).map(key => {
+  return Object.keys(attrs).map((key) => {
     return {
       key: key,
-      value: attrs[key]
+      value: attrs[key],
     };
   });
 }
 
 export const fetchHeadTags = () => {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/web/headtags`,
-      handler: res => {
+      handler: (res) => {
         if (res.status === 200 && Array.isArray(res.data)) {
           dispatch({
             type: "FETCH_HEADTAGS_SUCCESS",
@@ -103,31 +103,31 @@ export const fetchHeadTags = () => {
               acc[tag.ZUID].attributes = transformAttributes(tag.attributes);
 
               return acc;
-            }, {})
+            }, {}),
           });
         } else {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to fetch head tags`
+              message: `Failed to fetch head tags`,
             })
           );
           if (res.error) {
             dispatch(
               notify({
                 kind: "warn",
-                message: `Failed to load file. ${res.status} | ${res.error}`
+                message: `Failed to load file. ${res.status} | ${res.error}`,
               })
             );
           }
         }
-      }
+      },
     });
   };
 };
 
 export const addHeadTag = (resourceZUID, sort = 0) => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({
       type: "ADD_HEADTAG",
       tag: {
@@ -138,35 +138,35 @@ export const addHeadTag = (resourceZUID, sort = 0) => {
         attributes: [
           {
             key: "content",
-            value: ""
+            value: "",
           },
           {
             key: "name",
-            value: ""
+            value: "",
           },
           {
             key: "custom",
-            value: "true"
-          }
+            value: "true",
+          },
         ],
-        sort: sort
-      }
+        sort: sort,
+      },
     });
   };
 };
 
-export const createHeadTag = tag => {
-  return dispatch => {
+export const createHeadTag = (tag) => {
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/web/headtags`, {
       method: "POST",
       json: true,
-      body: tag
-    }).then(res => {
+      body: tag,
+    }).then((res) => {
       if (!res.data.error) {
         res.data.attributes = transformAttributes(res.data.attributes);
         dispatch({
           type: "ADD_HEADTAG",
-          tag: res.data
+          tag: res.data,
         });
       }
       return res;
@@ -174,15 +174,15 @@ export const createHeadTag = tag => {
   };
 };
 
-export const deleteHeadTag = id => {
-  return dispatch => {
+export const deleteHeadTag = (id) => {
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/web/headtags/${id}`, {
-      method: "DELETE"
-    }).then(res => {
+      method: "DELETE",
+    }).then((res) => {
       if (!res.data.error) {
         dispatch({
           type: "DELETE_HEADTAG",
-          id
+          id,
         });
         return res;
       }
@@ -190,59 +190,59 @@ export const deleteHeadTag = id => {
   };
 };
 
-export const saveHeadTag = tag => {
-  return dispatch => {
+export const saveHeadTag = (tag) => {
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/web/headtags/${tag.ZUID}`, {
       method: "PUT",
       json: true,
-      body: tag
+      body: tag,
     });
   };
 };
 
 export const addTagAttribute = (id, attr = { key: "", value: "" }) => {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "ADD_TAG_ATTRIBUTE",
       id,
-      attr
+      attr,
     });
   };
 };
 
 export const deleteTagAttribute = (id, index) => {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "DELETE_TAG_ATTRIBUTE",
       id,
-      index
+      index,
     });
   };
 };
 
 export const updateTagAttribute = (id, index, attr) => {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "UPDATE_TAG_ATTRIBUTE",
       id,
       index,
-      attr
+      attr,
     });
   };
 };
 
 export const updateTagSort = (id, sort) => {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "UPDATE_TAG_SORT",
       id,
-      sort
+      sort,
     });
   };
 };
 
 export const updateTagType = (id, value) => {
-  return dispatch => {
+  return (dispatch) => {
     const attributes = [];
 
     if (value === "meta") {
@@ -267,7 +267,7 @@ export const updateTagType = (id, value) => {
       type: "UPDATE_TAG_TYPE",
       id,
       value,
-      attributes
+      attributes,
     });
   };
 };

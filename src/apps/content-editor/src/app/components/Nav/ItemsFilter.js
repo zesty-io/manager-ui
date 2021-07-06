@@ -3,19 +3,19 @@ import React from "react";
 import { Search } from "@zesty-io/core/Search";
 import styles from "./ContentNav.less";
 
-const ItemsFilter = props => {
+const ItemsFilter = (props) => {
   return (
     <Search
       className={styles.SearchModels}
       name="itemsFilter"
       placeholder="Filter items by name, zuid or path"
       value={props.searchTerm}
-      onChange={term => {
+      onChange={(term) => {
         term = term.trim().toLowerCase();
         props.setSearchTerm(term);
         if (term) {
           props.setFilteredItems(
-            props.nav.raw.filter(f => {
+            props.nav.raw.filter((f) => {
               return (
                 f.label.toLowerCase().includes(term) ||
                 f.path.toLowerCase().includes(term) ||

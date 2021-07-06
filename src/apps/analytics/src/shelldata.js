@@ -1,5 +1,5 @@
 export default {
-  shellBarData: function() {
+  shellBarData: function () {
     return {
       labels: [
         "Loading",
@@ -8,7 +8,7 @@ export default {
         "Loading",
         "Loading",
         "Loading",
-        "Loading"
+        "Loading",
       ],
       datasets: [
         {
@@ -18,12 +18,12 @@ export default {
           borderWidth: 1,
           hoverBackgroundColor: "rgba(0,0,0,0,0.4)",
           hoverBorderColor: "rgba(0,0,0,0,1)",
-          data: [0, 0, 0, 0, 0, 0, 0]
-        }
-      ]
+          data: [0, 0, 0, 0, 0, 0, 0],
+        },
+      ],
     };
   },
-  shellDoughnutData: function() {
+  shellDoughnutData: function () {
     return {
       labels: ["Loading", "Loading", "Loading"],
       datasets: [
@@ -32,15 +32,15 @@ export default {
           backgroundColor: [
             "rgba(0,0,0,0,0.4)",
             "rgba(0,0,0,0,0.4)",
-            "rgba(0,0,0,0,0.4)"
+            "rgba(0,0,0,0,0.4)",
           ],
           hoverBackgroundColor: [
             "rgba(0,0,0,0,0.7)",
             "rgba(0,0,0,0,0.7)",
-            "rgba(0,0,0,0,0.7)"
-          ]
-        }
-      ]
+            "rgba(0,0,0,0,0.7)",
+          ],
+        },
+      ],
     };
-  }
+  },
 };

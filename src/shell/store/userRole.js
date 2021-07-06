@@ -3,7 +3,7 @@ import { notify } from "shell/store/notifications";
 
 export function userRole(
   state = {
-    systemRole: {}
+    systemRole: {},
   },
   action
 ) {
@@ -21,28 +21,28 @@ export function fetchUserRole() {
     const state = getState();
 
     return request(`${CONFIG.API_ACCOUNTS}/users/${state.user.ZUID}/roles`)
-      .then(roles => {
+      .then((roles) => {
         const role = roles.data.find(
-          role => role.entityZUID === state.instance.ZUID
+          (role) => role.entityZUID === state.instance.ZUID
         );
 
         if (role) {
           dispatch({
             type: "FETCH_USER_ROLE_SUCCESS",
             payload: {
-              data: role
-            }
+              data: role,
+            },
           });
         }
 
         return role;
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         dispatch(
           notify({
             kind: "warn",
-            message: "Failed to load your user role for this instance."
+            message: "Failed to load your user role for this instance.",
           })
         );
       });

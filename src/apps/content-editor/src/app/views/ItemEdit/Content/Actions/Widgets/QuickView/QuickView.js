@@ -8,7 +8,7 @@ import {
   faCodeBranch,
   faBolt,
   faDatabase,
-  faCode
+  faCode,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
@@ -66,7 +66,7 @@ export const QuickView = React.memo(function QuickView(props) {
               <strong>Language:</strong>&nbsp;
               <span>
                 {Object.keys(props.siblings || {}).find(
-                  lang => props.siblings[lang] === props.itemZUID
+                  (lang) => props.siblings[lang] === props.itemZUID
                 )}
               </span>
             </li>

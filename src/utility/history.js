@@ -6,6 +6,6 @@ const history = createBrowserHistory({
     } else {
       callback(true);
     }
-  }
+  },
 });
 export default history;

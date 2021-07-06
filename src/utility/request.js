@@ -20,8 +20,9 @@ export function request(url, opts = {}) {
       (opts.headers["Content-Type"] || opts.headers["content-type"])
     ) {
       console.log(
-        `Custom content-type: ${opts.headers["Content-Type"] ||
-          opts.headers["content-type"]}`
+        `Custom content-type: ${
+          opts.headers["Content-Type"] || opts.headers["content-type"]
+        }`
       );
     } else {
       if (opts.json) {
@@ -46,7 +47,7 @@ export function request(url, opts = {}) {
   opts.method = opts.method || "GET";
 
   return fetch(url, opts)
-    .then(res => {
+    .then((res) => {
       // console.log("Request:", res);
 
       // // Bad Request
@@ -71,17 +72,17 @@ export function request(url, opts = {}) {
         throw new Error(`500:RequestError: ${res.url}`);
       }
 
-      return res.json().then(function(json) {
+      return res.json().then(function (json) {
         return { ...json, status: res.status };
       });
     })
-    .then(json => {
+    .then((json) => {
       if (opts.callback) {
         opts.callback(json);
       }
       return json;
     })
-    .catch(err => {
+    .catch((err) => {
       if (err && err.res && err.res.status >= 500) {
         // Server Failed
         console.error(

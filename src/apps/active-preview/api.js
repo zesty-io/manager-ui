@@ -11,20 +11,20 @@ export default function api(url) {
 
   return fetch(`${url}`, {
     headers: {
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   })
-    .then(res =>
-      res.json().then(json => {
+    .then((res) =>
+      res.json().then((json) => {
         return {
           ...json,
           // pass along status code to determine
           // if request was unauthenticated
-          status: res.status
+          status: res.status,
         };
       })
     )
-    .then(json => {
+    .then((json) => {
       if (json.status === 401) {
         throw new Error("unauthenticated");
       } else {

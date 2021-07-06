@@ -8,7 +8,7 @@ export function redirects(state = {}, action) {
 
     case "REDIRECT_REMOVE_SUCCESS":
       return Object.keys(state)
-        .filter(path => state[path].ZUID !== action.zuid)
+        .filter((path) => state[path].ZUID !== action.zuid)
         .reduce((acc, path) => {
           acc[path] = { ...state[path] };
           return acc;
@@ -18,7 +18,7 @@ export function redirects(state = {}, action) {
       let merged = Object.assign(
         {},
         {
-          [action.redirect.path]: action.redirect
+          [action.redirect.path]: action.redirect,
         },
         state
       );
@@ -34,28 +34,28 @@ export function redirects(state = {}, action) {
 }
 
 export function fetchRedirects() {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({
-      type: "REDIRECTS_FETCH"
+      type: "REDIRECTS_FETCH",
     });
 
     return request(`${CONFIG.API_INSTANCE}/web/redirects`)
-      .then(json => {
+      .then((json) => {
         dispatch({
           type: "REDIRECTS_FETCH_SUCCESS",
           redirects: json.data.reduce((acc, redirect) => {
             acc[redirect.path] = redirect;
             return acc;
-          }, {})
+          }, {}),
         });
 
         return json;
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("fetchRedirects: ", err);
         dispatch({
           type: "REDIRECTS_FETCH_ERROR",
-          err
+          err,
         });
 
         return err;
@@ -64,21 +64,21 @@ export function fetchRedirects() {
 }
 
 export function createRedirect(redirect) {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({
-      type: "REDIRECT_CREATE"
+      type: "REDIRECT_CREATE",
     });
     return request(`${CONFIG.API_INSTANCE}/web/redirects`, {
       method: "POST",
       json: "true",
-      body: redirect
+      body: redirect,
     })
-      .then(json => {
+      .then((json) => {
         if (!json.error) {
           dispatch(
             notify({
               kind: "success",
-              message: `Created redirect`
+              message: `Created redirect`,
             })
           );
 
@@ -86,24 +86,24 @@ export function createRedirect(redirect) {
             type: "REDIRECT_CREATE_SUCCESS",
             redirect: {
               ...json.data,
-              created: true
-            }
+              created: true,
+            },
           });
         } else {
           // Notify user of all errors
           dispatch(
             notify({
               kind: "error",
-              message: `Failed creating redirect from ${redirect.path}. Must be a relative path.`
+              message: `Failed creating redirect from ${redirect.path}. Must be a relative path.`,
             })
           );
         }
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(
           notify({
             kind: "error",
-            message: "Failed creating redirect"
+            message: "Failed creating redirect",
           })
         );
       });
@@ -111,33 +111,33 @@ export function createRedirect(redirect) {
 }
 
 export function removeRedirect(zuid) {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({
-      type: "REDIRECT_REMOVE"
+      type: "REDIRECT_REMOVE",
     });
     request(`${CONFIG.API_INSTANCE}/web/redirects/${zuid}`, {
-      method: "DELETE"
+      method: "DELETE",
     })
-      .then(json => {
+      .then((json) => {
         if (!json.error) {
           dispatch({
             type: "REDIRECT_REMOVE_SUCCESS",
-            zuid
+            zuid,
           });
         } else {
           dispatch(
             notify({
               kind: "error",
-              message: "Failed to remove SEO redirect"
+              message: "Failed to remove SEO redirect",
             })
           );
         }
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(
           notify({
             kind: "error",
-            message: "Failed to remove SEO redirect"
+            message: "Failed to remove SEO redirect",
           })
         );
       });

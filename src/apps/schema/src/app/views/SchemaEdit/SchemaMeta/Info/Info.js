@@ -11,7 +11,7 @@ import {
   faCog,
   faPlus,
   faCode,
-  faEdit
+  faEdit,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
@@ -19,13 +19,13 @@ import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./Info.less";
 
-export default connect(state => {
+export default connect((state) => {
   return {
-    settings: state.settings
+    settings: state.settings,
   };
 })(function Info(props) {
   const instantJSON = props.settings.instance.find(
-    setting => setting.key === "basic_content_api_enabled"
+    (setting) => setting.key === "basic_content_api_enabled"
   );
 
   const codePath = useFilePath(props.model.ZUID);

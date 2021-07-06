@@ -18,10 +18,10 @@ import { updateSettings } from "../../../store/settings";
 
 import styles from "./SettingsStyles.less";
 
-export default connect(state => {
+export default connect((state) => {
   return {
     catInstance: state.settings.catInstance,
-    instance: state.settings.instance
+    instance: state.settings.instance,
   };
 })(function Settings(props) {
   const [saving, setSaving] = useState(false);
@@ -36,7 +36,7 @@ export default connect(state => {
       : "general";
 
     const matchingFields = props.instance.filter(
-      item => item.category === category
+      (item) => item.category === category
     );
 
     setFields(matchingFields);
@@ -59,12 +59,12 @@ export default connect(state => {
     setSaving(true);
 
     const requests = fields
-      .filter(field => {
-        if (dirtyFields.some(item => field.key === item)) {
+      .filter((field) => {
+        if (dirtyFields.some((item) => field.key === item)) {
           return field;
         }
       })
-      .map(field => {
+      .map((field) => {
         const value =
           fieldValues[field.key] === null
             ? null
@@ -72,35 +72,35 @@ export default connect(state => {
         return props.dispatch(
           updateSettings(field.ZUID, {
             ...field,
-            value
+            value,
           })
         );
       });
 
     Promise.all(requests)
-      .then(responses => {
+      .then((responses) => {
         setSaving(false);
         setDirtyFields([]);
         props.dispatch(
           notify({
             kind: "success",
-            message: "Settings Saved"
+            message: "Settings Saved",
           })
         );
       })
-      .catch(err => {
+      .catch((err) => {
         setSaving(false);
         props.dispatch(
           notify({
             kind: "warn",
-            message: err.message
+            message: err.message,
           })
         );
       });
   }
   return (
     <>
-      {fields.map(field => {
+      {fields.map((field) => {
         switch (field.dataType) {
           case "checkbox":
             if (field.key === "site_protocol") {
