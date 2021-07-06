@@ -20,7 +20,7 @@ export const MemoizedEditor = React.memo(
         scheme: "file",
         path: `${props.fileName}`,
         // attach contentModelZUID to monaco model for lookup within completion provider
-        query: `contentModelZUID=${props.contentModelZUID}&fileZUID=${props.fileZUID}`
+        query: `contentModelZUID=${props.contentModelZUID}&fileZUID=${props.fileZUID}`,
       });
       const model =
         monaco.editor.getModel(filenameURI) ||
@@ -35,9 +35,9 @@ export const MemoizedEditor = React.memo(
         theme="vs-dark"
         options={{
           selectOnLineNumbers: true,
-          wordWrap: "on"
+          wordWrap: "on",
         }}
-        onChange={newValue => {
+        onChange={(newValue) => {
           props.dispatch(
             updateFileCode(props.fileZUID, props.status, newValue)
           );
@@ -59,7 +59,7 @@ export const MemoizedEditor = React.memo(
           }
 
           editor.updateOptions({
-            theme: "parsleyDark"
+            theme: "parsleyDark",
           });
         }}
       />

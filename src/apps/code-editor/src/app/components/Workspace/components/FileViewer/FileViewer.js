@@ -19,13 +19,13 @@ import { FileDrawer } from "../../../FileDrawer";
 import styles from "./FileViewer.less";
 export const FileViewer = connect((state, props) => {
   const file = state.files.find(
-    file => file.ZUID === props.match.params.fileZUID
+    (file) => file.ZUID === props.match.params.fileZUID
   );
   const fields =
     file && file.contentModelZUID
       ? Object.keys(state.fields)
           .filter(
-            fieldZUID =>
+            (fieldZUID) =>
               state.fields[fieldZUID].contentModelZUID === file.contentModelZUID
           )
           .reduce((acc, fieldZUID) => {
@@ -36,7 +36,7 @@ export const FileViewer = connect((state, props) => {
 
   return {
     file: file ? file : {},
-    fields
+    fields,
   };
 })(
   React.memo(function FileViewer(props) {
@@ -61,20 +61,20 @@ export const FileViewer = connect((state, props) => {
 
       props
         .dispatch(fetchFile(match.params.fileZUID, match.params.fileType))
-        .then(res => {
+        .then((res) => {
           if (props.file.contentModelZUID) {
             return props.dispatch(fetchFields(props.file.contentModelZUID));
           } else {
             res;
           }
         })
-        .catch(err => {
+        .catch((err) => {
           if (err !== "duplicate request") {
             console.error(err);
             props.dispatch(
               notify({
                 kind: "warn",
-                message: `Could not load ${match.params.fileType} ${match.params.fileZUID}`
+                message: `Could not load ${match.params.fileType} ${match.params.fileZUID}`,
               })
             );
           }

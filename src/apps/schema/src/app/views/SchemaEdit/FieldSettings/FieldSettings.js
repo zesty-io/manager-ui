@@ -19,7 +19,7 @@ import {
   faExclamationTriangle,
   faImage,
   faCalendarTimes,
-  faCalendarAlt
+  faCalendarAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
@@ -36,7 +36,9 @@ import { formatName } from "utility/formatName";
 
 import styles from "./FieldSettings.less";
 export default function FieldSettings(props) {
-  const field = FIELD_TYPES.find(field => field.value === props.field.datatype);
+  const field = FIELD_TYPES.find(
+    (field) => field.value === props.field.datatype
+  );
 
   return (
     <div className={cx(styles.DefaultSettings, props.className)}>
@@ -72,7 +74,7 @@ export default function FieldSettings(props) {
               if (props.new && props.updateMultipleValues) {
                 props.updateMultipleValues({
                   [key]: val, // dynamic property key, name of field
-                  name: formatName(val) // literal name key
+                  name: formatName(val), // literal name key
                 });
               } else {
                 props.updateValue(val, key);
@@ -170,7 +172,7 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faParagraph} />
         &nbsp;Text
       </React.Fragment>
-    )
+    ),
   },
   {
     value: "textarea",
@@ -187,7 +189,7 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faParagraph} />
         &nbsp;TextArea
       </React.Fragment>
-    )
+    ),
   },
   {
     value: "wysiwyg_basic",
@@ -212,7 +214,7 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faParagraph} />
         &nbsp;WYSIWYG
       </React.Fragment>
-    )
+    ),
   },
   {
     value: "markdown",
@@ -244,7 +246,7 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faParagraph} />
         &nbsp;Markdown
       </React.Fragment>
-    )
+    ),
   },
   {
     value: "article_writer",
@@ -269,7 +271,7 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faParagraph} />
         &nbsp;Article Writer
       </React.Fragment>
-    )
+    ),
   },
   {
     value: "images",
@@ -294,7 +296,7 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faImages} />
         &nbsp;Media
       </React.Fragment>
-    )
+    ),
   },
   {
     value: "date",
@@ -317,7 +319,7 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faCalendar} />
         &nbsp;Date
       </React.Fragment>
-    )
+    ),
   },
   {
     value: "datetime",
@@ -340,7 +342,7 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faCalendarAlt} />
         &nbsp;Date &amp; Time
       </React.Fragment>
-    )
+    ),
   },
   {
     value: "dropdown",
@@ -363,7 +365,7 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faList} />
         &nbsp;Dropdown
       </React.Fragment>
-    )
+    ),
   },
   {
     value: "one_to_one",
@@ -380,7 +382,7 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faArrowsAltH} />
         &nbsp;Related: One to One
       </React.Fragment>
-    )
+    ),
   },
   {
     value: "one_to_many",
@@ -397,7 +399,7 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faSitemap} />
         &nbsp;Related: Many to one
       </React.Fragment>
-    )
+    ),
   },
   {
     value: "link",
@@ -420,7 +422,7 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faExternalLinkAlt} />
         &nbsp;External URL
       </React.Fragment>
-    )
+    ),
   },
   {
     value: "internal_link",
@@ -444,7 +446,7 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faLink} />
         &nbsp;Internal Link
       </React.Fragment>
-    )
+    ),
   },
   {
     value: "yes_no",
@@ -460,7 +462,7 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faToggleOn} />
         &nbsp;Toggle
       </React.Fragment>
-    )
+    ),
   },
   {
     value: "number",
@@ -471,7 +473,7 @@ export const FIELD_TYPES = [
     ),
     description: "",
     title: "Number",
-    html: "<i>+0</i>&nbsp;Number"
+    html: "<i>+0</i>&nbsp;Number",
   },
   {
     value: "color",
@@ -487,7 +489,7 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faPalette} />
         &nbsp;Color
       </React.Fragment>
-    )
+    ),
   },
   {
     value: "sort",
@@ -503,7 +505,7 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faSortNumericUp} />
         &nbsp;Sort
       </React.Fragment>
-    )
+    ),
   },
   {
     value: "currency",
@@ -519,7 +521,7 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faMoneyBillAlt} />
         &nbsp;Currency
       </React.Fragment>
-    )
+    ),
   },
   {
     value: "uuid",
@@ -535,6 +537,6 @@ export const FIELD_TYPES = [
         <FontAwesomeIcon icon={faIdCard} />
         &nbsp;UUID
       </React.Fragment>
-    )
-  }
+    ),
+  },
 ];

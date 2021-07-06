@@ -6,13 +6,13 @@ import styles from "./styles.less";
 export default class DragList extends Component {
   state = {
     source: "",
-    target: ""
+    target: "",
   };
   render() {
     return (
       <ul
         className={styles.sort}
-        onDragOver={event => {
+        onDragOver={(event) => {
           event.stopPropagation();
         }}
       >
@@ -24,17 +24,17 @@ export default class DragList extends Component {
               key={item.ZUID}
               id={item.ZUID}
               draggable={true}
-              onDragStart={event => {
+              onDragStart={(event) => {
                 // firefox requires this event, it does nothing
                 event.dataTransfer.setData("text", "");
               }}
-              onDragOver={event => {
+              onDragOver={(event) => {
                 event.preventDefault();
               }}
-              onDragEnd={evt => {
+              onDragEnd={(evt) => {
                 this.props.handleMove(evt.target.id, this.state.target);
               }}
-              onDragEnter={evt => this.setState({ target: evt.target.id })}
+              onDragEnter={(evt) => this.setState({ target: evt.target.id })}
               onDrop={this.drop}
               handleNestChange={this.props.handleNestChange}
             />

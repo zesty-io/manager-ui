@@ -25,7 +25,7 @@ export function fetchProducts() {
           "analytics",
           "seo",
           "audit-trail",
-          "settings"
+          "settings",
         ];
         break;
       case "Developer":
@@ -37,7 +37,7 @@ export function fetchProducts() {
           "leads",
           "analytics",
           "seo",
-          "settings"
+          "settings",
         ];
         break;
       case "SEO":
@@ -63,15 +63,15 @@ export function fetchProducts() {
         "analytics",
         "seo",
         "audit-trail",
-        "settings"
+        "settings",
       ];
     }
 
     dispatch({
       type: "FETCH_PRODUCTS_SUCCESS",
       payload: {
-        data
-      }
+        data,
+      },
     });
 
     // mimic promise api until we make api request

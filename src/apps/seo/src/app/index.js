@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { RedirectsManager } from "../views/RedirectsManager";
 
 import styles from "./app.less";
-export default connect(state => state)(
+export default connect((state) => state)(
   class HealthApp extends Component {
     render() {
       return (

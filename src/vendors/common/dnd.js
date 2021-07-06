@@ -25,7 +25,7 @@ var DnD = {
 
   // Draggable Item Events
   start: function start(el, key, data, cancel = true) {
-    el.addEventListener("dragstart", evt => {
+    el.addEventListener("dragstart", (evt) => {
       if (data && data.url) {
         var dragIcon = document.createElement("img");
         dragIcon.src = DnD.getFileIcon(data.url);
@@ -52,7 +52,7 @@ var DnD = {
     return DnD._remove(el, "dragleave", DnD._cb);
   },
 
-  getFileExt: filePath => {
+  getFileExt: (filePath) => {
     return filePath.split(".").pop();
   },
 
@@ -153,7 +153,7 @@ var DnD = {
       default:
         return `${basePath}_blank.png`;
     }
-  }
+  },
 };
 
 export default DnD;

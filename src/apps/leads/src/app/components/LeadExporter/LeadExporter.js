@@ -20,10 +20,10 @@ export function LeadExporter() {
           className={styles.Search}
           name="text-filter"
           placeholder="Search across all of your leads"
-          onChange={value => {
+          onChange={(value) => {
             dispatch(setFilterText(value));
           }}
-          onSubmit={value => {
+          onSubmit={(value) => {
             dispatch(setFilterText(value));
           }}
         />

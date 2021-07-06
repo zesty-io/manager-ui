@@ -16,13 +16,13 @@ export function InstanceActivity(props) {
     const since = moment().subtract(30, "days");
     const userLogs = Object.keys(props.logs)
       .filter(
-        logZUID => props.logs[logZUID].actionByUserZUID === props.user.ZUID
+        (logZUID) => props.logs[logZUID].actionByUserZUID === props.user.ZUID
       )
-      .map(zuid => props.logs[zuid])
-      .filter(log => moment(log.createdAt).isSameOrAfter(since));
+      .map((zuid) => props.logs[zuid])
+      .filter((log) => moment(log.createdAt).isSameOrAfter(since));
 
-    const edits = userLogs.filter(log => log.action === 2);
-    const publishes = userLogs.filter(log => log.action === 4);
+    const edits = userLogs.filter((log) => log.action === 2);
+    const publishes = userLogs.filter((log) => log.action === 4);
 
     setEdits(edits.length);
     setPublishes(publishes.length);

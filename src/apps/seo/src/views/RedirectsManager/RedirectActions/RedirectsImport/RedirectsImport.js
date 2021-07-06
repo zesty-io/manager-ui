@@ -12,7 +12,7 @@ export default function RedirectsImport(props) {
       <input
         type="file"
         className={styles.hidden}
-        ref={input => (fileInput = input)}
+        ref={(input) => (fileInput = input)}
         onChange={props.onChange}
       />
       <Button

@@ -10,7 +10,7 @@ import { GetStarted } from "../GetStarted";
 import { fetchLeads } from "../../../store/leads";
 
 import styles from "./Leads.less";
-export default connect(state => state)(function Leads(props) {
+export default connect((state) => state)(function Leads(props) {
   const [loading, setLoading] = useState();
 
   useEffect(() => {

@@ -14,18 +14,14 @@ const root = path.resolve(__dirname, "../");
 module.exports = async function release(env) {
   //create a buildInfo file
   const version = pkg.version;
-  const buildEngineer = await execSync("whoami")
-    .toString()
-    .trim(-2);
+  const buildEngineer = await execSync("whoami").toString().trim(-2);
   const gitCommit = await execSync("git rev-parse --short HEAD")
     .toString()
     .trim(-2);
   const gitBranch = await execSync("git rev-parse --abbrev-ref HEAD")
     .toString()
     .trim(-2);
-  let gitState = await execSync("git status --porcelain")
-    .toString()
-    .trim(-2);
+  let gitState = await execSync("git status --porcelain").toString().trim(-2);
   gitState = gitState === "" ? "clean" : "dirty";
 
   const h = {
@@ -37,9 +33,9 @@ module.exports = async function release(env) {
       gitBranch: gitBranch,
       buildEngineer: buildEngineer,
       gitState: gitState,
-      buildTimeStamp: Date.now()
+      buildTimeStamp: Date.now(),
     },
-    message: "healthy"
+    message: "healthy",
   };
 
   fs.writeFileSync(`${root}/build/release.json`, JSON.stringify(h));

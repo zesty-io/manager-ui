@@ -17,7 +17,7 @@ export function imports(state = {}, action) {
           // We take the states computed target over the zuid used
           // for the api redirect creation
           acc[key] = Object.assign({}, action.redirect, state[key], {
-            canImport: false
+            canImport: false,
           });
         } else {
           acc[key] = { ...state[key] };
@@ -61,7 +61,7 @@ export function imports(state = {}, action) {
 export function cancelImports(evt) {
   return {
     type: IMPORT_REDIRECTS,
-    redirects: []
+    redirects: [],
   };
 }
 
@@ -69,7 +69,7 @@ export function importCode(path, code) {
   return {
     type: IMPORT_CODE,
     path,
-    code
+    code,
   };
 }
 export function importTarget(path, target, targetZuid) {
@@ -77,14 +77,14 @@ export function importTarget(path, target, targetZuid) {
     type: IMPORT_TARGET,
     path,
     target,
-    targetZuid
+    targetZuid,
   };
 }
 export function importQuery(path, query) {
   return {
     type: IMPORT_QUERY,
     path,
-    query
+    query,
   };
 }
 
@@ -105,13 +105,13 @@ export function CSVImporter(evt) {
         ) {
           const fileReader = new FileReader();
 
-          fileReader.onerror = err => {
+          fileReader.onerror = (err) => {
             console.log("TODO// handle error event", err);
           };
-          fileReader.onloadstart = evt => {
+          fileReader.onloadstart = (evt) => {
             console.log("TODO// handle start event", evt);
           };
-          fileReader.onprogress = evt => {
+          fileReader.onprogress = (evt) => {
             console.log("TODO// handle progress event", evt);
           };
           fileReader.onloadend = () => {
@@ -133,7 +133,7 @@ export function CSVImporter(evt) {
               dispatch(
                 notify({
                   kind: "error",
-                  message: `Failed reading file: ${err}`
+                  message: `Failed reading file: ${err}`,
                 })
               );
             }
@@ -144,7 +144,7 @@ export function CSVImporter(evt) {
             setTimeout(() => {
               dispatch({
                 type: IMPORT_REDIRECTS,
-                redirects: targets
+                redirects: targets,
               });
             }, 250);
           };
@@ -154,7 +154,7 @@ export function CSVImporter(evt) {
           dispatch(
             notify({
               kind: "warn",
-              message: "Import must be a CSV file"
+              message: "Import must be a CSV file",
             })
           );
         }
@@ -170,12 +170,12 @@ export function CSVImporter(evt) {
  */
 function CSVToArray(csv) {
   const rows = parse(csv, {
-    skip_empty_lines: true
+    skip_empty_lines: true,
   });
   const columns = rows[0];
   const redirects = rows
     .slice(1)
-    .map(row => {
+    .map((row) => {
       const [original, target, code] = row;
       const [path, query] = original.split("?");
       return {
@@ -185,10 +185,10 @@ function CSVToArray(csv) {
         target_zuid: null,
         target: target,
         code: code || "301",
-        canImport: true
+        canImport: true,
       };
     })
-    .filter(redirect => {
+    .filter((redirect) => {
       if (redirect.path && redirect.target && redirect.code) {
         return true;
       }
@@ -242,7 +242,7 @@ function parseXML(xml, dispatch) {
       notify({
         kind: "warn",
         message:
-          "XML sitemap imports must follow the https://www.sitemaps.org/protocol.html spec."
+          "XML sitemap imports must follow the https://www.sitemaps.org/protocol.html spec.",
       })
     );
     throw new Error("Invalid XML root node.");
@@ -263,7 +263,7 @@ function parseXML(xml, dispatch) {
       target_zuid: null,
       target: "/", // Default to homepage
       code: "301",
-      canImport: true
+      canImport: true,
     };
   }
 

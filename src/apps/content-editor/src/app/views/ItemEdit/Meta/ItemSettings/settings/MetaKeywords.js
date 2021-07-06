@@ -6,7 +6,7 @@ import { Infotip } from "@zesty-io/core/Infotip";
 import styles from "./MetaKeywords.less";
 export const MetaKeywords = React.memo(function MetaKeywords({
   meta_keywords,
-  onChange
+  onChange,
 }) {
   return (
     <article className={styles.MetaKeywords} data-cy="metaKeywords">

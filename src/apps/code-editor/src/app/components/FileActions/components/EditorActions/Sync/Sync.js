@@ -5,7 +5,7 @@ import {
   faBan,
   faCheckCircle,
   faSpinner,
-  faSync
+  faSync,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Notice } from "@zesty-io/core/Notice";
@@ -25,10 +25,10 @@ export const Sync = React.memo(function Sync(props) {
     props
       .dispatch(
         fetchFile(props.fileZUID, props.fileType, {
-          forceSync: true
+          forceSync: true,
         })
       )
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
       })
       .finally(() => {

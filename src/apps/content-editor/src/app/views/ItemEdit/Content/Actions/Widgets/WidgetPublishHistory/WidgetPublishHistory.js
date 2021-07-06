@@ -10,10 +10,10 @@ import { fetchAuditTrailPublish } from "shell/store/logs";
 import cx from "classnames";
 import SharedWidgetStyles from "../SharedWidget.less";
 
-export default connect(state => {
+export default connect((state) => {
   return {
     logs: state.logs,
-    instanceZUID: state.instance.ZUID
+    instanceZUID: state.instance.ZUID,
   };
 })(
   React.memo(function WidgetPublishHistory(props) {
@@ -52,7 +52,7 @@ export default connect(state => {
               {Array.isArray(logs) && !logs.length && <p>Not published</p>}
 
               {Array.isArray(logs) &&
-                logs.map(log => {
+                logs.map((log) => {
                   const { firstName, lastName } = log;
                   return (
                     <li className="log" key={log.ZUID}>

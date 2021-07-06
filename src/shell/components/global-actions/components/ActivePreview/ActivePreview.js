@@ -13,9 +13,9 @@ import { faEye } from "@fortawesome/free-solid-svg-icons";
  */
 let preview;
 
-export default connect(state => {
+export default connect((state) => {
   return {
-    content: state.content
+    content: state.content,
   };
 })(function ActivePreview(props) {
   const origin = window.location.origin;
@@ -34,7 +34,7 @@ export default connect(state => {
       preview.postMessage(
         {
           source: "zesty",
-          refresh: true
+          refresh: true,
         },
         origin
       );
@@ -52,7 +52,7 @@ export default connect(state => {
       if (typeof itemZUID !== "string" || itemZUID.slice(0, 2) !== "7-") {
         itemZUID = location.pathname
           .split("/")
-          .find(part => part.slice(0, 2) === "7-");
+          .find((part) => part.slice(0, 2) === "7-");
       }
 
       if (itemZUID) {
@@ -62,7 +62,7 @@ export default connect(state => {
           preview.postMessage(
             {
               source: "zesty",
-              route: item.web.path
+              route: item.web.path,
             },
             origin
           );

@@ -1,2 +1,2 @@
-import GlobalAccount from './GlobalAccount'
-export default GlobalAccount
+import GlobalAccount from "./GlobalAccount";
+export default GlobalAccount;

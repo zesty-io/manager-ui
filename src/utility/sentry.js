@@ -9,15 +9,14 @@ if (["stage", "production"].includes(__CONFIG__?.ENV)) {
     environment: __CONFIG__?.ENV,
     integrations: [
       new Integrations.BrowserTracing({
-        routingInstrumentation: Sentry.reactRouterV5Instrumentation(history)
-      })
+        routingInstrumentation: Sentry.reactRouterV5Instrumentation(history),
+      }),
     ],
-    dsn:
-      "https://2e83c3767c484794a56832affe2d26d9@o162121.ingest.sentry.io/5441698",
+    dsn: "https://2e83c3767c484794a56832affe2d26d9@o162121.ingest.sentry.io/5441698",
     autoSessionTracking: true,
     tracesSampleRate: 1.0,
     normalizeDepth: 10, // increases depth of redux state tree sent
-    maxBreadcrumbs: 50 // reduce for performance purposes
+    maxBreadcrumbs: 50, // reduce for performance purposes
   });
 }
 

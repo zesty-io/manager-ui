@@ -9,10 +9,10 @@ import {
   publishFailure,
   publishPlanPending,
   publishPlanSuccess,
-  publishPlanFailure
+  publishPlanFailure,
 } from "../publishPlan";
 import { toggleNav } from "../ui";
-export const localStorage = store => next => action => {
+export const localStorage = (store) => (next) => (action) => {
   const result = next(action);
 
   try {

@@ -40,7 +40,7 @@ export function MediaEditGroupModal(props) {
             placeholder="Edit Group"
             name="group"
             value={name}
-            onChange={event => setName(event.target.value)}
+            onChange={(event) => setName(event.target.value)}
           />
           <Button kind="save" onClick={handleEditGroup}>
             <FontAwesomeIcon icon={faSave} />

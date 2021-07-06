@@ -14,7 +14,7 @@ const crawlParents = (nav, ZUID, crumbs, content) => {
     crumbs.push(parent);
     if (
       parent.parentZUID &&
-      !crumbs.filter(crumb => crumb.ZUID === parent.parentZUID).length
+      !crumbs.filter((crumb) => crumb.ZUID === parent.parentZUID).length
     ) {
       crawlParents(nav, parent.parentZUID, crumbs, content);
     }
@@ -28,7 +28,7 @@ const crawlParents = (nav, ZUID, crumbs, content) => {
         ZUID,
         contentModelZUID: parentZUID,
         label: item.web.metaLinkText,
-        type: "item"
+        type: "item",
       });
       crawlParents(nav, parentZUID, crumbs, content);
     }
@@ -37,11 +37,11 @@ const crawlParents = (nav, ZUID, crumbs, content) => {
   return crumbs;
 };
 
-export default connect(state => {
+export default connect((state) => {
   return {
     navContent: state.navContent,
     content: state.content,
-    models: state.models
+    models: state.models,
   };
 })(
   React.memo(function Breadcrumbs(props) {
@@ -87,7 +87,7 @@ export default connect(state => {
 
         <ol className={styles.Crumbs}>
           {trail
-            .filter(el => el)
+            .filter((el) => el)
             .reverse()
             .map((item, i) => {
               return (

@@ -7,7 +7,7 @@ import {
   faCog,
   faDatabase,
   faEdit,
-  faFolder
+  faFolder,
 } from "@fortawesome/free-solid-svg-icons";
 
 const ZUID_REGEX = /[a-zA-Z0-9]{1,5}-[a-zA-Z0-9]{6,10}-[a-zA-Z0-9]{5,35}/;
@@ -17,7 +17,7 @@ const uiSlice = createSlice({
   initialState: {
     loadedTabs: false,
     tabs: [],
-    openNav: true
+    openNav: true,
   },
   reducers: {
     loadTabsSuccess(state, action) {
@@ -35,13 +35,13 @@ const uiSlice = createSlice({
     },
     toggleNav(state) {
       state.openNav = !state.openNav;
-    }
-  }
+    },
+  },
 });
 
 // Thunk helper functions
 function parsePath(path) {
-  let parts = path.split("/").filter(part => part);
+  let parts = path.split("/").filter((part) => part);
   let zuid = null;
   let prefix = null;
   let contentSection = null;
@@ -148,7 +148,7 @@ function createTab(state, parsedPath) {
     case "10":
     case "11":
       if (state.files) {
-        const selectedFile = state.files.find(file => file.ZUID === zuid);
+        const selectedFile = state.files.find((file) => file.ZUID === zuid);
         if (selectedFile) {
           tab.name = selectedFile.fileName;
         }
@@ -187,17 +187,13 @@ function toCapitalCase(string) {
 
 export default uiSlice.reducer;
 
-export const {
-  loadTabsSuccess,
-  setTabs,
-  loadedUI,
-  toggleNav
-} = uiSlice.actions;
+export const { loadTabsSuccess, setTabs, loadedUI, toggleNav } =
+  uiSlice.actions;
 
 // Thunks
 
 export function loadTabs(instanceZUID) {
-  return dispatch => {
+  return (dispatch) => {
     return idb.get(`${instanceZUID}:session:routes`).then((tabs = []) => {
       return dispatch(loadTabsSuccess(tabs));
     });
@@ -209,12 +205,12 @@ export function openTab({ path, prevPath }) {
     const state = getState();
     const parsedPath = parsePath(path);
     if (validatePath(parsedPath)) {
-      const tabIndex = state.ui.tabs.findIndex(tab => tab.pathname === path);
+      const tabIndex = state.ui.tabs.findIndex((tab) => tab.pathname === path);
       // add new tab if not existing
       if (tabIndex === -1) {
         const newTab = createTab(state, parsedPath);
         const activeTabIndex = state.ui.tabs.findIndex(
-          t => t.pathname === prevPath
+          (t) => t.pathname === prevPath
         );
         // calculate new tabs here instead of reducer
         // so we have them on hand for idb.set
@@ -233,7 +229,7 @@ export function closeTab(path) {
   return (dispatch, getState) => {
     const state = getState();
     const removeTabIndex = state.ui.tabs.findIndex(
-      tab => tab.pathname === path
+      (tab) => tab.pathname === path
     );
     if (removeTabIndex !== -1) {
       // calculate new tabs here instead of reducer
@@ -263,7 +259,7 @@ export function closeTab(path) {
 export function rebuildTabs() {
   return (dispatch, getState) => {
     const state = getState();
-    const newTabs = state.ui.tabs.map(tab =>
+    const newTabs = state.ui.tabs.map((tab) =>
       createTab(state, parsePath(tab.pathname))
     );
     dispatch(setTabs(newTabs));

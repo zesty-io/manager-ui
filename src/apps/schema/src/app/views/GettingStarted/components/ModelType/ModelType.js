@@ -8,7 +8,7 @@ import {
   faFile,
   faPlus,
   faSave,
-  faTimes
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Card } from "@zesty-io/core/Card";

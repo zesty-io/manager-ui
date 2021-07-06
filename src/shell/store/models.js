@@ -13,8 +13,8 @@ export function models(state = {}, action) {
       return {
         ...state,
         [action.payload.ZUID]: {
-          ...action.payload
-        }
+          ...action.payload,
+        },
       };
 
     case "SAVE_MODEL_SUCCESS":
@@ -22,8 +22,8 @@ export function models(state = {}, action) {
         ...state,
         [action.payload.ZUID]: {
           ...state[action.payload.ZUID],
-          dirty: false
-        }
+          dirty: false,
+        },
       };
 
     case "SET_MODEL_VALUE":
@@ -32,8 +32,8 @@ export function models(state = {}, action) {
         [action.payload.ZUID]: {
           ...state[action.payload.ZUID],
           [action.payload.key]: action.payload.value,
-          dirty: true
-        }
+          dirty: true,
+        },
       };
 
     default:
@@ -51,83 +51,83 @@ export function updateModel(ZUID, key, value) {
     payload: {
       ZUID,
       key,
-      value
-    }
+      value,
+    },
   };
 }
 
 // API call actions
 
 export function fetchModels() {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/models`,
-      handler: res => {
+      handler: (res) => {
         if (res.status === 200) {
           return dispatch({
             type: "FETCH_MODELS_SUCCESS",
             payload: res.data.reduce((acc, model) => {
               acc[model.ZUID] = model;
               return acc;
-            }, {})
+            }, {}),
           });
         } else {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to fetch models`
+              message: `Failed to fetch models`,
             })
           );
           if (res.error) {
             throw new Error(res.error);
           }
         }
-      }
+      },
     });
   };
 }
 
 export function fetchModel(modelZUID) {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}`,
-      handler: res => {
+      handler: (res) => {
         if (res.status === 200) {
           return dispatch({
             type: "FETCH_MODEL_SUCCESS",
-            payload: res.data
+            payload: res.data,
           });
         } else {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to fetch models`
+              message: `Failed to fetch models`,
             })
           );
           if (res.error) {
             throw new Error(res.error);
           }
         }
-      }
+      },
     });
   };
 }
 
 export function createModel(payload) {
-  return dispatch => {
+  return (dispatch) => {
     // TODO check payload.name against existing state
 
     return request(`${CONFIG.API_INSTANCE}/content/models`, {
       method: "POST",
       json: true,
-      body: payload
-    }).then(res => {
+      body: payload,
+    }).then((res) => {
       if (res.status === 200) {
         dispatch({
           type: "CREATE_MODEL_SUCCESS",
-          payload: res.data
+          payload: res.data,
         });
       }
       return res;
@@ -140,14 +140,14 @@ export function duplicateModel(ZUID) {
     const state = getState();
     const model = state.models[ZUID];
     const fields = Object.values(state.fields).filter(
-      field => field.contentModelZUID === ZUID
+      (field) => field.contentModelZUID === ZUID
     );
 
     if (!model) {
       dispatch(
         notify({
           kind: "warn",
-          message: `Missing model: ${ZUID}`
+          message: `Missing model: ${ZUID}`,
         })
       );
       return;
@@ -166,16 +166,16 @@ export function duplicateModel(ZUID) {
     return request(`${CONFIG.API_INSTANCE}/content/models`, {
       method: "POST",
       json: true,
-      body: duplicateModel
-    }).then(modelResponse => {
+      body: duplicateModel,
+    }).then((modelResponse) => {
       if (modelResponse.status === 200) {
         dispatch({
           type: "CREATE_MODEL_SUCCESS",
-          payload: modelResponse.data
+          payload: modelResponse.data,
         });
 
         return Promise.all(
-          fields.map(field => {
+          fields.map((field) => {
             const duplicateField = { ...field };
 
             delete duplicateField.ZUID;
@@ -186,7 +186,7 @@ export function duplicateModel(ZUID) {
               {
                 method: "POST",
                 json: true,
-                body: duplicateField
+                body: duplicateField,
               }
             );
           })
@@ -194,7 +194,7 @@ export function duplicateModel(ZUID) {
           .then(() => {
             return modelResponse;
           })
-          .catch(err => {
+          .catch((err) => {
             console.error("Failed duplicating model fields", err);
             throw err;
           });
@@ -213,12 +213,12 @@ export function saveModel(modelZUID, payload) {
     return request(`${CONFIG.API_INSTANCE}/content/models/${modelZUID}`, {
       method: "PUT",
       json: true,
-      body: payload
-    }).then(res => {
+      body: payload,
+    }).then((res) => {
       if (res.status === 200) {
         dispatch({
           type: "SAVE_MODEL_SUCCESS",
-          payload: res.data
+          payload: res.data,
         });
       }
 
@@ -228,9 +228,9 @@ export function saveModel(modelZUID, payload) {
 }
 
 export function deleteModel(modelZUID) {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/content/models/${modelZUID}`, {
-      method: "DELETE"
+      method: "DELETE",
     }).then(() => dispatch(fetchModels()));
   };
 }

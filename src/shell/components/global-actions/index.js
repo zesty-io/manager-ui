@@ -16,7 +16,7 @@ import { ActivePreview } from "./components/ActivePreview";
 import styles from "./styles.less";
 export default React.memo(function GlobalActions(props) {
   const dispatch = useDispatch();
-  const openNav = useSelector(state => state.ui.openNav);
+  const openNav = useSelector((state) => state.ui.openNav);
   const [openMenu, setOpenMenu] = useState(false);
 
   const ref = useOnclickOutside(() => {

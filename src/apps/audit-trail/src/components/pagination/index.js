@@ -56,4 +56,4 @@ class Pagination extends Component {
   }
 }
 
-export default connect(state => state)(Pagination);
+export default connect((state) => state)(Pagination);

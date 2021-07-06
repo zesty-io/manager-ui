@@ -7,7 +7,7 @@ export class DragScroll extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      dragging: false
+      dragging: false,
     };
   }
 
@@ -23,22 +23,22 @@ export class DragScroll extends React.Component {
 
   mouseUpHandle = () => {
     this.setState({
-      dragging: false
+      dragging: false,
     });
   };
 
-  mouseDownHandle = evt => {
+  mouseDownHandle = (evt) => {
     evt.preventDefault();
 
     this.lastClientX = evt.clientX;
     this.lastClientY = evt.clientY;
 
     this.setState({
-      dragging: true
+      dragging: true,
     });
   };
 
-  mouseMoveHandle = evt => {
+  mouseMoveHandle = (evt) => {
     if (this.state.dragging) {
       this.props.childRef.current.scrollLeft -=
         -this.lastClientX + (this.lastClientX = evt.clientX);

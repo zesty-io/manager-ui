@@ -7,7 +7,7 @@ import {
   faLink,
   faSave,
   faTrash,
-  faBan
+  faBan,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
@@ -25,8 +25,8 @@ import styles from "./MediaDetailsModal.less";
 
 export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
   const dispatch = useDispatch();
-  const platform = useSelector(state => state.platform);
-  const userRole = useSelector(state => state.userRole);
+  const platform = useSelector((state) => state.platform);
+  const userRole = useSelector((state) => state.userRole);
   const urlField = useRef();
   const copyButton = useRef();
 
@@ -124,7 +124,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
               </label>
             }
             placeholder={"Image Title"}
-            onChange={val => setTitle(val)}
+            onChange={(val) => setTitle(val)}
           />
           <FieldTypeText
             className={styles.Field}
@@ -137,7 +137,7 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
               </label>
             }
             placeholder={"Image Filename"}
-            onChange={val => setFilename(val)}
+            onChange={(val) => setFilename(val)}
           />
           {/* <FieldTypeText
             className={styles.Field}
@@ -170,17 +170,19 @@ export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
         </Button>
 
         <ButtonGroup className={styles.ButtonGroup}>
-          {/* hide for Contributor */
-          userRole.name !== "Contributor" ? (
-            <Button
-              kind="warn"
-              onClick={props.showDeleteFileModal}
-              className={styles.Delete}
-            >
-              <FontAwesomeIcon icon={faTrash} />
-              <span>Delete</span>
-            </Button>
-          ) : null}
+          {
+            /* hide for Contributor */
+            userRole.name !== "Contributor" ? (
+              <Button
+                kind="warn"
+                onClick={props.showDeleteFileModal}
+                className={styles.Delete}
+              >
+                <FontAwesomeIcon icon={faTrash} />
+                <span>Delete</span>
+              </Button>
+            ) : null
+          }
 
           <Button kind="save" onClick={saveFile}>
             <FontAwesomeIcon icon={faSave} />

@@ -24,9 +24,10 @@ export function Dropzone(props) {
   );
 
   // Update state when props change
-  useEffect(() => setChildren(React.Children.toArray(props.children)), [
-    props.children
-  ]);
+  useEffect(
+    () => setChildren(React.Children.toArray(props.children)),
+    [props.children]
+  );
 
   const arrayMove = (array, from, to) => {
     const arr = [...array];
@@ -35,28 +36,28 @@ export function Dropzone(props) {
   };
 
   // NOTE: this function seems uneccessary
-  const onDragEnd = evt => {
+  const onDragEnd = (evt) => {
     // Reset
     setSourceIndex(null);
     setChildren(React.Children.toArray(props.children));
   };
 
-  const onDragEnter = evt => {
+  const onDragEnter = (evt) => {
     // Required to make a drop zone
     evt.preventDefault();
   };
 
-  const onDragOver = evt => {
+  const onDragOver = (evt) => {
     // Required to make drop zone
     evt.preventDefault();
   };
 
-  const onOver = index => {
+  const onOver = (index) => {
     setChildren(arrayMove(children, sourceIndex, index));
     setSourceIndex(index);
   };
 
-  const onDrop = evt => {
+  const onDrop = (evt) => {
     // Prevent page from unloading
     evt.preventDefault();
 
@@ -77,7 +78,7 @@ export function Dropzone(props) {
         return React.cloneElement(child, {
           index,
           onOver,
-          drag: setSourceIndex
+          drag: setSourceIndex,
         });
       })}
     </div>

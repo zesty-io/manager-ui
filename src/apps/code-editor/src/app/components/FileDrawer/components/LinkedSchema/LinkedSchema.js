@@ -34,7 +34,7 @@ export default function LinkedSchema(props) {
         </p>
 
         <ul>
-          {props.fields.map(field => (
+          {props.fields.map((field) => (
             <li key={field.ZUID}>
               <span className={styles.ParsleyRef}>
                 <span className={styles.Brace}>{"{{"}</span>

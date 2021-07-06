@@ -6,7 +6,7 @@ import {
   faArrowsAlt,
   faBan,
   faExpandArrowsAlt,
-  faSave
+  faSave,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Dropzone } from "./components/Dropzone";
@@ -19,7 +19,7 @@ import {
   Modal,
   ModalContent,
   ModalFooter,
-  ModalHeader
+  ModalHeader,
 } from "@zesty-io/core/Modal";
 
 import { resolvePathPart } from "../../../../../store/files";
@@ -30,13 +30,13 @@ export default connect((state, props) => {
   const typePathPart = resolvePathPart(props.type);
 
   const headersMap = state.headers
-    .filter(header => header.resourceZUID) // must have a resourceZUID
+    .filter((header) => header.resourceZUID) // must have a resourceZUID
     .reduce((acc, header) => {
       acc[header.resourceZUID] = header;
       return acc;
     }, {}); // convert to map for easy lookups
 
-  const files = state.files.filter(f => {
+  const files = state.files.filter((f) => {
     let filePathPart = resolvePathPart(f.type);
     return filePathPart === typePathPart && f.status === state.status.selected;
   });
@@ -44,20 +44,20 @@ export default connect((state, props) => {
   // Blend files and header data to create a data set and shape
   // need for the ordering experience
   const fileHeaders = files
-    .map(file => {
+    .map((file) => {
       const header = headersMap[file.ZUID];
 
       return {
         ZUID: file.ZUID,
         fileName: file.fileName,
-        sort: header ? header.sort : 1
+        sort: header ? header.sort : 1,
       };
     })
     .sort((fileA, fileB) => (fileA.sort > fileB.sort ? 1 : -1));
 
   return {
     typePathPart,
-    fileHeaders
+    fileHeaders,
   };
 })(function OrderFiles(props) {
   const [open, setOpen] = useState(false);
@@ -75,12 +75,12 @@ export default connect((state, props) => {
   }, [Object.keys(props.fileHeaders).length]);
 
   // Update headers order
-  const handleReorder = children => {
+  const handleReorder = (children) => {
     setFiles(
       children.map((child, i) => {
         return {
           ...child.props.file,
-          sort: i + 1 // API doesn't allow 0 so bump by 1
+          sort: i + 1, // API doesn't allow 0 so bump by 1
         };
       })
     );
@@ -90,7 +90,7 @@ export default connect((state, props) => {
     setLoading(true);
     props
       .dispatch(saveSort(props.typePathPart, files))
-      .then(res => {
+      .then((res) => {
         return props.dispatch(fetchHeaders());
       })
       .finally(() => {
@@ -139,7 +139,7 @@ export default connect((state, props) => {
             </p>
 
             <Dropzone className={styles.Files} onDrop={handleReorder}>
-              {files.map(file => {
+              {files.map((file) => {
                 return (
                   <Draggable
                     key={file.ZUID}

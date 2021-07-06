@@ -7,7 +7,7 @@ import {
   faTimesCircle,
   faCalendar,
   faCalendarPlus,
-  faExclamationTriangle
+  faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
@@ -42,15 +42,15 @@ export default class ScheduleFlyout extends Component {
       timezones: moment.tz.names().map((el, i) => {
         return {
           value: el,
-          html: el
+          html: el,
         };
-      })
+      }),
     });
   }
 
   handleCancelPublish = () => {
     this.setState({
-      scheduling: true
+      scheduling: true,
     });
 
     this.props
@@ -64,14 +64,14 @@ export default class ScheduleFlyout extends Component {
       )
       .finally(() => {
         this.setState({
-          scheduling: false
+          scheduling: false,
         });
       });
   };
 
   handleSchedulePublish = () => {
     this.setState({
-      scheduling: true
+      scheduling: true,
     });
 
     // Display timestamp to user in the selected timezone
@@ -93,33 +93,33 @@ export default class ScheduleFlyout extends Component {
           this.props.item.meta.ZUID,
           {
             publishAt: utcTime,
-            version: this.props.item.meta.version
+            version: this.props.item.meta.version,
           },
           {
             localTime: tzTime,
-            localTimezone: this.state.selectedTimezone
+            localTimezone: this.state.selectedTimezone,
           }
         )
       )
       .finally(() => {
         this.setState({
-          scheduling: false
+          scheduling: false,
         });
       });
   };
 
-  handleChangePublish = value => {
+  handleChangePublish = (value) => {
     // Convert emited date object into the local time without timezone information
     // moment creates local time objects by default
     const selectedTime = moment(value).format(UTC_FORMAT);
     return this.setState({
-      selectedTime
+      selectedTime,
     });
   };
 
-  handleChangeTimezone = value => {
+  handleChangeTimezone = (value) => {
     return this.setState({
-      selectedTimezone: value
+      selectedTimezone: value,
     });
   };
 

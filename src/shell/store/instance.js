@@ -10,8 +10,8 @@ export function instance(
   state = {
     ZUID: ZUID,
     settings: {
-      seo: {}
-    }
+      seo: {},
+    },
   },
   action
 ) {
@@ -26,20 +26,20 @@ export function instance(
 }
 
 export function fetchInstance() {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({
-      type: "FETCHING_INSTANCE"
+      type: "FETCHING_INSTANCE",
     });
 
-    return request(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`).then(res => {
+    return request(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`).then((res) => {
       if (res.status === 403) {
         throw res;
       }
       dispatch({
         type: "FETCHING_INSTANCE_SUCCESS",
         payload: {
-          data: res.data
-        }
+          data: res.data,
+        },
       });
 
       return res;
@@ -48,9 +48,9 @@ export function fetchInstance() {
 }
 
 export function fetchDomains() {
-  return dispatch => {
+  return (dispatch) => {
     request(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}/domains`)
-      .then(res => {
+      .then((res) => {
         dispatch({
           type: "FETCH_DOMAINS_SUCCESS",
           payload: {
@@ -62,17 +62,17 @@ export function fetchDomains() {
               const epochB = dateB.valueOf();
 
               return epochA - epochB;
-            })
-          }
+            }),
+          },
         });
 
         return res;
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(
           notify({
             kind: "warn",
-            message: "Failed to load domains"
+            message: "Failed to load domains",
           })
         );
       });

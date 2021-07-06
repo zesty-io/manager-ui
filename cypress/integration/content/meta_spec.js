@@ -19,10 +19,7 @@ describe("Content Meta", () => {
     cy.get('[data-value="7-f40360-7vcf5h"]').click();
     // select another parent, but switch it back to root level
     cy.get("[data-cy=itemParent] .Select").click();
-    cy.get("[data-cy=itemParent]")
-      .find('[data-value="0"]')
-      .first()
-      .click();
+    cy.get("[data-cy=itemParent]").find('[data-value="0"]').first().click();
 
     cy.get("[data-cy=metaLinkText]")
       .find("input")
@@ -58,14 +55,10 @@ describe("Content Meta", () => {
     cy.get('[data-value="-1"]').click();
 
     cy.get("[data-cy=canonicalTag] >  div").click();
-    cy.get('[data-value="1"]')
-      .last()
-      .click();
+    cy.get('[data-value="1"]').last().click();
 
     cy.get("[data-cy=canonicalTag] >  div").click();
-    cy.get('[data-value="0"]')
-      .last()
-      .click();
+    cy.get('[data-value="0"]').last().click();
 
     cy.get("#SaveItemButton").click();
     cy.contains("Saved a new ").should("exist");

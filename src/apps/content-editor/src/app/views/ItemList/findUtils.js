@@ -1,6 +1,6 @@
 export const findFields = (fields, modelZUID) => {
   return Object.keys(fields)
-    .filter(key => {
+    .filter((key) => {
       return (
         !fields[key].deletedAt &&
         fields[key].settings &&
@@ -8,13 +8,13 @@ export const findFields = (fields, modelZUID) => {
         fields[key].contentModelZUID === modelZUID
       );
     })
-    .map(key => fields[key])
+    .map((key) => fields[key])
     .sort((a, b) => a.sort - b.sort);
 };
 
 export const findItems = (items, modelZUID, langID = 1) => {
   return Object.keys(items)
-    .filter(key => {
+    .filter((key) => {
       return (
         items[key] &&
         items[key].meta &&
@@ -22,7 +22,7 @@ export const findItems = (items, modelZUID, langID = 1) => {
         items[key].meta.langID === langID
       );
     })
-    .map(key => items[key])
+    .map((key) => items[key])
     .sort((a, b) => {
       if (a.meta.createdAt < b.meta.createdAt) {
         return 1;

@@ -31,12 +31,12 @@ export default function SchemaNav(props) {
           className={styles.Search}
           name="filter_schema"
           placeholder="Filter model list"
-          onChange={term => {
+          onChange={(term) => {
             term = term.trim().toLowerCase();
             if (term) {
               setNav(
                 props.nav.filter(
-                  m =>
+                  (m) =>
                     m.label.toLowerCase().includes(term) ||
                     m.name.includes(term)
                 )

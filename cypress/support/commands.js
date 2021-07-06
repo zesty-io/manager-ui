@@ -9,9 +9,9 @@ Cypress.Commands.add("login", () => {
       url: `${Cypress.env("API_AUTH")}/login`,
       method: "POST",
       credentials: "include",
-      body: formBody
+      body: formBody,
     })
-    .then(async res => {
+    .then(async (res) => {
       const response = await new Response(res.body).json();
       // We need the cookie value returned reset so it is unsecure and
       // accessible by javascript

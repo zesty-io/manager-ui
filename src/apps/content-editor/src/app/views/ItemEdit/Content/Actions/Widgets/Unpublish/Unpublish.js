@@ -6,7 +6,7 @@ import { Button } from "@zesty-io/core/Button";
 import {
   CollapsibleCard,
   CardContent,
-  CardFooter
+  CardFooter,
 } from "@zesty-io/core/CollapsibleCard";
 
 import { unpublish } from "shell/store/content";
