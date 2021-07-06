@@ -3,8 +3,9 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSortAlphaDown,
-  faSortAlphaUp
+  faSortAlphaUp,
 } from "@fortawesome/free-solid-svg-icons";
+import { Infotip } from "@zesty-io/core/Infotip";
 import styles from "./RedirectsTableHeader.less";
 
 export default function RedirectsTableHeader(props) {
@@ -16,6 +17,7 @@ export default function RedirectsTableHeader(props) {
         onClick={props.handleSortBy}
         style={{ flex: "1" }}
       >
+        <Infotip className={styles.InfoTip}>File Path Only </Infotip>
         <span
           className={cx(
             styles.subheadline,
@@ -23,7 +25,7 @@ export default function RedirectsTableHeader(props) {
             props.sortBy === "from" ? styles.sorted : ""
           )}
         >
-          From
+          &nbsp; From
           {props.sortBy === "from" && props.sortDirection === "desc" ? (
             <FontAwesomeIcon icon={faSortAlphaDown} />
           ) : null}
