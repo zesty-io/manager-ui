@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { StickyTree } from "react-virtualized-sticky-tree";
 import Measure from "react-measure";
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import cx from "classnames";
 import moment from "moment-timezone";
 import { useHistory } from "react-router";
@@ -23,7 +23,7 @@ import {
 } from "../../../../../store/files";
 
 import styles from "./DifferActions.less";
-export const DifferActions = React.memo(function DifferActions(props) {
+export const DifferActions = memo(function DifferActions(props) {
   const [saving, setSaving] = useState(false);
   const [versions, setVersions] = useState([]);
   const [selectedVersion, setSelectedVersion] = useState(

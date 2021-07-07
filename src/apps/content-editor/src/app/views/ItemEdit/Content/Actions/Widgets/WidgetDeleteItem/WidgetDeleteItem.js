@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import { memo, useState, Fragment } from "react";
 import cx from "classnames";
 import { useHistory } from "react-router-dom";
 
@@ -19,7 +19,7 @@ import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
 import { deleteItem } from "shell/store/content";
 
-export const WidgetDeleteItem = React.memo(function WidgetDeleteItem(props) {
+export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
   const history = useHistory();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);

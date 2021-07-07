@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,7 +7,7 @@ import { ToggleButton } from "@zesty-io/core/ToggleButton";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./ToggleCell.less";
-export const ToggleCell = React.memo(function ToggleCell(props) {
+export const ToggleCell = memo(function ToggleCell(props) {
   if (props.field.settings && props.field.settings.options) {
     let options = Object.values(props.field.settings.options);
 

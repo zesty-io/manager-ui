@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import { memo, useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -23,7 +23,7 @@ import { editFile } from "shell/store/media";
 import shared from "./MediaShared.less";
 import styles from "./MediaDetailsModal.less";
 
-export const MediaDetailsModal = React.memo(function MediaDetailsModal(props) {
+export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
   const dispatch = useDispatch();
   const platform = useSelector((state) => state.platform);
   const userRole = useSelector((state) => state.userRole);

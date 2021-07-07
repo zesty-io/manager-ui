@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Info } from "./Info";
 import { Settings } from "./Settings";
 import { Delete } from "./Delete";

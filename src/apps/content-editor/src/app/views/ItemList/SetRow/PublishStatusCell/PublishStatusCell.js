@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,7 +8,7 @@ import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./PublishStatusCell.less";
-export const PublishStatusCell = React.memo(function PublishStatusCell(props) {
+export const PublishStatusCell = memo(function PublishStatusCell(props) {
   if (props.itemZUID.slice(0, 3) === "new") {
     return (
       <AppLink

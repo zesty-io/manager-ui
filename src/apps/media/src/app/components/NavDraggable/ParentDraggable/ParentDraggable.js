@@ -1,10 +1,10 @@
-import React, { useRef } from "react";
+import { memo, useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import omit from "lodash/omit";
 import { NodeDraggable } from "../NodeDraggable";
 import styles from "./ParentDraggable.less";
 
-export const ParentDraggable = React.memo(function ParentDraggable(props) {
+export const ParentDraggable = memo(function ParentDraggable(props) {
   // track recursion depth and pass it as a prop to the node component
   const depth = props.depth + 1 || 1;
   const ref = useRef(null);

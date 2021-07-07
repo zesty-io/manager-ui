@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef } from "react";
+import { memo, useCallback, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -23,7 +23,7 @@ import shared from "./MediaShared.less";
 import styles from "./MediaSidebar.less";
 import { MediaNav } from "./MediaNav";
 
-export const MediaSidebar = React.memo(function MediaSidebar(props) {
+export const MediaSidebar = memo(function MediaSidebar(props) {
   const dispatch = useDispatch();
 
   const groups = useSelector((state) => state.media.groups);

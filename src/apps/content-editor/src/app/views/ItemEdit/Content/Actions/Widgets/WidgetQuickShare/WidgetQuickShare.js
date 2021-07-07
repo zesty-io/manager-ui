@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
@@ -12,7 +12,7 @@ import {
   faRedditSquare,
   faTwitterSquare,
 } from "@fortawesome/free-brands-svg-icons";
-export const WidgetQuickShare = React.memo(function WidgetQuickShare(props) {
+export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
   const handleOpen = (evt, url) => {
     window.open(
       url,

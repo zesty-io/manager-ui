@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -27,10 +27,10 @@ export default connect((state) => {
     user: state.user,
     products: state.products,
     languages: state.languages,
-    files: state.files
+    files: state.files,
   };
 })(
-  React.memo(function LoadInstance(props) {
+  memo(function LoadInstance(props) {
     const [error, setError] = useState("");
     useEffect(() => {
       props

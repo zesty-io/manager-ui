@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { memo, useState } from "react";
 import { useHistory } from "react-router";
 
 import { Button } from "@zesty-io/core/Button";
@@ -15,7 +15,7 @@ import {
   faExclamationCircle,
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
-export const Delete = React.memo(function Delete(props) {
+export const Delete = memo(function Delete(props) {
   const [open, setOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const history = useHistory();

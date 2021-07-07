@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
@@ -43,7 +43,7 @@ export const LanguageSelector = connect((state, props) => {
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       {props.languages.length > 1 ? (
         <Select
           name="LanguageSelector"
@@ -56,6 +56,6 @@ export const LanguageSelector = connect((state, props) => {
           ))}
         </Select>
       ) : null}
-    </React.Fragment>
+    </Fragment>
   );
 });

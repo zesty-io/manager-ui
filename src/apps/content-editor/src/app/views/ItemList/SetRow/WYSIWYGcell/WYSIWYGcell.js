@@ -1,8 +1,8 @@
-import React from "react";
+import { memo } from "react";
 import cx from "classnames";
 
 import styles from "./WYSIWYGcell.less";
-export const WYSIWYGcell = React.memo(function WYSIWYGcell(props) {
+export const WYSIWYGcell = memo(function WYSIWYGcell(props) {
   const rawData = props.value;
   let elementFromData = document.createElement("div");
   elementFromData.innerHTML = rawData;

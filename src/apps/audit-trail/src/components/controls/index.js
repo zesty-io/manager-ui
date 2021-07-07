@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 import cx from "classnames";
 
 import { Search } from "@zesty-io/core/Search";
@@ -6,7 +6,7 @@ import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 
 import styles from "./styles.less";
-export default React.memo(function AuditControls(props) {
+export default memo(function AuditControls(props) {
   return (
     <header className={styles.auditControls}>
       <Search

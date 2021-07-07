@@ -1,10 +1,10 @@
-import React from "react";
+import { memo } from "react";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { Infotip } from "@zesty-io/core/Infotip";
 
 import styles from "./MetaLinkText.less";
-export const MetaLinkText = React.memo(function MetaLinkText({
+export const MetaLinkText = memo(function MetaLinkText({
   meta_link_text,
   onChange,
 }) {

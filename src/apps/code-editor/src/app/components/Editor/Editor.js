@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 
 import { FileActions } from "../FileActions";
 import { MemoizedEditor } from "./components/MemoizedEditor/MemoizedEditor";
@@ -9,7 +9,7 @@ import { MemoizedEditor } from "./components/MemoizedEditor/MemoizedEditor";
  * But we still want to broadcast store updates `onChange`
  */
 import styles from "./Editor.less";
-export const Editor = React.memo(function Editor(props) {
+export const Editor = memo(function Editor(props) {
   return (
     <main className={styles.Editor}>
       <FileActions

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,7 +15,7 @@ export default connect((state) => {
     platform: state.platform,
   };
 })(
-  React.memo(function Save(props) {
+  memo(function Save(props) {
     const [saving, setSaving] = useState(false);
 
     const onSave = () => {

@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import { PureComponent } from "react";
 
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 

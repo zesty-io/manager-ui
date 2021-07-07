@@ -1,5 +1,5 @@
 import * as moment from "moment";
-import React from "react";
+import { Component } from "react";
 import { connect } from "react-redux";
 
 import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
@@ -27,7 +27,7 @@ export default connect((state) => {
     filter: state.filter,
   };
 })(
-  class TableDateFilter extends React.Component {
+  class TableDateFilter extends Component {
     state = {
       endDate: this.props.endDate,
       startDate: this.props.startDate,

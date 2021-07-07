@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { useLocation } from "react-router";
 import { faCog, faFont } from "@fortawesome/free-solid-svg-icons";

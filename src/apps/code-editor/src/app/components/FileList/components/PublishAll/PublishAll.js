@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { memo, Fragment, useState } from "react";
 import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -32,7 +32,7 @@ export default connect((state) => {
     files: state.files.filter((file) => file.isLive === false),
   };
 })(
-  React.memo(function PublishAll(props) {
+  memo(function PublishAll(props) {
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
 
@@ -80,7 +80,7 @@ export default connect((state) => {
     };
 
     return (
-      <React.Fragment>
+      <Fragment>
         <Button
           className={styles.PublishAllBtn}
           onClick={() => setOpen(true)}
@@ -135,7 +135,7 @@ export default connect((state) => {
             </ButtonGroup>
           </ModalFooter>
         </Modal>
-      </React.Fragment>
+      </Fragment>
     );
   })
 );

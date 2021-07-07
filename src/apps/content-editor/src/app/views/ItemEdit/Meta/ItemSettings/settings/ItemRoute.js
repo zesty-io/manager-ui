@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import { memo, Fragment, useCallback, useState, useEffect } from "react";
 import { connect, useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import { searchItems } from "shell/store/content";
@@ -18,7 +18,7 @@ export const ItemRoute = connect((state) => {
     content: state.content,
   };
 })(
-  React.memo(function ItemRoute(props) {
+  memo(function ItemRoute(props) {
     const dispatch = useDispatch();
     const [pathPart, setPathPart] = useState(props.path_part);
     const [loading, setLoading] = useState(false);
@@ -122,7 +122,7 @@ export const ItemRoute = connect((state) => {
               &nbsp;Homepage
             </h1>
           ) : (
-            <React.Fragment>
+            <Fragment>
               <Input
                 type={"text"}
                 name="pathPart"
@@ -148,7 +148,7 @@ export const ItemRoute = connect((state) => {
                   <FontAwesomeIcon icon={faTimes} />
                 </InputIcon>
               )}
-            </React.Fragment>
+            </Fragment>
           )}
         </div>
       </article>

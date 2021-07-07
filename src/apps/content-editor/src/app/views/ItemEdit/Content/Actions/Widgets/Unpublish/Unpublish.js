@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { memo, Fragment, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faUnlink } from "@fortawesome/free-solid-svg-icons";
@@ -11,7 +11,7 @@ import {
 
 import { unpublish } from "shell/store/content";
 
-export const Unpublish = React.memo(function Unpublish(props) {
+export const Unpublish = memo(function Unpublish(props) {
   const isPublished = props.publishing && props.publishing.isPublished;
 
   const [loading, setLoading] = useState(false);
@@ -31,10 +31,10 @@ export const Unpublish = React.memo(function Unpublish(props) {
     <CollapsibleCard
       className={"Unpublish"}
       header={
-        <React.Fragment>
+        <Fragment>
           <FontAwesomeIcon icon={faUnlink} />
           &nbsp;Unpublish
-        </React.Fragment>
+        </Fragment>
       }
     >
       <CardContent>

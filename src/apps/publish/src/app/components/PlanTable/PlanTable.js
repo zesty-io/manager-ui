@@ -1,4 +1,3 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import { PlanStep } from "../PlanStep";
 import styles from "./PlanTable.less";

@@ -1,4 +1,4 @@
-import React from "react";
+import { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock } from "@fortawesome/free-solid-svg-icons";
 
@@ -7,7 +7,7 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import styles from "./RecentlyEdited.less";
-export class RecentlyEdited extends React.Component {
+export class RecentlyEdited extends Component {
   render() {
     return (
       <Card className={styles.Card}>

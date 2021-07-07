@@ -1,4 +1,3 @@
-import React from "react";
 import GlobalSearch from "shell/components/global-search";
 import GlobalAccount from "shell/components/global-account";
 import GlobalInstance from "shell/components/global-instance";

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import cx from "classnames";
 
 export function Draggable(props) {

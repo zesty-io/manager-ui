@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faCog } from "@fortawesome/free-solid-svg-icons";
@@ -11,9 +11,7 @@ import styles from "./MediaWorkspaceItem.less";
 import shared from "./MediaShared.less";
 import { isImage } from "../FileUtils";
 
-export const MediaWorkspaceItem = React.memo(function MediaWorkspaceItem(
-  props
-) {
+export const MediaWorkspaceItem = memo(function MediaWorkspaceItem(props) {
   const [lazyLoading, setLazyLoading] = useState(false);
   function handleIntersection(event) {
     if (event.isIntersecting) {

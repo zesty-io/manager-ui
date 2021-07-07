@@ -1,4 +1,4 @@
-import React from "react";
+import { Fragment } from "react";
 
 import { usePermission } from "shell/hooks/use-permissions";
 
@@ -12,7 +12,7 @@ export default function GaAuthenticate(props) {
   const canAuthenticate = usePermission("CODE");
 
   return (
-    <React.Fragment>
+    <Fragment>
       {canAuthenticate && (
         <div className={styles.buttonHolder}>
           <Button kind="save" onClick={props.onClick}>
@@ -21,6 +21,6 @@ export default function GaAuthenticate(props) {
           </Button>
         </div>
       )}
-    </React.Fragment>
+    </Fragment>
   );
 }

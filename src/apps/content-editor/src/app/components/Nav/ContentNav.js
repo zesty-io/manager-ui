@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useHistory } from "react-router";
 import { Link } from "react-router-dom";
@@ -71,7 +71,7 @@ export function ContentNav(props) {
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       <ItemsFilter
         setFilteredItems={setFilteredItems}
         nav={props.nav}
@@ -195,7 +195,7 @@ export function ContentNav(props) {
       </div>
 
       <ReorderNav isOpen={reorderOpen} toggleOpen={toggleModal} />
-    </React.Fragment>
+    </Fragment>
   );
 }
 

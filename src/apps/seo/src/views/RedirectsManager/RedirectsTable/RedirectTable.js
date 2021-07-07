@@ -1,4 +1,4 @@
-import React from "react";
+import { Component } from "react";
 import styles from "./RedirectTable.less";
 import cx from "classnames";
 
@@ -8,7 +8,7 @@ import { RedirectCreator } from "./RedirectCreator";
 import RedirectsTableHeader from "./RedirectsTableHeader";
 import RedirectsTableRow from "./RedirectsTableRow";
 
-export default class RedirectTable extends React.Component {
+export default class RedirectTable extends Component {
   constructor(props) {
     super(props);
 

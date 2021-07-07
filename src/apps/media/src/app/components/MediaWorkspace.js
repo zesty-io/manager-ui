@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import { memo, useCallback, useRef } from "react";
 import cx from "classnames";
 import { createSelector } from "reselect";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,7 +22,7 @@ const selectGroupFiles = createSelector(
     files.filter((file) => file.group_id === currentGroup.id).reverse()
 );
 
-export const MediaWorkspace = React.memo(function MediaWorkspace(props) {
+export const MediaWorkspace = memo(function MediaWorkspace(props) {
   const ref = useRef();
   const hiddenInputRef = useRef();
   const search = useSelector((state) => state.media.search);
