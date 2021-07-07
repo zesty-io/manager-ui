@@ -14,23 +14,6 @@ export function useFilePath(ZUID = "") {
     throw new Error("Required ZUID argument was not provided");
   }
 
-  const findItemZUID = Object.keys(content).find((file) => file === ZUID);
-  console.log("🚀 ~ findItemZUID", findItemZUID);
-  const findMatch = Object.values(content).filter(
-    (file) => file.meta.ZUID === findItemZUID
-  );
-  console.log("findMatch", findMatch[0].meta.contentModelZUID);
-
-  let findFile = files.find(
-    (file) => file.contentModelZUID === findMatch[0].meta.contentModelZUID
-  );
-
-  if (ZUID === findItemZUID && findFile) {
-    console.log(true);
-  } else {
-    console.log(false);
-  }
-
   //Currently accepting model zuids, view, stylesheet, javascript zuids
   // There is no place where this method is called by a content item zuid, if there was we would need to reference all items.
   switch (Number(ZUID.split("-")[0])) {
@@ -42,7 +25,7 @@ export function useFilePath(ZUID = "") {
         return "/code";
       }
 
-    // Working here David 7-???????????????????????????????????
+    // Searching on Content Item Zuid 7-
     case zuid.prefix.SITE_CONTENT_ITEM:
       let findItemZUID = Object.keys(content).find((file) => file === ZUID);
       let findMatch = Object.values(content).filter(
