@@ -8,7 +8,8 @@ export function useFilePath(ZUID = "") {
   const files = useSelector(selectFiles);
 
   const getContent = (state) => state.content;
-  const content = useSelector(getContent);
+  const selectContent = createSelector([getContent], (content) => content);
+  const content = useSelector(selectContent);
 
   if (!ZUID) {
     throw new Error("Required ZUID argument was not provided");
@@ -25,17 +26,15 @@ export function useFilePath(ZUID = "") {
         return "/code";
       }
 
-    // Searching on Content Item Zuid 7-
+    // Searching on Content Item Zuid 7-///////////////////////////////////////////////
     case zuid.prefix.SITE_CONTENT_ITEM:
-      let findItemZUID = Object.keys(content).find((file) => file === ZUID);
-      let findMatch = Object.values(content).filter(
-        (file) => file.meta.ZUID === findItemZUID
-      );
+      const item = content[ZUID];
+
       let findFile = files.find(
-        (file) => file.contentModelZUID === findMatch[0].meta.contentModelZUID
+        (file) => file.contentModelZUID === item.meta.contentModelZUID
       );
 
-      if (ZUID === findItemZUID && findFile) {
+      if (ZUID === item.meta.ZUID && findFile) {
         return `/code/file/views/${findFile.ZUID}`;
       } else {
         return "/code";
