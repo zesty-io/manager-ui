@@ -32,10 +32,9 @@ export function useFilePath(ZUID = "") {
         );
         if (findFile) {
           return `/code/file/views/${findFile.ZUID}`;
-        } else {
-          return "/code";
         }
       }
+      return "/code";
 
     case zuid.prefix.SITE_RESOURCE:
       const callBack = (file) => file.ZUID === ZUID;
