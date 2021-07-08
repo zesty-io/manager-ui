@@ -34,6 +34,7 @@ export class SetColumns extends PureComponent {
                   <span
                     key={field.ZUID}
                     onClick={() =>
+                      this.props.onSort &&
                       this.props.onSort(field.name, field.datatype)
                     }
                     className={cx(
