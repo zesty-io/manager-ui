@@ -18,6 +18,7 @@ export function useFilePath(ZUID = "") {
   //Currently accepting model zuids, view, stylesheet, javascript zuids
   // There is no place where this method is called by a content item zuid, if there was we would need to reference all items.
   switch (Number(ZUID.split("-")[0])) {
+    // Searching on Model ZUID
     case zuid.prefix.SITE_CONTENT_SET:
       let findfile = files.find((file) => file.contentModelZUID === ZUID);
       if (findfile) {
@@ -26,7 +27,7 @@ export function useFilePath(ZUID = "") {
         return "/code";
       }
 
-    // Searching on Content Item Zuid 7-///////////////////////////////////////////////
+    // Searching on Content Item ZUID
     case zuid.prefix.SITE_CONTENT_ITEM:
       const item = content[ZUID];
 
