@@ -34,7 +34,7 @@ export function useFilePath(ZUID = "") {
         (file) => file.contentModelZUID === item.meta.contentModelZUID
       );
 
-      if (ZUID === item.meta.ZUID && findFile) {
+      if (item.meta.contentModelZUID) {
         return `/code/file/views/${findFile.ZUID}`;
       } else {
         return "/code";
