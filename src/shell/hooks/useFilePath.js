@@ -3,13 +3,8 @@ import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
 
 export function useFilePath(ZUID = "") {
-  const getFiles = (state) => state.files;
-  const selectFiles = createSelector([getFiles], (files) => files);
-  const files = useSelector(selectFiles);
-
-  const getContent = (state) => state.content;
-  const selectContent = createSelector([getContent], (content) => content);
-  const content = useSelector(selectContent);
+  const files = useSelector((state) => state.files);
+  const content = useSelector((state) => state.content);
 
   if (!ZUID) {
     throw new Error("Required ZUID argument was not provided");
@@ -31,12 +26,13 @@ export function useFilePath(ZUID = "") {
     case zuid.prefix.SITE_CONTENT_ITEM:
       const item = content[ZUID];
 
-      let findFile = files.find(
-        (file) => file.contentModelZUID === item.meta.contentModelZUID
-      );
-
       if (item.meta.contentModelZUID) {
-        return `/code/file/views/${findFile.ZUID}`;
+        const findFile = files.find(
+          (file) => file.contentModelZUID === item.meta.contentModelZUID
+        );
+        if (findFile) {
+          return `/code/file/views/${findFile.ZUID}`;
+        }
       } else {
         return "/code";
       }
