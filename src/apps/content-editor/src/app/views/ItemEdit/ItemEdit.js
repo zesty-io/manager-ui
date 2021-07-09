@@ -140,7 +140,7 @@ export default function ItemEdit() {
 
     try {
       const itemResponse = await dispatch(fetchItem(modelZUID, itemZUID));
-      if (itemResponse.status === 404) {
+      if (itemResponse.status === 404 || itemResponse.status === 400) {
         dispatch(
           notify({
             message: itemResponse.message,
@@ -148,15 +148,6 @@ export default function ItemEdit() {
           })
         );
         throw new Error(itemResponse.message);
-      }
-      if (itemResponse.status === 400) {
-        dispatch(
-          notify({
-            message: itemResponse.message,
-            kind: "error",
-          })
-        );
-        return;
       } else {
         // select lang based on content lang
         dispatch(
