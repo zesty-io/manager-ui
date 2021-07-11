@@ -138,6 +138,7 @@ export default function GlobalInstance(props) {
               <Url
                 title={`http://${domain.domain}`}
                 href={`http://${domain.domain}`}
+                target="_blank"
               >
                 <FontAwesomeIcon icon={faExternalLinkAlt} />
                 &nbsp;
