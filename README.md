@@ -62,6 +62,19 @@ _e.g. linux: `/etc/hosts`_
 2. Start webpack: `npm run serve:webpack -- --env.NODE_ENV=production`
 3. Load the app in your browser: `<YOUR_UNIQUE_INSTANCE_ZUID>.manager.zesty.io:8080`
 
+## Tests
+
+Functional UI tests are run with cypress.io
+
+To run the tests on your machine you will need to create a `cypress.env.json` file at the root of the repository, add the following JSON and replace the email/password with valid credentials.
+
+```json
+{
+  "email": "EMAIL",
+  "password": "PASSWORD"
+}
+```
+
 ---
 
 **Notes**

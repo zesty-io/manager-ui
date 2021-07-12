@@ -3,7 +3,9 @@
 *.log
 *.lock
 *.css.json
-.env
+
+# secrets
+*.env*
 
 /build
 *dist/
