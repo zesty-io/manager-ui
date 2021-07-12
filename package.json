@@ -2,6 +2,17 @@
   "name": "manager-ui",
   "version": "1.0.1",
   "description": "Application for managing a Zesty.io content instance",
+  "license": "Commons Clause License Condition v1.0",
+  "author": "Zesty.io<developers@zesty.io>",
+  "contributors": [
+    "Stuart Runyan<stuart@zesty.io>",
+    "Joshua Hanson<joshua.hanson@zesty.io>",
+    "David Naimi<david.naimi@zesty.io>",
+    "Andy Fleming <andy@zesty.io>",
+    "Grant Glidewell <grant@zesty.io>",
+    "Mukesh Kastala <mukesh.kastala@zesty.io>",
+    "Gisele Blair <gisele.blair@zesty.io>"
+  ],
   "scripts": {
     "cleanup": "cross-env echo 'FINISHED'",
     "build-local": "npm run task:clean && npm run task:webpack -- --node-env local",
@@ -21,15 +32,6 @@
     "test": "cypress run --headless --browser chrome",
     "test:open": "cypress open"
   },
-  "author": "Zesty.io<developers@zesty.io>",
-  "contributors": [
-    "Stuart Runyan<stuart@zesty.io>",
-    "Joshua Hanson<joshua.hanson@zesty.io>",
-    "David Naimi<david.naimi@zesty.io>",
-    "Andy Fleming <andy@zesty.io>",
-    "Grant Glidewell <grant@zesty.io>",
-    "Mukesh Kastala <mukesh.kastala@zesty.io>"
-  ],
   "dependencies": {
     "@aeaton/react-prosemirror": "^0.21.1",
     "@aeaton/react-prosemirror-config-default": "^0.11.0",
