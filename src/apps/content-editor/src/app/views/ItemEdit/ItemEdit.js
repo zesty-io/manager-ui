@@ -148,15 +148,14 @@ export default function ItemEdit() {
           })
         );
         throw new Error(itemResponse.message);
-      } else {
-        // select lang based on content lang
-        dispatch(
-          selectLang(
-            languages.find((lang) => lang.ID === itemResponse.data.meta.langID)
-              .code
-          )
-        );
       }
+      // select lang based on content lang
+      dispatch(
+        selectLang(
+          languages.find((lang) => lang.ID === itemResponse.data.meta.langID)
+            .code
+        )
+      );
 
       // once we selectLang we can fetchFields
       // which triggers middleware which depends on lang
