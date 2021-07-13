@@ -72,13 +72,6 @@ export function ContentNav(props) {
 
   return (
     <React.Fragment>
-      <ItemsFilter
-        setFilteredItems={setFilteredItems}
-        nav={props.nav}
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-      />
-
       <div className={styles.Actions}>
         <Select
           name="createItemFromModel"
@@ -113,7 +106,12 @@ export function ContentNav(props) {
           />
         </Button>
       </div>
-
+      <ItemsFilter
+        setFilteredItems={setFilteredItems}
+        nav={props.nav}
+        setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
+      />
       <div className={styles.NavWrap}>
         <div className={styles.NavTitle}>
           <h1>Content</h1>
