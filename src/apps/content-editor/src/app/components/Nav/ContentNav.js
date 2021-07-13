@@ -160,7 +160,9 @@ export function ContentNav(props) {
             actions={actions}
           />
         )}
-        <h1 className={styles.NavTitle}>Headless Content Models</h1>
+        {!searchTerm && (
+          <h1 className={styles.NavTitle}>Headless Content Models</h1>
+        )}
         {!searchTerm && (
           <Nav
             id="HeadlessNavigation"
