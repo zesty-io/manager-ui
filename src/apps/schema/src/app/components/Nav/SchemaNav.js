@@ -59,7 +59,7 @@ export default function SchemaNav(props) {
       </div>
 
       <div className={styles.ModelList}>
-        <h1 className={styles.NavTitle}>Content Models</h1>
+        <h1 className={styles.NavTitle}>Content Model List</h1>
         <Nav
           className={styles.PageSets}
           id="pagesets"
