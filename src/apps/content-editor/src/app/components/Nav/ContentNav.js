@@ -144,6 +144,7 @@ export function ContentNav(props) {
           <Nav
             id="MainNavigation"
             className={styles.Nav}
+            lightMode="true"
             tree={filteredItems}
             selected={selected}
             collapseNode={collapseNode}
@@ -153,6 +154,7 @@ export function ContentNav(props) {
         {!searchTerm && (
           <Nav
             id="MainNavigation"
+            lightMode="true"
             className={styles.Nav}
             tree={props.nav.nav}
             selected={selected}
@@ -164,6 +166,7 @@ export function ContentNav(props) {
         {!searchTerm && (
           <Nav
             id="HeadlessNavigation"
+            lightMode="true"
             className={styles.Nav}
             tree={props.nav.headless}
             selected={selected}
