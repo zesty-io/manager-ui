@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Search } from "@zesty-io/core/Search";
 
 import styles from "./FilterFiles.less";

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { memo, useState } from "react";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,7 +9,7 @@ import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 import SharedWidgetStyles from "../SharedWidget.less";
 
-export const WidgetPurgeItem = React.memo(function WidgetPurgeItem(props) {
+export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
   const [loading, setLoading] = useState(false);
 
   return (

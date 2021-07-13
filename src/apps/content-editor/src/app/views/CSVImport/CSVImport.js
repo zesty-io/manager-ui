@@ -1,4 +1,4 @@
-import React, { Component, PureComponent } from "react";
+import { Component, PureComponent } from "react";
 import { connect } from "react-redux";
 import parse from "csv-parse/lib/es5/sync";
 import chunk from "lodash/chunk";

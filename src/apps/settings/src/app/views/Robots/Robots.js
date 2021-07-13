@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { useDomain } from "shell/hooks/use-domain";

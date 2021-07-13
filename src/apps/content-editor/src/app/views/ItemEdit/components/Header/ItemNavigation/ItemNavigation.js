@@ -1,4 +1,3 @@
-import React from "react";
 import cx from "classnames";
 
 import { AppLink } from "@zesty-io/core/AppLink";

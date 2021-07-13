@@ -1,5 +1,3 @@
-import React from "react";
-
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 
 import styles from "./FieldName.less";

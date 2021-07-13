@@ -1,5 +1,3 @@
-import React from "react";
-
 import styles from "./Start.less";
 export function Start(props) {
   return (

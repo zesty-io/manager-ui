@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { memo, useEffect } from "react";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -12,7 +12,7 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import { fileOpen, resolvePathPart } from "../../../store/files";
 
 import styles from "./FileTabs.less";
-export const FileTabs = React.memo(
+export const FileTabs = memo(
   function FileTabs(props) {
     useEffect(() => {
       props.dispatch(fileOpen(props.openFileZUID, props.status, true));

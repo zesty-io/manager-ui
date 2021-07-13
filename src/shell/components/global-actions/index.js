@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { memo, useState } from "react";
 import useOnclickOutside from "react-cool-onclickoutside";
 import cx from "classnames";
 
@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBook,
   faHashtag,
-  faQuestion
+  faQuestion,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "@zesty-io/core/Url";
@@ -17,7 +17,7 @@ import GlobalHelpMenu from "shell/components/GlobalHelpMenu";
 import { ActivePreview } from "./components/ActivePreview";
 
 import styles from "./styles.less";
-export default React.memo(function GlobalActions(props) {
+export default memo(function GlobalActions(props) {
   const dispatch = useDispatch();
   const openNav = useSelector((state) => state.ui.openNav);
   const [openMenu, setOpenMenu] = useState(false);

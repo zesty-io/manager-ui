@@ -1,4 +1,4 @@
-import React from "react";
+import { PureComponent } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
 import moment from "moment";
@@ -34,7 +34,7 @@ export default connect(function (state) {
     }, {}),
   };
 })(
-  class Analytics extends React.PureComponent {
+  class Analytics extends PureComponent {
     state = {
       recentlyEditedItems: [],
       favoriteModels: [],

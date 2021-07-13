@@ -1,4 +1,4 @@
-import React from "react";
+import { Component } from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,7 +12,7 @@ import ImportTableRowDisabled from "./ImportTableRowDisabled";
 import { createRedirect } from "../../../store/redirects";
 import { cancelImports } from "../../../store/imports";
 
-export default class RedirectImportTable extends React.Component {
+export default class RedirectImportTable extends Component {
   constructor(props) {
     super(props);
 

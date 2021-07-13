@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Modal, ModalHeader, ModalContent } from "@zesty-io/core/Modal";
 import { WithLoader } from "@zesty-io/core/WithLoader";

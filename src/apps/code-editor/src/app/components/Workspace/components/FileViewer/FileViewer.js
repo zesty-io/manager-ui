@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Switch, Route } from "react-router";
 import { Redirect } from "react-router-dom";
@@ -39,7 +39,7 @@ export const FileViewer = connect((state, props) => {
     fields,
   };
 })(
-  React.memo(function FileViewer(props) {
+  memo(function FileViewer(props) {
     const { match, location } = props;
     const [loading, setLoading] = useState(false);
 

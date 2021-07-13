@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { memo, useState } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
 
@@ -26,7 +26,7 @@ export default connect((state) => {
     user: state.user,
   };
 })(
-  React.memo(function Login(props) {
+  memo(function Login(props) {
     const [loading, setLoading] = useState(false);
     const [twoFactor, setTwoFactor] = useState(false);
     const [error, setError] = useState("");

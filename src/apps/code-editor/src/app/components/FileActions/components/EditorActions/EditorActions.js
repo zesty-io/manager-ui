@@ -1,10 +1,10 @@
-import React from "react";
+import { memo } from "react";
 
 import { Save } from "./Save";
 import { Publish } from "./Publish";
 
 import styles from "./EditorActions.less";
-export const EditorActions = React.memo(function EditorActions(props) {
+export const EditorActions = memo(function EditorActions(props) {
   return (
     <div className={styles.EditorActions}>
       <Save

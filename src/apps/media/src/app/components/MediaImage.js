@@ -1,4 +1,4 @@
-import React from "react";
+import { forwardRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFile,
@@ -16,7 +16,7 @@ import {
 import { fileExtension } from "../FileUtils";
 import styles from "./MediaImage.less";
 
-export const MediaImage = React.forwardRef(function MediaImage(props, ref) {
+export const MediaImage = forwardRef(function MediaImage(props, ref) {
   if (props.file.url.indexOf("blob:") !== -1) {
     return <img ref={ref} src={encodeURI(props.file.url)} />;
   }

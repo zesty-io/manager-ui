@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import moment from "moment";
 
@@ -19,7 +19,7 @@ import { fetchItems } from "shell/store/content";
 import { fetchFields } from "shell/store/fields";
 
 import styles from "./FileDrawer.less";
-export const FileDrawer = React.memo(function FileDrawer(props) {
+export const FileDrawer = memo(function FileDrawer(props) {
   const dispatch = useDispatch();
 
   const [open, setOpen] = useState(false);
@@ -66,7 +66,7 @@ export const FileDrawer = React.memo(function FileDrawer(props) {
 
         if (fields && fields.payload) {
           let tempArray = [];
-          Object.keys(fields.payload).forEach(field =>
+          Object.keys(fields.payload).forEach((field) =>
             tempArray.push(fields.payload[field])
           );
           setFields(tempArray);

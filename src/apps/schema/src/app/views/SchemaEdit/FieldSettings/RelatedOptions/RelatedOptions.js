@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { connect } from "react-redux";
 
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";

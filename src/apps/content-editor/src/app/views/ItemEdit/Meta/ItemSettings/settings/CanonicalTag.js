@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { memo, useState } from "react";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { Input } from "@zesty-io/core/Input";
@@ -25,7 +25,7 @@ const CANONICAL_OPTS = [
 ];
 
 import styles from "./CanonicalTag.less";
-export const CanonicalTag = React.memo(function CanonicalTag(props) {
+export const CanonicalTag = memo(function CanonicalTag(props) {
   const [whitelist, setWhitelist] = useState(props.whitelist);
   const [custom, setCustom] = useState(props.custom);
   const [mode, setMode] = useState(

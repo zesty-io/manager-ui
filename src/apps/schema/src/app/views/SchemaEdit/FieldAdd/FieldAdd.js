@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { Fragment, useState } from "react";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
 
@@ -114,7 +114,7 @@ export function FieldAdd(props) {
         {/* <div className={styles.description}>{fieldType.description}</div> */}
 
         {field.datatype == 0 && (
-          <React.Fragment>
+          <Fragment>
             {props.firstField && (
               <div className={styles.AlignHeader}>
                 <FontAwesomeIcon icon={faHandPointUp} />
@@ -135,7 +135,7 @@ export function FieldAdd(props) {
                 &nbsp;Learn more about fields and their types.
               </Url>
             </p>
-          </React.Fragment>
+          </Fragment>
         )}
 
         {field.datatype != 0 && (

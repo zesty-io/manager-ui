@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { memo, useState } from "react";
 import { useSelector } from "react-redux";
 import cx from "classnames";
 
@@ -11,7 +11,7 @@ import { MediaEditGroupModal } from "./MediaEditGroupModal";
 
 import styles from "./MediaHeader.less";
 
-export const MediaHeader = React.memo(function MediaHeader(props) {
+export const MediaHeader = memo(function MediaHeader(props) {
   const userRole = useSelector((state) => state.userRole);
   const [createGroupModal, setCreateGroupModal] = useState(false);
   const [editGroupModal, setEditGroupModal] = useState(false);

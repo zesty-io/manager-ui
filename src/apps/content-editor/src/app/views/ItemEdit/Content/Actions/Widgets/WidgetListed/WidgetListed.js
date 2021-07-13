@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode } from "@fortawesome/free-solid-svg-icons";
@@ -9,7 +9,7 @@ import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { Infotip } from "@zesty-io/core/Infotip";
 
 import styles from "./WidgetListed.less";
-export const WidgetListed = React.memo(function WidgetListed(props) {
+export const WidgetListed = memo(function WidgetListed(props) {
   return (
     <Card className={styles.WidgetListed}>
       <CardHeader>

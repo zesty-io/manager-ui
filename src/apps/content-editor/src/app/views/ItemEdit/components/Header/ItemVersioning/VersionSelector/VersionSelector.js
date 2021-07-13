@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { memo, useState, useEffect, useCallback } from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 import cx from "classnames";
@@ -21,7 +21,7 @@ export default connect((state, props) => {
     latestVersionNum,
   };
 })(
-  React.memo(function VersionSelector(props) {
+  memo(function VersionSelector(props) {
     const [loading, setLoading] = useState(true);
     const [selectedVersionNum, setSelectedVersionNum] = useState(
       props.latestVersionNum

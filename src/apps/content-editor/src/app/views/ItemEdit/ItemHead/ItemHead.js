@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Head } from "shell/components/Head";
 import { Header } from "../components/Header";
 

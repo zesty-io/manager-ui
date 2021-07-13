@@ -1,4 +1,3 @@
-import React from "react";
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
 
 import styles from "./ImportTableRowDisabled.less";

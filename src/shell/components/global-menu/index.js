@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 import { connect } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -23,7 +23,7 @@ export default connect((state) => {
     products: state.products,
   };
 })(
-  React.memo(function GlobalMenu(props) {
+  memo(function GlobalMenu(props) {
     const location = useLocation();
     const slug = location.pathname.split("/")[1];
     const icons = {

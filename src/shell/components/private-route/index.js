@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { memo, useEffect } from "react";
 import { connect } from "react-redux";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -13,7 +13,7 @@ export default connect((state) => {
     auth: state.auth,
   };
 })(
-  React.memo(function PrivateRoute(props) {
+  memo(function PrivateRoute(props) {
     useEffect(() => {
       const checkSession = () => {
         props.dispatch(verify()).catch(() => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { memo, Fragment, useState, useEffect } from "react";
 import { connect } from "react-redux";
 import debounce from "lodash/debounce";
 
@@ -15,7 +15,7 @@ export const ItemParent = connect((state) => {
     nav: state.navContent.raw,
   };
 })(
-  React.memo(
+  memo(
     function ItemParent(props) {
       const [loading, setLoading] = useState(false);
       const [parent, setParent] = useState({
@@ -143,10 +143,10 @@ export const ItemParent = connect((state) => {
               <Option
                 value="0"
                 component={
-                  <React.Fragment>
+                  <Fragment>
                     <FontAwesomeIcon icon={faHome} />
                     &nbsp;/
-                  </React.Fragment>
+                  </Fragment>
                 }
               />
               {parents.map((item) => (

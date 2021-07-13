@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -44,7 +44,7 @@ export default connect((state) => {
     models: state.models,
   };
 })(
-  React.memo(function Breadcrumbs(props) {
+  memo(function Breadcrumbs(props) {
     const trail = useMemo(() => {
       const normalizedNav = props.navContent.raw.reduce((acc, item) => {
         acc[item.ZUID] = item;

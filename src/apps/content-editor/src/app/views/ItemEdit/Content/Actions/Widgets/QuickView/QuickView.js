@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { memo, Fragment } from "react";
 import { useFilePath } from "shell/hooks/useFilePath";
 import moment from "moment-timezone";
 import cx from "classnames";
@@ -20,7 +20,7 @@ import { useDomain } from "shell/hooks/use-domain";
 
 import SharedWidgetStyles from "../SharedWidget.less";
 import styles from "./QuickView.less";
-export const QuickView = React.memo(function QuickView(props) {
+export const QuickView = memo(function QuickView(props) {
   const isPublished = props.publishing && props.publishing.isPublished;
   const isScheduled = props.scheduling && props.scheduling.isScheduled;
 

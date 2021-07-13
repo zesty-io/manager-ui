@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 
@@ -16,7 +16,7 @@ export default connect((state) => {
     instanceZUID: state.instance.ZUID,
   };
 })(
-  React.memo(function WidgetPublishHistory(props) {
+  memo(function WidgetPublishHistory(props) {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {

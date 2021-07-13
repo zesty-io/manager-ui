@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { Children, cloneElement, useState, useEffect } from "react";
 import cx from "classnames";
 
 import styles from "./Dropzone.less";
@@ -19,13 +19,11 @@ export function Dropzone(props) {
    * to describe what happens when the children are sorted.
    */
 
-  const [children, setChildren] = useState(
-    React.Children.toArray(props.children)
-  );
+  const [children, setChildren] = useState(Children.toArray(props.children));
 
   // Update state when props change
   useEffect(
-    () => setChildren(React.Children.toArray(props.children)),
+    () => setChildren(Children.toArray(props.children)),
     [props.children]
   );
 
@@ -39,7 +37,7 @@ export function Dropzone(props) {
   const onDragEnd = (evt) => {
     // Reset
     setSourceIndex(null);
-    setChildren(React.Children.toArray(props.children));
+    setChildren(Children.toArray(props.children));
   };
 
   const onDragEnter = (evt) => {
@@ -75,7 +73,7 @@ export function Dropzone(props) {
       onDrop={onDrop}
     >
       {children.map((child, index) => {
-        return React.cloneElement(child, {
+        return cloneElement(child, {
           index,
           onOver,
           drag: setSourceIndex,

@@ -208,7 +208,10 @@ module.exports = async (env) => {
             options: {
               cacheCompression: false,
               cacheDirectory: true,
-              presets: ["@babel/preset-env", "@babel/preset-react"],
+              presets: [
+                "@babel/preset-env",
+                ["@babel/preset-react", { runtime: "automatic" }],
+              ],
               plugins: ["@babel/plugin-transform-runtime"],
             },
           },

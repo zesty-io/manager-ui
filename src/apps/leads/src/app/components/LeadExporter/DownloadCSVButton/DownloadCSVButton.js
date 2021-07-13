@@ -1,4 +1,4 @@
-import React from "react";
+import { Component } from "react";
 import csvDownload from "json-to-csv-export";
 import * as moment from "moment";
 import { connect } from "react-redux";
@@ -16,7 +16,7 @@ export default connect((state) => {
     leads: state.leads,
   };
 })(
-  class DownloadCSVButton extends React.Component {
+  class DownloadCSVButton extends Component {
     constructor(props) {
       super(props);
       this.props = props;

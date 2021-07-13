@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { Fragment, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -103,10 +103,10 @@ export default function Settings(props) {
 
 function Header(props) {
   return (
-    <React.Fragment>
+    <Fragment>
       <FontAwesomeIcon icon={faCog} />
       &nbsp;Model Settings
-    </React.Fragment>
+    </Fragment>
   );
 }
 

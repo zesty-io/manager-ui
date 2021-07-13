@@ -1,4 +1,3 @@
-import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faEye, faLink } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
