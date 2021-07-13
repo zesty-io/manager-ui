@@ -138,7 +138,6 @@ export function fetchSettings() {
             data.options = data.options.replaceAll(",", ";");
           }
         });
-
         dispatch({
           type: "FETCH_SETTINGS_SUCCESS",
           payload: res.data.sort(sortNav),

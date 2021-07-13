@@ -61,10 +61,6 @@ export const FileList = memo(function FileList(props) {
     <section className={styles.FileList}>
       <header className={styles.NavActions}>
         <div className={styles.Actions}>
-          <div className={cx(styles.Action, styles.FilterFiles)}>
-            <FilterFiles setShownFiles={setShownFiles} nav={props.navCode} />
-          </div>
-
           {/* <div className={cx(styles.Action, styles.PublishAll)}>
               <PublishAll dispatch={props.dispatch} branch={branch} />
             </div> */}
@@ -82,6 +78,9 @@ export const FileList = memo(function FileList(props) {
             className={cx(styles.Action, styles.CreateFile)}
             dispatch={props.dispatch}
           />
+          <div className={cx(styles.Action, styles.FilterFiles)}>
+            <FilterFiles setShownFiles={setShownFiles} nav={props.navCode} />
+          </div>
         </div>
       </header>
 

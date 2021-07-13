@@ -72,13 +72,6 @@ export function ContentNav(props) {
 
   return (
     <Fragment>
-      <ItemsFilter
-        setFilteredItems={setFilteredItems}
-        nav={props.nav}
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-      />
-
       <div className={styles.Actions}>
         <Select
           name="createItemFromModel"
@@ -113,14 +106,19 @@ export function ContentNav(props) {
           />
         </Button>
       </div>
-
+      <ItemsFilter
+        setFilteredItems={setFilteredItems}
+        nav={props.nav}
+        setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
+      />
       <div className={styles.NavWrap}>
         <div className={styles.NavTitle}>
           <h1>Content</h1>
 
           <Link to="/content">
             {" "}
-            <Button>
+            <Button size="small" kind="outlined">
               <FontAwesomeIcon icon={faHome} title="Dashboard" />
             </Button>
           </Link>
@@ -144,6 +142,7 @@ export function ContentNav(props) {
           <Nav
             id="MainNavigation"
             className={styles.Nav}
+            lightMode="true"
             tree={filteredItems}
             selected={selected}
             collapseNode={collapseNode}
@@ -153,6 +152,7 @@ export function ContentNav(props) {
         {!searchTerm && (
           <Nav
             id="MainNavigation"
+            lightMode="true"
             className={styles.Nav}
             tree={props.nav.nav}
             selected={selected}
@@ -164,6 +164,7 @@ export function ContentNav(props) {
         {!searchTerm && (
           <Nav
             id="HeadlessNavigation"
+            lightMode="true"
             className={styles.Nav}
             tree={props.nav.headless}
             selected={selected}
@@ -187,6 +188,7 @@ export function ContentNav(props) {
             id="HiddenNav"
             className={(styles.Nav, hiddenOpen ? "" : styles.HiddenNavClosed)}
             tree={props.nav.hidden}
+            lightMode="true"
             selected={selected}
             collapseNode={collapseNode}
             actions={actions}

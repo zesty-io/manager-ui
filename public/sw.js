@@ -30,33 +30,33 @@ const PRECACHE_URLS = [
   // "https://brand.zesty.io/zesty-io-logo-vertical.svg",
   // "https://brand.zesty.io/zesty-io-logo-vertical-dark.svg",
 
-  "https://fonts.googleapis.com/css?family=Montserrat:200,400,500,500i"
+  "https://fonts.googleapis.com/css?family=Mulish",
 ];
 
 // The install handler takes care of precaching the resources we always need.
-self.addEventListener("install", event => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(PRECACHE)
-      .then(cache => cache.addAll(PRECACHE_URLS))
+      .then((cache) => cache.addAll(PRECACHE_URLS))
       .then(self.skipWaiting())
   );
 });
 
 // The activate handler takes care of cleaning up old caches.
-self.addEventListener("activate", event => {
+self.addEventListener("activate", (event) => {
   const currentCaches = [PRECACHE, RUNTIME];
   event.waitUntil(
     caches
       .keys()
-      .then(cacheNames => {
+      .then((cacheNames) => {
         return cacheNames.filter(
-          cacheName => !currentCaches.includes(cacheName)
+          (cacheName) => !currentCaches.includes(cacheName)
         );
       })
-      .then(cachesToDelete => {
+      .then((cachesToDelete) => {
         return Promise.all(
-          cachesToDelete.map(cacheToDelete => {
+          cachesToDelete.map((cacheToDelete) => {
             return caches.delete(cacheToDelete);
           })
         );
@@ -68,38 +68,38 @@ self.addEventListener("activate", event => {
 // The fetch handler serves responses for same-origin resources from a cache.
 // If no response is found, it populates the runtime cache with the response
 // from the network before returning it to the page.
-self.addEventListener("fetch", event => {
+self.addEventListener("fetch", (event) => {
   // Check precache first
   if (PRECACHE_URLS.includes(event.request.url)) {
     return caches
       .open(PRECACHE)
-      .then(cache =>
-        cache.match(event.request).then(cachedResponse => cachedResponse)
+      .then((cache) =>
+        cache.match(event.request).then((cachedResponse) => cachedResponse)
       );
 
     // Skip cross-origin requests, like those for Google Analytics.
   } else if (event.request.url.startsWith(self.location.origin)) {
     event.respondWith(
-      caches.match(event.request).then(cachedResponse => {
+      caches.match(event.request).then((cachedResponse) => {
         if (cachedResponse) {
           return cachedResponse;
         }
 
         return caches
           .open(RUNTIME)
-          .then(cache => {
-            return fetch(event.request).then(response => {
+          .then((cache) => {
+            return fetch(event.request).then((response) => {
               // Put a copy of the response in the runtime cache.
               return cache.put(event.request, response.clone()).then(() => {
                 return response;
               });
             });
           })
-          .catch(err => {
+          .catch((err) => {
             console.log("Fetch failed; returning offline page instead.", err);
             return caches
               .open(PRECACHE)
-              .then(cache => cache.match(OFFLINE_URL));
+              .then((cache) => cache.match(OFFLINE_URL));
           });
       })
     );

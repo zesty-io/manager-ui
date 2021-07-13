@@ -96,7 +96,7 @@ export function ChartDashboard(props) {
               },
 
               labels: {
-                fontFamily: " Montserrat",
+                fontFamily: "Mulish",
               },
             }}
           />
