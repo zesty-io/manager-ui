@@ -35,7 +35,7 @@
 
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Montserrat:200,400,500,500i"
+      href="https://fonts.googleapis.com/css?family=Mulish"
     />
 
     <style type="text/css">
@@ -47,7 +47,7 @@
       body {
         background-color: #f2f7fc;
         color: #5b667d;
-        font-family: "Montserrat", "Gibson Light", Arial, sans-serif;
+        font-family: "Mulish", Arial, sans-serif;
         font-size: 16px;
         height: 100%;
         width: 100%;
@@ -67,7 +67,7 @@
         align-items: center;
       }
       #center h1 {
-        font-family: "Montserrat", "Gibson Light", Arial, sans-serif;
+        font-family: "Mulish", Arial, sans-serif;
         font-size: 2em;
         font-weight: 300;
         text-shadow: 1px 1px 1px #d6e5ff;
@@ -132,7 +132,7 @@
 
         navigator.serviceWorker
           .getRegistrations()
-          .then(function(registrations) {
+          .then(function (registrations) {
             for (let registration of registrations) {
               registration.unregister();
             }
@@ -151,7 +151,7 @@
             alt="Displaying Zesty.io logo while application loads"
             height="200px"
             width="297px"
-            style="margin-bottom: 16px;"
+            style="margin-bottom: 16px"
           />
           <div class="loader">
             <span class="bar"></span>
@@ -164,7 +164,7 @@
       </div>
     </main>
     <!-- High z-index to beat the TinyMCE toolbar which has 1300-->
-    <div id="modalMount" style="position: relative; z-index: 1301;"></div>
+    <div id="modalMount" style="position: relative; z-index: 1301"></div>
     <%= htmlWebpackPlugin.tags.bodyTags %>
   </body>
 </html>
