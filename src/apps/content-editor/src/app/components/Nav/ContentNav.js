@@ -35,7 +35,7 @@ export function ContentNav(props) {
   const [searchTerm, setSearchTerm] = useState("");
 
   const [filteredItems, setFilteredItems] = useState(
-    props.nav.nav.sort(byLabel)
+    props.nav.nav.sort(bySort)
   );
 
   useEffect(() => {
@@ -160,7 +160,9 @@ export function ContentNav(props) {
             actions={actions}
           />
         )}
-        <h1 className={styles.NavTitle}>Headless Content Models</h1>
+        {!searchTerm && (
+          <h1 className={styles.NavTitle}>Headless Content Models</h1>
+        )}
         {!searchTerm && (
           <Nav
             id="HeadlessNavigation"
@@ -213,4 +215,10 @@ const byLabel = (a, b) => {
 
   // names must be equal
   return 0;
+};
+
+const bySort = (a, b) => {
+  let aSort = a.sort == null ? 1000 : a.sort;
+  let bSort = b.sort == null ? 1000 : b.sort;
+  return aSort - bSort;
 };
