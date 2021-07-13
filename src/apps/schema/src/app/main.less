@@ -1,3 +1,5 @@
+@import "~@zesty-io/core/colors.less";
+
 .SchemaBuilder {
   display: grid;
   grid-template-columns: minmax(200px, 20vw) 1fr;
@@ -5,7 +7,7 @@
   overflow: hidden;
 
   .SchemaMain {
-    box-shadow: 0 0 15px #0b0d13;
+    box-shadow: 0 0 15px fade(@zesty-dark-blue, 50%);
     height: calc(100vh - 54px);
     overflow-y: scroll;
     z-index: 1;
