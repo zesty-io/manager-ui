@@ -118,7 +118,7 @@ export function ContentNav(props) {
 
           <Link to="/content">
             {" "}
-            <Button>
+            <Button size="small" kind="outlined">
               <FontAwesomeIcon icon={faHome} title="Dashboard" />
             </Button>
           </Link>
@@ -188,6 +188,7 @@ export function ContentNav(props) {
             id="HiddenNav"
             className={(styles.Nav, hiddenOpen ? "" : styles.HiddenNavClosed)}
             tree={props.nav.hidden}
+            lightMode="true"
             selected={selected}
             collapseNode={collapseNode}
             actions={actions}
