@@ -11,7 +11,7 @@ const ItemsFilter = (props) => {
       onChange={(term) => {
         term = term.trim().toLowerCase();
         props.setSearchTerm(term);
-        if (term) {
+        if (term != "") {
           props.setFilteredItems(
             props.nav.raw.filter((f) => {
               return (

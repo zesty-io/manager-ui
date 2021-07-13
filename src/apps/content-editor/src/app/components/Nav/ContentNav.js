@@ -35,11 +35,11 @@ export function ContentNav(props) {
   const [searchTerm, setSearchTerm] = useState("");
 
   const [filteredItems, setFilteredItems] = useState(
-    props.nav.nav.sort(byLabel)
+    props.nav.nav.sort(bySort)
   );
 
   useEffect(() => {
-    setFilteredItems(props.nav.nav.sort(byLabel));
+    setFilteredItems(props.nav.nav.sort(bySort));
   }, [props.nav]);
 
   useEffect(() => {
@@ -88,9 +88,7 @@ export function ContentNav(props) {
                 props?.models[modelZUID]?.name.toLowerCase()
               );
             })
-            .sort((a, b) => {
-              return props.models[a].label >= props.models[b].label ? 1 : -1;
-            })
+
             .map((modelZUID) => (
               <Option
                 key={modelZUID}
@@ -213,4 +211,10 @@ const byLabel = (a, b) => {
 
   // names must be equal
   return 0;
+};
+
+const bySort = (a, b) => {
+  let aSort = a.sort == null ? 1000 : a.sort;
+  let bSort = b.sort == null ? 1000 : b.sort;
+  return aSort - bSort;
 };
