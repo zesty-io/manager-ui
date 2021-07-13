@@ -16,7 +16,7 @@ export class DataSettings extends React.Component {
       type: "SET_ITEM_WEB",
       itemZUID: this.props.item.meta.ZUID,
       key: name,
-      value: value
+      value: value,
     });
   };
 

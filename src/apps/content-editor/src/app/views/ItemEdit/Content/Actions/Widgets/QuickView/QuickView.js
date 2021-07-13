@@ -1,4 +1,5 @@
 import React, { Fragment } from "react";
+import { useFilePath } from "shell/hooks/useFilePath";
 import moment from "moment-timezone";
 import cx from "classnames";
 
@@ -7,7 +8,7 @@ import {
   faCodeBranch,
   faBolt,
   faDatabase,
-  faCode
+  faCode,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
@@ -24,6 +25,8 @@ export const QuickView = React.memo(function QuickView(props) {
   const isScheduled = props.scheduling && props.scheduling.isScheduled;
 
   const codeAccess = usePermission("CODE");
+
+  const codePath = useFilePath(props.modelZUID);
 
   return (
     <Fragment>
@@ -63,7 +66,7 @@ export const QuickView = React.memo(function QuickView(props) {
               <strong>Language:</strong>&nbsp;
               <span>
                 {Object.keys(props.siblings || {}).find(
-                  lang => props.siblings[lang] === props.itemZUID
+                  (lang) => props.siblings[lang] === props.itemZUID
                 )}
               </span>
             </li>
@@ -101,7 +104,7 @@ export const QuickView = React.memo(function QuickView(props) {
                 <FontAwesomeIcon icon={faDatabase} />
                 &nbsp;Edit Schema
               </AppLink>
-              <AppLink to="/code/">
+              <AppLink to={codePath}>
                 <FontAwesomeIcon icon={faCode} />
                 &nbsp;Edit Code
               </AppLink>

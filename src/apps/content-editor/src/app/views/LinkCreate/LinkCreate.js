@@ -12,7 +12,7 @@ import { Button } from "@zesty-io/core/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExternalLinkSquareAlt,
-  faLink
+  faLink,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { searchItems } from "shell/store/content";
@@ -23,14 +23,14 @@ import styles from "./LinkCreate.less";
 export function LinkCreate() {
   const dispatch = useDispatch();
   const history = useHistory();
-  const content = useSelector(state => state.content);
+  const content = useSelector((state) => state.content);
   const internalLinkOptions = useMemo(() => {
     return Object.keys(content)
-      .filter(key => content[key].web.path)
-      .map(key => {
+      .filter((key) => content[key].web.path)
+      .map((key) => {
         return {
           value: content[key].meta.ZUID,
-          text: content[key].web.path
+          text: content[key].web.path,
         };
       });
   }, [content]);
@@ -42,13 +42,13 @@ export function LinkCreate() {
     metaTitle: "",
     target: "",
     relNoFollow: false,
-    targetBlank: false
+    targetBlank: false,
   });
 
   function saveLink() {
     setState({
       ...state,
-      saving: true
+      saving: true,
     });
 
     const source = [];
@@ -68,10 +68,10 @@ export function LinkCreate() {
         label: state.label,
         metaTitle: state.metaTitle,
         source: source.join(";"),
-        target: state.target
-      }
+        target: state.target,
+      },
     })
-      .then(res => {
+      .then((res) => {
         setState({ ...state, saving: false });
         if (res.error) {
           let message = "";
@@ -89,7 +89,7 @@ export function LinkCreate() {
           dispatch(
             notify({
               message: `Failure creating link: ${message}`,
-              kind: "error"
+              kind: "error",
             })
           );
         } else {
@@ -98,14 +98,14 @@ export function LinkCreate() {
           dispatch(
             notify({
               message: "Successfully created link",
-              kind: "save"
+              kind: "save",
             })
           );
 
           history.push(`/content/link/${res.data.ZUID}`);
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         setState({ ...state, saving: false });
       });
@@ -114,7 +114,7 @@ export function LinkCreate() {
   function onChange(value, name) {
     setState({
       ...state,
-      [name]: value
+      [name]: value,
     });
   }
 
@@ -159,7 +159,7 @@ export function LinkCreate() {
             value={state.parentZUID}
             options={internalLinkOptions}
             onChange={onChange}
-            onSearch={term => dispatch(searchItems(term))}
+            onSearch={(term) => dispatch(searchItems(term))}
           />
 
           {state.type === "internal" ? (
@@ -170,7 +170,7 @@ export function LinkCreate() {
               value={state.target}
               options={internalLinkOptions}
               onChange={onChange}
-              onSearch={term => dispatch(searchItems(term))}
+              onSearch={(term) => dispatch(searchItems(term))}
             />
           ) : (
             <FieldTypeUrl
@@ -188,11 +188,11 @@ export function LinkCreate() {
             label="Link title"
             name="metaTitle"
             value={state.metaTitle}
-            onChange={value => {
+            onChange={(value) => {
               setState({
                 ...state,
                 label: value,
-                metaTitle: value
+                metaTitle: value,
               });
             }}
           />
@@ -202,7 +202,7 @@ export function LinkCreate() {
               type="checkbox"
               name="targetBlank"
               checked={state.targetBlank}
-              onClick={evt => {
+              onClick={(evt) => {
                 onChange(evt.target.checked, "targetBlank");
               }}
             />
@@ -213,7 +213,7 @@ export function LinkCreate() {
               type="checkbox"
               name="relNoFollow"
               checked={state.relNoFollow}
-              onClick={evt => {
+              onClick={(evt) => {
                 onChange(evt.target.checked, "relNoFollow");
               }}
             />

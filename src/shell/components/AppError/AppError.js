@@ -6,7 +6,7 @@ import { faBug } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./AppError.less";
 
-export default connect(state => {
+export default connect((state) => {
   return { user: state.user, platform: state.platform };
 })(function AppError(props) {
   return (

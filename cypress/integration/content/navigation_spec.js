@@ -6,9 +6,7 @@ describe("Navigation through content editor", () => {
   });
 
   it("Opens homepage item", () => {
-    cy.get("#MainNavigation")
-      .contains("Page")
-      .click();
+    cy.get("#MainNavigation").contains("Page").click();
     cy.contains("Page Title").should("exist");
     cy.contains("Page Content").should("exist");
   });

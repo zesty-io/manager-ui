@@ -17,7 +17,7 @@ export const LockedItem = ({
   userEmail,
   itemName,
   handleUnlock,
-  goBack
+  goBack,
 }) => {
   return (
     <div className={styles.Wrapper}>

@@ -13,9 +13,15 @@ export function products(state = ["content", "media"], action) {
 export function fetchProducts() {
   return (dispatch, getState) => {
     let data;
-    switch (getState().userRole.name) {
-      case "Owner":
-      case "Admin":
+    switch (getState().userRole.systemRoleZUID) {
+      // owner: 31-71cfc74-0wn3r
+      // admin: 31-71cfc74-4dm13
+      // developer: 31-71cfc74-d3v3l0p3r
+      // publisher: 31-71cfc74-p0bl1shr
+      // contributor: 31-71cfc74-c0ntr1b0t0r
+      // seo: 31-71cfc74-s30
+      case "31-71cfc74-0wn3r":
+      case "31-71cfc74-4dm13":
         data = [
           "content",
           "media",
@@ -25,10 +31,10 @@ export function fetchProducts() {
           "analytics",
           "seo",
           "audit-trail",
-          "settings"
+          "settings",
         ];
         break;
-      case "Developer":
+      case "31-71cfc74-d3v3l0p3r":
         data = [
           "content",
           "media",
@@ -37,17 +43,20 @@ export function fetchProducts() {
           "leads",
           "analytics",
           "seo",
-          "settings"
+          "settings",
         ];
         break;
-      case "SEO":
+      case "31-71cfc74-s30":
         data = ["content", "media", "leads", "analytics", "seo"];
         break;
-      case "Publisher":
+      case "31-71cfc74-p0bl1shr":
         data = ["content", "media", "leads", "analytics"];
         break;
-      case "Contributor":
+      case "31-71cfc74-c0ntr1b0t0r":
         data = ["content", "media"];
+        break;
+      case "31-71cfc74-m3d14":
+        data = ["media"];
         break;
       default:
         data = [];
@@ -63,15 +72,15 @@ export function fetchProducts() {
         "analytics",
         "seo",
         "audit-trail",
-        "settings"
+        "settings",
       ];
     }
 
     dispatch({
       type: "FETCH_PRODUCTS_SUCCESS",
       payload: {
-        data
-      }
+        data,
+      },
     });
 
     // mimic promise api until we make api request

@@ -20,11 +20,11 @@ function filterLeadsData(leads, filter) {
 
 import styles from "./LeadsTable.less";
 
-export default connect(state => {
+export default connect((state) => {
   const leads = filterLeadsData(state.leads, state.filter);
   return {
     filter: state.filter,
-    leads
+    leads,
   };
 })(
   class LeadsTable extends React.Component {
@@ -37,7 +37,7 @@ export default connect(state => {
       this.state = {
         currentLead: null, // The current lead being displayed in the modal
         loading: false, // Whether a request is being processed
-        modalIsOpen: false // Whether the modal is open (TRUE) or not (FALSE)
+        modalIsOpen: false, // Whether the modal is open (TRUE) or not (FALSE)
       };
     }
 
@@ -52,7 +52,7 @@ export default connect(state => {
       this.history.push(`#!`);
       this.setState({
         currentLead: null,
-        modalIsOpen: false
+        modalIsOpen: false,
       });
     };
 
@@ -67,7 +67,7 @@ export default connect(state => {
         // Remove any slashes from the query string
         currentLeadZuid = currentLeadZuid.replace(/\//, "");
         const currentLead = this.props.leads.find(
-          lead => lead.zuid === currentLeadZuid
+          (lead) => lead.zuid === currentLeadZuid
         );
         if (currentLead) {
           this.openModalAndUpdateRoute(currentLead);
@@ -80,7 +80,7 @@ export default connect(state => {
      *
      * Sets the State's Loading value to TRUE
      */
-    deleteLead = leadZuid => {
+    deleteLead = (leadZuid) => {
       this.setState({ loading: true });
       this.props.dispatch(deleteLead(leadZuid));
     };
@@ -102,11 +102,11 @@ export default connect(state => {
     /**
      * Opens a modal with the selected lead and updates the route
      */
-    openModalAndUpdateRoute = lead => {
+    openModalAndUpdateRoute = (lead) => {
       this.history.push(`#!?lead=${lead.zuid}`);
       this.setState({
         currentLead: lead,
-        modalIsOpen: true
+        modalIsOpen: true,
       });
     };
 
@@ -186,7 +186,7 @@ export default connect(state => {
               </tr>
             </thead>
             <tbody>
-              {this.props.leads.map(data => {
+              {this.props.leads.map((data) => {
                 return (
                   <tr
                     key={`${data.zuid}-${data.dateCreated}`}
@@ -215,7 +215,7 @@ export default connect(state => {
                   </li>
                   {this.state.currentLead &&
                     this.state.currentLead.formData &&
-                    Object.keys(this.state.currentLead.formData).map(key => {
+                    Object.keys(this.state.currentLead.formData).map((key) => {
                       return (
                         <li key={key}>
                           <span className={styles.Key}>{key}:</span>
@@ -233,7 +233,7 @@ export default connect(state => {
             <ModalFooter>
               {this.state.currentLead &&
               this.props.leads.find(
-                lead => lead.zuid === this.state.currentLead.zuid
+                (lead) => lead.zuid === this.state.currentLead.zuid
               ) ? (
                 <Button
                   kind="warn"

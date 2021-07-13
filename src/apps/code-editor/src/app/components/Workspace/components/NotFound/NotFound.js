@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 // import { Button } from "@zesty-io/core/Button";
 
 import styles from "./NotFound.less";
-export default connect(state => state)(function NotFound(props) {
+export default connect((state) => state)(function NotFound(props) {
   return (
     <div className={styles.NotFound}>
       <h1 className={styles.display}>View Not Found</h1>

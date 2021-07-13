@@ -16,14 +16,14 @@ const mediaSlice = createSlice({
       // nav root
       0: { children: [] },
       // hidden nav root
-      1: { children: [] }
+      1: { children: [] },
     },
     files: [],
     search: {
       term: null,
       files: [],
-      loading: false
-    }
+      loading: false,
+    },
   },
   reducers: {
     // Bins
@@ -32,13 +32,13 @@ const mediaSlice = createSlice({
         // nav root
         0: { children: [] },
         // hidden nav root
-        1: { children: [] }
+        1: { children: [] },
       };
       const closed = getClosedGroups();
       const hidden = getHiddenGroups();
 
       if (Array.isArray(action.payload)) {
-        action.payload.forEach(bin => {
+        action.payload.forEach((bin) => {
           bin.closed = closed.includes(bin.id);
           bin.children = [];
           bin.path = `/media/${bin.id}`;
@@ -98,7 +98,7 @@ const mediaSlice = createSlice({
       localStorage.setItem(
         "zesty:navMedia:closed",
         JSON.stringify(
-          Object.keys(state.groups).filter(id => state.groups[id].closed)
+          Object.keys(state.groups).filter((id) => state.groups[id].closed)
         )
       );
     },
@@ -113,7 +113,7 @@ const mediaSlice = createSlice({
       const group = action.payload;
       delete state.groups[group.id];
       const index = state.groups[group.group_id].children.findIndex(
-        val => val === group.id
+        (val) => val === group.id
       );
       if (index !== -1) {
         state.groups[group.group_id].children.splice(index, 1);
@@ -127,7 +127,7 @@ const mediaSlice = createSlice({
         localStorage.setItem(
           "zesty:navMedia:closed",
           JSON.stringify(
-            Object.keys(state.groups).filter(id => state.groups[id].closed)
+            Object.keys(state.groups).filter((id) => state.groups[id].closed)
           )
         );
       }
@@ -138,7 +138,7 @@ const mediaSlice = createSlice({
         group.hidden = !group.hidden;
         if (!group.hidden) {
           const index = state.groups[1].children.findIndex(
-            val => val === group.id
+            (val) => val === group.id
           );
           if (index !== -1) {
             state.groups[1].children.splice(index, 1);
@@ -149,7 +149,7 @@ const mediaSlice = createSlice({
           }
         } else {
           const index = state.groups[0].children.findIndex(
-            val => val === group.id
+            (val) => val === group.id
           );
           if (index !== -1) {
             state.groups[0].children.splice(index, 1);
@@ -160,7 +160,7 @@ const mediaSlice = createSlice({
         localStorage.setItem(
           "zesty:navMedia:hidden",
           JSON.stringify(
-            Object.keys(state.groups).filter(id => state.groups[id].hidden)
+            Object.keys(state.groups).filter((id) => state.groups[id].hidden)
           )
         );
       }
@@ -206,15 +206,15 @@ const mediaSlice = createSlice({
       const files = action.payload.files;
       const stateFiles = current(state.files);
       // sort newest files first
-      files.forEach(resultFile => {
-        if (stateFiles.findIndex(file => file.id === resultFile.id) === -1) {
+      files.forEach((resultFile) => {
+        if (stateFiles.findIndex((file) => file.id === resultFile.id) === -1) {
           state.files.push(resultFile);
         }
       });
     },
     deleteFileSuccess(state, action) {
       const fileIndex = state.files.findIndex(
-        file => file.id === action.payload.id
+        (file) => file.id === action.payload.id
       );
       if (fileIndex !== -1) {
         state.files.splice(fileIndex, 1);
@@ -226,7 +226,7 @@ const mediaSlice = createSlice({
     },
     fileUploadProgress(state, action) {
       const uploadingFile = state.files.find(
-        file => file.uploadID === action.payload.uploadID
+        (file) => file.uploadID === action.payload.uploadID
       );
       if (uploadingFile) {
         uploadingFile.progress = action.payload.progress;
@@ -234,7 +234,7 @@ const mediaSlice = createSlice({
     },
     fileUploadSuccess(state, action) {
       const uploadingFile = state.files.find(
-        file => file.uploadID === action.payload.uploadID
+        (file) => file.uploadID === action.payload.uploadID
       );
       if (uploadingFile) {
         uploadingFile.loading = false;
@@ -246,14 +246,14 @@ const mediaSlice = createSlice({
     },
     fileUploadError(state, action) {
       const fileIndex = state.files.findIndex(
-        file => file.uploadID === action.payload.uploadID
+        (file) => file.uploadID === action.payload.uploadID
       );
       if (fileIndex !== -1) {
         state.files.splice(fileIndex, 1);
       }
     },
     editFileSuccess(state, action) {
-      const file = state.files.find(file => file.id === action.payload.id);
+      const file = state.files.find((file) => file.id === action.payload.id);
       if (file) {
         file.filename = action.payload.filename;
         file.title = action.payload.title;
@@ -276,8 +276,8 @@ const mediaSlice = createSlice({
     clearSearch(state) {
       state.search.term = "";
       state.search.files = [];
-    }
-  }
+    },
+  },
 });
 
 function getClosedGroups() {
@@ -313,15 +313,15 @@ export const {
   searchFilesStart,
   searchFilesError,
   searchFilesSuccess,
-  clearSearch
+  clearSearch,
 } = mediaSlice.actions;
 
 function fetchBins(instanceID) {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/site/${instanceID}/bins`,
-      handler: res => {
+      handler: (res) => {
         if (res.status === 200) {
           return res.data;
         } else {
@@ -331,27 +331,27 @@ function fetchBins(instanceID) {
           throw res;
         }
       },
-      error: res => {
+      error: (res) => {
         dispatch(
           notify({ message: "Failed loading media bins", kind: "error" })
         );
         throw res;
-      }
+      },
     });
   };
 }
 
 function fetchEcoBins(ecoID) {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/eco/${ecoID}/bins`,
-      handler: res => {
+      handler: (res) => {
         if (res.status === 200) {
           return res.data;
         }
         //non-200 is not fatal
-      }
+      },
     });
   };
 }
@@ -372,11 +372,11 @@ export function fetchAllBins() {
 }
 
 export function editBin(binName, bin) {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/bin/${bin.id}`, {
       method: "PATCH",
-      body: { ...bin, name: binName }
-    }).then(res => {
+      body: { ...bin, name: binName },
+    }).then((res) => {
       if (res.status === 200) {
         dispatch(editBinSuccess(res.data[0]));
       } else {
@@ -388,11 +388,11 @@ export function editBin(binName, bin) {
 }
 
 function fetchGroups(binZUID) {
-  return dispatch => {
+  return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/bin/${binZUID}/groups`,
-      handler: res => {
+      handler: (res) => {
         if (res.status === 200) {
           return res.data;
         } else {
@@ -401,7 +401,7 @@ function fetchGroups(binZUID) {
           );
           throw res;
         }
-      }
+      },
     });
   };
 }
@@ -410,8 +410,8 @@ export function fetchAllGroups() {
   return (dispatch, getState) => {
     const groups = getState().media.groups;
     const binIDs = groups[0].children.concat(groups[1].children);
-    return Promise.all(binIDs.map(id => dispatch(fetchGroups(id)))).then(
-      groups => {
+    return Promise.all(binIDs.map((id) => dispatch(fetchGroups(id)))).then(
+      (groups) => {
         return dispatch(fetchGroupsSuccess(groups.flat()));
       }
     );
@@ -419,14 +419,14 @@ export function fetchAllGroups() {
 }
 
 export function createGroup(groupName, bin, group) {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/group`, {
       body: {
         bin_id: bin.id,
         group_id: group.id,
-        name: groupName
-      }
-    }).then(res => {
+        name: groupName,
+      },
+    }).then((res) => {
       if (res.status === 201) {
         dispatch(createGroupSuccess(res.data[0]));
         return res;
@@ -444,12 +444,12 @@ export function editGroup(groupID, newGroupProperties) {
     if (group) {
       const body = {
         ...pick(group, ["id", "group_id", "name"]),
-        ...newGroupProperties
+        ...newGroupProperties,
       };
       return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/group/${group.id}`, {
         method: "PATCH",
-        body
-      }).then(res => {
+        body,
+      }).then((res) => {
         if (res.status === 200) {
           dispatch(editGroupSuccess(res.data[0]));
         } else {
@@ -462,10 +462,10 @@ export function editGroup(groupID, newGroupProperties) {
 }
 
 export function deleteGroup(group) {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/group/${group.id}`, {
-      method: "DELETE"
-    }).then(res => {
+      method: "DELETE",
+    }).then((res) => {
       if (res.status === 200) {
         dispatch(deleteGroupSuccess(group));
         dispatch(
@@ -480,12 +480,12 @@ export function deleteGroup(group) {
 }
 
 export function fetchBinFiles(binZUID) {
-  return dispatch => {
+  return (dispatch) => {
     dispatch(fetchFilesStart({ group: binZUID }));
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/bin/${binZUID}/files`,
-      handler: res => {
+      handler: (res) => {
         if (res.status === 200) {
           dispatch(fetchFilesSuccess({ group: binZUID, files: res.data }));
         } else {
@@ -494,18 +494,18 @@ export function fetchBinFiles(binZUID) {
           );
           throw res;
         }
-      }
+      },
     });
   };
 }
 
 export function fetchGroupFiles(groupZUID) {
-  return dispatch => {
+  return (dispatch) => {
     dispatch(fetchFilesStart({ group: groupZUID }));
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.SERVICE_MEDIA_MANAGER}/group/${groupZUID}`,
-      handler: res => {
+      handler: (res) => {
         if (res.status === 200) {
           dispatch(
             fetchFilesSuccess({ group: groupZUID, files: res.data[0].files })
@@ -516,7 +516,7 @@ export function fetchGroupFiles(groupZUID) {
           );
           throw res;
         }
-      }
+      },
     });
   };
 }
@@ -547,12 +547,12 @@ export function uploadFile(file, bin) {
       `${CONFIG.SERVICE_MEDIA_STORAGE}/upload/${bin.storage_driver}/${bin.storage_name}`
     );
 
-    req.upload.addEventListener("progress", function(e) {
+    req.upload.addEventListener("progress", function (e) {
       file.progress = (e.loaded / e.total) * 100;
       dispatch(fileUploadProgress(file));
     });
 
-    req.addEventListener("load", function(e) {
+    req.addEventListener("load", function (e) {
       if (req.status === 201) {
         const response = JSON.parse(req.response);
         const uploadedFile = response.data[0];
@@ -571,10 +571,10 @@ export function uploadFile(file, bin) {
 }
 
 export function deleteFile(file) {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${file.id}`, {
-      method: "DELETE"
-    }).then(res => {
+      method: "DELETE",
+    }).then((res) => {
       if (res.status === 200) {
         dispatch(deleteFileSuccess(file));
         dispatch(
@@ -590,15 +590,15 @@ export function deleteFile(file) {
 
 export function editFile(fileID, fileProperties) {
   return (dispatch, getState) => {
-    const file = getState().media.files.find(file => file.id === fileID);
+    const file = getState().media.files.find((file) => file.id === fileID);
     const body = {
       ...pick(file, ["id", "group_id", "filename"]),
-      ...fileProperties
+      ...fileProperties,
     };
     return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${file.id}`, {
       method: "PATCH",
-      body
-    }).then(res => {
+      body,
+    }).then((res) => {
       if (res.status === 200) {
         dispatch(editFileSuccess(res.data[0]));
         // show notification if user is editing file fields
@@ -606,7 +606,7 @@ export function editFile(fileID, fileProperties) {
           dispatch(
             notify({
               message: `Edited file ${fileProperties.filename}`,
-              kind: "success"
+              kind: "success",
             })
           );
         }
@@ -621,8 +621,8 @@ export function editFile(fileID, fileProperties) {
 export function searchFiles(term) {
   return (dispatch, getState) => {
     const groups = getState().media.groups;
-    const visibleBins = groups[0].children.filter(id => id.startsWith("1-"));
-    const hiddenBins = groups[1].children.filter(id => id.startsWith("1-"));
+    const visibleBins = groups[0].children.filter((id) => id.startsWith("1-"));
+    const hiddenBins = groups[1].children.filter((id) => id.startsWith("1-"));
     if (term.startsWith("https://") || term.startsWith("http://")) {
       const termSplit = term.split("/");
       term = termSplit[termSplit.length - 1];
@@ -637,7 +637,7 @@ export function searchFiles(term) {
       uri: `${
         CONFIG.SERVICE_MEDIA_MANAGER
       }/search/files?${queryParams.toString()}`,
-      handler: res => {
+      handler: (res) => {
         if (res.status === 200) {
           dispatch(searchFilesSuccess({ term, files: res.data }));
         } else {
@@ -645,7 +645,7 @@ export function searchFiles(term) {
           dispatch(searchFilesError());
           throw res;
         }
-      }
+      },
     });
   };
 }

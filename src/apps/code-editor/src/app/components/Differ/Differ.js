@@ -48,7 +48,7 @@ export const Differ = React.memo(
               value={versionCodeRight}
               language={resolveMonacoLang(props.fileName)}
               options={{
-                selectOnLineNumbers: true
+                selectOnLineNumbers: true,
               }}
             />
           </div>

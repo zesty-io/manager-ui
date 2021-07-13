@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
-  faChevronRight
+  faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import styles from "./GlobalSidebar.less";
@@ -12,10 +12,10 @@ import Favicon from "shell/components/favicon";
 import GlobalMenu from "shell/components/global-menu";
 import GlobalActions from "shell/components/global-actions";
 
-export default connect(state => {
+export default connect((state) => {
   return {
     ui: state.ui,
-    instance: state.instance
+    instance: state.instance,
   };
 })(function GlobalSidebar(props) {
   return (

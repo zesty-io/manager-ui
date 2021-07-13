@@ -18,10 +18,10 @@ import { request } from "utility/request";
 
 import styles from "./Robots.less";
 
-export default connect(state => {
+export default connect((state) => {
   return {
     domain: state.instance.domain,
-    platform: state.platform
+    platform: state.platform,
   };
 })(function Robots(props) {
   const domain = useDomain();
@@ -34,8 +34,7 @@ export default connect(state => {
     key: "robots_on",
     keyFriendly: "Search Engine Crawlable?",
     parsleyAccess: false,
-    tips:
-      "Search engines will have permission to index each page of your site allowing for greater visibility"
+    tips: "Search engines will have permission to index each page of your site allowing for greater visibility",
   });
   const [robotText, setRobotText] = useState({
     admin: false,
@@ -43,7 +42,7 @@ export default connect(state => {
     dataType: "textarea",
     key: "robots_text",
     keyFriendly: "Custom Robots.txt Content",
-    parsleyAccess: false
+    parsleyAccess: false,
   });
 
   const robotURL = `${domain}/robots.txt`;
@@ -54,22 +53,22 @@ export default connect(state => {
     .substring(2, 15)}`;
 
   useEffect(() => {
-    request(`${CONFIG.API_INSTANCE}/env/settings`).then(res => {
-      const robots_on = res.data.find(setting => setting.key === "robots_on");
+    request(`${CONFIG.API_INSTANCE}/env/settings`).then((res) => {
+      const robots_on = res.data.find((setting) => setting.key === "robots_on");
       const robots_text = res.data.find(
-        setting => setting.key === "robots_text"
+        (setting) => setting.key === "robots_text"
       );
 
       // Merge current local state with incoming remote state
-      setRobotText(prevRobotText => ({
+      setRobotText((prevRobotText) => ({
         ...prevRobotText,
-        ...robots_text
+        ...robots_text,
       }));
-      setRobotOn(prevRobotOn => ({
+      setRobotOn((prevRobotOn) => ({
         ...prevRobotOn,
         ...robots_on,
         // We require this to be a number to properly convert to a boolean for the FeildTypeBinary compnent
-        value: Number(robots_on.value)
+        value: Number(robots_on.value),
       }));
     });
 
@@ -77,7 +76,7 @@ export default connect(state => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const handleKeyDown = evt => {
+  const handleKeyDown = (evt) => {
     if (
       ((props.platform.isMac && evt.metaKey) ||
         (!props.platform.isMac && evt.ctrlKey)) &&
@@ -88,17 +87,17 @@ export default connect(state => {
     }
   };
 
-  const handleRobotsOn = value => {
-    setRobotOn(prevRobotOn => ({
+  const handleRobotsOn = (value) => {
+    setRobotOn((prevRobotOn) => ({
       ...prevRobotOn,
-      value
+      value,
     }));
   };
 
-  const handleRobotsText = value => {
-    setRobotText(prevRobotText => ({
+  const handleRobotsText = (value) => {
+    setRobotText((prevRobotText) => ({
       ...prevRobotText,
-      value
+      value,
     }));
   };
 
@@ -107,40 +106,40 @@ export default connect(state => {
 
     const robotsOn = makeRequest({
       ...robotOn,
-      value: String(robotOn.value) // The API requires this as a string
+      value: String(robotOn.value), // The API requires this as a string
     });
     const robotsText = makeRequest(robotText);
 
     Promise.all([robotsOn, robotsText])
-      .then(res => {
+      .then((res) => {
         props.dispatch(
           notify({
             kind: "success",
-            message: "robots.txt file settings have been updated"
+            message: "robots.txt file settings have been updated",
           })
         );
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         props.dispatch(
           notify({
             kind: "warn",
-            message: `Failed saving robots.txt settings. ${err}`
+            message: `Failed saving robots.txt settings. ${err}`,
           })
         );
         setLoading(true);
       });
   };
 
-  const makeRequest = data => {
+  const makeRequest = (data) => {
     return request(
       `${CONFIG.API_INSTANCE}/env/settings${data.ZUID ? `/${data.ZUID}` : ""}`,
       {
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         method: data.ZUID ? "PUT" : "POST",
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       }
     );
   };

@@ -35,7 +35,7 @@ export const MediaWorkspaceItem = React.memo(function MediaWorkspaceItem(
   }, [props.toggleSelected, props.file]);
 
   const showFileDetails = useCallback(
-    event => {
+    (event) => {
       if (!props.file.loading) {
         event.stopPropagation();
         props.setCurrentFileID(props.file.id);
@@ -49,7 +49,7 @@ export const MediaWorkspaceItem = React.memo(function MediaWorkspaceItem(
       <Card
         className={cx({
           [styles.Card]: true,
-          [styles.selected]: props.selected
+          [styles.selected]: props.selected,
         })}
         onClick={toggleSelected}
       >
@@ -77,7 +77,7 @@ export const MediaWorkspaceItem = React.memo(function MediaWorkspaceItem(
             <div
               className={styles.ProgressBar}
               style={{
-                width: `${props.file.progress}%`
+                width: `${props.file.progress}%`,
               }}
             ></div>
           )}

@@ -7,7 +7,7 @@ import {
   faSpinner,
   faPlus,
   faExternalLinkSquareAlt,
-  faHandPointUp
+  faHandPointUp,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
@@ -31,10 +31,10 @@ export function FieldAdd(props) {
     description: "",
     required: false,
     settings: {
-      list: true
+      list: true,
     },
     sort: 10000,
-    dirty: false
+    dirty: false,
   };
   const [field, setField] = useState(initialState);
   const [loading, setLoading] = useState(false);
@@ -46,7 +46,7 @@ export function FieldAdd(props) {
       props.dispatch(
         notify({
           kind: "warn",
-          message: "Missing required field label"
+          message: "Missing required field label",
         })
       );
       return;
@@ -55,7 +55,7 @@ export function FieldAdd(props) {
       props.dispatch(
         notify({
           kind: "warn",
-          message: "Missing required field name"
+          message: "Missing required field name",
         })
       );
       return;
@@ -65,14 +65,14 @@ export function FieldAdd(props) {
 
     props
       .dispatch(createField(props.modelZUID, field))
-      .then(res => {
+      .then((res) => {
         setLoading(false);
 
         if (res.status === 201) {
           props.dispatch(
             notify({
               kind: "save",
-              message: `Created new field: ${field.label}`
+              message: `Created new field: ${field.label}`,
             })
           );
           setField(initialState);
@@ -81,18 +81,18 @@ export function FieldAdd(props) {
           props.dispatch(
             notify({
               kind: "warn",
-              message: `${res.error}`
+              message: `${res.error}`,
             })
           );
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         setLoading(false);
         props.dispatch(
           notify({
             kind: "warn",
-            message: err.message
+            message: err.message,
           })
         );
       });
@@ -106,7 +106,7 @@ export function FieldAdd(props) {
           name="type"
           options={FIELD_TYPES}
           defaultOptText="— Select a Field Type —"
-          onChange={val => {
+          onChange={(val) => {
             setField({ ...field, datatype: val });
           }}
         />
@@ -147,14 +147,14 @@ export function FieldAdd(props) {
               setField({
                 ...field,
                 [name]: val,
-                dirty: true
+                dirty: true,
               })
             }
-            updateMultipleValues={values => {
+            updateMultipleValues={(values) => {
               setField({
                 ...field,
                 ...values,
-                dirty: true
+                dirty: true,
               });
             }}
             updateFieldSetting={(val, name) =>
@@ -162,9 +162,9 @@ export function FieldAdd(props) {
                 ...field,
                 settings: {
                   ...field.settings,
-                  [name]: val
+                  [name]: val,
                 },
-                dirty: true
+                dirty: true,
               })
             }
           />

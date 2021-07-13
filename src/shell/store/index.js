@@ -32,7 +32,7 @@ const middlewares = [
   session,
   fetchResource,
   resolveFieldOptions,
-  thunkMiddleware
+  thunkMiddleware,
 ];
 
 /**
@@ -40,7 +40,7 @@ const middlewares = [
  */
 middlewares.push(
   createSentryMiddleware(Sentry, {
-    getUserContext: state => {
+    getUserContext: (state) => {
       return {
         email: state.user.email,
         ZUID: state.user.ZUID,
@@ -49,19 +49,19 @@ middlewares.push(
         lastName: state.user.lastName,
         lastLogin: state.user.lastLogin,
         selected_lang: state.user.selected_lang,
-        updatedAt: state.user.updatedAt
+        updatedAt: state.user.updatedAt,
       };
     },
-    stateTransformer: state => {
+    stateTransformer: (state) => {
       // Specify allow list of transferable data to sentry
       return {
         userRole: state.userRole,
         products: state.products,
         platform: state.platform,
         notifications: state.notifications,
-        instance: state.instance
+        instance: state.instance,
       };
-    }
+    },
   })
 );
 
@@ -88,12 +88,12 @@ function createReducer(asyncReducers) {
     platform,
     headTags,
     ui,
-    publishPlan
+    publishPlan,
   };
 
   return combineReducers({
     ...initialReducers,
-    ...asyncReducers
+    ...asyncReducers,
   });
 }
 

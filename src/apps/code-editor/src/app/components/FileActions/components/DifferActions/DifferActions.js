@@ -9,7 +9,7 @@ import {
   faBan,
   faSpinner,
   faSave,
-  faArrowRight
+  faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
@@ -19,7 +19,7 @@ import { Select, Option } from "@zesty-io/core/Select";
 import {
   fetchFileVersions,
   updateFileCode,
-  saveFile
+  saveFile,
 } from "../../../../../store/files";
 
 import styles from "./DifferActions.less";
@@ -37,7 +37,9 @@ export const DifferActions = React.memo(function DifferActions(props) {
         updateFileCode(props.fileZUID, props.status, props.currentCode)
       );
     } else {
-      const version = versions.find(v => v.version == Number(selectedVersion));
+      const version = versions.find(
+        (v) => v.version == Number(selectedVersion)
+      );
       props.dispatch(
         updateFileCode(props.fileZUID, props.status, version.code)
       );
@@ -54,7 +56,7 @@ export const DifferActions = React.memo(function DifferActions(props) {
         updateFileCode(props.fileZUID, props.status, props.currentCode)
       );
     } else {
-      const version = versions.find(v => v.version == selectedVersion);
+      const version = versions.find((v) => v.version == selectedVersion);
       props.dispatch(
         updateFileCode(props.fileZUID, props.status, version.code)
       );
@@ -74,11 +76,11 @@ export const DifferActions = React.memo(function DifferActions(props) {
     props.setLoading(true);
     props
       .dispatch(fetchFileVersions(props.fileZUID, props.fileType))
-      .then(res => {
+      .then((res) => {
         props.setLoading(false);
 
         let versions = res.data
-          .filter(v => v.status === props.status)
+          .filter((v) => v.status === props.status)
           .sort((a, b) => {
             let timeA = moment(a.createdAt).valueOf();
             let timeB = moment(b.createdAt).valueOf();
@@ -96,7 +98,7 @@ export const DifferActions = React.memo(function DifferActions(props) {
         versions.unshift({
           code: props.currentCode,
           version: "local",
-          status: props.status
+          status: props.status,
         });
 
         setVersions(versions);
@@ -104,7 +106,7 @@ export const DifferActions = React.memo(function DifferActions(props) {
         if (Array.isArray(res.data) && res.data.length) {
           if (props.publishedVersion) {
             let published = res.data.find(
-              f => f.version === props.publishedVersion
+              (f) => f.version === props.publishedVersion
             );
             setSelectedVersion(published.version);
             props.setVersionCodeRight(published.code);
@@ -114,13 +116,13 @@ export const DifferActions = React.memo(function DifferActions(props) {
           }
         }
       })
-      .catch(err => {
+      .catch((err) => {
         props.setLoading(false);
         console.error(err);
       });
   }, []);
 
-  const options = versions.map(version => {
+  const options = versions.map((version) => {
     let html = `Version ${version.version} <small>[${moment(
       version.createdAt
     ).format("MMM Do YYYY, [at] h:mm a")}]</small>`;
@@ -131,7 +133,7 @@ export const DifferActions = React.memo(function DifferActions(props) {
 
     return {
       html,
-      value: version.version
+      value: version.version,
     };
   });
 
@@ -141,8 +143,8 @@ export const DifferActions = React.memo(function DifferActions(props) {
         name="codeOne"
         className={styles.VersionSelector}
         value={options[0] && options[0].value}
-        onSelect={value => {
-          const version = versions.find(version => version.version == value);
+        onSelect={(value) => {
+          const version = versions.find((version) => version.version == value);
           if (version) {
             props.setVersionCodeLeft(version.code);
           } else {
@@ -161,8 +163,8 @@ export const DifferActions = React.memo(function DifferActions(props) {
         name="codeTwo"
         className={styles.VersionSelector}
         value={selectedVersion}
-        onSelect={value => {
-          const version = versions.find(version => version.version == value);
+        onSelect={(value) => {
+          const version = versions.find((version) => version.version == value);
           if (version) {
             props.setVersionCodeRight(version.code);
             setSelectedVersion(version.version);

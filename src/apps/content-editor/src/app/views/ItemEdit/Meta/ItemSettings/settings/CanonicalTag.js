@@ -8,20 +8,20 @@ import { FieldLabel } from "@zesty-io/core/FieldLabel";
 const CANONICAL_OPTS = [
   {
     value: 0,
-    text: "Off"
+    text: "Off",
   },
   {
     value: 1,
-    text: "On (Ignores query parameters)"
+    text: "On (Ignores query parameters)",
   },
   {
     value: 2,
-    text: "On - Allow certain parameters"
+    text: "On - Allow certain parameters",
   },
   {
     value: 3,
-    text: "On - Custom Path or Custom URL"
-  }
+    text: "On - Custom Path or Custom URL",
+  },
 ];
 
 import styles from "./CanonicalTag.less";
@@ -37,12 +37,12 @@ export const CanonicalTag = React.memo(function CanonicalTag(props) {
     props.onChange(Number(value), name);
   };
 
-  const handleWhitelist = evt => {
+  const handleWhitelist = (evt) => {
     props.onChange(evt.target.value, evt.target.name);
     setWhitelist(evt.target.value);
   };
 
-  const handleCustom = evt => {
+  const handleCustom = (evt) => {
     props.onChange(evt.target.value, evt.target.name);
     setCustom(evt.target.value);
   };
@@ -77,7 +77,7 @@ export const CanonicalTag = React.memo(function CanonicalTag(props) {
             value={CANONICAL_OPTS[mode] && CANONICAL_OPTS[mode].value}
             options={CANONICAL_OPTS}
           >
-            {CANONICAL_OPTS.map(opt => (
+            {CANONICAL_OPTS.map((opt) => (
               <Option key={opt.value} value={opt.value} text={opt.text} />
             ))}
           </Select>

@@ -6,23 +6,15 @@ describe("Head Tags", () => {
     cy.goHome();
   });
   it("creates and deletes new head tag", () => {
-    cy.get("#MainNavigation")
-      .contains("All Field Types")
-      .click();
+    cy.get("#MainNavigation").contains("All Field Types").click();
 
     cy.get("[data-cy=head]").click();
 
     cy.contains("Create Head Tag").click();
 
-    cy.get("[data-cy=tagCard]")
-      .last()
-      .find(".Select button")
-      .click();
+    cy.get("[data-cy=tagCard]").last().find(".Select button").click();
 
-    cy.get("[data-cy=tagCard]")
-      .last()
-      .find('[data-value="script"]')
-      .click();
+    cy.get("[data-cy=tagCard]").last().find('[data-value="script"]').click();
 
     cy.get("[data-cy=tagCard]")
       .last()
@@ -39,10 +31,7 @@ describe("Head Tags", () => {
       .type("newAttr");
 
     // Saves Head Tag
-    cy.get("[data-cy=tagCard]")
-      .last()
-      .find("#SaveItemButton")
-      .click();
+    cy.get("[data-cy=tagCard]").last().find("#SaveItemButton").click();
     cy.contains("New head tag created");
 
     // Deletes Head Tag

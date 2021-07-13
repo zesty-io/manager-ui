@@ -8,7 +8,7 @@ import {
   clear,
   entries,
   keys,
-  values
+  values,
 } from "idb-keyval";
 
 const DB = "zesty";
@@ -26,7 +26,7 @@ export default {
     return getMany(arr, customStore);
   },
   set(key, val) {
-    return set(key, val, customStore).catch(err => {
+    return set(key, val, customStore).catch((err) => {
       if (err.name === "InvalidStateError") {
         // recreate store
         customStore = createStore(DB, STORE);
@@ -52,5 +52,5 @@ export default {
   },
   values() {
     return values(customStore);
-  }
+  },
 };

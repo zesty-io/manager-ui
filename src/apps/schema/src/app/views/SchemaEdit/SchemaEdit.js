@@ -24,9 +24,9 @@ export default connect((state, props) => {
     modelZUID,
     model: state.models[modelZUID],
     fields: Object.keys(state.fields)
-      .map(key => state.fields[key])
-      .filter(field => field.contentModelZUID === modelZUID)
-      .sort((fieldA, fieldB) => fieldA.sort - fieldB.sort)
+      .map((key) => state.fields[key])
+      .filter((field) => field.contentModelZUID === modelZUID)
+      .sort((fieldA, fieldB) => fieldA.sort - fieldB.sort),
   };
 })(function SchemaEdit(props) {
   const [loading, setLoading] = useState(true);
@@ -41,12 +41,12 @@ export default connect((state, props) => {
         .then(() => {
           setLoading(true);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("fetchFields()", err);
           props.dispatch(
             notify({
               kind: "warn",
-              message: `There was an error loading the schema fields. ${err.message}`
+              message: `There was an error loading the schema fields. ${err.message}`,
             })
           );
           setLoading(true);
@@ -54,20 +54,20 @@ export default connect((state, props) => {
     }
   }, [props.modelZUID]);
 
-  const updateFieldSort = children => {
+  const updateFieldSort = (children) => {
     setSorting(true);
 
     // Re-sort to match index
     const sorted = children.map((child, i) => {
       return {
         ...child.props.children.props.field,
-        sort: i
+        sort: i,
       };
     });
 
     // Generate field update request for each field
     Promise.all(
-      sorted.map(field => {
+      sorted.map((field) => {
         return props.dispatch(
           saveField(field.contentModelZUID, field.ZUID, field)
         );
@@ -79,24 +79,24 @@ export default connect((state, props) => {
           payload: sorted.reduce((acc, field) => {
             acc[field.ZUID] = field;
             return acc;
-          }, {})
+          }, {}),
         });
 
         props.dispatch(
           notify({
             kind: "save",
-            message: `${props.model.label} field order updated`
+            message: `${props.model.label} field order updated`,
           })
         );
 
         setSorting(false);
       })
-      .catch(err => {
+      .catch((err) => {
         setSorting(false);
         props.dispatch(
           notify({
             kind: "warn",
-            message: err.message
+            message: err.message,
           })
         );
         console.error(err);
@@ -126,10 +126,10 @@ export default connect((state, props) => {
             <WithLoader condition={!sorting} message="Sorting Fields">
               <Dropzone onDrop={updateFieldSort}>
                 {props.fields
-                  .filter(field => !field.deletedAt)
-                  .map(field => {
+                  .filter((field) => !field.deletedAt)
+                  .map((field) => {
                     const type = FIELD_TYPES.find(
-                      type => type.value === field.datatype
+                      (type) => type.value === field.datatype
                     );
 
                     if (field.ZUID === props.fieldZUID) {
@@ -152,10 +152,10 @@ export default connect((state, props) => {
             <div className={styles.Deactivated}>
               <h2 className={styles.Title}>De-activated Fields</h2>
               {props.fields
-                .filter(field => field.deletedAt)
-                .map(field => {
+                .filter((field) => field.deletedAt)
+                .map((field) => {
                   const type = FIELD_TYPES.find(
-                    type => type.value === field.datatype
+                    (type) => type.value === field.datatype
                   );
 
                   if (field.ZUID === props.fieldZUID) {

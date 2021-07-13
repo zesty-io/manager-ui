@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheckCircle,
   faCloudUploadAlt,
-  faSpinner
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Notice } from "@zesty-io/core/Notice";
@@ -16,15 +16,15 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import {
   publishFile,
   resolvePathPart,
-  fetchFiles
+  fetchFiles,
 } from "../../../../../store/files";
 
 import { notify } from "shell/store/notifications";
 
 import styles from "./PublishAll.less";
-export default connect(state => {
+export default connect((state) => {
   return {
-    files: state.files.filter(file => file.isLive === false)
+    files: state.files.filter((file) => file.isLive === false),
   };
 })(function PublishAll(props) {
   const [loading, setLoading] = useState(false);
@@ -32,26 +32,26 @@ export default connect(state => {
   const handlePublishAll = () => {
     setLoading(true);
 
-    const requests = props.files.map(file => {
+    const requests = props.files.map((file) => {
       return props.dispatch(publishFile(file.ZUID, file.status));
     });
 
     Promise.all(requests)
-      .then(res => {
+      .then((res) => {
         if (res) {
           props.dispatch(
             notify({
               kind: "success",
-              message: "All files has been published"
+              message: "All files has been published",
             })
           );
         }
       })
-      .catch(err => {
+      .catch((err) => {
         props.dispatch(
           notify({
             kind: "warn",
-            message: err.message
+            message: err.message,
           })
         );
       })
@@ -75,7 +75,7 @@ export default connect(state => {
     >
       <CardContent>
         <ul>
-          {props.files.map(file => (
+          {props.files.map((file) => (
             <li key={file.ZUID}>
               <AppLink
                 to={`/code/file/${resolvePathPart(file.type)}/${

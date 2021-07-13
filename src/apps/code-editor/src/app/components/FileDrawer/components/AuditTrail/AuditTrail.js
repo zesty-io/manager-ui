@@ -30,7 +30,7 @@ export default function AuditTrail(props) {
         )}
 
         <ul>
-          {props.logs.map(log => (
+          {props.logs.map((log) => (
             <li key={log.ZUID} className={styles.Log}>
               {`${moment(log.createdAt).format("YYYY-MM-DD")} ${
                 log.firstName

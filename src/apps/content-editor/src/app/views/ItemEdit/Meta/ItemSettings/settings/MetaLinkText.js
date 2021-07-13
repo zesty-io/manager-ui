@@ -6,7 +6,7 @@ import { Infotip } from "@zesty-io/core/Infotip";
 import styles from "./MetaLinkText.less";
 export const MetaLinkText = React.memo(function MetaLinkText({
   meta_link_text,
-  onChange
+  onChange,
 }) {
   return (
     <article className={styles.MetaLinkText} data-cy="metaLinkText">

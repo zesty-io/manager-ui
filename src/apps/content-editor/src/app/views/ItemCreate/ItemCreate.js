@@ -17,12 +17,12 @@ import { notify } from "shell/store/notifications";
 import styles from "./ItemCreate.less";
 
 const selectSortedModelFields = createSelector(
-  state => state.fields,
+  (state) => state.fields,
   (_, modelZUID) => modelZUID,
   (fields, modelZUID) =>
     Object.keys(fields)
-      .filter(fieldZUID => fields[fieldZUID].contentModelZUID === modelZUID)
-      .map(fieldZUID => fields[fieldZUID])
+      .filter((fieldZUID) => fields[fieldZUID].contentModelZUID === modelZUID)
+      .map((fieldZUID) => fields[fieldZUID])
       .sort((a, b) => a.sort - b.sort)
 );
 
@@ -32,12 +32,12 @@ export default function ItemCreate() {
   const dispatch = useDispatch();
   const { modelZUID } = useParams();
   const itemZUID = `new:${modelZUID}`;
-  const model = useSelector(state => state.models[modelZUID]);
-  const item = useSelector(state => state.content[itemZUID]);
-  const instance = useSelector(state => state.instance);
-  const content = useSelector(state => state.content);
-  const platform = useSelector(state => state.platform);
-  const fields = useSelector(state =>
+  const model = useSelector((state) => state.models[modelZUID]);
+  const item = useSelector((state) => state.content[itemZUID]);
+  const instance = useSelector((state) => state.instance);
+  const content = useSelector((state) => state.content);
+  const platform = useSelector((state) => state.platform);
+  const fields = useSelector((state) =>
     selectSortedModelFields(state, modelZUID)
   );
   const [loading, setLoading] = useState(true);
@@ -97,9 +97,9 @@ export default function ItemCreate() {
           dispatch(
             notify({
               message: `You are missing data in ${res.missingRequired
-                .map(f => f.label)
+                .map((f) => f.label)
                 .join(", ")}`,
-              kind: "error"
+              kind: "error",
             })
           );
 
@@ -112,7 +112,7 @@ export default function ItemCreate() {
           dispatch(
             notify({
               message: res.error,
-              kind: "warn"
+              kind: "warn",
             })
           );
         }
@@ -126,14 +126,14 @@ export default function ItemCreate() {
         dispatch(
           notify({
             message: `Created new ${model.label} item`,
-            kind: "save"
+            kind: "save",
           })
         );
       } else {
         dispatch(
           notify({
             message: "Unknown issue creating new item",
-            kind: "warn"
+            kind: "warn",
           })
         );
       }

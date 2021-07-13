@@ -19,7 +19,7 @@ import "cypress-iframe";
 
 // @see https://docs.cypress.io/api/cypress-api/cookies.html#Set-global-default-cookies
 Cypress.Cookies.defaults({
-  preserve: Cypress.env("COOKIE_NAME")
+  preserve: Cypress.env("COOKIE_NAME"),
 });
 
 //Turn off fail on console errors

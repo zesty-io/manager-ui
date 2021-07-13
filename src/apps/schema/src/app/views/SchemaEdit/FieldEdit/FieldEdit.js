@@ -10,7 +10,7 @@ import {
   faSave,
   faPlayCircle,
   faPauseCircle,
-  faExclamationTriangle
+  faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
@@ -23,7 +23,7 @@ import {
   updateField,
   updateFieldSetting,
   deactivateField,
-  activateField
+  activateField,
 } from "shell/store/fields";
 
 import styles from "./FieldEdit.less";
@@ -77,7 +77,7 @@ function Header(props) {
       <Button
         className={styles.DragHandle}
         draggable="true"
-        onClick={evt => {
+        onClick={(evt) => {
           // Prevent the card toggle
           evt.preventDefault();
           evt.stopPropagation();
@@ -90,9 +90,9 @@ function Header(props) {
   );
 }
 
-const Footer = connect(state => {
+const Footer = connect((state) => {
   return {
-    platform: state.platform
+    platform: state.platform,
   };
 })(function Footer(props) {
   const [loading, setLoading] = useState(false);
@@ -101,21 +101,21 @@ const Footer = connect(state => {
     setLoading(true);
     props
       .dispatch(saveField(props.field.contentModelZUID, props.field.ZUID))
-      .then(res => {
+      .then((res) => {
         setLoading(false);
 
         if (res.status === 200) {
           props.dispatch(
             notify({
               kind: "save",
-              message: `Saved field: ${props.field.name}`
+              message: `Saved field: ${props.field.name}`,
             })
           );
         } else {
           props.dispatch(
             notify({
               kind: "warn",
-              message: `Failed tyring to save field: ${props.field.name}`
+              message: `Failed tyring to save field: ${props.field.name}`,
             })
           );
         }
@@ -123,7 +123,7 @@ const Footer = connect(state => {
       .catch(() => setLoading(false));
   };
 
-  const handleKeyDown = evt => {
+  const handleKeyDown = (evt) => {
     if (
       ((props.platform.isMac && evt.metaKey) ||
         (!props.platform.isMac && evt.ctrlKey)) &&
@@ -157,7 +157,7 @@ const Footer = connect(state => {
 
         {props.field.deletedAt ? (
           <Button
-            onClick={evt => {
+            onClick={(evt) => {
               evt.preventDefault();
               setLoading(true);
               props.dispatch(
@@ -176,7 +176,7 @@ const Footer = connect(state => {
           <Button
             className="deactivate"
             kind="cancel"
-            onClick={evt => {
+            onClick={(evt) => {
               evt.preventDefault();
               setLoading(true);
               props.dispatch(

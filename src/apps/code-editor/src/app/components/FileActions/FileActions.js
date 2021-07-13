@@ -10,7 +10,7 @@ import {
   faEdit,
   faFileCode,
   faHistory,
-  faPlus
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";

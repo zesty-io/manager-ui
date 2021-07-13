@@ -7,22 +7,22 @@ export function logs(state = {}, action) {
         ...state,
         [action.itemZUID]: {
           ...state[action.itemZUID],
-          auditTrailDraft: action.data
-        }
+          auditTrailDraft: action.data,
+        },
       };
     case "FETCH_AUDIT_TRAIL_PUB":
       return {
         ...state,
         [action.itemZUID]: {
           ...state[action.itemZUID],
-          auditTrailPublish: action.data
-        }
+          auditTrailPublish: action.data,
+        },
       };
 
     case "FETCH_USER_LOGS_SUCCESS":
       const logs = { ...state };
 
-      action.payload.forEach(log => {
+      action.payload.forEach((log) => {
         logs[log.ZUID] = log;
       });
 
@@ -35,15 +35,15 @@ export function logs(state = {}, action) {
 
 // Actions
 export function fetchAuditTrailDrafting(itemZUID, limit = 5) {
-  return dispatch => {
+  return (dispatch) => {
     return request(
       `${CONFIG.API_INSTANCE}/env/audits?affectedZUID=${itemZUID}&order=created&dir=desc&action=2&limit=${limit}`
-    ).then(data => {
+    ).then((data) => {
       if (data) {
         dispatch({
           type: "FETCH_AUDIT_TRAIL_DRAFT",
           itemZUID,
-          data: data.data
+          data: data.data,
         });
       } else {
         console.error(
@@ -55,10 +55,10 @@ export function fetchAuditTrailDrafting(itemZUID, limit = 5) {
 }
 
 export function fetchAuditTrailPublish(itemZUID, limit = 3) {
-  return dispatch => {
+  return (dispatch) => {
     return request(
       `${CONFIG.API_INSTANCE}/env/audits?affectedZUID=${itemZUID}&order=created&dir=desc&action=4&limit=${limit}`
-    ).then(data => {
+    ).then((data) => {
       if (data) {
         dispatch({ type: "FETCH_AUDIT_TRAIL_PUB", itemZUID, data: data.data });
       } else {

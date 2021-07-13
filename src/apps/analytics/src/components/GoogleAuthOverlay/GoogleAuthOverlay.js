@@ -12,7 +12,7 @@ export class GoogleAuthOverlay extends React.Component {
     titles: {
       noDomain: "Please Setup a Domain before Authenticating",
       notAuthenticated: "Please Authenticate Google Analytics",
-      legacyAuthentication: "Google needs to be Re-authenticated"
+      legacyAuthentication: "Google needs to be Re-authenticated",
     },
     descriptions: {
       noDomain:
@@ -20,13 +20,13 @@ export class GoogleAuthOverlay extends React.Component {
       notAuthenticated:
         "Someone in your organization with Google Analytics access needs to authenticate this Zesty.io instance. Before authenticating, the domain associated with this instance needs to be registed in Google Analytics.",
       legacyAuthentication:
-        "Traffic is being tracked, but your Google Authentication is from Legacy Zesty.io and needs to be re-authenticated to access new metrics. Someone in your organization with Google Analytics access needs to do this."
+        "Traffic is being tracked, but your Google Authentication is from Legacy Zesty.io and needs to be re-authenticated to access new metrics. Someone in your organization with Google Analytics access needs to do this.",
     },
     generalDescription:
-      "Authenticating Google Analytics will automate GA tags in your Web Engine renders pages. If you use Zesty.io purely headlessly, Google Analytics will on provide value on rendered web views."
+      "Authenticating Google Analytics will automate GA tags in your Web Engine renders pages. If you use Zesty.io purely headlessly, Google Analytics will on provide value on rendered web views.",
   };
 
-  createAnalyticsPopup = evt => {
+  createAnalyticsPopup = (evt) => {
     var address = encodeURI(
       CONFIG.SERVICE_GOOGLE_ANALYTICS_AUTH +
         "?user_id=" +

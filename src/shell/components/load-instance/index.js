@@ -14,17 +14,20 @@ import { detectPlatform } from "shell/store/platform";
 import { fetchInstances } from "shell/store/instances";
 import { fetchLangauges } from "shell/store/languages";
 import { fetchItemPublishings } from "shell/store/content";
+import { fetchFiles } from "../../../apps/code-editor/src/store/files";
+
 import { Url } from "@zesty-io/core/Url";
 import { loadOpenNav } from "../../store/ui";
 
 import styles from "./LoadInstance.less";
 
-export default connect(state => {
+export default connect((state) => {
   return {
     instance: state.instance,
     user: state.user,
     products: state.products,
-    languages: state.languages
+    languages: state.languages,
+    files: state.files
   };
 })(
   React.memo(function LoadInstance(props) {
@@ -32,11 +35,11 @@ export default connect(state => {
     useEffect(() => {
       props
         .dispatch(fetchInstance())
-        .then(res => {
+        .then((res) => {
           document.title = `Manager - ${res.data.name} - Zesty`;
           CONFIG.URL_PREVIEW_FULL = `${CONFIG.URL_PREVIEW_PROTOCOL}${res.data.randomHashID}${CONFIG.URL_PREVIEW}`;
         })
-        .catch(res => {
+        .catch((res) => {
           if (res.status === 403) {
             setError("You do not have permission to access to this instance");
           }
@@ -44,7 +47,7 @@ export default connect(state => {
 
       Promise.all([
         props.dispatch(fetchUser(props.user.ZUID)),
-        props.dispatch(fetchUserRole())
+        props.dispatch(fetchUserRole()),
       ]).then(() => {
         props.dispatch(fetchProducts());
       });
@@ -56,6 +59,10 @@ export default connect(state => {
       props.dispatch(fetchLangauges("enabled"));
       // Used in Publish Plan and Content sections
       props.dispatch(fetchItemPublishings());
+      // Used in Code Editor, useFilePath Hook
+      props.dispatch(fetchFiles("views"));
+      props.dispatch(fetchFiles("stylesheets"));
+      props.dispatch(fetchFiles("scripts"));
     }, []);
 
     return (
@@ -79,7 +86,8 @@ export default connect(state => {
               props.instance.ID &&
               props.instance.domains &&
               props.user.ID &&
-              props.languages.length
+              props.languages.length &&
+              props.files.length
             }
             message="Loading Instance"
             width="100vw"

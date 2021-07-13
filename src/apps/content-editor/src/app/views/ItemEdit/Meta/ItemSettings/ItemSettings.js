@@ -30,7 +30,7 @@ export const ItemSettings = React.memo(
           type: "SET_ITEM_WEB",
           itemZUID: meta.ZUID,
           key: name,
-          value: value
+          value: value,
         });
       },
       [meta.ZUID]

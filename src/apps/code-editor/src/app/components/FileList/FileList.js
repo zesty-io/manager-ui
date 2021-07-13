@@ -29,20 +29,20 @@ export const FileList = React.memo(function FileList(props) {
     setShownFiles(props.navCode.tree.sort(byLabel));
   }, [props.navCode]);
 
-  const views = shownFiles.filter(file => {
+  const views = shownFiles.filter((file) => {
     let pathPart = resolvePathPart(file.type);
     return pathPart !== "scripts" && pathPart !== "stylesheets";
   });
 
   const js = shownFiles
-    .filter(file => resolvePathPart(file.type) === "scripts")
+    .filter((file) => resolvePathPart(file.type) === "scripts")
     .sort(byOrder);
 
   const css = shownFiles
-    .filter(file => resolvePathPart(file.type) === "stylesheets")
+    .filter((file) => resolvePathPart(file.type) === "stylesheets")
     .sort(byOrder);
 
-  const collapseNode = node => {
+  const collapseNode = (node) => {
     props.dispatch(collapseNavItem(node.path));
   };
 
@@ -52,9 +52,9 @@ export const FileList = React.memo(function FileList(props) {
       icon={faCloudUploadAlt}
       className={styles.Action}
       showIcon={true}
-      available={file => !file.isLive}
-      onClick={file => props.dispatch(publishFile(file.ZUID, file.status))}
-    />
+      available={(file) => !file.isLive}
+      onClick={(file) => props.dispatch(publishFile(file.ZUID, file.status))}
+    />,
   ];
 
   return (

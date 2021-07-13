@@ -7,13 +7,13 @@ import {
   faBan,
   faSpinner,
   faTrash,
-  faTrashAlt
+  faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 import {
   CollapsibleCard,
   CardContent,
-  CardFooter
+  CardFooter,
 } from "@zesty-io/core/CollapsibleCard";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
@@ -72,7 +72,7 @@ export const WidgetDeleteItem = React.memo(function WidgetDeleteItem(props) {
 
             props
               .dispatch(deleteItem(props.modelZUID, props.itemZUID))
-              .then(res => {
+              .then((res) => {
                 if (res.status === 200) {
                   history.push("/content/" + props.modelZUID);
                 } else {

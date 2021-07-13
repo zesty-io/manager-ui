@@ -11,28 +11,18 @@ describe("Content List", () => {
 
   it("Sorts list items", () => {
     cy.visit("/content/6-0c960c-d1n0kx");
-    cy.get(".ItemList .SortBy")
-      .first()
-      .click();
+    cy.get(".ItemList .SortBy").first().click();
     cy.get(".ItemList article")
       .first()
       .contains("Parent pre selection with fast typing");
 
-    cy.get(".ItemList .SortBy")
-      .eq(1)
-      .click();
-    cy.get(".ItemList article")
-      .first()
-      .contains("Self-Defense Class");
+    cy.get(".ItemList .SortBy").eq(1).click();
+    cy.get(".ItemList article").first().contains("Self-Defense Class");
   });
 
   it("Bulk Edits Toggle and Number Values", () => {
     cy.visit("/content/6-e3d0e0-965qp6");
-    cy.get(".ItemList article")
-      .first()
-      .get(".SortCell button")
-      .first()
-      .click();
+    cy.get(".ItemList article").first().get(".SortCell button").first().click();
     cy.get(".ItemList article")
       .first()
       .get(".ToggleCell button")

@@ -6,11 +6,11 @@ import { ParsleyTheme } from "./parsley-theme";
 // we do this in a separate step before react render so that it only happens once
 export function MonacoSetup(store) {
   monaco.languages.register({
-    id: "parsley"
+    id: "parsley",
   });
 
   monaco.languages.setMonarchTokensProvider("parsley", {
-    tokenizer
+    tokenizer,
   });
 
   monaco.languages.setLanguageConfiguration("parsley", languageConf);
@@ -18,7 +18,7 @@ export function MonacoSetup(store) {
   monaco.editor.defineTheme("parsleyDark", {
     base: "vs-dark", // can also be vs-dark or hc-black
     inherit: true, // can also be false to completely replace the builtin rules
-    rules: ParsleyTheme
+    rules: ParsleyTheme,
   });
 
   /**
@@ -28,7 +28,7 @@ export function MonacoSetup(store) {
    */
   monaco.languages.registerCompletionItemProvider("parsley", {
     triggerCharacters: ["."],
-    provideCompletionItems: model => {
+    provideCompletionItems: (model) => {
       // Pull the contentModelZUID attached to the specific file model
       const query = new URLSearchParams(model.uri.query);
 
@@ -36,20 +36,20 @@ export function MonacoSetup(store) {
       const state = store.getState();
       const fields = Object.values(state.fields);
       const modelFields = fields.filter(
-        field => field.contentModelZUID === query.get("contentModelZUID")
+        (field) => field.contentModelZUID === query.get("contentModelZUID")
       );
 
       return {
-        suggestions: modelFields.map(field => {
+        suggestions: modelFields.map((field) => {
           return {
             label: field.name,
             kind: monaco.languages.CompletionItemKind.Property,
             documentation: `${field.description}`,
             detail: field.label,
-            insertText: field.name
+            insertText: field.name,
           };
-        })
+        }),
       };
-    }
+    },
   });
 }

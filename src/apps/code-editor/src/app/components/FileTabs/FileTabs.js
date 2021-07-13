@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBolt,
   faCircle,
-  faTimesCircle
+  faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -19,7 +19,7 @@ export const FileTabs = React.memo(
     }, [props.openFileZUID]);
 
     const openFiles = props.files
-      .filter(file => file.open && file.status === props.status)
+      .filter((file) => file.open && file.status === props.status)
       .sort((a, b) => {
         let fileNameA = a.fileName.toLowerCase().trim(); // ignore upper and lowercase
         let fileNameB = b.fileName.toLowerCase().trim(); // ignore upper and lowercase
@@ -34,7 +34,7 @@ export const FileTabs = React.memo(
         return 0;
       });
 
-    const handleClose = file => {
+    const handleClose = (file) => {
       props.dispatch(fileOpen(file.ZUID, file.status, false));
 
       if (file.dirty) {
@@ -43,7 +43,7 @@ export const FileTabs = React.memo(
 
       // Determine what file should be opened after closing this one
       if (file.ZUID === props.openFileZUID) {
-        let nextActiveFile = openFiles.find(f => f.ZUID !== file.ZUID);
+        let nextActiveFile = openFiles.find((f) => f.ZUID !== file.ZUID);
         if (nextActiveFile) {
           window.location = `/code/file/${resolvePathPart(
             nextActiveFile.type
@@ -56,7 +56,7 @@ export const FileTabs = React.memo(
 
     return (
       <div className={styles.OpenFiles}>
-        {openFiles.map(file => {
+        {openFiles.map((file) => {
           return (
             <span
               key={file.ZUID}
@@ -75,7 +75,7 @@ export const FileTabs = React.memo(
                 <span
                   className={cx(styles.Close, file.dirty ? styles.Dirty : null)}
                   title="Close File"
-                  onClick={evt => {
+                  onClick={(evt) => {
                     evt.preventDefault(); // otherwise the link is clicked and the file is reloaded
                     handleClose(file);
                   }}
@@ -134,11 +134,11 @@ export const FileTabs = React.memo(
 
     // 4
     const prevFile = prevProps.files.find(
-      file =>
+      (file) =>
         file.ZUID === prevProps.openFileZUID && file.status === prevProps.status
     );
     const nextFile = nextProps.files.find(
-      file =>
+      (file) =>
         file.ZUID === nextProps.openFileZUID && file.status === nextProps.status
     );
     if (
@@ -154,10 +154,10 @@ export const FileTabs = React.memo(
     //5
     if (
       prevProps.files.filter(
-        file => file.open && file.status === prevProps.status
+        (file) => file.open && file.status === prevProps.status
       ).length !==
       nextProps.files.filter(
-        file => file.open && file.status === nextProps.status
+        (file) => file.open && file.status === nextProps.status
       ).length
     ) {
       return false;

@@ -24,7 +24,7 @@ module.exports = {
 
     // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
     service: {
-      media_resolver: ""
+      media_resolver: "",
     },
 
     LEGACY_SITES_SERVICE: "https://svc.zesty.io/sites-service",
@@ -41,7 +41,7 @@ module.exports = {
     GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk",
 
     TIME_DISPLAY_FORMAT: "MMMM Do YYYY, [at] h:mm a",
-    TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss"
+    TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss",
   },
   stage: {
     VERSION: pkg.version,
@@ -80,7 +80,7 @@ module.exports = {
     GOOGLE_WEB_FONTS_KEY: "AIzaSyD075qEo9IXa4BPsSZ_YJGWlTw34T51kuk",
 
     TIME_DISPLAY_FORMAT: "MMMM Do YYYY, [at] h:mm a",
-    TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss"
+    TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss",
   },
   development: {
     VERSION: pkg.version,
@@ -106,7 +106,7 @@ module.exports = {
 
     // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
     service: {
-      media_resolver: ""
+      media_resolver: "",
     },
 
     URL_MANAGER: ".manager.dev.zesty.io:8080",
@@ -119,7 +119,7 @@ module.exports = {
     COOKIE_DOMAIN: ".zesty.io",
 
     TIME_DISPLAY_FORMAT: "MMMM Do YYYY, [at] h:mm a",
-    TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss"
+    TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss",
   },
   local: {
     VERSION: pkg.version,
@@ -145,7 +145,7 @@ module.exports = {
 
     // FIXME: This is a workaround to solve for the FieldTypeImage dependence on this object path reference
     service: {
-      media_resolver: "http://svc.zesty.localdev:3007/media-resolver-service"
+      media_resolver: "http://svc.zesty.localdev:3007/media-resolver-service",
     },
 
     LEGACY_SITES_SERVICE: "http://svc.zesty.localdev:3018/sites-service",
@@ -160,6 +160,6 @@ module.exports = {
     COOKIE_DOMAIN: ".zesty.localdev",
 
     TIME_DISPLAY_FORMAT: "MMMM Do YYYY, [at] h:mm a",
-    TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss"
-  }
+    TIME_UTC_FORMAT: "YYYY-MM-DD HH:mm:ss",
+  },
 };

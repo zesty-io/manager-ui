@@ -1,7 +1,7 @@
 import React from "react";
 
 import styles from "./Preview.less";
-export const Preview = props => (
+export const Preview = (props) => (
   <aside className={styles.TagPreviewWrap}>
     {/* {`<!-- Global head tags are inserted before local tags --> \n`} */}
 
@@ -31,9 +31,9 @@ export const Preview = props => (
       {props.tags &&
         props.tags
           .map(
-            tag =>
+            (tag) =>
               `  <${tag.type} ${tag.attributes
-                .map(attr => `${attr.key}="${attr.value}"`)
+                .map((attr) => `${attr.key}="${attr.value}"`)
                 .join(" ")} />`
           )
           .join("\n")}

@@ -7,7 +7,7 @@ export function leads(state = [], action) {
       return [...state, ...action.payload];
     case "DELETE_LEAD_SUCCESS":
       // Remove the deleted lead from the Store
-      state = state.filter(lead => lead.zuid !== action.payload);
+      state = state.filter((lead) => lead.zuid !== action.payload);
       return state;
     case "NEW_NOTIFICATION":
       return state;
@@ -17,9 +17,9 @@ export function leads(state = [], action) {
 }
 
 export function fetchLeads() {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/env/leads`)
-      .then(res => {
+      .then((res) => {
         const sortedLeads = res.data.sort(
           // sort by createdAt DESC
           (lead1, lead2) => {
@@ -29,15 +29,15 @@ export function fetchLeads() {
 
         dispatch({
           type: "FETCH_LEADS_SUCCESS",
-          payload: sortedLeads
+          payload: sortedLeads,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         dispatch(
           notify({
             kind: "warn",
-            message: err.message
+            message: err.message,
           })
         );
       });
@@ -45,26 +45,26 @@ export function fetchLeads() {
 }
 
 export function deleteLead(leadZuid) {
-  return dispatch => {
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/env/leads/${leadZuid}`, {
-      method: "DELETE"
+      method: "DELETE",
     })
-      .then(res => {
+      .then((res) => {
         if (res.hasOwnProperty("error")) {
           throw {
-            message: res.error
+            message: res.error,
           };
         }
         dispatch({
           type: "DELETE_LEAD_SUCCESS",
-          payload: leadZuid
+          payload: leadZuid,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(
           notify({
             kind: "error",
-            message: err.message
+            message: err.message,
           })
         );
       });

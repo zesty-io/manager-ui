@@ -9,7 +9,7 @@ import { fetchItem, fetchItems, searchItems } from "shell/store/content";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,
-  faExclamationTriangle
+  faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 
 // it would be nice to have a central import for all of these
@@ -37,11 +37,22 @@ import { FieldTypeOneToMany } from "@zesty-io/core/FieldTypeOneToMany";
 import styles from "./Field.less";
 import MediaStyles from "../../../../../../media/src/app/MediaAppModal.less";
 
+const FieldLabel = (props) => {
+  return (
+    <>
+      <span className={styles.MainLabel}>{props.label}&nbsp;</span>
+      <span className={styles.SubLabel}>
+        {props.datatype}: {props.name}
+      </span>
+    </>
+  );
+};
+
 // NOTE: Componetized so it can be memoized for input/render perf
-const RelatedOption = React.memo(props => {
+const RelatedOption = React.memo((props) => {
   return (
     <span>
-      <span onClick={evt => evt.stopPropagation()}>
+      <span onClick={(evt) => evt.stopPropagation()}>
         <AppLink
           className={styles.relatedItemLink}
           to={`/content/${props.modelZUID}/${props.itemZUID}`}
@@ -55,16 +66,16 @@ const RelatedOption = React.memo(props => {
 });
 
 // NOTE: Componetized so it can be memoized for input/render perf
-const LinkOption = React.memo(props => {
+const LinkOption = React.memo((props) => {
   return (
-    <React.Fragment>
+    <>
       <FontAwesomeIcon icon={faExclamationTriangle} />
       &nbsp;
       <AppLink to={`/content/${props.modelZUID}/${props.itemZUID}`}>
         {props.itemZUID}
       </AppLink>
       <strong>&nbsp;is missing a meta title</strong>
-    </React.Fragment>
+    </>
   );
 });
 
@@ -108,7 +119,7 @@ function resolveRelatedOptions(
   }
 
   return Object.keys(items)
-    .filter(itemZUID => {
+    .filter((itemZUID) => {
       return (
         items[itemZUID] &&
         items[itemZUID].meta &&
@@ -119,7 +130,7 @@ function resolveRelatedOptions(
           value?.split(",").includes(itemZUID))
       );
     })
-    .map(itemZUID => {
+    .map((itemZUID) => {
       return {
         filterValue: items[itemZUID].data[field.name],
         value: itemZUID,
@@ -129,20 +140,20 @@ function resolveRelatedOptions(
             itemZUID={itemZUID}
             text={items[itemZUID].data[field.name]}
           />
-        )
+        ),
       };
     })
     .sort(sortTitle);
 }
 
 const getSelectedLang = (langs, langID) =>
-  langs.find(lang => lang.ID === langID).code;
+  langs.find((lang) => lang.ID === langID).code;
 
-export default connect(state => {
+export default connect((state) => {
   return {
     allItems: state.content,
     allFields: state.fields,
-    allLanguages: state.languages
+    allLanguages: state.languages,
   };
 })(function Field(props) {
   const {
@@ -160,7 +171,7 @@ export default connect(state => {
     langID,
     onChange,
     onSave,
-    dispatch
+    dispatch,
   } = props;
 
   const [imageModal, setImageModal] = useState();
@@ -176,7 +187,7 @@ export default connect(state => {
         <MediaApp
           limitSelected={imageModal.limit}
           modal={true}
-          addImages={images => {
+          addImages={(images) => {
             imageModal.callback(images);
             setImageModal();
           }}
@@ -192,7 +203,7 @@ export default connect(state => {
       return (
         <FieldTypeText
           name={name}
-          label={label}
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -205,7 +216,7 @@ export default connect(state => {
       return (
         <FieldTypeText
           name={name}
-          label={label}
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -220,7 +231,7 @@ export default connect(state => {
       return (
         <FieldTypeUUID
           name={name}
-          label={label}
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           placeholder="UUID field values are auto-generated"
@@ -234,7 +245,7 @@ export default connect(state => {
       return (
         <FieldTypeTextarea
           name={name}
-          label={label}
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -249,7 +260,7 @@ export default connect(state => {
         <div className={styles.WYSIWYGFieldType}>
           <FieldTypeTinyMCE
             name={name}
-            label={label}
+            label={<FieldLabel label={label} name={name} datatype={datatype} />}
             description={description}
             tooltip={settings.tooltip}
             required={required}
@@ -265,9 +276,9 @@ export default connect(state => {
               advcode: "/vendors/tinymce/plugins/advcode/plugin.js",
               powerpaste: "/vendors/tinymce/plugins/powerpaste/plugin.js",
               formatpainter: "/vendors/tinymce/plugins/formatpainter/plugin.js",
-              pageembed: "/vendors/tinymce/plugins/pageembed/plugin.js"
+              pageembed: "/vendors/tinymce/plugins/pageembed/plugin.js",
             }}
-            mediaBrowser={opts => {
+            mediaBrowser={(opts) => {
               setImageModal(opts);
             }}
           />
@@ -280,7 +291,7 @@ export default connect(state => {
         <div className={styles.WYSIWYGFieldType}>
           <FieldTypeEditor
             name={name}
-            label={label}
+            label={<FieldLabel label={label} name={name} datatype={datatype} />}
             description={description}
             tooltip={settings.tooltip}
             required={required}
@@ -288,7 +299,7 @@ export default connect(state => {
             onChange={onChange}
             type={datatype}
             maxLength="16000"
-            mediaBrowser={opts => {
+            mediaBrowser={(opts) => {
               setImageModal(opts);
             }}
           />
@@ -298,9 +309,10 @@ export default connect(state => {
 
     case "files":
     case "images":
-      const images = useMemo(() => (value || "").split(",").filter(el => el), [
-        value
-      ]);
+      const images = useMemo(
+        () => (value || "").split(",").filter((el) => el),
+        [value]
+      );
       const mediaAppProps = {};
       if (settings && settings.group_id && settings.group_id !== "0") {
         mediaAppProps.groupID = settings.group_id;
@@ -310,7 +322,7 @@ export default connect(state => {
           <FieldTypeImage
             images={images}
             name={name}
-            label={label}
+            label={<FieldLabel label={label} name={name} datatype={datatype} />}
             description={description}
             tooltip={settings.tooltip}
             required={required}
@@ -323,7 +335,7 @@ export default connect(state => {
             resolveImage={(zuid, width, height) =>
               `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${zuid}/getimage/?w=${width}&h=${height}&type=fit`
             }
-            mediaBrowser={opts => {
+            mediaBrowser={(opts) => {
               setImageModal(opts);
             }}
           />
@@ -338,7 +350,7 @@ export default connect(state => {
                 {...mediaAppProps}
                 limitSelected={imageModal.limit - images.length}
                 modal={true}
-                addImages={images => {
+                addImages={(images) => {
                   imageModal.callback(images);
                   setImageModal();
                 }}
@@ -355,7 +367,7 @@ export default connect(state => {
         return (
           <FieldTypeBinary
             name={name}
-            label={label}
+            label={<FieldLabel label={label} name={name} datatype={datatype} />}
             description={description}
             tooltip={settings.tooltip}
             required={required}
@@ -381,10 +393,10 @@ export default connect(state => {
     case "dropdown":
       const dropdownOptions = useMemo(() => {
         return settings.options
-          ? Object.keys(settings.options).map(name => {
+          ? Object.keys(settings.options).map((name) => {
               return {
                 value: name,
-                text: settings.options[name]
+                text: settings.options[name],
               };
             })
           : [];
@@ -395,7 +407,7 @@ export default connect(state => {
           description={description}
           tooltip={settings.tooltip}
           name={name}
-          label={label}
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           required={required}
           value={value}
           onChange={onChange}
@@ -408,12 +420,12 @@ export default connect(state => {
       let internalLinkOptions = useMemo(() => {
         return Object.keys(props.allItems)
           .filter(
-            itemZUID =>
+            (itemZUID) =>
               !itemZUID.includes("new") && // exclude new items
               props.allItems[itemZUID].meta.ZUID && // ensure the item has a zuid
               props.allItems[itemZUID].web.pathPart // exclude items non-routeable items
           )
-          .map(itemZUID => {
+          .map((itemZUID) => {
             let item = props.allItems[itemZUID];
             let html = "";
 
@@ -426,18 +438,19 @@ export default connect(state => {
                     modelZUID={item.meta.contentModelZUID}
                     itemZUID={itemZUID}
                   />
-                )
+                ),
               };
             }
 
             if (item.web.path || item.web.pathPart) {
-              html += `<small style="font-style:italic;">${item.web.path ||
-                item.web.pathPart}</small>`;
+              html += `<small style="font-style:italic;">${
+                item.web.path || item.web.pathPart
+              }</small>`;
             }
 
             return {
               value: itemZUID,
-              html: html
+              html: html,
             };
           })
           .sort(sortHTML);
@@ -451,7 +464,7 @@ export default connect(state => {
         // insert placeholder
         internalLinkOptions.unshift({
           value: value,
-          text: `Related item: ${value}`
+          text: `Related item: ${value}`,
         });
 
         // load related item from API
@@ -461,14 +474,14 @@ export default connect(state => {
       }
 
       const onInternalLinkSearch = useCallback(
-        term => dispatch(searchItems(term)),
+        (term) => dispatch(searchItems(term)),
         []
       );
 
       return (
         <FieldTypeInternalLink
           name={name}
-          label={label}
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -492,7 +505,7 @@ export default connect(state => {
       const onOneToOneOpen = useCallback(() => {
         return dispatch(
           fetchItems(relatedModelZUID, {
-            lang: getSelectedLang(props.allLanguages, langID)
+            lang: getSelectedLang(props.allLanguages, langID),
           })
         );
       }, [props.allLanguages.length, relatedModelZUID, langID]);
@@ -512,13 +525,13 @@ export default connect(state => {
         relatedModelZUID,
         relatedFieldZUID,
         langID,
-        value
+        value,
       ]);
 
       if (
         value &&
         value != "0" &&
-        !oneToOneOptions.find(opt => opt.value === value)
+        !oneToOneOptions.find((opt) => opt.value === value)
       ) {
         //the related option is not in the array, we need ot insert it
         oneToOneOptions.unshift({
@@ -526,7 +539,7 @@ export default connect(state => {
           value: value,
           component: (
             <span>
-              <span onClick={evt => evt.stopPropagation()}>
+              <span onClick={(evt) => evt.stopPropagation()}>
                 <AppLink
                   className={styles.relatedItemLink}
                   to={`/content/${relatedModelZUID}/${value}`}
@@ -536,7 +549,7 @@ export default connect(state => {
               </span>
               &nbsp;Selected item: {value}
             </span>
-          )
+          ),
         });
       }
 
@@ -544,7 +557,7 @@ export default connect(state => {
         <FieldTypeOneToOne
           className={styles.FieldTypeOneToOne}
           name={name}
-          label={label}
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -586,7 +599,7 @@ export default connect(state => {
         relatedModelZUID,
         relatedFieldZUID,
         langID,
-        value
+        value,
       ]);
 
       // Delay loading options until user opens dropdown
@@ -595,9 +608,9 @@ export default connect(state => {
           dispatch(fetchFields(relatedModelZUID)),
           dispatch(
             fetchItems(relatedModelZUID, {
-              lang: getSelectedLang(props.allLanguages, langID)
+              lang: getSelectedLang(props.allLanguages, langID),
             })
-          )
+          ),
         ]);
       }, [props.allLanguages.length, relatedModelZUID, langID]);
 
@@ -605,7 +618,7 @@ export default connect(state => {
         <FieldTypeOneToMany
           className={styles.FieldTypeOneToMany}
           name={name}
-          label={label}
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -621,7 +634,7 @@ export default connect(state => {
       return (
         <FieldTypeColor
           name={name}
-          label={label}
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -634,7 +647,7 @@ export default connect(state => {
       return (
         <FieldTypeNumber
           name={name}
-          label={label}
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -647,7 +660,7 @@ export default connect(state => {
       return (
         <FieldTypeCurrency
           name={name}
-          label={label}
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           placeholder="0.00"
@@ -677,7 +690,7 @@ export default connect(state => {
       return (
         <FieldTypeDate
           name={name}
-          label={label}
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           datatype={datatype}
@@ -691,7 +704,7 @@ export default connect(state => {
       return (
         <FieldTypeSort
           name={name}
-          label={label}
+          label={<FieldLabel label={label} name={name} datatype={datatype} />}
           description={description}
           tooltip={settings.tooltip}
           required={required}
