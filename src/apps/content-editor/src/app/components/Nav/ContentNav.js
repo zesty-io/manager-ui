@@ -39,7 +39,7 @@ export function ContentNav(props) {
   );
 
   useEffect(() => {
-    setFilteredItems(props.nav.nav.sort(bySort));
+    setFilteredItems(props.nav.nav.sort(byLabel));
   }, [props.nav]);
 
   useEffect(() => {
