@@ -88,7 +88,9 @@ export function ContentNav(props) {
                 props?.models[modelZUID]?.name.toLowerCase()
               );
             })
-
+            .sort((a, b) => {
+              return props.models[a].label >= props.models[b].label ? 1 : -1;
+            })
             .map((modelZUID) => (
               <Option
                 key={modelZUID}
