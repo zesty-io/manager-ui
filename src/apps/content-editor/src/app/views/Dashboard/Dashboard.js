@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
 import moment from "moment-timezone";
@@ -66,7 +66,7 @@ const selectModelsByZuid = createSelector(
     }, {})
 );
 
-export default React.memo(function Dashboard() {
+export default memo(function Dashboard() {
   const user = useSelector((state) => state.user);
   const instance = useSelector((state) => state.instance);
   const headTags = useSelector((state) => state.headTags);

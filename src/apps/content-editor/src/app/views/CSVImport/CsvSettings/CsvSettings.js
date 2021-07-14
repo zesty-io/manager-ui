@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import { Select, Option, Input } from "@zesty-io/core";
 
 import styles from "./CsvSettings.less";

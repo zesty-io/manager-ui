@@ -1,4 +1,3 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import cx from "classnames";
@@ -13,7 +12,7 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import styles from "./FileStatus.less";
 import shared from "../../FileDrawer.less";
 
-const FileType = props => {
+const FileType = (props) => {
   if (
     props.fileType === "templateset" ||
     props.fileType === "pageset" ||
@@ -38,7 +37,7 @@ const FileType = props => {
 };
 
 export default function FileStatus(props) {
-  const instance = useSelector(state => state.instance);
+  const instance = useSelector((state) => state.instance);
 
   return (
     <Card className={cx(styles.FileStatus, shared.DrawerStyles)}>

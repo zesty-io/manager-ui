@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 import cx from "classnames";
 import moment from "moment-timezone";
 
@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./DateCell.less";
-export const DateCell = React.memo(function DateCell(props) {
+export const DateCell = memo(function DateCell(props) {
   if (props.value) {
     return (
       <span className={cx(props.className, styles.DateCell)}>

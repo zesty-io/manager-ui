@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { memo, Fragment, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -19,7 +19,7 @@ import { notify } from "shell/store/notifications";
 import { createFile } from "../../../../../store/files";
 
 import styles from "./CreateFile.less";
-export const CreateFile = React.memo(function CreateFile(props) {
+export const CreateFile = memo(function CreateFile(props) {
   const history = useHistory();
 
   const [loading, setLoading] = useState(false);
@@ -76,7 +76,7 @@ export const CreateFile = React.memo(function CreateFile(props) {
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       <Button
         className={styles.CreateFileBtn}
         onClick={() => setOpen(true)}
@@ -196,6 +196,6 @@ export const CreateFile = React.memo(function CreateFile(props) {
           </ModalFooter>
         </Modal>
       )}
-    </React.Fragment>
+    </Fragment>
   );
 });

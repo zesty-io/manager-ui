@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import cx from "classnames";
 
@@ -27,6 +27,16 @@ export default function SchemaNav(props) {
   return (
     <nav className={cx("SchemaNav", styles.SchemaNav)}>
       <div className={styles.Actions}>
+        <Button
+          className={styles.CreateModel}
+          kind="secondary"
+          onClick={() => history.push("/schema/new")}
+          type="save"
+        >
+          <FontAwesomeIcon icon={faPlus} />
+          &nbsp;Create Model
+        </Button>
+
         <Search
           className={styles.Search}
           name="filter_schema"
@@ -46,22 +56,14 @@ export default function SchemaNav(props) {
             }
           }}
         />
-
-        <Button
-          className={styles.CreateModel}
-          kind="secondary"
-          onClick={() => history.push("/schema/new")}
-          type="save"
-        >
-          <FontAwesomeIcon icon={faPlus} />
-          &nbsp;Create Model
-        </Button>
       </div>
 
       <div className={styles.ModelList}>
+        <h1 className={styles.NavTitle}>Content Model List</h1>
         <Nav
           className={styles.PageSets}
           id="pagesets"
+          lightMode="true"
           name="pagesets"
           selected={selected}
           tree={nav}

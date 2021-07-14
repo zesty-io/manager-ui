@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react";
+import { Fragment, useState, useEffect, useReducer } from "react";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
@@ -29,29 +29,29 @@ const SCHEMA_TYPES = [
   {
     value: "templateset",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faFile} />
         &nbsp;Single Page Model
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "pageset",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faListAlt} />
         &nbsp;Multi Page Model
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "dataset",
 
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faDatabase} />
         &nbsp;Headless Data Model
-      </React.Fragment>
+      </Fragment>
     ),
   },
 ];

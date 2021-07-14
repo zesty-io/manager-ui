@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import cx from "classnames";
 
@@ -16,7 +16,7 @@ import { resolvePathPart, publishFile } from "../../../store/files";
 import { collapseNavItem } from "../../../store/navCode";
 
 import styles from "./FileList.less";
-export const FileList = React.memo(function FileList(props) {
+export const FileList = memo(function FileList(props) {
   // const [branch, setBranch] = useState(props.branch);
   const [shownFiles, setShownFiles] = useState(
     props.navCode.tree.sort(byLabel)
@@ -61,10 +61,6 @@ export const FileList = React.memo(function FileList(props) {
     <section className={styles.FileList}>
       <header className={styles.NavActions}>
         <div className={styles.Actions}>
-          <div className={cx(styles.Action, styles.FilterFiles)}>
-            <FilterFiles setShownFiles={setShownFiles} nav={props.navCode} />
-          </div>
-
           {/* <div className={cx(styles.Action, styles.PublishAll)}>
               <PublishAll dispatch={props.dispatch} branch={branch} />
             </div> */}
@@ -82,6 +78,9 @@ export const FileList = React.memo(function FileList(props) {
             className={cx(styles.Action, styles.CreateFile)}
             dispatch={props.dispatch}
           />
+          <div className={cx(styles.Action, styles.FilterFiles)}>
+            <FilterFiles setShownFiles={setShownFiles} nav={props.navCode} />
+          </div>
         </div>
       </header>
 

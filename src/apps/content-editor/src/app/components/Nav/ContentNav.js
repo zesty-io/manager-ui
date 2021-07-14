@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useHistory } from "react-router";
 import { Link } from "react-router-dom";
@@ -35,7 +35,7 @@ export function ContentNav(props) {
   const [searchTerm, setSearchTerm] = useState("");
 
   const [filteredItems, setFilteredItems] = useState(
-    props.nav.nav.sort(byLabel)
+    props.nav.nav.sort(bySort)
   );
 
   useEffect(() => {
@@ -71,14 +71,7 @@ export function ContentNav(props) {
   };
 
   return (
-    <React.Fragment>
-      <ItemsFilter
-        setFilteredItems={setFilteredItems}
-        nav={props.nav}
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-      />
-
+    <Fragment>
       <div className={styles.Actions}>
         <Select
           name="createItemFromModel"
@@ -113,14 +106,19 @@ export function ContentNav(props) {
           />
         </Button>
       </div>
-
+      <ItemsFilter
+        setFilteredItems={setFilteredItems}
+        nav={props.nav}
+        setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
+      />
       <div className={styles.NavWrap}>
         <div className={styles.NavTitle}>
           <h1>Content</h1>
 
           <Link to="/content">
             {" "}
-            <Button>
+            <Button size="small" kind="outlined">
               <FontAwesomeIcon icon={faHome} title="Dashboard" />
             </Button>
           </Link>
@@ -144,6 +142,7 @@ export function ContentNav(props) {
           <Nav
             id="MainNavigation"
             className={styles.Nav}
+            lightMode="true"
             tree={filteredItems}
             selected={selected}
             collapseNode={collapseNode}
@@ -153,6 +152,7 @@ export function ContentNav(props) {
         {!searchTerm && (
           <Nav
             id="MainNavigation"
+            lightMode="true"
             className={styles.Nav}
             tree={props.nav.nav}
             selected={selected}
@@ -160,10 +160,13 @@ export function ContentNav(props) {
             actions={actions}
           />
         )}
-        <h1 className={styles.NavTitle}>Headless Content Models</h1>
+        {!searchTerm && (
+          <h1 className={styles.NavTitle}>Headless Content Models</h1>
+        )}
         {!searchTerm && (
           <Nav
             id="HeadlessNavigation"
+            lightMode="true"
             className={styles.Nav}
             tree={props.nav.headless}
             selected={selected}
@@ -187,6 +190,7 @@ export function ContentNav(props) {
             id="HiddenNav"
             className={(styles.Nav, hiddenOpen ? "" : styles.HiddenNavClosed)}
             tree={props.nav.hidden}
+            lightMode="true"
             selected={selected}
             collapseNode={collapseNode}
             actions={actions}
@@ -195,7 +199,7 @@ export function ContentNav(props) {
       </div>
 
       <ReorderNav isOpen={reorderOpen} toggleOpen={toggleModal} />
-    </React.Fragment>
+    </Fragment>
   );
 }
 
@@ -211,4 +215,10 @@ const byLabel = (a, b) => {
 
   // names must be equal
   return 0;
+};
+
+const bySort = (a, b) => {
+  let aSort = a.sort == null ? 1000 : a.sort;
+  let bSort = b.sort == null ? 1000 : b.sort;
+  return aSort - bSort;
 };

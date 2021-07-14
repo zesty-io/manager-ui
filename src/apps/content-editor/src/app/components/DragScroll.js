@@ -1,9 +1,9 @@
-import React from "react";
+import { Component } from "react";
 
 /**
  * Adapted from https://github.com/qiaolb/react-dragscroll/blob/master/src/DragScroll.jsx
  */
-export class DragScroll extends React.Component {
+export class DragScroll extends Component {
   constructor(props) {
     super(props);
     this.state = {

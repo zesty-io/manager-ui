@@ -1,9 +1,9 @@
-import React from "react";
+import { memo } from "react";
 
 import { Select, Option } from "@zesty-io/core/Select";
 
 import styles from "./SelectBranch.less";
-export const SelectBranch = React.memo(function SelectBranch(props) {
+export const SelectBranch = memo(function SelectBranch(props) {
   return (
     <Select
       name="branch"

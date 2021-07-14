@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Search } from "@zesty-io/core/Search";
 import styles from "./ContentNav.less";
 
@@ -13,7 +11,7 @@ const ItemsFilter = (props) => {
       onChange={(term) => {
         term = term.trim().toLowerCase();
         props.setSearchTerm(term);
-        if (term) {
+        if (term != "") {
           props.setFilteredItems(
             props.nav.raw.filter((f) => {
               return (

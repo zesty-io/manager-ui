@@ -1,4 +1,4 @@
-import React from "react";
+import { Component, Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe, faKey, faPlug } from "@fortawesome/free-solid-svg-icons";
 
@@ -7,7 +7,7 @@ import { Button } from "@zesty-io/core/Button";
 import GaAuthenticate from "./GaAuthenticate";
 import styles from "./GoogleAuthOverlay.less";
 
-export class GoogleAuthOverlay extends React.Component {
+export class GoogleAuthOverlay extends Component {
   state = {
     titles: {
       noDomain: "Please Setup a Domain before Authenticating",
@@ -71,24 +71,24 @@ export class GoogleAuthOverlay extends React.Component {
         </div>
 
         {this.props.domainSet ? (
-          <React.Fragment>
+          <Fragment>
             {this.props.gaLegacyAuth ? (
-              <React.Fragment>
+              <Fragment>
                 <h2>{this.state.titles.legacyAuthentication}</h2>
                 <p>{this.state.descriptions.legacyAuthentication}</p>
-              </React.Fragment>
+              </Fragment>
             ) : (
-              <React.Fragment>
+              <Fragment>
                 <h2>{this.state.titles.notAuthenticated}</h2>
                 <p>{this.state.descriptions.notAuthenticated}</p>
-              </React.Fragment>
+              </Fragment>
             )}
 
             {/* Exported this button in order to utilize usePermission hook */}
             <GaAuthenticate onClick={this.createAnalyticsPopup} />
-          </React.Fragment>
+          </Fragment>
         ) : (
-          <React.Fragment>
+          <Fragment>
             <h2>{this.state.titles.noDomain}</h2>
             <p>{this.state.descriptions.noDomain}</p>
             <div className={styles.buttonHolder}>
@@ -102,7 +102,7 @@ export class GoogleAuthOverlay extends React.Component {
                 Click here to Setup Your Domain
               </Button>
             </div>
-          </React.Fragment>
+          </Fragment>
         )}
 
         <p className={styles.generalDescription}>

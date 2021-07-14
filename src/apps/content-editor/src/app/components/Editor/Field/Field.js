@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useState } from "react";
+import { memo, useMemo, useCallback, useState } from "react";
 import ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
@@ -49,7 +49,7 @@ const FieldLabel = (props) => {
 };
 
 // NOTE: Componetized so it can be memoized for input/render perf
-const RelatedOption = React.memo((props) => {
+const RelatedOption = memo((props) => {
   return (
     <span>
       <span onClick={(evt) => evt.stopPropagation()}>
@@ -66,7 +66,7 @@ const RelatedOption = React.memo((props) => {
 });
 
 // NOTE: Componetized so it can be memoized for input/render perf
-const LinkOption = React.memo((props) => {
+const LinkOption = memo((props) => {
   return (
     <>
       <FontAwesomeIcon icon={faExclamationTriangle} />

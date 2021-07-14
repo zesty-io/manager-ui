@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, PureComponent } from "react";
+import { useRef, useState, useEffect, PureComponent } from "react";
 import { connect } from "react-redux";
 import { VariableSizeList as List } from "react-window";
 import { useHistory } from "react-router-dom";

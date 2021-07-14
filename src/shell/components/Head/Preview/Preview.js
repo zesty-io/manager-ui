@@ -1,5 +1,3 @@
-import React from "react";
-
 import styles from "./Preview.less";
 export const Preview = (props) => (
   <aside className={styles.TagPreviewWrap}>

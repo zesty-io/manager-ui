@@ -1,4 +1,4 @@
-import React from "react";
+import { Fragment } from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -153,78 +153,78 @@ export const FIELD_TYPES = [
   {
     value: "text",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faParagraph} />
-      </React.Fragment>
+      </Fragment>
     ),
     description: (
-      <React.Fragment>
+      <Fragment>
         <p>
           Text fields are limited to 150 characters and are useful for short
           content.
         </p>
         <em>e.g. Titles</em>
-      </React.Fragment>
+      </Fragment>
     ),
     title: "Text",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faParagraph} />
         &nbsp;Text
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "textarea",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faParagraph} />
-      </React.Fragment>
+      </Fragment>
     ),
     description:
       "Textarea fields are useful for unstructured large chunks of text. They provide more character length than a text field but exclude the styling control of a WYSIWYG field. Textarea content is stored raw without going through any processing.",
     title: "Textarea",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faParagraph} />
         &nbsp;TextArea
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "wysiwyg_basic",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faParagraph} />
-      </React.Fragment>
+      </Fragment>
     ),
     description: (
-      <React.Fragment>
+      <Fragment>
         <p>
           <abbr title="What You See Is What You Get">WYSIWYG</abbr> fields allow
           an editor styling and structuring of their content. This field type is
           also able to be viewed as a Markdown, Inline or HTML editor, giving
           authors control over their experience.
         </p>
-      </React.Fragment>
+      </Fragment>
     ),
     title: "WYSIWYG",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faParagraph} />
         &nbsp;WYSIWYG
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "markdown",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faParagraph} />
-      </React.Fragment>
+      </Fragment>
     ),
     description: (
-      <React.Fragment>
+      <Fragment>
         <p>
           Markdown fields provide an editor that allows using{" "}
           <Url
@@ -238,238 +238,238 @@ export const FIELD_TYPES = [
           able to be viewed as a WYSIWYG, Inline or HTML editor. Giving authors
           control over their experience.
         </p>
-      </React.Fragment>
+      </Fragment>
     ),
     title: "Markdown",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faParagraph} />
         &nbsp;Markdown
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "article_writer",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faParagraph} />
-      </React.Fragment>
+      </Fragment>
     ),
     description: (
-      <React.Fragment>
+      <Fragment>
         <p>
           Article Writer fields provide an inline editor that allows a subset of
           styling and structuring elements. This field type is also able to be
           viewed as a Markdown, Inline or HTML editor. Giving authors control
           over their experience.
         </p>
-      </React.Fragment>
+      </Fragment>
     ),
     title: "Article Writer",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faParagraph} />
         &nbsp;Article Writer
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "images",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faImages} />
-      </React.Fragment>
+      </Fragment>
     ),
     description: (
-      <React.Fragment>
+      <Fragment>
         <p>
           Media fields allow the selection of media from this instances
           available media assets. This field can have a limit on how many assets
           can be selected as well as can be locked to a specific group from the
           media app.
         </p>
-      </React.Fragment>
+      </Fragment>
     ),
     title: "Media",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faImages} />
         &nbsp;Media
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "date",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faCalendar} />
-      </React.Fragment>
+      </Fragment>
     ),
     description: (
-      <React.Fragment>
+      <Fragment>
         <p>
           Date fields allow authors to select a date that will be guaranteed to
           be in a structured format.
         </p>
-      </React.Fragment>
+      </Fragment>
     ),
     title: "Date",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faCalendar} />
         &nbsp;Date
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "datetime",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faCalendarAlt} />
-      </React.Fragment>
+      </Fragment>
     ),
     description: (
-      <React.Fragment>
+      <Fragment>
         <p>
           Date &amp; Time fields allow authors to select a date and time that
           will be guaranteed to be in a structured format.
         </p>
-      </React.Fragment>
+      </Fragment>
     ),
     title: "Date & Time",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faCalendarAlt} />
         &nbsp;Date &amp; Time
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "dropdown",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faList} />
-      </React.Fragment>
+      </Fragment>
     ),
     description: (
-      <React.Fragment>
+      <Fragment>
         <p>
           Dropdown fields offer the ability to provide a pre-defined set of
           options for authors to select from.
         </p>
-      </React.Fragment>
+      </Fragment>
     ),
     title: "Dropdown",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faList} />
         &nbsp;Dropdown
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "one_to_one",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faArrowsAltH} />
-      </React.Fragment>
+      </Fragment>
     ),
     description:
       "One to one relationships allow content editors to connect another models content to this one by selecting the other item based upon one of it's fields. This provides the ability to resolve this relationship within a template or the SDK and gain access to the related item data.",
     title: "Related: One to One",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faArrowsAltH} />
         &nbsp;Related: One to One
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "one_to_many",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faSitemap} />
-      </React.Fragment>
+      </Fragment>
     ),
     description:
       "Many to one relationships allows content editors to connect many items from another model to this one by selecting the other items based upon one of their fields. This provides the ability to resolve the relationships within a template or the SDK and gain access to the related items data.",
     title: "Related: Many to One",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faSitemap} />
         &nbsp;Related: Many to one
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "link",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faExternalLinkAlt} />
-      </React.Fragment>
+      </Fragment>
     ),
     description: (
-      <React.Fragment>
+      <Fragment>
         <p>
           External URL fields provide content authors an input allowing for
           external domain urls.
         </p>
-      </React.Fragment>
+      </Fragment>
     ),
     title: "External URL",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faExternalLinkAlt} />
         &nbsp;External URL
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "internal_link",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faLink} />
-      </React.Fragment>
+      </Fragment>
     ),
     description: (
-      <React.Fragment>
+      <Fragment>
         <p>
           Internal Link fields allow for the selection of an internal instance
           item from any schema. This can be useful for providing authors the
           ability to relate an item across an instance.
         </p>
-      </React.Fragment>
+      </Fragment>
     ),
     title: "Internal Link",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faLink} />
         &nbsp;Internal Link
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "yes_no",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faToggleOn} />
-      </React.Fragment>
+      </Fragment>
     ),
     description: "",
     title: "Toggle",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faToggleOn} />
         &nbsp;Toggle
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "number",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <i>+0</i>
-      </React.Fragment>
+      </Fragment>
     ),
     description: "",
     title: "Number",
@@ -478,65 +478,65 @@ export const FIELD_TYPES = [
   {
     value: "color",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faPalette} />
-      </React.Fragment>
+      </Fragment>
     ),
     description: "",
     title: "Color",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faPalette} />
         &nbsp;Color
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "sort",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faSortNumericUp} />
-      </React.Fragment>
+      </Fragment>
     ),
     description: "",
     title: "Sort",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faSortNumericUp} />
         &nbsp;Sort
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "currency",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faMoneyBillAlt} />
-      </React.Fragment>
+      </Fragment>
     ),
     description: "",
     title: "Currency",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faMoneyBillAlt} />
         &nbsp;Currency
-      </React.Fragment>
+      </Fragment>
     ),
   },
   {
     value: "uuid",
     icon: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faIdCard} />
-      </React.Fragment>
+      </Fragment>
     ),
     description: "",
     title: "UUID",
     component: (
-      <React.Fragment>
+      <Fragment>
         <FontAwesomeIcon icon={faIdCard} />
         &nbsp;UUID
-      </React.Fragment>
+      </Fragment>
     ),
   },
 ];

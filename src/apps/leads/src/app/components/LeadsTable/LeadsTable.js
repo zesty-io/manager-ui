@@ -1,4 +1,4 @@
-import React from "react";
+import { Component } from "react";
 import { connect } from "react-redux";
 import { createBrowserHistory } from "history";
 
@@ -27,7 +27,7 @@ export default connect((state) => {
     leads,
   };
 })(
-  class LeadsTable extends React.Component {
+  class LeadsTable extends Component {
     history = createBrowserHistory();
 
     constructor(props) {

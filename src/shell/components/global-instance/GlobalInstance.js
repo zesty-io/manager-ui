@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import cx from "classnames";
 import { useSelector } from "react-redux";
 import { usePermission } from "shell/hooks/use-permissions";
@@ -138,6 +138,7 @@ export default function GlobalInstance(props) {
               <Url
                 title={`http://${domain.domain}`}
                 href={`http://${domain.domain}`}
+                target="_blank"
               >
                 <FontAwesomeIcon icon={faExternalLinkAlt} />
                 &nbsp;

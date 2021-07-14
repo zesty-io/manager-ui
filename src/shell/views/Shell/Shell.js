@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { Sentry } from "utility/sentry";
@@ -30,7 +30,7 @@ export default connect((state) => {
     products: state.products,
   };
 })(
-  React.memo(function Shell(props) {
+  memo(function Shell(props) {
     const dispatch = useDispatch();
     const openNav = useSelector((state) => state.ui.openNav);
 

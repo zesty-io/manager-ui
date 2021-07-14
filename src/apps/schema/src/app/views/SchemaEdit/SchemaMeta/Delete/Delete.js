@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { Fragment, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -33,10 +33,10 @@ export default function Delete(props) {
 
 function Header() {
   return (
-    <React.Fragment>
+    <Fragment>
       <FontAwesomeIcon icon={faTrash} />
       &nbsp;Delete Model
-    </React.Fragment>
+    </Fragment>
   );
 }
 
@@ -45,7 +45,7 @@ function Footer(props) {
   const history = useHistory();
 
   return (
-    <React.Fragment>
+    <Fragment>
       <CardFooter>
         <Button kind="warn" onClick={() => setIsOpen(true)}>
           <FontAwesomeIcon icon={faTrash} />
@@ -92,6 +92,6 @@ function Footer(props) {
           Cancel
         </Button>
       </ConfirmDialog>
-    </React.Fragment>
+    </Fragment>
   );
 }

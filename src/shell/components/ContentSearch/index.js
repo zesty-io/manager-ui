@@ -1,4 +1,12 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import {
+  forwardRef,
+  createRef,
+  Fragment,
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+} from "react";
 import { connect, useDispatch } from "react-redux";
 import moment from "moment-timezone";
 import debounce from "lodash/debounce";
@@ -27,7 +35,7 @@ import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 
 import styles from "./styles.less";
-export default React.forwardRef((props, providedRef) => {
+export default forwardRef((props, providedRef) => {
   const dispatch = useDispatch();
 
   const [term, setTerm] = useState(props.value);
@@ -47,15 +55,7 @@ export default React.forwardRef((props, providedRef) => {
       if (term) {
         dispatch(searchItems(term))
           .then((res) => {
-            if (res.status !== 200) return;
-            if (res.status === 200) {
-              let results = res.data;
-              if (props.filterResults) {
-                results = props.filterResults(results);
-              }
-              setRefs(results.map(() => React.createRef()));
-              setSearchResults(results);
-            } else {
+            if (res.status !== 200) {
               dispatch(
                 notify({
                   kind: "warn",
@@ -63,6 +63,12 @@ export default React.forwardRef((props, providedRef) => {
                 })
               );
             }
+            let results = res.data;
+            if (props.filterResults) {
+              results = props.filterResults(results);
+            }
+            setRefs(results.map(() => createRef()));
+            setSearchResults(results);
           })
           .finally(() => setLoading(false));
       }
@@ -347,15 +353,15 @@ const ListOption = (props) => {
       <p className={styles.ItemName}>
         <span className={styles.subheadline}>
           {props.opt?.web?.metaTitle ? (
-            <React.Fragment>
+            <Fragment>
               {modelIcon}
               {props.opt.web.metaTitle}
-            </React.Fragment>
+            </Fragment>
           ) : (
-            <React.Fragment>
+            <Fragment>
               <FontAwesomeIcon icon={faExclamationTriangle} /> Item missing meta
               title
-            </React.Fragment>
+            </Fragment>
           )}
         </span>
 

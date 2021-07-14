@@ -1,11 +1,11 @@
-import React, { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import cx from "classnames";
 import { NodeDraggableMemo } from "../NodeDraggable";
 import styles from "./NavDraggable.less";
 import { editFile, editGroup, highlightGroup } from "shell/store/media";
 
-export const NavDraggable = React.memo(function NavDraggable(props) {
+export const NavDraggable = memo(function NavDraggable(props) {
   const dispatch = useDispatch();
   const [prevID, setPrevID] = useState();
 

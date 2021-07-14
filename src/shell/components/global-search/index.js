@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 

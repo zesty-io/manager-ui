@@ -1,9 +1,28 @@
+@import "~@zesty-io/core/typography.less";
+
 .SettingsNav {
-  background-color: #404759;
+  background-color: transparent;
   word-break: break-all;
+  padding-top: 16px;
+
+  .NavTitle {
+    padding: 8px 16px;
+    color: @zesty-dark-blue;
+    background-color: transparent;
+    text-transform: uppercase;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &.NoResults {
+      color: @zesty-yellow;
+      word-break: break-word;
+    }
+  }
 
   .Actions {
-    background-color: #4b5468;
+    background-color: transparent;
     display: flex;
     flex-direction: column;
     padding: 8px 8px 8px 8px;

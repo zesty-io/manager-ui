@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 import { Switch, Route } from "react-router";
 
 import { GettingStarted } from "./components/GettingStarted";
@@ -6,7 +6,7 @@ import { FileViewer } from "./components/FileViewer";
 import { NotFound } from "./components/NotFound";
 
 import styles from "./Workspace.less";
-export const Workspace = React.memo(function Workspace(props) {
+export const Workspace = memo(function Workspace(props) {
   return (
     <div className={styles.Workspace}>
       <Switch>

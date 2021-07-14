@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Switch,
   Route,
@@ -140,7 +140,7 @@ export default function ItemEdit() {
 
     try {
       const itemResponse = await dispatch(fetchItem(modelZUID, itemZUID));
-      if (itemResponse.status === 404) {
+      if (itemResponse.status === 404 || itemResponse.status === 400) {
         dispatch(
           notify({
             message: itemResponse.message,

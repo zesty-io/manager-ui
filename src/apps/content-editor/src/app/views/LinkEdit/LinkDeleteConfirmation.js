@@ -1,4 +1,3 @@
-import React from "react";
 import { useDispatch } from "react-redux";
 
 import { notify } from "shell/store/notifications";

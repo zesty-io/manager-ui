@@ -9,8 +9,9 @@
 
 .Actions {
   display: flex;
-  background-color: #4b5468; // @zesty-tab-blue;// #5b667d;
+  background-color: transparent; // @zesty-tab-blue;// #5b667d;
   padding: 8px;
+  padding-bottom: 0px;
 
   .Select {
     margin-right: 4px;
@@ -25,13 +26,13 @@
   height: calc(100vh - 54px - 100px);
   margin: 0;
   overflow-y: auto;
-  background: #404759;
+  background: transparent;
   padding: 0;
 
   .NavTitle {
     padding: 8px 16px;
-    color: @zesty-light-blue;
-    background-color: #5b667d;
+    color: @zesty-dark-blue;
+    background-color: transparent;
     text-transform: uppercase;
 
     display: flex;
@@ -48,14 +49,15 @@
   }
 
   .HiddenNav {
-    opacity: 0.5;
+    opacity: 0.8;
     .NavTitle {
       cursor: pointer;
-
+      color: @zesty-gray;
       &:hover,
       &:active,
       &:focus {
-        color: @zesty-white;
+        color: @zesty-dark-blue;
+        opacity: 1;
       }
     }
   }

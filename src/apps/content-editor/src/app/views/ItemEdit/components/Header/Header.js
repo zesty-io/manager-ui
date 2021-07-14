@@ -1,4 +1,4 @@
-import React from "react";
+import { PureComponent } from "react";
 import cx from "classnames";
 
 import { PreviewUrl } from "./PreviewUrl";
@@ -8,7 +8,7 @@ import { LanguageSelector } from "./LanguageSelector";
 import ItemNavigation from "./ItemNavigation";
 
 import styles from "./Header.less";
-export class Header extends React.PureComponent {
+export class Header extends PureComponent {
   render() {
     return (
       <header className={styles.Header}>

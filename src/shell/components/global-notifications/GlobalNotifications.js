@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
 import cx from "classnames";
@@ -21,7 +21,7 @@ export default connect((state) => {
     notifications: state.notifications,
   };
 })(
-  React.memo(function GlobalNotifications(props) {
+  memo(function GlobalNotifications(props) {
     const [initialRender, setInitialRender] = useState(true);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [showToast, setShowToast] = useState(false);

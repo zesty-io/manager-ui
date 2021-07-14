@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import { memo, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 import { useDrag, useDrop } from "react-dnd";
@@ -26,7 +26,7 @@ function find(id, items) {
   return false;
 }
 
-export const NodeDraggableMemo = React.memo(function NodeDraggable(props) {
+export const NodeDraggableMemo = memo(function NodeDraggable(props) {
   const depth = props.depth + 1 || 1;
   const collapseNode = useCallback(
     () => props.collapseNode(props.id),

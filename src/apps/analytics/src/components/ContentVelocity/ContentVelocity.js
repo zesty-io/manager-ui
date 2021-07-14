@@ -1,9 +1,9 @@
-import React from "react";
+import { Component } from "react";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartLine } from "@fortawesome/free-solid-svg-icons";
 
-export class ContentVelocity extends React.Component {
+export class ContentVelocity extends Component {
   render() {
     return (
       <Card>

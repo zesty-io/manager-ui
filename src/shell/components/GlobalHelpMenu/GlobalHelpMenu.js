@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
 
@@ -167,7 +167,11 @@ export default connect((state) => {
 
       <div className={styles.helpModules}>
         <Card className={cx(styles.helpModule, styles.primary)}>
-          <CardHeader className={styles.subheadline}>zesty.org</CardHeader>
+          <CardHeader className={styles.subheadline}>
+            <Url target="_blank" href="https://zesty.org/">
+              zesty.org
+            </Url>
+          </CardHeader>
           <CardContent>
             <ul className={styles.helpBox}>
               {links.map((link) => (

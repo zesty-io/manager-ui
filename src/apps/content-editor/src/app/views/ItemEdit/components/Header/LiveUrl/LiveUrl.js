@@ -1,5 +1,3 @@
-import React from "react";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome, faLink, faUnlink } from "@fortawesome/free-solid-svg-icons";
 import { Url } from "@zesty-io/core/Url";

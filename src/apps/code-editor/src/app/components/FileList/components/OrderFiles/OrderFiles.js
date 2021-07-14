@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -100,7 +100,7 @@ export default connect((state, props) => {
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       <Button
         onClick={() => setOpen(true)}
         kind="primary"
@@ -175,6 +175,6 @@ export default connect((state, props) => {
           </ModalFooter>
         </Modal>
       )}
-    </React.Fragment>
+    </Fragment>
   );
 });

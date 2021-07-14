@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 
@@ -132,20 +132,20 @@ export function LinkCreate() {
               className={styles.Icon}
               value="internal"
               component={
-                <React.Fragment>
+                <Fragment>
                   <FontAwesomeIcon icon={faLink} />
                   &nbsp;Internal Link
-                </React.Fragment>
+                </Fragment>
               }
             />
             <Option
               className={styles.Icon}
               value="external"
               component={
-                <React.Fragment>
+                <Fragment>
                   <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
                   &nbsp;External Link
-                </React.Fragment>
+                </Fragment>
               }
             />
           </Select>

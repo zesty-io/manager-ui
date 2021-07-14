@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import { PureComponent } from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -34,6 +34,7 @@ export class SetColumns extends PureComponent {
                   <span
                     key={field.ZUID}
                     onClick={() =>
+                      this.props.onSort &&
                       this.props.onSort(field.name, field.datatype)
                     }
                     className={cx(

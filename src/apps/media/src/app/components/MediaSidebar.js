@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef } from "react";
+import { memo, useCallback, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -23,7 +23,7 @@ import shared from "./MediaShared.less";
 import styles from "./MediaSidebar.less";
 import { MediaNav } from "./MediaNav";
 
-export const MediaSidebar = React.memo(function MediaSidebar(props) {
+export const MediaSidebar = memo(function MediaSidebar(props) {
   const dispatch = useDispatch();
 
   const groups = useSelector((state) => state.media.groups);
@@ -113,18 +113,6 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
   return (
     <nav className={cx(styles.Nav, hiddenOpen ? styles.hiddenOpen : null)}>
       <div className={styles.TopNav}>
-        <form className={styles.SearchForm} onSubmit={handleSearch}>
-          <input
-            type="search"
-            className={shared.Input}
-            placeholder="Search your files"
-            value={props.searchTerm}
-            onChange={(event) => props.setSearchTerm(event.target.value)}
-          />
-          <button type="submit" aria-label="Search">
-            <FontAwesomeIcon icon={faSearch} />
-          </button>
-        </form>
         <Button
           aria-label="Upload"
           className={styles.PadLeft}
@@ -142,6 +130,18 @@ export const MediaSidebar = React.memo(function MediaSidebar(props) {
           onChange={handleFileInputChange}
           style={{ display: "none" }}
         />
+        <form className={styles.SearchForm} onSubmit={handleSearch}>
+          <input
+            type="search"
+            className={shared.Input}
+            placeholder="Search your files"
+            value={props.searchTerm}
+            onChange={(event) => props.setSearchTerm(event.target.value)}
+          />
+          <button type="submit" aria-label="Search">
+            <FontAwesomeIcon icon={faSearch} />
+          </button>
+        </form>
       </div>
       <MediaNav
         className={styles.MediaNav}

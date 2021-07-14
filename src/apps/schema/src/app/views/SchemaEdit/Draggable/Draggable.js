@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { Children, cloneElement, useRef } from "react";
 
 // import styles from "./Draggable.less";
 export function Draggable(props) {
@@ -14,8 +14,8 @@ export function Draggable(props) {
         props.onOver(props.index);
       }}
     >
-      {React.Children.map(props.children, (child) =>
-        React.cloneElement(child, {
+      {Children.map(props.children, (child) =>
+        cloneElement(child, {
           onDragStart: (evt) => {
             props.drag(props.index);
 

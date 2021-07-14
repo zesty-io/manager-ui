@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 
