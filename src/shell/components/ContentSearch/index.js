@@ -55,14 +55,7 @@ export default forwardRef((props, providedRef) => {
       if (term) {
         dispatch(searchItems(term))
           .then((res) => {
-            if (res.status === 200) {
-              let results = res.data;
-              if (props.filterResults) {
-                results = props.filterResults(results);
-              }
-              setRefs(results.map(() => createRef()));
-              setSearchResults(results);
-            } else {
+            if (res.status !== 200) {
               dispatch(
                 notify({
                   kind: "warn",
@@ -70,6 +63,12 @@ export default forwardRef((props, providedRef) => {
                 })
               );
             }
+            let results = res.data;
+            if (props.filterResults) {
+              results = props.filterResults(results);
+            }
+            setRefs(results.map(() => createRef()));
+            setSearchResults(results);
           })
           .finally(() => setLoading(false));
       }
