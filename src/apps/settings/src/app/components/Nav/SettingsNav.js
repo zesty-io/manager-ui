@@ -33,32 +33,34 @@ export default connect((state) => {
     {
       label: "WebEngine",
       children: props.instanceNav,
-      path: "/settings/instance",
+      path: "#",
       icon: faGlobe,
+    },
+  ];
+  const treeGlobal = [
+    {
+      label: "Head Tags",
+      path: "/settings/head",
+      icon: faCode,
     },
     {
       label: "Robots.txt",
       path: "/settings/robots",
       icon: faFileAlt,
     },
-    {
-      label: "Head Tags",
-      path: "/settings/head",
-      icon: faCode,
-    },
   ];
   const treeAlt = [
     {
       label: "Styles",
       children: props.stylesNav,
-      path: "/settings/styles",
+      path: "#",
       icon: faPenFancy,
     },
 
     {
       label: "Fonts",
       children: props.fontsNav,
-      path: "/settings/fonts",
+      path: "#",
       icon: faFont,
     },
   ];
@@ -74,12 +76,21 @@ export default connect((state) => {
           selected={selected}
           tree={tree}
         />
+        <h1 className={styles.NavTitle}>WebEngine Global</h1>
+        <Nav
+          className={styles.PageSets}
+          id="settings2"
+          lightMode="true"
+          name="settings2"
+          selected={selected}
+          tree={treeGlobal}
+        />
         <h1 className={styles.NavTitle}>WebEngine Styles &amp; Fonts</h1>
         <Nav
           className={styles.PageSets}
-          id="settings"
+          id="settings3"
           lightMode="true"
-          name="settings"
+          name="settings3"
           selected={selected}
           tree={treeAlt}
         />

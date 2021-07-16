@@ -5,6 +5,7 @@ import {
   faCog,
   faEnvelope,
   faFont,
+  faPalette,
   faTools,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -68,7 +69,7 @@ export function settings(
             label: item.name,
             value: item.ID,
             path: `/settings/styles/${item.ID}`,
-            icon: ICONS[item.icon] || faCog,
+            icon: ICONS[item.icon] || faPalette,
           };
         }),
       };
