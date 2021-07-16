@@ -13,11 +13,16 @@ export default function ItemNavigation({ modelZUID, itemZUID }) {
         className={cx(
           styles.AppLink,
           styles.buttonText,
-          slug !== "meta" && slug !== "head" ? styles.Selected : null
+          slug !== "meta" &&
+            slug !== "head" &&
+            slug !== "preview" &&
+            slug !== "headless"
+            ? styles.Selected
+            : null
         )}
         to={`/content/${modelZUID}/${itemZUID}`}
       >
-        Content
+        Edit Content
       </AppLink>
       <AppLink
         data-cy="meta"
@@ -28,7 +33,7 @@ export default function ItemNavigation({ modelZUID, itemZUID }) {
         )}
         to={`/content/${modelZUID}/${itemZUID}/meta`}
       >
-        Meta
+        SEO &amp; Meta
       </AppLink>
       <AppLink
         data-cy="head"
@@ -39,7 +44,18 @@ export default function ItemNavigation({ modelZUID, itemZUID }) {
         )}
         to={`/content/${modelZUID}/${itemZUID}/head`}
       >
-        Head
+        Head Tags
+      </AppLink>
+      <AppLink
+        data-cy="preview"
+        className={cx(
+          styles.AppLink,
+          styles.buttonText,
+          slug === "preview" ? styles.Selected : null
+        )}
+        to={`/content/${modelZUID}/${itemZUID}/preview`}
+      >
+        WebEngine Preview
       </AppLink>
     </nav>
   );
