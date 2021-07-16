@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { VariableSizeList as List } from "react-window";
 import { useHistory } from "react-router-dom";
 import isEqual from "lodash/isEqual";
+import isEmpty from "lodash/isEmpty";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -82,7 +83,11 @@ export default connect((state, props) => {
   const [initialLoading, setInitialLoading] = useState(false);
   const [backgroundLoading, setBackgroundLoading] = useState(false);
 
-  const [items, setItems] = useState([]);
+  // const [items, setItems] = useState([]);
+  const [unfilteredItems, setItems] = useState([]);
+  const items = unfilteredItems.filter(
+    (item) => Array.isArray(item) || !isEmpty(item.data)
+  );
   const [itemCount, setItemCount] = useState(0);
   const [fields, setFields] = useState([]);
   const [filter, setFilter] = useState(
@@ -417,7 +422,7 @@ export default connect((state, props) => {
     runFilterTerm can perform all three actions
     as it is dealing with all of the items in the global state.
 
-    runFilterStatus 
+    runFilterStatus
 
     runSort only deals with the in state items so can work
     autonomously.
