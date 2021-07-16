@@ -4,7 +4,13 @@ import { connect } from "react-redux";
 import { useDomain } from "shell/hooks/use-domain";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEdit,
+  faFile,
+  faSave,
+  faSpinner,
+  faTextHeight,
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "@zesty-io/core/Url";
 import { Button } from "@zesty-io/core/Button";
@@ -15,8 +21,10 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
+import typographystyles from "@zesty-io/core/typography.less";
 
 import styles from "./Robots.less";
+import { Divider } from "@zesty-io/core/Divider";
 
 export default connect((state) => {
   return {
@@ -147,10 +155,11 @@ export default connect((state) => {
   return (
     <WithLoader condition={robotOn.ZUID} message="Finding robots.txt settings">
       <div className={styles.Robots}>
-        <h2 className={styles.display}>
-          <FontAwesomeIcon icon={faEdit} />
+        <h1 className={styles.subheadline}>
+          <FontAwesomeIcon icon={faFile} className={styles.titleIcon} />
           Robots.txt Editor
-        </h2>
+        </h1>
+        <Divider />
 
         <div className={styles.Row}>
           <FieldTypeBinary
@@ -189,8 +198,10 @@ export default connect((state) => {
           </Notice>
           <Notice>
             <p>
-              Stage/preview urls ALWAYS have robots.txt off to avoid being
-              crawled by search engines.
+              Non-Live domains ALWAYS have robots.txt off to avoid being crawled
+              by search engines. This include [hash]-dev.webengine.zesty.io,
+              [hash]-dev.preview.zesty.io, and any registered domain set to the
+              "dev" branch
             </p>
           </Notice>
         </div>

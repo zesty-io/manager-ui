@@ -1,7 +1,83 @@
-.selectProtocol {
-  max-width: 200px;
-}
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
 
-.ButtonSave {
-  margin-top: 8px;
+.Settings {
+  .saveButton {
+    max-width: 160px;
+    align-self: flex-end;
+  }
+  .selectProtocol {
+    max-width: 200px;
+  }
+  h1 {
+    color: @zesty-dark-blue !important;
+  }
+  .titleIcon {
+    font-size: 130%;
+    color: @zesty-white;
+    padding-right: 8px;
+    margin-bottom: -3px;
+  }
+  .ButtonSave {
+    margin-top: 8px;
+  }
+  .row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      flex-basis: 100%;
+      flex: 1;
+      min-width: 45%;
+      margin: 16px 2.5%;
+      label {
+        span {
+          margin-bottom: 8px;
+        }
+      }
+    }
+  }
+  .labelRow {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    a,
+    button {
+      flex: 1;
+    }
+    a {
+      flex-basis: 40px;
+      margin: auto 0px;
+    }
+    button {
+      flex-basis: 180px;
+      margin-left: auto;
+    }
+    p,
+    aside {
+      flex: 1;
+      flex-grow: 100;
+      margin: 0px 8px;
+    }
+    aside {
+      border-radius: 5px;
+      font-size: 0.8em;
+      svg {
+        color: @zesty-orange;
+      }
+    }
+  }
+
+  hr {
+    border-bottom: 1px lighten(@zesty-light-gray, 20%) solid !important;
+    margin: 8px 16px;
+  }
+  .flexCol {
+    width: 40%;
+  }
 }
