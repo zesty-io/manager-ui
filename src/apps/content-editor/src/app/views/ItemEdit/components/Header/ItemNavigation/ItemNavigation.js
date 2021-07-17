@@ -3,7 +3,7 @@ import cx from "classnames";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./ItemNavigation.less";
-export default function ItemNavigation({ modelZUID, itemZUID }) {
+export default function ItemNavigation({ modelZUID, itemZUID, item }) {
   const slug = window.location.href.split("/").pop();
 
   return (
@@ -35,28 +35,32 @@ export default function ItemNavigation({ modelZUID, itemZUID }) {
       >
         SEO &amp; Meta
       </AppLink>
-      <AppLink
-        data-cy="head"
-        className={cx(
-          styles.AppLink,
-          styles.buttonText,
-          slug === "head" ? styles.Selected : null
-        )}
-        to={`/content/${modelZUID}/${itemZUID}/head`}
-      >
-        Head Tags
-      </AppLink>
-      <AppLink
-        data-cy="preview"
-        className={cx(
-          styles.AppLink,
-          styles.buttonText,
-          slug === "preview" ? styles.Selected : null
-        )}
-        to={`/content/${modelZUID}/${itemZUID}/preview`}
-      >
-        WebEngine Preview
-      </AppLink>
+      {item.web.path && (
+        <AppLink
+          data-cy="head"
+          className={cx(
+            styles.AppLink,
+            styles.buttonText,
+            slug === "head" ? styles.Selected : null
+          )}
+          to={`/content/${modelZUID}/${itemZUID}/head`}
+        >
+          Head Tags
+        </AppLink>
+      )}
+      {item.web.path && (
+        <AppLink
+          data-cy="preview"
+          className={cx(
+            styles.AppLink,
+            styles.buttonText,
+            slug === "preview" ? styles.Selected : null
+          )}
+          to={`/content/${modelZUID}/${itemZUID}/preview`}
+        >
+          WebEngine Preview
+        </AppLink>
+      )}
     </nav>
   );
 }
