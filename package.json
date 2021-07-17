@@ -45,7 +45,7 @@
     "@riotjs/observable": "^4.0.4",
     "@sentry/react": "^6.4.0",
     "@sentry/tracing": "^6.4.0",
-    "@tinymce/tinymce-react": "3.8.4",
+    "@tinymce/tinymce-react": "^3.12.6",
     "@welldone-software/why-did-you-render": "^6.1.1",
     "@zesty-io/core": "1.2.2",
     "chart.js": "^2.9.3",
