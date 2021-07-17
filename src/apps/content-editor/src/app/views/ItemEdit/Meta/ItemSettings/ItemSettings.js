@@ -99,6 +99,8 @@ export const ItemSettings = memo(
               {web.metaDescription && web.metaDescription.substr(0, 160)}
             </p>
           </div>
+          <h6 className={styles.title}>Common Word Bank</h6>
+          <div>Word 1</div>
         </aside>
       </section>
     );
