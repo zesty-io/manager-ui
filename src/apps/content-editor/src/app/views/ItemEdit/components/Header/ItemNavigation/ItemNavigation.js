@@ -3,7 +3,7 @@ import cx from "classnames";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./ItemNavigation.less";
-export default function ItemNavigation({ modelZUID, itemZUID }) {
+export default function ItemNavigation({ modelZUID, itemZUID, item }) {
   const slug = window.location.href.split("/").pop();
 
   return (
@@ -13,11 +13,16 @@ export default function ItemNavigation({ modelZUID, itemZUID }) {
         className={cx(
           styles.AppLink,
           styles.buttonText,
-          slug !== "meta" && slug !== "head" ? styles.Selected : null
+          slug !== "meta" &&
+            slug !== "head" &&
+            slug !== "preview" &&
+            slug !== "headless"
+            ? styles.Selected
+            : null
         )}
         to={`/content/${modelZUID}/${itemZUID}`}
       >
-        Content
+        Edit Content
       </AppLink>
       <AppLink
         data-cy="meta"
@@ -28,19 +33,34 @@ export default function ItemNavigation({ modelZUID, itemZUID }) {
         )}
         to={`/content/${modelZUID}/${itemZUID}/meta`}
       >
-        Meta
+        SEO &amp; Meta
       </AppLink>
-      <AppLink
-        data-cy="head"
-        className={cx(
-          styles.AppLink,
-          styles.buttonText,
-          slug === "head" ? styles.Selected : null
-        )}
-        to={`/content/${modelZUID}/${itemZUID}/head`}
-      >
-        Head
-      </AppLink>
+      {item.web.path && (
+        <AppLink
+          data-cy="head"
+          className={cx(
+            styles.AppLink,
+            styles.buttonText,
+            slug === "head" ? styles.Selected : null
+          )}
+          to={`/content/${modelZUID}/${itemZUID}/head`}
+        >
+          Head Tags
+        </AppLink>
+      )}
+      {item.web.path && (
+        <AppLink
+          data-cy="preview"
+          className={cx(
+            styles.AppLink,
+            styles.buttonText,
+            slug === "preview" ? styles.Selected : null
+          )}
+          to={`/content/${modelZUID}/${itemZUID}/preview`}
+        >
+          WebEngine Preview
+        </AppLink>
+      )}
     </nav>
   );
 }

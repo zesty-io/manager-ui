@@ -27,6 +27,7 @@ import { PendingEditsModal } from "../../components/PendingEditsModal";
 import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
 import { Meta } from "./Meta";
+import { WebEnginePreview } from "./WebEnginePreview";
 import { ItemHead } from "./ItemHead";
 
 const selectSortedModelFields = createSelector(
@@ -300,6 +301,25 @@ export default function ItemEdit() {
             path="/content/:modelZUID/:itemZUID/meta"
             render={() => (
               <Meta
+                instance={instance}
+                modelZUID={modelZUID}
+                model={model}
+                itemZUID={itemZUID}
+                item={item}
+                items={items}
+                fields={fields}
+                user={user}
+                onSave={save}
+                dispatch={dispatch}
+                saving={saving}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/content/:modelZUID/:itemZUID/preview"
+            render={() => (
+              <WebEnginePreview
                 instance={instance}
                 modelZUID={modelZUID}
                 model={model}

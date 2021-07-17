@@ -1,0 +1,61 @@
+@import "~@zesty-io/core/typography.less";
+@import "~@zesty-io/core/colors.less";
+.WebEngineWrap {
+  .bottomFrame {
+    .browserWrap {
+      width: 90%;
+      max-width: 1400px;
+      margin: 0px auto;
+      margin-top: 10px;
+      background: @zesty-gray;
+      border-radius: 10px;
+      padding: 6px 0px 0px 0px;
+      .browserBar {
+        display: flex;
+        justify-content: space-between;
+        span.label {
+          color: @zesty-light-gray;
+          //font-weight: bold;
+          margin: auto 0px;
+          padding: 0px 20px;
+          font-size: 16px;
+        }
+        .browserUrl {
+          background: @zesty-dark-blue;
+          padding: 8px 10px;
+          border-radius: 30px;
+          border: none;
+          width: 40%;
+          color: @zesty-light-gray;
+          overflow-x: hidden;
+          &:focus {
+            outline: none;
+          }
+        }
+
+        .outboundLink {
+          border: 1px @zesty-light-gray solid;
+          padding: 5px 12px;
+          border-radius: 4px;
+          text-shadow: none;
+          margin-right: 24px;
+          color: lighten(@zesty-light-gray, 10%);
+          //background-color: @zesty-dark-blue;
+          &:hover {
+            text-shadow: none;
+
+            background-color: @zesty-dark-blue;
+          }
+        }
+      }
+
+      .previewFrame {
+        width: 100%;
+        margin-top: 6px;
+        height: 80vh;
+        border: none;
+        border-radius: 0px;
+      }
+    }
+  }
+}
