@@ -26,7 +26,7 @@ export function ContentInsights(props) {
     return string.replace(/(\d-(.*?)-(.*?))(,| )/gi, " ");
   };
   const stripPunctuation = (string) => {
-    return string.replace(/("|,|:|;|\. |!)/gi, " ");
+    return string.replace(/("|,|:|;|\?|+|\(|\)|\. |!)/gi, " ");
   };
   const stripDoubleSpace = (string) => {
     return string.replace(/\s\s+/g, " ");
