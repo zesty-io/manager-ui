@@ -5,10 +5,14 @@ import MetaDescription from "./settings/MetaDescription";
 import { MetaKeywords } from "./settings/MetaKeywords";
 import { MetaLinkText } from "./settings/MetaLinkText";
 import { ItemRoute } from "./settings/ItemRoute";
+import { ContentInsights } from "./ContentInsights";
 import { ItemParent } from "./settings/ItemParent";
 import { CanonicalTag } from "./settings/CanonicalTag";
 import { SitemapPriority } from "./settings/SitemapPriority";
 import { useDomain } from "shell/hooks/use-domain";
+import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import styles from "./ItemSettings.less";
 
@@ -38,7 +42,7 @@ export const ItemSettings = memo(
 
     return (
       <section className={styles.Meta}>
-        <main className={styles.Settings}>
+        <main className={styles.MetaMain}>
           {web.pathPart !== "zesty_home" && (
             <Fragment>
               <ItemParent
@@ -78,27 +82,39 @@ export const ItemSettings = memo(
             />
           )}
         </main>
-        <aside className={styles.GoogleListing}>
-          <h6 className={styles.title}>Example Search Engine Listing</h6>
-          <div className={styles.SearchResult}>
-            <h6 className={styles.GoogleTitle}>{web.metaTitle}</h6>
-            <div className={styles.GoogleLink}>
-              {domain ? (
-                <a
-                  id="google-link-example"
-                  target="_blank"
-                  href={`${domain}${web.path ? web.path : "/"}`}
-                >
-                  {`${domain}${web.path ? web.path : "/"}`}
-                </a>
-              ) : null}
+        <aside className={styles.MetaSide}>
+          <Card>
+            <CardHeader>
+              <section>
+                <div>
+                  <FontAwesomeIcon icon={faSearch} />
+                  &nbsp;Example Search Engine Listing
+                </div>
+              </section>
+            </CardHeader>
+            <CardContent>
+              <div className={styles.SearchResult}>
+                <h6 className={styles.GoogleTitle}>{web.metaTitle}</h6>
+                <div className={styles.GoogleLink}>
+                  {domain ? (
+                    <a
+                      id="google-link-example"
+                      target="_blank"
+                      href={`${domain}${web.path ? web.path : "/"}`}
+                    >
+                      {`${domain}${web.path ? web.path : "/"}`}
+                    </a>
+                  ) : null}
 
-              <span className={styles.Icon} />
-            </div>
-            <p className={styles.GoogleDesc}>
-              {web.metaDescription && web.metaDescription.substr(0, 160)}
-            </p>
-          </div>
+                  <span className={styles.Icon} />
+                </div>
+                <p className={styles.GoogleDesc}>
+                  {web.metaDescription && web.metaDescription.substr(0, 160)}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+          <ContentInsights content={props.item.data} meta={props.item.web} />
         </aside>
       </section>
     );
