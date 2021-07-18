@@ -319,7 +319,9 @@ export function ContentInsights(props) {
           })}
         </div>
         <Divider className={styles.divider} />
-        <h4>Word Occurences from Content</h4>
+        <h4>
+          Word Occurences from this Content Item (not fully rendered page)
+        </h4>
         <div className={styles.wordBank}>
           {wordArray.map((item, i) => {
             if (item.count > 1) {
