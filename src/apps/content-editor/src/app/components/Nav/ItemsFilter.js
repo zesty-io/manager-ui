@@ -1,6 +1,5 @@
 import { Search } from "@zesty-io/core/Search";
 import styles from "./ContentNav.less";
-import cx from "classnames";
 
 const ItemsFilter = (props) => {
   return (
