@@ -1,5 +1,6 @@
 import { Search } from "@zesty-io/core/Search";
 import styles from "./ContentNav.less";
+import cx from "classnames";
 
 const ItemsFilter = (props) => {
   return (
@@ -8,6 +9,7 @@ const ItemsFilter = (props) => {
       name="itemsFilter"
       placeholder="Filter items by name, zuid or path"
       value={props.searchTerm}
+      roundedEdge="true"
       onChange={(term) => {
         term = term.trim().toLowerCase();
         props.setSearchTerm(term);
