@@ -1,5 +1,6 @@
 import { memo, useCallback, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Search } from "@zesty-io/core/Search";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUpload,
@@ -30,16 +31,6 @@ export const MediaSidebar = memo(function MediaSidebar(props) {
 
   const [hiddenOpen, setHiddenOpen] = useState(false);
   const hiddenFileInput = useRef(null);
-
-  function handleSearch(event) {
-    event.preventDefault();
-    const term = props.searchTerm.trim();
-    if (term) {
-      dispatch(searchFiles(term));
-    } else {
-      dispatch(clearSearch());
-    }
-  }
 
   function handleUploadClick() {
     hiddenFileInput.current.click();
@@ -110,6 +101,32 @@ export const MediaSidebar = memo(function MediaSidebar(props) {
     );
   };
 
+  const [name, setName] = useState("");
+
+  // function handleSearch(event) {
+  //   event.preventDefault();
+  //   const term = props.searchTerm.trim();
+  //   console.log(term)
+  //   if (term) {
+  //     dispatch(searchFiles(term));
+  //   } else {
+  //     dispatch(clearSearch());
+  //   }
+  // }
+
+  const handleSearch = (term) => {
+    term = term.trim().toLowerCase();
+    setName(term);
+    // console.log(setName(term.trim()));
+    // console.log(name)
+
+    if (term) {
+      dispatch(searchFiles(name));
+    } else {
+      dispatch(clearSearch());
+    }
+  };
+
   return (
     <nav className={cx(styles.Nav, hiddenOpen ? styles.hiddenOpen : null)}>
       <div className={styles.TopNav}>
@@ -130,7 +147,16 @@ export const MediaSidebar = memo(function MediaSidebar(props) {
           onChange={handleFileInputChange}
           style={{ display: "none" }}
         />
-        <form className={styles.SearchForm} onSubmit={handleSearch}>
+
+        <Search
+          type="search"
+          className={styles.Search}
+          placeholder="Search your files"
+          value={name}
+          onChange={handleSearch}
+        ></Search>
+
+        {/* <form className={styles.SearchForm} onSubmit={handleSearch}>
           <input
             type="search"
             className={shared.Input}
@@ -141,7 +167,7 @@ export const MediaSidebar = memo(function MediaSidebar(props) {
           <button type="submit" aria-label="Search">
             <FontAwesomeIcon icon={faSearch} />
           </button>
-        </form>
+        </form> */}
       </div>
       <MediaNav
         className={styles.MediaNav}
