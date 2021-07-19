@@ -1,6 +1,8 @@
 import { memo, useCallback, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import debounce from "lodash/debounce";
 import { Search } from "@zesty-io/core/Search";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUpload,
@@ -31,6 +33,18 @@ export const MediaSidebar = memo(function MediaSidebar(props) {
 
   const [hiddenOpen, setHiddenOpen] = useState(false);
   const hiddenFileInput = useRef(null);
+
+  const debouncedSearch = useCallback(
+    debounce((term) => {
+      const lowerCaseTerm = term.trim().toLowerCase();
+      if (lowerCaseTerm) {
+        dispatch(searchFiles(lowerCaseTerm));
+      } else {
+        dispatch(clearSearch());
+      }
+    }, 650),
+    []
+  );
 
   function handleUploadClick() {
     hiddenFileInput.current.click();
@@ -101,32 +115,6 @@ export const MediaSidebar = memo(function MediaSidebar(props) {
     );
   };
 
-  const [name, setName] = useState("");
-
-  // function handleSearch(event) {
-  //   event.preventDefault();
-  //   const term = props.searchTerm.trim();
-  //   console.log(term)
-  //   if (term) {
-  //     dispatch(searchFiles(term));
-  //   } else {
-  //     dispatch(clearSearch());
-  //   }
-  // }
-
-  const handleSearch = (term) => {
-    term = term.trim().toLowerCase();
-    setName(term);
-    // console.log(setName(term.trim()));
-    // console.log(name)
-
-    if (term) {
-      dispatch(searchFiles(name));
-    } else {
-      dispatch(clearSearch());
-    }
-  };
-
   return (
     <nav className={cx(styles.Nav, hiddenOpen ? styles.hiddenOpen : null)}>
       <div className={styles.TopNav}>
@@ -150,24 +138,10 @@ export const MediaSidebar = memo(function MediaSidebar(props) {
 
         <Search
           type="search"
-          className={styles.Search}
+          className={cx(styles.Search, styles.SearchForm)}
           placeholder="Search your files"
-          value={name}
-          onChange={handleSearch}
+          onChange={debouncedSearch}
         ></Search>
-
-        {/* <form className={styles.SearchForm} onSubmit={handleSearch}>
-          <input
-            type="search"
-            className={shared.Input}
-            placeholder="Search your files"
-            value={props.searchTerm}
-            onChange={(event) => props.setSearchTerm(event.target.value)}
-          />
-          <button type="submit" aria-label="Search">
-            <FontAwesomeIcon icon={faSearch} />
-          </button>
-        </form> */}
       </div>
       <MediaNav
         className={styles.MediaNav}
