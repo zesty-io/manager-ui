@@ -49,6 +49,7 @@ Every instance has a Zesty Universal ID (ZUID) which uniquely identifies itself 
 **NOTE: Running the instance manager locally still connects to remote PRODUCTION resources. Meaning any actions you take will be done against your live instance.**
 
 _e.g. linux: `/etc/hosts`_
+windows: `c:\windows\system32\drivers\etc\hosts`
 
 ```
 127.0.0.1 <YOUR_UNIQUE_INSTANCE_ZUID>.manager.zesty.io

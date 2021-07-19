@@ -1,0 +1,86 @@
+@import "~@zesty-io/core/typography.less";
+@import "~@zesty-io/core/colors.less";
+@roundPx: 6px;
+.ContentInsights {
+  background: white;
+
+  .divider {
+    margin: 8px 0px;
+  }
+  .toggleButton {
+    padding: 0px 10px !important;
+    margin-bottom: auto;
+  }
+  .level {
+    display: flex;
+    div {
+      flex: 1;
+      text-align: center;
+      background-color: lighten(@zesty-light-gray, 15%);
+      border: 1px lighten(@zesty-light-gray, 15%) solid;
+      color: @zesty-gray;
+      border-radius: 4px;
+      margin-right: 8px;
+      overflow: hidden;
+      padding-top: 4px;
+      &:last-child {
+        margin-right: 0px;
+      }
+      span {
+        display: block;
+        font-size: 2em;
+        background: white;
+        color: @zesty-dark-blue;
+        padding: 8px 0px;
+        margin-top: 4px;
+      }
+    }
+  }
+  .wordBank {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    .wordGroup {
+      display: flex;
+      width: min-content;
+      font-size: 1em;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      border: 1px lighten(@zesty-light-gray, 15%) solid;
+      border-radius: @roundPx;
+      overflow: hidden;
+
+      strong {
+        width: 20px;
+        flex: 1;
+        display: inline-block;
+        background: lighten(@zesty-light-gray, 15%);
+        color: @zesty-dark-blue;
+
+        padding: 5px 8px;
+        font-weight: 600;
+      }
+      span {
+        flex: 5;
+        flex-direction: column;
+        flex-basis: 100%;
+        display: inline-block;
+        color: @zesty-dark-blue;
+        background: white;
+
+        padding: 5px 0px 5px 8px;
+      }
+      &.hidden {
+        display: none;
+      }
+      &.matched {
+        border: 1px lighten(@zesty-green, 20%) solid;
+        strong {
+          background: lighten(@zesty-green, 20%);
+          color: darken(@zesty-green, 20%);
+        }
+      }
+    }
+  }
+}
