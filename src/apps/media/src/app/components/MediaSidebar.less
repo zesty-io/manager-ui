@@ -1,8 +1,9 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
 @import "../MediaApp.less";
 
 .Nav {
-  background-color: #404759;
+  background-color: @nav-background-color;
   word-break: break-word;
   min-height: 100%;
 
@@ -27,14 +28,14 @@
       margin: 0 0 8px 0;
 
       @media only screen and (min-width: 2000px) {
-        margin: 4px 0 0 4px;
+        margin: 4px 8px 0 4px;
       }
     }
   }
 
   .NavTitle {
-    color: #c3cddf;
-    font-size: 14px;
+    color: @zesty-light-blue;
+    font-size: @font-size-label;
     text-align: left;
     padding: 4px 12px;
     display: flex;
