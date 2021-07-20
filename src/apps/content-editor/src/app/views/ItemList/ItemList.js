@@ -83,7 +83,6 @@ export default connect((state, props) => {
   const [initialLoading, setInitialLoading] = useState(false);
   const [backgroundLoading, setBackgroundLoading] = useState(false);
 
-  // const [items, setItems] = useState([]);
   const [unfilteredItems, setItems] = useState([]);
   const items = unfilteredItems.filter(
     (item) => Array.isArray(item) || !isEmpty(item.data)
