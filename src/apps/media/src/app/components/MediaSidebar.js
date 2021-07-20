@@ -1,5 +1,8 @@
 import { memo, useCallback, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import debounce from "lodash/debounce";
+import { Search } from "@zesty-io/core/Search";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUpload,
@@ -31,15 +34,17 @@ export const MediaSidebar = memo(function MediaSidebar(props) {
   const [hiddenOpen, setHiddenOpen] = useState(false);
   const hiddenFileInput = useRef(null);
 
-  function handleSearch(event) {
-    event.preventDefault();
-    const term = props.searchTerm.trim();
-    if (term) {
-      dispatch(searchFiles(term));
-    } else {
-      dispatch(clearSearch());
-    }
-  }
+  const debouncedSearch = useCallback(
+    debounce((term) => {
+      const lowerCaseTerm = term.trim().toLowerCase();
+      if (lowerCaseTerm) {
+        dispatch(searchFiles(lowerCaseTerm));
+      } else {
+        dispatch(clearSearch());
+      }
+    }, 650),
+    []
+  );
 
   function handleUploadClick() {
     hiddenFileInput.current.click();
@@ -130,18 +135,13 @@ export const MediaSidebar = memo(function MediaSidebar(props) {
           onChange={handleFileInputChange}
           style={{ display: "none" }}
         />
-        <form className={styles.SearchForm} onSubmit={handleSearch}>
-          <input
-            type="search"
-            className={shared.Input}
-            placeholder="Search your files"
-            value={props.searchTerm}
-            onChange={(event) => props.setSearchTerm(event.target.value)}
-          />
-          <button type="submit" aria-label="Search">
-            <FontAwesomeIcon icon={faSearch} />
-          </button>
-        </form>
+
+        <Search
+          type="search"
+          className={cx(styles.Search, styles.SearchForm)}
+          placeholder="Search your files"
+          onChange={debouncedSearch}
+        ></Search>
       </div>
       <MediaNav
         className={styles.MediaNav}
