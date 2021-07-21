@@ -14,7 +14,16 @@ export function LeadExporter() {
 
   return (
     <header className={styles.LeadExporter}>
-      <div className={cx(styles.filter)}>
+      <div className={cx(styles.filter, styles.Date)}>
+        <TableDateFilter />
+      </div>
+      <div className={styles.filter}>
+        <FormGroupSelector />
+      </div>
+      <div className={styles.filter}>
+        <DownloadCSVButton />
+      </div>
+      <div className={cx(styles.filter, styles.SearchEnd)}>
         <Search
           className={styles.Search}
           name="text-filter"
@@ -26,15 +35,6 @@ export function LeadExporter() {
             dispatch(setFilterText(value));
           }}
         />
-      </div>
-      <div className={cx(styles.filter, styles.Date)}>
-        <TableDateFilter />
-      </div>
-      <div className={styles.filter}>
-        <FormGroupSelector />
-      </div>
-      <div className={styles.filter}>
-        <DownloadCSVButton />
       </div>
     </header>
   );
