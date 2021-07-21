@@ -9,13 +9,6 @@ import styles from "./styles.less";
 export default memo(function AuditControls(props) {
   return (
     <header className={styles.auditControls}>
-      <Search
-        className={styles.SearchLogs}
-        placeholder="Search AuditTrail Logs"
-        onChange={(value) => {
-          props.setSearch(value.trim().toLowerCase());
-        }}
-      />
       <ButtonGroup className={styles.btnGroup}>
         <Button
           className={cx(styles.child, {
@@ -60,6 +53,13 @@ export default memo(function AuditControls(props) {
           Last Month
         </Button>
       </ButtonGroup>
+      <Search
+        className={styles.SearchLogs}
+        placeholder="Search AuditTrail Logs"
+        onChange={(value) => {
+          props.setSearch(value.trim().toLowerCase());
+        }}
+      />
     </header>
   );
 });
