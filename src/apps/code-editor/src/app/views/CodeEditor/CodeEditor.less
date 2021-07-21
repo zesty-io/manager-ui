@@ -1,11 +1,13 @@
+@import "~@zesty-io/core/colors.less";
+
 .CodeEditor {
   display: grid;
-  grid-template-columns: minmax(200px, 20vw) 1fr;
+  grid-template-columns: minmax(200px, 350px) 1fr;
   height: calc(100vh - 54px);
   overflow: hidden;
 
   .Nav {
-    background-color: #404759;
+    background-color: @nav-background-color;
     word-break: break-word;
   }
   .FileEditor {

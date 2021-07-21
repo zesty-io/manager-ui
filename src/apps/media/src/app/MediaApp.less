@@ -1,6 +1,6 @@
 @import "~@zesty-io/core/typography.less";
 
-@nav-width: 20vw;
+@nav-width: minmax(200px, 350px);
 .MediaApp {
   overflow: hidden;
   display: grid;
@@ -8,7 +8,7 @@
   font-family: @font-family-default;
 
   & > section[class*="Loading"] {
-    background-color: #f2f7fc;
+    background-color: @appBkgColor;
     position: absolute;
   }
   @media (min-width: 2000px) {
