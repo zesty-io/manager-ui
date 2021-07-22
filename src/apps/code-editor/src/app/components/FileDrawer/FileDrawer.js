@@ -1,6 +1,7 @@
 import { memo, useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
+import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
@@ -21,6 +22,8 @@ import { fetchFields } from "shell/store/fields";
 import styles from "./FileDrawer.less";
 export const FileDrawer = memo(function FileDrawer(props) {
   const dispatch = useDispatch();
+  const platform = useSelector((state) => state.platform);
+  console.log("davey", platform.isMac);
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -85,6 +88,22 @@ export const FileDrawer = memo(function FileDrawer(props) {
     setOpen(!open);
   }
 
+  const onKeydownDrawer = (evt) => {
+    if (
+      ((platform.isMac && evt.metaKey) || (!platform.isMac && evt.ctrlKey)) &&
+      evt.key == "d"
+    ) {
+      evt.preventDefault();
+      handleSetOpen();
+    }
+  };
+  useEffect(() => {
+    window.addEventListener("keydown", onKeydownDrawer);
+    return () => {
+      window.removeEventListener("keydown", onKeydownDrawer);
+    };
+  });
+
   return (
     <Drawer
       className={styles.Drawer}
@@ -102,7 +121,16 @@ export const FileDrawer = memo(function FileDrawer(props) {
         </Button>
 
         {open ? null : (
-          <span className={styles.bodyText}>More file information</span>
+          <span className={styles.bodyText}>More file information&nbsp;</span>
+        )}
+        {open ? (
+          <span className={cx(styles.bodyText, styles.DrawerShortcut)}>
+            ({platform.isMac ? "CMD" : "CTRL"} + D) Close Drawer
+          </span>
+        ) : (
+          <span className={cx(styles.bodyText, styles.DrawerShortcut)}>
+            ({platform.isMac ? "CMD" : "CTRL"} + D) Open Drawer
+          </span>
         )}
       </DrawerHandle>
       <DrawerContent className={styles.DrawerContent}>
