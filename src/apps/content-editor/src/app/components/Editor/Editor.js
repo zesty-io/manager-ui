@@ -81,8 +81,20 @@ export default class Editor extends PureComponent {
             value: value
               .trim()
               .toLowerCase()
-              .replace(/'|-|"|@|%|\(|\)|:|\{|\}|\[|\]|\*|\$|!|,|¿|¡|`/g, "")
+              .replace(
+                /'|-|"|@|%|\(|\)|:|;|\{|\}|\[|\]|\*|\$|!|,|¿|¡|`|™|©|®|€/g,
+                ""
+              )
               .replace(/\&/g, "and")
+              .replace("æ", "ae")
+              .replace("œ", "oe")
+              .replace(/å|à|á|â|ä/g, "a")
+              .replace(/è|é|ê|ë/g, "e")
+              .replace(/ì|í|î|ï/g, "i")
+              .replace(/ñ/, "n")
+              .replace(/ò|ó|ô|ö/g, "o")
+              .replace(/ù|ú|û|ü/g, "u")
+              .replace("æ", "ae")
               .replace(/\+/g, "plus")
               .replace(/\s+/g, " ")
               .replace(/[^a-zA-Z0-9]/g, "-"),
