@@ -26,7 +26,6 @@
     flex-direction: column;
     padding: 8px;
     overflow: hidden;
-    overflow-x: none;
 
     .Search {
       display: flex;
@@ -45,11 +44,8 @@
   }
 
   .ModelList {
-    height: calc(100vh - 54px - 102px);
-
-    @media only screen and (min-width: 2000px) {
-      height: calc(100vh - 54px - 56px);
-    }
+    // 100vh - GlobalTopbar - NavActions
+    height: calc(100vh - 54px - 106px);
 
     margin: 0;
     overflow-y: auto;

@@ -1,7 +1,7 @@
 @import "~@zesty-io/core/colors.less";
 
 .FileList {
-  background: #404759;
+  background: @nav-background-color;
   margin: 0;
   padding: 0;
 
@@ -46,20 +46,21 @@
 
   .Title {
     align-items: center;
-    background-color: #5b667d;
+    background-color: @zesty-grey;
     display: flex;
     padding: 12px 12px 4px 12px;
 
     h1 {
-      color: #c3cddf;
+      color: @zesty-light-blue;
       text-transform: uppercase;
       margin-right: auto;
     }
   }
 
   .List {
-    background: #404759;
-    height: calc(100vh - 54px - 57px);
+    background: @nav-background-color;
+    // 100vh - GlobalTopbar - NavActions
+    height: calc(100vh - 54px - 106px);
     margin: 0;
     overflow-x: hidden;
     padding: 0;
