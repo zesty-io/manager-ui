@@ -31,7 +31,7 @@ export const fetchResource =
             }
           });
       } else {
-        // console.log("duplicate request: ", action.uri);
+        console.log("duplicate request: ", action.uri);
         return Promise.resolve({
           status: 409,
           data: {},
