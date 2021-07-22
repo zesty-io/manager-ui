@@ -96,7 +96,7 @@ export default class Editor extends PureComponent {
               .replace(/ù|ú|û|ü/g, "u")
               .replace("æ", "ae")
               .replace(/\+/g, "plus")
-              .replace(/\s+/g, " ")
+              .replace(/\s+/g, " ") // really important to be last, this prevent doubling or trippling up hyphens due to mulitple spaces
               .replace(/[^a-zA-Z0-9]/g, "-"),
           });
         }
