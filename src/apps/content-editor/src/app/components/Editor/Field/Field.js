@@ -1,8 +1,8 @@
-import { memo, useMemo, useCallback, useState } from "react";
+import { memo, useMemo, useEffect, useCallback, useState } from "react";
 import ReactDOM from "react-dom";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import moment from "moment-timezone";
-
+import { usePrevious } from "react-use";
 import { fetchFields } from "shell/store/fields";
 import { fetchItem, fetchItems, searchItems } from "shell/store/content";
 
@@ -11,7 +11,6 @@ import {
   faEdit,
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
-
 // it would be nice to have a central import for all of these
 // instead of individually importing
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -149,32 +148,40 @@ function resolveRelatedOptions(
 const getSelectedLang = (langs, langID) =>
   langs.find((lang) => lang.ID === langID).code;
 
-export default connect((state) => {
-  return {
-    allItems: state.content,
-    allFields: state.fields,
-    allLanguages: state.languages,
-  };
-})(function Field(props) {
-  const {
-    ZUID,
-    contentModelZUID,
-    value,
-    datatype,
-    required,
-    settings,
-    label,
-    description,
-    name,
-    relatedFieldZUID,
-    relatedModelZUID,
-    langID,
-    onChange,
-    onSave,
-    dispatch,
-  } = props;
+export default function Field({
+  ZUID,
+  contentModelZUID,
+  item,
+  datatype,
+  required,
+  settings,
+  label,
+  description,
+  name,
+  relatedFieldZUID,
+  relatedModelZUID,
+  langID,
+  onChange,
+  onSave,
+}) {
+  const dispatch = useDispatch();
+  const allItems = useSelector((state) => state.content);
+  const allFields = useSelector((state) => state.fields);
+  const allLanguages = useSelector((state) => state.languages);
 
   const [imageModal, setImageModal] = useState();
+  const value = item?.data?.[name];
+  const [versionedValue, setVersionedValue] = useState(value);
+
+  const version = item?.meta?.version;
+  const prevVersion = usePrevious(version);
+
+  useEffect(() => {
+    // only set value if version is changed
+    if (version !== prevVersion) {
+      setVersionedValue(value);
+    }
+  }, [version, prevVersion, value]);
 
   function renderMediaModal() {
     return ReactDOM.createPortal(
@@ -264,7 +271,7 @@ export default connect((state) => {
             description={description}
             tooltip={settings.tooltip}
             required={required}
-            value={value}
+            value={versionedValue}
             onChange={onChange}
             onSave={onSave}
             type={datatype}
@@ -416,17 +423,17 @@ export default connect((state) => {
       );
 
     case "internal_link":
-      let internalLinkRelatedItem = props.allItems[value];
+      let internalLinkRelatedItem = allItems[value];
       let internalLinkOptions = useMemo(() => {
-        return Object.keys(props.allItems)
+        return Object.keys(allItems)
           .filter(
             (itemZUID) =>
               !itemZUID.includes("new") && // exclude new items
-              props.allItems[itemZUID].meta.ZUID && // ensure the item has a zuid
-              props.allItems[itemZUID].web.pathPart // exclude items non-routeable items
+              allItems[itemZUID].meta.ZUID && // ensure the item has a zuid
+              allItems[itemZUID].web.pathPart // exclude items non-routeable items
           )
           .map((itemZUID) => {
-            let item = props.allItems[itemZUID];
+            let item = allItems[itemZUID];
             let html = "";
 
             if (item.web.metaTitle) {
@@ -454,7 +461,7 @@ export default connect((state) => {
             };
           })
           .sort(sortHTML);
-      }, [internalLinkRelatedItem, Object.keys(props.allItems).length]);
+      }, [internalLinkRelatedItem, Object.keys(allItems).length]);
 
       if (
         !internalLinkRelatedItem ||
@@ -494,7 +501,7 @@ export default connect((state) => {
 
     case "one_to_one":
       // If the initial value doesn't exist in local store load from API
-      if (value && (!props.allItems[value] || !props.allItems[value].meta)) {
+      if (value && (!allItems[value] || !allItems[value].meta)) {
         if (relatedModelZUID && value) {
           if (value != "0") {
             dispatch(fetchItem(relatedModelZUID, value));
@@ -505,23 +512,23 @@ export default connect((state) => {
       const onOneToOneOpen = useCallback(() => {
         return dispatch(
           fetchItems(relatedModelZUID, {
-            lang: getSelectedLang(props.allLanguages, langID),
+            lang: getSelectedLang(allLanguages, langID),
           })
         );
-      }, [props.allLanguages.length, relatedModelZUID, langID]);
+      }, [allLanguages.length, relatedModelZUID, langID]);
 
       let oneToOneOptions = useMemo(() => {
         return resolveRelatedOptions(
-          props.allFields,
-          props.allItems,
+          allFields,
+          allItems,
           relatedFieldZUID,
           relatedModelZUID,
           langID,
           value
         );
       }, [
-        Object.keys(props.allFields).length,
-        Object.keys(props.allItems).length,
+        Object.keys(allFields).length,
+        Object.keys(allItems).length,
         relatedModelZUID,
         relatedFieldZUID,
         langID,
@@ -573,8 +580,8 @@ export default connect((state) => {
       // when an endpoint is available for that purpose
       // if (value) {
       //   const resolved = resolveRelatedOptions(
-      //     props.allFields,
-      //     props.allItems,
+      //     allFields,
+      //     allItems,
       //     relatedFieldZUID,
       //     relatedModelZUID
       //   );
@@ -586,16 +593,16 @@ export default connect((state) => {
 
       const oneToManyOptions = useMemo(() => {
         return resolveRelatedOptions(
-          props.allFields,
-          props.allItems,
+          allFields,
+          allItems,
           relatedFieldZUID,
           relatedModelZUID,
           langID,
           value
         );
       }, [
-        Object.keys(props.allFields).length,
-        Object.keys(props.allItems).length,
+        Object.keys(allFields).length,
+        Object.keys(allItems).length,
         relatedModelZUID,
         relatedFieldZUID,
         langID,
@@ -608,11 +615,11 @@ export default connect((state) => {
           dispatch(fetchFields(relatedModelZUID)),
           dispatch(
             fetchItems(relatedModelZUID, {
-              lang: getSelectedLang(props.allLanguages, langID),
+              lang: getSelectedLang(allLanguages, langID),
             })
           ),
         ]);
-      }, [props.allLanguages.length, relatedModelZUID, langID]);
+      }, [allLanguages.length, relatedModelZUID, langID]);
 
       return (
         <FieldTypeOneToMany
@@ -720,4 +727,4 @@ export default connect((state) => {
         </AppLink>
       );
   }
-});
+}
