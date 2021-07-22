@@ -8,6 +8,9 @@ import { Input } from "@zesty-io/core/Input";
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
 
 import { createRedirect } from "../../../../store/redirects";
+import RedirectsImport from "../../../RedirectsManager/RedirectActions/RedirectsImport/RedirectsImport";
+
+import { CSVImporter } from "../../../../../src/store/imports";
 
 import styles from "./RedirectCreator.less";
 import ContentSearch from "shell/components/ContentSearch";
@@ -73,6 +76,13 @@ export function RedirectCreator(props) {
           <FontAwesomeIcon icon={faPlus} />
           Create Redirect
         </Button>
+      </span>
+      <span className={styles.RedirectCreatorCell}>
+        <RedirectsImport
+          onChange={(evt) => {
+            props.dispatch(CSVImporter(evt));
+          }}
+        />
       </span>
     </div>
   );

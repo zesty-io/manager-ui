@@ -18,6 +18,7 @@ import {
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
 import { deleteItem } from "shell/store/content";
+import { closeTab } from "shell/store/ui";
 
 export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
   const history = useHistory();
@@ -69,11 +70,11 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
           onClick={() => {
             setConfirmOpen(false);
             setDeleting(true);
-
             props
               .dispatch(deleteItem(props.modelZUID, props.itemZUID))
               .then((res) => {
                 if (res.status === 200) {
+                  props.dispatch(closeTab(history.location.pathname));
                   history.push("/content/" + props.modelZUID);
                 } else {
                   // if delete fails, component is still mounted, so we can set state

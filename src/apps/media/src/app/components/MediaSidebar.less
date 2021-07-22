@@ -1,8 +1,9 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
 @import "../MediaApp.less";
 
 .Nav {
-  background-color: #404759;
+  background-color: @nav-background-color;
   word-break: break-word;
   min-height: 100%;
 
@@ -11,51 +12,16 @@
     display: flex;
     flex-direction: column;
 
-    @media only screen and (min-width: 2000px) {
-      flex-direction: row;
-      align-items: center;
-    }
-    //Temporary search button styles until we pull from DS
     .SearchForm {
-      display: flex;
-      flex: 1;
-
-      button {
-        align-items: center;
-        background-color: #404759;
-        border: 1px solid #404759;
-        border-radius: 0 3px 3px 0;
-        background-color: #404759;
-        box-shadow: inset 0 -2px 2px 0 rgba(26, 32, 44, 0.24),
-          inset 0 0 2px 0 rgba(26, 32, 44, 0.12);
-        color: #ffffff;
-        cursor: pointer;
-        display: flex;
-        font-weight: 500;
-        font-style: normal;
-        font-stretch: normal;
-        line-height: 24px;
-        letter-spacing: 0.1px;
-        padding: 8px 16px 8px 16px;
-        flex-direction: row;
-        justify-content: flex-start;
-        text-transform: uppercase;
-        text-align: left;
-      }
-    }
-
-    .Upload {
-      margin: 0 0 8px 0;
-
-      @media only screen and (min-width: 2000px) {
-        margin: 0 0 0 4px;
+      input {
+        flex: 1;
       }
     }
   }
 
   .NavTitle {
-    color: #c3cddf;
-    font-size: 14px;
+    color: @zesty-light-blue;
+    font-size: @font-size-label;
     text-align: left;
     padding: 4px 12px;
     display: flex;
