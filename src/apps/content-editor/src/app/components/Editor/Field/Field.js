@@ -179,9 +179,9 @@ export default function Field({
   useEffect(() => {
     // only set value if version is changed
     if (version !== prevVersion) {
-      setVersionedValue(item?.data?.[name]);
+      setVersionedValue(value);
     }
-  }, [version, prevVersion, item, name]);
+  }, [version, prevVersion, value]);
 
   function renderMediaModal() {
     return ReactDOM.createPortal(
