@@ -81,7 +81,10 @@ export default class Editor extends PureComponent {
             value: value
               .trim()
               .toLowerCase()
+              .replace(/'|-|"|@|%|\(|\)|:|\{|\}|\[|\]|\*|\$|!|,|¿|¡|`/g, "")
               .replace(/\&/g, "and")
+              .replace(/\+/g, "plus")
+              .replace(/\s+/g, " ")
               .replace(/[^a-zA-Z0-9]/g, "-"),
           });
         }
