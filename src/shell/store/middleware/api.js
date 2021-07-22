@@ -31,8 +31,12 @@ export const fetchResource =
             }
           });
       } else {
-        console.log("duplicate request: ", action.uri);
-        return Promise.resolve();
+        // console.log("duplicate request: ", action.uri);
+        return Promise.resolve({
+          status: 409,
+          data: {},
+          message: "DuplicateRequest: Not sent to server",
+        });
       }
     } else {
       return next(action);
