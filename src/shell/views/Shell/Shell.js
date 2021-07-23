@@ -22,6 +22,7 @@ import LeadsApp from "apps/leads/src";
 import SchemaApp from "apps/schema/src";
 import SeoApp from "apps/seo/src";
 import SettingsApp from "apps/settings/src";
+import VendorApp from "apps/vendor-app/src";
 
 import styles from "./Shell.less";
 
@@ -109,6 +110,15 @@ export default connect((state) => {
                           key={product}
                           path="/settings"
                           component={SettingsApp}
+                        />
+                      );
+
+                    case "apps":
+                      return (
+                        <Route
+                          key={product}
+                          path="/apps"
+                          component={VendorApp}
                         />
                       );
                     default:
