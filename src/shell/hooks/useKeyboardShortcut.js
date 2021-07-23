@@ -1,7 +1,13 @@
 import { useEffect, useCallback, useReducer } from "react";
 
-//https://keycode.info/
+/*/
+https://keycode.info/
 //https://github.com/arthurtyukayev/use-keyboard-shortcut
+
+ EX:   useKeyboardShortcut(["meta", "d"], () => console.log("Action"), {
+    overrideSystem: true,
+  });
+  */
 
 const blacklistedTargets = ["INPUT", "TEXTAREA"];
 
@@ -40,6 +46,7 @@ const useKeyboardShortcut = (shortcutKeys, callback, options) => {
 
   const { overrideSystem } = options || {};
 
+  //Converting array keys pressed to an object of lowercase keys
   const initalKeyMapping = shortcutKeys.reduce((currentKeys, key) => {
     currentKeys[key.toLowerCase()] = false;
     return currentKeys;
@@ -47,13 +54,21 @@ const useKeyboardShortcut = (shortcutKeys, callback, options) => {
 
   const [keys, setKeys] = useReducer(keysReducer, initalKeyMapping);
 
+  //Prevent function from being re-created, we wrap in useCallback
   const keydownListener = useCallback(
     (assignedKey) => (keydownEvent) => {
       const loweredKey = assignedKey.toLowerCase();
 
+      //Check to make sure that this KeyboardEvent is not a repeating event,
       if (keydownEvent.repeat) return;
+
+      //Check to make sure that DOM element isn't an input or textarea because we don't want to trigger keyboard shortcuts when the user is typing.
       if (blacklistedTargets.includes(keydownEvent.target.tagName)) return;
+
+      //Check to make sure that the pressed key is in the shortcutKeys array,
       if (loweredKey !== keydownEvent.key.toLowerCase()) return;
+
+      //Update the state to indicate the key is being held down.‍
       if (keys[loweredKey] === undefined) return;
 
       if (overrideSystem) {
@@ -86,6 +101,7 @@ const useKeyboardShortcut = (shortcutKeys, callback, options) => {
     [keys, overrideSystem]
   );
 
+  // Check out keys state object to make sure that all of the keys are currently being held down. Once that criteria is met it will fire the callback function.
   useEffect(() => {
     if (!Object.values(keys).filter((value) => !value).length) {
       callback(keys);
