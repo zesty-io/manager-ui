@@ -2,8 +2,7 @@ import { memo, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import cx from "classnames";
-
-import useKeyboardShortcut from "shell/hooks/useKeyboardShortcut";
+import { useKeyboardShortcut } from "shell/hooks/useKeyboardShortcut";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
@@ -89,8 +88,9 @@ export const FileDrawer = memo(function FileDrawer(props) {
     setOpen(!open);
   }
 
-  useKeyboardShortcut(["meta", "d"], () => handleSetOpen(), {
-    overrideSystem: true,
+  // Handle keyboard shortcut Drawer
+  useKeyboardShortcut("d", () => {
+    handleSetOpen();
   });
 
   return (

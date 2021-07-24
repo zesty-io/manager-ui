@@ -9,6 +9,7 @@ import {
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
+import { useKeyboardShortcut } from "shell/hooks/useKeyboardShortcut";
 
 import { notify } from "shell/store/notifications";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
@@ -79,25 +80,10 @@ export default function ItemEdit() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // handle keyboard shortcut save
-  useEffect(() => {
-    const handleSaveKeyboardShortcut = (event) => {
-      if (
-        ((platform.isMac && event.metaKey) ||
-          (!platform.isMac && event.ctrlKey)) &&
-        event.key == "s"
-      ) {
-        event.preventDefault();
-        if (item && item.dirty) {
-          save();
-        }
-      }
-    };
-    window.addEventListener("keydown", handleSaveKeyboardShortcut);
-    return () => {
-      window.removeEventListener("keydown", handleSaveKeyboardShortcut);
-    };
-  }, [item]);
+  // Handle keyboard shortcut save
+  useKeyboardShortcut("s", () => {
+    save();
+  });
 
   useEffect(() => {
     // on mount and modelZUID/itemZUID update,
