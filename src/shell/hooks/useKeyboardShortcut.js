@@ -1,7 +1,14 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
+/*
+Usage Example
+  useKeyboardShortcut("letter", () => callback());
+
+*/
+
 export function useKeyboardShortcut(key, callback) {
+  //Get OS
   const platform = useSelector((state) => state.platform);
 
   if (!key)

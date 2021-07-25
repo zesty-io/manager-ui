@@ -85,7 +85,7 @@ export const FileDrawer = memo(function FileDrawer(props) {
 
   function handleSetOpen() {
     // TODO persist to user settings
-    setOpen(!open);
+    setOpen((open) => !open);
   }
 
   // Handle keyboard shortcut Drawer
