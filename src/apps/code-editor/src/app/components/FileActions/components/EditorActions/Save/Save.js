@@ -1,5 +1,6 @@
 import { memo, useState, useEffect } from "react";
 import { connect } from "react-redux";
+import { useKeyboardShortcut } from "shell/hooks/useKeyboardShortcut";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faSave } from "@fortawesome/free-solid-svg-icons";
@@ -29,22 +30,8 @@ export default connect((state) => {
           setSaving(false);
         });
     };
-    const onKeydownSave = (evt) => {
-      if (
-        ((props.platform.isMac && evt.metaKey) ||
-          (!props.platform.isMac && evt.ctrlKey)) &&
-        evt.key == "s"
-      ) {
-        evt.preventDefault();
-        onSave();
-      }
-    };
-    useEffect(() => {
-      window.addEventListener("keydown", onKeydownSave);
-      return () => {
-        window.removeEventListener("keydown", onKeydownSave);
-      };
-    });
+    // Handle keyboard shortcut Save
+    useKeyboardShortcut("s", () => onSave());
 
     return (
       <Button kind="save" onClick={onSave} disabled={saving}>
