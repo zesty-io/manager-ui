@@ -1,4 +1,4 @@
-import { memo, useRef, useState, useEffect } from "react";
+import { memo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import { useKeyboardShortcut } from "shell/hooks/useKeyboardShortcut";
