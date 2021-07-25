@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from "react";
+import { memo, useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import cx from "classnames";
@@ -89,9 +89,7 @@ export const FileDrawer = memo(function FileDrawer(props) {
   }
 
   // Handle keyboard shortcut Drawer
-  useKeyboardShortcut("d", () => {
-    handleSetOpen();
-  });
+  useKeyboardShortcut("d", () => handleSetOpen());
 
   return (
     <Drawer

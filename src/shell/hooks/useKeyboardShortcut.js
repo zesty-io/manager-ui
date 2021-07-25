@@ -25,5 +25,5 @@ export function useKeyboardShortcut(key, callback) {
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  }, [callback]);
 }
