@@ -631,6 +631,7 @@ export function resolvePathPart(type) {
     case "ajax-json":
     case "ajax-html":
     case "404":
+    case "loader":
       return "views";
 
     case "text/js":
