@@ -1,4 +1,5 @@
 import { connect } from "react-redux";
+import { CheckPlatform } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -12,11 +13,7 @@ import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./Header.less";
-export default connect((state) => {
-  return {
-    platform: state.platform,
-  };
-})(function Header(props) {
+export function Header(props) {
   return (
     <header className={styles.Header}>
       <span>
@@ -43,10 +40,10 @@ export default connect((state) => {
           ) : (
             <FontAwesomeIcon icon={faSave} />
           )}
-          Create Item&nbsp;
-          <small>({props.platform.isMac ? "CMD" : "CTRL"} + S)</small>
+
+          <CheckPlatform text={"Create Item"} shortcutKey={"S"} />
         </Button>
       </ButtonGroup>
     </header>
   );
-});
+}

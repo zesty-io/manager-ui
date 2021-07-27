@@ -1,7 +1,7 @@
 import { memo, useRef, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
-import { useKeyboardShortcut } from "shell/hooks/useKeyboardShortcut";
+import { useMetaKey, CheckPlatform } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -43,7 +43,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
   }
 
   // Handle keyboard shortcut Save
-  useKeyboardShortcut("s", () => saveFile());
+  useMetaKey("s", () => saveFile());
 
   function copyURL() {
     urlField.current.select();
@@ -174,7 +174,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
 
           <Button kind="save" onClick={saveFile}>
             <FontAwesomeIcon icon={faSave} />
-            <span> SAVE ({platform.isMac ? "CMD" : "CTRL"} + S)</span>
+            <CheckPlatform text={"SAVE"} shortcutKey={"S"} />
           </Button>
         </ButtonGroup>
       </ModalFooter>

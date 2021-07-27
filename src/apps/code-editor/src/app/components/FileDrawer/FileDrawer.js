@@ -2,7 +2,7 @@ import { memo, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import cx from "classnames";
-import { useKeyboardShortcut } from "shell/hooks/useKeyboardShortcut";
+import { useMetaKey, CheckPlatform } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
@@ -23,7 +23,6 @@ import { fetchFields } from "shell/store/fields";
 import styles from "./FileDrawer.less";
 export const FileDrawer = memo(function FileDrawer(props) {
   const dispatch = useDispatch();
-  const platform = useSelector((state) => state.platform);
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -88,8 +87,7 @@ export const FileDrawer = memo(function FileDrawer(props) {
     setOpen((open) => !open);
   }
 
-  // Handle keyboard shortcut Drawer
-  useKeyboardShortcut("d", () => handleSetOpen());
+  useMetaKey("d", () => handleSetOpen());
 
   return (
     <Drawer
@@ -110,15 +108,11 @@ export const FileDrawer = memo(function FileDrawer(props) {
         {open ? null : (
           <span className={styles.bodyText}>More file information</span>
         )}
-        {open ? (
-          <span className={cx(styles.bodyText, styles.DrawerShortcut)}>
-            ({platform.isMac ? "CMD" : "CTRL"} + D) Close Drawer
-          </span>
-        ) : (
-          <span className={cx(styles.bodyText, styles.DrawerShortcut)}>
-            ({platform.isMac ? "CMD" : "CTRL"} + D) Open Drawer
-          </span>
-        )}
+
+        <div className={cx(styles.bodyText, styles.DrawerShortcut)}>
+          {open ? <span>Close Drawer</span> : <span>Open Drawer</span>}
+          <CheckPlatform shortcutKey={"D"} />
+        </div>
       </DrawerHandle>
       <DrawerContent className={styles.DrawerContent}>
         <WithLoader

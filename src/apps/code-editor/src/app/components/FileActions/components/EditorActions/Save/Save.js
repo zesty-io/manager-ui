@@ -1,6 +1,6 @@
 import { memo, useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { useKeyboardShortcut } from "shell/hooks/useKeyboardShortcut";
+import { useMetaKey, CheckPlatform } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faSave } from "@fortawesome/free-solid-svg-icons";
@@ -30,8 +30,8 @@ export default connect((state) => {
           setSaving(false);
         });
     };
-    // Handle keyboard shortcut Save
-    useKeyboardShortcut("s", () => onSave());
+
+    useMetaKey("s", () => onSave());
 
     return (
       <Button kind="save" onClick={onSave} disabled={saving}>
@@ -42,8 +42,7 @@ export default connect((state) => {
         )}
         Save&nbsp;
         <span className={styles.HideSmall}>
-          {" "}
-          ({props.platform.isMac ? "CMD" : "CTRL"} + S)
+          <CheckPlatform shortcutKey={"S"} />
         </span>
       </Button>
     );

@@ -1,2 +1,1 @@
-import ItemVersioning from "./ItemVersioning";
-export { ItemVersioning };
+export { ItemVersioning } from "./ItemVersioning";

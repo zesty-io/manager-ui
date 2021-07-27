@@ -9,7 +9,7 @@ import {
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
-import { useKeyboardShortcut } from "shell/hooks/useKeyboardShortcut";
+import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { notify } from "shell/store/notifications";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
@@ -80,8 +80,7 @@ export default function ItemEdit() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // Handle keyboard shortcut save
-  useKeyboardShortcut("s", () => {
+  useMetaKey("s", () => {
     save();
   });
 
