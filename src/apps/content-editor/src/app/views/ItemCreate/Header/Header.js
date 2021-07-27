@@ -1,4 +1,3 @@
-import { connect } from "react-redux";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
