@@ -1,8 +1,8 @@
 import { memo, useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import moment from "moment";
 import cx from "classnames";
-import { useMetaKey, CheckPlatform } from "shell/hooks/useMetaKey";
+import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
@@ -30,6 +30,8 @@ export const FileDrawer = memo(function FileDrawer(props) {
   const [fields, setFields] = useState([]);
   const [items, setItems] = useState([]);
   const [logs, setLogs] = useState([]);
+
+  const metaShortcut = useMetaKey("d", handleSetOpen);
 
   useEffect(() => {
     setLoading(true);
@@ -87,8 +89,6 @@ export const FileDrawer = memo(function FileDrawer(props) {
     setOpen((open) => !open);
   }
 
-  useMetaKey("d", () => handleSetOpen());
-
   return (
     <Drawer
       className={styles.Drawer}
@@ -110,8 +110,10 @@ export const FileDrawer = memo(function FileDrawer(props) {
         )}
 
         <div className={cx(styles.bodyText, styles.DrawerShortcut)}>
-          {open ? <span>Close Drawer</span> : <span>Open Drawer</span>}
-          <CheckPlatform shortcutKey={"D"} />
+          <span>
+            {" "}
+            {open ? "Close" : "Open"} Drawer {metaShortcut}
+          </span>
         </div>
       </DrawerHandle>
       <DrawerContent className={styles.DrawerContent}>

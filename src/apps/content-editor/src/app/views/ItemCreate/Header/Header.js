@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import { CheckPlatform } from "shell/hooks/useMetaKey";
+import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,6 +14,7 @@ import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./Header.less";
 export function Header(props) {
+  const metaShortcut = useMetaKey("s", props.onSave);
   return (
     <header className={styles.Header}>
       <span>
@@ -40,8 +41,7 @@ export function Header(props) {
           ) : (
             <FontAwesomeIcon icon={faSave} />
           )}
-
-          <CheckPlatform text={"Create Item"} shortcutKey={"S"} />
+          Create Item&nbsp; {metaShortcut}
         </Button>
       </ButtonGroup>
     </header>

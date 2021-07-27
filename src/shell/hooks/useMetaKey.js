@@ -1,16 +1,9 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFolderMinus,
-  faFolderOpen,
-  faFolderPlus,
-} from "@fortawesome/free-solid-svg-icons";
 
 /*
 Usage Example
-  useMetaKey("letter", () => callback());
-
+  useMetaKey("letter", callback);
 */
 
 export function useMetaKey(key, callback) {
@@ -38,16 +31,6 @@ export function useMetaKey(key, callback) {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [callback]);
-}
 
-export function CheckPlatform(props) {
-  const platform = useSelector((state) => state.platform);
-  return (
-    <React.Fragment>
-      <span className={props.className}>
-        {props.text}&nbsp;(
-        {platform.isMac ? "CMD" : "CTRL"} + {props.shortcutKey.toUpperCase()})
-      </span>
-    </React.Fragment>
-  );
+  return `(${platform.isMac ? `cmd` : `ctrl`} + ${key})`;
 }

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-
-import { CheckPlatform } from "shell/hooks/useMetaKey";
+import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -29,6 +28,8 @@ export function ItemVersioning(props) {
   const [open, setOpen] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [cached, setCached] = useState(false);
+
+  const metaShortcut = useMetaKey("s", props.onSave);
 
   const checkCache = () => {
     if (props?.props?.item?.web?.path) {
@@ -164,7 +165,7 @@ export function ItemVersioning(props) {
         )}
         Save&nbsp;
         <span className={styles.HideVersion}>Version&nbsp;</span>
-        <CheckPlatform shortcutKey={"S"} />
+        {metaShortcut}
       </Button>
     </ButtonGroup>
   );
