@@ -2,10 +2,14 @@ import { applyMiddleware, combineReducers, createStore } from "redux";
 import thunkMiddleware from "redux-thunk";
 import createSentryMiddleware from "redux-sentry-middleware";
 import { composeWithDevTools } from "redux-devtools-extension";
+
+import { Sentry } from "utility/sentry";
+
 import { fetchResource, resolveFieldOptions } from "./middleware/api";
 import { localStorage } from "./middleware/local-storage";
 import { session } from "./middleware/session";
-import { Sentry } from "utility/sentry";
+import { appBus } from "./middleware/app-bus";
+
 import { auth } from "./auth";
 import { products } from "./products";
 import { user } from "./user";
@@ -25,11 +29,13 @@ import media from "./media";
 import { users } from "./users";
 import ui from "./ui";
 import publishPlan from "./publishPlan";
+import apps from "./apps";
 
 // Middleware is applied in order of array
 const middlewares = [
   localStorage,
   session,
+  appBus,
   fetchResource,
   resolveFieldOptions,
   thunkMiddleware,
@@ -70,6 +76,7 @@ function createReducer(asyncReducers) {
     noop: () => {
       return {};
     },
+    apps,
     auth,
     user,
     users: users.reducer,

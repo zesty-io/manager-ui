@@ -12,6 +12,7 @@ import {
   publishPlanFailure,
 } from "../publishPlan";
 import { toggleNav } from "../ui";
+
 export const localStorage = (store) => (next) => (action) => {
   const result = next(action);
 
