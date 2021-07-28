@@ -149,32 +149,35 @@ export function HeadlessOptions(props) {
         {headlessResponse && (
           <div>
             <div className={styles.HeadlessOptions}>
-              <Card className={styles.customCard}>
-                <CardHeader className={styles.cardHeader}>
-                  <h2>
-                    <FontAwesomeIcon icon={faFileCode} />
-                    URL to JSON
-                  </h2>
-                  <Docs
-                    subject="Routing toJSON"
-                    url={headlessResponse.routing.documentation}
-                  />
-                </CardHeader>
-                <div className={styles.useTags}>
-                  <span className={styles.smallTags}>Headless SSR</span>{" "}
-                  <span className={styles.smallTags}>Headless Websites</span>
-                </div>
-                <CardContent>
-                  <p>
-                    {headlessResponse.routing.about} Access all routes from the{" "}
-                    <Url href={headlessResponse.routing.map} target="_blank">
-                      toJSON Routing Map
-                    </Url>
-                    .
-                  </p>
-                  {outputLinks(toJSONPath)}
-                </CardContent>
-              </Card>
+              {props.item.web.path && (
+                <Card className={styles.customCard}>
+                  <CardHeader className={styles.cardHeader}>
+                    <h2>
+                      <FontAwesomeIcon icon={faFileCode} />
+                      URL to JSON
+                    </h2>
+                    <Docs
+                      subject="Routing toJSON"
+                      url={headlessResponse.routing.documentation}
+                    />
+                  </CardHeader>
+                  <div className={styles.useTags}>
+                    <span className={styles.smallTags}>Headless SSR</span>{" "}
+                    <span className={styles.smallTags}>Headless Websites</span>
+                  </div>
+                  <CardContent>
+                    <p>
+                      {headlessResponse.routing.about} Access all routes from
+                      the{" "}
+                      <Url href={headlessResponse.routing.map} target="_blank">
+                        toJSON Routing Map
+                      </Url>
+                      .
+                    </p>
+                    {outputLinks(toJSONPath)}
+                  </CardContent>
+                </Card>
+              )}
               <Card className={styles.customCard}>
                 <CardHeader className={styles.cardHeader}>
                   <h2>
@@ -327,47 +330,52 @@ export function HeadlessOptions(props) {
                   </AppLink>
                 </CardContent>
               </Card>
-              <Card className={styles.customCard}>
-                <CardHeader className={styles.cardHeader}>
-                  <h2>
-                    <FontAwesomeIcon icon={faNewspaper} />
-                    VisualLayout
-                  </h2>
-                  <Docs subject="Visual Layout" />
-                </CardHeader>
-                <div className={styles.useTags}>
-                  <span className={styles.smallTags}>Automation Design</span>
-                  <span className={styles.smallTags}>Content Experiences</span>
-                </div>
-                <CardContent>
-                  <p>
-                    Visual layout is accessible from rendered HTML or structured
-                    JSON from the{" "}
-                    <Url href={`${previewURL}${toJSONPath}`} target="_blank">
-                      {previewURL}
-                      {toJSONPath}
-                    </Url>{" "}
-                    endpoint via the object path [meta.layout.json] or
-                    [meta.layout.html]. To use Visual Layout in your React
-                    project, view the{" "}
-                    <Url
-                      href="https://www.npmjs.com/package/@zesty-io/react-autolayout"
-                      target="_blank"
-                    >
-                      <FontAwesomeIcon icon={faNpm} /> React Auto Layout Package
-                    </Url>
-                    .{" "}
-                  </p>
+              {props.item.web.path && (
+                <Card className={styles.customCard}>
+                  <CardHeader className={styles.cardHeader}>
+                    <h2>
+                      <FontAwesomeIcon icon={faNewspaper} />
+                      VisualLayout
+                    </h2>
+                    <Docs subject="Visual Layout" />
+                  </CardHeader>
+                  <div className={styles.useTags}>
+                    <span className={styles.smallTags}>Automation Design</span>
+                    <span className={styles.smallTags}>
+                      Content Experiences
+                    </span>
+                  </div>
+                  <CardContent>
+                    <p>
+                      Visual layout is accessible from rendered HTML or
+                      structured JSON from the{" "}
+                      <Url href={`${previewURL}${toJSONPath}`} target="_blank">
+                        {previewURL}
+                        {toJSONPath}
+                      </Url>{" "}
+                      endpoint via the object path [meta.layout.json] or
+                      [meta.layout.html]. To use Visual Layout in your React
+                      project, view the{" "}
+                      <Url
+                        href="https://www.npmjs.com/package/@zesty-io/react-autolayout"
+                        target="_blank"
+                      >
+                        <FontAwesomeIcon icon={faNpm} /> React Auto Layout
+                        Package
+                      </Url>
+                      .{" "}
+                    </p>
 
-                  <Divider />
-                  <p>
-                    Visual layout is controlled from the{" "}
-                    <Url href="https://parsley.zesty.io/pvl/demo.html">
-                      Visual Layout Tool
-                    </Url>
-                  </p>
-                </CardContent>
-              </Card>
+                    <Divider />
+                    <p>
+                      Visual layout is controlled from the{" "}
+                      <Url href="https://parsley.zesty.io/pvl/demo.html">
+                        Visual Layout Tool
+                      </Url>
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
         )}

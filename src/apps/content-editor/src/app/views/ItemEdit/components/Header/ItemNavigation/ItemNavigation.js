@@ -61,19 +61,18 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
           WebEngine Preview
         </AppLink>
       )}
-      {item.web.path && (
-        <AppLink
-          data-cy="headless"
-          className={cx(
-            styles.AppLink,
-            styles.buttonText,
-            slug === "headless" ? styles.Selected : null
-          )}
-          to={`/content/${modelZUID}/${itemZUID}/headless`}
-        >
-          Headless Options
-        </AppLink>
-      )}
+
+      <AppLink
+        data-cy="headless"
+        className={cx(
+          styles.AppLink,
+          styles.buttonText,
+          slug === "headless" ? styles.Selected : null
+        )}
+        to={`/content/${modelZUID}/${itemZUID}/headless`}
+      >
+        Headless Options
+      </AppLink>
     </nav>
   );
 }
