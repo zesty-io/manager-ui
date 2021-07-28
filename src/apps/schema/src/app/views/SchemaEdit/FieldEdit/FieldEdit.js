@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
-import { connect } from "react-redux";
+import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -90,11 +90,7 @@ function Header(props) {
   );
 }
 
-const Footer = connect((state) => {
-  return {
-    platform: state.platform,
-  };
-})(function Footer(props) {
+export function Footer(props) {
   const [loading, setLoading] = useState(false);
 
   const onSave = () => {
@@ -123,25 +119,7 @@ const Footer = connect((state) => {
       .catch(() => setLoading(false));
   };
 
-  const handleKeyDown = (evt) => {
-    if (
-      ((props.platform.isMac && evt.metaKey) ||
-        (!props.platform.isMac && evt.ctrlKey)) &&
-      evt.key == "s"
-    ) {
-      evt.preventDefault();
-      if (props.field.dirty) {
-        onSave();
-      }
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  });
+  const metaShortcut = useMetaKey("s", onSave);
 
   return (
     <footer className={styles.FieldFooter}>
@@ -152,7 +130,7 @@ const Footer = connect((state) => {
           ) : (
             <FontAwesomeIcon icon={faSave} />
           )}
-          Save Changes
+          Save {metaShortcut}
         </Button>
 
         {props.field.deletedAt ? (
@@ -195,4 +173,4 @@ const Footer = connect((state) => {
       </ButtonGroup>
     </footer>
   );
-});
+}
