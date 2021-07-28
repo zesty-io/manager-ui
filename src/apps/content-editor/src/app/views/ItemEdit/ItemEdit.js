@@ -29,6 +29,7 @@ import { Content } from "./Content";
 import { Meta } from "./Meta";
 import { WebEnginePreview } from "./WebEnginePreview";
 import { ItemHead } from "./ItemHead";
+import { HeadlessOptions } from "./HeadlessOptions";
 
 const selectSortedModelFields = createSelector(
   (state) => state.fields,
@@ -329,6 +330,24 @@ export default function ItemEdit() {
                 fields={fields}
                 user={user}
                 onSave={save}
+                dispatch={dispatch}
+                saving={saving}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/content/:modelZUID/:itemZUID/headless"
+            render={() => (
+              <HeadlessOptions
+                instance={instance}
+                modelZUID={modelZUID}
+                model={model}
+                itemZUID={itemZUID}
+                item={item}
+                items={items}
+                fields={fields}
+                user={user}
                 dispatch={dispatch}
                 saving={saving}
               />

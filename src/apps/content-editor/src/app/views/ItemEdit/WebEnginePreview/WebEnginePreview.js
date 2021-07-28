@@ -3,7 +3,7 @@ import { Url } from "@zesty-io/core/Url";
 
 import styles from "./WebEnginePreview.less";
 export function WebEnginePreview(props) {
-  let previewURL = `https://${props.instance.randomHashID}-dev.webengine.zesty.io${props.item.web.path}`;
+  let previewURL = `${CONFIG.URL_PREVIEW_PROTOCOL}${props.instance.randomHashID}${CONFIG.URL_PREVIEW}${props.item.web.path}`;
   const highlight = (event) => event.target.select();
   return (
     <section className={styles.WebEngineWrap}>
