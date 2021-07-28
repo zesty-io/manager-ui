@@ -1,4 +1,4 @@
-import { memo, useRef, useState, useCallback } from "react";
+import { memo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import { useMetaKey } from "shell/hooks/useMetaKey";
@@ -27,7 +27,6 @@ import styles from "./MediaDetailsModal.less";
 
 export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
   const dispatch = useDispatch();
-  const platform = useSelector((state) => state.platform);
   const userRole = useSelector((state) => state.userRole);
   const urlField = useRef();
   const copyButton = useRef();

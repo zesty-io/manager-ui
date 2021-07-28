@@ -80,9 +80,7 @@ export default function ItemEdit() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  useMetaKey("s", () => {
-    save();
-  });
+  useMetaKey("s", save);
 
   useEffect(() => {
     // on mount and modelZUID/itemZUID update,
