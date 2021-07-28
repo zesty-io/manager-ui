@@ -31,7 +31,7 @@ export const FileDrawer = memo(function FileDrawer(props) {
   const [items, setItems] = useState([]);
   const [logs, setLogs] = useState([]);
 
-  const metaShortcut = useMetaKey("d", handleSetOpen);
+  const metaShortcut = useMetaKey("j", handleSetOpen);
 
   useEffect(() => {
     setLoading(true);
