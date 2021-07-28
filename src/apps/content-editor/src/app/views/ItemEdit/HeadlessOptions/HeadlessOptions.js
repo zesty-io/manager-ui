@@ -225,7 +225,14 @@ export function HeadlessOptions(props) {
                       GQL Map endpoint
                     </Url>
                     . Note this item is only accessible by traversing through
-                    the data array on the model's GQL endpoint.
+                    the data array on the model's GQL endpoint.{" "}
+                    <Url
+                      href="https://github.com/zesty-io/graphql-zesty"
+                      target="_blank"
+                    >
+                      GraphQL Apollo Github Link
+                    </Url>
+                    .
                   </p>
                   {outputLinks(gqlPath)}
                 </CardContent>
