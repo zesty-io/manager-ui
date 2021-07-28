@@ -24,6 +24,17 @@ export function useMetaKey(key, callback) {
     );
   }
 
+  /**
+   * We are ignoring the rebinding on consumer renders,
+   * while this may be inefficient it's an easier to understand cost
+   * than trying to manage state whether the event handler should be rebound
+   *
+   * We considered this implementation here https://stackoverflow.com/a/57556594
+   * we may want to revisit this in the future
+   *
+   * IMPORTANT: Not using dependencies within the effect causes bugs as the values in the function reference do not get updated
+   *
+   */
   useEffect(() => {
     const onKeyDown = (evt) => {
       if (
