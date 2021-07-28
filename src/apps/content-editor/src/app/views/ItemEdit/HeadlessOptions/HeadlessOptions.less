@@ -1,0 +1,67 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.HeadlessOptionsWrapper {
+  overflow-y: auto;
+  height: calc(100vh - 120px);
+  overflow: scroll;
+  .HeadlessOptions {
+    display: flex;
+    @media (max-width: 1400px) {
+      flex-direction: column;
+    }
+    div {
+      flex: 1;
+    }
+  }
+  .cardHeader {
+    display: flex;
+    a {
+      margin-left: auto;
+    }
+    span {
+      margin: auto 0px;
+    }
+    svg {
+      margin: auto 0px;
+      margin-right: 8px;
+    }
+  }
+  .customCard {
+    flex: 1 1 0px;
+    .useTags {
+      background: lighten(@zesty-light-blue, 15%);
+      padding: 8px 16px 8px 16px;
+      .smallTags {
+        background: @zesty-gray;
+        color: white;
+        padding: 3px 8px;
+        margin-right: 4px;
+        border-radius: 4px;
+        display: inline-block;
+        font-size: 0.8em;
+        font-family: @font-family-secondary;
+      }
+    }
+
+    h5 {
+      font-size: 1.1em;
+      margin-top: 12px;
+    }
+    hr {
+      margin: 6px 0;
+    }
+    a {
+      font-size: 11px;
+      font-family: @font-family-secondary;
+    }
+    p {
+      line-height: 130%;
+      font-size: 0.9em;
+      font-family: @font-family-secondary;
+      a {
+        font-size: inherit;
+      }
+    }
+  }
+}

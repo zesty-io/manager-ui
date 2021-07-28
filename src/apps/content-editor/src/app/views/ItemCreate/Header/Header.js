@@ -1,4 +1,4 @@
-import { connect } from "react-redux";
+import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -12,11 +12,8 @@ import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./Header.less";
-export default connect((state) => {
-  return {
-    platform: state.platform,
-  };
-})(function Header(props) {
+export function Header(props) {
+  const metaShortcut = useMetaKey("s", props.onSave);
   return (
     <header className={styles.Header}>
       <span>
@@ -43,10 +40,9 @@ export default connect((state) => {
           ) : (
             <FontAwesomeIcon icon={faSave} />
           )}
-          Create Item&nbsp;
-          <small>({props.platform.isMac ? "CMD" : "CTRL"} + S)</small>
+          Create Item&nbsp; {metaShortcut}
         </Button>
       </ButtonGroup>
     </header>
   );
-});
+}

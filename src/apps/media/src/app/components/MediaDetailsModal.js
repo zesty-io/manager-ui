@@ -1,6 +1,8 @@
-import { memo, useRef, useState, useEffect } from "react";
+import { memo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
+import { useMetaKey } from "shell/hooks/useMetaKey";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCopy,
@@ -25,7 +27,6 @@ import styles from "./MediaDetailsModal.less";
 
 export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
   const dispatch = useDispatch();
-  const platform = useSelector((state) => state.platform);
   const userRole = useSelector((state) => state.userRole);
   const urlField = useRef();
   const copyButton = useRef();
@@ -40,22 +41,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
     });
   }
 
-  function handleKeyboardShortcutSave(evt) {
-    if (
-      ((platform.isMac && evt.metaKey) || (!platform.isMac && evt.ctrlKey)) &&
-      evt.key == "s"
-    ) {
-      evt.preventDefault();
-      saveFile();
-    }
-  }
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyboardShortcutSave);
-    return () => {
-      window.removeEventListener("keydown", handleKeyboardShortcutSave);
-    };
-  });
+  const metaShortcut = useMetaKey("s", saveFile);
 
   function copyURL() {
     urlField.current.select();
@@ -186,7 +172,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
 
           <Button kind="save" onClick={saveFile}>
             <FontAwesomeIcon icon={faSave} />
-            <span>Save (CTRL + S)</span>
+            Save {metaShortcut}
           </Button>
         </ButtonGroup>
       </ModalFooter>

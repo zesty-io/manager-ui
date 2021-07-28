@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { connect } from "react-redux";
+import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -8,7 +8,6 @@ import {
   faCalendar,
   faCheckCircle,
   faCloudUploadAlt,
-  faMinusCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
@@ -22,17 +21,15 @@ import { usePermission } from "shell/hooks/use-permissions";
 import { useDomain } from "shell/hooks/use-domain";
 
 import styles from "./ItemVersioning.less";
-export default connect((state) => {
-  return {
-    platform: state.platform,
-  };
-})(function ItemVersioning(props) {
+export function ItemVersioning(props) {
   const canPublish = usePermission("PUBLISH");
   const domain = useDomain();
 
   const [open, setOpen] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [cached, setCached] = useState(false);
+
+  const metaShortcut = useMetaKey("s", props.onSave);
 
   const checkCache = () => {
     if (props?.props?.item?.web?.path) {
@@ -168,8 +165,8 @@ export default connect((state) => {
         )}
         Save&nbsp;
         <span className={styles.HideVersion}>Version&nbsp;</span>
-        <small>({props.platform.isMac ? "CMD" : "CTRL"} + S)</small>
+        {metaShortcut}
       </Button>
     </ButtonGroup>
   );
-});
+}

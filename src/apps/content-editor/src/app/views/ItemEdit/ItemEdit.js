@@ -9,6 +9,7 @@ import {
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
+import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { notify } from "shell/store/notifications";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
@@ -29,6 +30,7 @@ import { Content } from "./Content";
 import { Meta } from "./Meta";
 import { WebEnginePreview } from "./WebEnginePreview";
 import { ItemHead } from "./ItemHead";
+import { HeadlessOptions } from "./HeadlessOptions";
 
 const selectSortedModelFields = createSelector(
   (state) => state.fields,
@@ -79,25 +81,7 @@ export default function ItemEdit() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // handle keyboard shortcut save
-  useEffect(() => {
-    const handleSaveKeyboardShortcut = (event) => {
-      if (
-        ((platform.isMac && event.metaKey) ||
-          (!platform.isMac && event.ctrlKey)) &&
-        event.key == "s"
-      ) {
-        event.preventDefault();
-        if (item && item.dirty) {
-          save();
-        }
-      }
-    };
-    window.addEventListener("keydown", handleSaveKeyboardShortcut);
-    return () => {
-      window.removeEventListener("keydown", handleSaveKeyboardShortcut);
-    };
-  }, [item]);
+  useMetaKey("s", save);
 
   useEffect(() => {
     // on mount and modelZUID/itemZUID update,
@@ -329,6 +313,24 @@ export default function ItemEdit() {
                 fields={fields}
                 user={user}
                 onSave={save}
+                dispatch={dispatch}
+                saving={saving}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/content/:modelZUID/:itemZUID/headless"
+            render={() => (
+              <HeadlessOptions
+                instance={instance}
+                modelZUID={modelZUID}
+                model={model}
+                itemZUID={itemZUID}
+                item={item}
+                items={items}
+                fields={fields}
+                user={user}
                 dispatch={dispatch}
                 saving={saving}
               />
