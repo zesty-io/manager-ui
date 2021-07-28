@@ -111,7 +111,6 @@ export const FileDrawer = memo(function FileDrawer(props) {
 
         <div className={cx(styles.bodyText, styles.DrawerShortcut)}>
           <span>
-            {" "}
             {open ? "Close" : "Open"} Drawer {metaShortcut}
           </span>
         </div>
