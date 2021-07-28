@@ -86,7 +86,6 @@ export function HeadlessOptions(props) {
       </div>
     );
   };
-  console.log(props.instance, headlessResponse, props.model);
 
   return (
     <section className={styles.WebEngineWrap}>
