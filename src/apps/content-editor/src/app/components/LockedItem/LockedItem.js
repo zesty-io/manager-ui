@@ -1,4 +1,3 @@
-import { useState } from "react";
 import moment from "moment-timezone";
 import cx from "classnames";
 
@@ -13,7 +12,6 @@ import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Url } from "@zesty-io/core/Url";
 
-import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
 import styles from "./LockedItem.less";
@@ -26,19 +24,11 @@ export const LockedItem = ({
   itemName,
   handleUnlock,
   goBack,
-  checkingLock,
+  handleLockedItem,
 }) => {
   return (
     <div className={styles.ItemLocked}>
-      {/* <Button
-        kind="warn"
-        id="DeleteItemButton"
-        onClick={() => setConfirmOpen(true)}
-      >
-        DAVID TEST
-      </Button> */}
-
-      <ConfirmDialog className={styles.ConfirmDialog} isOpen={checkingLock}>
+      <ConfirmDialog className={styles.ConfirmDialog} isOpen={handleLockedItem}>
         <FontAwesomeIcon className={styles.backgroundIcon} icon={faLock} />
         <header className={cx(styles.headline, styles.Header)}>
           Item Locked
