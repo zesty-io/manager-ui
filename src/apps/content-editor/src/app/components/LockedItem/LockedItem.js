@@ -14,6 +14,7 @@ import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Url } from "@zesty-io/core/Url";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
+import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
 import styles from "./LockedItem.less";
 
@@ -25,23 +26,25 @@ export const LockedItem = ({
   itemName,
   handleUnlock,
   goBack,
+  checkingLock,
 }) => {
-  const [open, setOpen] = useState(true);
-
   return (
     <div className={styles.ItemLocked}>
-      <Modal
-        className={styles.Modal}
-        type="global"
-        open={open}
-        onClose={() => setOpen(false)}
+      {/* <Button
+        kind="warn"
+        id="DeleteItemButton"
+        onClick={() => setConfirmOpen(true)}
       >
+        DAVID TEST
+      </Button> */}
+
+      <ConfirmDialog className={styles.ConfirmDialog} isOpen={checkingLock}>
         <FontAwesomeIcon className={styles.backgroundIcon} icon={faLock} />
         <header className={cx(styles.headline, styles.Header)}>
           Item Locked
         </header>
 
-        <ModalContent className={cx(styles.ModalContent, styles.subheadline)}>
+        <div className={cx(styles.ConfirmContent, styles.subheadline)}>
           <p>
             The item <strong className={styles.ItemName}>{itemName}</strong> is
             being edited by&nbsp;
@@ -60,25 +63,38 @@ export const LockedItem = ({
             To ignore this warning and possibly overwrite {userFirstName}'s
             changes you may unlock this content
           </p>
-        </ModalContent>
+        </div>
 
-        <ModalFooter className={styles.Footer}>
-          <span className={styles.AlignRight}>
-            <ButtonGroup>
-              <Button
-                className={styles.ButtonBack}
-                kind="cancel"
-                onClick={goBack}
-              >
-                <FontAwesomeIcon icon={faStepBackward} /> Go Back
-              </Button>
-              <Button kind="save" onClick={handleUnlock}>
-                <FontAwesomeIcon icon={faUnlock} /> Unlock
-              </Button>
-            </ButtonGroup>
-          </span>
-        </ModalFooter>
-      </Modal>
+        <footer className={styles.AlignRight}>
+          <ButtonGroup>
+            <Button
+              className={styles.ButtonBack}
+              kind="cancel"
+              onClick={goBack}
+            >
+              <FontAwesomeIcon icon={faStepBackward} /> Go Back
+            </Button>
+            <Button kind="save" onClick={handleUnlock}>
+              <FontAwesomeIcon icon={faUnlock} /> Unlock
+            </Button>
+          </ButtonGroup>
+        </footer>
+
+        {/* <footer className={styles.Footer}>
+          <div className={styles.AlignRight}>
+            <Button
+              className={styles.ButtonBack}
+              kind="cancel"
+              onClick={goBack}
+            >
+              <FontAwesomeIcon icon={faStepBackward} /> Go Back
+            </Button>
+            <Button kind="save" onClick={handleUnlock}>
+              <FontAwesomeIcon icon={faUnlock} /> Unlock
+            </Button>
+          </div>
+        </footer> */}
+      </ConfirmDialog>
     </div>
   );
 };

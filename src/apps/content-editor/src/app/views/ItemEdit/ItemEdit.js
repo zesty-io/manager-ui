@@ -235,17 +235,18 @@ export default function ItemEdit() {
         model?.label ? `Loading ${model.label} Content` : "Loading Content"
       }
     >
-      {!checkingLock && lockState.userZUID !== user.user_zuid && (
-        <LockedItem
-          timestamp={lockState.timestamp}
-          userFirstName={lockState.firstName}
-          userLastName={lockState.lastName}
-          userEmail={lockState.email}
-          itemName={item?.web?.metaLinkText}
-          handleUnlock={forceUnlock}
-          goBack={() => history.goBack()}
-        />
-      )}
+      {/* {!checkingLock && lockState.userZUID !== user.user_zuid && ( */}
+      <LockedItem
+        timestamp={lockState.timestamp}
+        userFirstName={lockState.firstName}
+        userLastName={lockState.lastName}
+        userEmail={lockState.email}
+        itemName={item?.web?.metaLinkText}
+        handleUnlock={forceUnlock}
+        goBack={() => history.goBack()}
+        checkingLock={checkingLock}
+      />
+      {/* )} */}
 
       <PendingEditsModal
         show={item?.dirty}

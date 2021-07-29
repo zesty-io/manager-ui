@@ -2,8 +2,8 @@
 @import "~@zesty-io/core/typography.less";
 
 .ItemLocked {
-  .Modal {
-    background: linear-gradient(@zesty-orange 40%, @appBkgColor 25%);
+  .ConfirmDialog {
+    background: linear-gradient(@zesty-orange 35%, @appBkgColor 25%);
     position: relative;
     overflow: hidden;
 
@@ -11,7 +11,7 @@
       color: @appBkgColor;
       position: absolute;
       right: 0px;
-      top: -10px;
+      top: -40px;
       font-size: 14rem;
       opacity: 0.2;
       // transform: rotate(-30deg);
@@ -19,25 +19,24 @@
 
     .Header {
       position: relative;
-      padding: 20px 0;
       color: @white;
     }
-    .ModalContent {
+    .ConfirmContent {
       padding-top: 48px;
-    }
-    .ItemName {
-      color: @zesty-orange;
-    }
-
-    .Footer {
-      .ButtonBack {
-        margin-right: 8px;
+      .ItemName {
+        color: @zesty-orange;
       }
     }
+
     .AlignRight {
+      margin-top: 24px;
       display: flex;
       width: 100%;
       justify-content: flex-end;
+
+      .ButtonBack {
+        margin-right: 8px;
+      }
     }
   }
 }
