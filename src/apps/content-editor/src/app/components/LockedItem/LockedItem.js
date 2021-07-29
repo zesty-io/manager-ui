@@ -79,21 +79,6 @@ export const LockedItem = ({
             </Button>
           </ButtonGroup>
         </footer>
-
-        {/* <footer className={styles.Footer}>
-          <div className={styles.AlignRight}>
-            <Button
-              className={styles.ButtonBack}
-              kind="cancel"
-              onClick={goBack}
-            >
-              <FontAwesomeIcon icon={faStepBackward} /> Go Back
-            </Button>
-            <Button kind="save" onClick={handleUnlock}>
-              <FontAwesomeIcon icon={faUnlock} /> Unlock
-            </Button>
-          </div>
-        </footer> */}
       </ConfirmDialog>
     </div>
   );
