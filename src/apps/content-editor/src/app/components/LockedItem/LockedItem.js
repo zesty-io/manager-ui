@@ -36,9 +36,9 @@ export const LockedItem = ({
         open={open}
         onClose={() => setOpen(false)}
       >
+        <FontAwesomeIcon className={styles.backgroundIcon} icon={faLock} />
         <header className={cx(styles.headline, styles.Header)}>
           Item Locked
-          <FontAwesomeIcon className={styles.backgroundIcon} icon={faLock} />
         </header>
 
         <ModalContent className={cx(styles.ModalContent, styles.subheadline)}>
@@ -50,7 +50,7 @@ export const LockedItem = ({
           </p>
 
           <p>
-            You can contact {userFirstName} via
+            You can contact {userFirstName} via&nbsp;
             <Url title="Email" href={`mailto:${userEmail}`}>
               {userEmail}
             </Url>
