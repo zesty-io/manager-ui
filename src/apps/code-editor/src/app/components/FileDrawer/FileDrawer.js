@@ -1,6 +1,8 @@
 import { memo, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import moment from "moment";
+import cx from "classnames";
+import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
@@ -28,6 +30,8 @@ export const FileDrawer = memo(function FileDrawer(props) {
   const [fields, setFields] = useState([]);
   const [items, setItems] = useState([]);
   const [logs, setLogs] = useState([]);
+
+  const metaShortcut = useMetaKey("j", handleSetOpen);
 
   useEffect(() => {
     setLoading(true);
@@ -82,7 +86,7 @@ export const FileDrawer = memo(function FileDrawer(props) {
 
   function handleSetOpen() {
     // TODO persist to user settings
-    setOpen(!open);
+    setOpen((open) => !open);
   }
 
   return (
@@ -104,6 +108,12 @@ export const FileDrawer = memo(function FileDrawer(props) {
         {open ? null : (
           <span className={styles.bodyText}>More file information</span>
         )}
+
+        <div className={cx(styles.bodyText, styles.DrawerShortcut)}>
+          <span>
+            {open ? "Close" : "Open"} Drawer {metaShortcut}
+          </span>
+        </div>
       </DrawerHandle>
       <DrawerContent className={styles.DrawerContent}>
         <WithLoader
