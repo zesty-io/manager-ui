@@ -16,7 +16,7 @@ import { Url } from "@zesty-io/core/Url";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 
 import styles from "./LockedItem.less";
-import classNames from "classnames";
+
 export const LockedItem = ({
   timestamp,
   userFirstName,
