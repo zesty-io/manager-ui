@@ -1,58 +1,42 @@
 @import "~@zesty-io/core/colors.less";
 @import "~@zesty-io/core/typography.less";
 
-.Wrapper {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-  background-color: rgba(0, 0, 0, 0.5);
-  .Card {
-    background-color: @zesty-white;
-    border: 1px solid @zesty-orange;
-    max-width: 550px;
-    margin-left: -15%;
+.ItemLocked {
+  .ConfirmDialog {
+    background: linear-gradient(@zesty-orange 35%, @appBkgColor 25%);
+    position: relative;
+    overflow: hidden;
+
+    .backgroundIcon {
+      color: @appBkgColor;
+      position: absolute;
+      right: 0px;
+      top: -40px;
+      font-size: 14rem;
+      opacity: 0.2;
+    }
+
     .Header {
       position: relative;
-      overflow: hidden;
-      .backgroundIcon {
-        position: absolute;
-        right: -2%;
-        top: -10%;
-        font-size: 13rem;
-        color: lighten(@zesty-orange, 15%);
-      }
-      background-color: @zesty-orange;
-      color: white;
-      font-weight: 400;
-      padding: 30px 20px;
-      h1 {
-        font-size: 32px;
-        line-height: 48px;
-        font-weight: 300;
-        letter-spacing: 0.32px;
-        color: @zesty-white;
+      color: @white;
+    }
+    .ConfirmContent {
+      padding-top: 64px;
+      position: relative;
+      .ItemName {
+        color: @zesty-orange;
       }
     }
-    .Center {
-      p {
-        line-height: 1.4;
-        margin-bottom: 8px;
-      }
-    }
-    .Footer {
-      background-color: @zesty-white;
-      .ButtonBack {
-        margin-right: 8px;
-      }
-    }
-    .alignRight {
+
+    .AlignRight {
+      margin-top: 24px;
       display: flex;
       width: 100%;
       justify-content: flex-end;
+
+      .ButtonBack {
+        margin-right: 8px;
+      }
     }
   }
 }

@@ -228,6 +228,9 @@ export default function ItemEdit() {
     return dispatch(fetchItem(modelZUID, itemZUID));
   }
 
+  const handleLockedItem =
+    !checkingLock && lockState.userZUID !== user.user_zuid;
+
   return (
     <WithLoader
       condition={!loading && item && Object.keys(item).length}
@@ -235,7 +238,7 @@ export default function ItemEdit() {
         model?.label ? `Loading ${model.label} Content` : "Loading Content"
       }
     >
-      {!checkingLock && lockState.userZUID !== user.user_zuid && (
+      {handleLockedItem && (
         <LockedItem
           timestamp={lockState.timestamp}
           userFirstName={lockState.firstName}
@@ -244,6 +247,7 @@ export default function ItemEdit() {
           itemName={item?.web?.metaLinkText}
           handleUnlock={forceUnlock}
           goBack={() => history.goBack()}
+          handleLockedItem={handleLockedItem}
         />
       )}
 
