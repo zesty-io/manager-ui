@@ -1,4 +1,5 @@
 import { memo, useState, Fragment } from "react";
+import { useDispatch } from "react-redux";
 import cx from "classnames";
 import { useHistory } from "react-router-dom";
 
@@ -18,9 +19,11 @@ import {
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
 import { deleteItem } from "shell/store/content";
+import { fetchNav } from "../../../../../../../store/navContent";
 import { closeTab } from "shell/store/ui";
 
 export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
+  const dispatch = useDispatch();
   const history = useHistory();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -76,6 +79,7 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
                 if (res.status === 200) {
                   props.dispatch(closeTab(history.location.pathname));
                   history.push("/content/" + props.modelZUID);
+                  dispatch(fetchNav());
                 } else {
                   // if delete fails, component is still mounted, so we can set state
                   setDeleting(false);
