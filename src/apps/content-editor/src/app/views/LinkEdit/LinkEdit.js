@@ -2,6 +2,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSave, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
@@ -9,14 +12,15 @@ import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
 import { Input } from "@zesty-io/core/Input";
 import { Button } from "@zesty-io/core/Button";
+import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
+import { fetchNav } from "apps/content-editor/src/store/navContent";
+import { closeTab } from "shell/store/ui";
 import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 
-import LinkDeleteConfirmation from "./LinkDeleteConfirmation";
 import styles from "./LinkEdit.less";
-
 export default function LinkEdit() {
   const dispatch = useDispatch();
   const isMounted = useRef(false);
@@ -45,7 +49,7 @@ export default function LinkEdit() {
     loading: false,
   };
   const [state, setState] = useState(INITIAL_STATE);
-  const [linkDeleteConfirmation, setLinkDeleteConfirmation] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   useEffect(() => {
     isMounted.current = true;
@@ -199,15 +203,31 @@ export default function LinkEdit() {
       });
   }
 
+  function deleteLink() {
+    return request(`${CONFIG.API_INSTANCE}/content/links/${linkZUID}`, {
+      method: "DELETE",
+      json: true,
+    }).then(() => {
+      dispatch(notify({ message: "Deleted Link", kind: "save" }));
+      dispatch(closeTab(`/content/link/${linkZUID}`));
+      dispatch(fetchNav());
+    });
+  }
+
+  function onDelete(yes) {
+    if (yes) {
+      deleteLink();
+    }
+
+    // always close yes or no
+    setShowConfirmation(false);
+  }
+
   function onChange(value, name) {
     setState({
       ...state,
       [name]: value,
     });
-  }
-
-  function confirmDelete() {
-    setLinkDeleteConfirmation(true);
   }
 
   return (
@@ -288,18 +308,25 @@ export default function LinkEdit() {
           </CardContent>
           <CardFooter className={styles.LinkEditActions}>
             <Button kind="save" disabled={state.saving} onClick={saveLink}>
+              <FontAwesomeIcon icon={faSave} />
               Save Changes
             </Button>
-            <Button kind="warn" disabled={state.saving} onClick={confirmDelete}>
+            <Button
+              kind="warn"
+              disabled={state.saving}
+              onClick={() => setShowConfirmation(true)}
+            >
+              <FontAwesomeIcon icon={faTrashAlt} />
               Delete
             </Button>
           </CardFooter>
         </Card>
       </WithLoader>
-      {linkDeleteConfirmation && (
-        <LinkDeleteConfirmation
-          linkZUID={linkZUID}
-          onClose={() => setLinkDeleteConfirmation(false)}
+      {showConfirmation && (
+        <ConfirmDialog
+          isOpen={showConfirmation}
+          prompt="Are you sure you want to delete this link?"
+          callback={onDelete}
         />
       )}
     </section>
