@@ -2,9 +2,12 @@ import { applyMiddleware, combineReducers, createStore } from "redux";
 import thunkMiddleware from "redux-thunk";
 import createSentryMiddleware from "redux-sentry-middleware";
 import { composeWithDevTools } from "redux-devtools-extension";
+
 import { fetchResource, resolveFieldOptions } from "./middleware/api";
 import { localStorage } from "./middleware/local-storage";
 import { session } from "./middleware/session";
+import { nav } from "./middleware/nav";
+
 import { Sentry } from "utility/sentry";
 import { auth } from "./auth";
 import { products } from "./products";
@@ -30,6 +33,7 @@ import publishPlan from "./publishPlan";
 const middlewares = [
   localStorage,
   session,
+  nav,
   fetchResource,
   resolveFieldOptions,
   thunkMiddleware,

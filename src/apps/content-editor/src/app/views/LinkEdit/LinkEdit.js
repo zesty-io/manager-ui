@@ -14,7 +14,6 @@ import { Input } from "@zesty-io/core/Input";
 import { Button } from "@zesty-io/core/Button";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
-import { fetchNav } from "apps/content-editor/src/store/navContent";
 import { closeTab } from "shell/store/ui";
 import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
@@ -208,9 +207,11 @@ export default function LinkEdit() {
       method: "DELETE",
       json: true,
     }).then(() => {
+      dispatch({
+        type: "REMOVE_LINK",
+      });
       dispatch(notify({ message: "Deleted Link", kind: "save" }));
       dispatch(closeTab(`/content/link/${linkZUID}`));
-      dispatch(fetchNav());
     });
   }
 
