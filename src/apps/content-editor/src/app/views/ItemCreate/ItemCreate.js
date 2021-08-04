@@ -13,7 +13,6 @@ import { ItemSettings } from "../ItemEdit/Meta/ItemSettings";
 import { DataSettings } from "../ItemEdit/Meta/ItemSettings/DataSettings";
 import { fetchFields } from "shell/store/fields";
 import { createItem, generateItem, fetchItem } from "shell/store/content";
-import { fetchNav } from "../../../store/navContent";
 import { notify } from "shell/store/notifications";
 import styles from "./ItemCreate.less";
 
@@ -120,8 +119,6 @@ export default function ItemCreate() {
       } else if (res.data && res.data.ZUID) {
         // fetch item we just saved
         await dispatch(fetchItem(modelZUID, res.data.ZUID));
-        //Update Nav
-        await dispatch(fetchNav());
 
         // Redirect to new item after creating
         history.push(`/content/${modelZUID}/${res.data.ZUID}`);

@@ -102,6 +102,10 @@ export function LinkCreate() {
             })
           );
 
+          dispatch({
+            type: "CREATE_LINK",
+          });
+
           history.push(`/content/link/${res.data.ZUID}`);
         }
       })
