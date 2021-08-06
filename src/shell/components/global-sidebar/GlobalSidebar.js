@@ -37,7 +37,7 @@ export default connect((state) => {
             onClick={props.onClick}
           >
             <FontAwesomeIcon icon={faChevronLeft} />
-            <span>Collapse</span> <br></br>
+            <span>Collapse</span> <br />
             <span className={styles.metaShortcut}>{metaShortcut}</span>
           </p>
         ) : (
