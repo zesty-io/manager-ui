@@ -38,9 +38,14 @@ export default function FieldSettings(props) {
     (field) => field.value === props.field.datatype
   );
 
+  /**
+   *  Added a useRef workaround to get FieldTypeText Field Label & Field Name to
+   * to autopopulate on initial create item. This also resolves the input cursor jump to end  on input on item edit.
+   * helper reference https://stackoverflow.com/a/57773476/6178393
+   *
+   */
   const fieldLabelRef = useRef();
   const fieldNameRef = useRef();
-
   const cursorRef = useRef(0);
 
   useEffect(() => {
