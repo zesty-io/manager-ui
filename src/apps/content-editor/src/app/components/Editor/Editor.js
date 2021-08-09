@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from "react";
+import React, { memo, useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
@@ -41,7 +41,7 @@ export default memo(function Editor({
     }
   };
 
-  const onChange = (value, name) => {
+  const onChange = useCallback((value, name) => {
     if (!name) {
       throw new Error("Input is missing name attribute");
     }
@@ -108,7 +108,7 @@ export default memo(function Editor({
         });
       }
     }
-  };
+  }, []);
 
   return (
     <div className={styles.Fields}>
