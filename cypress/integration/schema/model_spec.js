@@ -8,7 +8,7 @@ describe("Schema", () => {
   const timestamp = Date.now();
   const SCHEMA_NAME = `Test Schema: ${timestamp}`;
 
-  it("Create Model, Add Field, and Delete Model", () => {
+  it("Create Model, Add Field, Update Field and Delete Model", () => {
     cy.get('input[name="label"]').type(SCHEMA_NAME);
 
     cy.get('button[kind="save"]').contains("Create Model").click();
@@ -22,6 +22,22 @@ describe("Schema", () => {
     cy.get('input[name="label"]').type("my label", { force: true });
 
     cy.get('button[kind="save"]').contains("Add Field").click();
+
+    cy.get('input[name="label"]').type(
+      "{leftarrow}{leftarrow}{leftarrow}{leftarrow}{leftarrow} inserting  text within {rightarrow} test",
+      {
+        force: true,
+      }
+    );
+
+    cy.get('input[name="name"]').type(
+      "{leftarrow}{leftarrow}{leftarrow}{leftarrow}{leftarrow} inserting  text within {rightarrow} test",
+      {
+        force: true,
+      }
+    );
+
+    cy.get('button[kind="save"]').contains("Save").click({ force: true });
 
     cy.contains("Delete Model").click({ force: true });
     cy.get('button[kind="warn"]').contains("Delete Model").click();
