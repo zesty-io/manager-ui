@@ -253,6 +253,8 @@ export default function Field({
           tooltip={settings.tooltip}
           required={required}
           value={value}
+          version={version}
+          datatype={datatype}
           onChange={onChange}
           maxLength="16000"
         />
