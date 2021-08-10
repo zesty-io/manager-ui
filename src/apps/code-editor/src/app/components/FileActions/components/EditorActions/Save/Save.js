@@ -1,5 +1,5 @@
-import { memo, useState, useEffect } from "react";
-import { connect } from "react-redux";
+import { useState } from "react";
+
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
