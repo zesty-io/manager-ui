@@ -23,19 +23,9 @@ describe("Schema", () => {
 
     cy.get('button[kind="save"]').contains("Add Field").click();
 
-    cy.get('input[name="label"]').type(
-      "{leftarrow}{leftarrow}{leftarrow}{leftarrow}{leftarrow} inserting  text within {rightarrow} test",
-      {
-        force: true,
-      }
-    );
+    cy.get('input[name="label"]').should("have.value", "my label");
 
-    cy.get('input[name="name"]').type(
-      "{leftarrow}{leftarrow}{leftarrow}{leftarrow}{leftarrow} inserting  text within {rightarrow} test",
-      {
-        force: true,
-      }
-    );
+    cy.get('input[name="name"]').should("have.value", "my_label");
 
     cy.get('button[kind="save"]').contains("Save").click({ force: true });
 
