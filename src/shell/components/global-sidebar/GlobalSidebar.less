@@ -1,4 +1,5 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
 .GlobalSidebar {
   display: flex;
   background-color: @globalMenuBkgColor;
@@ -35,6 +36,11 @@
         margin-right: 8px;
       }
     }
+  }
+  .metaShortcut {
+    margin-left: 16px;
+    font-size: @font-size-caption;
+    color: @zesty-grey;
   }
   .subMenu {
     position: absolute;
