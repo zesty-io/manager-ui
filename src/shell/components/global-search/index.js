@@ -1,43 +1,17 @@
-import { useEffect, useCallback, useRef } from "react";
-import { connect } from "react-redux";
+import { useRef } from "react";
+
 import { useHistory } from "react-router-dom";
+import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import ContentSearch from "shell/components/ContentSearch";
 import { notify } from "shell/store/notifications";
 
-export default connect((state) => {
-  return {
-    platform: state.platform,
-  };
-})(function GlobalSearch(props) {
+export default function GlobalSearch(props) {
   const ref = useRef();
   const history = useHistory();
-
-  const placeholder =
-    props.placeholder ||
-    `Global Search (${props.platform.isMac ? "CMD" : "CTRL"} + Shift + K)`;
-
-  const focusGlobalSearch = useCallback(
-    (evt) => {
-      if (
-        ((!props.platform.isMac && evt.ctrlKey) ||
-          (props.platform.isMac && evt.metaKey)) &&
-        evt.shiftKey &&
-        evt.key === "K"
-      ) {
-        evt.preventDefault();
-        ref.current.focus();
-      }
-    },
-    [props.platform]
-  );
-
-  useEffect(() => {
-    document.addEventListener("keydown", focusGlobalSearch);
-    return () => {
-      document.removeEventListener("keydown", focusGlobalSearch);
-    };
-  }, []);
+  const metaShortcut = useMetaKey("k", "shift", () => {
+    ref.current.focus();
+  });
 
   const handleSelect = (item) => {
     if (item?.meta) {
@@ -55,9 +29,9 @@ export default connect((state) => {
   return (
     <ContentSearch
       ref={ref}
-      placeholder={placeholder}
+      placeholder={`Global Search ${metaShortcut}`}
       onSelect={handleSelect}
       value=""
     />
   );
-});
+}

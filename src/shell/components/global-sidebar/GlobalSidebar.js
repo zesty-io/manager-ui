@@ -5,7 +5,6 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import styles from "./GlobalSidebar.less";
 
@@ -19,7 +18,6 @@ export default connect((state) => {
     instance: state.instance,
   };
 })(function GlobalSidebar(props) {
-  const metaShortcut = useMetaKey("b", props.onClick);
   return (
     <aside className={styles.GlobalSidebar}>
       <div
@@ -37,8 +35,7 @@ export default connect((state) => {
             onClick={props.onClick}
           >
             <FontAwesomeIcon icon={faChevronLeft} />
-            <span>Collapse</span> <br />
-            <span className={styles.metaShortcut}>{metaShortcut}</span>
+            <span>Collapse</span>
           </p>
         ) : (
           <p className={styles.Collapse} onClick={props.onClick}>
