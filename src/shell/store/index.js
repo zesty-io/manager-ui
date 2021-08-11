@@ -9,6 +9,7 @@ import { fetchResource, resolveFieldOptions } from "./middleware/api";
 import { localStorage } from "./middleware/local-storage";
 import { session } from "./middleware/session";
 import { appBus } from "./middleware/app-bus";
+import { nav } from "./middleware/nav";
 
 import { auth } from "./auth";
 import { products } from "./products";
@@ -36,6 +37,7 @@ const middlewares = [
   localStorage,
   session,
   appBus,
+  nav,
   fetchResource,
   resolveFieldOptions,
   thunkMiddleware,

@@ -1,6 +1,6 @@
 import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import cx from "classnames";
 import usePrevious from "react-use/lib/usePrevious";
 import debounce from "lodash/debounce";
@@ -19,12 +19,12 @@ const TAB_PADDING = 16;
 const TAB_BORDER = 1;
 
 export default memo(function GlobalTabs() {
-  const history = useHistory();
+  const location = useLocation();
   const dispatch = useDispatch();
   const tabs = useSelector((state) => state.ui.tabs);
   const instanceZUID = useSelector((state) => state.instance.ZUID);
   const loadedTabs = useSelector((state) => state.ui.loadedTabs);
-  const prevPath = usePrevious(history.location.pathname);
+  const prevPath = usePrevious(location.pathname);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const models = useSelector((state) => state.models);
   const content = useSelector((state) => state.content);
@@ -50,9 +50,9 @@ export default memo(function GlobalTabs() {
   // openTab every time path changes
   useEffect(() => {
     if (loadedTabs) {
-      dispatch(openTab({ path: history.location.pathname, prevPath }));
+      dispatch(openTab({ path: location.pathname, prevPath }));
     }
-  }, [loadedTabs, history.location.pathname]);
+  }, [loadedTabs, location.pathname]);
 
   // rebuild tabs if any of the store slices changes
   // slices could include tab.name updates
@@ -102,7 +102,7 @@ export default memo(function GlobalTabs() {
     <nav ref={tabContainerRef} className={styles.QuickLinks}>
       <ol className={styles.Links}>
         {tabs.map((tab, i) => {
-          const isActiveTab = tab.pathname === history.location.pathname;
+          const isActiveTab = tab.pathname === location.pathname;
           const tabProps = {};
           if (isActiveTab) {
             tabProps.ref = activeTabRef;

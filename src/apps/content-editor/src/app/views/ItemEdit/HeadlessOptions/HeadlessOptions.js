@@ -34,7 +34,14 @@ export function HeadlessOptions(props) {
     try {
       let headlessRes = await fetch(headlessURL);
       let headlessData = await headlessRes.json();
-      setHeadlessResponse(headlessData.headless);
+      if (
+        headlessData.headless.hasOwnProperty("mode") &&
+        headlessData.headless.mode != "traditional"
+      ) {
+        setHeadlessResponse(headlessData.headless);
+      } else {
+        setHeadlessResponse(false);
+      }
     } catch (err) {
       setHeadlessResponse(false);
     }

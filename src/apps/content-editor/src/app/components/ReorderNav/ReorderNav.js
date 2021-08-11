@@ -12,7 +12,6 @@ import DragList from "./DragComponents/DragList";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
-import { fetchNav } from "../../../store/navContent";
 
 import styles from "./ReorderNav.less";
 class ReorderNav extends Component {
@@ -44,12 +43,19 @@ class ReorderNav extends Component {
       json: true,
     })
       .then(() => {
+        this.props.dispatch({
+          type: "REORDER_NAV",
+        });
         this.props.dispatch(
-          notify({ message: "Changes have been saved", kind: "save" })
+          notify({
+            message: "Changes have been saved",
+            kind: "save",
+          })
         );
-        this.setState({ dirty: false, requesting: false });
-        // fetch new Nav
-        this.props.dispatch(fetchNav());
+        this.setState({
+          dirty: false,
+          requesting: false,
+        });
       })
       .catch((err) => {
         this.props.dispatch(
@@ -76,6 +82,7 @@ class ReorderNav extends Component {
       current: name,
     });
   };
+
   handleMove = (source, target) => {
     // filter out the source item
     let mutatedArray = this.state[this.state.current].filter(

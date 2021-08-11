@@ -1,8 +1,7 @@
-import { memo, useMemo, useEffect, useCallback, useState } from "react";
+import { memo, useMemo, useCallback, useState } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment-timezone";
-import { usePrevious } from "react-use";
 import { fetchFields } from "shell/store/fields";
 import { fetchItem, fetchItems, searchItems } from "shell/store/content";
 
@@ -36,7 +35,7 @@ import { FieldTypeOneToMany } from "@zesty-io/core/FieldTypeOneToMany";
 import styles from "./Field.less";
 import MediaStyles from "../../../../../../media/src/app/MediaAppModal.less";
 
-const FieldLabel = (props) => {
+const FieldLabel = memo((props) => {
   return (
     <>
       <span className={styles.MainLabel}>{props.label}&nbsp;</span>
@@ -45,7 +44,7 @@ const FieldLabel = (props) => {
       </span>
     </>
   );
-};
+});
 
 // NOTE: Componetized so it can be memoized for input/render perf
 const RelatedOption = memo((props) => {
@@ -170,18 +169,9 @@ export default function Field({
   const allLanguages = useSelector((state) => state.languages);
 
   const [imageModal, setImageModal] = useState();
+
   const value = item?.data?.[name];
-  const [versionedValue, setVersionedValue] = useState(value);
-
   const version = item?.meta?.version;
-  const prevVersion = usePrevious(version);
-
-  useEffect(() => {
-    // only set value if version is changed
-    if (version !== prevVersion) {
-      setVersionedValue(value);
-    }
-  }, [version, prevVersion, value]);
 
   function renderMediaModal() {
     return ReactDOM.createPortal(
@@ -204,13 +194,19 @@ export default function Field({
     );
   }
 
+  // NOTE: stablize label, large perf improvement
+  const FieldTypeLabel = useMemo(
+    () => <FieldLabel label={label} name={name} datatype={datatype} />,
+    [label, name, datatype]
+  );
+
   switch (datatype) {
     case "text":
     case "fontawesome":
       return (
         <FieldTypeText
           name={name}
-          label={<FieldLabel label={label} name={name} datatype={datatype} />}
+          label={FieldTypeLabel}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -223,7 +219,7 @@ export default function Field({
       return (
         <FieldTypeText
           name={name}
-          label={<FieldLabel label={label} name={name} datatype={datatype} />}
+          label={FieldTypeLabel}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -238,7 +234,7 @@ export default function Field({
       return (
         <FieldTypeUUID
           name={name}
-          label={<FieldLabel label={label} name={name} datatype={datatype} />}
+          label={FieldTypeLabel}
           description={description}
           tooltip={settings.tooltip}
           placeholder="UUID field values are auto-generated"
@@ -252,29 +248,33 @@ export default function Field({
       return (
         <FieldTypeTextarea
           name={name}
-          label={<FieldLabel label={label} name={name} datatype={datatype} />}
+          label={FieldTypeLabel}
           description={description}
           tooltip={settings.tooltip}
           required={required}
           value={value}
+          version={version}
+          datatype={datatype}
           onChange={onChange}
           maxLength="16000"
         />
       );
+
     case "wysiwyg_advanced":
     case "wysiwyg_basic":
       return (
         <div className={styles.WYSIWYGFieldType}>
           <FieldTypeTinyMCE
             name={name}
-            label={<FieldLabel label={label} name={name} datatype={datatype} />}
+            label={FieldTypeLabel}
             description={description}
             tooltip={settings.tooltip}
             required={required}
-            value={versionedValue}
+            value={value}
+            version={version}
             onChange={onChange}
             onSave={onSave}
-            type={datatype}
+            datatype={datatype}
             maxLength="16000"
             skin="oxide"
             skinURL="/vendors/tinymce/skins/ui/oxide"
@@ -292,19 +292,21 @@ export default function Field({
           {imageModal && renderMediaModal()}
         </div>
       );
+
     case "markdown":
     case "article_writer":
       return (
         <div className={styles.WYSIWYGFieldType}>
           <FieldTypeEditor
             name={name}
-            label={<FieldLabel label={label} name={name} datatype={datatype} />}
+            label={FieldTypeLabel}
             description={description}
             tooltip={settings.tooltip}
             required={required}
             value={value}
+            version={version}
             onChange={onChange}
-            type={datatype}
+            datatype={datatype}
             maxLength="16000"
             mediaBrowser={(opts) => {
               setImageModal(opts);
@@ -329,7 +331,7 @@ export default function Field({
           <FieldTypeImage
             images={images}
             name={name}
-            label={<FieldLabel label={label} name={name} datatype={datatype} />}
+            label={FieldTypeLabel}
             description={description}
             tooltip={settings.tooltip}
             required={required}
@@ -374,7 +376,7 @@ export default function Field({
         return (
           <FieldTypeBinary
             name={name}
-            label={<FieldLabel label={label} name={name} datatype={datatype} />}
+            label={FieldTypeLabel}
             description={description}
             tooltip={settings.tooltip}
             required={required}
@@ -414,7 +416,7 @@ export default function Field({
           description={description}
           tooltip={settings.tooltip}
           name={name}
-          label={<FieldLabel label={label} name={name} datatype={datatype} />}
+          label={FieldTypeLabel}
           required={required}
           value={value}
           onChange={onChange}
@@ -488,7 +490,7 @@ export default function Field({
       return (
         <FieldTypeInternalLink
           name={name}
-          label={<FieldLabel label={label} name={name} datatype={datatype} />}
+          label={FieldTypeLabel}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -564,7 +566,7 @@ export default function Field({
         <FieldTypeOneToOne
           className={styles.FieldTypeOneToOne}
           name={name}
-          label={<FieldLabel label={label} name={name} datatype={datatype} />}
+          label={FieldTypeLabel}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -625,7 +627,7 @@ export default function Field({
         <FieldTypeOneToMany
           className={styles.FieldTypeOneToMany}
           name={name}
-          label={<FieldLabel label={label} name={name} datatype={datatype} />}
+          label={FieldTypeLabel}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -641,7 +643,7 @@ export default function Field({
       return (
         <FieldTypeColor
           name={name}
-          label={<FieldLabel label={label} name={name} datatype={datatype} />}
+          label={FieldTypeLabel}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -654,7 +656,7 @@ export default function Field({
       return (
         <FieldTypeNumber
           name={name}
-          label={<FieldLabel label={label} name={name} datatype={datatype} />}
+          label={FieldTypeLabel}
           description={description}
           tooltip={settings.tooltip}
           required={required}
@@ -667,7 +669,7 @@ export default function Field({
       return (
         <FieldTypeCurrency
           name={name}
-          label={<FieldLabel label={label} name={name} datatype={datatype} />}
+          label={FieldTypeLabel}
           description={description}
           tooltip={settings.tooltip}
           placeholder="0.00"
@@ -697,7 +699,7 @@ export default function Field({
       return (
         <FieldTypeDate
           name={name}
-          label={<FieldLabel label={label} name={name} datatype={datatype} />}
+          label={FieldTypeLabel}
           description={description}
           tooltip={settings.tooltip}
           datatype={datatype}
@@ -711,7 +713,7 @@ export default function Field({
       return (
         <FieldTypeSort
           name={name}
-          label={<FieldLabel label={label} name={name} datatype={datatype} />}
+          label={FieldTypeLabel}
           description={description}
           tooltip={settings.tooltip}
           required={required}

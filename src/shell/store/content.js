@@ -487,7 +487,6 @@ export function createItem(modelZUID, itemZUID) {
           type: "REMOVE_ITEM",
           itemZUID,
         });
-        // dispatch(fetchNav());
       }
       return res;
     });
@@ -520,10 +519,6 @@ export function deleteItem(modelZUID, itemZUID) {
             kind: "save",
           })
         );
-
-        // Always update content navigation after deleting an item
-        // NOTE: alternatively the navContent store could listen for the `REMOVE_ITEM` action
-        // dispatch(fetchNav());
       }
       return res;
     });
