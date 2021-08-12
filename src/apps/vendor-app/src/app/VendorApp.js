@@ -1,20 +1,22 @@
 import Cookies from "js-cookie";
 import cx from "classnames";
 import { useEffect, useRef, useState } from "react";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { registerFrame } from "shell/store/apps";
 
 import styles from "./VendorApp.less";
-export default function VendorApp(props) {
+export default function VendorApp() {
   const dispatch = useDispatch();
   const instance = useSelector((state) => state.instance);
-
   const [sessionToken] = useState(Cookies.get(CONFIG.COOKIE_NAME));
   const frame = useRef();
-  const src = "http://localhost:3000";
 
-  console.log("VendorApp", instance);
+  // TODO handle multiple apps
+  // TODO handle registered app url
+  const src = `http://${window.location.hostname}:3000`;
+
+  // console.log("VendorApp", instance);
 
   useEffect(() => {
     if (frame.current) {
@@ -26,9 +28,8 @@ export default function VendorApp(props) {
           {
             source: "zesty",
             sessionToken,
-            payload: {
-              instance,
-            },
+            instance,
+            payload: {},
           },
           src
         );
