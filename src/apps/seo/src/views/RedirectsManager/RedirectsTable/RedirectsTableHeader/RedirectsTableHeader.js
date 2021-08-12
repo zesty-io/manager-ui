@@ -16,7 +16,7 @@ export default function RedirectsTableHeader(props) {
         onClick={props.handleSortBy}
         style={{ flex: "1" }}
       >
-        <Infotip className={styles.InfoTip}>File Path Only </Infotip>
+        <Infotip className={styles.InfoTip}>File Path Only </Infotip>&nbsp;
         <span
           className={cx(
             styles.subheadline,
@@ -24,7 +24,7 @@ export default function RedirectsTableHeader(props) {
             props.sortBy === "from" ? styles.sorted : ""
           )}
         >
-          &nbsp; From
+          Incoming Path
           {props.sortBy === "from" && props.sortDirection === "desc" ? (
             <FontAwesomeIcon icon={faSortAlphaDown} />
           ) : null}
@@ -69,7 +69,7 @@ export default function RedirectsTableHeader(props) {
             props.sortBy === "to" ? styles.sorted : ""
           )}
         >
-          To
+          Redirect Target
           {props.sortBy === "to" && props.sortDirection === "desc" ? (
             <FontAwesomeIcon icon={faSortAlphaDown} />
           ) : null}
