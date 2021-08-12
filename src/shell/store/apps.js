@@ -4,6 +4,13 @@ const slice = createSlice({
   name: "apps",
   initialState: {
     frames: [],
+    installed: [
+      {
+        zuid: "content-designer",
+        name: "Content Designer",
+        url: `http://${window.location.hostname}:3000`,
+      },
+    ],
   },
   reducers: {
     registerFrame(state, action) {
@@ -14,3 +21,6 @@ const slice = createSlice({
 
 export default slice.reducer;
 export const { registerFrame } = slice.actions;
+
+// fetch installed apps from appi
+export function fetchApps() {}

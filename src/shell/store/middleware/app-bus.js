@@ -6,8 +6,6 @@ export const appBus =
 
     if (state.apps.frames.length) {
       state.apps.frames.forEach((frame) => {
-        console.log("frame", frame);
-
         frame?.contentWindow?.postMessage({
           source: "zesty",
           action,

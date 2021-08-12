@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import cx from "classnames";
@@ -16,63 +16,81 @@ import {
   faBullseye,
   faCode,
   faMicrochip,
+  faCaretRight,
 } from "@fortawesome/free-solid-svg-icons";
 
+const ICONS = {
+  content: faEdit,
+  media: faImage,
+  schema: faDatabase,
+  code: faCode,
+  leads: faAddressCard,
+  analytics: faChartLine,
+  seo: faBullseye,
+  "audit-trail": faHistory,
+  settings: faCog,
+  apps: faMicrochip,
+};
+
 import styles from "./styles.less";
-export default connect((state) => {
-  return {
-    products: state.products,
-  };
-})(
-  memo(function GlobalMenu(props) {
-    const location = useLocation();
-    const slug = location.pathname.split("/")[1];
-    const icons = {
-      content: faEdit,
-      media: faImage,
-      schema: faDatabase,
-      code: faCode,
-      leads: faAddressCard,
-      analytics: faChartLine,
-      seo: faBullseye,
-      "audit-trail": faHistory,
-      settings: faCog,
-      apps: faMicrochip,
-    };
+export default memo(function GlobalMenu(props) {
+  const products = useSelector((state) => state.products);
+  const apps = useSelector((state) => state.apps);
+  const location = useLocation();
+  const slug = location.pathname.split("/")[1];
 
-    return (
-      <menu
-        className={cx(styles.GlobalMenu, props.openNav ? styles.OpenNav : "")}
-      >
-        {props.products.map((product) => {
-          // Covert dashes to spaces
-          // Uppercase first letter of word
-          let name = product
-            .split("-")
-            .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-            .join(" ");
+  return (
+    <menu
+      className={cx(styles.GlobalMenu, props.openNav ? styles.OpenNav : "")}
+    >
+      {products.map((product) => {
+        // Covert dashes to spaces
+        // Uppercase first letter of word
+        let name = product
+          .split("-")
+          .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+          .join(" ");
 
-          if (product === "seo") {
-            name = name.toUpperCase();
-          }
+        if (product === "seo") {
+          name = name.toUpperCase();
+        }
 
+        return (
+          <Link
+            key={product}
+            className={cx(
+              styles.control,
+              slug === product ? styles.current : null
+            )}
+            to={`/${product}`}
+            // onClick={this.showMenu}
+            title={`${name} App`}
+          >
+            <FontAwesomeIcon icon={ICONS[product]} />
+            <span className={styles.title}>{name}</span>
+          </Link>
+        );
+      })}
+
+      {/* Custom App Links */}
+      <menu className={styles.CustomApps}>
+        {apps.installed.map((app) => {
           return (
             <Link
-              key={product}
+              key={app.zuid}
               className={cx(
                 styles.control,
-                slug === product ? styles.current : null
+                slug === app.name ? styles.current : null
               )}
-              to={`/${product}`}
-              // onClick={this.showMenu}
-              title={`${name} App`}
+              to={`/app/${app.zuid}`}
+              title={`${app.name}`}
             >
-              <FontAwesomeIcon icon={icons[product]} />
-              <span className={styles.title}>{name}</span>
+              <FontAwesomeIcon icon={faCaretRight} />
+              <span className={styles.title}>{app.name}</span>
             </Link>
           );
         })}
       </menu>
-    );
-  })
-);
+    </menu>
+  );
+});
