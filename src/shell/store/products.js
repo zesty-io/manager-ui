@@ -73,7 +73,6 @@ export function fetchProducts() {
         "seo",
         "audit-trail",
         "settings",
-        "apps",
       ];
     }
 

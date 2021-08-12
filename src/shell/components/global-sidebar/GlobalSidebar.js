@@ -10,6 +10,7 @@ import styles from "./GlobalSidebar.less";
 
 import Favicon from "shell/components/favicon";
 import GlobalMenu from "shell/components/global-menu";
+import GlobalCustomApps from "shell/components/global-custom-apps";
 import GlobalActions from "shell/components/global-actions";
 
 export default connect((state) => {
@@ -28,6 +29,7 @@ export default connect((state) => {
       >
         <Favicon />
         <GlobalMenu openNav={props.ui.openNav} />
+        <GlobalCustomApps openNav={props.ui.openNav} />
         <GlobalActions hash={props.instance.randomHashID} />
         {props.openNav ? (
           <p

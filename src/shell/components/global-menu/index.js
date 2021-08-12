@@ -71,26 +71,6 @@ export default memo(function GlobalMenu(props) {
           </Link>
         );
       })}
-
-      {/* Custom App Links */}
-      <menu className={styles.CustomApps}>
-        {apps.installed.map((app) => {
-          return (
-            <Link
-              key={app.zuid}
-              className={cx(
-                styles.control,
-                slug === app.name ? styles.current : null
-              )}
-              to={`/app/${app.zuid}`}
-              title={`${app.name}`}
-            >
-              <FontAwesomeIcon icon={faCaretRight} />
-              <span className={styles.title}>{app.name}</span>
-            </Link>
-          );
-        })}
-      </menu>
     </menu>
   );
 });
