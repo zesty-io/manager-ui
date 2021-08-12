@@ -26,24 +26,16 @@ export function RedirectCreator(props) {
     console.log("Term :", term);
     // ContentSearch return Object while Search return string
     term = term.meta ? term.meta.ZUID : term;
-
-    if (term.substring(0, 2).includes("7-")) {
-      setType("page");
-    }
-    if (term.includes("http")) {
-      setType("external");
-    }
-
-    if (term.startsWith("/")) {
-      setType("path");
-    }
-
     setTo(term);
 
-    // setType("path");
+    if (term.startsWith("7-")) {
+      return setType("page");
+    }
+    if (term.startsWith("http")) {
+      return setType("external");
+    }
 
-    console.log("--------------------------------------");
-    console.log("Term inside  determineType:", term);
+    return setType("path");
   };
 
   const handleCreateRedirect = () => {
@@ -85,7 +77,13 @@ export function RedirectCreator(props) {
         />
       </span>
       <span className={styles.RedirectCreatorCell} style={{ flex: "1" }}>
-        {type === "page" ? (
+        {type === "external" ? (
+          <Search
+            className={styles.SearchBar}
+            onChange={determineType}
+            value={to}
+          />
+        ) : (
           <ContentSearch
             className={styles.SearchBar}
             placeholder="Search for item"
@@ -94,12 +92,6 @@ export function RedirectCreator(props) {
             filterResults={(results) =>
               results.filter((result) => result.web.path !== null)
             }
-            value={to}
-          />
-        ) : (
-          <Search
-            className={styles.SearchBar}
-            onChange={determineType}
             value={to}
           />
         )}
