@@ -23,8 +23,8 @@ export function RedirectCreator(props) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [code, setCode] = useState(1); // Toggle defaults to 301
-  const [type, setType] = useState("");
-  const [showFilter, setShowFilter] = useState(false);
+  const [type, setType] = useState("page");
+  const [showFilter, setShowFilter] = useState(true);
   const [showInputExternal, setShowInputExternal] = useState(false);
   const [showInputPath, setShowInputPath] = useState(false);
 
@@ -96,13 +96,13 @@ export function RedirectCreator(props) {
           onValue="301"
           onChange={(val) => setCode(Number(val))}
         />
-        <div>
-          <Select name={"selectType"} onSelect={selectTypeHandler}>
-            <Option value="internalPage" text="Internal Page" />
-            <Option value="externalPage" text="External Page" />
-            <Option value="relativePath" text="Relative Path" />
-          </Select>
-        </div>
+      </span>
+      <span className={styles.RedirectCreatorCell}>
+        <Select name={"selectType"} onSelect={selectTypeHandler}>
+          <Option defaultValue="internalPage" text="Internal Page" />
+          <Option value="externalPage" text="External Page" />
+          <Option value="relativePath" text="Relative Path" />
+        </Select>
       </span>
       <span className={styles.RedirectCreatorCell} style={{ flex: "1" }}>
         {showFilter && (
