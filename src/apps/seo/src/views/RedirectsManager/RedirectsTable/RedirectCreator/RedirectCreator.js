@@ -7,6 +7,7 @@ import { Button } from "@zesty-io/core/Button";
 import { Input } from "@zesty-io/core/Input";
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
 import { Select, Option } from "@zesty-io/core/Select";
+import { Search } from "@zesty-io/core/Search";
 
 import { createRedirect } from "../../../../store/redirects";
 import RedirectsImport from "../../../RedirectsManager/RedirectActions/RedirectsImport/RedirectsImport";
@@ -22,9 +23,6 @@ export function RedirectCreator(props) {
   const [to, setTo] = useState("");
   const [code, setCode] = useState(1); // Toggle defaults to 301
   const [type, setType] = useState("page");
-  const [showFilter, setShowFilter] = useState(true);
-  const [showInputExternal, setShowInputExternal] = useState(false);
-  const [showInputPath, setShowInputPath] = useState(false);
 
   const determineTerm = (term) => {
     // ContentSearch return Object while Search return string
@@ -32,29 +30,28 @@ export function RedirectCreator(props) {
     setTo(term);
   };
 
-  const selectTypeHandler = (selectType) => {
-    if (selectType === "internalPage") {
-      setShowInputExternal(false);
-      setShowInputPath(false);
-
-      setShowFilter(true);
-      return setType("page");
+  const renderSearch = () => {
+    if (type === "page") {
+      return (
+        <ContentSearch
+          className={styles.SearchBar}
+          placeholder="Search for item"
+          onSelect={determineTerm}
+          filterResults={(results) =>
+            results.filter((result) => result.web.path !== null)
+          }
+          value={to}
+        />
+      );
     }
-    if (selectType === "externalPage") {
-      setShowFilter(false);
-      setShowInputPath(false);
-
-      setShowInputExternal(true);
-      return setType("external");
-    }
-
-    if (selectType === "relativePath") {
-      setShowFilter(false);
-      setShowInputExternal(false);
-
-      setShowInputPath(true);
-      return setType("path");
-    }
+    return (
+      <Search
+        className={styles.SearchBar}
+        onChange={determineTerm}
+        placeholder={type === "external" ? "Add URL" : "Add File Path"}
+        value={to}
+      />
+    );
   };
 
   const handleCreateRedirect = () => {
@@ -96,42 +93,14 @@ export function RedirectCreator(props) {
         />
       </span>
       <span className={styles.RedirectCreatorCell}>
-        <Select name={"selectType"} onSelect={selectTypeHandler}>
-          <Option defaultValue="internalPage" text="Internal Page" />
-          <Option value="externalPage" text="External Page" />
-          <Option value="relativePath" text="Relative Path" />
+        <Select name={"selectType"} onSelect={setType}>
+          <Option defaultValue="page" text="Internal Page" />
+          <Option value="external" text="External Page" />
+          <Option value="path" text="Relative Path" />
         </Select>
       </span>
       <span className={styles.RedirectCreatorCell} style={{ flex: "1" }}>
-        {showFilter && (
-          <ContentSearch
-            className={styles.SearchBar}
-            placeholder="Search for item"
-            onSelect={determineTerm}
-            filterResults={(results) =>
-              results.filter((result) => result.web.path !== null)
-            }
-            value={to}
-          />
-        )}
-
-        {showInputExternal && (
-          <Input
-            className={styles.SearchBar}
-            placeholder="Add URL"
-            onChange={determineTerm}
-            value={to}
-          />
-        )}
-
-        {showInputPath && (
-          <Input
-            className={styles.SearchBar}
-            placeholder="Add your relative path"
-            onChange={determineTerm}
-            value={to}
-          />
-        )}
+        {renderSearch()}
       </span>
       <span className={styles.RedirectCreatorCell}>
         <Button className="save" kind="save" onClick={handleCreateRedirect}>
