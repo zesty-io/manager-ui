@@ -7,35 +7,56 @@ import { Button } from "@zesty-io/core/Button";
 import { Input } from "@zesty-io/core/Input";
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
 import { Search } from "@zesty-io/core/Search";
+import { Select, Option } from "@zesty-io/core/Select";
 
 import { createRedirect } from "../../../../store/redirects";
 import RedirectsImport from "../../../RedirectsManager/RedirectActions/RedirectsImport/RedirectsImport";
 
 import { CSVImporter } from "../../../../../src/store/imports";
+import { notify } from "shell/store/notifications";
+
+import ContentSearch from "shell/components/ContentSearch";
 
 import styles from "./RedirectCreator.less";
-import ContentSearch from "shell/components/ContentSearch";
 
 export function RedirectCreator(props) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [code, setCode] = useState(1); // Toggle defaults to 301
   const [type, setType] = useState("");
+  const [showFilter, setShowFilter] = useState(false);
+  const [showInputExternal, setShowInputExternal] = useState(false);
+  const [showInputPath, setShowInputPath] = useState(false);
 
-  const determineType = (term) => {
-    console.log("Term :", term);
+  const determineTerm = (term) => {
     // ContentSearch return Object while Search return string
     term = term.meta ? term.meta.ZUID : term;
     setTo(term);
+  };
 
-    if (term.startsWith("7-")) {
+  const selectTypeHandler = (selectType) => {
+    if (selectType === "internalPage") {
+      setShowInputExternal(false);
+      setShowInputPath(false);
+
+      setShowFilter(true);
       return setType("page");
     }
-    if (term.startsWith("http")) {
+    if (selectType === "externalPage") {
+      setShowFilter(false);
+      setShowInputPath(false);
+
+      setShowInputExternal(true);
       return setType("external");
     }
 
-    return setType("path");
+    if (selectType === "relativePath") {
+      setShowFilter(false);
+      setShowInputExternal(false);
+
+      setShowInputPath(true);
+      return setType("path");
+    }
   };
 
   const handleCreateRedirect = () => {
@@ -75,23 +96,39 @@ export function RedirectCreator(props) {
           onValue="301"
           onChange={(val) => setCode(Number(val))}
         />
+        <div>
+          <Select name={"selectType"} onSelect={selectTypeHandler}>
+            <Option value="internalPage" text="Internal Page" />
+            <Option value="externalPage" text="External Page" />
+            <Option value="relativePath" text="Relative Path" />
+          </Select>
+        </div>
       </span>
       <span className={styles.RedirectCreatorCell} style={{ flex: "1" }}>
-        {type === "external" ? (
-          <Search
-            className={styles.SearchBar}
-            onChange={determineType}
-            value={to}
-          />
-        ) : (
+        {showFilter && (
           <ContentSearch
             className={styles.SearchBar}
             placeholder="Search for item"
-            onSelect={determineType}
-            onChange={determineType}
+            onSelect={determineTerm}
             filterResults={(results) =>
               results.filter((result) => result.web.path !== null)
             }
+            value={to}
+          />
+        )}
+
+        {showInputExternal && (
+          <Search
+            className={styles.SearchBar}
+            onChange={determineTerm}
+            value={to}
+          />
+        )}
+
+        {showInputPath && (
+          <Search
+            className={styles.SearchBar}
+            onChange={determineTerm}
             value={to}
           />
         )}

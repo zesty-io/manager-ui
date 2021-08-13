@@ -46,13 +46,19 @@ export default function RedirectsTableHeader(props) {
             props.sortBy === "type" ? styles.sorted : ""
           )}
         >
-          Type
+          Status Code
           {props.sortBy === "type" && props.sortDirection === "desc" ? (
             <FontAwesomeIcon icon={faSortAlphaDown} />
           ) : null}
           {props.sortBy === "type" && props.sortDirection === "asc" ? (
             <FontAwesomeIcon icon={faSortAlphaUp} />
           ) : null}
+        </span>
+      </span>
+
+      <span className={cx(styles.RedirectsTableHeaderCell, styles.code)}>
+        <span className={cx(styles.subheadline, styles.column)}>
+          Redirect Type
         </span>
       </span>
 
