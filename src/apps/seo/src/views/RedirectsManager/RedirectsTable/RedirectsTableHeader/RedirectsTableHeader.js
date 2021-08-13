@@ -46,7 +46,7 @@ export default function RedirectsTableHeader(props) {
             props.sortBy === "type" ? styles.sorted : ""
           )}
         >
-          Status Code
+          HTTP Code
           {props.sortBy === "type" && props.sortDirection === "desc" ? (
             <FontAwesomeIcon icon={faSortAlphaDown} />
           ) : null}

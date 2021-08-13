@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
+  faExternalLinkAlt,
   faFileAlt,
   faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
@@ -20,6 +21,20 @@ export default function RedirectsTableRow(props) {
       <span className={cx(styles.RedirectsTableRowCell, styles.code)}>
         {props.code}&nbsp;
         <FontAwesomeIcon icon={faArrowRight} />
+      </span>
+
+      <span className={cx(styles.RedirectsTableRowCell, styles.code)}>
+        {props.targetType === "external" ? (
+          <span>
+            {props.targetType}&nbsp;
+            <FontAwesomeIcon icon={faExternalLinkAlt} />
+          </span>
+        ) : (
+          <span>
+            {props.targetType}&nbsp;
+            <FontAwesomeIcon icon={faFileAlt} />
+          </span>
+        )}
       </span>
 
       {props.target_type === "page" ? (
