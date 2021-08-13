@@ -6,7 +6,10 @@ import { Route, Switch } from "react-router";
 
 import { registerFrame } from "shell/store/apps";
 import { NotFound } from "shell/components/NotFound";
+
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+import { Url } from "@zesty-io/core/Url";
+import { Search } from "@zesty-io/core/Search";
 
 import styles from "./CustomApp.less";
 export default function CustomApp() {
@@ -59,17 +62,119 @@ function LoadApp(props) {
 
 function InstallApp() {
   return (
-    <section>
-      <Card>
-        <CardHeader>
-          <h1 className={styles.display}>Install a Custom Application</h1>
-        </CardHeader>
-        <CardContent>
-          <ol>
-            <li>Register your application</li>
-          </ol>
-        </CardContent>
-      </Card>
+    <section className={styles.InstallApp}>
+      <header className={styles.Filter}>
+        <h1 className={styles.display}>Find an application: </h1>
+        <Search />
+      </header>
+
+      <main className={styles.Grid}>
+        <Card className={styles.Register}>
+          <CardHeader>
+            <h1 className={styles.display}>Custom Applications</h1>
+          </CardHeader>
+          <CardContent>
+            <ol className={styles.subheadline}>
+              <li>
+                <Url href="https://github.com/zesty-io/app-custom-guide">
+                  Build an application
+                </Url>
+              </li>
+              <li>Register an application</li>
+              <li>Install an application</li>
+            </ol>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <h1 className={styles.display}>Content Designer</h1>
+          </CardHeader>
+          <CardContent>
+            <figure>
+              <img src="" />
+            </figure>
+            <p>Create dynamic layouts.</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <h1 className={styles.display}>Content Designer</h1>
+          </CardHeader>
+          <CardContent>
+            <figure>
+              <img src="" />
+            </figure>
+            <p>Create dynamic layouts.</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <h1 className={styles.display}>Content Designer</h1>
+          </CardHeader>
+          <CardContent>
+            <figure>
+              <img src="" />
+            </figure>
+            <p>Create dynamic layouts.</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <h1 className={styles.display}>Content Designer</h1>
+          </CardHeader>
+          <CardContent>
+            <figure>
+              <img src="" />
+            </figure>
+            <p>Create dynamic layouts.</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <h1 className={styles.display}>Content Designer</h1>
+          </CardHeader>
+          <CardContent>
+            <figure>
+              <img src="" />
+            </figure>
+            <p>Create dynamic layouts.</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <h1 className={styles.display}>Content Designer</h1>
+          </CardHeader>
+          <CardContent>
+            <figure>
+              <img src="" />
+            </figure>
+            <p>Create dynamic layouts.</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <h1 className={styles.display}>Content Designer</h1>
+          </CardHeader>
+          <CardContent>
+            <figure>
+              <img src="" />
+            </figure>
+            <p>Create dynamic layouts.</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <h1 className={styles.display}>Content Designer</h1>
+          </CardHeader>
+          <CardContent>
+            <figure>
+              <img src="" />
+            </figure>
+            <p>Create dynamic layouts.</p>
+          </CardContent>
+        </Card>
+      </main>
     </section>
   );
 }

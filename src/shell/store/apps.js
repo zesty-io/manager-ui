@@ -8,7 +8,7 @@ const slice = createSlice({
       {
         zuid: "content-designer",
         name: "Content Designer",
-        url: `http://${window.location.hostname}:3000`,
+        url: `https://zesty-io.github.io/app-content-designer`,
       },
     ],
   },
