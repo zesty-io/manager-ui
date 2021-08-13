@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -6,14 +6,12 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 import { Input } from "@zesty-io/core/Input";
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
-import { Search } from "@zesty-io/core/Search";
 import { Select, Option } from "@zesty-io/core/Select";
 
 import { createRedirect } from "../../../../store/redirects";
 import RedirectsImport from "../../../RedirectsManager/RedirectActions/RedirectsImport/RedirectsImport";
 
 import { CSVImporter } from "../../../../../src/store/imports";
-import { notify } from "shell/store/notifications";
 
 import ContentSearch from "shell/components/ContentSearch";
 
@@ -118,16 +116,18 @@ export function RedirectCreator(props) {
         )}
 
         {showInputExternal && (
-          <Search
+          <Input
             className={styles.SearchBar}
+            placeholder="Add URL"
             onChange={determineTerm}
             value={to}
           />
         )}
 
         {showInputPath && (
-          <Search
+          <Input
             className={styles.SearchBar}
+            placeholder="Add your relative path"
             onChange={determineTerm}
             value={to}
           />
