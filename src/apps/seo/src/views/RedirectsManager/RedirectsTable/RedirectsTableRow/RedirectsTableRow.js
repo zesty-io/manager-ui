@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
   faExternalLinkAlt,
+  faFile,
   faFileAlt,
   faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
@@ -28,6 +29,11 @@ export default function RedirectsTableRow(props) {
           <span>
             {props.targetType}&nbsp;
             <FontAwesomeIcon icon={faExternalLinkAlt} />
+          </span>
+        ) : props.targetType === "path" ? (
+          <span>
+            {props.targetType}&nbsp;
+            <FontAwesomeIcon icon={faFile} />
           </span>
         ) : (
           <span>
@@ -60,7 +66,7 @@ export default function RedirectsTableRow(props) {
         </span>
       )}
 
-      <span className={styles.RedirectsTableRowCell}>
+      <span style={{ flex: "1" }} className={styles.RedirectsTableRowCell}>
         <Button
           className={cx(styles.removeBtn, "button deleteButton")}
           onClick={props.removeRedirect}

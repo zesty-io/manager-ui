@@ -74,6 +74,7 @@ export default function RedirectsTableHeader(props) {
             styles.column,
             props.sortBy === "to" ? styles.sorted : ""
           )}
+          style={{ marginLeft: "16px" }}
         >
           Redirect Target
           {props.sortBy === "to" && props.sortDirection === "desc" ? (
@@ -87,7 +88,7 @@ export default function RedirectsTableHeader(props) {
 
       <span
         className={styles.RedirectsTableHeaderCell}
-        style={{ flexBasis: "9rem" }}
+        style={{ flexBasis: "23rem" }}
       ></span>
     </div>
   );
