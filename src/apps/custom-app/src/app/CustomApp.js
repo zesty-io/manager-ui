@@ -34,7 +34,12 @@ function LoadApp(props) {
 
   useEffect(() => {
     if (frame.current) {
-      dispatch(registerFrame(frame.current));
+      // TODO need too rethink this. The goal was to allow posting messages from other locations within core
+      // but if not handled properly the reference to the frame could be a memory leak
+      // dispatch(registerFrame({
+      //   zuid: app.zuid,
+      //   frame: frame.current
+      // }));
 
       frame.current.addEventListener("load", () => {
         // Send users session into frame on load

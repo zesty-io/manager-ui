@@ -3,18 +3,26 @@ import { createSlice } from "@reduxjs/toolkit";
 const slice = createSlice({
   name: "apps",
   initialState: {
-    frames: [],
+    frames: {},
     installed: [
       {
-        zuid: "content-designer",
+        zuid: "50-XOX-XOXOX",
         name: "Content Designer",
+        label: "content-designer",
+        public: true,
+        approved: true,
         url: `https://zesty-io.github.io/app-content-designer`,
       },
+    ],
+    registered: [
+      // TODO load all public and available private apps
     ],
   },
   reducers: {
     registerFrame(state, action) {
-      state.frames.push(action.payload);
+      // state.frames.push(action.payload);
+
+      state.frames[action.payload.zuid] = action.payload.frame;
     },
   },
 });
