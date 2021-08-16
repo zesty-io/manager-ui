@@ -1,4 +1,4 @@
-import { memo, Fragment } from "react";
+import { memo, Fragment, useState } from "react";
 import { useFilePath } from "shell/hooks/useFilePath";
 import moment from "moment-timezone";
 import cx from "classnames";
@@ -9,6 +9,7 @@ import {
   faBolt,
   faDatabase,
   faCode,
+  faCopy,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
@@ -16,7 +17,6 @@ import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import { usePermission } from "shell/hooks/use-permissions";
-import { useDomain } from "shell/hooks/use-domain";
 
 import SharedWidgetStyles from "../SharedWidget.less";
 import styles from "./QuickView.less";
@@ -27,6 +27,15 @@ export const QuickView = memo(function QuickView(props) {
   const codeAccess = usePermission("CODE");
 
   const codePath = useFilePath(props.modelZUID);
+
+  const [copy, setCopy] = useState("");
+
+  const handleCopy = (evt) => {
+    console.log(evt.target.innerHTML);
+    setCopy(evt.target.innerHTML);
+    console.log(copy);
+    console.log(navigator.clipboard.writeText(copy));
+  };
 
   return (
     <Fragment>
@@ -60,7 +69,8 @@ export const QuickView = memo(function QuickView(props) {
           <ul>
             <li>
               <strong>ZUID:</strong>&nbsp;
-              <span className={styles.ZUID}>{props.itemZUID}</span>
+              <span onClick={handleCopy}>{props.itemZUID}</span>
+              <FontAwesomeIcon icon={faCopy} />
             </li>
             <li>
               <strong>Language:</strong>&nbsp;
