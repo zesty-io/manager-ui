@@ -15,7 +15,7 @@ import styles from "./RedirectsTableRow.less";
 export default function RedirectsTableRow(props) {
   return (
     <div className={styles.RedirectsTableRow}>
-      <span className={styles.RedirectsTableRowCell} style={{ flex: "1" }}>
+      <span className={styles.RedirectsTableRowCell} style={{ flex: "2" }}>
         <code>{props.path}</code>
       </span>
 
@@ -65,7 +65,11 @@ export default function RedirectsTableRow(props) {
           <code>{props.target}</code>
         </span>
       )}
-
+      {/* Space to help align body with header */}
+      <span
+        style={{ flex: "1" }}
+        className={styles.RedirectsTableRowCell}
+      ></span>
       <span style={{ flex: "1" }} className={styles.RedirectsTableRowCell}>
         <Button
           className={cx(styles.removeBtn, "button deleteButton")}
