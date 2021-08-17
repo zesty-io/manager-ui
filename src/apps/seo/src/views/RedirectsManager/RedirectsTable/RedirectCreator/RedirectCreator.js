@@ -6,26 +6,60 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 import { Input } from "@zesty-io/core/Input";
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
+import { Select, Option } from "@zesty-io/core/Select";
+import { Search } from "@zesty-io/core/Search";
 
 import { createRedirect } from "../../../../store/redirects";
 import RedirectsImport from "../../../RedirectsManager/RedirectActions/RedirectsImport/RedirectsImport";
 
 import { CSVImporter } from "../../../../../src/store/imports";
 
-import styles from "./RedirectCreator.less";
 import ContentSearch from "shell/components/ContentSearch";
+
+import styles from "./RedirectCreator.less";
 
 export function RedirectCreator(props) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [code, setCode] = useState(1); // Toggle defaults to 301
+  const [type, setType] = useState("page");
+
+  const determineTerm = (term) => {
+    // ContentSearch return Object while Search return string
+    term = term.meta ? term.meta.ZUID : term;
+    setTo(term);
+  };
+
+  const renderSearch = () => {
+    if (type === "page") {
+      return (
+        <ContentSearch
+          className={styles.SearchBar}
+          placeholder="Search for item"
+          onSelect={determineTerm}
+          filterResults={(results) =>
+            results.filter((result) => result.web.path !== null)
+          }
+          value={to}
+        />
+      );
+    }
+    return (
+      <Search
+        className={styles.SearchBar}
+        onChange={determineTerm}
+        placeholder={type === "external" ? "Add URL" : "Add File Path"}
+        value={to}
+      />
+    );
+  };
 
   const handleCreateRedirect = () => {
     props
       .dispatch(
         createRedirect({
           path: from,
-          targetType: "path",
+          targetType: type,
           target: to,
           code: code === 1 ? 301 : 302, // API expects a 301/302 value
         })
@@ -58,18 +92,15 @@ export function RedirectCreator(props) {
           onChange={(val) => setCode(Number(val))}
         />
       </span>
+      <span className={styles.RedirectCreatorCell}>
+        <Select name={"selectType"} onSelect={setType} value={type}>
+          <Option value="page" selected text="Internal Page" />
+          <Option value="external" text="External Page" />
+          <Option value="path" text="Relative Path" />
+        </Select>
+      </span>
       <span className={styles.RedirectCreatorCell} style={{ flex: "1" }}>
-        <ContentSearch
-          className={styles.SearchBar}
-          placeholder="Search for item"
-          onSelect={(item) => {
-            setTo(item.web.path);
-          }}
-          filterResults={(results) =>
-            results.filter((result) => result.web.path !== null)
-          }
-          value={to}
-        />
+        {renderSearch()}
       </span>
       <span className={styles.RedirectCreatorCell}>
         <Button className="save" kind="save" onClick={handleCreateRedirect}>
