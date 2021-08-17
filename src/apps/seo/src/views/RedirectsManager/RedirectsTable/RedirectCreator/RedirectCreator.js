@@ -95,8 +95,8 @@ export function RedirectCreator(props) {
       <span className={styles.RedirectCreatorCell}>
         <Select name={"selectType"} onSelect={setType} value={type}>
           <Option value="page" selected text="Internal Page" />
-          <Option value="external" text="External Page" />
-          <Option value="path" text="Relative Path" />
+          <Option value="external" text="External URL" />
+          <Option value="path" text="Root Path" />
         </Select>
       </span>
       <span className={styles.RedirectCreatorCell} style={{ flex: "1" }}>

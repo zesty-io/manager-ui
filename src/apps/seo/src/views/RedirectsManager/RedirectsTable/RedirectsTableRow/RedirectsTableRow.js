@@ -15,7 +15,7 @@ import styles from "./RedirectsTableRow.less";
 export default function RedirectsTableRow(props) {
   return (
     <div className={styles.RedirectsTableRow}>
-      <span className={styles.RedirectsTableRowCell} style={{ flex: "2" }}>
+      <span className={styles.RedirectsTableRowCell} style={{ flex: "1" }}>
         <code>{props.path}</code>
       </span>
 
@@ -27,17 +27,17 @@ export default function RedirectsTableRow(props) {
       <span className={cx(styles.RedirectsTableRowCell, styles.code)}>
         {props.targetType === "external" ? (
           <span>
-            {props.targetType}&nbsp;
+            External URL&nbsp;
             <FontAwesomeIcon icon={faExternalLinkAlt} />
           </span>
         ) : props.targetType === "path" ? (
           <span>
-            {props.targetType}&nbsp;
+            Root Path&nbsp;
             <FontAwesomeIcon icon={faFile} />
           </span>
         ) : (
           <span>
-            {props.targetType}&nbsp;
+            Internal Page&nbsp;
             <FontAwesomeIcon icon={faFileAlt} />
           </span>
         )}
@@ -65,12 +65,11 @@ export default function RedirectsTableRow(props) {
           <code>{props.target}</code>
         </span>
       )}
-      {/* Space to help align body with header */}
+
       <span
-        style={{ flex: "1" }}
+        style={{ flexBasis: "24rem" }}
         className={styles.RedirectsTableRowCell}
-      ></span>
-      <span style={{ flex: "1" }} className={styles.RedirectsTableRowCell}>
+      >
         <Button
           className={cx(styles.removeBtn, "button deleteButton")}
           onClick={props.removeRedirect}
