@@ -8,6 +8,7 @@ import { faBolt, faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
+import { CopyChip } from "@zesty-io/core/CopyChip";
 
 import styles from "./FileStatus.less";
 import shared from "../../FileDrawer.less";
@@ -129,7 +130,10 @@ export default function FileStatus(props) {
           </li>
 
           <li>
-            File ZUID: <em className={styles.ZUID}>{props.file.ZUID}</em>
+            File ZUID:
+            <em>
+              <CopyChip value={props.file.ZUID}>{props.file.ZUID} </CopyChip>
+            </em>
           </li>
           <li>
             File Type:&nbsp;

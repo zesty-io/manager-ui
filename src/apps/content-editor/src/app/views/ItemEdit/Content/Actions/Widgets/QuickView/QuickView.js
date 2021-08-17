@@ -9,17 +9,18 @@ import {
   faBolt,
   faDatabase,
   faCode,
-  faCopy,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
+import { CopyChip } from "@zesty-io/core/CopyChip";
 
 import { usePermission } from "shell/hooks/use-permissions";
 
 import SharedWidgetStyles from "../SharedWidget.less";
 import styles from "./QuickView.less";
+
 export const QuickView = memo(function QuickView(props) {
   const isPublished = props.publishing && props.publishing.isPublished;
   const isScheduled = props.scheduling && props.scheduling.isScheduled;
@@ -27,15 +28,6 @@ export const QuickView = memo(function QuickView(props) {
   const codeAccess = usePermission("CODE");
 
   const codePath = useFilePath(props.modelZUID);
-
-  const [copy, setCopy] = useState("");
-
-  const handleCopy = (evt) => {
-    console.log(evt.target.innerHTML);
-    setCopy(evt.target.innerHTML);
-    console.log(copy);
-    console.log(navigator.clipboard.writeText(copy));
-  };
 
   return (
     <Fragment>
@@ -69,8 +61,7 @@ export const QuickView = memo(function QuickView(props) {
           <ul>
             <li>
               <strong>ZUID:</strong>&nbsp;
-              <span onClick={handleCopy}>{props.itemZUID}</span>
-              <FontAwesomeIcon icon={faCopy} />
+              <CopyChip value={props.itemZUID}>{props.itemZUID}</CopyChip>
             </li>
             <li>
               <strong>Language:</strong>&nbsp;
