@@ -1,18 +1,38 @@
-import cx from "classnames";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { fetchContentItem } from "shell/store/content";
+import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
   faExternalLinkAlt,
   faFile,
   faFileAlt,
+  faLink,
   faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
+import { Url } from "@zesty-io/core/Url";
 
 import styles from "./RedirectsTableRow.less";
 export default function RedirectsTableRow(props) {
+  const dispatch = useDispatch();
+  const [pathName, setPathName] = useState("");
+  const [pathLink, setPathLink] = useState("");
+
+  useEffect(() => {
+    if (props.targetType === "page") {
+      dispatch(fetchContentItem(props.target)).then((res) => {
+        if (res && res.data) {
+          setPathLink(res.data[0].meta.contentModelZUID);
+          setPathName(res.data[0].web.path);
+        }
+      });
+    }
+  }, [props.target]);
+
   return (
     <div className={styles.RedirectsTableRow}>
       <span className={styles.RedirectsTableRowCell} style={{ flex: "1" }}>
@@ -43,19 +63,28 @@ export default function RedirectsTableRow(props) {
         )}
       </span>
 
-      {props.target_type === "page" ? (
+      {props.targetType === "page" ? (
         <span
           className={cx(styles.RedirectsTableRowCell, styles.to)}
           style={{ flex: "1" }}
         >
           <Link
             className={styles.internalLink}
-            href={`/content/${props.target}`}
+            to={`/content/${pathLink}/${props.target}`}
           >
-            <FontAwesomeIcon className={styles.icon} icon={faFileAlt} />{" "}
-            {props.target_page_title}
+            <FontAwesomeIcon className={styles.icon} icon={faLink} />{" "}
+            <code>{pathName}</code>
           </Link>
-          <small>{props.target_page_url}</small>
+        </span>
+      ) : props.targetType === "external" ? (
+        <span
+          className={cx(styles.RedirectsTableRowCell, styles.to)}
+          style={{ flex: "1" }}
+        >
+          <Url href={props.target} target="_blank" title="Redirect URL">
+            <FontAwesomeIcon icon={faExternalLinkAlt} />
+            &nbsp;<code>{props.target}</code>
+          </Url>
         </span>
       ) : (
         <span
