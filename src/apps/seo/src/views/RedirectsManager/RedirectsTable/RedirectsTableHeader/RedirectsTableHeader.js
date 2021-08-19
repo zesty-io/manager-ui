@@ -39,6 +39,9 @@ export default function RedirectsTableHeader(props) {
         data-value="type"
         onClick={props.handleSortBy}
       >
+        <Infotip className={styles.InfoTip}>
+          301: Moved Permanently <br /> 302: Temporarily Moved
+        </Infotip>
         <span
           className={cx(
             styles.subheadline,
@@ -46,7 +49,7 @@ export default function RedirectsTableHeader(props) {
             props.sortBy === "type" ? styles.sorted : ""
           )}
         >
-          HTTP Code
+          &nbsp; HTTP Code
           {props.sortBy === "type" && props.sortDirection === "desc" ? (
             <FontAwesomeIcon icon={faSortAlphaDown} />
           ) : null}
@@ -55,7 +58,11 @@ export default function RedirectsTableHeader(props) {
           ) : null}
         </span>
       </span>
-
+      <Infotip className={styles.InfoTip}>
+        Internal E.g. /about
+        <br /> External E.g. https://zesty.org/
+        <br /> Wildcard E.g. /blog/*/*/
+      </Infotip>
       <span className={cx(styles.RedirectsTableHeaderCell, styles.code)}>
         <span className={cx(styles.subheadline, styles.column)}>
           Redirect Type
