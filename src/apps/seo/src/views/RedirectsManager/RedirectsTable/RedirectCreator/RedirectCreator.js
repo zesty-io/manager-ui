@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
@@ -30,30 +30,6 @@ export function RedirectCreator(props) {
     setTo(term);
   };
 
-  const renderSearch = () => {
-    if (type === "page") {
-      return (
-        <ContentSearch
-          className={styles.SearchBar}
-          placeholder="Search for item"
-          onSelect={determineTerm}
-          filterResults={(results) =>
-            results.filter((result) => result.web.path !== null)
-          }
-          value={to}
-        />
-      );
-    }
-    return (
-      <Search
-        className={styles.SearchBar}
-        onChange={determineTerm}
-        placeholder={type === "external" ? "Add URL" : "Add File Path"}
-        value={to}
-      />
-    );
-  };
-
   const handleCreateRedirect = () => {
     props
       .dispatch(
@@ -72,7 +48,12 @@ export function RedirectCreator(props) {
 
   return (
     <div className={styles.RedirectCreator}>
-      <span className={styles.RedirectCreatorCell} style={{ flex: "1" }}>
+      <span
+        className={cx(
+          styles.RedirectCreatorCell,
+          styles.RedirectCreatorCellExpand
+        )}
+      >
         <Input
           className={styles.from}
           name="redirectFrom"
@@ -99,8 +80,30 @@ export function RedirectCreator(props) {
           <Option value="path" text="Wildcard" />
         </Select>
       </span>
-      <span className={styles.RedirectCreatorCell} style={{ flex: "1" }}>
-        {renderSearch()}
+      <span
+        className={cx(
+          styles.RedirectCreatorCell,
+          styles.RedirectCreatorCellExpand
+        )}
+      >
+        {type === "page" ? (
+          <ContentSearch
+            className={styles.SearchBar}
+            placeholder="Search for item"
+            onSelect={determineTerm}
+            filterResults={(results) =>
+              results.filter((result) => result.web.path !== null)
+            }
+            value={to}
+          />
+        ) : (
+          <Search
+            className={cx(styles.SearchBar, styles.InputSearch)}
+            onChange={determineTerm}
+            placeholder={type === "external" ? "Add URL" : "Add File Path"}
+            defaultValue={to}
+          />
+        )}
       </span>
       <span className={styles.RedirectCreatorCell}>
         <Button className="save" kind="save" onClick={handleCreateRedirect}>

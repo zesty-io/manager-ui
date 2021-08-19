@@ -35,7 +35,12 @@ export default function RedirectsTableRow(props) {
 
   return (
     <div className={styles.RedirectsTableRow}>
-      <span className={styles.RedirectsTableRowCell} style={{ flex: "1" }}>
+      <span
+        className={cx(
+          styles.RedirectsTableRowCell,
+          styles.RedirectCreatorCellExpand
+        )}
+      >
         <code>{props.path}</code>
       </span>
 
@@ -65,8 +70,11 @@ export default function RedirectsTableRow(props) {
 
       {props.targetType === "page" ? (
         <span
-          className={cx(styles.RedirectsTableRowCell, styles.to)}
-          style={{ flex: "1" }}
+          className={cx(
+            styles.RedirectsTableRowCell,
+            styles.RedirectCreatorCellExpand,
+            styles.to
+          )}
         >
           <Link
             className={styles.internalLink}
@@ -78,8 +86,11 @@ export default function RedirectsTableRow(props) {
         </span>
       ) : props.targetType === "external" ? (
         <span
-          className={cx(styles.RedirectsTableRowCell, styles.to)}
-          style={{ flex: "1" }}
+          className={cx(
+            styles.RedirectsTableRowCell,
+            styles.RedirectCreatorCellExpand,
+            styles.to
+          )}
         >
           <Url href={props.target} target="_blank" title="Redirect URL">
             <FontAwesomeIcon icon={faExternalLinkAlt} />
@@ -88,8 +99,11 @@ export default function RedirectsTableRow(props) {
         </span>
       ) : (
         <span
-          className={cx(styles.RedirectsTableRowCell, styles.to)}
-          style={{ flex: "1" }}
+          className={cx(
+            styles.RedirectsTableRowCell,
+            styles.RedirectCreatorCellExpand,
+            styles.to
+          )}
         >
           <code>{props.target}</code>
         </span>
