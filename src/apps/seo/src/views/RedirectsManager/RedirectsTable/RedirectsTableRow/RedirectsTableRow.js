@@ -35,12 +35,7 @@ export default function RedirectsTableRow(props) {
 
   return (
     <div className={styles.RedirectsTableRow}>
-      <span
-        className={cx(
-          styles.RedirectsTableRowCell,
-          styles.RedirectCreatorCellExpand
-        )}
-      >
+      <span className={styles.RedirectsTableRowCell}>
         <code>{props.path}</code>
       </span>
 
@@ -69,13 +64,7 @@ export default function RedirectsTableRow(props) {
       </span>
 
       {props.targetType === "page" ? (
-        <span
-          className={cx(
-            styles.RedirectsTableRowCell,
-            styles.RedirectCreatorCellExpand,
-            styles.to
-          )}
-        >
+        <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
           <Link
             className={styles.internalLink}
             to={`/content/${modelZuid}/${props.target}`}
@@ -85,26 +74,14 @@ export default function RedirectsTableRow(props) {
           </Link>
         </span>
       ) : props.targetType === "external" ? (
-        <span
-          className={cx(
-            styles.RedirectsTableRowCell,
-            styles.RedirectCreatorCellExpand,
-            styles.to
-          )}
-        >
+        <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
           <Url href={props.target} target="_blank" title="Redirect URL">
             <FontAwesomeIcon icon={faExternalLinkAlt} />
             &nbsp;<code>{props.target}</code>
           </Url>
         </span>
       ) : (
-        <span
-          className={cx(
-            styles.RedirectsTableRowCell,
-            styles.RedirectCreatorCellExpand,
-            styles.to
-          )}
-        >
+        <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
           <code>{props.target}</code>
         </span>
       )}
