@@ -55,7 +55,10 @@ export default connect((state) => {
         <li className={styles.email}>{props.user.email} </li>
 
         <li className={styles.zuid}>
-          ZUID: <CopyChip value={props.user.ZUID}>{props.user.ZUID}</CopyChip>
+          ZUID:{" "}
+          <CopyChip className={styles.CopyChip} value={props.user.ZUID}>
+            {props.user.ZUID}
+          </CopyChip>
         </li>
 
         <li className={styles.role}>Instance: {props.userRole.name}</li>
