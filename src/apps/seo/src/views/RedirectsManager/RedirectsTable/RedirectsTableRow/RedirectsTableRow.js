@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { fetchContentItem } from "shell/store/content";
+import { searchItems } from "shell/store/content";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -19,15 +19,15 @@ import { Url } from "@zesty-io/core/Url";
 import styles from "./RedirectsTableRow.less";
 export default function RedirectsTableRow(props) {
   const dispatch = useDispatch();
-  const [pathName, setPathName] = useState("");
-  const [pathLink, setPathLink] = useState("");
+  const [path, setPath] = useState("");
+  const [modelZuid, setModelZuid] = useState("");
 
   useEffect(() => {
     if (props.targetType === "page") {
-      dispatch(fetchContentItem(props.target)).then((res) => {
+      dispatch(searchItems(props.target)).then((res) => {
         if (res && res.data) {
-          setPathLink(res.data[0].meta.contentModelZUID);
-          setPathName(res.data[0].web.path);
+          setModelZuid(res.data[0].meta.contentModelZUID);
+          setPath(res.data[0].web.path);
         }
       });
     }
@@ -47,17 +47,17 @@ export default function RedirectsTableRow(props) {
       <span className={cx(styles.RedirectsTableRowCell, styles.code)}>
         {props.targetType === "external" ? (
           <span>
-            External URL&nbsp;
+            External&nbsp;
             <FontAwesomeIcon icon={faExternalLinkAlt} />
           </span>
         ) : props.targetType === "path" ? (
           <span>
-            Root Path&nbsp;
+            Wildcard&nbsp;
             <FontAwesomeIcon icon={faFile} />
           </span>
         ) : (
           <span>
-            Internal Page&nbsp;
+            Internal&nbsp;
             <FontAwesomeIcon icon={faFileAlt} />
           </span>
         )}
@@ -70,10 +70,10 @@ export default function RedirectsTableRow(props) {
         >
           <Link
             className={styles.internalLink}
-            to={`/content/${pathLink}/${props.target}`}
+            to={`/content/${modelZuid}/${props.target}`}
           >
             <FontAwesomeIcon className={styles.icon} icon={faLink} />{" "}
-            <code>{pathName}</code>
+            <code>{path}</code>
           </Link>
         </span>
       ) : props.targetType === "external" ? (

@@ -59,9 +59,9 @@ export default function RedirectsTableHeader(props) {
         </span>
       </span>
       <Infotip className={styles.InfoTip}>
-        Internal Page ex: / Homepage
-        <br /> External Page ex: https://zesty.org/
-        <br /> Root Path ex: /about/teams
+        Internal E.g. / Homepage
+        <br /> External E.g. https://zesty.org/
+        <br /> Wildcard E.g. /about/teams
       </Infotip>
       <span className={cx(styles.RedirectsTableHeaderCell, styles.code)}>
         <span className={cx(styles.subheadline, styles.column)}>

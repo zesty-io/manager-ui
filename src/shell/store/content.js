@@ -260,39 +260,6 @@ export function fetchItem(modelZUID, itemZUID) {
   };
 }
 
-export function fetchContentItem(itemZUID) {
-  return (dispatch) => {
-    return request(`${CONFIG.API_INSTANCE}/search/items?q=${itemZUID}`).then(
-      (res) => {
-        if (res.status === 200) {
-          dispatch({
-            type: "FETCH_ITEMS_SUCCESS",
-            payload: res.data.filter((item) => {
-              if (item.data) {
-                return true;
-              } else {
-                console.error("Broken item", item);
-                return false;
-              }
-            }),
-          });
-        }
-
-        if (res.status === 400) {
-          dispatch(
-            notify({
-              message: `There was an issue fetching recent items: ${res.error}`,
-              kind: "error",
-            })
-          );
-        }
-
-        return res;
-      }
-    );
-  };
-}
-
 export function searchItems(
   term,
   query = {
