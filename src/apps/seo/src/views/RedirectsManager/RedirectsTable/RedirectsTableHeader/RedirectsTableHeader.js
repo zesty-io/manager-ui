@@ -14,7 +14,6 @@ export default function RedirectsTableHeader(props) {
         className={styles.RedirectsTableHeaderCell}
         data-value="from"
         onClick={props.handleSortBy}
-        style={{ flex: "1" }}
       >
         <Infotip className={styles.InfoTip}>File Path Only </Infotip>&nbsp;
         <span
@@ -58,14 +57,14 @@ export default function RedirectsTableHeader(props) {
           ) : null}
         </span>
       </span>
-      <Infotip className={styles.InfoTip}>
-        Internal E.g. /about
-        <br /> External E.g. https://zesty.org/
-        <br /> Wildcard E.g. /blog/*/*/
-      </Infotip>
       <span className={cx(styles.RedirectsTableHeaderCell, styles.code)}>
+        <Infotip className={styles.InfoTip}>
+          Internal E.g. /about
+          <br /> External E.g. https://zesty.org/
+          <br /> Wildcard E.g. /blog/*/*/
+        </Infotip>
         <span className={cx(styles.subheadline, styles.column)}>
-          Redirect Type
+          &nbsp;Redirect Type
         </span>
       </span>
 
@@ -73,7 +72,6 @@ export default function RedirectsTableHeader(props) {
         className={styles.RedirectsTableHeaderCell}
         data-value="to"
         onClick={props.handleSortBy}
-        style={{ flex: "1" }}
       >
         <span
           className={cx(
@@ -92,11 +90,6 @@ export default function RedirectsTableHeader(props) {
           ) : null}
         </span>
       </span>
-
-      <span
-        className={styles.RedirectsTableHeaderCell}
-        style={{ flexBasis: "23rem" }}
-      ></span>
     </div>
   );
 }

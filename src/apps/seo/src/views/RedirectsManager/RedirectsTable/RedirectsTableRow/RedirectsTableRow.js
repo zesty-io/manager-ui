@@ -109,10 +109,9 @@ export default function RedirectsTableRow(props) {
         </span>
       )}
 
-      <span
-        style={{ flexBasis: "24rem" }}
-        className={styles.RedirectsTableRowCell}
-      >
+      <span>{/* Helper for grid spacing to match header  */}</span>
+
+      <span className={styles.RedirectsTableRowCell}>
         <Button
           className={cx(styles.removeBtn, "button deleteButton")}
           onClick={props.removeRedirect}

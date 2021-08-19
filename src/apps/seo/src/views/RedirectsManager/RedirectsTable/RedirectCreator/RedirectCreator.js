@@ -48,12 +48,7 @@ export function RedirectCreator(props) {
 
   return (
     <div className={styles.RedirectCreator}>
-      <span
-        className={cx(
-          styles.RedirectCreatorCell,
-          styles.RedirectCreatorCellExpand
-        )}
-      >
+      <span className={styles.RedirectCreatorCell}>
         <Input
           className={styles.from}
           name="redirectFrom"
@@ -80,12 +75,7 @@ export function RedirectCreator(props) {
           <Option value="path" text="Wildcard" />
         </Select>
       </span>
-      <span
-        className={cx(
-          styles.RedirectCreatorCell,
-          styles.RedirectCreatorCellExpand
-        )}
-      >
+      <span className={styles.RedirectCreatorCell}>
         {type === "page" ? (
           <ContentSearch
             className={styles.SearchBar}

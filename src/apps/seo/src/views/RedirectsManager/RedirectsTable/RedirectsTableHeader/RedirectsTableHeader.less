@@ -2,9 +2,8 @@
 @import "~@zesty-io/core/typography.less";
 
 .RedirectsTableHeader {
-  display: flex;
-  // position: sticky;
-  top: 3rem;
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) auto auto minmax(200px, 1fr) 200px 200px;
   z-index: 1;
   align-items: baseline;
   padding-bottom: 16px;

@@ -1,8 +1,12 @@
 @import "~@zesty-io/core/colors.less";
 .RedirectsTableRow {
-  align-items: center;
+  // display: flex;
+  // align-items: center;
   background-color: @white;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 135px 141px 1fr 200px 200px;
+  gap: 0 8px;
+  align-items: center;
 
   &:nth-of-type(odd) {
     background: lighten(@zesty-light-blue, 15%);
