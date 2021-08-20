@@ -5,7 +5,7 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 
-import { CopyChip } from "@zesty-io/core/CopyChip";
+import { CopyButton } from "@zesty-io/core/CopyButton";
 import { Url } from "@zesty-io/core/Url";
 
 import styles from "./GlobalAccount.less";
@@ -55,10 +55,8 @@ export default connect((state) => {
         <li className={styles.email}>{props.user.email} </li>
 
         <li className={styles.zuid}>
-          ZUID:{" "}
-          <CopyChip className={styles.CopyChip} value={props.user.ZUID}>
-            {props.user.ZUID}
-          </CopyChip>
+          ZUID:&nbsp;
+          <CopyButton value={props.user.ZUID}>{props.user.ZUID}</CopyButton>
         </li>
 
         <li className={styles.role}>Instance: {props.userRole.name}</li>

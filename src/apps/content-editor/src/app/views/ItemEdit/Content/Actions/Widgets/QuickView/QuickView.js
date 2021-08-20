@@ -14,7 +14,7 @@ import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
-import { CopyChip } from "@zesty-io/core/CopyChip";
+import { CopyButton } from "@zesty-io/core/CopyButton";
 
 import { usePermission } from "shell/hooks/use-permissions";
 
@@ -61,7 +61,7 @@ export const QuickView = memo(function QuickView(props) {
           <ul>
             <li>
               <strong>ZUID:</strong>&nbsp;
-              <CopyChip value={props.itemZUID}>{props.itemZUID}</CopyChip>
+              <CopyButton value={props.itemZUID}>{props.itemZUID}</CopyButton>
             </li>
             <li>
               <strong>Language:</strong>&nbsp;
