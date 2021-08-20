@@ -6,6 +6,7 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
+  faAsterisk,
   faExternalLinkAlt,
   faFile,
   faFileAlt,
@@ -39,26 +40,26 @@ export default function RedirectsTableRow(props) {
         <code>{props.path}</code>
       </span>
 
-      <span className={cx(styles.RedirectsTableRowCell, styles.code)}>
+      <span className={styles.RedirectsTableRowCell}>
         {props.code}&nbsp;
         <FontAwesomeIcon icon={faArrowRight} />
       </span>
 
-      <span className={cx(styles.RedirectsTableRowCell, styles.code)}>
+      <span className={styles.RedirectsTableRowCell}>
         {props.targetType === "external" ? (
           <span>
-            External&nbsp;
             <FontAwesomeIcon icon={faExternalLinkAlt} />
+            External&nbsp;
           </span>
         ) : props.targetType === "path" ? (
           <span>
-            Wildcard&nbsp;
             <FontAwesomeIcon icon={faFile} />
+            Wildcard&nbsp;
           </span>
         ) : (
           <span>
-            Internal&nbsp;
             <FontAwesomeIcon icon={faFileAlt} />
+            Internal&nbsp;
           </span>
         )}
       </span>
@@ -82,6 +83,7 @@ export default function RedirectsTableRow(props) {
         </span>
       ) : (
         <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
+          <FontAwesomeIcon icon={faAsterisk} />
           <code>{props.target}</code>
         </span>
       )}

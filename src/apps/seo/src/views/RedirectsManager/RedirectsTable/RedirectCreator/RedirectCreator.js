@@ -23,9 +23,13 @@ export function RedirectCreator(props) {
   const [to, setTo] = useState("");
   const [code, setCode] = useState(1); // Toggle defaults to 301
   const [type, setType] = useState("page");
+  const [contentSearchValue, setContentSearchValue] = useState("");
 
   const determineTerm = (term) => {
     // ContentSearch return Object while Search return string
+    let contentSearchValue = term.meta ? term.web.path : term;
+    setContentSearchValue(contentSearchValue);
+
     term = term.meta ? term.meta.ZUID : term;
     setTo(term);
   };
@@ -43,6 +47,7 @@ export function RedirectCreator(props) {
       .then(() => {
         setFrom("");
         setTo("");
+        setContentSearchValue("");
       });
   };
 
@@ -84,7 +89,7 @@ export function RedirectCreator(props) {
             filterResults={(results) =>
               results.filter((result) => result.web.path !== null)
             }
-            value={to}
+            value={contentSearchValue}
           />
         ) : (
           <Search
