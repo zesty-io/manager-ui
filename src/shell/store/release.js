@@ -15,7 +15,7 @@ function asyncBatch(chunkedData, fn) {
 }
 
 const { actions, reducer } = createSlice({
-  name: "publishPlan",
+  name: "release",
   initialState: {
     data: [], // [{ZUID, version, status}] idle/pending/error
     status: "idle" /*

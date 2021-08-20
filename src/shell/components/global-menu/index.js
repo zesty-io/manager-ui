@@ -15,6 +15,7 @@ import {
   faCog,
   faBullseye,
   faCode,
+  faRocket,
 } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./styles.less";
@@ -36,6 +37,7 @@ export default connect((state) => {
       seo: faBullseye,
       "audit-trail": faHistory,
       settings: faCog,
+      release: faRocket,
     };
 
     return (

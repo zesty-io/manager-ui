@@ -6,17 +6,17 @@ import { Header } from "./components/Header";
 import { PlanTable } from "./components/PlanTable";
 import { Completed } from "./components/Completed";
 import { Start } from "./components/Start";
-import styles from "./PublishApp.less";
+import styles from "./ReleaseApp.less";
 
-export default function PublishApp() {
+export default function ReleaseApp() {
   const dispatch = useDispatch();
-  const publishPlan = useSelector((state) => state.publishPlan);
+  const release = useSelector((state) => state.release);
   const content = useSelector((state) => state.content);
 
   // load versions for all ZUIDs
   // possibly can lazy load these when you open select
   useEffect(() => {
-    publishPlan.data.forEach((step) => {
+    release.data.forEach((step) => {
       dispatch(
         fetchVersions(
           content[step.ZUID].meta.contentModelZUID,
@@ -27,21 +27,17 @@ export default function PublishApp() {
   }, []);
 
   return (
-    <section className={cx(styles.PublishApp, styles.bodyText)}>
-      <Header plan={publishPlan} />
+    <section className={cx(styles.ReleaseApp, styles.bodyText)}>
+      <Header plan={release} />
       <main>
-        {(publishPlan.status === "loaded" ||
-          publishPlan.status === "pending" ||
-          publishPlan.status === "error") &&
-        publishPlan.data.length ? (
-          <PlanTable plan={publishPlan} />
+        {(release.status === "loaded" ||
+          release.status === "pending" ||
+          release.status === "error") &&
+        release.data.length ? (
+          <PlanTable plan={release} />
         ) : null}
-        {publishPlan.status === "loaded" && !publishPlan.data.length ? (
-          <Start />
-        ) : null}
-        {publishPlan.status === "success" ? (
-          <Completed plan={publishPlan} />
-        ) : null}
+        {release.status === "loaded" && !release.data.length ? <Start /> : null}
+        {release.status === "success" ? <Completed plan={release} /> : null}
       </main>
     </section>
   );

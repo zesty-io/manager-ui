@@ -10,7 +10,7 @@ import {
   publishPlanPending,
   publishPlanSuccess,
   publishPlanFailure,
-} from "../publishPlan";
+} from "../release";
 import { toggleNav } from "../ui";
 export const localStorage = (store) => (next) => (action) => {
   const result = next(action);
@@ -26,6 +26,7 @@ export const localStorage = (store) => (next) => (action) => {
         delete ui.loadedTabs;
         idb.set(`${state.instance.ZUID}:ui`, ui);
         break;
+
       case `${resetPlan}`:
       case `${addStep}`:
       case `${removeStep}`:
@@ -38,6 +39,7 @@ export const localStorage = (store) => (next) => (action) => {
       case `${publishPlanFailure}`:
         idb.set(`${state.instance.ZUID}:publishPlan`, state.publishPlan);
         break;
+
       case "FETCH_ITEM_SUCCESS":
       case "FETCH_ITEMS_SUCCESS":
       case "SEARCH_ITEMS_SUCCESS":

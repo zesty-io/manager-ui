@@ -9,7 +9,7 @@ import {
   faSpinner,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
-import { removeStep, updateStep } from "shell/store/publishPlan";
+import { removeStep, updateStep } from "shell/store/release";
 import { Select, Option } from "@zesty-io/core/Select";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Url } from "@zesty-io/core/Url";

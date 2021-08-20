@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from "react";
+import { memo } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { Sentry } from "utility/sentry";
@@ -14,7 +14,7 @@ import Missing from "shell/components/missing";
 
 import ContentApp from "apps/content-editor/src";
 import DamApp from "apps/media/src";
-import PublishApp from "apps/publish/src";
+import ReleaseApp from "apps/release/src";
 import AuditTrailApp from "apps/audit-trail/src";
 import AnalyticsApp from "apps/analytics/src";
 import CodeApp from "apps/code-editor/src";
@@ -47,7 +47,7 @@ export default connect((state) => {
           <div className={styles.SubApp} data-cy="SubApp">
             <Sentry.ErrorBoundary fallback={() => <AppError />}>
               <Switch>
-                <Route path="/publish" component={PublishApp} />
+                <Route path="/release" component={ReleaseApp} />
 
                 <Route path="/media/:groupID/file/:fileID" component={DamApp} />
                 <Route path="/media/:groupID" component={DamApp} />

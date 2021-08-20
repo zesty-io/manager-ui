@@ -13,7 +13,7 @@ import history from "utility/history";
 import { Sentry } from "utility/sentry";
 import { store, injectReducer } from "shell/store";
 import { navContent } from "../apps/content-editor/src/store/navContent";
-import { loadedPlan } from "shell/store/publishPlan";
+import { loadedPlan } from "shell/store/release";
 
 import AppError from "shell/components/AppError";
 import PrivateRoute from "./components/private-route";
@@ -68,17 +68,15 @@ try {
       `${instanceZUID}:models`,
       `${instanceZUID}:fields`,
       `${instanceZUID}:content`,
-      `${instanceZUID}:publishPlan`,
+      `${instanceZUID}:release`,
       `${instanceZUID}:ui`,
     ])
     .then((results) => {
-      const [lang, nav, models, fields, content, publishPlan, ui] = results;
-
       store.dispatch({
         type: "LOADED_LOCAL_USER_LANG",
         payload: {
           // default to english
-          lang: lang || "en-US",
+          lang: results.lang || "en-US",
         },
       });
 
@@ -92,21 +90,21 @@ try {
 
       store.dispatch({
         type: "LOADED_LOCAL_MODELS",
-        payload: models,
+        payload: results.models,
       });
 
       store.dispatch({
         type: "LOADED_LOCAL_FIELDS",
-        payload: fields,
+        payload: results.fields,
       });
 
       store.dispatch({
         type: "LOADED_LOCAL_ITEMS",
-        data: content,
+        data: results.content,
       });
-      store.dispatch(loadedUI(ui));
+      store.dispatch(loadedUI(results.ui));
 
-      store.dispatch(loadedPlan(publishPlan));
+      store.dispatch(loadedPlan(results.release));
     });
 } catch (err) {
   console.error("IndexedDB:get:error", err);

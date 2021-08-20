@@ -27,7 +27,7 @@ import { headTags } from "./headTags";
 import media from "./media";
 import { users } from "./users";
 import ui from "./ui";
-import publishPlan from "./publishPlan";
+import release from "./release";
 
 // Middleware is applied in order of array
 const middlewares = [
@@ -92,7 +92,7 @@ function createReducer(asyncReducers) {
     platform,
     headTags,
     ui,
-    publishPlan,
+    release,
   };
 
   return combineReducers({

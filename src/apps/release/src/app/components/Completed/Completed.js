@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { resetPlan } from "shell/store/publishPlan";
+import { resetPlan } from "shell/store/release";
 import { Button } from "@zesty-io/core/Button";
 import styles from "./Completed.less";
 

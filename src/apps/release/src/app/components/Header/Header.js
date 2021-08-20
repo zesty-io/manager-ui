@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudUploadAlt, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { addStep, publishAll } from "shell/store/publishPlan";
+import { addStep, publishAll } from "shell/store/release";
 import { fetchVersions } from "shell/store/contentVersions";
 import { Button } from "@zesty-io/core/Button";
 import ContentSearch from "shell/components/ContentSearch";
@@ -31,10 +31,10 @@ export function Header({ plan }) {
   }, [dispatch]);
   return (
     <header className={styles.Header}>
-      <h1 className={styles.display}>Publish Plan</h1>
+      <h1 className={styles.display}>Release</h1>
       {showSearch ? (
         <ContentSearch
-          placeholder="Search for items to include in your publish plan"
+          placeholder="Search for items to include in your release"
           onSelect={onSelect}
           keepResultsOnSelect={true}
         />
