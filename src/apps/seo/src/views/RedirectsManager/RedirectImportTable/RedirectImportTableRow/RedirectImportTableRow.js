@@ -45,6 +45,8 @@ export default class RedirectImportTableRow extends Component {
           />
         </span>
 
+        <span className={styles.RedirectCreatorCell}>Page</span>
+
         <span className={styles.RowCell} style={{ flex: "1" }}>
           {this.props.target_type === "page" ? (
             <Select

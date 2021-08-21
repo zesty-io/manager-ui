@@ -2,7 +2,7 @@ import { Component } from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faSave, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
 import styles from "./RedirectImportTable.less";
 
@@ -24,7 +24,7 @@ export default class RedirectImportTable extends Component {
       <section className={styles.RedirectImportTable}>
         <div className={styles.Actions}>
           <Button
-            className={cx("save", styles.addAll)}
+            className={styles.addAll}
             onClick={this.handleAddAllRedirects}
           >
             <FontAwesomeIcon icon={faPlus} />
@@ -37,16 +37,16 @@ export default class RedirectImportTable extends Component {
           </Button>
         </div>
         <div className={styles.Header}>
-          <span className={styles.Cell} style={{ flex: "1" }}>
-            From
+          <span className={cx(styles.Cell, styles.subheadline)}>
+            Incoming Path
           </span>
-          <span className={styles.Cell} style={{ flexBasis: "6rem" }}>
-            Type
+          <span className={cx(styles.Cell, styles.subheadline)}>Http Code</span>
+          <span className={cx(styles.Cell, styles.subheadline)}>
+            Redirect Type
           </span>
-          <span className={styles.Cell} style={{ flex: "1" }}>
-            To
+          <span className={cx(styles.Cell, styles.subheadline)}>
+            Redirect Target
           </span>
-          <span className={styles.Cell} style={{ flexBasis: "6rem" }}></span>
         </div>
         <main className={styles.TableBody}>
           {Object.keys(this.props.imports).map((key) => {
