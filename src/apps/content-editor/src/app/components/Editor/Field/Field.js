@@ -49,7 +49,7 @@ const FieldLabel = memo((props) => {
 // NOTE: Componetized so it can be memoized for input/render perf
 const RelatedOption = memo((props) => {
   return (
-    <span className={styles.RelatedOption}>
+    <span>
       <span onClick={(evt) => evt.stopPropagation()}>
         <AppLink
           className={styles.relatedItemLink}
@@ -129,26 +129,17 @@ function resolveRelatedOptions(
       );
     })
     .map((itemZUID) => {
-      for (const [key, value] of Object.entries(items[itemZUID].siblings)) {
-        if (items[itemZUID].meta.ZUID === value) {
-          return {
-            filterValue: items[itemZUID].data[field.name],
-            value: itemZUID,
-            component: (
-              <RelatedOption
-                modelZUID={modelZUID}
-                itemZUID={itemZUID}
-                text={
-                  <>
-                    <span>{items[itemZUID].data[field.name]}</span>
-                    <em className={styles.Language}>&nbsp;{key}</em>
-                  </>
-                }
-              />
-            ),
-          };
-        }
-      }
+      return {
+        filterValue: items[itemZUID].data[field.name],
+        value: itemZUID,
+        component: (
+          <RelatedOption
+            modelZUID={modelZUID}
+            itemZUID={itemZUID}
+            text={items[itemZUID].data[field.name]}
+          />
+        ),
+      };
     })
     .sort(sortTitle);
 }
