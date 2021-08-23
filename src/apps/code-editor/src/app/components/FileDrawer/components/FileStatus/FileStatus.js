@@ -132,9 +132,7 @@ export default function FileStatus(props) {
           <li>
             File ZUID:
             <em>
-              <CopyButton value={props.file.ZUID}>
-                {props.file.ZUID}{" "}
-              </CopyButton>
+              <CopyButton value={props.file.ZUID}></CopyButton>
             </em>
           </li>
           <li>

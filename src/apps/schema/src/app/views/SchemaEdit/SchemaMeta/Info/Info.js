@@ -84,9 +84,7 @@ export default connect((state) => {
           </li>
           <li>
             <abbr title="Zesty Universal ID">ZUID</abbr>:&nbsp;
-            <CopyButton value={props.model.ZUID}>
-              <strong>{props.model.ZUID}</strong>
-            </CopyButton>
+            <CopyButton value={props.model.ZUID}></CopyButton>
           </li>
           <li>
             Instant API:&nbsp;
