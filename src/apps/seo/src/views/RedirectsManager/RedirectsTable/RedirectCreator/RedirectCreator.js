@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
@@ -23,35 +23,15 @@ export function RedirectCreator(props) {
   const [to, setTo] = useState("");
   const [code, setCode] = useState(1); // Toggle defaults to 301
   const [type, setType] = useState("page");
+  const [contentSearchValue, setContentSearchValue] = useState("");
 
   const determineTerm = (term) => {
     // ContentSearch return Object while Search return string
+    let contentSearchValue = term.meta ? term.web.path : term;
+    setContentSearchValue(contentSearchValue);
+
     term = term.meta ? term.meta.ZUID : term;
     setTo(term);
-  };
-
-  const renderSearch = () => {
-    if (type === "page") {
-      return (
-        <ContentSearch
-          className={styles.SearchBar}
-          placeholder="Search for item"
-          onSelect={determineTerm}
-          filterResults={(results) =>
-            results.filter((result) => result.web.path !== null)
-          }
-          value={to}
-        />
-      );
-    }
-    return (
-      <Search
-        className={styles.SearchBar}
-        onChange={determineTerm}
-        placeholder={type === "external" ? "Add URL" : "Add File Path"}
-        value={to}
-      />
-    );
   };
 
   const handleCreateRedirect = () => {
@@ -67,12 +47,13 @@ export function RedirectCreator(props) {
       .then(() => {
         setFrom("");
         setTo("");
+        setContentSearchValue("");
       });
   };
 
   return (
     <div className={styles.RedirectCreator}>
-      <span className={styles.RedirectCreatorCell} style={{ flex: "1" }}>
+      <span className={styles.RedirectCreatorCell}>
         <Input
           className={styles.from}
           name="redirectFrom"
@@ -99,8 +80,25 @@ export function RedirectCreator(props) {
           <Option value="path" text="Wildcard" />
         </Select>
       </span>
-      <span className={styles.RedirectCreatorCell} style={{ flex: "1" }}>
-        {renderSearch()}
+      <span className={styles.RedirectCreatorCell}>
+        {type === "page" ? (
+          <ContentSearch
+            className={styles.SearchBar}
+            placeholder="Search for item"
+            onSelect={determineTerm}
+            filterResults={(results) =>
+              results.filter((result) => result.web.path !== null)
+            }
+            value={contentSearchValue}
+          />
+        ) : (
+          <Search
+            className={cx(styles.SearchBar, styles.InputSearch)}
+            onChange={determineTerm}
+            placeholder={type === "external" ? "Add URL" : "Add File Path"}
+            defaultValue={to}
+          />
+        )}
       </span>
       <span className={styles.RedirectCreatorCell}>
         <Button className="save" kind="save" onClick={handleCreateRedirect}>

@@ -2,11 +2,12 @@
 @import "~@zesty-io/core/typography.less";
 
 .RedirectCreator {
-  align-items: center;
-  display: flex;
   background: lighten(@zesty-light-blue, 10%);
   border-radius: 4px 4px 0 0;
   margin: 0;
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) auto auto minmax(200px, 1fr) auto auto;
+  gap: 0 16px;
 
   .RedirectCreatorCell:nth-child("odd") {
     flex: 1;
@@ -21,6 +22,9 @@
       flex: 1;
       input {
         flex: 1;
+      }
+      &.InputSearch {
+        margin: 0;
       }
     }
     .from {

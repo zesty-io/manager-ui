@@ -6,6 +6,7 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
+  faAsterisk,
   faExternalLinkAlt,
   faFile,
   faFileAlt,
@@ -35,39 +36,36 @@ export default function RedirectsTableRow(props) {
 
   return (
     <div className={styles.RedirectsTableRow}>
-      <span className={styles.RedirectsTableRowCell} style={{ flex: "1" }}>
+      <span className={styles.RedirectsTableRowCell}>
         <code>{props.path}</code>
       </span>
 
-      <span className={cx(styles.RedirectsTableRowCell, styles.code)}>
+      <span className={styles.RedirectsTableRowCell}>
         {props.code}&nbsp;
         <FontAwesomeIcon icon={faArrowRight} />
       </span>
 
-      <span className={cx(styles.RedirectsTableRowCell, styles.code)}>
+      <span className={styles.RedirectsTableRowCell}>
         {props.targetType === "external" ? (
           <span>
-            External&nbsp;
             <FontAwesomeIcon icon={faExternalLinkAlt} />
+            External&nbsp;
           </span>
         ) : props.targetType === "path" ? (
           <span>
-            Wildcard&nbsp;
             <FontAwesomeIcon icon={faFile} />
+            Wildcard&nbsp;
           </span>
         ) : (
           <span>
-            Internal&nbsp;
             <FontAwesomeIcon icon={faFileAlt} />
+            Internal&nbsp;
           </span>
         )}
       </span>
 
       {props.targetType === "page" ? (
-        <span
-          className={cx(styles.RedirectsTableRowCell, styles.to)}
-          style={{ flex: "1" }}
-        >
+        <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
           <Link
             className={styles.internalLink}
             to={`/content/${modelZuid}/${props.target}`}
@@ -77,28 +75,22 @@ export default function RedirectsTableRow(props) {
           </Link>
         </span>
       ) : props.targetType === "external" ? (
-        <span
-          className={cx(styles.RedirectsTableRowCell, styles.to)}
-          style={{ flex: "1" }}
-        >
+        <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
           <Url href={props.target} target="_blank" title="Redirect URL">
             <FontAwesomeIcon icon={faExternalLinkAlt} />
             &nbsp;<code>{props.target}</code>
           </Url>
         </span>
       ) : (
-        <span
-          className={cx(styles.RedirectsTableRowCell, styles.to)}
-          style={{ flex: "1" }}
-        >
+        <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
+          <FontAwesomeIcon icon={faAsterisk} />
           <code>{props.target}</code>
         </span>
       )}
 
-      <span
-        style={{ flexBasis: "24rem" }}
-        className={styles.RedirectsTableRowCell}
-      >
+      <span>{/* Helper for grid spacing to match header  */}</span>
+
+      <span className={styles.RedirectsTableRowCell}>
         <Button
           className={cx(styles.removeBtn, "button deleteButton")}
           onClick={props.removeRedirect}
