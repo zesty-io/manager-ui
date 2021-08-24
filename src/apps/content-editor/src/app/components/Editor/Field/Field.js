@@ -47,9 +47,9 @@ const FieldLabel = memo((props) => {
 });
 
 // NOTE: Componetized so it can be memoized for input/render perf
-const RelatedOption = memo((props) => {
+const ResolvedOption = memo((props) => {
   return (
-    <span className={styles.RelatedOption}>
+    <span className={styles.ResolvedOption}>
       <span onClick={(evt) => evt.stopPropagation()}>
         <AppLink
           className={styles.relatedItemLink}
@@ -102,7 +102,7 @@ function sortHTML(a, b) {
   return 0;
 }
 
-function resolveRelatedOptions(
+function resolveResolvedOptions(
   fields,
   items,
   fieldZUID,
@@ -129,13 +129,14 @@ function resolveRelatedOptions(
       );
     })
     .map((itemZUID) => {
+      // Matching ItemZUID to languageZUID to get language code {key} to display in dropdown
       for (const [key, value] of Object.entries(items[itemZUID].siblings)) {
         if (items[itemZUID].meta.ZUID === value) {
           return {
             filterValue: items[itemZUID].data[field.name],
             value: itemZUID,
             component: (
-              <RelatedOption
+              <ResolvedOption
                 modelZUID={modelZUID}
                 itemZUID={itemZUID}
                 text={
@@ -147,6 +148,7 @@ function resolveRelatedOptions(
               />
             ),
           };
+          break;
         }
       }
     })
@@ -529,7 +531,7 @@ export default function Field({
       }, [allLanguages.length, relatedModelZUID, langID]);
 
       let oneToOneOptions = useMemo(() => {
-        return resolveRelatedOptions(
+        return resolveResolvedOptions(
           allFields,
           allItems,
           relatedFieldZUID,
@@ -590,7 +592,7 @@ export default function Field({
       //TODO: we need to implement specific fetches for items
       // when an endpoint is available for that purpose
       // if (value) {
-      //   const resolved = resolveRelatedOptions(
+      //   const resolved = resolveResolvedOptions(
       //     allFields,
       //     allItems,
       //     relatedFieldZUID,
@@ -603,7 +605,7 @@ export default function Field({
       // }
 
       const oneToManyOptions = useMemo(() => {
-        return resolveRelatedOptions(
+        return resolveResolvedOptions(
           allFields,
           allItems,
           relatedFieldZUID,
