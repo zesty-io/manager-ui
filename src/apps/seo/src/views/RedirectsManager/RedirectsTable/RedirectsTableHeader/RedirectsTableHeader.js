@@ -16,7 +16,7 @@ export default function RedirectsTableHeader(props) {
         onClick={props.handleSortBy}
         style={{ flex: "1" }}
       >
-        <Infotip className={styles.InfoTip}>File Path Only </Infotip>
+        <Infotip className={styles.InfoTip}>File Path Only </Infotip>&nbsp;
         <span
           className={cx(
             styles.subheadline,
@@ -24,7 +24,7 @@ export default function RedirectsTableHeader(props) {
             props.sortBy === "from" ? styles.sorted : ""
           )}
         >
-          &nbsp; From
+          Incoming Path
           {props.sortBy === "from" && props.sortDirection === "desc" ? (
             <FontAwesomeIcon icon={faSortAlphaDown} />
           ) : null}
@@ -39,6 +39,9 @@ export default function RedirectsTableHeader(props) {
         data-value="type"
         onClick={props.handleSortBy}
       >
+        <Infotip className={styles.InfoTip}>
+          301: Moved Permanently <br /> 302: Temporarily Moved
+        </Infotip>
         <span
           className={cx(
             styles.subheadline,
@@ -46,13 +49,23 @@ export default function RedirectsTableHeader(props) {
             props.sortBy === "type" ? styles.sorted : ""
           )}
         >
-          Type
+          &nbsp; HTTP Code
           {props.sortBy === "type" && props.sortDirection === "desc" ? (
             <FontAwesomeIcon icon={faSortAlphaDown} />
           ) : null}
           {props.sortBy === "type" && props.sortDirection === "asc" ? (
             <FontAwesomeIcon icon={faSortAlphaUp} />
           ) : null}
+        </span>
+      </span>
+      <Infotip className={styles.InfoTip}>
+        Internal E.g. /about
+        <br /> External E.g. https://zesty.org/
+        <br /> Wildcard E.g. /blog/*/*/
+      </Infotip>
+      <span className={cx(styles.RedirectsTableHeaderCell, styles.code)}>
+        <span className={cx(styles.subheadline, styles.column)}>
+          Redirect Type
         </span>
       </span>
 
@@ -68,8 +81,9 @@ export default function RedirectsTableHeader(props) {
             styles.column,
             props.sortBy === "to" ? styles.sorted : ""
           )}
+          style={{ marginLeft: "16px" }}
         >
-          To
+          Redirect Target
           {props.sortBy === "to" && props.sortDirection === "desc" ? (
             <FontAwesomeIcon icon={faSortAlphaDown} />
           ) : null}
@@ -81,7 +95,7 @@ export default function RedirectsTableHeader(props) {
 
       <span
         className={styles.RedirectsTableHeaderCell}
-        style={{ flexBasis: "9rem" }}
+        style={{ flexBasis: "23rem" }}
       ></span>
     </div>
   );
