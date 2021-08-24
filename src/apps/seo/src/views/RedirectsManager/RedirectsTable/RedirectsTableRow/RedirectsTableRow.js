@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { searchItems } from "shell/store/content";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,17 +20,19 @@ import { Url } from "@zesty-io/core/Url";
 import styles from "./RedirectsTableRow.less";
 export default function RedirectsTableRow(props) {
   const dispatch = useDispatch();
+  const content = useSelector((state) => state.content);
+
   const [path, setPath] = useState("");
   const [modelZuid, setModelZuid] = useState("");
 
   useEffect(() => {
     if (props.targetType === "page") {
-      dispatch(searchItems(props.target)).then((res) => {
-        if (res && res.data) {
-          setModelZuid(res.data[0].meta.contentModelZUID);
-          setPath(res.data[0].web.path);
+      for (const [key, value] of Object.entries(content)) {
+        if (props.target === key) {
+          setModelZuid(value.meta.contentModelZUID);
+          setPath(value.web.path);
         }
-      });
+      }
     }
   }, [props.target]);
 
