@@ -1,4 +1,5 @@
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
+import cx from "classnames";
 
 import styles from "./ImportTableRowDisabled.less";
 
@@ -27,7 +28,7 @@ export default function ImportTableRowDisabled({
         {target}
         {query_string ? `?${query_string}` : null}
       </span>
-      <span className={styles.RowCell}>
+      <span className={cx(styles.RowCell, styles.RowCellEnd)}>
         {created ? <span>Created</span> : <span>Pre-Existing</span>}
       </span>
     </div>
