@@ -58,7 +58,7 @@ const ResolvedOption = memo((props) => {
           <FontAwesomeIcon icon={faEdit} />
         </AppLink>
       </span>
-      &nbsp;{props.text}
+      &nbsp;{props.html}
     </span>
   );
 });
@@ -102,7 +102,7 @@ function sortHTML(a, b) {
   return 0;
 }
 
-function resolveResolvedOptions(
+function resolveRelatedOptions(
   fields,
   items,
   fieldZUID,
@@ -139,7 +139,7 @@ function resolveResolvedOptions(
               <ResolvedOption
                 modelZUID={modelZUID}
                 itemZUID={itemZUID}
-                text={
+                html={
                   <>
                     <span>{items[itemZUID].data[field.name]}</span>
                     <em className={styles.Language}>&nbsp;{key}</em>
@@ -531,7 +531,7 @@ export default function Field({
       }, [allLanguages.length, relatedModelZUID, langID]);
 
       let oneToOneOptions = useMemo(() => {
-        return resolveResolvedOptions(
+        return resolveRelatedOptions(
           allFields,
           allItems,
           relatedFieldZUID,
@@ -592,7 +592,7 @@ export default function Field({
       //TODO: we need to implement specific fetches for items
       // when an endpoint is available for that purpose
       // if (value) {
-      //   const resolved = resolveResolvedOptions(
+      //   const resolved = resolveRelatedOptions(
       //     allFields,
       //     allItems,
       //     relatedFieldZUID,
@@ -605,7 +605,7 @@ export default function Field({
       // }
 
       const oneToManyOptions = useMemo(() => {
-        return resolveResolvedOptions(
+        return resolveRelatedOptions(
           allFields,
           allItems,
           relatedFieldZUID,
