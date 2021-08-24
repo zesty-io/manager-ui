@@ -12,9 +12,7 @@ export default function ImportTableRowDisabled({
 }) {
   return (
     <div className={styles.ImportTableRowDisabled}>
-      <span className={styles.RowCell} style={{ flex: "1" }}>
-        {path}
-      </span>
+      <span className={styles.RowCell}>{path}</span>
       <span className={styles.RedirectCreatorCell}>
         <ToggleButton
           className={styles.code}
@@ -24,7 +22,7 @@ export default function ImportTableRowDisabled({
           onValue="301"
         />
       </span>
-      <span className={styles.RowCell} style={{ flex: "1" }}>
+      <span className={styles.RowCell}>
         {target}
         {query_string ? `?${query_string}` : null}
       </span>
