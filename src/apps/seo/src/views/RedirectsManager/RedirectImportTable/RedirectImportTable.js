@@ -3,13 +3,15 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core/Button";
-import styles from "./RedirectImportTable.less";
+import { Notice } from "@zesty-io/core/Notice";
 
 import RedirectImportTableRow from "./RedirectImportTableRow";
 import ImportTableRowDisabled from "./ImportTableRowDisabled";
 
 import { createRedirect } from "../../../store/redirects";
 import { cancelImports } from "../../../store/imports";
+
+import styles from "./RedirectImportTable.less";
 
 function RedirectImportTable(props) {
   const handleCancelImport = () => {
@@ -35,27 +37,26 @@ function RedirectImportTable(props) {
   return (
     <section className={styles.RedirectImportTable}>
       <div className={styles.Actions}>
-        <Button className={styles.addAll} onClick={handleAddAllRedirects}>
-          <FontAwesomeIcon icon={faPlus} />
-          Add All Redirects
-        </Button>
+        <Notice>
+          Import CSV does not allow for external and wildcard redirects
+        </Notice>
+        <div className={styles.RedirectButtons}>
+          <Button className={styles.addAll} onClick={handleAddAllRedirects}>
+            <FontAwesomeIcon icon={faPlus} />
+            Add All Redirects
+          </Button>
 
-        <Button onClick={handleCancelImport}>
-          <FontAwesomeIcon icon={faTimes} />
-          Close Import
-        </Button>
+          <Button onClick={handleCancelImport}>
+            <FontAwesomeIcon icon={faTimes} />
+            Close Import
+          </Button>
+        </div>
       </div>
       <div className={styles.Header}>
-        <span className={cx(styles.Cell, styles.subheadline)}>
-          Incoming Path
-        </span>
-        <span className={cx(styles.Cell, styles.subheadline)}>Http Code</span>
-        <span className={cx(styles.Cell, styles.subheadline)}>
-          Redirect Type
-        </span>
-        <span className={cx(styles.Cell, styles.subheadline)}>
-          Redirect Target
-        </span>
+        <span className={cx(styles.Cell, styles.subheadline)}>From</span>
+
+        <span className={cx(styles.Cell, styles.subheadline)}>Type</span>
+        <span className={cx(styles.Cell, styles.subheadline)}>To</span>
       </div>
       <main className={styles.TableBody}>
         {Object.keys(props.imports).map((key) => {

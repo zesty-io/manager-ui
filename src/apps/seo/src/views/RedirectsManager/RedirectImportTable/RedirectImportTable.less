@@ -4,24 +4,31 @@
 .RedirectImportTable {
   .Actions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: 16px;
     .addAll {
       margin-right: 16px;
     }
+    .RedirectButtons {
+      display: flex;
+    }
   }
   .Header {
     display: grid;
-    grid-template-columns: minmax(200px, 1fr) auto auto minmax(200px, 1fr) 200px 200px;
+    grid-template-columns: minmax(200px, 1fr) 100px 344px minmax(200px, 1fr);
     z-index: 1;
     align-items: baseline;
     padding: 0 16px 16px 16px;
-    background-color: #f2f4fb;
+    gap: 0 36px;
 
     .Cell {
       cursor: pointer;
       font-weight: 900;
-      padding: 0 1rem;
+      // padding: 0 1rem;
     }
+  }
+  .TableBody {
+    border: 1px solid @zesty-light-blue;
+    border-radius: 4px;
   }
 }

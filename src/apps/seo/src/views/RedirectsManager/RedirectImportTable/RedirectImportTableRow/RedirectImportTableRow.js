@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import cx from "classnames";
 
 import styles from "./RedirectImportTableRow.less";
 
@@ -50,9 +51,7 @@ function RedirectImportTableRow(props) {
 
   return (
     <div className={styles.RedirectImportTableRow}>
-      <span className={styles.RowCell} style={{ flex: "1" }}>
-        {props.path}
-      </span>
+      <span className={styles.RowCell}>{props.path}</span>
 
       <span className={styles.RedirectCreatorCell}>
         <ToggleButton
@@ -65,9 +64,7 @@ function RedirectImportTableRow(props) {
         />
       </span>
 
-      <span className={styles.RedirectCreatorCell}>Page</span>
-
-      <span className={styles.RowCell} style={{ flex: "1" }}>
+      <span className={styles.RowCell}>
         {props.target_type === "page" ? (
           <Select className={styles.selector} onSelect={handlePageTarget}>
             {Object.keys(props.paths).map((key) => {
@@ -98,7 +95,7 @@ function RedirectImportTableRow(props) {
         />
       </span>
 
-      <span className={styles.RowCell}>
+      <span className={cx(styles.RowCell, styles.RedirectButton)}>
         <Button className="save" onClick={handleAddRedirect}>
           <FontAwesomeIcon icon={faPlus} />
           Redirect
