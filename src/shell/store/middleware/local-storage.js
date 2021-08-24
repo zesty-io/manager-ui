@@ -1,17 +1,7 @@
 import idb from "utility/idb";
-import {
-  resetPlan,
-  addStep,
-  removeStep,
-  updateStep,
-  publishPending,
-  publishSuccess,
-  publishFailure,
-  publishPlanPending,
-  publishPlanSuccess,
-  publishPlanFailure,
-} from "../release";
+import { actions } from "shell/store/releases";
 import { toggleNav } from "../ui";
+
 export const localStorage = (store) => (next) => (action) => {
   const result = next(action);
 
@@ -27,16 +17,16 @@ export const localStorage = (store) => (next) => (action) => {
         idb.set(`${state.instance.ZUID}:ui`, ui);
         break;
 
-      case `${resetPlan}`:
-      case `${addStep}`:
-      case `${removeStep}`:
-      case `${updateStep}`:
-      case `${publishPending}`:
-      case `${publishSuccess}`:
-      case `${publishFailure}`:
-      case `${publishPlanPending}`:
-      case `${publishPlanSuccess}`:
-      case `${publishPlanFailure}`:
+      case `${actions.resetPlan}`:
+      case `${actions.addStep}`:
+      case `${actions.removeStep}`:
+      case `${actions.updateStep}`:
+      case `${actions.publishPending}`:
+      case `${actions.publishSuccess}`:
+      case `${actions.publishFailure}`:
+      case `${actions.publishPlanPending}`:
+      case `${actions.publishPlanSuccess}`:
+      case `${actions.publishPlanFailure}`:
         idb.set(`${state.instance.ZUID}:publishPlan`, state.publishPlan);
         break;
 

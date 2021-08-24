@@ -13,7 +13,7 @@ import history from "utility/history";
 import { Sentry } from "utility/sentry";
 import { store, injectReducer } from "shell/store";
 import { navContent } from "../apps/content-editor/src/store/navContent";
-import { loadedPlan } from "shell/store/release";
+import { actions } from "shell/store/releases";
 
 import AppError from "shell/components/AppError";
 import PrivateRoute from "./components/private-route";
@@ -104,7 +104,7 @@ try {
       });
       store.dispatch(loadedUI(results.ui));
 
-      store.dispatch(loadedPlan(results.release));
+      store.dispatch(actions.loadedPlan(results.release));
     });
 } catch (err) {
   console.error("IndexedDB:get:error", err);

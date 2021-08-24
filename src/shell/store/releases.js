@@ -3,22 +3,11 @@ import chunk from "lodash/chunk";
 import idb from "utility/idb";
 import { publish } from "shell/store/content";
 
-function asyncBatch(chunkedData, fn) {
-  return chunkedData.reduce((promise, batch) => {
-    return promise.then((results) => {
-      return Promise.allSettled(batch.map(fn)).then((data) => {
-        results.push(data);
-        return results;
-      });
-    });
-  }, Promise.resolve([]));
-}
-
-const { actions, reducer } = createSlice({
-  name: "release",
+export const releases = createSlice({
+  name: "releases",
   initialState: {
-    data: [], // [{ZUID, version, status}] idle/pending/error
-    status: "idle" /*
+    // Local derived state
+    /*
     idle - initial state
     loaded - data loaded from indexeddb
     pending - publish pending
@@ -31,29 +20,43 @@ const { actions, reducer } = createSlice({
     pending->{success,error}
     error->pending
     success->loaded
-    */,
+    */
+    status: "idle",
     successes: 0,
     failures: 0,
+
+    // API state
+    data: [
+      {
+        ZUID: "00-000-0000",
+        name: "Release Plan 1",
+        description: "User provided description of plan",
+        createdAt: "2020...",
+        createdByUserZUID: "5-user-zuid",
+        updatedAt: "2021-...",
+        updatedByUserZUID: "5-user-zuid",
+      },
+    ],
   },
   reducers: {
     loadedPlan(state, action) {
-      // no cache, initial load
-      const plan = action.payload;
-      if (!plan) {
-        state.status = "loaded";
-      } else {
-        // If user refreshed page and had pending operation,
-        // let's reset statuses so they can start over
-        if (plan.status === "pending") {
-          plan.status = "loaded";
-        }
-        plan.data.forEach((step) => {
-          if (step.status === "pending") {
-            step.status = "idle";
-          }
-        });
-        return plan;
-      }
+      // // no cache, initial load
+      // const plan = action.payload;
+      // if (!plan) {
+      //   state.status = "loaded";
+      // } else {
+      //   // If user refreshed page and had pending operation,
+      //   // let's reset statuses so they can start over
+      //   if (plan.status === "pending") {
+      //     plan.status = "loaded";
+      //   }
+      //   plan.data.forEach((step) => {
+      //     if (step.status === "pending") {
+      //       step.status = "idle";
+      //     }
+      //   });
+      //   return plan;
+      // }
     },
     resetPlan(state) {
       state.data = [];
@@ -61,31 +64,31 @@ const { actions, reducer } = createSlice({
       state.successes = 0;
       state.failures = 0;
     },
-    addStep(state, action) {
-      // prevent duplicate ZUIDs
-      if (!state.data.find((step) => step.ZUID === action.payload.ZUID)) {
-        state.data.push(action.payload);
-        if (state.status === "success") {
-          state.status = "loaded";
-        }
-      }
-    },
-    removeStep(state, action) {
-      const removeStepIndex = state.data.findIndex(
-        (step) => step.ZUID === action.payload.ZUID
-      );
-      if (removeStepIndex !== -1) {
-        state.data.splice(removeStepIndex, 1);
-      }
-    },
-    updateStep(state, action) {
-      const updateStep = state.data.find(
-        (step) => step.ZUID === action.payload.ZUID
-      );
-      if (updateStep) {
-        updateStep.version = action.payload.version;
-      }
-    },
+    // addStep(state, action) {
+    //   // prevent duplicate ZUIDs
+    //   if (!state.data.find((step) => step.ZUID === action.payload.ZUID)) {
+    //     state.data.push(action.payload);
+    //     if (state.status === "success") {
+    //       state.status = "loaded";
+    //     }
+    //   }
+    // },
+    // removeStep(state, action) {
+    //   const removeStepIndex = state.data.findIndex(
+    //     (step) => step.ZUID === action.payload.ZUID
+    //   );
+    //   if (removeStepIndex !== -1) {
+    //     state.data.splice(removeStepIndex, 1);
+    //   }
+    // },
+    // updateStep(state, action) {
+    //   const updateStep = state.data.find(
+    //     (step) => step.ZUID === action.payload.ZUID
+    //   );
+    //   if (updateStep) {
+    //     updateStep.version = action.payload.version;
+    //   }
+    // },
     publishPending(state, action) {
       const step = state.data.find((step) => step.ZUID === action.payload);
       if (step) {
@@ -123,21 +126,34 @@ const { actions, reducer } = createSlice({
   },
 });
 
-export const {
-  loadedPlan,
-  resetPlan,
-  addStep,
-  removeStep,
-  updateStep,
-  publishPending,
-  publishSuccess,
-  publishFailure,
-  publishPlanPending,
-  publishPlanSuccess,
-  publishPlanFailure,
-} = actions;
+export const { actions, reducer } = releases;
 
-export default reducer;
+// export const {
+//   loadedPlan,
+//   resetPlan,
+//   // addStep,
+//   // removeStep,
+//   // updateStep,
+//   publishPending,
+//   publishSuccess,
+//   publishFailure,
+//   publishPlanPending,
+//   publishPlanSuccess,
+//   publishPlanFailure,
+// } = actions;
+
+// export default reducer;
+
+function asyncBatch(chunkedData, fn) {
+  return chunkedData.reduce((promise, batch) => {
+    return promise.then((results) => {
+      return Promise.allSettled(batch.map(fn)).then((data) => {
+        results.push(data);
+        return results;
+      });
+    });
+  }, Promise.resolve([]));
+}
 
 // Publish content in batches, marking all
 // successes/failures until all batches processed

@@ -1,3 +1,7 @@
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Button } from "@zesty-io/core/Button";
+
 import styles from "./Start.less";
 export function Start(props) {
   return (
@@ -12,6 +16,11 @@ export function Start(props) {
           release
         </li>
       </ol>
+
+      <Button className={styles.Create} kind="save" size="large">
+        <FontAwesomeIcon icon={faPlus} />
+        Create Release
+      </Button>
     </div>
   );
 }

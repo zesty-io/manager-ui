@@ -1,13 +1,13 @@
 import { useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { resetPlan } from "shell/store/release";
+import { actions } from "shell/store/releases";
 import { Button } from "@zesty-io/core/Button";
 import styles from "./Completed.less";
 
 export function Completed({ plan }) {
   const dispatch = useDispatch();
   const onStartNewPlan = useCallback(() => {
-    dispatch(resetPlan());
+    dispatch(actions.resetPlan());
   }, [dispatch]);
   return (
     <div className={styles.Completed}>

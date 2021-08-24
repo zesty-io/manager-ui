@@ -9,7 +9,7 @@ import {
   faSpinner,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
-import { removeStep, updateStep } from "shell/store/release";
+import { actions } from "shell/store/releases";
 import { Select, Option } from "@zesty-io/core/Select";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Url } from "@zesty-io/core/Url";
@@ -34,12 +34,12 @@ export function PlanStep({ step, item, versions, lang }) {
       ];
 
   const onRemove = useCallback(() => {
-    dispatch(removeStep(step));
+    dispatch(actions.removeStep(step));
   }, [dispatch, step]);
 
   const onUpdateVersion = useCallback(
     (version) => {
-      dispatch(updateStep({ ...step, version: +version }));
+      dispatch(actions.updateStep({ ...step, version: +version }));
     },
     [dispatch, step]
   );

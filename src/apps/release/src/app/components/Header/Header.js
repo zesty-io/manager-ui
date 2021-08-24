@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudUploadAlt, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { addStep, publishAll } from "shell/store/release";
+import { actions, publishAll } from "shell/store/releases";
 import { fetchVersions } from "shell/store/contentVersions";
 import { Button } from "@zesty-io/core/Button";
 import ContentSearch from "shell/components/ContentSearch";
@@ -16,7 +16,7 @@ export function Header({ plan }) {
   const onSelect = useCallback(
     (item) => {
       dispatch(
-        addStep({
+        actions.addStep({
           ZUID: item.meta.ZUID,
           version: item.meta.version,
           status: "idle",

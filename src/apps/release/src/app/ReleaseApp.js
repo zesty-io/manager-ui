@@ -10,17 +10,17 @@ import styles from "./ReleaseApp.less";
 
 export default function ReleaseApp() {
   const dispatch = useDispatch();
-  const release = useSelector((state) => state.release);
+  const release = useSelector((state) => state.releases.data[0]);
   const content = useSelector((state) => state.content);
 
   // load versions for all ZUIDs
   // possibly can lazy load these when you open select
   useEffect(() => {
-    release.data.forEach((step) => {
+    release.members.forEach((member) => {
       dispatch(
         fetchVersions(
-          content[step.ZUID].meta.contentModelZUID,
-          content[step.ZUID].meta.ZUID
+          content[member.ZUID].meta.contentModelZUID,
+          content[member.ZUID].meta.ZUID
         )
       );
     });
@@ -33,10 +33,12 @@ export default function ReleaseApp() {
         {(release.status === "loaded" ||
           release.status === "pending" ||
           release.status === "error") &&
-        release.data.length ? (
+        release.members.length ? (
           <PlanTable plan={release} />
         ) : null}
-        {release.status === "loaded" && !release.data.length ? <Start /> : null}
+        {release.status === "loaded" && !release.members.length ? (
+          <Start />
+        ) : null}
         {release.status === "success" ? <Completed plan={release} /> : null}
       </main>
     </section>
