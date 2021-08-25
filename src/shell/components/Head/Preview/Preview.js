@@ -2,7 +2,6 @@ import styles from "./Preview.less";
 export const Preview = (props) => (
   <aside className={styles.TagPreviewWrap}>
     {/* {`<!-- Global head tags are inserted before local tags --> \n`} */}
-    {console.log("🚀 ~ file: Preview.js ~ PROPS", props)}
     <pre className={styles.TagPreview}>
       <div className={styles.Tag}>{`<head>`}</div>
       <div>
