@@ -135,7 +135,9 @@ function resolveRelatedOptions(
         const match = Object.entries(items[itemZUID].siblings).find(
           (arr) => items[itemZUID].meta.ZUID === arr[1]
         );
-        langCode = match[0];
+        if (match) {
+          langCode = match[0];
+        }
       }
 
       return {
