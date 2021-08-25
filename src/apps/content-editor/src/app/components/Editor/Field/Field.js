@@ -130,27 +130,30 @@ function resolveRelatedOptions(
     })
     .map((itemZUID) => {
       // Matching ItemZUID to languageZUID to get language code {key} to display in dropdown
-      for (const [key, value] of Object.entries(items[itemZUID].siblings)) {
-        if (items[itemZUID].meta.ZUID === value) {
-          return {
-            filterValue: items[itemZUID].data[field.name],
-            value: itemZUID,
-            component: (
-              <ResolvedOption
-                modelZUID={modelZUID}
-                itemZUID={itemZUID}
-                html={
-                  <>
-                    <span>{items[itemZUID].data[field.name]}</span>
-                    <em className={styles.Language}>&nbsp;{key}</em>
-                  </>
-                }
-              />
-            ),
-          };
-          break;
-        }
+      let langCode = "";
+      if (items[itemZUID].siblings) {
+        const match = Object.entries(items[itemZUID].siblings).find(
+          (arr) => items[itemZUID].meta.ZUID === arr[1]
+        );
+        langCode = match[0];
       }
+
+      return {
+        filterValue: items[itemZUID].data[field.name],
+        value: itemZUID,
+        component: (
+          <ResolvedOption
+            modelZUID={modelZUID}
+            itemZUID={itemZUID}
+            html={
+              <>
+                <span>{items[itemZUID].data[field.name]}</span>
+                <em className={styles.Language}>&nbsp;{langCode}</em>
+              </>
+            }
+          />
+        ),
+      };
     })
     .sort(sortTitle);
 }
