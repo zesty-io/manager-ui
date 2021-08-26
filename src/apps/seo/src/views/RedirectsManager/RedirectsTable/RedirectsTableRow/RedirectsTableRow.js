@@ -12,6 +12,7 @@ import {
   faFileAlt,
   faLink,
   faTrashAlt,
+  faBan,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
@@ -25,10 +26,11 @@ export default function RedirectsTableRow(props) {
   const [path, setPath] = useState("");
   const [modelZuid, setModelZuid] = useState("");
 
+  const findTarget = Object.values(content).find(
+    (item) => item.meta.ZUID === props.target
+  );
+
   useEffect(() => {
-    const findTarget = Object.values(content).find(
-      (item) => item.meta.ZUID === props.target
-    );
     if (props.targetType === "page") {
       if (findTarget) {
         setModelZuid(findTarget.meta.contentModelZUID);
@@ -71,13 +73,21 @@ export default function RedirectsTableRow(props) {
 
       {props.targetType === "page" ? (
         <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
-          <Link
-            className={styles.internalLink}
-            to={`/content/${modelZuid}/${props.target}`}
-          >
-            <FontAwesomeIcon className={styles.icon} icon={faLink} />{" "}
-            <code>{path}</code>
-          </Link>
+          {findTarget ? (
+            <Link
+              className={styles.internalLink}
+              to={`/content/${modelZuid}/${props.target}`}
+            >
+              <FontAwesomeIcon className={styles.icon} icon={faLink} />
+              &nbsp;
+              <code>{path}</code>
+            </Link>
+          ) : (
+            <code>
+              <FontAwesomeIcon className={styles.icon} icon={faBan} />
+              {path}
+            </code>
+          )}
         </span>
       ) : props.targetType === "external" ? (
         <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
