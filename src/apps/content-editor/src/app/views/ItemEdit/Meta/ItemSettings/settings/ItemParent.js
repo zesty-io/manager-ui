@@ -94,10 +94,6 @@ export const ItemParent = connect((state) => {
             setParent(item);
           } else {
             props.dispatch(searchItems(parentZUID)).then((res) => {
-              console.log(
-                "🚀 ~ file: ItemParent.js ~ line 97 ~ props.dispatch ~ res",
-                res
-              );
               setParent(res.data[0]);
 
               /**
