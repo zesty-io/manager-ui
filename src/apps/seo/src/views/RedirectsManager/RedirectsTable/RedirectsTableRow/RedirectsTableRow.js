@@ -26,12 +26,15 @@ export default function RedirectsTableRow(props) {
   const [modelZuid, setModelZuid] = useState("");
 
   useEffect(() => {
+    const findTarget = Object.values(content).find(
+      (item) => item.meta.ZUID === props.target
+    );
     if (props.targetType === "page") {
-      for (const [key, value] of Object.entries(content)) {
-        if (props.target === key) {
-          setModelZuid(value.meta.contentModelZUID);
-          setPath(value.web.path);
-        }
+      if (findTarget) {
+        setModelZuid(findTarget.meta.contentModelZUID);
+        setPath(findTarget.web.path);
+      } else {
+        setPath("Not Results Found");
       }
     }
   }, [props.target]);
