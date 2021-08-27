@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { searchItems } from "shell/store/content";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,6 +12,7 @@ import {
   faFileAlt,
   faLink,
   faTrashAlt,
+  faBan,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@zesty-io/core/Button";
@@ -20,17 +21,30 @@ import { Url } from "@zesty-io/core/Url";
 import styles from "./RedirectsTableRow.less";
 export default function RedirectsTableRow(props) {
   const dispatch = useDispatch();
+  const content = useSelector((state) => state.content);
+
   const [path, setPath] = useState("");
   const [modelZuid, setModelZuid] = useState("");
 
+  const findTarget = Object.values(content).find(
+    (item) => item.meta.ZUID === props.target
+  );
+
   useEffect(() => {
     if (props.targetType === "page") {
-      dispatch(searchItems(props.target)).then((res) => {
-        if (res && res.data) {
-          setModelZuid(res.data[0].meta.contentModelZUID);
-          setPath(res.data[0].web.path);
-        }
-      });
+      if (findTarget?.meta?.contentModelZUID) {
+        setModelZuid(findTarget.meta.contentModelZUID);
+        setPath(findTarget.web.path);
+      } else {
+        dispatch(searchItems(props.target)).then((res) => {
+          if (res && res.data.length) {
+            setModelZuid(findTarget.meta.contentModelZUID);
+            setPath(res.data[0].web.path);
+          } else {
+            setPath("Redirect Target Not Found");
+          }
+        });
+      }
     }
   }, [props.target]);
 
@@ -66,13 +80,21 @@ export default function RedirectsTableRow(props) {
 
       {props.targetType === "page" ? (
         <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
-          <Link
-            className={styles.internalLink}
-            to={`/content/${modelZuid}/${props.target}`}
-          >
-            <FontAwesomeIcon className={styles.icon} icon={faLink} />{" "}
-            <code>{path}</code>
-          </Link>
+          {findTarget ? (
+            <Link
+              className={styles.internalLink}
+              to={`/content/${modelZuid}/${props.target}`}
+            >
+              <FontAwesomeIcon className={styles.icon} icon={faLink} />
+              &nbsp;
+              <code>{path}</code>
+            </Link>
+          ) : (
+            <code>
+              <FontAwesomeIcon className={styles.icon} icon={faBan} />
+              {path}
+            </code>
+          )}
         </span>
       ) : props.targetType === "external" ? (
         <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
