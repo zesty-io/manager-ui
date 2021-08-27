@@ -33,10 +33,15 @@ export default function RedirectsTableRow(props) {
   useEffect(() => {
     if (props.targetType === "page") {
       if (findTarget) {
-        setModelZuid(findTarget.meta.contentModelZUID);
+        setModelZuid(findTarget?.meta?.contentModelZUID);
         setPath(findTarget.web.path);
       } else {
-        setPath("Not Results Found");
+        dispatch(searchItems(props.target)).then((res) => {
+          if (res && res.data) {
+            setModelZuid(res.data[0].meta.contentModelZUID);
+            setPath(res.data[0].web.path);
+          }
+        });
       }
     }
   }, [props.target]);
@@ -73,21 +78,14 @@ export default function RedirectsTableRow(props) {
 
       {props.targetType === "page" ? (
         <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
-          {findTarget ? (
-            <Link
-              className={styles.internalLink}
-              to={`/content/${modelZuid}/${props.target}`}
-            >
-              <FontAwesomeIcon className={styles.icon} icon={faLink} />
-              &nbsp;
-              <code>{path}</code>
-            </Link>
-          ) : (
-            <code>
-              <FontAwesomeIcon className={styles.icon} icon={faBan} />
-              {path}
-            </code>
-          )}
+          <Link
+            className={styles.internalLink}
+            to={`/content/${modelZuid}/${props.target}`}
+          >
+            <FontAwesomeIcon className={styles.icon} icon={faLink} />
+            &nbsp;
+            <code>{path}</code>
+          </Link>
         </span>
       ) : props.targetType === "external" ? (
         <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
