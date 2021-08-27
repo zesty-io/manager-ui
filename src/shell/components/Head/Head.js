@@ -60,8 +60,9 @@ export default connect((state, props) => {
           </Button>
 
           <Notice>
-            Head tags are not versioned or published. Saved changes to head tags
-            take effect immediately on your live instance.
+            Head tags are not versioned. Once saved they will take effect when
+            the page(s) are next cached. Caching occurs on publish or every 24
+            hours.
           </Notice>
         </h1>
 
