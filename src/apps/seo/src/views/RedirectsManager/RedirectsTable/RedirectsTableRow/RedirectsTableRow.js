@@ -38,7 +38,7 @@ export default function RedirectsTableRow(props) {
       } else {
         dispatch(searchItems(props.target)).then((res) => {
           if (res && res.data.length) {
-            setModelZuid(res.data.contentModelZUID);
+            setModelZuid(res.data[0].contentModelZUID);
             setPath(res.data[0].web.path);
           } else {
             setPath("Redirect Target Not Found");
