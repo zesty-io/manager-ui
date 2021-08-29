@@ -335,9 +335,10 @@ export function ContentInsights(props) {
           })}
           {!showAllWords && (
             <Button
+              kind="outlined"
+              type="tertiary"
               size="small"
               className={styles.toggleButton}
-              kind="outlined"
               onClick={() => setShowAllWords(true)}
             >
               Show Non-Recurring Words
@@ -345,9 +346,10 @@ export function ContentInsights(props) {
           )}
           {showAllWords && (
             <Button
+              kind="outlined"
+              type="tertiary"
               size="small"
               className={styles.toggleButton}
-              kind="outlined"
               onClick={() => setShowAllWords(false)}
             >
               Hide Non-Recurring Words
