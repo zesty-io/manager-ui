@@ -103,7 +103,6 @@ export default connect((state, props) => {
     <Fragment>
       <Button
         onClick={() => setOpen(true)}
-        kind="primary"
         title="Change combine and pre-process order"
       >
         <FontAwesomeIcon icon={faArrowsAlt} />
