@@ -598,7 +598,7 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
     }
 
     return request(
-      `${CONFIG.API_INSTANCE}/${instance.ZUID}/content/models/${modelZUID}/items/${itemZUID}/publishings/${publishZUID}`,
+      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings/${publishZUID}`,
       {
         method: "DELETE",
       }
