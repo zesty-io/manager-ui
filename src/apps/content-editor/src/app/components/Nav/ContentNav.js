@@ -118,7 +118,7 @@ export function ContentNav(props) {
 
           <Link to="/content">
             {" "}
-            <Button kind="outlined" type="tertiary" size="small">
+            <Button kind="outlined" size="small">
               <FontAwesomeIcon icon={faHome} title="Dashboard" />
             </Button>
           </Link>

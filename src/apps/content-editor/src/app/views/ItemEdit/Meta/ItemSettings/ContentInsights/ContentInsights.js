@@ -336,7 +336,6 @@ export function ContentInsights(props) {
           {!showAllWords && (
             <Button
               kind="outlined"
-              type="tertiary"
               size="small"
               className={styles.toggleButton}
               onClick={() => setShowAllWords(true)}
@@ -347,7 +346,6 @@ export function ContentInsights(props) {
           {showAllWords && (
             <Button
               kind="outlined"
-              type="tertiary"
               size="small"
               className={styles.toggleButton}
               onClick={() => setShowAllWords(false)}
