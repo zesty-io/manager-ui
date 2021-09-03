@@ -70,7 +70,7 @@ export function DropdownOptions(props) {
             }}
           />
           <Button
-            kind="warn"
+            type="warn"
             onClick={() => {
               const newOptions = [...options];
               newOptions.splice(i, 1);

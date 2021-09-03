@@ -24,7 +24,7 @@ describe("Schema", () => {
     cy.get('button[type="save"]').contains("Add Field").click();
 
     cy.contains("Delete Model").click({ force: true });
-    cy.get('button[kind="warn"]').contains("Delete Model").click();
+    cy.get('button[type="warn"]').contains("Delete Model").click();
     cy.get("#deleteConfirmButton").click();
   });
 });

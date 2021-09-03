@@ -88,7 +88,7 @@ export default memo(function PendingEditsModal(props) {
               )}
               Save
             </Button>
-            <Button disabled={loading} kind="warn" onClick={handler}>
+            <Button disabled={loading} type="warn" onClick={handler}>
               {loading ? (
                 <FontAwesomeIcon icon={faSpinner} spin />
               ) : (

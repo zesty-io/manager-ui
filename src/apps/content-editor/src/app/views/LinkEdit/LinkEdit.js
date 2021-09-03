@@ -313,7 +313,7 @@ export default function LinkEdit() {
               Save Changes
             </Button>
             <Button
-              kind="warn"
+              type="warn"
               disabled={state.saving}
               onClick={() => setShowConfirmation(true)}
             >

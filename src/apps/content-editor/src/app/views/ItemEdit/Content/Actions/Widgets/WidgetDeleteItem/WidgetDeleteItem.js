@@ -45,7 +45,7 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
         </CardContent>
         <CardFooter>
           <Button
-            kind="warn"
+            type="warn"
             id="DeleteItemButton"
             onClick={() => setConfirmOpen(true)}
             disabled={deleting}
@@ -66,7 +66,7 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
       >
         <Button
           id="deleteConfirmButton"
-          kind="warn"
+          type="warn"
           onClick={() => {
             setConfirmOpen(false);
             setDeleting(true);

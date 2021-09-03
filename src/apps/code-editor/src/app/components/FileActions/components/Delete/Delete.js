@@ -24,7 +24,7 @@ export const Delete = memo(function Delete(props) {
     <div className={styles.DeleteBtn}>
       {props.fileName !== "loader" ? (
         <Button
-          kind="warn"
+          type="warn"
           onClick={() => setOpen(true)}
           className={styles.Button}
         >

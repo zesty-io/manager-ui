@@ -160,7 +160,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             /* hide for Contributor */
             userRole.name !== "Contributor" ? (
               <Button
-                kind="warn"
+                type="warn"
                 onClick={props.showDeleteFileModal}
                 className={styles.Delete}
               >
