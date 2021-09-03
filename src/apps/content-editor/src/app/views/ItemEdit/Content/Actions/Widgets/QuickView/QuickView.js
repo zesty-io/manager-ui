@@ -61,7 +61,7 @@ export const QuickView = memo(function QuickView(props) {
           <ul>
             <li>
               <strong>ZUID:</strong>&nbsp;
-              <CopyButton value={props.itemZUID}></CopyButton>
+              <CopyButton value={props.itemZUID} />
             </li>
             <li>
               <strong>Language:</strong>&nbsp;

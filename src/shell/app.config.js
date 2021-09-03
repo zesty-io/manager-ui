@@ -27,8 +27,6 @@ module.exports = {
       media_resolver: "",
     },
 
-    LEGACY_SITES_SERVICE: "https://svc.zesty.io/sites-service",
-
     URL_MANAGER: ".manager.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
     URL_PREVIEW: "-dev.webengine.zesty.io",
@@ -65,8 +63,6 @@ module.exports = {
       "https://us-central1-zesty-stage.cloudfunctions.net/authenticateGoogleAnalytics",
     SERVICE_GOOGLE_ANALYTICS_READ:
       "https://us-central1-zesty-stage.cloudfunctions.net/googleAnalyticsGetPageViews",
-
-    LEGACY_SITES_SERVICE: "https://stage-svc.zesty.io/sites-service",
 
     URL_MANAGER: ".manager.stage.zesty.io",
     URL_MANAGER_PROTOCOL: "https://",
@@ -147,8 +143,6 @@ module.exports = {
     service: {
       media_resolver: "http://svc.zesty.localdev:3007/media-resolver-service",
     },
-
-    LEGACY_SITES_SERVICE: "http://svc.zesty.localdev:3018/sites-service",
 
     URL_MANAGER: ".manager.zesty.localdev:9000",
     URL_MANAGER_PROTOCOL: "http://",
