@@ -39,7 +39,7 @@ export const Sync = memo(function Sync(props) {
 
   return (
     <div>
-      <Button kind="alt" onClick={() => setOpen(true)}>
+      <Button type="alt" onClick={() => setOpen(true)}>
         {loading ? (
           <FontAwesomeIcon spin icon={faSpinner} />
         ) : (

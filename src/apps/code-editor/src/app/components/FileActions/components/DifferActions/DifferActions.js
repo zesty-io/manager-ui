@@ -197,7 +197,7 @@ export const DifferActions = memo(function DifferActions(props) {
           <Button
             className={styles.Button}
             onClick={resolveSync}
-            kind="alt"
+            type="alt"
             disabled={saving}
           >
             {saving ? (
