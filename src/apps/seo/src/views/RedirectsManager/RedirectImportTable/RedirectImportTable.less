@@ -1,25 +1,33 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
 .RedirectImportTable {
   .Actions {
     display: flex;
-    justify-content: flex-end;
-    padding: 1rem;
+    justify-content: space-between;
+    padding: 16px;
     .addAll {
-      margin-right: 1rem;
+      margin-right: 16px;
+    }
+    .RedirectButtons {
+      display: flex;
     }
   }
   .Header {
-    display: flex;
-    background: @zesty-field-blue;
-    border-bottom: 1px solid #b8c8e2;
+    display: grid;
+    grid-template-columns: minmax(200px, 1fr) 100px 344px minmax(200px, 1fr);
     z-index: 1;
     align-items: baseline;
-    padding-bottom: 0.5rem;
+    padding: 0 16px 16px 16px;
+    gap: 0 36px;
 
     .Cell {
       cursor: pointer;
       font-weight: 900;
-      padding: 0 1rem;
     }
+  }
+  .TableBody {
+    border: 1px solid @zesty-light-blue;
+    border-radius: 4px;
   }
 }

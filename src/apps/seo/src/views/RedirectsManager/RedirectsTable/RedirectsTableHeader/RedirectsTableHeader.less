@@ -2,12 +2,11 @@
 @import "~@zesty-io/core/typography.less";
 
 .RedirectsTableHeader {
-  display: flex;
-  // position: sticky;
-  top: 3rem;
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) auto auto minmax(200px, 1fr) 200px 200px;
   z-index: 1;
   align-items: baseline;
-  padding-bottom: 16px;
+  padding: 0 16px 16px 16px;
   background-color: @appBkgColor;
 
   .InfoTip {
@@ -22,7 +21,7 @@
   .RedirectsTableHeaderCell {
     cursor: pointer;
     font-weight: 900;
-    padding: 0 1rem;
+    padding: 0 8px;
 
     .column {
       border-bottom: 3px solid @zesty-field-blue;
