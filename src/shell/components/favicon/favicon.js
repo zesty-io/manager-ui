@@ -244,7 +244,7 @@ export default connect((state) => {
         </ModalContent>
         <ModalFooter>
           <ButtonGroup className={styles.Actions}>
-            <Button kind="save" className={styles.Button} onClick={handleSave}>
+            <Button type="save" className={styles.Button} onClick={handleSave}>
               {loading ? (
                 <FontAwesomeIcon icon={faSpinner} spin />
               ) : (

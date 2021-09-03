@@ -83,7 +83,7 @@ export function DropdownOptions(props) {
       ))}
 
       <Button
-        kind="save"
+        type="save"
         onClick={() => {
           setOptions([...options, { key: "", value: "" }]);
         }}

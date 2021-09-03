@@ -308,7 +308,7 @@ export default function LinkEdit() {
             </label>
           </CardContent>
           <CardFooter className={styles.LinkEditActions}>
-            <Button kind="save" disabled={state.saving} onClick={saveLink}>
+            <Button type="save" disabled={state.saving} onClick={saveLink}>
               <FontAwesomeIcon icon={faSave} />
               Save Changes
             </Button>

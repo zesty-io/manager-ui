@@ -200,7 +200,7 @@ export const HeadTag = (props) => {
       </CardContent>
       <CardFooter className={styles.CardFooter}>
         <Button
-          kind="save"
+          type="save"
           id="SaveItemButton"
           disabled={saving}
           onClick={tag.hasOwnProperty("createdAt") ? onSave : onCreate}

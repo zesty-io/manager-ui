@@ -124,7 +124,7 @@ export function Footer(props) {
   return (
     <footer className={styles.FieldFooter}>
       <ButtonGroup className={styles.FieldActions}>
-        <Button kind="save" disabled={!props.field.dirty} onClick={onSave}>
+        <Button type="save" disabled={!props.field.dirty} onClick={onSave}>
           {loading ? (
             <FontAwesomeIcon icon={faSpinner} spin />
           ) : (

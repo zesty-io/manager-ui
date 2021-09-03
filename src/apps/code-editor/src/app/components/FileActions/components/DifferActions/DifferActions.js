@@ -181,7 +181,7 @@ export const DifferActions = memo(function DifferActions(props) {
 
       {props.synced ? (
         <>
-          <Button className={styles.Button} onClick={loadVersion} kind="save">
+          <Button className={styles.Button} onClick={loadVersion} type="save">
             <FontAwesomeIcon icon={faHistory} />
             <span className={styles.Hide}>Load Version&nbsp;</span>{" "}
             {selectedVersion}

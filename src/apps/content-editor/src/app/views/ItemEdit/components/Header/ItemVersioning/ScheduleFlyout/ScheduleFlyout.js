@@ -215,7 +215,7 @@ export default class ScheduleFlyout extends Component {
               </ModalContent>
               <ModalFooter className={styles.ModalFooter}>
                 <Button
-                  kind="save"
+                  type="save"
                   id="SchedulePublishButton"
                   onClick={this.handleSchedulePublish}
                   disabled={this.state.scheduling}

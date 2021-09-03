@@ -80,7 +80,7 @@ export default memo(function PendingEditsModal(props) {
         </ModalContent>
         <ModalFooter>
           <ButtonGroup className={styles.Actions}>
-            <Button disabled={loading} kind="save" onClick={handler}>
+            <Button disabled={loading} type="save" onClick={handler}>
               {loading ? (
                 <FontAwesomeIcon icon={faSpinner} spin />
               ) : (

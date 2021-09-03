@@ -165,7 +165,7 @@ export default connect((state, props) => {
             </Notice>
           </ModalContent>
           <ModalFooter>
-            <Button kind="save" onClick={handleSaveSort} disabled={loading}>
+            <Button type="save" onClick={handleSaveSort} disabled={loading}>
               <FontAwesomeIcon icon={faSave} /> Save Order
             </Button>
             <Button kind="cancel" onClick={() => setOpen(false)}>

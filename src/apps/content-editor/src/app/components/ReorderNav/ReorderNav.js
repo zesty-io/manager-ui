@@ -138,7 +138,7 @@ class ReorderNav extends Component {
                 Return to Root
               </Button>
               <Button
-                kind="save"
+                type="save"
                 onClick={this.requestForReorder}
                 disabled={!this.state.dirty || this.state.requesting}
               >

@@ -49,7 +49,7 @@ export const Delete = memo(function Delete(props) {
         </ModalContent>
         <ModalFooter className={styles.ModalFooter}>
           <Button
-            kind="save"
+            type="save"
             disabled={deleting}
             onClick={() => {
               setDeleting(true);

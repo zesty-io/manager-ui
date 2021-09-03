@@ -63,7 +63,7 @@ export const Sync = memo(function Sync(props) {
         </ModalContent>
         <ModalFooter>
           <ButtonGroup className={styles.ModalActions}>
-            <Button kind="save" onClick={handleSync} disabled={loading}>
+            <Button type="save" onClick={handleSync} disabled={loading}>
               {loading ? (
                 <FontAwesomeIcon spin icon={faSpinner} />
               ) : (

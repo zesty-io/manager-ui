@@ -64,7 +64,7 @@ export const LockedItem = ({
             >
               <FontAwesomeIcon icon={faStepBackward} /> Go Back
             </Button>
-            <Button kind="save" onClick={handleUnlock}>
+            <Button type="save" onClick={handleUnlock}>
               <FontAwesomeIcon icon={faUnlock} /> Unlock
             </Button>
           </ButtonGroup>

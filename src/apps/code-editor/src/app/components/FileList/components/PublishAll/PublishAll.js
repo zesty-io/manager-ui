@@ -119,7 +119,7 @@ export default connect((state) => {
           </ModalContent>
           <ModalFooter>
             <ButtonGroup className={styles.ModalActions}>
-              <Button kind="save" onClick={handlePublishAll} disabled={loading}>
+              <Button type="save" onClick={handlePublishAll} disabled={loading}>
                 {loading ? (
                   <FontAwesomeIcon spin icon={faSpinner} />
                 ) : (

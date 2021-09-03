@@ -170,7 +170,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             ) : null
           }
 
-          <Button kind="save" onClick={saveFile}>
+          <Button type="save" onClick={saveFile}>
             <FontAwesomeIcon icon={faSave} />
             Save {metaShortcut}
           </Button>
