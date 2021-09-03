@@ -1,26 +1,25 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { zip } from "cypress/types/lodash";
-import chunk from "lodash/chunk";
-import idb from "utility/idb";
+import { request } from "utility/request";
 
-const { actions, reducer } = createSlice({
+export const releaseMembers = createSlice({
   name: "releaseMembers",
   initialState: {
     // API state
     data: {
-      "00-000-0000": {
-        ZUID: "00-000-0000",
-        itemZuid: "7-00-000-0000",
-        version: "0",
-      },
+      "00-000-0000": [
+        {
+          ZUID: "00-000-0000",
+          itemZuid: "7-00-000-0000",
+          version: "0",
+        },
+      ],
     },
   },
   reducers: {
-    loadedMembers(state, action) {
-      action.payload.forEach((member) => {
-        state.data[member.ZUID] = member;
-      });
+    fetchMembersSuccess(state, action) {
+      state.data[action.releaseZUID] = action.payload;
     },
+
     addMember(state, action) {
       state.data[action.payload.ZUID] = action.payload;
     },
@@ -120,21 +119,25 @@ const { actions, reducer } = createSlice({
   },
 });
 
+export const { actions, reducer } = releaseMembers;
+
 export function fetchMembers(releaseZUID) {
   return (dispatch) => {
     return request(
       `${CONFIG.API_INSTANCE}/releases/${releaseZUID}/members`
     ).then((res) => {
-      dispatch({
-        type: reducer.loadedMembers,
-        payload: res.data,
-      });
+      dispatch(
+        actions.fetchMembersSuccess({
+          releaseZUID,
+          payload: res.data,
+        })
+      );
     });
   };
 }
 
 export function createMember(releaseZUID, payload) {
-  return (dispatch) => {
+  return () => {
     return request(`${CONFIG.API_INSTANCE}/releases/${releaseZUID}/members`, {
       method: "POST",
       body: payload,
@@ -143,7 +146,7 @@ export function createMember(releaseZUID, payload) {
 }
 
 export function updateMember(releaseZUID, memberZUID, payload) {
-  return (dispatch) => {
+  return () => {
     return request(
       `${CONFIG.API_INSTANCE}/releases/${releaseZUID}/members/${memberZUID}`,
       {
@@ -155,7 +158,7 @@ export function updateMember(releaseZUID, memberZUID, payload) {
 }
 
 export function deleteMember(releaseZUID, memberZUID) {
-  return (dispatch) => {
+  return () => {
     return request(
       `${CONFIG.API_INSTANCE}/releases/${releaseZUID}/members/${memberZUID}`,
       {

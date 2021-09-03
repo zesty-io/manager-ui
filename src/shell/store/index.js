@@ -28,6 +28,7 @@ import media from "./media";
 import ui from "./ui";
 import { users } from "./users";
 import { releases } from "./releases";
+import { releaseMembers } from "./releaseMembers";
 
 // Middleware is applied in order of array
 const middlewares = [
@@ -78,6 +79,7 @@ function createReducer(asyncReducers) {
     user,
     users: users.reducer,
     releases: releases.reducer,
+    releaseMembers: releaseMembers.reducer,
     userRole,
     products,
     instance,

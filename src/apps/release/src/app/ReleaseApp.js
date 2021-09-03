@@ -1,34 +1,49 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Route, Switch, useHistory } from "react-router";
 import cx from "classnames";
-import { fetchVersions } from "shell/store/contentVersions";
-import { Header } from "./components/Header";
-import { PlanTable } from "./components/PlanTable";
-import { Completed } from "./components/Completed";
-import { Start } from "./components/Start";
-import styles from "./ReleaseApp.less";
 
+import { fetchReleases } from "shell/store/releases";
+
+import { CreateRelease } from "./views/CreateRelease";
+import { ViewRelease } from "./views/ViewRelease";
+
+// import { fetchVersions } from "shell/store/contentVersions";
+// import { Completed } from "./components/Completed";
+// import { Start } from "./components/Start";
+
+import styles from "./ReleaseApp.less";
 export default function ReleaseApp() {
   const dispatch = useDispatch();
-  const release = useSelector((state) => state.releases.data[0]);
-  const content = useSelector((state) => state.content);
+  const history = useHistory();
+
+  const release = useSelector((state) => state.releases);
+  // const content = useSelector((state) => state.content);
 
   // load versions for all ZUIDs
   // possibly can lazy load these when you open select
   useEffect(() => {
-    release.members.forEach((member) => {
-      dispatch(
-        fetchVersions(
-          content[member.ZUID].meta.contentModelZUID,
-          content[member.ZUID].meta.ZUID
-        )
-      );
-    });
+    if (!release.length) {
+      dispatch(fetchReleases()).then((res) => {
+        if (res.status === 200) {
+          if (res.data.length) {
+            history.push(`/release/${res.data[0].ZUID}`);
+          } else {
+            history.push("/release/create");
+          }
+        }
+      });
+    }
   }, []);
 
   return (
     <section className={cx(styles.ReleaseApp, styles.bodyText)}>
-      <Header plan={release} />
+      <Switch>
+        <Route path="/release/create" component={CreateRelease} />
+        <Route path="/release/:zuid" component={ViewRelease} />
+      </Switch>
+
+      {/* 
       <main>
         {(release.status === "loaded" ||
           release.status === "pending" ||
@@ -40,7 +55,7 @@ export default function ReleaseApp() {
           <Start />
         ) : null}
         {release.status === "success" ? <Completed plan={release} /> : null}
-      </main>
+      </main> */}
     </section>
   );
 }

@@ -1,12 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 import chunk from "lodash/chunk";
+
 import idb from "utility/idb";
+import { request } from "utility/request";
+
 import { publish } from "shell/store/content";
+import { notify } from "shell/store/notifications";
 
 export const releases = createSlice({
   name: "releases",
   initialState: {
     // Local derived state
+
     /*
     idle - initial state
     loaded - data loaded from indexeddb
@@ -39,6 +44,10 @@ export const releases = createSlice({
     ],
   },
   reducers: {
+    fetchReleasesSuccess(state, action) {
+      state.data = action.payload;
+    },
+
     loadedPlan(state, action) {
       // // no cache, initial load
       // const plan = action.payload;
@@ -184,6 +193,74 @@ export function publishAll() {
       } else {
         dispatch(actions.publishPlanFailure());
       }
+    });
+  };
+}
+
+/**
+ * Adds database structures to support feature
+ * @return Promise
+ */
+export function activate() {
+  return () => {
+    return request(`${CONFIG.API_INSTANCE}/env/releases/activate`, {
+      method: "POST",
+    });
+  };
+}
+
+/**
+ * Load all releases for instance
+ * @returns Promise
+ */
+export function fetchReleases() {
+  return (dispatch) => {
+    return request(`${CONFIG.API_INSTANCE}/env/releases`).then((res) => {
+      if (res.status === 200) {
+        dispatch(actions.fetchReleasesSuccess(res.data));
+      } else {
+        if (
+          res.status === 400 &&
+          res.error === "Bad Request: release not activated"
+        ) {
+          // return dispatch(activate())
+          // TODO handle activation
+        } else {
+          dispatch(
+            notify({
+              kind: "warn",
+              message: "There was an unknown error loading your releases",
+            })
+          );
+        }
+      }
+      return res;
+    });
+  };
+}
+
+export function fetchRelease(zuid) {
+  return (dispatch) => {
+    return request(`${CONFIG.API_INSTANCE}/env/releases/${zuid}`).then(
+      (res) => {
+        if (res.status === 200) {
+          dispatch(actions.fetchReleaseSuccess(res.data));
+        } else {
+          // todo handle error
+        }
+
+        return res;
+      }
+    );
+  };
+}
+
+export function createRelease(payload) {
+  return () => {
+    return request(`${CONFIG.API_INSTANCE}/env/releases`, {
+      method: "POST",
+      body: payload,
+      json: true,
     });
   };
 }
