@@ -71,7 +71,7 @@ export const Sync = memo(function Sync(props) {
               )}
               Sync File
             </Button>
-            <Button kind="cancel" onClick={() => setOpen(false)}>
+            <Button type="cancel" onClick={() => setOpen(false)}>
               <FontAwesomeIcon icon={faBan} />
               Cancel (ESC)
             </Button>

@@ -252,7 +252,7 @@ export default connect((state) => {
               )}
               Save Favicon
             </Button>
-            <Button kind="cancel" onClick={handleClose}>
+            <Button type="cancel" onClick={handleClose}>
               <FontAwesomeIcon icon={faBan} />
               Cancel (ESC)
             </Button>

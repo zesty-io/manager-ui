@@ -88,7 +88,7 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
         </Button>
         <Button
           id="deleteCancelButton"
-          kind="cancel"
+          type="cancel"
           onClick={() => setConfirmOpen(false)}
         >
           <FontAwesomeIcon icon={faBan} />

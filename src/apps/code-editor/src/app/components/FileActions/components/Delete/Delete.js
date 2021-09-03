@@ -74,7 +74,7 @@ export const Delete = memo(function Delete(props) {
             )}
             Delete File
           </Button>
-          <Button kind="cancel" onClick={() => setOpen(false)}>
+          <Button type="cancel" onClick={() => setOpen(false)}>
             <FontAwesomeIcon icon={faBan} />
             Cancel (ESC)
           </Button>

@@ -96,7 +96,7 @@ export default memo(function PendingEditsModal(props) {
               )}
               Discard
             </Button>
-            <Button disabled={loading} kind="cancel" onClick={handler}>
+            <Button disabled={loading} type="cancel" onClick={handler}>
               <FontAwesomeIcon icon={faBan} />
               Cancel (ESC)
             </Button>

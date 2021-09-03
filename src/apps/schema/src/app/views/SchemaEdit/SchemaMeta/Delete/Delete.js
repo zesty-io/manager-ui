@@ -85,7 +85,7 @@ function Footer(props) {
         </Button>
         <Button
           id="deleteCancelButton"
-          kind="cancel"
+          type="cancel"
           onClick={() => setIsOpen(false)}
         >
           <FontAwesomeIcon icon={faBan} />

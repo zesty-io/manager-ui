@@ -182,7 +182,7 @@ export const CreateFile = memo(function CreateFile(props) {
                 Create File
               </Button>
               <Button
-                kind="cancel"
+                type="cancel"
                 onClick={() => {
                   setName("");
                   setType("");

@@ -128,7 +128,7 @@ export default connect((state) => {
                 Publish All Files
               </Button>
 
-              <Button kind="cancel" onClick={() => setOpen(false)}>
+              <Button type="cancel" onClick={() => setOpen(false)}>
                 <FontAwesomeIcon icon={faBan} />
                 Cancel (ESC)
               </Button>

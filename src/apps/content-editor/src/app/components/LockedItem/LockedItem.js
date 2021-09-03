@@ -59,7 +59,7 @@ export const LockedItem = ({
           <ButtonGroup>
             <Button
               className={styles.ButtonBack}
-              kind="cancel"
+              type="cancel"
               onClick={goBack}
             >
               <FontAwesomeIcon icon={faStepBackward} /> Go Back

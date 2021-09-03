@@ -47,7 +47,7 @@ export const MediaHeader = memo(function MediaHeader(props) {
           )}
 
           <Button
-            kind="cancel"
+            type="cancel"
             title="Edit"
             aria-label="Edit"
             onClick={() => setEditGroupModal(true)}

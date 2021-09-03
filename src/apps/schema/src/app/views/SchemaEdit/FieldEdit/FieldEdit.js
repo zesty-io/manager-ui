@@ -153,7 +153,7 @@ export function Footer(props) {
         ) : (
           <Button
             className="deactivate"
-            kind="cancel"
+            type="cancel"
             onClick={(evt) => {
               evt.preventDefault();
               setLoading(true);
