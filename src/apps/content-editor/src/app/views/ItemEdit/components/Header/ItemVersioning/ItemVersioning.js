@@ -153,7 +153,7 @@ export function ItemVersioning(props) {
         </ButtonGroup>
       )}
 
-      {/* <Button
+      <Button
         type="save"
         disabled={props.saving || !props.item.dirty}
         onClick={props.onSave}
@@ -167,8 +167,7 @@ export function ItemVersioning(props) {
         Save&nbsp;
         <span className={styles.HideVersion}>Version&nbsp;</span>
         {metaShortcut}
-      </Button> */}
-      <CopyButton kind="outlinedReversed" value="david naimi" />
+      </Button>
     </ButtonGroup>
   );
 }
