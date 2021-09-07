@@ -19,7 +19,6 @@ import { publish } from "shell/store/content";
 import { fetchAuditTrailPublish } from "shell/store/logs";
 import { usePermission } from "shell/hooks/use-permissions";
 import { useDomain } from "shell/hooks/use-domain";
-import { CopyButton } from "@zesty-io/core/CopyButton";
 
 import styles from "./ItemVersioning.less";
 export function ItemVersioning(props) {
