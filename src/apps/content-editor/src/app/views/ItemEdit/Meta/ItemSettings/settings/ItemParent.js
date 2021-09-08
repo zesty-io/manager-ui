@@ -72,7 +72,7 @@ export const ItemParent = connect((state) => {
       };
 
       useEffect(() => {
-        let parentZUID = props.parentZUID;
+        let parentZUID = props.parentZUID ? props.parentZUID : "0";
 
         // If it's a new item chase down the parentZUID within navigation
         // This way we avoid an API request
@@ -107,7 +107,7 @@ export const ItemParent = connect((state) => {
               setParents(
                 parentOptions(props.path, {
                   ...props.content,
-                  [res.data[0]?.meta.ZUID]: res.data[0],
+                  [res.data[0].meta.ZUID]: res.data[0],
                 })
               );
             });
