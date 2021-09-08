@@ -180,7 +180,7 @@ export default class ScheduleFlyout extends Component {
                 </Button>
                 <Button
                   className={styles.Cancel}
-                  kind="cancel"
+                  type="cancel"
                   onClick={this.props.toggleOpen}
                 >
                   <FontAwesomeIcon icon={faTimesCircle} />
@@ -215,7 +215,7 @@ export default class ScheduleFlyout extends Component {
               </ModalContent>
               <ModalFooter className={styles.ModalFooter}>
                 <Button
-                  kind="save"
+                  type="save"
                   id="SchedulePublishButton"
                   onClick={this.handleSchedulePublish}
                   disabled={this.state.scheduling}
@@ -225,7 +225,7 @@ export default class ScheduleFlyout extends Component {
                 </Button>
                 <Button
                   className={styles.Cancel}
-                  kind="cancel"
+                  type="cancel"
                   id="SchedulePublishClose"
                   onClick={this.props.toggleOpen}
                 >

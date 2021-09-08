@@ -71,7 +71,7 @@ export function Wizard(props) {
                     >
                       {showBack(child.props.showBack) && (
                         <Button
-                          kind="cancel"
+                          type="cancel"
                           onClick={prev}
                           className={styles.Button}
                         >

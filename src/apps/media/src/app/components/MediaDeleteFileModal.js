@@ -36,7 +36,7 @@ export function MediaDeleteFileModal(props) {
         </p>
       </ModalContent>
       <ModalFooter className={styles.Footer}>
-        <Button kind="cancel" onClick={props.onClose}>
+        <Button type="cancel" onClick={props.onClose}>
           <FontAwesomeIcon icon={faBan} />
           <span>Cancel</span>
         </Button>

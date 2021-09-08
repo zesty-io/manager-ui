@@ -333,7 +333,7 @@ class CSVImport extends Component {
             </label>
           </form>
           <Button
-            kind="save"
+            type="save"
             disabled={
               this.state.complete ||
               this.state.inFlight ||

@@ -147,7 +147,7 @@ export function Preview(props) {
               <FontAwesomeIcon icon={faSync} />
             </Button>
             {copied ? (
-              <Button onClick={handleCopy} kind="save">
+              <Button onClick={handleCopy} type="save">
                 <FontAwesomeIcon icon={faCheck} />
               </Button>
             ) : (
@@ -182,9 +182,9 @@ export function Preview(props) {
             >
               <Option value="fullscreen" text="Desktop" />
 
-              {/* 
-            Generate available options from templates, 
-            except the initial "No Template" template 
+              {/*
+            Generate available options from templates,
+            except the initial "No Template" template
             */}
               {Object.keys(templates)
                 .slice(1)

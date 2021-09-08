@@ -77,7 +77,7 @@ export class SetActions extends Component {
 
             {Boolean(this.props.isDirty) && (
               <Button
-                kind="save"
+                type="save"
                 className={cx(styles.Action, styles.Save)}
                 disabled={this.props.saving}
                 onClick={this.props.onSaveAll}

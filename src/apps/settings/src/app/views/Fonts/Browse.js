@@ -233,7 +233,7 @@ export default connect((state) => {
               </div>
               <div>
                 <Button
-                  kind="save"
+                  type="save"
                   id="InstallFont"
                   className={styles.SaveBtn}
                   onClick={() => onUpdateFont(itemFont.family)}
