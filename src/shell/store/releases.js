@@ -256,11 +256,38 @@ export function fetchRelease(zuid) {
 }
 
 export function createRelease(payload) {
-  return () => {
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/env/releases`, {
       method: "POST",
       body: payload,
       json: true,
-    });
+    })
+      .then((res) => {
+        // console.log(res);
+        if (res.status === 201) {
+          dispatch(
+            notify({
+              kind: "success",
+              message: `Created Release: ${res.data.name}`,
+            })
+          );
+        } else {
+          dispatch(
+            notify({
+              kind: "warn",
+              message: res.error,
+            })
+          );
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        dispatch(
+          notify({
+            kind: "warn",
+            message: "Failed creating a release",
+          })
+        );
+      });
   };
 }

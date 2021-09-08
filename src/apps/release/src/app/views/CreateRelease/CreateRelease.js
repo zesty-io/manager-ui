@@ -10,7 +10,6 @@ import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 
 import { createRelease } from "shell/store/releases";
-import { notify } from "shell/store/notifications";
 
 import styles from "./CreateRelease.less";
 export function CreateRelease() {
@@ -26,35 +25,12 @@ export function CreateRelease() {
         name,
         description,
       })
-    )
-      .then((res) => {
-        console.log(res);
-        if (res.status === 201) {
-          history.push(`/release/${res.data.ZUID}`);
-          dispatch(
-            notify({
-              kind: "success",
-              message: `Created Release: ${res.data.name}`,
-            })
-          );
-        } else {
-          dispatch(
-            notify({
-              kind: "warn",
-              message: res.error,
-            })
-          );
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        dispatch(
-          notify({
-            kind: "warn",
-            message: "Failed creating a release",
-          })
-        );
-      });
+    ).then((res) => {
+      console.log(res);
+      if (res.status === 201) {
+        history.push(`/release/${res.data.ZUID}`);
+      }
+    });
   };
 
   return (

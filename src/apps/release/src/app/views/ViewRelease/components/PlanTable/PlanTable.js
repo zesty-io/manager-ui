@@ -2,10 +2,11 @@ import { useSelector } from "react-redux";
 import { PlanStep } from "../PlanStep";
 import styles from "./PlanTable.less";
 
-export function PlanTable({ plan }) {
+export function PlanTable({ members }) {
   const content = useSelector((state) => state.content);
   const contentVersions = useSelector((state) => state.contentVersions);
   const languages = useSelector((state) => state.languages);
+
   return (
     <table className={styles.PlanTable}>
       <thead>
@@ -22,7 +23,7 @@ export function PlanTable({ plan }) {
         </tr>
       </thead>
       <tbody>
-        {plan.data.map((step) => {
+        {members.map((step) => {
           const item = content[step.ZUID];
           return (
             <PlanStep
@@ -40,7 +41,7 @@ export function PlanTable({ plan }) {
           <td>
             <div>
               <strong>
-                Published {plan.successes}/{plan.successes + plan.data.length}
+                {/* Published {plan.successes}/{plan.successes + plan.data.length} */}
               </strong>
             </div>
           </td>

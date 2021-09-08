@@ -17,7 +17,7 @@ export const releaseMembers = createSlice({
   },
   reducers: {
     fetchMembersSuccess(state, action) {
-      state.data[action.releaseZUID] = action.payload;
+      state.data[action.payload.releaseZUID] = action.payload.data;
     },
 
     addMember(state, action) {
@@ -124,12 +124,12 @@ export const { actions, reducer } = releaseMembers;
 export function fetchMembers(releaseZUID) {
   return (dispatch) => {
     return request(
-      `${CONFIG.API_INSTANCE}/releases/${releaseZUID}/members`
+      `${CONFIG.API_INSTANCE}/env/releases/${releaseZUID}/members`
     ).then((res) => {
       dispatch(
         actions.fetchMembersSuccess({
           releaseZUID,
-          payload: res.data,
+          data: res.data,
         })
       );
     });
@@ -138,17 +138,20 @@ export function fetchMembers(releaseZUID) {
 
 export function createMember(releaseZUID, payload) {
   return () => {
-    return request(`${CONFIG.API_INSTANCE}/releases/${releaseZUID}/members`, {
-      method: "POST",
-      body: payload,
-    });
+    return request(
+      `${CONFIG.API_INSTANCE}/env/releases/${releaseZUID}/members`,
+      {
+        method: "POST",
+        body: payload,
+      }
+    );
   };
 }
 
 export function updateMember(releaseZUID, memberZUID, payload) {
   return () => {
     return request(
-      `${CONFIG.API_INSTANCE}/releases/${releaseZUID}/members/${memberZUID}`,
+      `${CONFIG.API_INSTANCE}/env/releases/${releaseZUID}/members/${memberZUID}`,
       {
         method: "PUT",
         body: payload,
@@ -160,7 +163,7 @@ export function updateMember(releaseZUID, memberZUID, payload) {
 export function deleteMember(releaseZUID, memberZUID) {
   return () => {
     return request(
-      `${CONFIG.API_INSTANCE}/releases/${releaseZUID}/members/${memberZUID}`,
+      `${CONFIG.API_INSTANCE}/env/releases/${releaseZUID}/members/${memberZUID}`,
       {
         method: "DELETE",
       }

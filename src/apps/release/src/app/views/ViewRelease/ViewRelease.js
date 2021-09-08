@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import cx from "classnames";
@@ -51,9 +51,14 @@ export function ViewRelease() {
     <section className={cx(styles.ViewRelease, styles.bodyText)}>
       {/* Todo loader? */}
 
-      {/* <Header plan={release} /> */}
+      {members && (
+        <Fragment>
+          {/* <Header plan={release} /> */}
+          <PlanTable members={members} />
+        </Fragment>
+      )}
 
-      {/* {members.length ? <PlanTable plan={release} /> : <ol className={styles.display}>
+      {/* {members.length ?  : <ol className={styles.display}>
                 <li>
                     Begin by searching for content you want to include in this release
                 </li>

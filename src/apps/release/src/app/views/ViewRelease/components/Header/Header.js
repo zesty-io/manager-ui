@@ -13,6 +13,7 @@ export function Header({ plan }) {
   const canPublish = plan.status !== "pending" && plan.data.length;
   const showSearch = plan.status !== "success";
   const showPublishAll = plan.status !== "success";
+
   const onSelect = useCallback(
     (item) => {
       dispatch(
@@ -26,9 +27,11 @@ export function Header({ plan }) {
     },
     [dispatch]
   );
+
   const onPublishAll = useCallback(() => {
     dispatch(publishAll());
   }, [dispatch]);
+
   return (
     <header className={styles.Header}>
       <h1 className={styles.display}>Release</h1>
