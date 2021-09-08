@@ -40,7 +40,7 @@ export default memo(function PendingEditsModal(props) {
   }, []);
 
   const handler = (evt) => {
-    switch (evt.currentTarget.attributes["kind"].value) {
+    switch (evt.currentTarget.attributes["type"].value) {
       case "save":
         setLoading(true);
         props.onSave().then(() => {
