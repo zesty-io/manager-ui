@@ -47,7 +47,7 @@ export const MediaHeader = memo(function MediaHeader(props) {
           )}
 
           <Button
-            kind="cancel"
+            type="cancel"
             title="Edit"
             aria-label="Edit"
             onClick={() => setEditGroupModal(true)}
@@ -68,7 +68,7 @@ export const MediaHeader = memo(function MediaHeader(props) {
           userRole.name !== "Contributor" ? (
             <Button
               title="Delete Group"
-              kind="warn"
+              type="warn"
               aria-label="Delete"
               onClick={props.showDeleteGroupModal}
             >

@@ -171,7 +171,7 @@ export function FieldAdd(props) {
         )}
       </CardContent>
       <CardFooter>
-        <Button kind="save" disabled={!field.dirty || loading} onClick={create}>
+        <Button type="save" disabled={!field.dirty || loading} onClick={create}>
           {loading ? (
             <FontAwesomeIcon icon={faSpinner} />
           ) : (

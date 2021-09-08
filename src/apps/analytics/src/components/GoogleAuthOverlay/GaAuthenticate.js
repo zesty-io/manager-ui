@@ -15,7 +15,7 @@ export default function GaAuthenticate(props) {
     <Fragment>
       {canAuthenticate && (
         <div className={styles.buttonHolder}>
-          <Button kind="save" onClick={props.onClick}>
+          <Button type="save" onClick={props.onClick}>
             <FontAwesomeIcon icon={faKey} />
             Click here to Authenticate With Google
           </Button>

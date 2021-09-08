@@ -95,7 +95,7 @@ export default connect((state) => {
         </Notice>
       </CardContent>
       <CardFooter>
-        <Button kind="save" onClick={handlePublishAll} disabled={loading}>
+        <Button type="save" onClick={handlePublishAll} disabled={loading}>
           {loading ? (
             <FontAwesomeIcon icon={faSpinner} />
           ) : (

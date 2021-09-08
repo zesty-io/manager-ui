@@ -24,7 +24,7 @@ export const Delete = memo(function Delete(props) {
     <div className={styles.DeleteBtn}>
       {props.fileName !== "loader" ? (
         <Button
-          kind="warn"
+          type="warn"
           onClick={() => setOpen(true)}
           className={styles.Button}
         >
@@ -49,7 +49,7 @@ export const Delete = memo(function Delete(props) {
         </ModalContent>
         <ModalFooter className={styles.ModalFooter}>
           <Button
-            kind="save"
+            type="save"
             disabled={deleting}
             onClick={() => {
               setDeleting(true);
@@ -74,7 +74,7 @@ export const Delete = memo(function Delete(props) {
             )}
             Delete File
           </Button>
-          <Button kind="cancel" onClick={() => setOpen(false)}>
+          <Button type="cancel" onClick={() => setOpen(false)}>
             <FontAwesomeIcon icon={faBan} />
             Cancel (ESC)
           </Button>

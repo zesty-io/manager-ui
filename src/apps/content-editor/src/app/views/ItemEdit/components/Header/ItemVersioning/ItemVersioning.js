@@ -153,7 +153,7 @@ export function ItemVersioning(props) {
       )}
 
       <Button
-        kind="save"
+        type="save"
         disabled={props.saving || !props.item.dirty}
         onClick={props.onSave}
         id="SaveItemButton"

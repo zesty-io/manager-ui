@@ -56,7 +56,7 @@ export default connect((state) => {
 
         <li className={styles.zuid}>
           ZUID:&nbsp;
-          <CopyButton value={props.user.ZUID} />
+          <CopyButton kind="outlined" size="compact" value={props.user.ZUID} />
         </li>
 
         <li className={styles.role}>Instance: {props.userRole.name}</li>
