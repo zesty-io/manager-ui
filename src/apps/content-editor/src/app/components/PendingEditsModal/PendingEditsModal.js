@@ -80,7 +80,7 @@ export default memo(function PendingEditsModal(props) {
         </ModalContent>
         <ModalFooter>
           <ButtonGroup className={styles.Actions}>
-            <Button disabled={loading} kind="save" onClick={handler}>
+            <Button disabled={loading} type="save" onClick={handler}>
               {loading ? (
                 <FontAwesomeIcon icon={faSpinner} spin />
               ) : (
@@ -88,7 +88,7 @@ export default memo(function PendingEditsModal(props) {
               )}
               Save
             </Button>
-            <Button disabled={loading} kind="warn" onClick={handler}>
+            <Button disabled={loading} type="warn" onClick={handler}>
               {loading ? (
                 <FontAwesomeIcon icon={faSpinner} spin />
               ) : (
@@ -96,7 +96,7 @@ export default memo(function PendingEditsModal(props) {
               )}
               Discard
             </Button>
-            <Button disabled={loading} kind="cancel" onClick={handler}>
+            <Button disabled={loading} type="cancel" onClick={handler}>
               <FontAwesomeIcon icon={faBan} />
               Cancel (ESC)
             </Button>

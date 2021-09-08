@@ -38,7 +38,7 @@ export function MediaSelected(props) {
             >
               <Button
                 className={styles.ButtonLoad}
-                kind="save"
+                type="save"
                 onClick={() => props.addImages(props.selected)}
               >
                 <FontAwesomeIcon icon={faUpload} />

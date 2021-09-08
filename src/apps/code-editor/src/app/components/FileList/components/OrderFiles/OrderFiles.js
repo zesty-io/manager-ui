@@ -103,7 +103,6 @@ export default connect((state, props) => {
     <Fragment>
       <Button
         onClick={() => setOpen(true)}
-        kind="primary"
         title="Change combine and pre-process order"
       >
         <FontAwesomeIcon icon={faArrowsAlt} />
@@ -166,10 +165,10 @@ export default connect((state, props) => {
             </Notice>
           </ModalContent>
           <ModalFooter>
-            <Button kind="save" onClick={handleSaveSort} disabled={loading}>
+            <Button type="save" onClick={handleSaveSort} disabled={loading}>
               <FontAwesomeIcon icon={faSave} /> Save Order
             </Button>
-            <Button kind="cancel" onClick={() => setOpen(false)}>
+            <Button type="cancel" onClick={() => setOpen(false)}>
               <FontAwesomeIcon icon={faBan} /> Cancel (ESC)
             </Button>
           </ModalFooter>

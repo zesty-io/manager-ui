@@ -101,7 +101,7 @@ export function RedirectCreator(props) {
         )}
       </span>
       <span className={styles.RedirectCreatorCell}>
-        <Button className="save" kind="save" onClick={handleCreateRedirect}>
+        <Button className="save" type="save" onClick={handleCreateRedirect}>
           <FontAwesomeIcon icon={faPlus} />
           Create Redirect
         </Button>

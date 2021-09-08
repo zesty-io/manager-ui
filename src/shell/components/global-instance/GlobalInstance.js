@@ -69,7 +69,8 @@ export default function GlobalInstance(props) {
 
       <main className={cx(styles.Instance, open ? null : styles.hide)}>
         <p className={cx(styles.bodyText, styles.zuid)}>
-          ZUID: <CopyButton value={instance.ZUID} />
+          ZUID:{" "}
+          <CopyButton kind="outlined" size="compact" value={instance.ZUID} />
         </p>
 
         <Select className={styles.Select} name="instance" value={instance.ZUID}>

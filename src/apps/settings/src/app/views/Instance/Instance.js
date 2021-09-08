@@ -127,7 +127,7 @@ export default connect((state) => {
             <Button
               className={styles.ButtonSave}
               id="saveSettings"
-              kind="save"
+              type="save"
               className={styles.saveButton}
               onClick={saveFields}
               disabled={saving || dirtyFields.length === 0}

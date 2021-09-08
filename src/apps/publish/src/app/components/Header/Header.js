@@ -41,7 +41,7 @@ export function Header({ plan }) {
       ) : null}
       {showPublishAll ? (
         <Button
-          kind="alt"
+          type="alt"
           disabled={!canPublish && "disabled"}
           onClick={onPublishAll}
         >

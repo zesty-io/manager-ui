@@ -236,7 +236,7 @@ export default connect((state) => {
                 (lead) => lead.zuid === this.state.currentLead.zuid
               ) ? (
                 <Button
-                  kind="warn"
+                  type="warn"
                   className={styles.btnDanger}
                   disabled={this.state.loading}
                   onClick={() => this.deleteLead(this.state.currentLead.zuid)}
