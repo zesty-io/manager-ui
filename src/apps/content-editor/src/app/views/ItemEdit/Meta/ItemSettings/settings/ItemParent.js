@@ -86,10 +86,6 @@ export const ItemParent = connect((state) => {
           props.onChange(parentZUID, "parentZUID");
         }
 
-        console.log(
-          "🚀 ~ file: ItemParent.js ~ line 93 ~ useEffect ~ parentZUID",
-          parentZUID
-        );
         // Try to preselect parent
         if (parentZUID && parentZUID != "0" && parentZUID !== null) {
           const item = props.content[parentZUID];
