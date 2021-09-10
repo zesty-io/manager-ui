@@ -11,7 +11,7 @@ describe("Schema", () => {
   it("Create Model, Add Field, and Delete Model", () => {
     cy.get('input[name="label"]').type(SCHEMA_NAME);
 
-    cy.get('button[kind="save"]').contains("Create Model").click();
+    cy.get('button[type="save"]').contains("Create Model").click();
 
     cy.get(".FieldAdd").should("exist");
 
@@ -21,10 +21,10 @@ describe("Schema", () => {
 
     cy.get('input[name="label"]').type("my label", { force: true });
 
-    cy.get('button[kind="save"]').contains("Add Field").click();
+    cy.get('button[type="save"]').contains("Add Field").click();
 
     cy.contains("Delete Model").click({ force: true });
-    cy.get('button[kind="warn"]').contains("Delete Model").click();
+    cy.get('button[type="warn"]').contains("Delete Model").click();
     cy.get("#deleteConfirmButton").click();
   });
 });

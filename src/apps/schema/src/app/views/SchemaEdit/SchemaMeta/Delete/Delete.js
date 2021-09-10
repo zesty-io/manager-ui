@@ -47,7 +47,7 @@ function Footer(props) {
   return (
     <Fragment>
       <CardFooter>
-        <Button kind="warn" onClick={() => setIsOpen(true)}>
+        <Button type="warn" onClick={() => setIsOpen(true)}>
           <FontAwesomeIcon icon={faTrash} />
           Delete Model
         </Button>
@@ -59,7 +59,7 @@ function Footer(props) {
       >
         <Button
           id="deleteConfirmButton"
-          kind="warn"
+          type="warn"
           onClick={() => {
             props
               .dispatch(deleteModel(props.model.ZUID))
@@ -85,7 +85,7 @@ function Footer(props) {
         </Button>
         <Button
           id="deleteCancelButton"
-          kind="cancel"
+          type="cancel"
           onClick={() => setIsOpen(false)}
         >
           <FontAwesomeIcon icon={faBan} />

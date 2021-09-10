@@ -136,14 +136,14 @@ export const HeadTag = (props) => {
           <Button
             className={styles.Delete}
             onClick={onDelete}
-            kind="warn"
+            type="warn"
             id="DelteHeadtag"
           >
             <FontAwesomeIcon className={styles.Del} icon={faTrash} />
             Delete Tag
           </Button>
         ) : (
-          <Button className={styles.Delete} onClick={onCancel} kind="warn">
+          <Button className={styles.Delete} onClick={onCancel} type="warn">
             <FontAwesomeIcon className={styles.Del} icon={faTrash} />
             Cancel
           </Button>
@@ -187,7 +187,7 @@ export const HeadTag = (props) => {
                 <Button
                   className={styles.Del}
                   onClick={() => dispatch(deleteTagAttribute(tag.ZUID, index))}
-                  kind="warn"
+                  type="warn"
                 >
                   <FontAwesomeIcon className={styles.Del} icon={faTrash} />
                 </Button>
@@ -200,7 +200,7 @@ export const HeadTag = (props) => {
       </CardContent>
       <CardFooter className={styles.CardFooter}>
         <Button
-          kind="save"
+          type="save"
           id="SaveItemButton"
           disabled={saving}
           onClick={tag.hasOwnProperty("createdAt") ? onSave : onCreate}

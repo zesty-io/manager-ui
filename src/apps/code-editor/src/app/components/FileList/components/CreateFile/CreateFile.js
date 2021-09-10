@@ -170,7 +170,7 @@ export const CreateFile = memo(function CreateFile(props) {
           <ModalFooter>
             <ButtonGroup className={styles.ModalActions}>
               <Button
-                kind="save"
+                type="save"
                 onClick={handleCreateFile}
                 disabled={type === "" || type === "0" || loading}
               >
@@ -182,7 +182,7 @@ export const CreateFile = memo(function CreateFile(props) {
                 Create File
               </Button>
               <Button
-                kind="cancel"
+                type="cancel"
                 onClick={() => {
                   setName("");
                   setType("");

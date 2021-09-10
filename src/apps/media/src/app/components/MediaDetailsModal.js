@@ -130,7 +130,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
         </div>
       </ModalContent>
       <ModalFooter className={shared.ModalFooter}>
-        <Button kind="cancel" onClick={props.onClose}>
+        <Button type="cancel" onClick={props.onClose}>
           <FontAwesomeIcon icon={faBan} />
           <span>Cancel</span>
         </Button>
@@ -140,7 +140,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             /* hide for Contributor */
             userRole.name !== "Contributor" ? (
               <Button
-                kind="warn"
+                type="warn"
                 onClick={props.showDeleteFileModal}
                 className={styles.Delete}
               >
@@ -150,7 +150,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             ) : null
           }
 
-          <Button kind="save" onClick={saveFile}>
+          <Button type="save" onClick={saveFile}>
             <FontAwesomeIcon icon={faSave} />
             Save {metaShortcut}
           </Button>

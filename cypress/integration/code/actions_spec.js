@@ -9,7 +9,7 @@ describe("Code Editor", () => {
     cy.get(".Select").eq(1).click();
     cy.get(".Select li").eq(1).click();
     cy.get('input[type="text"]').type("mySnippet");
-    cy.get('button[kind="save"]').eq(1).click();
+    cy.get('button[type="save"]').eq(1).click();
   });
 
   it("Navigate to file", () => {
@@ -31,7 +31,7 @@ describe("Code Editor", () => {
       .trigger("mousemove", { which: 1, force: true })
       .trigger("mouseup", { force: true });
 
-    cy.get('button[kind="save"]').contains("Save Order").click({ force: true });
+    cy.get('button[type="save"]').contains("Save Order").click({ force: true });
 
     cy.contains("File sort order has been saved", { timeout: 5000 }).should(
       "exist"
