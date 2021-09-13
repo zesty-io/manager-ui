@@ -73,10 +73,11 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
         </div>
 
         <div className={styles.FieldsContainer}>
-          <CopyButton copyInput value={props.file.url}>
-            {" "}
-            Copy{" "}
-          </CopyButton>
+          <CopyButton
+            className={styles.CopyButton}
+            kind="outlined"
+            value={props.file.url}
+          />
 
           <FieldTypeText
             className={styles.Field}
