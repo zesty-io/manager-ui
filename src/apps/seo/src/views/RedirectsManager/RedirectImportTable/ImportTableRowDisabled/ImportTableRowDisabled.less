@@ -1,18 +1,21 @@
 @import "~@zesty-io/core/colors.less";
 .ImportTableRowDisabled {
   align-items: center;
-  background-color: @zesty-white;
-  border-bottom: 1px @zesty-field-blue solid;
-  display: flex;
-  opacity: 0.5;
+  background-color: @white;
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) 100px 1fr 370px;
+  gap: 0 36px;
 
   &:nth-of-type(odd) {
-    background-color: #dae2f1;
+    background: lighten(@zesty-light-blue, 15%);
   }
 
   .RowCell {
     display: flex;
     padding: 1rem;
+    &.RowCellEnd {
+      justify-self: flex-end;
+    }
   }
 
   .RedirectCreatorCell {

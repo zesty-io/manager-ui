@@ -1,4 +1,6 @@
-import { Component } from "react";
+import React, { useState } from "react";
+import cx from "classnames";
+
 import styles from "./RedirectImportTableRow.less";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,110 +15,94 @@ import { createRedirect } from "../../../../store/redirects";
 import { importTarget } from "../../../../store/imports";
 import { importQuery } from "../../../../store/imports";
 
-export default class RedirectImportTableRow extends Component {
-  constructor(props) {
-    super(props);
+function RedirectImportTableRow(props) {
+  const [code, setCode] = useState(1); // Toggle defaults to 301
+  const [type, setType] = useState("page");
 
-    this.state = {
-      code: 1,
-    };
+  const handleCode = (val) => {
+    setCode(Number(val));
+  };
 
-    this.handleCode = this.handleCode.bind(this);
-    this.handlePageTarget = this.handlePageTarget.bind(this);
-    this.handlePathTarget = this.handlePathTarget.bind(this);
-    this.handleQuery = this.handleQuery.bind(this);
-    this.handleAddRedirect = this.handleAddRedirect.bind(this);
-  }
-  render() {
-    return (
-      <div className={styles.RedirectImportTableRow}>
-        <span className={styles.RowCell} style={{ flex: "1" }}>
-          {this.props.path}
-        </span>
+  const handlePageTarget = (evt) => {
+    const path = props.paths[evt.target.dataset.value];
+    props.dispatch(importTarget(props.path, path.path_full, path.zuid));
+  };
 
-        <span className={styles.RedirectCreatorCell}>
-          <ToggleButton
-            className={styles.code}
-            name="redirectType"
-            value={this.state.code}
-            offValue="302"
-            onValue="301"
-            onChange={this.handleCode}
-          />
-        </span>
-
-        <span className={styles.RowCell} style={{ flex: "1" }}>
-          {this.props.target_type === "page" ? (
-            <Select
-              className={styles.selector}
-              onSelect={this.handlePageTarget}
-            >
-              {Object.keys(this.props.paths).map((key) => {
-                let path = this.props.paths[key];
-
-                if (path.path_full !== this.props.target) {
-                  return (
-                    <Option key={key} value={path.path_full}>
-                      {path.path_full}
-                    </Option>
-                  );
-                } else {
-                  return (
-                    <Option selected="true" key={key} value={path.path_full}>
-                      {path.path_full}
-                    </Option>
-                  );
-                }
-              })}
-            </Select>
-          ) : (
-            <Input
-              onChange={this.handlePathTarget}
-              defaultValue={this.props.target}
-            />
-          )}
-          <Input
-            onChange={this.handleQuery}
-            placeholder="Redirect query string"
-            defaultValue={this.props.query_string}
-          />
-        </span>
-
-        <span className={styles.RowCell}>
-          <Button className="save" onClick={this.handleAddRedirect}>
-            <FontAwesomeIcon icon={faPlus} />
-            Redirect
-          </Button>
-        </span>
-      </div>
-    );
-  }
-  handleCode(value) {
-    this.setState({
-      code: value,
-    });
-  }
-  handlePageTarget(evt) {
-    const path = this.props.paths[evt.target.dataset.value];
-    this.props.dispatch(
-      importTarget(this.props.path, path.path_full, path.zuid)
-    );
-  }
-  handlePathTarget(evt) {
+  const handlePathTarget = (evt) => {
     console.log("// TODO handlePathTarget", evt);
-  }
-  handleQuery(evt) {
-    this.props.dispatch(importQuery(this.props.path, evt.target.value));
-  }
-  handleAddRedirect(evt) {
-    this.props.dispatch(
+    // setType()
+  };
+
+  const handleQuery = (evt) => {
+    props.dispatch(importQuery(props.path, evt.target.value));
+  };
+
+  const handleAddRedirect = (evt) => {
+    props.dispatch(
       createRedirect({
-        path: this.props.path,
-        query_string: this.props.query_string,
-        targetType: this.props.target_type,
-        target: this.props.target_zuid || this.props.target,
-        code: this.state.code === 1 ? 301 : 302,
+        path: props.path,
+        query_string: props.query_string,
+        targetType: props.target_type,
+        target: props.target_zuid || props.target,
+        code: code === 1 ? 301 : 302, // API expects a 301/302 value
       })
     );
-  }
+  };
+
+  return (
+    <div className={styles.RedirectImportTableRow}>
+      <span className={styles.RowCell}>{props.path}</span>
+
+      <span className={styles.RedirectCreatorCell}>
+        <ToggleButton
+          className={styles.code}
+          name="redirectType"
+          value={code}
+          offValue="302"
+          onValue="301"
+          onChange={handleCode}
+        />
+      </span>
+
+      <span className={styles.RowCell}>
+        {props.target_type === "page" ? (
+          <Select className={styles.selector} onSelect={handlePageTarget}>
+            {Object.keys(props.paths).map((key) => {
+              let path = props.paths[key];
+
+              if (path.path_full !== props.target) {
+                return (
+                  <Option key={key} value={path.path_full}>
+                    {path.path_full}
+                  </Option>
+                );
+              } else {
+                return (
+                  <Option selected="true" key={key} value={path.path_full}>
+                    {path.path_full}
+                  </Option>
+                );
+              }
+            })}
+          </Select>
+        ) : (
+          <Input onChange={handlePathTarget} defaultValue={props.target} />
+        )}
+        <Input
+          onChange={handleQuery}
+          placeholder="Redirect query string"
+          defaultValue={props.query_string}
+        />
+      </span>
+
+      <span className={cx(styles.RowCell, styles.RedirectButton)}>
+        <Button className="save" onClick={handleAddRedirect}>
+          <FontAwesomeIcon icon={faPlus} />
+          Redirect
+        </Button>
+      </span>
+    </div>
+  );
 }
+
+export default RedirectImportTableRow;

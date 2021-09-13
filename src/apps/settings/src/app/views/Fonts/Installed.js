@@ -181,7 +181,7 @@ export default connect((state) => {
                   All their equipment and instruments are alive.
                 </p>
                 <Button
-                  kind="warn"
+                  type="warn"
                   onClick={() => toggleEnableFont(null, "0", font.font)}
                   className={styles.ButtonRemoveFont}
                 >
@@ -206,7 +206,7 @@ export default connect((state) => {
                   All their equipment and instruments are alive.
                 </p>
                 <Button
-                  kind="warn"
+                  type="warn"
                   id="RemoveFont"
                   onClick={() =>
                     toggleEnableFont(variant.label, "0", font.font)

@@ -16,7 +16,7 @@ describe("Fields", () => {
 
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
     cy.get('.FieldAdd input[name="name"]').type(fieldName);
-    cy.get('.FieldAdd footer button[kind="save"]').click();
+    cy.get('.FieldAdd footer button[type="save"]').click();
 
     // Find the newly created field
     cy.contains(".Fields article header h1", fieldLabel, {
@@ -42,7 +42,7 @@ describe("Fields", () => {
           .clear()
           .type(newFieldLabel);
 
-        cy.get('.Fields article footer button[kind="save"]').last().click();
+        cy.get('.Fields article footer button[type="save"]').last().click();
 
         cy.get('.Fields article input[name="label"]')
           .last()
@@ -65,7 +65,7 @@ describe("Fields", () => {
 
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
     cy.get('.FieldAdd input[name="name"]').type(fieldName);
-    cy.get('.FieldAdd footer button[kind="save"]').click();
+    cy.get('.FieldAdd footer button[type="save"]').click();
 
     // Find the newly created field
     cy.contains(".Fields article header h1", fieldLabel, {
@@ -84,7 +84,7 @@ describe("Fields", () => {
 
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
     cy.get('.FieldAdd input[name="name"]').type(fieldName);
-    cy.get('.FieldAdd footer button[kind="save"]').click();
+    cy.get('.FieldAdd footer button[type="save"]').click();
 
     // Find the newly created field
     cy.contains(".Fields article header h1", fieldLabel, {

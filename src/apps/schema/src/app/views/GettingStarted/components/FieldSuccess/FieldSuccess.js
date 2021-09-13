@@ -23,7 +23,7 @@ export function FieldSuccess(props) {
           to={`/content/${props.modelZUID}/new`}
           onClick={props.goToContent}
         >
-          <Button kind="save">
+          <Button type="save">
             <FontAwesomeIcon icon={faCheck} /> I want to add content
           </Button>
         </AppLink>

@@ -5,6 +5,7 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 
+import { CopyButton } from "@zesty-io/core/CopyButton";
 import { Url } from "@zesty-io/core/Url";
 
 import styles from "./GlobalAccount.less";
@@ -53,7 +54,11 @@ export default connect((state) => {
         </li>
         <li className={styles.email}>{props.user.email} </li>
 
-        <li className={styles.zuid}>ZUID: {props.user.ZUID}</li>
+        <li className={styles.zuid}>
+          ZUID:&nbsp;
+          <CopyButton kind="outlined" size="compact" value={props.user.ZUID} />
+        </li>
+
         <li className={styles.role}>Instance: {props.userRole.name}</li>
 
         <li className={styles.accounts}>

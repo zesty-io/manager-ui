@@ -158,7 +158,7 @@ export default connect((state) => {
         )}
 
         <Url target="_blank" href="https://chat.zesty.io">
-          <Button className={styles.Button} kind="alt" title="Chat">
+          <Button className={styles.Button} type="alt" title="Chat">
             <FontAwesomeIcon icon={faComments} />
             chat.zesty.io
           </Button>

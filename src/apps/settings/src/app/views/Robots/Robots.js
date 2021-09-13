@@ -189,7 +189,7 @@ export default connect((state) => {
         </div>
 
         <Button
-          kind="save"
+          type="save"
           className={styles.SaveBtn}
           onClick={handleSave}
           disabled={loading}

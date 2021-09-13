@@ -15,6 +15,7 @@ import {
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
+import { CopyButton } from "@zesty-io/core/CopyButton";
 
 import styles from "./Info.less";
 
@@ -47,7 +48,7 @@ export default connect((state) => {
             Type: <strong>{props.model.type}</strong>
             <ul className={styles.SubList}>
               <li>
-                Has item URLs:{" "}
+                Has item URLs:&nbsp;
                 <strong>
                   {props.model.type === "dataset" ? (
                     <span className={styles.no}>
@@ -62,7 +63,7 @@ export default connect((state) => {
               </li>
 
               <li>
-                Has multiple items:{" "}
+                Has multiple items:&nbsp;
                 <strong>
                   {props.model.type === "templateset" ? (
                     <span className={styles.no}>
@@ -82,11 +83,15 @@ export default connect((state) => {
             Created On: <strong>{props.model.createdAt}</strong>
           </li>
           <li>
-            <abbr title="Zesty Universal ID">ZUID</abbr>:{" "}
-            <strong>{props.model.ZUID}</strong>
+            <abbr title="Zesty Universal ID">ZUID</abbr>:&nbsp;
+            <CopyButton
+              kind="outlined"
+              size="compact"
+              value={props.model.ZUID}
+            />
           </li>
           <li>
-            Instant API:{" "}
+            Instant API:&nbsp;
             {instantJSON && instantJSON.value === "1" ? (
               <Url
                 target="_blank"

@@ -228,7 +228,7 @@ export function LinkCreate() {
           <Button
             id="CreateLinkButton"
             disabled={state.saving}
-            kind="save"
+            type="save"
             onClick={saveLink}
           >
             Create Link

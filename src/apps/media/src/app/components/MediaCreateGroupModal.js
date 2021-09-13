@@ -42,7 +42,7 @@ export function MediaCreateGroupModal(props) {
             value={groupName}
             onChange={(event) => setGroupName(event.target.value)}
           />
-          <Button kind="save" onClick={handleCreateGroup}>
+          <Button type="save" onClick={handleCreateGroup}>
             <FontAwesomeIcon icon={faPlus} />
             <span>Create</span>
           </Button>
