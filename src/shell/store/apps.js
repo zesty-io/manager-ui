@@ -11,7 +11,7 @@ const slice = createSlice({
         label: "content-designer",
         public: true,
         approved: true,
-        url: `https://zesty-io.github.io/app-content-designer`,
+        url: `https://zesty-io.github.io/app-content-composer`,
       },
     ],
     registered: [
