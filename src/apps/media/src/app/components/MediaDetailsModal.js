@@ -17,7 +17,7 @@ import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
 import { Infotip } from "@zesty-io/core/Infotip";
 import { Url } from "@zesty-io/core/Url";
-import { CopyInput } from "@zesty-io/core/CopyInput";
+import { CopyButton } from "@zesty-io/core/CopyButton";
 
 import { MediaImage } from "./MediaImage";
 import { editFile } from "shell/store/media";
@@ -73,7 +73,10 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
         </div>
 
         <div className={styles.FieldsContainer}>
-          <CopyInput value={props.file.url} />
+          <CopyButton copyInput value={props.file.url}>
+            {" "}
+            Copy{" "}
+          </CopyButton>
 
           <FieldTypeText
             className={styles.Field}
