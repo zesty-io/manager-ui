@@ -130,7 +130,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
         </div>
       </ModalContent>
       <ModalFooter className={shared.ModalFooter}>
-        <Button onClick={props.onClose}>
+        <Button type="cancel" onClick={props.onClose}>
           <FontAwesomeIcon icon={faBan} />
           <span>Cancel</span>
         </Button>
