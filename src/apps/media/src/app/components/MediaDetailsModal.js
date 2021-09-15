@@ -106,23 +106,22 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             onChange={(val) => setFilename(val)}
           />
 
-          <div className={styles.DescriptionList}>
-            <div>
-              <span>ZUID: </span>
+          <dl className={styles.DescriptionList}>
+            <dt>ZUID:</dt>
+            <dd>
               <CopyButton
                 kind="outlined"
                 size="compact"
                 value={props.file.id}
               />
-            </div>
-
+            </dd>
             {props.file.updated_at && (
-              <div>
-                <span>Created at: </span>
-                <em>{props.file.updated_at}</em>
-              </div>
+              <>
+                <dt> Created at: </dt>
+                <dd>{props.file.updated_at}</dd>
+              </>
             )}
-          </div>
+          </dl>
         </div>
       </ModalContent>
       <ModalFooter className={shared.ModalFooter}>

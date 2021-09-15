@@ -48,12 +48,17 @@
     }
 
     .DescriptionList {
-      span {
+      & > * {
+        padding: 4px 0;
+      }
+      dt {
         font-weight: bold;
       }
-      color: @zesty-gray;
-      & > * {
-        margin: 8px 0;
+      dd {
+        color: @zesty-gray;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
   }
