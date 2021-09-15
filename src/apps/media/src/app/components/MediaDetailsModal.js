@@ -5,7 +5,6 @@ import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCopy,
   faLink,
   faSave,
   faTrash,
@@ -18,6 +17,7 @@ import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
 import { Infotip } from "@zesty-io/core/Infotip";
 import { Url } from "@zesty-io/core/Url";
+import { CopyButton } from "@zesty-io/core/CopyButton";
 
 import { MediaImage } from "./MediaImage";
 import { editFile } from "shell/store/media";
@@ -28,8 +28,6 @@ import styles from "./MediaDetailsModal.less";
 export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
   const dispatch = useDispatch();
   const userRole = useSelector((state) => state.userRole);
-  const urlField = useRef();
-  const copyButton = useRef();
 
   // state for controlled fields
   const [title, setTitle] = useState(props.file.title);
@@ -42,14 +40,6 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
   }
 
   const metaShortcut = useMetaKey("s", saveFile);
-
-  function copyURL() {
-    urlField.current.select();
-    document.execCommand("copy");
-    document.getSelection().empty();
-    urlField.current.blur();
-    copyButton.current.focus();
-  }
 
   return (
     <Modal
@@ -83,22 +73,12 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
         </div>
 
         <div className={styles.FieldsContainer}>
-          <label className={styles.CopyLabel}>
-            <Button
-              ref={copyButton}
-              className={styles.CopyButton}
-              onClick={copyURL}
-            >
-              <FontAwesomeIcon icon={faCopy} />
-              <span>Copy</span>
-            </Button>
-            <input
-              ref={urlField}
-              type="text"
-              defaultValue={props.file.url}
-              readOnly
-            />
-          </label>
+          <CopyButton
+            className={styles.CopyButton}
+            kind="outlined"
+            value={props.file.url}
+          />
+
           <FieldTypeText
             className={styles.Field}
             name="title"

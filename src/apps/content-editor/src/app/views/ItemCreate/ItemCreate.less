@@ -2,7 +2,8 @@
 @import "~@zesty-io/core/typography.less";
 
 .ItemCreate {
-  height: calc(100vh - 54px - 90px);
+  //100 - Globaltopbar - (Header + Globaltopbar) && Prevents header from being hidden after create item error
+  height: calc(100vh - 54px - 130px);
   padding: 32px;
   overflow-y: auto;
 }
