@@ -1,4 +1,4 @@
-import { memo, useRef, useState } from "react";
+import { memo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import { useMetaKey } from "shell/hooks/useMetaKey";
@@ -105,21 +105,16 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             placeholder={"Image Filename"}
             onChange={(val) => setFilename(val)}
           />
-          {/* <FieldTypeText
-            className={styles.Field}
-            name="alt"
-            label={
-              <label>
-                <Infotip title="Edit Alt Attribute " />
-                &nbsp;Alt Attribute
-              </label>
-            }
-            placeholder={"Alt Attribute"}
-          /> */}
 
           <dl className={styles.DescriptionList}>
             <dt>ZUID:</dt>
-            <dd>{props.file.id}</dd>
+            <dd>
+              <CopyButton
+                kind="outlined"
+                size="compact"
+                value={props.file.id}
+              />
+            </dd>
             {props.file.updated_at && (
               <>
                 <dt> Created at: </dt>
@@ -137,7 +132,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
 
         <ButtonGroup className={styles.ButtonGroup}>
           {
-            /* hide for Contributor */
+            /* Hide for Contributor */
             userRole.name !== "Contributor" ? (
               <Button
                 type="warn"
