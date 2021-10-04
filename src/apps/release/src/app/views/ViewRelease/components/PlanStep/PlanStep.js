@@ -1,24 +1,31 @@
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router";
 import cx from "classnames";
 import moment from "moment-timezone";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faDatabase,
-  faEye,
-  faSpinner,
-  faTimes,
-} from "@fortawesome/free-solid-svg-icons";
+
 import { actions } from "shell/store/releases";
+import { deleteMember } from "shell/store/releaseMembers";
+
 import { Select, Option } from "@zesty-io/core/Select";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Url } from "@zesty-io/core/Url";
 import { Button } from "@zesty-io/core/Button";
-import styles from "./PlanStep.less";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faDatabase,
+  faEye,
+  faEyeSlash,
+  faSpinner,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
 
+import styles from "./PlanStep.less";
 export function PlanStep({ step, item, versions, lang }) {
   const dispatch = useDispatch();
+  const params = useParams();
   const instanceID = useSelector((state) => state.instance.randomHashID);
+
   const options = versions
     ? versions.map((content) => {
         return {
@@ -32,10 +39,6 @@ export function PlanStep({ step, item, versions, lang }) {
           value: step.version,
         },
       ];
-
-  const onRemove = useCallback(() => {
-    dispatch(actions.removeStep(step));
-  }, [dispatch, step]);
 
   const onUpdateVersion = useCallback(
     (version) => {
@@ -85,19 +88,25 @@ export function PlanStep({ step, item, versions, lang }) {
 
       <td>
         {/* Preview link should include specific selected version */}
-        <Url
-          target="_blank"
-          title={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${step.version}`}
-          href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${step.version}`}
-        >
-          <FontAwesomeIcon icon={faEye} />
-        </Url>
+        {item.web.path ? (
+          <Url
+            target="_blank"
+            title={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${step.version}`}
+            href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${step.version}`}
+          >
+            <FontAwesomeIcon icon={faEye} />
+          </Url>
+        ) : (
+          <FontAwesomeIcon icon={faEyeSlash} />
+        )}
       </td>
       <td>
         {step.status === "pending" ? (
           <FontAwesomeIcon icon={faSpinner} spin />
         ) : (
-          <Button onClick={onRemove}>
+          <Button
+            onClick={() => dispatch(deleteMember(params.zuid, step.ZUID))}
+          >
             <FontAwesomeIcon title="Remove" icon={faTimes} />
           </Button>
         )}

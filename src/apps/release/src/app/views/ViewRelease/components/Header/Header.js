@@ -1,26 +1,39 @@
 import { useCallback } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory, useParams } from "react-router";
+
+import { actions, publishAll } from "shell/store/releases";
+import { createMember } from "shell/store/releaseMembers";
+import { fetchVersions } from "shell/store/contentVersions";
+
+import ContentSearch from "shell/components/ContentSearch";
+import { Button } from "@zesty-io/core/Button";
+import { Select, Option } from "@zesty-io/core/Select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudUploadAlt, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { actions, publishAll } from "shell/store/releases";
-import { fetchVersions } from "shell/store/contentVersions";
-import { Button } from "@zesty-io/core/Button";
-import ContentSearch from "shell/components/ContentSearch";
-import styles from "./Header.less";
 
+import styles from "./Header.less";
 export function Header({ plan }) {
   const dispatch = useDispatch();
-  const canPublish = plan.status !== "pending" && plan.data.length;
-  const showSearch = plan.status !== "success";
-  const showPublishAll = plan.status !== "success";
+  const params = useParams();
+  const history = useHistory();
+
+  const releases = useSelector((state) => state.releases.data);
+
+  // const canPublish = plan.status !== "pending" && plan.data.length;
+  // const showSearch = plan.status !== "success";
+  // const showPublishAll = plan.status !== "success";
+
+  const canPublish = false;
+  const showSearch = false;
+  const showPublishAll = false;
 
   const onSelect = useCallback(
     (item) => {
       dispatch(
-        actions.addStep({
-          ZUID: item.meta.ZUID,
+        createMember(plan.ZUID, {
+          resourceZUID: item.meta.ZUID,
           version: item.meta.version,
-          status: "idle",
         })
       );
       dispatch(fetchVersions(item.meta.contentModelZUID, item.meta.ZUID));
@@ -32,35 +45,47 @@ export function Header({ plan }) {
     dispatch(publishAll());
   }, [dispatch]);
 
+  console.log("Header", releases);
+
   return (
     <header className={styles.Header}>
-      <h1 className={styles.display}>Release</h1>
-      {showSearch ? (
-        <ContentSearch
-          placeholder="Search for items to include in your release"
-          onSelect={onSelect}
-          keepResultsOnSelect={true}
-        />
-      ) : null}
-      {showPublishAll ? (
-        <Button
-          type="alt"
-          disabled={!canPublish && "disabled"}
-          onClick={onPublishAll}
-        >
-          {plan.status === "pending" ? (
-            <>
-              <FontAwesomeIcon icon={faSpinner} spin />
-              &nbsp;Publishing
-            </>
-          ) : (
-            <>
-              <FontAwesomeIcon icon={faCloudUploadAlt} />
-              &nbsp;Publish All
-            </>
-          )}
-        </Button>
-      ) : null}
+      <Select
+        name="release"
+        value={params.zuid}
+        onSelect={(val) => history.push(`/release/${val}`)}
+      >
+        {releases.map((release) => {
+          return (
+            <Option
+              key={release.ZUID}
+              value={release.ZUID}
+              text={release.name}
+            />
+          );
+        })}
+      </Select>
+      <ContentSearch
+        placeholder="Search for items to include in your release"
+        onSelect={onSelect}
+        keepResultsOnSelect={true}
+      />
+      <Button
+        type="alt"
+        disabled={!canPublish && "disabled"}
+        onClick={onPublishAll}
+      >
+        {plan.status === "pending" ? (
+          <>
+            <FontAwesomeIcon icon={faSpinner} spin />
+            &nbsp;Publishing
+          </>
+        ) : (
+          <>
+            <FontAwesomeIcon icon={faCloudUploadAlt} />
+            &nbsp;Publish All
+          </>
+        )}
+      </Button>
     </header>
   );
 }

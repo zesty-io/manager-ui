@@ -23,15 +23,16 @@ export function PlanTable({ members }) {
         </tr>
       </thead>
       <tbody>
-        {members.map((step) => {
-          const item = content[step.ZUID];
+        {members.map((member) => {
+          const item = content[member.resourceZUID];
+          const lang = languages.find((lang) => lang.ID === item.meta.langID);
           return (
             <PlanStep
-              key={step.ZUID}
+              key={member.ZUID}
               item={item}
-              versions={contentVersions[step.ZUID]}
-              lang={languages.find((l) => l.ID === item.meta.langID).code}
-              step={step}
+              versions={contentVersions[member.ZUID]}
+              lang={lang?.code}
+              step={member}
             />
           );
         })}

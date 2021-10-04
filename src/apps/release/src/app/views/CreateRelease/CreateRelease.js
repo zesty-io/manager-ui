@@ -26,7 +26,6 @@ export function CreateRelease() {
         description,
       })
     ).then((res) => {
-      console.log(res);
       if (res.status === 201) {
         history.push(`/release/${res.data.ZUID}`);
       }

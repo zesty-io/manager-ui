@@ -3,17 +3,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import cx from "classnames";
 
+import { searchItems } from "shell/store/content";
 import { fetchVersions } from "shell/store/contentVersions";
-import { fetchRelease } from "shell/store/releases";
 import { fetchMembers } from "shell/store/releaseMembers";
 
 import { Header } from "./components/Header";
 import { PlanTable } from "./components/PlanTable";
+import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import styles from "./ViewRelease.less";
 export function ViewRelease() {
   const dispatch = useDispatch();
   const params = useParams();
+
+  const [loading, setLoading] = useState(false);
 
   const release = useSelector((state) =>
     state.releases.data.find((release) => {
@@ -22,52 +25,66 @@ export function ViewRelease() {
   );
 
   const members = useSelector(
-    (state) => state.releaseMembers.data[params.zuid]
+    (state) => state.releaseMembers.data[params.zuid] || []
   );
 
-  // // load versions for all member ZUIDs
-  // // possibly can lazy load these when you open select
-  // useEffect(() => {
-  //     if (!release) {
-  //         dispatch(fetchRelease(params.zuid))
-  //     } else {
-  //         release.members.forEach((member) => {
-  //             dispatch(
-  //                 fetchVersions(
-  //                     content[member.ZUID].meta.contentModelZUID,
-  //                     content[member.ZUID].meta.ZUID
-  //                 )
-  //             );
-  //         });
-  //     }
-  // }, [release, params.zuid]);
-
-  // Load release members
+  // load versions for all member ZUIDs
   useEffect(() => {
-    dispatch(fetchMembers(params.zuid));
-  }, []);
+    setLoading(true);
+
+    // fetch release members
+    dispatch(fetchMembers(params.zuid)).then((membersRes) => {
+      if (membersRes.status === 200) {
+        const requests = membersRes.data.map((member) => {
+          // fetch release member content item
+          return dispatch(searchItems(member.resourceZUID)).then(
+            (searchRes) => {
+              if (searchRes?.status === 200) {
+                // fetch content item versions
+                // possibly can lazy load these when you open select
+                return dispatch(
+                  fetchVersions(
+                    searchRes.data[0].meta.contentModelZUID,
+                    searchRes.data[0].meta.ZUID
+                  )
+                );
+              }
+            }
+          );
+        });
+
+        Promise.all(requests).finally(() => setLoading(false));
+      }
+    });
+  }, [release, params.zuid]);
+
+  // console.log('ViewRelease', loading, release, members);
 
   return (
     <section className={cx(styles.ViewRelease, styles.bodyText)}>
-      {/* Todo loader? */}
-
-      {members && (
-        <Fragment>
-          {/* <Header plan={release} /> */}
+      <WithLoader
+        condition={!loading && release && members}
+        message={`Loading Release: ${release?.name}`}
+        height="100%"
+      >
+        <Header plan={release} />
+        {members.length ? (
           <PlanTable members={members} />
-        </Fragment>
-      )}
-
-      {/* {members.length ?  : <ol className={styles.display}>
-                <li>
-                    Begin by searching for content you want to include in this release
-                </li>
-                <li>Select an item from the search list to add it to this release</li>
-                <li>
-                    Press the "Publish All" button to publish all the items listed in the
-                    release
-                </li>
-            </ol>} */}
+        ) : (
+          <ol className={styles.display}>
+            <li>
+              Begin by searching for content you want to include in this release
+            </li>
+            <li>
+              Select an item from the search list to add it to this release
+            </li>
+            <li>
+              Press the "Publish All" button to publish all the items listed in
+              the release
+            </li>
+          </ol>
+        )}
+      </WithLoader>
     </section>
   );
 }

@@ -132,41 +132,53 @@ export function fetchMembers(releaseZUID) {
           data: res.data,
         })
       );
+
+      return res;
     });
   };
 }
 
 export function createMember(releaseZUID, payload) {
-  return () => {
+  return (dispatch) => {
     return request(
       `${CONFIG.API_INSTANCE}/env/releases/${releaseZUID}/members`,
       {
         method: "POST",
         body: payload,
+        json: true,
       }
-    );
+    ).then((res) => {
+      dispatch(fetchMembers(releaseZUID));
+      return res;
+    });
   };
 }
 
 export function updateMember(releaseZUID, memberZUID, payload) {
-  return () => {
+  return (dispatch) => {
     return request(
       `${CONFIG.API_INSTANCE}/env/releases/${releaseZUID}/members/${memberZUID}`,
       {
         method: "PUT",
         body: payload,
       }
-    );
+    ).then((res) => {
+      dispatch(fetchMembers(releaseZUID));
+      return res;
+    });
   };
 }
 
 export function deleteMember(releaseZUID, memberZUID) {
-  return () => {
+  return (dispatch) => {
     return request(
       `${CONFIG.API_INSTANCE}/env/releases/${releaseZUID}/members/${memberZUID}`,
       {
         method: "DELETE",
       }
-    );
+    ).then((res) => {
+      dispatch(fetchMembers(releaseZUID));
+      return res;
+    });
   };
 }

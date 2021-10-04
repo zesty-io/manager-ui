@@ -19,7 +19,6 @@ export function Activate() {
     setLoading(true);
     dispatch(activate())
       .then((res) => {
-        console.log(res);
         if (res.status === 204) {
           history.push(`/release/create`);
         }
