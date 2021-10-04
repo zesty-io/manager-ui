@@ -263,7 +263,6 @@ export function createRelease(payload) {
       json: true,
     })
       .then((res) => {
-        // console.log(res);
         if (res.status === 201) {
           dispatch(
             notify({
@@ -279,6 +278,7 @@ export function createRelease(payload) {
             })
           );
         }
+        return res;
       })
       .catch((err) => {
         console.error(err);
