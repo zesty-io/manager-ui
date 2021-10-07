@@ -1,19 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { request } from "utility/request";
+import { notify } from "shell/store/notifications";
 
 export const releaseMembers = createSlice({
   name: "releaseMembers",
   initialState: {
     // API state
-    data: {
-      "00-000-0000": [
-        {
-          ZUID: "00-000-0000",
-          itemZuid: "7-00-000-0000",
-          version: "0",
-        },
-      ],
-    },
+    data: {},
   },
   reducers: {
     fetchMembersSuccess(state, action) {
@@ -161,8 +154,15 @@ export function updateMember(releaseZUID, memberZUID, payload) {
       {
         method: "PUT",
         body: payload,
+        json: true,
       }
     ).then((res) => {
+      dispatch(
+        notify({
+          kind: "success",
+          message: `Updated release member to version ${payload.version}`,
+        })
+      );
       dispatch(fetchMembers(releaseZUID));
       return res;
     });

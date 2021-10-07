@@ -45,7 +45,7 @@ export function Header({ plan }) {
     dispatch(publishAll());
   }, [dispatch]);
 
-  console.log("Header", releases);
+  // console.log("Header", releases);
 
   return (
     <header className={styles.Header}>

@@ -21,10 +21,7 @@ export default function ReleaseApp() {
     // TODO: initial request to check activation
 
     dispatch(fetchReleases()).then((res) => {
-      if (res.data?.length) {
-        // when first loaded we always navigate to latest release
-        history.push(`/release/${res.data[0].ZUID}`);
-      } else {
+      if (!res.data?.length) {
         if (res.error === "Bad Request: release not activated") {
           history.push("/release/activate");
         } else {

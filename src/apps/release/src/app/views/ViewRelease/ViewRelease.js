@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import cx from "classnames";
@@ -25,12 +25,15 @@ export function ViewRelease() {
   );
 
   const members = useSelector(
-    (state) => state.releaseMembers.data[params.zuid] || []
+    (state) => state.releaseMembers.data[params.zuid]
   );
 
   // load versions for all member ZUIDs
   useEffect(() => {
-    setLoading(true);
+    // background load if we have release and member data locally
+    if (!release || !members) {
+      setLoading(true);
+    }
 
     // fetch release members
     dispatch(fetchMembers(params.zuid)).then((membersRes) => {
@@ -58,33 +61,27 @@ export function ViewRelease() {
     });
   }, [release, params.zuid]);
 
-  // console.log('ViewRelease', loading, release, members);
-
   return (
-    <section className={cx(styles.ViewRelease, styles.bodyText)}>
-      <WithLoader
-        condition={!loading && release && members}
-        message={`Loading Release: ${release?.name}`}
-        height="100%"
-      >
-        <Header plan={release} />
-        {members.length ? (
-          <PlanTable members={members} />
-        ) : (
-          <ol className={styles.display}>
-            <li>
-              Begin by searching for content you want to include in this release
-            </li>
-            <li>
-              Select an item from the search list to add it to this release
-            </li>
-            <li>
-              Press the "Publish All" button to publish all the items listed in
-              the release
-            </li>
-          </ol>
-        )}
-      </WithLoader>
-    </section>
+    <WithLoader
+      condition={!loading && release && members}
+      message={`Loading Release: ${release?.name}`}
+      height="100vh"
+    >
+      <Header plan={release} />
+      {Array.isArray(members) && members.length ? (
+        <PlanTable members={members} />
+      ) : (
+        <ol className={cx(styles.Instructions, styles.display)}>
+          <li>
+            Begin by searching for content you want to include in this release
+          </li>
+          <li>Select an item from the search list to add it to this release</li>
+          <li>
+            Press the "Publish All" button to publish all the items listed in
+            the release
+          </li>
+        </ol>
+      )}
+    </WithLoader>
   );
 }

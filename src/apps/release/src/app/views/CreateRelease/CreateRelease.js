@@ -9,7 +9,7 @@ import { Button } from "@zesty-io/core/Button";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 
-import { createRelease } from "shell/store/releases";
+import { createRelease, fetchReleases } from "shell/store/releases";
 
 import styles from "./CreateRelease.less";
 export function CreateRelease() {
@@ -27,7 +27,9 @@ export function CreateRelease() {
       })
     ).then((res) => {
       if (res.status === 201) {
-        history.push(`/release/${res.data.ZUID}`);
+        dispatch(fetchReleases(res.data.ZUID)).then(() => {
+          history.push(`/release/${res.data.ZUID}`);
+        });
       }
     });
   };

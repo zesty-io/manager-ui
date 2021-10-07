@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import chunk from "lodash/chunk";
 
-import idb from "utility/idb";
 import { request } from "utility/request";
 
 import { publish } from "shell/store/content";

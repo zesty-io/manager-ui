@@ -1,11 +1,10 @@
-import { useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import cx from "classnames";
 import moment from "moment-timezone";
 
-import { actions } from "shell/store/releases";
-import { deleteMember } from "shell/store/releaseMembers";
+import { updateMember, deleteMember } from "shell/store/releaseMembers";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -21,10 +20,20 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./PlanStep.less";
-export function PlanStep({ step, item, versions, lang }) {
+export function PlanStep(props) {
   const dispatch = useDispatch();
   const params = useParams();
+
   const instanceID = useSelector((state) => state.instance.randomHashID);
+  const item = useSelector((state) => state.content[props.member.resourceZUID]);
+  const versions = useSelector(
+    (state) => state.contentVersions[props.member.resourceZUID]
+  );
+  const lang = useSelector((state) =>
+    state.languages.find((lang) => lang.ID === item.meta.langID)
+  );
+
+  const [loading, setLoading] = useState(false);
 
   const options = versions
     ? versions.map((content) => {
@@ -35,31 +44,47 @@ export function PlanStep({ step, item, versions, lang }) {
       })
     : [
         {
-          text: `Version ${step.version}`,
-          value: step.version,
+          text: `Version ${props.member.version}`,
+          value: props.member.version,
         },
       ];
 
   const onUpdateVersion = useCallback(
     (version) => {
-      dispatch(actions.updateStep({ ...step, version: +version }));
+      dispatch(
+        updateMember(props.member.releaseZUID, props.member.ZUID, {
+          ...props.member,
+          version: Number(version),
+        })
+      );
     },
-    [dispatch, step]
+    [dispatch, props.member]
   );
+
+  const remove = () => {
+    setLoading(true);
+    dispatch(deleteMember(params.zuid, props.member.ZUID)).finally(() =>
+      setLoading(false)
+    );
+  };
 
   return (
     <tr
       className={cx(
         styles.bodyText,
         styles.PlanStep,
-        step.status === "error" ? styles.error : null
+        props.member.status === "error" ? styles.error : null
       )}
     >
-      <td>{lang}</td>
+      <td>{lang.code}</td>
 
       <td>
         {/* Update preview link when version is changed */}
-        <Select onSelect={onUpdateVersion} name="version" value={step.version}>
+        <Select
+          onSelect={onUpdateVersion}
+          name="version"
+          value={props.member.version}
+        >
           {options.map((opt) => (
             <Option key={opt.value} value={opt.value} text={opt.text} />
           ))}
@@ -91,8 +116,8 @@ export function PlanStep({ step, item, versions, lang }) {
         {item.web.path ? (
           <Url
             target="_blank"
-            title={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${step.version}`}
-            href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${step.version}`}
+            title={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${props.member.version}`}
+            href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${props.member.version}`}
           >
             <FontAwesomeIcon icon={faEye} />
           </Url>
@@ -101,12 +126,10 @@ export function PlanStep({ step, item, versions, lang }) {
         )}
       </td>
       <td>
-        {step.status === "pending" ? (
+        {loading ? (
           <FontAwesomeIcon icon={faSpinner} spin />
         ) : (
-          <Button
-            onClick={() => dispatch(deleteMember(params.zuid, step.ZUID))}
-          >
+          <Button onClick={remove}>
             <FontAwesomeIcon title="Remove" icon={faTimes} />
           </Button>
         )}

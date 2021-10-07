@@ -16,18 +16,17 @@ export function ListReleases() {
         </CardFooter>
       </Card>
 
-      {releases.length &&
-        releases.map((release) => {
-          return (
-            <Card key={release.ZUID}>
-              <CardHeader>{release.name}</CardHeader>
-              <CardContent>{release.description}</CardContent>
-              <CardFooter>
-                <AppLink to={`/release/${release.ZUID}`}>View Release</AppLink>
-              </CardFooter>
-            </Card>
-          );
-        })}
+      {releases.map((release) => {
+        return (
+          <Card key={release.ZUID}>
+            <CardHeader>{release.name}</CardHeader>
+            <CardContent>{release.description}</CardContent>
+            <CardFooter>
+              <AppLink to={`/release/${release.ZUID}`}>View Release</AppLink>
+            </CardFooter>
+          </Card>
+        );
+      })}
     </main>
   );
 }
