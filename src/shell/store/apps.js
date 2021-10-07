@@ -11,7 +11,7 @@ const slice = createSlice({
         label: "content-designer",
         public: true,
         approved: true,
-        url: `https://zesty-io.github.io/app-content-composer`,
+        url: `http://parsely.zesty.io:3000/`,
       },
     ],
     registered: [

@@ -7,17 +7,7 @@
   grid-gap: 12px;
   padding: 8px 0;
 
-  &.OpenNav {
-    a {
-      text-align: left;
-    }
-    svg {
-      margin-right: 8px;
-    }
-  }
-
-  a,
-  .Collapse {
+  a {
     text-align: center;
     color: @zesty-field-blue;
     text-decoration: none;
@@ -29,6 +19,25 @@
 
     .title {
       display: inline-block;
+    }
+  }
+
+  &.OpenNav {
+    a {
+      text-align: left;
+    }
+    svg {
+      margin-right: 8px;
+    }
+  }
+
+  &.Collapse {
+    a {
+      text-align: center;
+      justify-content: center;
+      .title {
+        display: none;
+      }
     }
   }
 

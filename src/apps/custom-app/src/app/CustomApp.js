@@ -29,7 +29,9 @@ function LoadApp(props) {
   const app = useSelector((state) =>
     state.apps.installed.find((app) => app.zuid === props.match.params.zuid)
   );
+
   const instance = useSelector((state) => state.instance);
+
   const [sessionToken] = useState(Cookies.get(CONFIG.COOKIE_NAME));
 
   useEffect(() => {

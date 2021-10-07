@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretRight, faMicrochip } from "@fortawesome/free-solid-svg-icons";
+import { faFileAlt, faMicrochip } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./styles.less";
 export default memo(function GlobalCustomApps(props) {
@@ -15,7 +15,10 @@ export default memo(function GlobalCustomApps(props) {
 
   return (
     <menu
-      className={cx(styles.CustomApps, props.openNav ? styles.OpenNav : "")}
+      className={cx(
+        styles.CustomApps,
+        props.openNav ? styles.OpenNav : styles.Collapse
+      )}
     >
       <Link to="/apps">
         <FontAwesomeIcon icon={faMicrochip} />
@@ -33,7 +36,7 @@ export default memo(function GlobalCustomApps(props) {
             to={`/app/${app.zuid}`}
             title={`${app.name}`}
           >
-            <FontAwesomeIcon icon={faCaretRight} />
+            <FontAwesomeIcon icon={faFileAlt} />
             <span className={styles.title}>{app.name}</span>
           </Link>
         );
