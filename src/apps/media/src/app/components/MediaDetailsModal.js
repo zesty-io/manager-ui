@@ -1,11 +1,10 @@
-import { memo, useRef, useState } from "react";
+import { memo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCopy,
   faLink,
   faSave,
   faTrash,
@@ -18,6 +17,7 @@ import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
 import { Infotip } from "@zesty-io/core/Infotip";
 import { Url } from "@zesty-io/core/Url";
+import { CopyButton } from "@zesty-io/core/CopyButton";
 
 import { MediaImage } from "./MediaImage";
 import { editFile } from "shell/store/media";
@@ -28,8 +28,6 @@ import styles from "./MediaDetailsModal.less";
 export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
   const dispatch = useDispatch();
   const userRole = useSelector((state) => state.userRole);
-  const urlField = useRef();
-  const copyButton = useRef();
 
   // state for controlled fields
   const [title, setTitle] = useState(props.file.title);
@@ -42,14 +40,6 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
   }
 
   const metaShortcut = useMetaKey("s", saveFile);
-
-  function copyURL() {
-    urlField.current.select();
-    document.execCommand("copy");
-    document.getSelection().empty();
-    urlField.current.blur();
-    copyButton.current.focus();
-  }
 
   return (
     <Modal
@@ -83,22 +73,12 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
         </div>
 
         <div className={styles.FieldsContainer}>
-          <label className={styles.CopyLabel}>
-            <Button
-              ref={copyButton}
-              className={styles.CopyButton}
-              onClick={copyURL}
-            >
-              <FontAwesomeIcon icon={faCopy} />
-              <span>Copy</span>
-            </Button>
-            <input
-              ref={urlField}
-              type="text"
-              defaultValue={props.file.url}
-              readOnly
-            />
-          </label>
+          <CopyButton
+            className={styles.CopyButton}
+            kind="outlined"
+            value={props.file.url}
+          />
+
           <FieldTypeText
             className={styles.Field}
             name="title"
@@ -125,21 +105,16 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             placeholder={"Image Filename"}
             onChange={(val) => setFilename(val)}
           />
-          {/* <FieldTypeText
-            className={styles.Field}
-            name="alt"
-            label={
-              <label>
-                <Infotip title="Edit Alt Attribute " />
-                &nbsp;Alt Attribute
-              </label>
-            }
-            placeholder={"Alt Attribute"}
-          /> */}
 
           <dl className={styles.DescriptionList}>
             <dt>ZUID:</dt>
-            <dd>{props.file.id}</dd>
+            <dd>
+              <CopyButton
+                kind="outlined"
+                size="compact"
+                value={props.file.id}
+              />
+            </dd>
             {props.file.updated_at && (
               <>
                 <dt> Created at: </dt>
@@ -157,7 +132,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
 
         <ButtonGroup className={styles.ButtonGroup}>
           {
-            /* hide for Contributor */
+            /* Hide for Contributor */
             userRole.name !== "Contributor" ? (
               <Button
                 type="warn"

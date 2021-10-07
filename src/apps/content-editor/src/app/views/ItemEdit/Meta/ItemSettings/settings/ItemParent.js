@@ -63,11 +63,11 @@ export const ItemParent = connect((state) => {
             } else if (navEntry.parentZUID) {
               return findNavParent(navEntry.parentZUID, count);
             } else {
-              return false;
+              return { ZUID: "0" };
             }
           }
         } else {
-          return false;
+          return { ZUID: "0" };
         }
       };
 
@@ -78,13 +78,12 @@ export const ItemParent = connect((state) => {
         // This way we avoid an API request
         if (props.itemZUID && props.itemZUID.slice(0, 3) === "new") {
           const result = findNavParent(props.modelZUID);
-          if (result) {
-            // change for preselection
-            parentZUID = result.ZUID;
 
-            // Update redux store so if the item is saved we know it's parent
-            props.onChange(parentZUID, "parentZUID");
-          }
+          // change for preselection
+          parentZUID = result.ZUID;
+
+          // Update redux store so if the item is saved we know it's parent
+          props.onChange(parentZUID, "parentZUID");
         }
 
         // Try to preselect parent
