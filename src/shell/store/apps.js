@@ -7,8 +7,8 @@ const slice = createSlice({
     installed: [
       {
         zuid: "50-XOX-XOXOX",
-        name: "Content Designer",
-        label: "content-designer",
+        name: "Content Composer",
+        label: "content-composer",
         public: true,
         approved: true,
         url: `http://parsely.zesty.io:3000/`,

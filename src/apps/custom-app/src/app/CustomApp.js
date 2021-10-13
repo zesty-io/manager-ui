@@ -95,7 +95,7 @@ function InstallApp() {
 
         <Card>
           <CardHeader>
-            <h1 className={styles.display}>Content Designer</h1>
+            <h1 className={styles.display}>Content Composer</h1>
           </CardHeader>
           <CardContent>
             <figure>
@@ -106,7 +106,7 @@ function InstallApp() {
         </Card>
         <Card>
           <CardHeader>
-            <h1 className={styles.display}>Content Designer</h1>
+            <h1 className={styles.display}>Content Composer</h1>
           </CardHeader>
           <CardContent>
             <figure>
@@ -117,7 +117,7 @@ function InstallApp() {
         </Card>
         <Card>
           <CardHeader>
-            <h1 className={styles.display}>Content Designer</h1>
+            <h1 className={styles.display}>Content Composer</h1>
           </CardHeader>
           <CardContent>
             <figure>
@@ -128,7 +128,7 @@ function InstallApp() {
         </Card>
         <Card>
           <CardHeader>
-            <h1 className={styles.display}>Content Designer</h1>
+            <h1 className={styles.display}>Content Composer</h1>
           </CardHeader>
           <CardContent>
             <figure>
@@ -139,7 +139,7 @@ function InstallApp() {
         </Card>
         <Card>
           <CardHeader>
-            <h1 className={styles.display}>Content Designer</h1>
+            <h1 className={styles.display}>Content Composer</h1>
           </CardHeader>
           <CardContent>
             <figure>
@@ -150,7 +150,7 @@ function InstallApp() {
         </Card>
         <Card>
           <CardHeader>
-            <h1 className={styles.display}>Content Designer</h1>
+            <h1 className={styles.display}>Content Composer</h1>
           </CardHeader>
           <CardContent>
             <figure>
@@ -161,7 +161,7 @@ function InstallApp() {
         </Card>
         <Card>
           <CardHeader>
-            <h1 className={styles.display}>Content Designer</h1>
+            <h1 className={styles.display}>Content Composer</h1>
           </CardHeader>
           <CardContent>
             <figure>
@@ -172,7 +172,7 @@ function InstallApp() {
         </Card>
         <Card>
           <CardHeader>
-            <h1 className={styles.display}>Content Designer</h1>
+            <h1 className={styles.display}>Content Composer</h1>
           </CardHeader>
           <CardContent>
             <figure>
