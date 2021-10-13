@@ -8,10 +8,10 @@ describe("Schema", () => {
   const timestamp = Date.now();
   const SCHEMA_NAME = `Test Schema: ${timestamp}`;
 
-  it("Create Model, Add Field, and Delete Model", () => {
+  it.skip("Create Model, Add Field, and Delete Model", () => {
     cy.get('input[name="label"]').type(SCHEMA_NAME);
 
-    cy.get('button[type="save"]').contains("Create Model").click();
+    cy.get('button[type="save"]').last().click();
 
     cy.get(".FieldAdd").should("exist");
 
