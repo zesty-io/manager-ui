@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import cx from "classnames";
 
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@zesty-io/core/Button";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
@@ -18,20 +18,29 @@ export function CreateRelease() {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleCreate = () => {
+    setLoading(true);
     dispatch(
       createRelease({
         name,
         description,
       })
-    ).then((res) => {
-      if (res.status === 201) {
-        dispatch(fetchReleases(res.data.ZUID)).then(() => {
-          history.push(`/release/${res.data.ZUID}`);
-        });
-      }
-    });
+    )
+      .then((res) => {
+        if (res.status === 201) {
+          dispatch(fetchReleases(res.data.ZUID))
+            .then(() => {
+              history.push(`/release/${res.data.ZUID}`);
+            })
+            .finally(() => setLoading(false));
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
   };
 
   return (
@@ -49,12 +58,17 @@ export function CreateRelease() {
         />
 
         <Button
+          disabled={loading}
           className={styles.Create}
           kind="save"
           size="large"
           onClick={handleCreate}
         >
-          <FontAwesomeIcon icon={faPlus} />
+          {loading ? (
+            <FontAwesomeIcon icon={faSpinner} />
+          ) : (
+            <FontAwesomeIcon icon={faPlus} />
+          )}
           Create Release
         </Button>
       </div>

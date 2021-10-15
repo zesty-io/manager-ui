@@ -117,7 +117,7 @@ export const { actions, reducer } = releaseMembers;
 export function fetchMembers(releaseZUID) {
   return (dispatch) => {
     return request(
-      `${CONFIG.API_INSTANCE}/env/releases/${releaseZUID}/members`
+      `${CONFIG.API_INSTANCE}/releases/${releaseZUID}/members`
     ).then((res) => {
       dispatch(
         actions.fetchMembersSuccess({
@@ -133,14 +133,11 @@ export function fetchMembers(releaseZUID) {
 
 export function createMember(releaseZUID, payload) {
   return (dispatch) => {
-    return request(
-      `${CONFIG.API_INSTANCE}/env/releases/${releaseZUID}/members`,
-      {
-        method: "POST",
-        body: payload,
-        json: true,
-      }
-    ).then((res) => {
+    return request(`${CONFIG.API_INSTANCE}/releases/${releaseZUID}/members`, {
+      method: "POST",
+      body: payload,
+      json: true,
+    }).then((res) => {
       dispatch(fetchMembers(releaseZUID));
       return res;
     });
@@ -148,19 +145,28 @@ export function createMember(releaseZUID, payload) {
 }
 
 export function updateMember(releaseZUID, memberZUID, payload) {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     return request(
-      `${CONFIG.API_INSTANCE}/env/releases/${releaseZUID}/members/${memberZUID}`,
+      `${CONFIG.API_INSTANCE}/releases/${releaseZUID}/members/${memberZUID}`,
       {
         method: "PUT",
         body: payload,
         json: true,
       }
     ).then((res) => {
+      const state = getState();
+      const release = state.release.data.find(
+        (release) => release.ZUID === releaseZUID
+      );
+      const member = state.releaseMembers.data[releaseZUID]?.find(
+        (member) => member.ZUID === memberZUID
+      );
+      const item = state.content[member.resourceZUID];
+
       dispatch(
         notify({
           kind: "success",
-          message: `Updated release member to version ${payload.version}`,
+          message: `Updated release (${release.name}) member(${item?.meta.metaTitle}) to version ${payload.version}`,
         })
       );
       dispatch(fetchMembers(releaseZUID));
@@ -172,7 +178,7 @@ export function updateMember(releaseZUID, memberZUID, payload) {
 export function deleteMember(releaseZUID, memberZUID) {
   return (dispatch) => {
     return request(
-      `${CONFIG.API_INSTANCE}/env/releases/${releaseZUID}/members/${memberZUID}`,
+      `${CONFIG.API_INSTANCE}/releases/${releaseZUID}/members/${memberZUID}`,
       {
         method: "DELETE",
       }

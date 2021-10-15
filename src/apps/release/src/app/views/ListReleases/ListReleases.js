@@ -8,7 +8,7 @@ export function ListReleases() {
   const releases = useSelector((state) => state.releases.data);
   return (
     <main className={styles.ListReleases}>
-      <Card>
+      <Card className={styles.Card}>
         <CardHeader>New Release</CardHeader>
         <CardContent>Setup a new release</CardContent>
         <CardFooter>
@@ -18,7 +18,7 @@ export function ListReleases() {
 
       {releases.map((release) => {
         return (
-          <Card key={release.ZUID}>
+          <Card key={release.ZUID} className={styles.Card}>
             <CardHeader>{release.name}</CardHeader>
             <CardContent>{release.description}</CardContent>
             <CardFooter>
