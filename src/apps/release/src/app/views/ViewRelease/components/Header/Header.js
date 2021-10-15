@@ -24,9 +24,9 @@ export function Header({ plan }) {
   // const showSearch = plan.status !== "success";
   // const showPublishAll = plan.status !== "success";
 
-  const canPublish = false;
-  const showSearch = false;
-  const showPublishAll = false;
+  // const canPublish = false;
+  // const showSearch = false;
+  // const showPublishAll = false;
 
   const onSelect = useCallback(
     (item) => {
@@ -41,9 +41,11 @@ export function Header({ plan }) {
     [dispatch]
   );
 
-  const onPublishAll = useCallback(() => {
-    dispatch(publishAll());
-  }, [dispatch]);
+  // const onPublishAll = useCallback(() => {
+  //   dispatch(publishAll());
+  // }, [dispatch]);
+
+  const onPublishAll = () => dispatch(publishAll(params.zuid));
 
   // console.log("Header", releases);
 
@@ -69,11 +71,7 @@ export function Header({ plan }) {
         onSelect={onSelect}
         keepResultsOnSelect={true}
       />
-      <Button
-        type="alt"
-        disabled={!canPublish && "disabled"}
-        onClick={onPublishAll}
-      >
+      <Button type="alt" onClick={onPublishAll}>
         {plan.status === "pending" ? (
           <>
             <FontAwesomeIcon icon={faSpinner} spin />

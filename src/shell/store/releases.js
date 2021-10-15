@@ -155,33 +155,44 @@ function asyncBatch(chunkedData, fn) {
 
 // Publish content in batches, marking all
 // successes/failures until all batches processed
-export function publishAll() {
+export function publishAll(releaseZUID) {
   const PUBLISH_BATCH_SIZE = 15;
+
   return (dispatch, getState) => {
-    const { content, publishPlan } = getState();
-    dispatch(actions.publishPlanPending());
-    return asyncBatch(chunk(publishPlan.data, PUBLISH_BATCH_SIZE), (step) => {
-      dispatch(actions.publishPending(step.ZUID));
-      return dispatch(
-        publish(content[step.ZUID].meta.contentModelZUID, step.ZUID, {
-          version: step.version,
-        })
-      )
-        .then(() => {
-          dispatch(actions.publishSuccess(step.ZUID));
-        })
-        .catch((err) => {
-          dispatch(
-            actions.publishFailure({ ZUID: step.ZUID, error: err.message })
-          );
-        });
-    }).then(() => {
-      const state = getState();
-      if (!state.publishPlan.data.length) {
-        dispatch(actions.publishPlanSuccess());
-      } else {
-        dispatch(actions.publishPlanFailure());
+    const { content, releaseMembers } = getState();
+
+    // dispatch(actions.publishPlanPending());
+
+    return asyncBatch(
+      chunk(releaseMembers.data[releaseZUID], PUBLISH_BATCH_SIZE),
+      (member) => {
+        // dispatch(actions.publishPending(member.ZUID));
+
+        return dispatch(
+          publish(
+            content[member.resourceZUID].meta.contentModelZUID,
+            member.resourceZUID,
+            {
+              version: member.version,
+            }
+          )
+        );
+        // .then(() => {
+        //   // dispatch(actions.publishSuccess(member.ZUID));
+        // })
+        // .catch((err) => {
+        //   // dispatch(
+        //   //   actions.publishFailure({ ZUID: member.ZUID, error: err.message })
+        //   // );
+        // });
       }
+    ).then(() => {
+      // const state = getState();
+      // if (!state.publishPlan.data.length) {
+      //   // dispatch(actions.publishPlanSuccess());
+      // } else {
+      //   // dispatch(actions.publishPlanFailure());
+      // }
     });
   };
 }
