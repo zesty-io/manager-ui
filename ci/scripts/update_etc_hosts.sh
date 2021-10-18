@@ -19,12 +19,12 @@ entries=(
 
 for entry in ${entries[@]}; do
     if [ $(cat /etc/hosts | grep $entry | wc -l) -gt 0 ]; then
-    echo "entry '127.0.0.1 $entry' already exists in /etc/hosts"
+    echo "entry 'localhost $entry' already exists in /etc/hosts"
     else
-        echo "adding entry for '127.0.0.1 $entry' to /etc/hosts"
-        sudo echo "127.0.0.1 $entry" | sudo tee -a /etc/hosts
+        echo "adding entry for 'localhost $entry' to /etc/hosts"
+        sudo echo "localhost $entry" | sudo tee -a /etc/hosts
         if [ $? -ne 0 ]; then
-            echo "failed to add entry for '127.0.0.1 $entry'"
+            echo "failed to add entry for 'localhost $entry'"
             exit 1
         fi
     fi
