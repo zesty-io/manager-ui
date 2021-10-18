@@ -17,14 +17,22 @@ entries=(
     '8-f48cf3a682-7fthvk.manager.dev.zesty.io'
 )
 
+#  https://github.com/cypress-io/cypress/issues/680#issuecomment-506857092
+echo "mapping localhost to 127.0.0.1 in /etc/hosts"
+sudo echo "127.0.0.1 localhost" | sudo tee -a /etc/hosts
+if [ $? -ne 0 ]; then
+    echo "failed to add entry for 'localhost $entry'"
+    exit 1
+fi
+
 for entry in ${entries[@]}; do
     if [ $(cat /etc/hosts | grep $entry | wc -l) -gt 0 ]; then
-    echo "entry 'localhost $entry' already exists in /etc/hosts"
+    echo "entry '127.0.0.1 $entry' already exists in /etc/hosts"
     else
-        echo "adding entry for 'localhost $entry' to /etc/hosts"
-        sudo echo "localhost $entry" | sudo tee -a /etc/hosts
+        echo "adding entry for '127.0.0.1 $entry' to /etc/hosts"
+        sudo echo "127.0.0.1 $entry" | sudo tee -a /etc/hosts
         if [ $? -ne 0 ]; then
-            echo "failed to add entry for 'localhost $entry'"
+            echo "failed to add entry for '127.0.0.1 $entry'"
             exit 1
         fi
     fi
