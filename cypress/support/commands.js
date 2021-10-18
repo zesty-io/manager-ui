@@ -1,8 +1,8 @@
 Cypress.Commands.add("login", () => {
   const formBody = new FormData();
 
-  formBody.append("email", Cypress.env("email"));
-  formBody.append("password", Cypress.env("password"));
+  formBody.append("email", Cypress.env("EMAIL"));
+  formBody.append("password", Cypress.env("PASSWORD"));
 
   return cy
     .request({
