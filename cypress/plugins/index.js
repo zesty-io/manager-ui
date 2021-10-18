@@ -14,6 +14,7 @@
 const path = require("path");
 const dotenv = require("dotenv");
 const os = require("os");
+const { exec } = require("child_process");
 
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
@@ -26,6 +27,18 @@ module.exports = (on, config) => {
     // source the user credentials from the ci environment config
     config.env.email = ciEnvConfig.TEST_USER_EMAIL;
     config.env.password = ciEnvConfig.TEST_USER_PASSWORD;
+    console.log("checking /etc/hosts file");
+    exec("cat /etc/hosts", (error, stdout, stderr) => {
+      if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
+    });
   }
   return config;
 };

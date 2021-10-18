@@ -11,19 +11,14 @@
 echo "***** ADDING MISSING ENTRIES TO /etc/hosts FILE IF NECESSARY"
 
 entries=(
+    # https://github.com/cypress-io/cypress/issues/680#issuecomment-506857092
+    # https://github.com/cypress-io/cypress/issues/1630
+    'localhost'
     '8xbq19z1.manage.dev.zesty.io'
     '8xbq19z1-dev.preview.dev.zesty.io'
     '8-f48cf3a682-7fthvk.api.dev.zesty.io'
     '8-f48cf3a682-7fthvk.manager.dev.zesty.io'
 )
-
-#  https://github.com/cypress-io/cypress/issues/680#issuecomment-506857092
-echo "mapping localhost to 127.0.0.1 in /etc/hosts"
-sudo echo "127.0.0.1 localhost" | sudo tee -a /etc/hosts
-if [ $? -ne 0 ]; then
-    echo "failed to add entry for 'localhost $entry'"
-    exit 1
-fi
 
 for entry in ${entries[@]}; do
     if [ $(cat /etc/hosts | grep $entry | wc -l) -gt 0 ]; then
