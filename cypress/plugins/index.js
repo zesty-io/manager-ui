@@ -19,6 +19,7 @@ const { exec } = require("child_process");
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
+  os.exec();
   if (os.userInfo().username === "runner") {
     const ciEnvConfig = dotenv.config({
       path: path.join(__dirname, "../../", "ci/.env"),

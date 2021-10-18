@@ -31,7 +31,7 @@
     "task:clean": "rimraf build",
     "task:webpack": "cross-env NODE_OPTIONS='--max_old_space_size=4096' webpack --progress --config src/shell/webpack.config.js",
     "test:setup": "./ci/scripts/pull_ci_secrets.sh false && ./ci/scripts/update_etc_hosts.sh",
-    "ci": "start-server-and-test start http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080 test",
+    "ci": "start-server-and-test start http://127.0.0.1:8080 test",
     "test": "./node_modules/.bin/cypress run --headless --browser chrome",
     "test:open": "./node_modules/.bin/cypress open",
     "pull:ci:screenshots": "./ci/scripts/pull_ci_screenshots.sh"
