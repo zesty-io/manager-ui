@@ -15,12 +15,6 @@ entries=(
     '8xbq19z1-dev.preview.dev.zesty.io'
     '8-f48cf3a682-7fthvk.api.dev.zesty.io'
     '8-f48cf3a682-7fthvk.manager.dev.zesty.io'
-    'accounts.zesty.localdev'
-    'accounts.api.zesty.localdev'
-    'auth.api.zesty.localdev'
-    'redis-gateway.zesty.localdev'
-    'svc.zesty.localdev'
-    'preview.zesty.localdev'
 )
 
 for entry in ${entries[@]}; do
