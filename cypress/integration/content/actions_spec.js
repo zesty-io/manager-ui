@@ -10,7 +10,8 @@ describe("Actions in content editor", () => {
   it("not save when missing required Field", () => {
     // TODO: update field ZUID to be correct synced ZUID when prod syncs down
     cy.visit("/schema/6-556370-8sh47g");
-    cy.contains("required field 1").click();
+
+    cy.contains("required field 1").click({ force: true });
     cy.contains("Reactivate").click();
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     cy.get("input[type=text]")
