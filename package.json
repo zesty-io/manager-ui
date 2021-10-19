@@ -19,6 +19,9 @@
     "build-dev": "npm run task:clean && npm run task:webpack -- --node-env development",
     "build-stage": "npm run task:clean && npm run task:webpack -- --node-env stage",
     "build-prod": "npm run task:clean && npm run task:webpack -- --node-env production",
+    "ci:test:setup": "./ci/scripts/pull_ci_secrets.sh false && ./ci/scripts/update_etc_hosts.sh",
+    "ci": "start-server-and-test start http://localhost:8080 test",
+    "ci:pull:screenshots": "./ci/scripts/pull_ci_screenshots.sh",
     "prepare": "husky install",
     "release:stage": "zutil deploy stage .",
     "release:prod": "npm test && zutil deploy prod .",
@@ -30,11 +33,8 @@
     "start:stage": "npm run serve:webpack -- --node-env stage --mode=development",
     "task:clean": "rimraf build",
     "task:webpack": "cross-env NODE_OPTIONS='--max_old_space_size=4096' webpack --progress --config src/shell/webpack.config.js",
-    "test:setup": "./ci/scripts/pull_ci_secrets.sh false && ./ci/scripts/update_etc_hosts.sh",
-    "ci": "start-server-and-test start http://localhost:8080 test",
     "test": "./node_modules/.bin/cypress run --headless --browser chrome",
-    "test:open": "./node_modules/.bin/cypress open",
-    "pull:ci:screenshots": "./ci/scripts/pull_ci_screenshots.sh"
+    "test:open": "./node_modules/.bin/cypress open"
   },
   "dependencies": {
     "@aeaton/react-prosemirror": "^0.21.1",

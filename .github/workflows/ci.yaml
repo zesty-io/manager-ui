@@ -36,7 +36,7 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Setup Testing Environment
-        run: npm run test:setup
+        run: npm run ci:test:setup
       - name: Run Tests
         run: npm run ci
       - name: Upload Screenshots
