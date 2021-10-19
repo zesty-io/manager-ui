@@ -38,10 +38,7 @@ jobs:
       - name: Setup Testing Environment
         run: npm run test:setup
       - name: Run Tests
-        uses: cypress-io/github-action@v2
-        with:
-          start: npm run start
-          wait-on: "http://localhost:8080"
+        run: npm run ci
       - name: Upload Screenshots
         if: ${{ failure() }}
         run: ./ci/scripts/upload_debug_screenshots_to_gcp.sh
