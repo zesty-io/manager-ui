@@ -21,7 +21,7 @@ describe("Code Editor", () => {
   });
 
   it("Sort resources", () => {
-    cy.get('button[kind="primary"]').contains("Order").click();
+    cy.contains("Order").first().click();
 
     cy.get('[data-index="0"]').trigger("mousedown", {
       which: 1,
