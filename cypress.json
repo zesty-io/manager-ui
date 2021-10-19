@@ -4,6 +4,7 @@
   "viewportHeight": 1080,
   "chromeWebSecurity": false,
   "baseUrl": "http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080/",
+  "video": false,
   "env": {
     "ACCOUNTS_UI": "http://accounts.dev.zesty.io:9001/",
     "API_ACCOUNTS": "https://accounts.api.dev.zesty.io/v1",
@@ -14,6 +15,8 @@
     "PREVIEW_URL": "-dev.preview.dev.zesty.io",
     "PREVIEW_URL_PROTOCOL": "https://",
     "COOKIE_NAME": "DEV_APP_SID",
-    "COOKIE_DOMAIN": ".zesty.io"
+    "COOKIE_DOMAIN": ".zesty.io",
+    "EMAIL": "grant.glidewell+test14@zesty.io",
+    "PASSWORD": "newValidPass14"
   }
 }
