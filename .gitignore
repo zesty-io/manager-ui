@@ -6,6 +6,7 @@
 
 # secrets
 *.env*
+*.enc
 
 /build
 *dist/

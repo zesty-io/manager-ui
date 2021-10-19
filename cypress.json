@@ -14,8 +14,6 @@
     "PREVIEW_URL": "-dev.preview.dev.zesty.io",
     "PREVIEW_URL_PROTOCOL": "https://",
     "COOKIE_NAME": "DEV_APP_SID",
-    "COOKIE_DOMAIN": ".zesty.io",
-    "EMAIL": "",
-    "PASSWORD": ""
+    "COOKIE_DOMAIN": ".zesty.io"
   }
 }

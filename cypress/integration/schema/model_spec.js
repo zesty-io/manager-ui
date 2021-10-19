@@ -8,7 +8,7 @@ describe("Schema", () => {
   const timestamp = Date.now();
   const SCHEMA_NAME = `Test Schema: ${timestamp}`;
 
-  it("Create Model, Add Field, and Delete Model", () => {
+  it.skip("Create Model, Add Field, and Delete Model", () => {
     cy.get('input[name="label"]').type(SCHEMA_NAME);
 
     cy.get("[data-cy=SubApp] .Select").first().click({ force: true });
