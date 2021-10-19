@@ -13,6 +13,7 @@ describe("Code Editor", () => {
   });
 
   it("Navigate to file", () => {
+    cy.wait(9000);
     cy.get("#Navigation > article").eq(1).click();
   });
   it("Publish file", () => {
