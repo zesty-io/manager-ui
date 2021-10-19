@@ -14,9 +14,14 @@ describe("Instance", () => {
 
   it("Developer", () => {
     cy.get("[data-cy=SettingsNav]").contains("developer").click();
-    cy.get("[data-cy=SubApp] button").first().click();
+    // cy.contains("Show Zesty Tips?").siblings("ToggleButton").click();
+    // cy.getByLabel("GraphQL Cors").should("have.value", "").type("test");
+    cy.get('input[type="text"]').type("test test test").clear();
+    cy.wait(3000);
 
-    cy.get("#saveSettings").click();
+    cy.get("[data-cy=SubApp] button").first().click({ force: true });
+
+    cy.get("#saveSettings").click({ force: true });
     cy.contains(SAVED_MESSAGE).should("exist");
   });
 
