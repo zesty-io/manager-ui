@@ -9,16 +9,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Read Hosts File
-        run: cat /etc/hosts
       # This Clean step simply checks if there's already a workflow running from the last
       # commit and cancels it if there is. This helps us save on cloud cost in the long run.
       # See https://github.com/rokroskar/workflow-run-cleanup-action for more information.
-      # - name: Clean
-      #   uses: rokroskar/workflow-run-cleanup-action@v0.2.2
-      #   env:
-      #     GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-      #   if: "github.ref != 'refs/heads/master'"
+      - name: Clean
+        uses: rokroskar/workflow-run-cleanup-action@v0.2.2
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        if: "github.ref != 'refs/heads/master'"
       - name: Checkout Repo
         uses: actions/checkout@v2
       - name: Set up Gcloud SDK
