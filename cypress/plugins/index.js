@@ -27,6 +27,8 @@ module.exports = (on, config) => {
     // source the user credentials from the ci environment config
     config.env.email = ciEnvConfig.TEST_USER_EMAIL;
     config.env.password = ciEnvConfig.TEST_USER_PASSWORD;
+    config.env.baseUrl =
+      "https://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080";
     console.log("checking /etc/hosts file");
     exec("cat /etc/hosts", (error, stdout, stderr) => {
       if (error) {
