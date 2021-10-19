@@ -14,8 +14,7 @@ describe("Instance", () => {
 
   it("Developer", () => {
     cy.get("[data-cy=SettingsNav]").contains("developer").click();
-    cy.get("[data-cy=SubApp] button").first().click();
-
+    cy.get("[data-cy=SubApp] button").last().click();
     cy.get("#saveSettings").click();
     cy.contains(SAVED_MESSAGE).should("exist");
   });
