@@ -10,19 +10,13 @@
 
 echo "***** ADDING MISSING ENTRIES TO /etc/hosts FILE IF NECESSARY"
 
-entries=(
-    '8-f48cf3a682-7fthvk.manager.dev.zesty.io'
-)
-
-for entry in ${entries[@]}; do
-    if [ $(cat /etc/hosts | grep $entry | wc -l) -gt 0 ]; then
-    echo "entry '127.0.0.1 $entry' already exists in /etc/hosts"
-    else
-        echo "adding entry for '127.0.0.1 $entry' to /etc/hosts"
-        sudo echo "127.0.0.1 $entry" | sudo tee -a /etc/hosts
-        if [ $? -ne 0 ]; then
-            echo "failed to add entry for '127.0.0.1 $entry'"
-            exit 1
-        fi
+if [ $(cat /etc/hosts | grep '8-f48cf3a682-7fthvk.manager.dev.zesty.io' | wc -l) -gt 0 ]; then
+echo "entry '127.0.0.1 '8-f48cf3a682-7fthvk.manager.dev.zesty.io'' already exists in /etc/hosts"
+else
+    echo "adding entry for '127.0.0.1 '8-f48cf3a682-7fthvk.manager.dev.zesty.io'' to /etc/hosts"
+    sudo echo "127.0.0.1 '8-f48cf3a682-7fthvk.manager.dev.zesty.io'" | sudo tee -a /etc/hosts
+    if [ $? -ne 0 ]; then
+        echo "failed to add entry for '127.0.0.1 '8-f48cf3a682-7fthvk.manager.dev.zesty.io''"
+        exit 1
     fi
-done
+fi
