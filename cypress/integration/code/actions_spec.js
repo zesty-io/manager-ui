@@ -44,7 +44,9 @@ describe("Code Editor", () => {
       .and("contain", "test.less")
       .click();
     cy.get('svg[data-icon="history"]').first().click();
-    cy.get(".original").should("exist");
-    cy.get(".modified").should("exist");
+    cy.wait(4000);
+
+    cy.get(".react-monaco-editor-container .original").should("exist");
+    cy.get(".react-monaco-editor-container .modified").should("exist");
   });
 });
