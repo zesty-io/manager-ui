@@ -25,8 +25,13 @@ describe("Settings Actions", () => {
 
   it("Links", () => {
     cy.get("[data-cy=SettingsNav]").contains("Links").click();
-    cy.get("[data-cy=SubApp] .Select").first().click();
-    cy.get("[data-cy=SubApp] .Select .selections li").first().click();
+
+    cy.get("[data-cy=SubApp] .Select", { timeout: 4000 })
+      .click()
+      .find("[data-value=none]")
+      .click();
+    // cy.get("[data-cy=SubApp] .Select").first().click();
+    // cy.get("[data-cy=SubApp] .Select .selections li").first().click();
     cy.get("#SaveSettings").click();
     cy.contains(SAVED_MESSAGE).should("exist");
   });
