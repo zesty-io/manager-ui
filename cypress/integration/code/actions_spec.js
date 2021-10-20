@@ -30,8 +30,8 @@ describe("Code Editor", () => {
       .trigger("mousemove", { which: 1, force: true })
       .trigger("mouseup", { force: true });
 
-    cy.get('button[type="save"]').contains("Save Order").click({ force: true });
-
+    cy.get("footer").last().get("[data-cy=saveOrder]").click({ force: true });
+    cy.wait(1000);
     cy.contains("File sort order has been saved", { timeout: 5000 }).should(
       "exist"
     );
@@ -40,6 +40,7 @@ describe("Code Editor", () => {
   it("Compare files", () => {
     cy.visit("/code/file/views/11-eb8dec-6nsjbf/diff/local,29");
     // FIXME: The UI is not reflecting the correct state of the URL, showing incorrect diff versions.
+    cy.wait(1000);
 
     cy.get(".react-monaco-editor-container .editor.modified").should("exist");
     cy.get(".react-monaco-editor-container .editor.modified").should("exist");
