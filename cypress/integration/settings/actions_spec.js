@@ -30,9 +30,8 @@ describe("Settings Actions", () => {
       .click()
       .find("[data-value=none]")
       .click();
-    // cy.get("[data-cy=SubApp] .Select").first().click();
-    // cy.get("[data-cy=SubApp] .Select .selections li").first().click();
-    cy.get("#SaveSettings").click();
+
+    cy.get("#SaveSettings").click({ force: true });
     cy.contains(SAVED_MESSAGE).should("exist");
   });
 

@@ -31,10 +31,8 @@ describe("Code Editor", () => {
       .trigger("mouseup", { force: true });
 
     cy.get("footer").last().get("[data-cy=saveOrder]").click({ force: true });
-    cy.wait(1000);
-    cy.contains("File sort order has been saved", { timeout: 5000 }).should(
-      "exist"
-    );
+
+    cy.contains("My Notifications", { timeout: 5000 }).should("exist");
   });
 
   it("Compare files", () => {
