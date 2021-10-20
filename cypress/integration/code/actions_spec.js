@@ -39,7 +39,7 @@ describe("Code Editor", () => {
 
   // race conditions sometimes fails
   it("Compare files", () => {
-    cy.contains("test.less").click({ force: true });
+    cy.contains("test.less").click();
     cy.get('svg[data-icon="history"]').first().click();
     cy.get(".original").should("exist");
     cy.get(".modified").should("exist");
