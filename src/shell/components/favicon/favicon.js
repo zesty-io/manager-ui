@@ -181,6 +181,7 @@ export default connect((state) => {
 
   return (
     <div
+      data-cy="Favicon"
       className={styles.Favicon}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
@@ -280,9 +281,6 @@ export default connect((state) => {
             <Button type="cancel" onClick={handleClose}>
               <FontAwesomeIcon icon={faBan} />
               Cancel (ESC)
-            </Button>
-            <Button onClick={onDelete} type="warn" id="DelteHeadtag">
-              DELETE IMAGE HEAD TAG
             </Button>
           </ButtonGroup>
         </ModalFooter>
