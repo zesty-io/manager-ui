@@ -32,7 +32,7 @@ jobs:
         service_account_key: ${{ secrets.GCP_DEV_SA_KEY }}
         export_default_credentials: true
     - name: Deploy to Dev
-      run: gcloud app deploy app.dev.yaml --quiet --project zesty-dev
+      run: gcloud app deploy app.yaml --quiet --project zesty-dev
     - name: Post Successful Dev Deploy Notification To Slack
       uses: rtCamp/action-slack-notify@v2
       env:
@@ -96,7 +96,7 @@ jobs:
         service_account_key: ${{ secrets.GCP_SA_KEY }}
         export_default_credentials: true
     - name: Deploy to Staging
-      run: gcloud app deploy app.stage.yaml --quiet --project zesty-stage
+      run: gcloud app deploy app.yaml --quiet --project zesty-stage
     - name: Post Successful Stage Deploy Notification To Slack
       uses: rtCamp/action-slack-notify@v2
       env:
