@@ -23,7 +23,7 @@ describe("Settings Actions", () => {
     cy.contains(SAVED_MESSAGE).should("exist");
   });
 
-  it("Links", () => {
+  it.skip("Links", () => {
     cy.get("[data-cy=SettingsNav]").contains("Links").click();
     cy.get("[data-cy=SubApp] .Select").first().click();
     cy.get("[data-cy=SubApp] .Select .selections li").first().click();
