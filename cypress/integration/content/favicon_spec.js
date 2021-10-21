@@ -11,6 +11,7 @@ describe("Favicon upload image", () => {
     cy.wait(1000);
     //figure remove button
     cy.get("figure button").click();
+    cy.wait(1000);
     //figure add button
     cy.get("figure button").click();
     cy.wait(2000);
