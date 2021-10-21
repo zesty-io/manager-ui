@@ -211,6 +211,7 @@ export default connect((state) => {
         </ModalHeader>
         <ModalContent>
           <FieldTypeImage
+            data-cy="FieldTypeImage"
             name="favicon"
             label="Image to be used as instance favicon"
             description="Favicons are used by search engine, browsers and applications. They are typically displayed along side your domain name. We recommend using a square PNG image with a transparent background, 228 x 228 or greater."
@@ -270,7 +271,12 @@ export default connect((state) => {
         </ModalContent>
         <ModalFooter>
           <ButtonGroup className={styles.Actions}>
-            <Button type="save" className={styles.Button} onClick={handleSave}>
+            <Button
+              data-cy="faviconSave"
+              type="save"
+              className={styles.Button}
+              onClick={handleSave}
+            >
               {loading ? (
                 <FontAwesomeIcon icon={faSpinner} spin />
               ) : (

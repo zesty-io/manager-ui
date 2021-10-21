@@ -37,6 +37,7 @@ export function MediaSelected(props) {
               onClick={handleSetOpen}
             >
               <Button
+                data-cy="loadSelected"
                 className={styles.ButtonLoad}
                 type="save"
                 onClick={() => props.addImages(props.selected)}
