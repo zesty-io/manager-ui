@@ -3,7 +3,7 @@ import { PlanStep } from "../PlanStep";
 import styles from "./PlanTable.less";
 export function PlanTable({ members }) {
   return (
-    <table className={styles.PlanTable}>
+    <table data-cy="PlanTable" className={styles.PlanTable}>
       <thead>
         <tr>
           <th className={styles.subheadline}>Lang</th>

@@ -47,17 +47,20 @@ export function CreateRelease() {
     <div className={cx(styles.CreateRelease, styles.bodyText)}>
       <div>
         <FieldTypeText
+          data-cy="release-name"
           label="Release Name"
           name="name"
           onChange={(val) => setName(val)}
         />
         <FieldTypeTextarea
+          data-cy="release-desc"
           label="Release Description"
           name="description"
           onChange={(val) => setDescription(val)}
         />
 
         <Button
+          data-cy="release-createBtn"
           disabled={loading}
           className={styles.Create}
           kind="save"

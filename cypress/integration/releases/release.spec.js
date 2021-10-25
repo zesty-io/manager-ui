@@ -1,10 +1,11 @@
-describe("Release > create", () => {
+describe("Release", () => {
   before(() => {
     cy.login();
-    cy.visit("/release/create");
   });
 
   it("create release", () => {
+    cy.visit("/release/create");
+
     const timestamp = Date.now();
     const title = `Title - ${timestamp}`;
     const desc = `Description - ${timestamp}`;
@@ -16,5 +17,7 @@ describe("Release > create", () => {
     cy.contains(`Created Release: ${title}`).should("exist");
   });
 
-  // it("change release")
+  // it("update release")
+
+  // it("delete release")
 });

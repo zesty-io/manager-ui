@@ -79,7 +79,7 @@ export function PlanStep(props) {
     >
       <td>{lang.code}</td>
 
-      <td>
+      <td data-cy="release-member-version">
         {/* Update preview link when version is changed */}
         <Select
           onSelect={onUpdateVersion}
@@ -126,7 +126,7 @@ export function PlanStep(props) {
           <FontAwesomeIcon icon={faEyeSlash} />
         )}
       </td>
-      <td>
+      <td data-cy="release-member-delete">
         {loading ? (
           <FontAwesomeIcon icon={faSpinner} spin />
         ) : (
