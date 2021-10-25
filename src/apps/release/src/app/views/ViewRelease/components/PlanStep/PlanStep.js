@@ -29,6 +29,7 @@ export function PlanStep(props) {
   const versions = useSelector(
     (state) => state.contentVersions[props.member.resourceZUID]
   );
+
   const lang = useSelector((state) =>
     state.languages.find((lang) => lang.ID === item.meta.langID)
   );

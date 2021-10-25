@@ -1,5 +1,5 @@
 import idb from "utility/idb";
-import { actions } from "shell/store/releases";
+// import { actions } from "shell/store/releases";
 import { toggleNav } from "../ui";
 
 export const localStorage = (store) => (next) => (action) => {
@@ -17,18 +17,18 @@ export const localStorage = (store) => (next) => (action) => {
         idb.set(`${state.instance.ZUID}:ui`, ui);
         break;
 
-      case `${actions.resetPlan}`:
-      case `${actions.addStep}`:
-      case `${actions.removeStep}`:
-      case `${actions.updateStep}`:
-      case `${actions.publishPending}`:
-      case `${actions.publishSuccess}`:
-      case `${actions.publishFailure}`:
-      case `${actions.publishPlanPending}`:
-      case `${actions.publishPlanSuccess}`:
-      case `${actions.publishPlanFailure}`:
-        idb.set(`${state.instance.ZUID}:publishPlan`, state.publishPlan);
-        break;
+      // case `${actions.resetPlan}`:
+      // case `${actions.addStep}`:
+      // case `${actions.removeStep}`:
+      // case `${actions.updateStep}`:
+      // case `${actions.publishPending}`:
+      // case `${actions.publishSuccess}`:
+      // case `${actions.publishFailure}`:
+      // case `${actions.publishPlanPending}`:
+      // case `${actions.publishPlanSuccess}`:
+      // case `${actions.publishPlanFailure}`:
+      //   idb.set(`${state.instance.ZUID}:publishPlan`, state.publishPlan);
+      //   break;
 
       case "FETCH_ITEM_SUCCESS":
       case "FETCH_ITEMS_SUCCESS":
@@ -48,6 +48,10 @@ export const localStorage = (store) => (next) => (action) => {
 
       case "FETCH_CONTENT_NAV_SUCCESS":
         idb.set(`${state.instance.ZUID}:navContent`, state.navContent.raw);
+        break;
+
+      case "FETCH_LANGUAGES_SUCCESS":
+        idb.set(`${state.instance.ZUID}:languages`, state.languages);
         break;
     }
   } catch (err) {

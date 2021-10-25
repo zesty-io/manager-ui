@@ -41,16 +41,10 @@ export function Header({ plan }) {
     [dispatch]
   );
 
-  // const onPublishAll = useCallback(() => {
-  //   dispatch(publishAll());
-  // }, [dispatch]);
-
   const onPublishAll = () => dispatch(publishAll(params.zuid));
 
-  // console.log("Header", releases);
-
   return (
-    <header className={styles.Header}>
+    <header data-cy="ReleaseHeader" className={styles.Header}>
       <Select
         name="release"
         value={params.zuid}

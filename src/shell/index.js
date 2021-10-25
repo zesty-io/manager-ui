@@ -13,9 +13,9 @@ import history from "utility/history";
 import { Sentry } from "utility/sentry";
 import { store, injectReducer } from "shell/store";
 import { navContent } from "../apps/content-editor/src/store/navContent";
-import { actions } from "shell/store/releases";
 
 import AppError from "shell/components/AppError";
+
 import PrivateRoute from "./components/private-route";
 import LoadInstance from "./components/load-instance";
 import Shell from "./views/Shell";
@@ -63,20 +63,25 @@ function render() {
 try {
   idb
     .getMany([
+      `${instanceZUID}:languages`,
       `${instanceZUID}:user:selected_lang`,
       `${instanceZUID}:navContent`,
       `${instanceZUID}:models`,
       `${instanceZUID}:fields`,
       `${instanceZUID}:content`,
-      `${instanceZUID}:release`,
       `${instanceZUID}:ui`,
     ])
-    .then((results) => {
+    .then(([languages, selectedLang, nav, models, fields, content, ui]) => {
+      store.dispatch({
+        type: "LOADED_LOCAL_LANGUAGES",
+        payload: languages,
+      });
+
       store.dispatch({
         type: "LOADED_LOCAL_USER_LANG",
         payload: {
           // default to english
-          lang: results.lang || "en-US",
+          lang: selectedLang || "en-US",
         },
       });
 
@@ -90,21 +95,20 @@ try {
 
       store.dispatch({
         type: "LOADED_LOCAL_MODELS",
-        payload: results.models,
+        payload: models,
       });
 
       store.dispatch({
         type: "LOADED_LOCAL_FIELDS",
-        payload: results.fields,
+        payload: fields,
       });
 
       store.dispatch({
         type: "LOADED_LOCAL_ITEMS",
-        data: results.content,
+        data: content,
       });
-      store.dispatch(loadedUI(results.ui));
 
-      store.dispatch(actions.loadedPlan(results.release));
+      store.dispatch(loadedUI(ui));
     });
 } catch (err) {
   console.error("IndexedDB:get:error", err);
