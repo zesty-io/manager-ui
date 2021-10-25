@@ -15,6 +15,9 @@ describe("Release", () => {
 
     cy.get("[data-cy=release-createBtn]").click();
     cy.contains(`Created Release: ${title}`).should("exist");
+
+    // URL should have redirected to release ZUID
+    cy.url().should("include", "/release/27-");
   });
 
   // it("update release")
