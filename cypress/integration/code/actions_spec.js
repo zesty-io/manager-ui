@@ -38,8 +38,6 @@ describe("Code Editor", () => {
   it("Compare files", () => {
     cy.visit("/code/file/views/11-eb8dec-6nsjbf/diff/local,29");
     // FIXME: The UI is not reflecting the correct state of the URL, showing incorrect diff versions.
-    cy.wait(1000);
-
     cy.get(".react-monaco-editor-container .editor.modified").should("exist");
     cy.get(".react-monaco-editor-container .editor.modified").should("exist");
   });
