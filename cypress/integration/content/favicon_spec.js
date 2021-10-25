@@ -7,17 +7,22 @@ describe("Favicon upload image", () => {
 
   it(" update favicon image", () => {
     cy.get("[data-cy=Favicon]").click();
-    cy.get("figure img").siblings("button").click();
-    cy.wait(1000);
+
+    cy.get("figure").then((figure) => {
+      if (figure.find("img").length > 0) {
+        cy.get("figure img").siblings("button").click();
+      }
+    });
+
     //figure remove button
     cy.get("figure button").click();
-    cy.wait(1000);
+
     //figure add button
-    cy.get("figure button").click();
-    cy.wait(2000);
+    cy.get("figure button").click({ force: true });
+
     cy.get("figure img").eq(1).click({ force: true });
     cy.get("[data-cy=loadSelected]").click();
-    cy.wait(2000);
-    cy.get("[data-cy=faviconSave]").click();
+
+    cy.get("[data-cy=faviconSave]").click({ force: true });
   });
 });
