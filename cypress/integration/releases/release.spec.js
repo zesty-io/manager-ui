@@ -23,4 +23,6 @@ describe("Release", () => {
   // it("update release")
 
   // it("delete release")
+
+  it("publish release", () => {});
 });

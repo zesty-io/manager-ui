@@ -1,5 +1,3 @@
-import { request } from "utility/request";
-
 export function products(state = ["content", "media"], action) {
   switch (action.type) {
     case "FETCH_PRODUCTS_SUCCESS":
@@ -32,7 +30,7 @@ export function fetchProducts() {
           "seo",
           "audit-trail",
           "settings",
-          "release",
+          // "release",
         ];
         break;
       case "31-71cfc74-d3v3l0p3r":
@@ -45,7 +43,7 @@ export function fetchProducts() {
           "analytics",
           "seo",
           "settings",
-          "release",
+          // "release",
         ];
         break;
       case "31-71cfc74-s30":
@@ -75,7 +73,7 @@ export function fetchProducts() {
         "seo",
         "audit-trail",
         "settings",
-        "release",
+        // "release",
       ];
     }
 

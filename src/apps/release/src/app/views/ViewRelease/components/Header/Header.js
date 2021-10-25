@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router";
 
@@ -17,6 +17,8 @@ export function Header({ plan }) {
   const dispatch = useDispatch();
   const params = useParams();
   const history = useHistory();
+
+  const [loading, setLoading] = useState(false);
 
   const releases = useSelector((state) => state.releases.data);
 
@@ -41,7 +43,10 @@ export function Header({ plan }) {
     [dispatch]
   );
 
-  const onPublishAll = () => dispatch(publishAll(params.zuid));
+  const onPublishAll = () => {
+    setLoading(true);
+    dispatch(publishAll(params.zuid)).finally(() => setLoading(false));
+  };
 
   return (
     <header data-cy="ReleaseHeader" className={styles.Header}>
@@ -65,8 +70,8 @@ export function Header({ plan }) {
         onSelect={onSelect}
         keepResultsOnSelect={true}
       />
-      <Button type="alt" onClick={onPublishAll}>
-        {plan.status === "pending" ? (
+      <Button type="alt" onClick={onPublishAll} disabled={loading}>
+        {loading ? (
           <>
             <FontAwesomeIcon icon={faSpinner} spin />
             &nbsp;Publishing

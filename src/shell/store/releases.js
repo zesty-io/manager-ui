@@ -87,40 +87,40 @@ export const releases = createSlice({
     //     updateStep.version = action.payload.version;
     //   }
     // },
-    publishPending(state, action) {
-      const step = state.data.find((step) => step.ZUID === action.payload);
-      if (step) {
-        step.status = "pending";
-      }
-    },
-    publishSuccess(state, action) {
-      const removeStepIndex = state.data.findIndex(
-        (step) => step.ZUID === action.payload
-      );
-      if (removeStepIndex !== -1) {
-        state.data.splice(removeStepIndex, 1);
-        state.successes++;
-      }
-    },
-    publishFailure(state, action) {
-      const step = state.data.find((step) => step.ZUID === action.payload.ZUID);
-      if (step) {
-        step.status = "error";
-        step.error = action.payload.error;
-        state.errors++;
-      }
-    },
-    publishPlanPending(state) {
-      state.status = "pending";
-      // reset errors on start of publish
-      state.errors = 0;
-    },
-    publishPlanSuccess(state) {
-      state.status = "success";
-    },
-    publishPlanFailure(state) {
-      state.status = "error";
-    },
+    // publishPending(state, action) {
+    //   const step = state.data.find((step) => step.ZUID === action.payload);
+    //   if (step) {
+    //     step.status = "pending";
+    //   }
+    // },
+    // publishSuccess(state, action) {
+    //   const removeStepIndex = state.data.findIndex(
+    //     (step) => step.ZUID === action.payload
+    //   );
+    //   if (removeStepIndex !== -1) {
+    //     state.data.splice(removeStepIndex, 1);
+    //     state.successes++;
+    //   }
+    // },
+    // publishFailure(state, action) {
+    //   const step = state.data.find((step) => step.ZUID === action.payload.ZUID);
+    //   if (step) {
+    //     step.status = "error";
+    //     step.error = action.payload.error;
+    //     state.errors++;
+    //   }
+    // },
+    // publishPlanPending(state) {
+    //   state.status = "pending";
+    //   // reset errors on start of publish
+    //   state.errors = 0;
+    // },
+    // publishPlanSuccess(state) {
+    //   state.status = "success";
+    // },
+    // publishPlanFailure(state) {
+    //   state.status = "error";
+    // },
   },
 });
 
