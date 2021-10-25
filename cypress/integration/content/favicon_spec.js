@@ -5,9 +5,8 @@ describe("Favicon upload image", () => {
     cy.visit("/settings/head");
   });
 
-  it(" update favicon image", () => {
+  it("update favicon image", () => {
     cy.get("[data-cy=Favicon]").click();
-
     cy.get("figure").then((figure) => {
       if (figure.find("img").length > 0) {
         cy.get("figure img").siblings("button").click();
@@ -16,13 +15,10 @@ describe("Favicon upload image", () => {
 
     //figure remove button
     cy.get("figure button").click();
-
     //figure add button
     cy.get("figure button").click({ force: true });
-
     cy.get("figure img").eq(1).click({ force: true });
     cy.get("[data-cy=loadSelected]").click();
-
     cy.get("[data-cy=faviconSave]").click({ force: true });
   });
 });
