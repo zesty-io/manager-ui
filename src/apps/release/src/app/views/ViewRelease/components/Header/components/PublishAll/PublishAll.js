@@ -26,7 +26,10 @@ export const PublishAll = memo(function PublishAll() {
 
   const onPublishAll = () => {
     setLoading(true);
-    dispatch(publishAll(params.zuid)).finally(() => setLoading(false));
+    dispatch(publishAll(params.zuid)).finally(() => {
+      setLoading(false);
+      setOpen(false);
+    });
   };
 
   return (
