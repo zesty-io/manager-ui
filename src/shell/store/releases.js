@@ -225,7 +225,18 @@ export function fetchReleases() {
   return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/releases`).then((res) => {
       if (res.status === 200) {
-        dispatch(actions.fetchReleasesSuccess(res.data));
+        const sorted = res.data.sort((a, b) => {
+          if (a.createdAt > b.createdAt) {
+            return -1;
+          }
+          if (a.createdAt < b.createdAt) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+
+        dispatch(actions.fetchReleasesSuccess(sorted));
       }
       return res;
     });
