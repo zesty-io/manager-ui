@@ -155,7 +155,7 @@ export function updateMember(releaseZUID, memberZUID, payload) {
       }
     ).then((res) => {
       const state = getState();
-      const release = state.release.data.find(
+      const release = state.releases.data.find(
         (release) => release.ZUID === releaseZUID
       );
       const member = state.releaseMembers.data[releaseZUID]?.find(
@@ -166,7 +166,7 @@ export function updateMember(releaseZUID, memberZUID, payload) {
       dispatch(
         notify({
           kind: "success",
-          message: `Updated release (${release.name}) member(${item?.meta.metaTitle}) to version ${payload.version}`,
+          message: `Updated release(${release.name}) member(${item?.web.metaTitle}) to version ${payload.version}`,
         })
       );
       dispatch(fetchMembers(releaseZUID));
