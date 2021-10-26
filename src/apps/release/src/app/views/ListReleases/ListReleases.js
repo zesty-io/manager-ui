@@ -6,6 +6,7 @@ import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import styles from "./ListReleases.less";
 export function ListReleases() {
   const releases = useSelector((state) => state.releases.data);
+  const members = useSelector((state) => state.releaseMembers.data);
   return (
     <main className={styles.ListReleases}>
       <Card className={styles.Card}>
@@ -22,6 +23,7 @@ export function ListReleases() {
             <CardHeader>{release.name}</CardHeader>
             <CardContent>{release.description}</CardContent>
             <CardFooter>
+              <p>{members[release.ZUID]?.length} members</p>
               <AppLink to={`/release/${release.ZUID}`}>View Release</AppLink>
             </CardFooter>
           </Card>

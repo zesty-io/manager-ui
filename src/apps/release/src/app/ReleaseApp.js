@@ -6,6 +6,7 @@ import cx from "classnames";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { fetchReleases } from "shell/store/releases";
+import { fetchMembers } from "shell/store/releaseMembers";
 
 import { Activate } from "./views/Activate";
 import { CreateRelease } from "./views/CreateRelease";
@@ -30,6 +31,11 @@ export default function ReleaseApp() {
           } else {
             history.push("/release/create");
           }
+        } else {
+          // pre-fetch all members
+          return Promise.all(
+            res.data.map((release) => dispatch(fetchMembers(release.ZUID)))
+          );
         }
       })
       .finally(() => setLoading(false));
