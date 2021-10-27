@@ -12,9 +12,10 @@ describe("Favicon upload image", () => {
         cy.get("figure img").siblings("button").click();
       }
     });
-
+    cy.wait(1000);
     //figure remove button
     cy.get("figure button").click();
+    cy.wait(1000);
     //figure add button
     cy.get("figure button").click({ force: true });
     cy.get("figure img").eq(1).click({ force: true });
