@@ -72,7 +72,9 @@ function Header(props) {
           />
         )}
       </span>
-      <h1 className={styles.Title}>{props.field.label}</h1>
+      <h1 data-cy="fieldLabel" className={styles.Title}>
+        {props.field.label}
+      </h1>
       <small className={styles.Type}>{props.field.datatype}</small>
       <Button
         className={styles.DragHandle}

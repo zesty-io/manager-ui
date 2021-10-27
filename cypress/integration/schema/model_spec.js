@@ -11,16 +11,19 @@ describe("Schema", () => {
   it.skip("Create Model, Add Field, and Delete Model", () => {
     cy.get('input[name="label"]').type(SCHEMA_NAME);
 
-    cy.get('button[type="save"]').last().click();
-
-    cy.get(".FieldAdd").should("exist");
-
     cy.get("[data-cy=SubApp] .Select").first().click({ force: true });
 
+    cy.get('li[data-value="pageset"]').click({ force: true });
+
+    cy.get('button[type="save"]')
+      .last()
+      .contains("Create Model")
+      .click({ force: true });
+
+    cy.contains("— Select a Field Type —").click({ force: true });
     cy.get('li[data-value="text"]').click({ force: true });
 
     cy.get('input[name="label"]').type("my label", { force: true });
-
     cy.get('button[type="save"]').contains("Add Field").click();
 
     cy.contains("Delete Model").click({ force: true });
