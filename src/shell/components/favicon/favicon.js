@@ -25,7 +25,11 @@ import { AppLink } from "@zesty-io/core/AppLink";
 
 import MediaApp from "../../../apps/media/src/app/MediaApp";
 
-import { fetchHeadTags, createHeadTag } from "shell/store/headTags";
+import {
+  fetchHeadTags,
+  createHeadTag,
+  deleteHeadTag,
+} from "shell/store/headTags";
 
 import styles from "./favicon.less";
 import MediaStyles from "../../../apps/media/src/app/MediaAppModal.less";
@@ -43,6 +47,7 @@ export default connect((state) => {
   const [faviconZUID, setFaviconZUID] = useState("");
   const [faviconURL, setFaviconURL] = useState("");
   const [imageModal, setImageModal] = useState();
+  const [headtagZUID, setHeadTagZUID] = useState();
 
   const [sizes] = useState([32, 128, 152, 167, 180, 192, 196]);
 
@@ -57,10 +62,26 @@ export default connect((state) => {
       )
     );
     if (tag) {
+      setHeadTagZUID(tag.ZUID);
+    }
+    if (tag) {
       const attr = tag.attributes.find((attr) => attr.key === "href");
       setFaviconURL(attr.value);
     }
   }, [props.headTags]);
+
+  const onDelete = () => {
+    props.dispatch(deleteHeadTag(headtagZUID)).then((res) => {
+      props.dispatch(
+        notify({
+          message: res.data.error
+            ? res.data.error
+            : "Head tag for image deleted",
+          kind: res.data.error ? "warn" : "success",
+        })
+      );
+    });
+  };
 
   const handleClose = () => setOpen(false);
 
@@ -81,6 +102,9 @@ export default connect((state) => {
 
   const handleSave = () => {
     setLoading(true);
+    if (headtagZUID) {
+      onDelete();
+    }
     props
       .dispatch(
         createHeadTag({
@@ -157,6 +181,7 @@ export default connect((state) => {
 
   return (
     <div
+      data-cy="Favicon"
       className={styles.Favicon}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
@@ -186,6 +211,7 @@ export default connect((state) => {
         </ModalHeader>
         <ModalContent>
           <FieldTypeImage
+            data-cy="FieldTypeImage"
             name="favicon"
             label="Image to be used as instance favicon"
             description="Favicons are used by search engine, browsers and applications. They are typically displayed along side your domain name. We recommend using a square PNG image with a transparent background, 228 x 228 or greater."
@@ -193,6 +219,7 @@ export default connect((state) => {
             // limit={1}
             // values field displays
             images={images}
+            imageZUID={headtagZUID}
             // feed to media app
             value={faviconZUID}
             onChange={handleImage}
@@ -244,7 +271,12 @@ export default connect((state) => {
         </ModalContent>
         <ModalFooter>
           <ButtonGroup className={styles.Actions}>
-            <Button type="save" className={styles.Button} onClick={handleSave}>
+            <Button
+              data-cy="faviconSave"
+              type="save"
+              className={styles.Button}
+              onClick={handleSave}
+            >
               {loading ? (
                 <FontAwesomeIcon icon={faSpinner} spin />
               ) : (
