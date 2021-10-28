@@ -195,7 +195,7 @@ function parentOptions(currentItemLangID, path, items) {
           items[itemZUID].web.path && // must have a path
           items[itemZUID].web.path !== "/" && // Exclude homepage
           items[itemZUID].web.path !== path && // Exclude current item
-          items[itemZUID].meta.langID === currentItemLangID
+          items[itemZUID].meta.langID === currentItemLangID // display only relevant language options
       )
       // De-dupe list of zuids & convert to item objects
       .reduce((acc, zuid) => {
