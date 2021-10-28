@@ -22,7 +22,7 @@ describe("Settings Actions", () => {
     cy.get("#SaveSettings").click();
     cy.contains(SAVED_MESSAGE).should("exist");
   });
-  
+
   // skipping flakey test in preparation for CI
   it.skip("Links", () => {
     cy.get("[data-cy=SettingsNav]").contains("Links").click();
@@ -47,7 +47,7 @@ describe("Settings Actions", () => {
   it("Buttons", () => {
     cy.get("[data-cy=SettingsNav]").contains("Buttons").click();
     cy.get("[data-cy=SubApp] input[type=text]").first().clear().type("normal");
-    cy.get("#SaveSettings").click();
+    cy.get("#SaveSettings").click({ force: true });
     cy.contains(SAVED_MESSAGE).should("exist");
   });
 
