@@ -145,7 +145,11 @@ export default forwardRef((props, providedRef) => {
   }, [searchRef]);
 
   return (
-    <div className={cx(styles.GlobalSearch, props.className)} ref={searchRef}>
+    <div
+      data-cy="ContentSearch"
+      className={cx(styles.GlobalSearch, props.className)}
+      ref={searchRef}
+    >
       <Search
         className={styles.Search}
         placeholder={props.placeholder}
