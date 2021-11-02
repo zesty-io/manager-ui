@@ -30,6 +30,7 @@ import {
   createHeadTag,
   deleteHeadTag,
 } from "shell/store/headTags";
+import { notify } from "shell/store/notifications";
 
 import styles from "./favicon.less";
 import MediaStyles from "../../../apps/media/src/app/MediaAppModal.less";
@@ -74,9 +75,7 @@ export default connect((state) => {
     props.dispatch(deleteHeadTag(headtagZUID)).then((res) => {
       props.dispatch(
         notify({
-          message: res.data.error
-            ? res.data.error
-            : "Head tag for image deleted",
+          message: res.data.error ? res.data.error : "Favicon updated",
           kind: res.data.error ? "warn" : "success",
         })
       );
