@@ -10,6 +10,12 @@ describe("Content SEO & Meta", () => {
     cy.get("header").find(".Select").first().click();
     cy.get('[data-value="es"]').click();
     cy.get("[data-cy=meta]").click();
-    cy.get("[data-cy=itemParent]").contains("/es").should("exist");
+
+    // cy.get("[data-cy=itemParent]").contains("/es").should("exist");
+    cy.get("[data-cy=itemParent]").find(".Select").click();
+
+    cy.get(".Select li").then((list) => {
+      expect(list.text()).contains("/es");
+    });
   });
 });
