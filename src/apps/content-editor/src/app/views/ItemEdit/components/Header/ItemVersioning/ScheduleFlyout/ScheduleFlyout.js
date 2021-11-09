@@ -4,8 +4,8 @@ import moment from "moment-timezone";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBan,
-  faCalendar,
   faCalendarPlus,
+  faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
@@ -167,12 +167,12 @@ export default class ScheduleFlyout extends Component {
                   &nbsp;Cancel
                 </Button>
                 <Button
-                  type="secondary"
+                  type="warn"
                   data-cy="UnschedulePublishButton"
                   disabled={this.state.scheduling}
                   onClick={this.handleCancelPublish}
                 >
-                  <FontAwesomeIcon icon={faBan} />
+                  <FontAwesomeIcon icon={faTrashAlt} />
                   &nbsp;Unschedule Version&nbsp;
                   {this.props.item.scheduling.version}
                 </Button>
