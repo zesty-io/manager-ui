@@ -1,9 +1,10 @@
-import React, { memo, useCallback, useEffect } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 import { Field } from "./Field";
 import styles from "./Editor.less";
+import { useSetState } from "react-use";
 
 export default memo(function Editor({
   active,
@@ -110,8 +111,31 @@ export default memo(function Editor({
     }
   }, []);
 
+  const [prevFrameState, setPrevFrameState] = useState({
+    url: "https://numbergenerator.org/",
+    key: "<random hash>",
+  });
+
+  const resetiFrame = () => {
+    const randomNumber = new Date().getUTCMilliseconds();
+    console.log(
+      "🚀 ~ file: Editor.js ~ line 125 ~ resetiFrame ~ randomNumber",
+      randomNumber
+    );
+    setPrevFrameState({ ...prevFrameState, key: randomNumber });
+  };
+
   return (
     <div className={styles.Fields}>
+      <div>
+        <button onClick={resetiFrame}> Random Iframe reload</button>
+        <iframe
+          key={prevFrameState.key}
+          src={prevFrameState.url}
+          style={{ height: "1000", width: "100%" }}
+          frameborder="0"
+        ></iframe>
+      </div>
       {item.meta && item.meta.ZUID && <Breadcrumbs itemZUID={item.meta.ZUID} />}
 
       {fields.length ? (
