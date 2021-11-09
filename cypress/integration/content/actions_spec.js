@@ -82,14 +82,14 @@ describe("Actions in content editor", () => {
       .first()
       .click();
     cy.get(".flatpickr-calendar.open .flatpickr-confirm").click();
-    cy.get("#SchedulePublishButton").click();
+    cy.get("[data-cy=SchedulePublishButton]").click();
     cy.contains("Scheduled version").should("exist");
     cy.get("#SchedulePublishClose").click();
   });
 
   it.skip("Unschedules a Publish for an item", () => {
     cy.get("#PublishScheduleButton").click();
-    cy.get("#UnschedulePublishButton").click();
+    cy.get("[data-cy=UnschedulePublishButton]").click();
     cy.get("#SchedulePublishClose").click();
   });
 
