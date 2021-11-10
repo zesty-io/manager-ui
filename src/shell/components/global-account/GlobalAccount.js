@@ -18,16 +18,12 @@ export default connect((state) => {
   const [open, setOpen] = useState(false);
   const ref = useRef();
 
-  const toggleGlobalAccount = () => {
-    setOpen(!open);
-  };
-
   useEffect(() => {
     const handleGlobalClick = (evt) => {
       if (ref && ref.current.contains(evt.target)) {
-        toggleGlobalAccount;
+        setOpen(true);
       } else {
-        toggleGlobalAccount;
+        setOpen(false);
       }
     };
 
@@ -45,7 +41,10 @@ export default connect((state) => {
         src={`https://www.gravatar.com/avatar/${props.user.emailHash}?d=mm&s=40`}
         height="30px"
         width="30px"
-        onClick={toggleGlobalAccount}
+        onClick={(evt) => {
+          evt.stopPropagation();
+          setOpen(!open);
+        }}
       />
 
       <menu
