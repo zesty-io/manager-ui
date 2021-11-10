@@ -39,6 +39,7 @@ export default connect((state) => {
   return (
     <section className={styles.GlobalAccount} ref={ref}>
       <img
+        data-cy="globalAccountAvatar"
         className={styles.Avatar}
         alt={`${props.user.firstName} ${props.user.lastName} Avatar`}
         src={`https://www.gravatar.com/avatar/${props.user.emailHash}?d=mm&s=40`}
