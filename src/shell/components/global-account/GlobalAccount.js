@@ -16,22 +16,21 @@ export default connect((state) => {
   };
 })(function GlobalAccount(props) {
   const [open, setOpen] = useState(false);
-  const ref = useRef();
+  const ref = useRef(null);
+
+  const handleClickOutside = (event) => {
+    console.log(ref);
+    if (ref.current && !ref.current.contains(event.target)) {
+      setOpen(false);
+    }
+  };
 
   useEffect(() => {
-    const handleGlobalClick = (evt) => {
-      if (ref && ref.current.contains(evt.target)) {
-        setOpen(true);
-      } else {
-        setOpen(false);
-      }
+    document.addEventListener("click", handleClickOutside, true);
+    return () => {
+      document.removeEventListener("click", handleClickOutside, true);
     };
-
-    window.addEventListener("click", handleGlobalClick);
-
-    return () => window.removeEventListener("click", handleGlobalClick);
-  }, [ref]);
-
+  });
   return (
     <section className={styles.GlobalAccount} ref={ref}>
       <img
@@ -42,7 +41,7 @@ export default connect((state) => {
         height="30px"
         width="30px"
         onClick={(evt) => {
-          evt.stopPropagation();
+          // evt.stopPropagation();
           setOpen(!open);
         }}
       />
