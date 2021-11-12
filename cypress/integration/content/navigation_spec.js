@@ -25,5 +25,6 @@ describe("Navigation through content editor", () => {
     cy.get("[data-cy=globalAccountAvatar]").click();
     cy.get("menu").should("exist");
     cy.get("[data-cy=globalAccountAvatar]").click();
+    cy.get("[data-cy=globalAccountAvatar] menu").should("not.exist");
   });
 });

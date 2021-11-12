@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+
 import { connect } from "react-redux";
 import cx from "classnames";
 
@@ -40,8 +41,7 @@ export default connect((state) => {
         src={`https://www.gravatar.com/avatar/${props.user.emailHash}?d=mm&s=40`}
         height="30px"
         width="30px"
-        onClick={(evt) => {
-          // evt.stopPropagation();
+        onClick={() => {
           setOpen(!open);
         }}
       />
