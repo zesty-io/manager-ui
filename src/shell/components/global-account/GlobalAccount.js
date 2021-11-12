@@ -20,7 +20,6 @@ export default connect((state) => {
   const ref = useRef(null);
 
   const handleClickOutside = (event) => {
-    console.log(ref);
     if (ref.current && !ref.current.contains(event.target)) {
       setOpen(false);
     }
