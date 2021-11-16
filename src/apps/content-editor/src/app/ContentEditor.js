@@ -55,23 +55,26 @@ export default function ContentEditor(props) {
         )}
       >
         <div className={cx(styles.Nav, ui.contentNav ? styles.OpenNav : " ")}>
+          <ContentNav
+            dispatch={dispatch}
+            models={contentModels}
+            nav={navContent}
+          />
           <Button
+            data-cy="contentNavButton"
             className={styles.CollapseButton}
             onClick={() => {
               dispatch(toggleContentNav());
             }}
           >
             {ui.contentNav ? (
-              <FontAwesomeIcon icon={faChevronLeft} />
+              <span>
+                <FontAwesomeIcon icon={faChevronLeft} /> Collapse
+              </span>
             ) : (
               <FontAwesomeIcon icon={faChevronRight} />
             )}
           </Button>
-          <ContentNav
-            dispatch={dispatch}
-            models={contentModels}
-            nav={navContent}
-          />
         </div>
         <div className={styles.Content}>
           <div className={styles.ContentWrap}>

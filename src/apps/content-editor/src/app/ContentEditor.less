@@ -12,7 +12,9 @@
     overflow-y: auto;
 
     transition: all 0.4s;
-    width: 70px;
+    width: 50px;
+    display: flex;
+    align-items: flex-end;
 
     //Hide all content on collapse except button
     div {
@@ -20,19 +22,23 @@
     }
 
     .CollapseButton {
-      display: block;
-      margin: 16px 13px 0 auto;
+      width: 100%;
+      justify-content: center;
+      border-radius: initial;
     }
 
     // Display all Content Nav
     &.OpenNav {
-      display: block;
       width: 20vw;
-      div:not(:last-child) {
+      display: initial;
+      align-items: flex-end;
+
+      div {
         display: flex;
       }
-      div:last-child {
-        display: block;
+
+      div:last-of-type {
+        flex-direction: column;
       }
     }
   }

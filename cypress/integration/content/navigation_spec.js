@@ -21,4 +21,9 @@ describe("Navigation through content editor", () => {
     cy.get('[data-value="link"]').click();
     cy.get("#CreateLinkButton").should("exist");
   });
+  // it("Check Content Nav Collapse functionality ", () => {
+  //   cy.get("[data-cy=contentNavButton]").siblings("div").should("not.exist");
+  //   // cy.visit("/code");
+  //   // cy.visit("/content");
+  // });
 });
