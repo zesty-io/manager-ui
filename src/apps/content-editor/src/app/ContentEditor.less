@@ -3,7 +3,13 @@
 .ContentEditor {
   height: calc(100vh - 54px);
   display: grid;
-  grid-template-columns: minmax(200px, 350px) 1fr;
+  grid-template-columns: 25px 1fr;
+  // transition: grid-template-columns 350ms ease;
+  transition: all 0.4s;
+
+  &.openedNav {
+    grid-template-columns: minmax(200px, 350px) 1fr;
+  }
 
   .Nav {
     background: transparent;

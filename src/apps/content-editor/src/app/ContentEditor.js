@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { connect } from "react-redux";
 import { Switch, Route } from "react-router-dom";
+import cx from "classnames";
 
 import { fetchModels } from "shell/store/models";
 import { fetchNav } from "../store/navContent";
@@ -43,7 +44,7 @@ export default connect((state) => {
           }
           message="Starting Content Editor"
         >
-          <section className={styles.ContentEditor}>
+          <section className={cx(styles.ContentEditor, styles.openedNav)}>
             <div className={styles.Nav}>
               <ContentNav
                 dispatch={this.props.dispatch}
