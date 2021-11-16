@@ -1,5 +1,5 @@
-import { Component } from "react";
-import { connect } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
 
@@ -22,75 +22,76 @@ import { CSVImport } from "./views/CSVImport";
 import "@zesty-io/core/vendor.css";
 
 import styles from "./ContentEditor.less";
-export default connect((state) => {
-  return {
-    contentModels: state.models,
-    navContent: state.navContent,
+
+export default function ContentEditor(props) {
+  const contentModels = useSelector((state) => state.models);
+  const navContent = useSelector((state) => state.navContent);
+  const dispatch = useDispatch();
+  const [toggleContentNav, setToggleContentNav] = useState(false);
+
+  useEffect(() => {
+    // Kick off loading data before app mount
+    // to decrease time to first interaction
+    dispatch(fetchNav());
+    dispatch(fetchModels());
+  }, []);
+
+  const toggleNav = () => {
+    setToggleContentNav(!toggleContentNav);
   };
-})(
-  class ContentEditor extends Component {
-    componentDidMount() {
-      // Kick off loading data before app mount
-      // to decrease time to first interaction
-      this.props.dispatch(fetchNav());
-      this.props.dispatch(fetchModels());
-    }
-    render() {
-      return (
-        <WithLoader
-          condition={
-            this.props.navContent.nav.length ||
-            this.props.navContent.headless.length
-          }
-          message="Starting Content Editor"
+
+  return (
+    <WithLoader
+      condition={navContent.nav.length || navContent.headless.length}
+      message="Starting Content Editor"
+    >
+      <section
+        className={cx(
+          styles.ContentEditor,
+          toggleContentNav ? styles.openedNav : ""
+        )}
+      >
+        <div
+          className={cx(styles.Nav, toggleContentNav ? styles.OpenNav : " ")}
         >
-          <section className={cx(styles.ContentEditor, styles.openedNav)}>
-            <div className={styles.Nav}>
-              <ContentNav
-                dispatch={this.props.dispatch}
-                models={this.props.contentModels}
-                nav={this.props.navContent}
+          <button className={styles.CollapseToggle} onClick={toggleNav}>
+            toggleNav
+          </button>
+          <ContentNav
+            dispatch={dispatch}
+            models={contentModels}
+            nav={navContent}
+          />
+        </div>
+        <div className={styles.Content}>
+          <div className={styles.ContentWrap}>
+            <Switch>
+              <Route exact path="/content" component={Dashboard} />
+
+              <Route exact path="/content/link/new" component={LinkCreate} />
+
+              <Route
+                exact
+                path="/content/:modelZUID/new"
+                component={ItemCreate}
               />
-            </div>
-            <div className={styles.Content}>
-              <div className={styles.ContentWrap}>
-                <Switch>
-                  <Route exact path="/content" component={Dashboard} />
+              <Route path="/content/link/:linkZUID" component={LinkEdit} />
+              <Route
+                exact
+                path="/content/:modelZUID/import"
+                component={CSVImport}
+              />
+              <Route
+                path="/content/:modelZUID/:itemZUID"
+                component={ItemEdit}
+              />
+              <Route exact path="/content/:modelZUID" component={ItemList} />
 
-                  <Route
-                    exact
-                    path="/content/link/new"
-                    component={LinkCreate}
-                  />
-
-                  <Route
-                    exact
-                    path="/content/:modelZUID/new"
-                    component={ItemCreate}
-                  />
-                  <Route path="/content/link/:linkZUID" component={LinkEdit} />
-                  <Route
-                    exact
-                    path="/content/:modelZUID/import"
-                    component={CSVImport}
-                  />
-                  <Route
-                    path="/content/:modelZUID/:itemZUID"
-                    component={ItemEdit}
-                  />
-                  <Route
-                    exact
-                    path="/content/:modelZUID"
-                    component={ItemList}
-                  />
-
-                  <Route path="*" component={NotFound} />
-                </Switch>
-              </div>
-            </div>
-          </section>
-        </WithLoader>
-      );
-    }
-  }
-);
+              <Route path="*" component={NotFound} />
+            </Switch>
+          </div>
+        </div>
+      </section>
+    </WithLoader>
+  );
+}
