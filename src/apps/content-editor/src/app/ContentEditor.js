@@ -2,6 +2,12 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
+import { Button } from "@zesty-io/core";
 
 import { fetchModels } from "shell/store/models";
 import { fetchNav } from "../store/navContent";
@@ -54,9 +60,13 @@ export default function ContentEditor(props) {
         <div
           className={cx(styles.Nav, toggleContentNav ? styles.OpenNav : " ")}
         >
-          <button className={styles.CollapseToggle} onClick={toggleNav}>
-            toggleNav
-          </button>
+          <Button className={styles.CollapseButton} onClick={toggleNav}>
+            {toggleContentNav ? (
+              <FontAwesomeIcon icon={faChevronLeft} />
+            ) : (
+              <FontAwesomeIcon icon={faChevronRight} />
+            )}
+          </Button>
           <ContentNav
             dispatch={dispatch}
             models={contentModels}

@@ -12,21 +12,26 @@
     overflow-y: auto;
 
     transition: all 0.4s;
-    // transition: width 350ms ease;
-    width: 100px;
+    width: 70px;
 
-    //Hide all content on collapse
-    & > * {
+    //Hide all content on collapse except button
+    div {
       display: none;
     }
-    //Show only button
-    .CollapseToggle {
+
+    .CollapseButton {
       display: block;
+      margin: 16px 13px 0 auto;
     }
+
+    // Display all Content Nav
     &.OpenNav {
       display: block;
       width: 20vw;
-      & > * {
+      div:not(:last-child) {
+        display: flex;
+      }
+      div:last-child {
         display: block;
       }
     }
