@@ -18,6 +18,7 @@ const uiSlice = createSlice({
     loadedTabs: false,
     tabs: [],
     openNav: true,
+    contentNav: true,
   },
   reducers: {
     loadTabsSuccess(state, action) {
@@ -31,10 +32,14 @@ const uiSlice = createSlice({
     loadedUI(state, action) {
       if (action.payload) {
         state.openNav = action.payload.openNav;
+        state.contentNav = action.payload.contentNav;
       }
     },
     toggleNav(state) {
       state.openNav = !state.openNav;
+    },
+    toggleContentNav(state) {
+      state.contentNav = !state.contentNav;
     },
   },
 });
@@ -187,8 +192,13 @@ function toCapitalCase(string) {
 
 export default uiSlice.reducer;
 
-export const { loadTabsSuccess, setTabs, loadedUI, toggleNav } =
-  uiSlice.actions;
+export const {
+  loadTabsSuccess,
+  setTabs,
+  loadedUI,
+  toggleNav,
+  toggleContentNav,
+} = uiSlice.actions;
 
 // Thunks
 

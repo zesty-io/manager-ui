@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toggleContentNav } from "shell/store/ui";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -32,8 +33,8 @@ import styles from "./ContentEditor.less";
 export default function ContentEditor(props) {
   const contentModels = useSelector((state) => state.models);
   const navContent = useSelector((state) => state.navContent);
+  const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
-  const [toggleContentNav, setToggleContentNav] = useState(false);
 
   useEffect(() => {
     // Kick off loading data before app mount
@@ -41,10 +42,6 @@ export default function ContentEditor(props) {
     dispatch(fetchNav());
     dispatch(fetchModels());
   }, []);
-
-  const toggleNav = () => {
-    setToggleContentNav(!toggleContentNav);
-  };
 
   return (
     <WithLoader
@@ -54,14 +51,17 @@ export default function ContentEditor(props) {
       <section
         className={cx(
           styles.ContentEditor,
-          toggleContentNav ? styles.openedNav : ""
+          ui.contentNav ? styles.openedNav : ""
         )}
       >
-        <div
-          className={cx(styles.Nav, toggleContentNav ? styles.OpenNav : " ")}
-        >
-          <Button className={styles.CollapseButton} onClick={toggleNav}>
-            {toggleContentNav ? (
+        <div className={cx(styles.Nav, ui.contentNav ? styles.OpenNav : " ")}>
+          <Button
+            className={styles.CollapseButton}
+            onClick={() => {
+              dispatch(toggleContentNav());
+            }}
+          >
+            {ui.contentNav ? (
               <FontAwesomeIcon icon={faChevronLeft} />
             ) : (
               <FontAwesomeIcon icon={faChevronRight} />
