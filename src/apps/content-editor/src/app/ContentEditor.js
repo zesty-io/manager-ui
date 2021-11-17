@@ -72,7 +72,7 @@ export default function ContentEditor(props) {
             ) : (
               <FontAwesomeIcon icon={faChevronRight} />
             )}
-            {ui.contentNav ? <span>Collapse</span> : ""}
+            {ui.contentNav ? <span data-cy="collapseText">Collapse</span> : ""}
           </Button>
         </div>
         <div className={styles.Content}>
