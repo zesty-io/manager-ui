@@ -21,13 +21,24 @@
       display: none;
     }
 
+    [data-icon="chevron-right"] {
+      span {
+        display: none;
+      }
+    }
+
     .CollapseButton {
       width: 100%;
       justify-content: center;
       border-radius: initial;
-      padding: 13px;
+      padding: 16px;
       text-transform: capitalize;
       font-size: 16px;
+      color: @zesty-field-blue;
+      line-height: 18px;
+      &:hover {
+        color: @zesty-orange;
+      }
       svg {
         margin-right: 8px;
       }
