@@ -69,7 +69,8 @@ export default function ContentEditor(props) {
           >
             {ui.contentNav ? (
               <span>
-                <FontAwesomeIcon icon={faChevronLeft} /> Collapse
+                <FontAwesomeIcon icon={faChevronLeft} />
+                Collapse
               </span>
             ) : (
               <FontAwesomeIcon icon={faChevronRight} />
