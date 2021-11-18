@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleContentNav } from "shell/store/ui";
 import { Switch, Route } from "react-router-dom";
@@ -72,7 +72,6 @@ export default function ContentEditor(props) {
             ) : (
               <FontAwesomeIcon icon={faChevronRight} />
             )}
-            {ui.contentNav ? <span data-cy="collapseText">Collapse</span> : ""}
           </Button>
         </div>
         <div className={styles.Content}>
