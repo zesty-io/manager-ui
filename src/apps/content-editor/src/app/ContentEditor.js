@@ -51,7 +51,7 @@ export default function ContentEditor(props) {
       <section
         className={cx(
           styles.ContentEditor,
-          ui.contentNav ? styles.openedNav : ""
+          ui.contentNav ? styles.OpenEditor : ""
         )}
       >
         <div className={cx(styles.Nav, ui.contentNav ? styles.OpenNav : " ")}>

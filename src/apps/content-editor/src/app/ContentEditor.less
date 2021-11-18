@@ -3,52 +3,45 @@
 .ContentEditor {
   height: calc(100vh - 54px);
   display: grid;
-  grid-template-columns: max-content 1fr;
+  grid-template-columns: 50px 1fr;
+
+  &.OpenEditor {
+    grid-template-columns: 20vw 1fr;
+  }
 
   .Nav {
     background: transparent;
     overflow: hidden;
-    overflow-x: hidden;
     overflow-y: auto;
-
-    width: 50px;
     display: flex;
     align-items: flex-end;
 
-    //Hide all content on collapse except button
     div {
       display: none;
     }
 
-    .CollapseButton {
-      width: 100%;
-      justify-content: center;
-      border-radius: initial;
-
-      text-transform: capitalize;
-
-      color: @zesty-field-blue;
-
-      &:hover {
-        color: @zesty-orange;
-      }
-      svg {
-        margin-right: 8px;
-      }
-    }
-
-    // Display all Content Nav
     &.OpenNav {
-      width: 20vw;
       display: initial;
-      align-items: flex-end;
-
       div {
         display: flex;
       }
 
       div:last-of-type {
         flex-direction: column;
+      }
+    }
+
+    .CollapseButton {
+      width: 100%;
+      justify-content: center;
+      border-radius: initial;
+      text-transform: capitalize;
+      color: @zesty-field-blue;
+      &:hover {
+        color: @zesty-orange;
+      }
+      svg {
+        margin-right: 8px;
       }
     }
   }
