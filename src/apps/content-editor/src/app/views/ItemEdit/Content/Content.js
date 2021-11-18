@@ -7,6 +7,11 @@ import { Drawer, DrawerContent } from "@zesty-io/core/Drawer";
 import { Button } from "@zesty-io/core";
 
 import { Actions } from "./Actions";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./Content.less";
 export default function Content(props) {
@@ -55,6 +60,11 @@ export default function Content(props) {
               dispatch(toggleContentActions());
             }}
           >
+            {ui.contentActions ? (
+              <FontAwesomeIcon icon={faChevronRight} />
+            ) : (
+              <FontAwesomeIcon icon={faChevronLeft} />
+            )}
             Actions
           </Button>
           <Drawer
