@@ -1,11 +1,20 @@
+import { useState } from "react";
 import { Editor } from "../../../components/Editor";
 import { Header } from "../components/Header";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
+import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
+import { Button } from "@zesty-io/core";
 
 import { Actions } from "./Actions";
 
 import styles from "./Content.less";
 export default function Content(props) {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const drawerOnClick = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+
   return (
     <main className={styles.Content}>
       <Header
@@ -41,15 +50,30 @@ export default function Content(props) {
             onSave={props.onSave}
           />
         </div>
-        <div className={styles.Actions}>
-          <Actions
-            {...props}
-            site={{}}
-            set={{
-              type: props.model.type,
-            }}
-          />
-        </div>
+        <aside className={styles.Actions}>
+          <Button className={styles.CollapseBtn} onClick={drawerOnClick}>
+            Actions
+          </Button>
+          <Drawer
+            className={styles.Drawer}
+            position="right"
+            offset="0px"
+            width="20vw"
+            // 100 - GlobalTopbar - Header - ActionsBtn - 16px
+            height="calc(100vh - 54px - 75px - 40px - 16px)"
+            open={drawerOpen}
+          >
+            <DrawerContent className={styles.DrawerContent}>
+              <Actions
+                {...props}
+                site={{}}
+                set={{
+                  type: props.model.type,
+                }}
+              />
+            </DrawerContent>
+          </Drawer>
+        </aside>
       </div>
     </main>
   );

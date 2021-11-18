@@ -1,10 +1,13 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
 .Content {
   height: calc(100vh - 54px);
   overflow: auto;
 
   .MainEditor {
     display: grid;
-    grid-template-columns: minmax(400px, auto) minmax(250px, 15vw);
+    grid-template-columns: 1fr auto;
     margin: 16px 32px;
     grid-gap: 32px;
 
@@ -14,7 +17,17 @@
     }
     .Actions {
       position: relative;
-      background: #f2f7fc;
+      background: @appBkgColor;
+      .CollapseBtn {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        margin: 8px 16px;
+        z-index: 110;
+      }
+
+      .Drawer {
+      }
     }
   }
 }
