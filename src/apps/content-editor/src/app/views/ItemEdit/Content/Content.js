@@ -1,19 +1,17 @@
-import { useState } from "react";
+import { toggleContentActions } from "shell/store/ui";
+import { useDispatch, useSelector } from "react-redux";
 import { Editor } from "../../../components/Editor";
 import { Header } from "../components/Header";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
-import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
+import { Drawer, DrawerContent } from "@zesty-io/core/Drawer";
 import { Button } from "@zesty-io/core";
 
 import { Actions } from "./Actions";
 
 import styles from "./Content.less";
 export default function Content(props) {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
-  const drawerOnClick = () => {
-    setDrawerOpen(!drawerOpen);
-  };
+  const ui = useSelector((state) => state.ui);
+  const dispatch = useDispatch();
 
   return (
     <main className={styles.Content}>
@@ -51,7 +49,12 @@ export default function Content(props) {
           />
         </div>
         <aside className={styles.Actions}>
-          <Button className={styles.CollapseBtn} onClick={drawerOnClick}>
+          <Button
+            className={styles.CollapseBtn}
+            onClick={() => {
+              dispatch(toggleContentActions());
+            }}
+          >
             Actions
           </Button>
           <Drawer
@@ -61,7 +64,7 @@ export default function Content(props) {
             width="20vw"
             // 100 - GlobalTopbar - Header - ActionsBtn - 16px
             height="calc(100vh - 54px - 75px - 40px - 16px)"
-            open={drawerOpen}
+            open={ui.contentActions}
           >
             <DrawerContent className={styles.DrawerContent}>
               <Actions

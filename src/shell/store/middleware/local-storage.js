@@ -1,6 +1,6 @@
 import idb from "utility/idb";
 // import { actions } from "shell/store/releases";
-import { toggleNav } from "../ui";
+import { toggleNav, toggleContentActions } from "../ui";
 
 export const localStorage = (store) => (next) => (action) => {
   const result = next(action);
@@ -10,6 +10,7 @@ export const localStorage = (store) => (next) => (action) => {
 
     switch (action.type) {
       case `${toggleNav}`:
+      case `${toggleContentActions}`:
         const ui = { ...state.ui };
         // we already store tabs separately
         delete ui.tabs;
