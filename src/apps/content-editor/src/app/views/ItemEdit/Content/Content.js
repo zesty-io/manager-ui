@@ -55,6 +55,7 @@ export default function Content(props) {
         </div>
         <aside className={styles.Actions}>
           <Button
+            data-cy="ActionsButton"
             className={styles.CollapseBtn}
             onClick={() => {
               dispatch(toggleContentActions());
