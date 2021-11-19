@@ -293,3 +293,38 @@ export function createRelease(payload) {
       });
   };
 }
+
+export function deleteRelease(zuid) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const release = state.releases.data.find(
+      (release) => release.ZUID === zuid
+    );
+
+    return request(`${CONFIG.API_INSTANCE}/releases/${zuid}`, {
+      method: "delete",
+    }).then((res) => {
+      // Update store
+      return dispatch(fetchReleases()).then(() => {
+        if (res.status !== 200) {
+          dispatch(
+            notify({
+              message: `Failed deleting release ${release?.name}`,
+              type: "warn",
+            })
+          );
+        } else {
+          dispatch(
+            notify({
+              message: `Deleted release ${release?.name}`,
+              type: "success",
+            })
+          );
+        }
+
+        // Return delete request response
+        return res;
+      });
+    });
+  };
+}
