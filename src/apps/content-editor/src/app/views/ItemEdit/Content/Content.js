@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Editor } from "../../../components/Editor";
 import { Header } from "../components/Header";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
-import { Drawer, DrawerContent } from "@zesty-io/core/Drawer";
+import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
 import { Button } from "@zesty-io/core";
 
 import { Actions } from "./Actions";
@@ -66,7 +66,6 @@ export default function Content(props) {
             ) : (
               <FontAwesomeIcon icon={faChevronLeft} />
             )}
-            Actions
           </Button>
           <Drawer
             className={styles.Drawer}
@@ -77,6 +76,21 @@ export default function Content(props) {
             height="calc(100vh - 54px - 75px - 40px - 16px)"
             open={ui.contentActions}
           >
+            {/* <DrawerHandle
+              className={styles.DrawerHandle}
+              onClick={() => {
+                dispatch(toggleContentActions());
+              }}
+            >
+              <Button title="Actions">
+                {ui.contentActions ? (
+                  <FontAwesomeIcon icon={faChevronRight} />
+                ) : (
+                  <FontAwesomeIcon icon={faChevronLeft} />
+                )}
+              </Button>
+            </DrawerHandle> */}
+
             <DrawerContent className={styles.DrawerContent}>
               <Actions
                 {...props}
