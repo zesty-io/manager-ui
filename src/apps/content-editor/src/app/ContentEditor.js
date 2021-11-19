@@ -70,7 +70,16 @@ export default function ContentEditor(props) {
             <FontAwesomeIcon icon={faChevronRight} />
           )}
         </Button>
-        <div className={cx(styles.Nav, ui.contentNav ? styles.OpenNav : " ")}>
+
+        <div
+          className={cx(
+            styles.Nav,
+            ui.contentNav ? styles.OpenNav : styles.ClosedNav
+          )}
+          onClick={() => {
+            !ui.contentNav ? dispatch(toggleContentNav()) : "";
+          }}
+        >
           <ContentNav
             dispatch={dispatch}
             models={contentModels}

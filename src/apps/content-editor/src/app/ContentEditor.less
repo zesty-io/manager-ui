@@ -3,7 +3,7 @@
 .ContentEditor {
   height: calc(100vh - 54px);
   display: grid;
-  grid-template-columns: 16px 1fr;
+  grid-template-columns: 24px 1fr;
   position: relative;
 
   &.OpenEditor {
@@ -12,13 +12,15 @@
 
   .CollapseButton {
     justify-content: center;
-    border-radius: initial;
-    text-transform: capitalize;
-    color: @zesty-field-blue;
+    border-radius: 0 4px 4px 0;
+    color: @globalMenuBkgColor;
+    padding: 16px 8px;
+    background-color: @appBkgColor;
+    box-shadow: 2px 2px 5px fade(@zesty-dark-blue, 50%);
 
     position: absolute;
     bottom: 0;
-    left: 16px;
+    left: 24px;
     z-index: 100;
 
     &.TabBtn {
@@ -27,9 +29,6 @@
 
     &:hover {
       color: @zesty-orange;
-    }
-    svg {
-      margin-right: 8px;
     }
   }
 
@@ -52,6 +51,12 @@
 
       div:last-of-type {
         flex-direction: column;
+      }
+    }
+    &.ClosedNav {
+      &:hover {
+        cursor: pointer;
+        background: darken(@appBkgColor, 2%);
       }
     }
   }
