@@ -72,6 +72,7 @@ export default function ContentEditor(props) {
         </Button>
 
         <div
+          data-cy="contentNav"
           className={cx(
             styles.Nav,
             ui.contentNav ? styles.OpenNav : styles.ClosedNav
