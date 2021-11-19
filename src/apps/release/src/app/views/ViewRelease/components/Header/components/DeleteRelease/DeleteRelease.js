@@ -7,12 +7,12 @@ import { Notice } from "@zesty-io/core/Notice";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 
 import { deleteRelease } from "shell/store/releases";
+import { usePermission } from "shell/hooks/use-permissions";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBan,
   faCheckCircle,
-  faSpinner,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -25,6 +25,8 @@ export const DeleteRelease = memo(function DeleteRelease() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const canPublish = usePermission("PUBLISH");
+
   const onDeleteRelease = () => {
     setLoading(true);
     dispatch(deleteRelease(params.zuid)).finally(() => {
@@ -34,7 +36,11 @@ export const DeleteRelease = memo(function DeleteRelease() {
 
   return (
     <div>
-      <Button type="warn" onClick={() => setOpen(true)} disabled={loading}>
+      <Button
+        type="warn"
+        onClick={() => setOpen(true)}
+        disabled={!canPublish || loading}
+      >
         <FontAwesomeIcon icon={faTrash} />
         &nbsp;Delete
       </Button>

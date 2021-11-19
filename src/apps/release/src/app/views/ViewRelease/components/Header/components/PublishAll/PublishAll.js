@@ -7,6 +7,7 @@ import { Notice } from "@zesty-io/core/Notice";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 
 import { publishAll } from "shell/store/releases";
+import { usePermission } from "shell/hooks/use-permissions";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -23,6 +24,7 @@ export const PublishAll = memo(function PublishAll() {
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const canPublish = usePermission("PUBLISH");
 
   const onPublishAll = () => {
     setLoading(true);
@@ -34,7 +36,11 @@ export const PublishAll = memo(function PublishAll() {
 
   return (
     <div>
-      <Button type="alt" onClick={() => setOpen(true)} disabled={loading}>
+      <Button
+        type="alt"
+        onClick={() => setOpen(true)}
+        disabled={!canPublish || loading}
+      >
         <FontAwesomeIcon icon={faCloudUploadAlt} />
         &nbsp;Publish All
       </Button>
