@@ -3,10 +3,34 @@
 .ContentEditor {
   height: calc(100vh - 54px);
   display: grid;
-  grid-template-columns: 50px 1fr;
+  grid-template-columns: 16px 1fr;
+  position: relative;
 
   &.OpenEditor {
     grid-template-columns: 20vw 1fr;
+  }
+
+  .CollapseButton {
+    justify-content: center;
+    border-radius: initial;
+    text-transform: capitalize;
+    color: @zesty-field-blue;
+
+    position: absolute;
+    bottom: 0;
+    left: 16px;
+    z-index: 100;
+
+    &.TabBtn {
+      left: 20vw;
+    }
+
+    &:hover {
+      color: @zesty-orange;
+    }
+    svg {
+      margin-right: 8px;
+    }
   }
 
   .Nav {
@@ -28,20 +52,6 @@
 
       div:last-of-type {
         flex-direction: column;
-      }
-    }
-
-    .CollapseButton {
-      width: 100%;
-      justify-content: center;
-      border-radius: initial;
-      text-transform: capitalize;
-      color: @zesty-field-blue;
-      &:hover {
-        color: @zesty-orange;
-      }
-      svg {
-        margin-right: 8px;
       }
     }
   }
