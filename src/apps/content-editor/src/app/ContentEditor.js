@@ -55,6 +55,7 @@ export default function ContentEditor(props) {
         )}
       >
         <Button
+          title={ui.contentNav ? "CLOSE" : "OPEN"}
           data-cy="contentNavButton"
           className={cx(
             styles.CollapseButton,
