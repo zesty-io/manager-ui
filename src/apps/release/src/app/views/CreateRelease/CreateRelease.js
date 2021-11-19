@@ -19,8 +19,15 @@ export function CreateRelease() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleCreate = () => {
+    if (!name) {
+      setError("Missing required release name");
+      return;
+    }
+
+    setError("");
     setLoading(true);
     dispatch(
       createRelease({
@@ -35,10 +42,11 @@ export function CreateRelease() {
               history.push(`/release/${res.data.ZUID}`);
             })
             .finally(() => setLoading(false));
+        } else {
+          setError(res.error);
         }
       })
-      .catch((err) => {
-        console.error(err);
+      .finally(() => {
         setLoading(false);
       });
   };
@@ -50,7 +58,9 @@ export function CreateRelease() {
           data-cy="release-name"
           label="Release Name"
           name="name"
-          onChange={(val) => setName(val)}
+          onChange={(val) => setName(val.trim())}
+          required
+          error={error}
         />
         <FieldTypeTextarea
           data-cy="release-desc"
