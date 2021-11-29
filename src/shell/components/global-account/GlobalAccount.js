@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,22 +10,18 @@ import { CopyButton } from "@zesty-io/core/CopyButton";
 import { Url } from "@zesty-io/core/Url";
 
 import styles from "./GlobalAccount.less";
-export default connect((state) => {
-  return {
-    user: state.user,
-    userRole: state.userRole,
-  };
-})(function GlobalAccount(props) {
+export default function GlobalAccount(props) {
+  const user = useSelector((state) => state.user);
+  const userRole = useSelector((state) => state.userRole);
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
-  const handleClickOutside = (event) => {
-    if (ref.current && !ref.current.contains(event.target)) {
-      setOpen(false);
-    }
-  };
-
   useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
     document.addEventListener("click", handleClickOutside, true);
     return () => {
       document.removeEventListener("click", handleClickOutside, true);
@@ -36,8 +32,8 @@ export default connect((state) => {
       <img
         data-cy="globalAccountAvatar"
         className={styles.Avatar}
-        alt={`${props.user.firstName} ${props.user.lastName} Avatar`}
-        src={`https://www.gravatar.com/avatar/${props.user.emailHash}?d=mm&s=40`}
+        alt={`${user.firstName} ${user.lastName} Avatar`}
+        src={`https://www.gravatar.com/avatar/${user.emailHash}?d=mm&s=40`}
         height="30px"
         width="30px"
         onClick={() => {
@@ -49,16 +45,16 @@ export default connect((state) => {
         className={cx(styles.bodyText, styles.Menu, open ? null : styles.hide)}
       >
         <li>
-          {props.user.firstName} {props.user.lastName}
+          {user.firstName} {user.lastName}
         </li>
-        <li className={styles.email}>{props.user.email} </li>
+        <li className={styles.email}>{user.email} </li>
 
         <li className={styles.zuid}>
           ZUID:&nbsp;
-          <CopyButton kind="outlined" size="compact" value={props.user.ZUID} />
+          <CopyButton kind="outlined" size="compact" value={user.ZUID} />
         </li>
 
-        <li className={styles.role}>Instance: {props.userRole.name}</li>
+        <li className={styles.role}>Instance: {userRole.name}</li>
 
         <li className={styles.accounts}>
           <Url href={`${CONFIG.URL_ACCOUNTS}`}>My Accounts</Url>
@@ -76,4 +72,4 @@ export default connect((state) => {
       </menu>
     </section>
   );
-});
+}
