@@ -1,10 +1,13 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
 .Content {
   height: calc(100vh - 54px);
   overflow: auto;
 
   .MainEditor {
     display: grid;
-    grid-template-columns: minmax(400px, auto) minmax(250px, 15vw);
+    grid-template-columns: 1fr auto;
     margin: 16px 32px;
     grid-gap: 32px;
 
@@ -14,7 +17,30 @@
     }
     .Actions {
       position: relative;
-      background: #f2f7fc;
+      background: @appBkgColor;
+
+      .CollapseBtn {
+        background-color: @appBkgColor;
+        color: @globalMenuBkgColor;
+        position: fixed;
+        bottom: 0;
+        right: 7px;
+        padding: 16px 8px;
+        z-index: 140;
+        box-shadow: 0px 0px 6px lighten(@zesty-dark-blue, 20%);
+        border-radius: 4px 0 0 4px;
+
+        &:hover {
+          color: @zesty-orange;
+        }
+      }
+
+      .Drawer {
+        overflow-x: hidden;
+        box-shadow: 0px 0px 12px lighten(@zesty-dark-blue, 20%);
+        z-index: 130;
+        bottom: 0;
+      }
     }
   }
 }

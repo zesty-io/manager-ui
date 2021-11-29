@@ -19,6 +19,7 @@ const uiSlice = createSlice({
     tabs: [],
     openNav: true,
     contentNav: true,
+    contentActions: true,
   },
   reducers: {
     loadTabsSuccess(state, action) {
@@ -33,6 +34,7 @@ const uiSlice = createSlice({
       if (action.payload) {
         state.openNav = action.payload.openNav;
         state.contentNav = action.payload.contentNav;
+        state.contentActions = action.payload.contentActions;
       }
     },
     toggleNav(state) {
@@ -40,6 +42,9 @@ const uiSlice = createSlice({
     },
     toggleContentNav(state) {
       state.contentNav = !state.contentNav;
+    },
+    toggleContentActions(state) {
+      state.contentActions = !state.contentActions;
     },
   },
 });
@@ -198,6 +203,7 @@ export const {
   loadedUI,
   toggleNav,
   toggleContentNav,
+  toggleContentActions,
 } = uiSlice.actions;
 
 // Thunks

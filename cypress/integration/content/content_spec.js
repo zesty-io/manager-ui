@@ -294,4 +294,43 @@ describe("Content Specs", () => {
   //   cy.get('#SaveItemButton').click();
   //   cy.contains('Saved a new ', { timeout: 5000 }).should('exist');
   // });
+
+  it("Check Actions Collapsed functionality", () => {
+    cy.get("[data-cy=ActionsButton]")
+      .siblings("div")
+      .then((btn) => {
+        if (btn.is(":visible")) {
+          cy.get("[data-cy=ActionsButton]")
+            .siblings("div")
+            .should("be.visible");
+        } else {
+          cy.get("[data-cy=ActionsButton]")
+            .siblings("div")
+            .should("not.be.visible");
+        }
+      });
+  });
+  it("Check Actions Collapse persist when clicking on other Applications", () => {
+    cy.get("[data-cy=ActionsButton]")
+      .siblings("div")
+      .then((btn) => {
+        if (btn.is(":visible")) {
+          cy.get("[data-cy=ActionsButton]")
+            .siblings("div")
+            .should("be.visible");
+
+          cy.visit("/code");
+          cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+          cy.get("[data-cy=ActionsButton]")
+            .siblings("div")
+            .should("be.visible");
+        } else {
+          cy.visit("/code");
+          cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+          cy.get("[data-cy=ActionsButton]")
+            .siblings("div")
+            .should("not.be.visible");
+        }
+      });
+  });
 });
