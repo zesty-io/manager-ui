@@ -10,25 +10,29 @@
     grid-template-columns: 1fr auto;
     margin: 16px 32px;
     grid-gap: 32px;
+    align-items: flex-start;
 
     .Editor {
       flex: 2;
       padding: 0;
     }
     .Actions {
-      position: relative;
       background: @appBkgColor;
+      position: relative;
 
       .CollapseBtn {
         background-color: @appBkgColor;
         color: @globalMenuBkgColor;
-        position: fixed;
-        bottom: 0;
-        right: 7px;
-        padding: 16px 8px;
-        z-index: 140;
+        padding: 8px 16px;
+        z-index: 20;
         box-shadow: 0px 0px 6px lighten(@zesty-dark-blue, 20%);
         border-radius: 4px 0 0 4px;
+        // position: relative;
+        // bottom: 0;
+        // right: -32px;
+        position: fixed;
+        right: 7px;
+        bottom: 0;
 
         &:hover {
           color: @zesty-orange;
@@ -36,10 +40,19 @@
       }
 
       .Drawer {
+        position: relative;
         overflow-x: hidden;
-        box-shadow: 0px 0px 12px lighten(@zesty-dark-blue, 20%);
-        z-index: 130;
+        overflow-y: hidden !important;
+        // box-shadow: 0px 0px 12px lighten(@zesty-dark-blue, 20%);
+        z-index: 10;
         bottom: 0;
+
+        .show {
+          opacity: 1;
+        }
+        .hide {
+          opacity: 0;
+        }
       }
     }
   }
