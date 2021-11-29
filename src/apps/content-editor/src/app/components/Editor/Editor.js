@@ -111,50 +111,63 @@ export default memo(function Editor({
   }, []);
 
   return (
-    <div className={styles.Fields}>
-      {item.meta && item.meta.ZUID && <Breadcrumbs itemZUID={item.meta.ZUID} />}
+    <div className={styles.DuoMode}>
+      <div className={styles.Fields}>
+        {item.meta && item.meta.ZUID && (
+          <Breadcrumbs itemZUID={item.meta.ZUID} />
+        )}
 
-      {fields.length ? (
-        fields
-          .filter((field) => !field.deletedAt)
-          .map((field) => {
-            return (
-              <div
-                key={`${field.ZUID}`}
-                id={field.ZUID}
-                className={styles.Field}
-              >
-                <Field
-                  ZUID={field.ZUID}
-                  contentModelZUID={field.contentModelZUID}
-                  active={active === field.ZUID}
-                  name={field.name}
-                  label={field.label}
-                  description={field.description}
-                  required={field.required}
-                  relatedFieldZUID={field.relatedFieldZUID}
-                  relatedModelZUID={field.relatedModelZUID}
-                  datatype={field.datatype}
-                  options={field.options}
-                  settings={field.settings}
-                  onChange={onChange}
-                  onSave={onSave}
-                  item={item}
-                  langID={item?.meta?.langID}
-                />
-              </div>
-            );
-          })
-      ) : (
-        <div className={styles.NoFields}>
-          <h1 className={styles.Display}>No fields have been added</h1>
-          <h2 className={styles.SubHead}>
-            Use the{" "}
-            <AppLink to={`/schema/${model.ZUID}`}>Schema Builder</AppLink> to
-            define your items content
-          </h2>
-        </div>
-      )}
+        {fields.length ? (
+          fields
+            .filter((field) => !field.deletedAt)
+            .map((field) => {
+              return (
+                <div
+                  key={`${field.ZUID}`}
+                  id={field.ZUID}
+                  className={styles.Field}
+                >
+                  <Field
+                    ZUID={field.ZUID}
+                    contentModelZUID={field.contentModelZUID}
+                    active={active === field.ZUID}
+                    name={field.name}
+                    label={field.label}
+                    description={field.description}
+                    required={field.required}
+                    relatedFieldZUID={field.relatedFieldZUID}
+                    relatedModelZUID={field.relatedModelZUID}
+                    datatype={field.datatype}
+                    options={field.options}
+                    settings={field.settings}
+                    onChange={onChange}
+                    onSave={onSave}
+                    item={item}
+                    langID={item?.meta?.langID}
+                  />
+                </div>
+              );
+            })
+        ) : (
+          <div className={styles.NoFields}>
+            <h1 className={styles.Display}>No fields have been added</h1>
+            <h2 className={styles.SubHead}>
+              Use the{" "}
+              <AppLink to={`/schema/${model.ZUID}`}>Schema Builder</AppLink> to
+              define your items content
+            </h2>
+          </div>
+        )}
+      </div>
+      <div>
+        {item.dirty && <h1>Save to see Changes</h1>}
+        <iframe
+          key={item.meta.version}
+          src={"https://8xbq19z1-dev.preview.dev.zesty.io/"}
+          style={{ width: "100%", height: "100vh" }}
+          frameborder="0"
+        ></iframe>
+      </div>
     </div>
   );
 });
