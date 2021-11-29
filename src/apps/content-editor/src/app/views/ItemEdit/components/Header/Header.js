@@ -1,6 +1,10 @@
 import { useState } from "react";
 import cx from "classnames";
-import { toggleContentNav, toggleContentActions } from "shell/store/ui";
+import {
+  toggleNav,
+  toggleContentNav,
+  toggleContentActions,
+} from "shell/store/ui";
 
 import { PreviewUrl } from "./PreviewUrl";
 import { LiveUrl } from "./LiveUrl";
@@ -23,6 +27,7 @@ export function Header(props) {
 
   const DuoMode = () => {
     toggleDuoMode();
+    dispatch(toggleNav());
     dispatch(toggleContentNav());
     dispatch(toggleContentActions());
   };
