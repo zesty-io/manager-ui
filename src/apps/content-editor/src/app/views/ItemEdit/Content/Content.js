@@ -73,7 +73,8 @@ export default function Content(props) {
             offset="0px"
             width="20vw"
             // 100 - GlobalTopbar - Header - ActionsBtn - 16px
-            height="calc(100vh - 54px - 75px - 40px - 16px)"
+            // height="calc(100vh - 54px - 75px - 40px - 16px)"
+            height="calc(100vh - 54px)"
             open={ui.contentActions}
           >
             <DrawerContent className={styles.DrawerContent}>
