@@ -160,12 +160,12 @@ export default memo(function Editor({
         )}
       </div>
       <div>
-        {item.dirty && <h1>Save to see Changes</h1>}
+        {item.dirty && <h1>Click Save to see Changes</h1>}
         <iframe
           key={item.meta.version}
           src={"https://8xbq19z1-dev.preview.dev.zesty.io/"}
           style={{ width: "100%", height: "100vh" }}
-          frameborder="0"
+          frameBorder="0"
         ></iframe>
       </div>
     </div>

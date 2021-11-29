@@ -1,47 +1,69 @@
-import { PureComponent } from "react";
+import { useState } from "react";
 import cx from "classnames";
+import { toggleContentNav, toggleContentActions } from "shell/store/ui";
 
 import { PreviewUrl } from "./PreviewUrl";
 import { LiveUrl } from "./LiveUrl";
 import { LanguageSelector } from "./LanguageSelector";
+import { useDispatch, useSelector } from "react-redux";
+import { ToggleButton } from "@zesty-io/core/ToggleButton";
 
 import ItemNavigation from "./ItemNavigation";
 
 import styles from "./Header.less";
-export class Header extends PureComponent {
-  render() {
-    return (
-      <header className={styles.Header}>
-        <div className={cx(styles.Split)}>
-          <div className={styles.Left}>
-            <ItemNavigation
-              modelZUID={this.props.modelZUID}
-              itemZUID={this.props.itemZUID}
-              item={this.props.item}
-            />
+
+export function Header(props) {
+  const ui = useSelector((state) => state.ui);
+  const dispatch = useDispatch();
+  const [duoModeopen, setDuoModeOpen] = useState(true);
+
+  const toggleDuoMode = () => {
+    setDuoModeOpen(!duoModeopen);
+  };
+
+  const DuoMode = () => {
+    toggleDuoMode();
+    dispatch(toggleContentNav());
+    dispatch(toggleContentActions());
+  };
+
+  return (
+    <header className={styles.Header}>
+      <div className={cx(styles.Split)}>
+        <div className={styles.Left}>
+          <ItemNavigation
+            modelZUID={props.modelZUID}
+            itemZUID={props.itemZUID}
+            item={props.item}
+          />
+        </div>
+        <div className={styles.Right}>
+          <div className={styles.Links}>
+            {props.item.web.path && <LiveUrl item={props.item} />}
+
+            {props.item.web.path && (
+              <PreviewUrl item={props.item} instance={props.instance} />
+            )}
           </div>
-          <div className={styles.Right}>
-            <div className={styles.Links}>
-              {this.props.item.web.path && <LiveUrl item={this.props.item} />}
 
-              {this.props.item.web.path && (
-                <PreviewUrl
-                  item={this.props.item}
-                  instance={this.props.instance}
-                />
-              )}
-            </div>
+          <ToggleButton
+            className={styles.ToggleButton}
+            name={props.name}
+            value={duoModeopen}
+            offValue="OFF"
+            onValue="ON"
+            onChange={DuoMode}
+          />
 
-            <div className={styles.Actions}>
-              <LanguageSelector
-                className={styles.I18N}
-                itemZUID={this.props.itemZUID}
-              />
-              {this.props.children}
-            </div>
+          <div className={styles.Actions}>
+            <LanguageSelector
+              className={styles.I18N}
+              itemZUID={props.itemZUID}
+            />
+            {props.children}
           </div>
         </div>
-      </header>
-    );
-  }
+      </div>
+    </header>
+  );
 }
