@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import cx from "classnames";
 import { toggleDuoMode } from "shell/store/ui";
 
@@ -9,6 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
 
 import ItemNavigation from "./ItemNavigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDesktop } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./Header.less";
 
@@ -20,6 +22,21 @@ export function Header(props) {
     <header className={styles.Header}>
       <div className={cx(styles.Split)}>
         <div className={styles.Left}>
+          <ToggleButton
+            className={styles.ToggleButton}
+            name={props.name}
+            value={ui.duoMode}
+            offValue="OFF"
+            onValue={
+              <React.Fragment>
+                <FontAwesomeIcon icon={faDesktop} />
+              </React.Fragment>
+            }
+            onChange={() => {
+              dispatch(toggleDuoMode());
+            }}
+          />
+
           <ItemNavigation
             modelZUID={props.modelZUID}
             itemZUID={props.itemZUID}
@@ -31,21 +48,10 @@ export function Header(props) {
           <div className={styles.Links}>
             {props.item.web.path && <LiveUrl item={props.item} />}
 
-            {props.item.web.path && (
+            {/* {props.item.web.path && (
               <PreviewUrl item={props.item} instance={props.instance} />
-            )}
+            )} */}
           </div>
-
-          <ToggleButton
-            className={styles.ToggleButton}
-            name={props.name}
-            value={ui.duoMode}
-            offValue="OFF"
-            onValue="ON"
-            onChange={() => {
-              dispatch(toggleDuoMode());
-            }}
-          />
 
           <div className={styles.Actions}>
             <LanguageSelector
