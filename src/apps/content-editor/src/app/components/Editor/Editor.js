@@ -1,5 +1,6 @@
 import React, { memo, useCallback, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import cx from "classnames";
+import { useDispatch, useSelector } from "react-redux";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 import { Field } from "./Field";
@@ -14,6 +15,7 @@ export default memo(function Editor({
   onSave,
   itemZUID,
 }) {
+  const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
   const firstTextField = fields.find((field) => field.datatype === "text");
   const firstContentField = fields.find(
@@ -111,7 +113,7 @@ export default memo(function Editor({
   }, []);
 
   return (
-    <div className={styles.DuoMode}>
+    <div className={ui.duoMode ? styles.DuoMode : styles.DuoModeOff}>
       <div className={styles.Fields}>
         {item.meta && item.meta.ZUID && (
           <Breadcrumbs itemZUID={item.meta.ZUID} />

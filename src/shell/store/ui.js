@@ -20,6 +20,7 @@ const uiSlice = createSlice({
     openNav: true,
     contentNav: true,
     contentActions: true,
+    duoMode: true,
   },
   reducers: {
     loadTabsSuccess(state, action) {
@@ -35,6 +36,7 @@ const uiSlice = createSlice({
         state.openNav = action.payload.openNav;
         state.contentNav = action.payload.contentNav;
         state.contentActions = action.payload.contentActions;
+        state.duoMode = action.payload.duoMode;
       }
     },
     toggleNav(state) {
@@ -45,6 +47,10 @@ const uiSlice = createSlice({
     },
     toggleContentActions(state) {
       state.contentActions = !state.contentActions;
+    },
+    toggleDuoMode(state) {
+      console.log(state.duoMode);
+      state.duoMode = !state.duoMode;
     },
   },
 });
@@ -204,6 +210,7 @@ export const {
   toggleNav,
   toggleContentNav,
   toggleContentActions,
+  toggleDuoMode,
 } = uiSlice.actions;
 
 // Thunks

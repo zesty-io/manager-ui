@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Editor } from "../../../components/Editor";
 import { Header } from "../components/Header";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
-import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
+import { Drawer, DrawerContent } from "@zesty-io/core/Drawer";
 import { Button } from "@zesty-io/core";
 
 import { Actions } from "./Actions";

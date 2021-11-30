@@ -1,10 +1,6 @@
 import { useState } from "react";
 import cx from "classnames";
-import {
-  toggleNav,
-  toggleContentNav,
-  toggleContentActions,
-} from "shell/store/ui";
+import { toggleDuoMode } from "shell/store/ui";
 
 import { PreviewUrl } from "./PreviewUrl";
 import { LiveUrl } from "./LiveUrl";
@@ -17,20 +13,8 @@ import ItemNavigation from "./ItemNavigation";
 import styles from "./Header.less";
 
 export function Header(props) {
-  const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
-  const [duoModeopen, setDuoModeOpen] = useState(true);
-
-  const toggleDuoMode = () => {
-    setDuoModeOpen(!duoModeopen);
-  };
-
-  const DuoMode = () => {
-    toggleDuoMode();
-    dispatch(toggleNav());
-    dispatch(toggleContentNav());
-    dispatch(toggleContentActions());
-  };
+  const ui = useSelector((state) => state.ui);
 
   return (
     <header className={styles.Header}>
@@ -54,10 +38,12 @@ export function Header(props) {
           <ToggleButton
             className={styles.ToggleButton}
             name={props.name}
-            value={duoModeopen}
+            value={ui.duoMode}
             offValue="OFF"
             onValue="ON"
-            onChange={DuoMode}
+            onChange={() => {
+              dispatch(toggleDuoMode());
+            }}
           />
 
           <div className={styles.Actions}>
