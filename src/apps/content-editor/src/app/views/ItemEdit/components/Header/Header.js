@@ -24,6 +24,7 @@ export function Header(props) {
             modelZUID={props.modelZUID}
             itemZUID={props.itemZUID}
             item={props.item}
+            toggleDuoMode={ui.duoMode}
           />
         </div>
         <div className={styles.Right}>

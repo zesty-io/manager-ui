@@ -3,7 +3,12 @@ import cx from "classnames";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./ItemNavigation.less";
-export default function ItemNavigation({ modelZUID, itemZUID, item }) {
+export default function ItemNavigation({
+  modelZUID,
+  itemZUID,
+  item,
+  toggleDuoMode,
+}) {
   const slug = window.location.href.split("/").pop();
 
   return (
@@ -48,19 +53,6 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
           Head Tags
         </AppLink>
       )}
-      {item.web.path && (
-        <AppLink
-          data-cy="preview"
-          className={cx(
-            styles.AppLink,
-            styles.buttonText,
-            slug === "preview" ? styles.Selected : null
-          )}
-          to={`/content/${modelZUID}/${itemZUID}/preview`}
-        >
-          WebEngine Preview
-        </AppLink>
-      )}
 
       <AppLink
         data-cy="headless"
@@ -73,6 +65,20 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
       >
         Headless Options
       </AppLink>
+
+      {item.web.path && toggleDuoMode && (
+        <AppLink
+          data-cy="preview"
+          className={cx(
+            styles.AppLink,
+            styles.buttonText,
+            slug === "preview" ? styles.Selected : null
+          )}
+          to={`/content/${modelZUID}/${itemZUID}/preview`}
+        >
+          WebEngine Preview
+        </AppLink>
+      )}
     </nav>
   );
 }

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 import { Field } from "./Field";
+import { Notice } from "@zesty-io/core/Notice";
 import styles from "./Editor.less";
 
 export default memo(function Editor({
@@ -162,7 +163,11 @@ export default memo(function Editor({
         )}
       </div>
       <div>
-        {item.dirty && <h1>Click Save to see Changes</h1>}
+        {item.dirty ? (
+          <Notice>Click Save to See Changes</Notice>
+        ) : (
+          <p className={styles.Notice}></p>
+        )}
         <iframe
           key={item.meta.version}
           src={"https://8xbq19z1-dev.preview.dev.zesty.io/"}
