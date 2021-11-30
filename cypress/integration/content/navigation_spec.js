@@ -79,4 +79,10 @@ describe("Navigation through content editor", () => {
         }
       });
   });
+  it("Open and Close Global Account", () => {
+    cy.get("[data-cy=globalAccountAvatar]").click();
+    cy.get("menu").should("exist");
+    cy.get("[data-cy=globalAccountAvatar]").click();
+    cy.get("[data-cy=globalAccountAvatar] menu").should("not.exist");
+  });
 });
