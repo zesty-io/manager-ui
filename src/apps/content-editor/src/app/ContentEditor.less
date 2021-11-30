@@ -3,7 +3,7 @@
 .ContentEditor {
   height: calc(100vh - 54px);
   display: grid;
-  grid-template-columns: 24px 1fr;
+  grid-template-columns: auto 1fr;
   position: relative;
 
   &.OpenEditor {
@@ -14,13 +14,13 @@
     justify-content: center;
     border-radius: 0 4px 4px 0;
     color: @globalMenuBkgColor;
-    padding: 16px 8px;
+    padding: 8px 16px;
     background-color: @appBkgColor;
     box-shadow: 2px 2px 5px fade(@zesty-dark-blue, 50%);
 
     position: absolute;
     bottom: 0;
-    left: 24px;
+    left: 0;
     z-index: 100;
 
     &.TabBtn {
