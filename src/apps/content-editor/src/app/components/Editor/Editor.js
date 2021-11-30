@@ -1,5 +1,4 @@
 import React, { memo, useCallback, useEffect } from "react";
-import cx from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
@@ -169,6 +168,7 @@ export default memo(function Editor({
           <p className={styles.Notice}></p>
         )}
         <iframe
+          className={styles.duoModeiFrame}
           key={item.meta.version}
           src={"https://8xbq19z1-dev.preview.dev.zesty.io/"}
           style={{ width: "100%", height: "100vh" }}

@@ -66,7 +66,7 @@ export default function ItemNavigation({
         Headless Options
       </AppLink>
 
-      {item.web.path && toggleDuoMode && (
+      {item.web.path && !toggleDuoMode && (
         <AppLink
           data-cy="preview"
           className={cx(
