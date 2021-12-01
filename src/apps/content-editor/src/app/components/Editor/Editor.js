@@ -167,13 +167,15 @@ export default memo(function Editor({
         ) : (
           <p className={styles.Notice}></p>
         )}
-        <iframe
-          className={styles.duoModeiFrame}
-          key={item.meta.version}
-          src={"https://8xbq19z1-dev.preview.dev.zesty.io/"}
-          style={{ width: "100%", height: "100vh" }}
-          frameBorder="0"
-        ></iframe>
+        {ui.duoMode && (
+          <iframe
+            className={styles.duoModeiFrame}
+            key={item.meta.version}
+            src={"https://8xbq19z1-dev.preview.dev.zesty.io/"}
+            style={{ width: "100%", height: "100vh" }}
+            frameBorder="0"
+          ></iframe>
+        )}
       </div>
     </div>
   );
