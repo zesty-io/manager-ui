@@ -17,8 +17,6 @@ export function Header(props) {
   const dispatch = useDispatch();
   const ui = useSelector((state) => state.ui);
 
-  console.log(Number(ui.duoMode));
-
   return (
     <header className={styles.Header}>
       <div className={cx(styles.Split)}>
@@ -34,7 +32,6 @@ export function Header(props) {
               </React.Fragment>
             }
             onChange={(val) => {
-              console.log("val", val);
               if (val == 1) {
                 dispatch(actions.setDuoMode(true));
                 dispatch(actions.setGlobalNav(false));
