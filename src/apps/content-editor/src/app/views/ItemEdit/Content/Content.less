@@ -19,6 +19,7 @@
     .Actions {
       background: @appBkgColor;
       position: relative;
+      margin-bottom: 10rem;
 
       .CollapseBtn {
         font-size: 16px;
@@ -26,9 +27,6 @@
         z-index: 20;
         box-shadow: 0px 0px 6px lighten(@zesty-dark-blue, 20%);
         border-radius: 4px 0 0 4px;
-        position: fixed;
-        right: 7px;
-        bottom: 0;
 
         &:hover {
           color: @zesty-orange;
@@ -37,10 +35,29 @@
 
       .Drawer {
         position: relative;
-        overflow-x: hidden;
         overflow-y: hidden !important;
         z-index: 10;
         bottom: 0;
+        transition: none;
+
+        // Room in Actions drawer for DrawerHandle
+        .DrawerHandlePlaceHolder {
+          height: 32px;
+        }
+
+        .DrawerHandle {
+          svg {
+            font-size: 16px;
+          }
+          position: absolute;
+          bottom: 10px;
+          left: 16px;
+          &.DrawerHandleClose {
+            position: fixed;
+            bottom: 0;
+            left: initial;
+          }
+        }
       }
     }
   }

@@ -2,7 +2,7 @@ import React from "react";
 import { Notice } from "@zesty-io/core/Notice";
 import { useSelector } from "react-redux";
 
-// import styles from "./Preview.less";
+import styles from "./Preview.less";
 export default function Preview(props) {
   const instance = useSelector((state) => state.instance);
 
