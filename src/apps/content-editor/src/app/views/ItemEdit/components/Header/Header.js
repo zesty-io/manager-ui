@@ -37,14 +37,14 @@ export function Header(props) {
               console.log("val", val);
               if (val == 1) {
                 dispatch(actions.setDuoMode(true));
-                dispatch(actions.setGlobalNav(true));
-                dispatch(actions.setContentNav(true));
-                dispatch(actions.setContentActions(true));
-              } else {
-                dispatch(actions.setDuoMode(false));
                 dispatch(actions.setGlobalNav(false));
                 dispatch(actions.setContentNav(false));
                 dispatch(actions.setContentActions(false));
+              } else {
+                dispatch(actions.setDuoMode(false));
+                dispatch(actions.setGlobalNav(true));
+                dispatch(actions.setContentNav(true));
+                dispatch(actions.setContentActions(true));
               }
             }}
           />
