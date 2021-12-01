@@ -15,6 +15,7 @@ export default function Preview(props) {
             )} */}
 
       <iframe
+        key={props.version}
         src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
         frameBorder="0"
         style={{ width: "100%", height: "100vh" }}

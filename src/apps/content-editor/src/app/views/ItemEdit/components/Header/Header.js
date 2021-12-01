@@ -32,7 +32,6 @@ export function Header(props) {
               </React.Fragment>
             }
             onChange={(val) => {
-              console.log("duo", val);
               if (val == 1) {
                 dispatch(actions.setDuoMode(true));
                 dispatch(actions.setGlobalNav(true));

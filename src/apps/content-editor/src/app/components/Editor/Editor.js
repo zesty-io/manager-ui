@@ -162,7 +162,11 @@ export default memo(function Editor({
           </div>
         )}
       </div>
-      <div>{ui.duoMode && <Preview dirty={item.dirty} />}</div>
+      <div>
+        {ui.duoMode && (
+          <Preview dirty={item.dirty} version={item.meta.version} />
+        )}
+      </div>
     </div>
   );
 });
