@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
@@ -112,6 +112,25 @@ export default memo(function Editor({
     }
   }, []);
 
+  const [loader, setLoader] = useState(true);
+
+  const hideSpinner = () => {
+    setLoader(!loader);
+  };
+
+  useEffect(() => {
+    let iconTimer = setTimeout(() => {
+      if (loader) {
+        setLoader(false);
+      }
+    }, 500);
+
+    return () => {
+      clearTimeout(iconTimer);
+    };
+  }, [loader]);
+
+  console.log("Loader", loader);
   return (
     <div className={ui.duoMode ? styles.DuoMode : styles.DuoModeOff}>
       <div className={styles.Fields}>
@@ -167,6 +186,9 @@ export default memo(function Editor({
         ) : (
           <p className={styles.Notice}></p>
         )}
+
+        {loader && <h1 className={styles.Loader}>LOADING</h1>}
+
         {ui.duoMode && (
           <iframe
             className={styles.duoModeiFrame}
@@ -174,6 +196,7 @@ export default memo(function Editor({
             src={"https://8xbq19z1-dev.preview.dev.zesty.io/"}
             style={{ width: "100%", height: "100vh" }}
             frameBorder="0"
+            onLoad={hideSpinner}
           ></iframe>
         )}
       </div>
