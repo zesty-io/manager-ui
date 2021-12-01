@@ -5,7 +5,7 @@ import { Sentry } from "utility/sentry";
 import cx from "classnames";
 
 import { useDispatch, useSelector } from "react-redux";
-import { toggleNav } from "shell/store/ui";
+import { actions } from "shell/store/ui";
 
 import AppError from "shell/components/AppError";
 import GlobalSidebar from "shell/components/global-sidebar";
@@ -38,7 +38,7 @@ export default connect((state) => {
       <section className={cx(styles.Shell, openNav ? null : styles.NavClosed)}>
         <GlobalSidebar
           onClick={() => {
-            dispatch(toggleNav());
+            dispatch(actions.setGlobalNav(!openNav));
           }}
           openNav={openNav}
         />

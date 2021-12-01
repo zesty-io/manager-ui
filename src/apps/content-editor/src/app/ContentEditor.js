@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleContentNav } from "shell/store/ui";
+import { actions } from "shell/store/ui";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -62,7 +62,7 @@ export default function ContentEditor(props) {
             ui.contentNav ? styles.TabBtn : ""
           )}
           onClick={() => {
-            dispatch(toggleContentNav());
+            dispatch(actions.setContentNav(!ui.contentNav));
           }}
         >
           {ui.contentNav ? (
@@ -78,9 +78,6 @@ export default function ContentEditor(props) {
             styles.Nav,
             ui.contentNav ? styles.OpenNav : styles.ClosedNav
           )}
-          onClick={() => {
-            !ui.contentNav ? dispatch(toggleContentNav()) : "";
-          }}
         >
           <ContentNav
             dispatch={dispatch}

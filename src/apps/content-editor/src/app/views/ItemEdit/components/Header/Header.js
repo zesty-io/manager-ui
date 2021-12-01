@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import cx from "classnames";
-import { toggleDuoMode } from "shell/store/ui";
 
-import { PreviewUrl } from "./PreviewUrl";
+import { actions } from "shell/store/ui";
+
 import { LiveUrl } from "./LiveUrl";
 import { LanguageSelector } from "./LanguageSelector";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,7 +13,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDesktop } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./Header.less";
-
 export function Header(props) {
   const dispatch = useDispatch();
   const ui = useSelector((state) => state.ui);
@@ -25,15 +24,26 @@ export function Header(props) {
           <ToggleButton
             className={styles.ToggleButton}
             name={props.name}
-            value={ui.duoMode}
+            value={Number(ui.duoMode)}
             offValue="OFF"
             onValue={
               <React.Fragment>
                 <FontAwesomeIcon icon={faDesktop} />
               </React.Fragment>
             }
-            onChange={() => {
-              dispatch(toggleDuoMode());
+            onChange={(val) => {
+              console.log("duo", val);
+              if (val == 1) {
+                dispatch(actions.setDuoMode(true));
+                dispatch(actions.setGlobalNav(true));
+                dispatch(actions.setContentNav(true));
+                dispatch(actions.setContentActions(true));
+              } else {
+                dispatch(actions.setDuoMode(false));
+                dispatch(actions.setGlobalNav(false));
+                dispatch(actions.setContentNav(false));
+                dispatch(actions.setContentActions(false));
+              }
             }}
           />
 

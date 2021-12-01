@@ -12,7 +12,7 @@ import {
 
 const ZUID_REGEX = /[a-zA-Z0-9]{1,5}-[a-zA-Z0-9]{6,10}-[a-zA-Z0-9]{5,35}/;
 
-const uiSlice = createSlice({
+export const ui = createSlice({
   name: "ui",
   initialState: {
     loadedTabs: false,
@@ -39,21 +39,22 @@ const uiSlice = createSlice({
         state.duoMode = action.payload.duoMode;
       }
     },
-    toggleNav(state) {
-      state.openNav = !state.openNav;
+    setGlobalNav(state, action) {
+      state.openNav = action.payload;
     },
-    toggleContentNav(state) {
-      state.contentNav = !state.contentNav;
+    setContentNav(state, action) {
+      state.contentNav = action.payload;
     },
-    toggleContentActions(state) {
-      state.contentActions = !state.contentActions;
+    setContentActions(state, action) {
+      state.contentActions = action.payload;
     },
-    toggleDuoMode(state) {
-      console.log(state.duoMode);
-      state.duoMode = !state.duoMode;
+    setDuoMode(state, action) {
+      state.duoMode = action.payload;
     },
   },
 });
+
+export const { actions, reducer } = ui;
 
 // Thunk helper functions
 function parsePath(path) {
@@ -201,24 +202,12 @@ function toCapitalCase(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export default uiSlice.reducer;
-
-export const {
-  loadTabsSuccess,
-  setTabs,
-  loadedUI,
-  toggleNav,
-  toggleContentNav,
-  toggleContentActions,
-  toggleDuoMode,
-} = uiSlice.actions;
-
 // Thunks
 
 export function loadTabs(instanceZUID) {
   return (dispatch) => {
     return idb.get(`${instanceZUID}:session:routes`).then((tabs = []) => {
-      return dispatch(loadTabsSuccess(tabs));
+      return dispatch(actions.loadTabsSuccess(tabs));
     });
   };
 }
@@ -241,7 +230,7 @@ export function openTab({ path, prevPath }) {
         newTabs.splice(activeTabIndex + 1, 0, newTab);
         // Maximum of 20 route records
         newTabs = newTabs.slice(0, 20);
-        dispatch(setTabs(newTabs));
+        dispatch(actions.setTabs(newTabs));
         idb.set(`${state.instance.ZUID}:session:routes`, newTabs);
       }
     }
@@ -273,7 +262,7 @@ export function closeTab(path) {
         }
       }
 
-      dispatch(setTabs(newTabs));
+      dispatch(actions.setTabs(newTabs));
       idb.set(`${state.instance.ZUID}:session:routes`, newTabs);
     }
   };
@@ -285,7 +274,7 @@ export function rebuildTabs() {
     const newTabs = state.ui.tabs.map((tab) =>
       createTab(state, parsePath(tab.pathname))
     );
-    dispatch(setTabs(newTabs));
+    dispatch(actions.setTabs(newTabs));
     idb.set(`${state.instance.ZUID}:session:routes`, newTabs);
   };
 }

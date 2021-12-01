@@ -1,4 +1,4 @@
-import { toggleContentActions } from "shell/store/ui";
+import { actions } from "shell/store/ui";
 import { useDispatch, useSelector } from "react-redux";
 import { Editor } from "../../../components/Editor";
 import { Header } from "../components/Header";
@@ -58,7 +58,7 @@ export default function Content(props) {
             data-cy="ActionsButton"
             className={styles.CollapseBtn}
             onClick={() => {
-              dispatch(toggleContentActions());
+              dispatch(actions.setContentActions(!ui.contentActions));
             }}
           >
             {ui.contentActions ? (
