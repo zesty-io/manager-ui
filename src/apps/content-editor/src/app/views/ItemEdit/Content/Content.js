@@ -1,25 +1,14 @@
-import { actions } from "shell/store/ui";
 import { useDispatch, useSelector } from "react-redux";
-import cx from "classnames";
+
 import { Editor } from "../../../components/Editor";
 import { Header } from "../components/Header";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
-import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
-import { Button } from "@zesty-io/core";
 
-import { Actions } from "./Actions";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
+import { ActionsDrawer } from "./ActionsDrawer";
 
 import styles from "./Content.less";
-import React from "react";
-export default function Content(props) {
-  const ui = useSelector((state) => state.ui);
-  const dispatch = useDispatch();
 
+export default function Content(props) {
   return (
     <main className={styles.Content}>
       <Header
@@ -56,47 +45,7 @@ export default function Content(props) {
           />
         </div>
         <aside className={styles.Actions}>
-          <Drawer
-            className={styles.Drawer}
-            position="right"
-            // offset="0px"
-            offset="43px"
-            width="20vw"
-            open={ui.contentActions}
-          >
-            <DrawerHandle
-              data-cy="ActionsButton"
-              className={cx(
-                styles.DrawerHandle,
-                !ui.contentActions ? styles.DrawerHandleClose : ""
-              )}
-              onClick={() => {
-                dispatch(actions.setContentActions(!ui.contentActions));
-              }}
-            >
-              <Button title="Open for additional file information">
-                {ui.contentActions ? (
-                  <FontAwesomeIcon icon={faChevronRight} />
-                ) : (
-                  <FontAwesomeIcon icon={faChevronLeft} />
-                )}
-              </Button>
-            </DrawerHandle>
-            <DrawerContent className={styles.DrawerContent}>
-              {ui.contentActions && (
-                <React.Fragment>
-                  <Actions
-                    {...props}
-                    site={{}}
-                    set={{
-                      type: props.model.type,
-                    }}
-                  />
-                  <div className={styles.DrawerHandlePlaceHolder}></div>
-                </React.Fragment>
-              )}
-            </DrawerContent>
-          </Drawer>
+          <ActionsDrawer {...props} />
         </aside>
       </div>
     </main>
