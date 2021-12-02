@@ -44,7 +44,7 @@ export default function Content(props) {
             onSave={props.onSave}
           />
         </div>
-        <aside className={styles.Actions}>
+        <aside data-cy="ActionsContent" className={styles.Actions}>
           <ActionsDrawer {...props} />
         </aside>
       </div>

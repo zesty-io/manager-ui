@@ -29,7 +29,6 @@ export default function ActionsDrawer(props) {
       open={ui.contentActions}
     >
       <DrawerHandle
-        data-cy="ActionsButton"
         className={cx(
           styles.DrawerHandle,
           !ui.contentActions ? styles.DrawerHandleClose : ""
@@ -38,7 +37,10 @@ export default function ActionsDrawer(props) {
           dispatch(actions.setContentActions(!ui.contentActions));
         }}
       >
-        <Button title="Open for additional file information">
+        <Button
+          data-cy="ActionsButton"
+          title="Open for additional file information"
+        >
           {ui.contentActions ? (
             <FontAwesomeIcon icon={faChevronRight} />
           ) : (

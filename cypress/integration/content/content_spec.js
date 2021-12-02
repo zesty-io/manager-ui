@@ -296,41 +296,27 @@ describe("Content Specs", () => {
   // });
 
   it("Check Actions Collapsed functionality", () => {
-    cy.get("[data-cy=ActionsButton]")
-      .siblings("div")
-      .then((btn) => {
-        if (btn.is(":visible")) {
-          cy.get("[data-cy=ActionsButton]")
-            .siblings("div")
-            .should("be.visible");
-        } else {
-          cy.get("[data-cy=ActionsButton]")
-            .siblings("div")
-            .should("not.be.visible");
-        }
-      });
+    cy.get("[data-cy=ActionsContent]", { timeout: 5000 }).then((content) => {
+      if (content.is(":visible")) {
+        cy.get("[data-cy=ActionsContent]").should("be.visible");
+      } else {
+        cy.get("[data-cy=ActionsContent]").should("not.be.visible");
+      }
+    });
   });
   it("Check Actions Collapse persist when clicking on other Applications", () => {
-    cy.get("[data-cy=ActionsButton]")
-      .siblings("div")
-      .then((btn) => {
-        if (btn.is(":visible")) {
-          cy.get("[data-cy=ActionsButton]")
-            .siblings("div")
-            .should("be.visible");
+    cy.get("[data-cy=ActionsContent]").then((content) => {
+      if (content.is(":visible")) {
+        cy.get("[data-cy=ActionsContent]").should("be.visible");
 
-          cy.visit("/code");
-          cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
-          cy.get("[data-cy=ActionsButton]")
-            .siblings("div")
-            .should("be.visible");
-        } else {
-          cy.visit("/code");
-          cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
-          cy.get("[data-cy=ActionsButton]")
-            .siblings("div")
-            .should("not.be.visible");
-        }
-      });
+        cy.visit("/code");
+        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+        cy.get("[data-cy=ActionsContent]").should("be.visible");
+      } else {
+        cy.visit("/code");
+        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+        cy.get("[data-cy=ActionsContent]").should("not.be.visible");
+      }
+    });
   });
 });
