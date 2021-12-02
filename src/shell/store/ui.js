@@ -20,7 +20,7 @@ export const ui = createSlice({
     openNav: true,
     contentNav: true,
     contentActions: true,
-    duoMode: true,
+    duoMode: false,
   },
   reducers: {
     loadTabsSuccess(state, action) {
