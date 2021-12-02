@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 import { Field } from "./Field";
-import { Preview } from "./Preview";
+import { PreviewMode } from "./PreviewMode";
 
 import styles from "./Editor.less";
 export default memo(function Editor({
@@ -164,7 +164,7 @@ export default memo(function Editor({
       </div>
       <div>
         {ui.duoMode && (
-          <Preview dirty={item.dirty} version={item.meta.version} />
+          <PreviewMode dirty={item.dirty} version={item.meta.version} />
         )}
       </div>
     </div>

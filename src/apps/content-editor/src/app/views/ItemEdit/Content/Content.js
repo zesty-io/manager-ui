@@ -1,5 +1,3 @@
-import { useDispatch, useSelector } from "react-redux";
-
 import { Editor } from "../../../components/Editor";
 import { Header } from "../components/Header";
 import { ItemVersioning } from "../components/Header/ItemVersioning";

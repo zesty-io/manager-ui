@@ -20,7 +20,12 @@
     .Logo {
       display: flex;
       align-items: center;
-      margin-right: 32px;
+      margin-right: 16px;
+    }
+
+    .ActionInfo {
+      display: flex;
+      margin-left: auto;
     }
 
     .Url {
@@ -29,19 +34,17 @@
       .Route {
         flex: 1;
       }
-      button {
-        margin-right: 8px;
-      }
     }
 
     .Device {
       display: flex;
-      margin: 0 16px;
+      margin: 0 8px;
+      [title="Rotate device"] {
+        margin-right: 0 8px;
+      }
       .Select {
-        min-width: 200px;
-        & > span {
-          flex: initial;
-        }
+        // min-width: 200px;
+
         li {
           small {
             color: @zesty-gray;
@@ -98,10 +101,26 @@
 
         // had browser scroll bar to mimic mobile device
         width: calc(100% + 15px);
-        button {
-          margin-right: 8px;
-        }
       }
+    }
+  }
+  [title~="Rotate"],
+  [title~="Reload"] {
+    margin-right: 8px;
+  }
+
+  //Hide copy url text for smaller screens windows
+  .CopyButton {
+    font-size: 0;
+    svg {
+      margin-right: initial;
+    }
+  }
+
+  .CopyButton {
+    @media screen and (min-width: 2000px) {
+      font-size: initial;
+      margin-right: 8px;
     }
   }
 }

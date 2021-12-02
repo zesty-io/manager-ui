@@ -124,76 +124,80 @@ export function Preview(props) {
             &nbsp;
             <figcaption>Active Preview</figcaption>
           </figure>
+          <div className={styles.ActionInfo}>
+            <div className={styles.Url}>
+              <Button
+                onClick={() => setRefresh(Date.now())}
+                title="Reload current url in active preview"
+              >
+                <FontAwesomeIcon icon={faSync} />
+              </Button>
 
-          <div className={styles.Url}>
-            <Button
-              onClick={() => setRefresh(Date.now())}
-              title="Reload current url in active preview"
-            >
-              <FontAwesomeIcon icon={faSync} />
-            </Button>
-
-            <CopyButton value={`${domain}${route}`} />
-            {/* <Input
+              <CopyButton
+                className={styles.CopyButton}
+                value={`${domain}${route}`}
+              />
+              {/* <Input
               ref={input}
               className={styles.Route}
               value={`${domain}${route}`}
             /> */}
-          </div>
+            </div>
 
-          <div className={styles.Device}>
-            <Button onClick={() => setRotate(!rotate)} title="Rotate device">
-              <FontAwesomeIcon
-                icon={faMobileAlt}
-                style={{
-                  transform: `rotate(${rotate ? "-90deg" : "0deg"})`,
-                }}
-              />
-            </Button>
-            <Select
-              className={styles.Select}
-              name="device"
-              value="fullscreen"
-              onSelect={(val) => setDevice(val)}
-            >
-              <Option value="fullscreen" text="Desktop" />
+            <div className={styles.Device}>
+              <Button onClick={() => setRotate(!rotate)} title="Rotate device">
+                <FontAwesomeIcon
+                  icon={faMobileAlt}
+                  style={{
+                    transform: `rotate(${rotate ? "-90deg" : "0deg"})`,
+                  }}
+                />
+              </Button>
+              <Select
+                className={styles.Select}
+                name="device"
+                value="fullscreen"
+                onSelect={(val) => setDevice(val)}
+              >
+                <Option value="fullscreen" text="Desktop" />
 
-              {/*
+                {/*
             Generate available options from templates,
             except the initial "No Template" template
             */}
-              {Object.keys(templates)
-                .slice(1)
-                .map((template, index) => (
-                  <Option
-                    key={index}
-                    value={template}
-                    html={templates[template].option}
-                  />
-                ))}
-            </Select>
-          </div>
+                {Object.keys(templates)
+                  .slice(1)
+                  .map((template, index) => (
+                    <Option
+                      key={index}
+                      value={template}
+                      html={templates[template].option}
+                    />
+                  ))}
+              </Select>
+            </div>
 
-          {instance.domain && (
-            <Url
-              className={styles.Live}
-              href={`//${instance.domain}${route}`}
-              target="_blank"
-              title="Open live link in standard browser window"
-            >
-              <FontAwesomeIcon icon={faExternalLinkAlt} />
-              &nbsp;Live
-            </Url>
-          )}
+            {instance.domain && (
+              <Url
+                className={styles.Live}
+                href={`//${instance.domain}${route}`}
+                target="_blank"
+                title="Open live link in standard browser window"
+              >
+                <FontAwesomeIcon icon={faExternalLinkAlt} />
+                &nbsp;Live
+              </Url>
+            )}
 
-          <div className={styles.Menu}>
-            <Button
-              onClick={() => setOpen(!open)}
-              title="Additional menu options"
-            >
-              <FontAwesomeIcon icon={faEllipsisV} />
-            </Button>
-            <Meta open={open} route={route} instanceZUID={ZUID} />
+            <div className={styles.Menu}>
+              <Button
+                onClick={() => setOpen(!open)}
+                title="Additional menu options"
+              >
+                <FontAwesomeIcon icon={faEllipsisV} />
+              </Button>
+              <Meta open={open} route={route} instanceZUID={ZUID} />
+            </div>
           </div>
         </header>
         <main className={styles.Preview}>

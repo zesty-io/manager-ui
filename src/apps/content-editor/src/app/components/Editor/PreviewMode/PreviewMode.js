@@ -2,17 +2,15 @@ import React from "react";
 import { Notice } from "@zesty-io/core/Notice";
 import { useSelector } from "react-redux";
 
-import styles from "./Preview.less";
-export default function Preview(props) {
+import styles from "./PreviewMode.less";
+export default function PreviewMode(props) {
   const instance = useSelector((state) => state.instance);
 
   return (
-    <div>
-      {/* {props.dirty ? (
-                <Notice>Click Save to See Changes</Notice>
-            ) : (
-                <p></p>
-            )} */}
+    <div className={styles.DMContainer}>
+      <div className={styles.Notice}>
+        {props.dirty && <Notice>Click Save to See Changes</Notice>}
+      </div>
 
       <iframe
         key={props.version}
