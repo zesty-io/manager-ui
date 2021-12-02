@@ -7,13 +7,15 @@
 }
 
 .ActivePreview {
+  background-color: @appBkgColor;
   .TopBar {
     background-color: @zesty-light-gray;
-    border-bottom: 2px solid #888888;
+    // border-bottom: 2px solid #888888;
     display: flex;
     background: linear-gradient(#ebebeb, #d5d5d5);
     padding: 4px 16px;
     height: 40px;
+    box-shadow: 2px 2px 5px rgb(27 32 44 / 50%);
 
     .Logo {
       display: flex;
@@ -27,6 +29,9 @@
       .Route {
         flex: 1;
       }
+      button {
+        margin-right: 8px;
+      }
     }
 
     .Device {
@@ -34,6 +39,9 @@
       margin: 0 16px;
       .Select {
         min-width: 200px;
+        & > span {
+          flex: initial;
+        }
         li {
           small {
             color: @zesty-gray;
@@ -90,6 +98,9 @@
 
         // had browser scroll bar to mimic mobile device
         width: calc(100% + 15px);
+        button {
+          margin-right: 8px;
+        }
       }
     }
   }

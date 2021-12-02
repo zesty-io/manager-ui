@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react";
+import cx from "classnames";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { Button } from "@zesty-io/core/Button";
 import { Input } from "@zesty-io/core/Input";
 import { Url } from "@zesty-io/core/Url";
+import { CopyButton } from "@zesty-io/core/CopyButton";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCheck,
-  faCopy,
   faExternalLinkAlt,
   faSync,
   faEllipsisV,
@@ -87,20 +87,6 @@ export function Preview(props) {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleCopy = () => {
-    input.current.focus();
-    input.current.select();
-    const result = document.execCommand("copy");
-    input.current.blur();
-
-    if (result !== "unsuccessful") {
-      // this is gross, but we dont have another way to notify
-      // the user of copy status
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
   /**
    * This functional component is provided to the selected template function
    * It needs to be setup inside the `Preview` component so it can
@@ -146,23 +132,13 @@ export function Preview(props) {
             >
               <FontAwesomeIcon icon={faSync} />
             </Button>
-            {copied ? (
-              <Button onClick={handleCopy} type="save">
-                <FontAwesomeIcon icon={faCheck} />
-              </Button>
-            ) : (
-              <Button onClick={handleCopy}>
-                <FontAwesomeIcon
-                  icon={faCopy}
-                  title="Copy current preview url to clipboarda"
-                />
-              </Button>
-            )}
-            <Input
+
+            <CopyButton value={`${domain}${route}`} />
+            {/* <Input
               ref={input}
               className={styles.Route}
               value={`${domain}${route}`}
-            />
+            /> */}
           </div>
 
           <div className={styles.Device}>
