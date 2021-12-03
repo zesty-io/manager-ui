@@ -42,7 +42,12 @@ module.exports = async (env) => {
       compress: true,
       contentBase: path.resolve(__dirname, "../../build"),
       disableHostCheck: true,
-      historyApiFallback: true,
+      historyApiFallback: {
+        rewrites: [
+          { from: /^\/active-preview/, to: "/activePreview.html" },
+          { from: /./, to: "/index.html" },
+        ],
+      },
     },
     devtool:
       process.env.NODE_ENV !== "development"
