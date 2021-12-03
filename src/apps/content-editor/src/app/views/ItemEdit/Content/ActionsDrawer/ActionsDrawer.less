@@ -1,18 +1,6 @@
 @import "~@zesty-io/core/colors.less";
 @import "~@zesty-io/core/typography.less";
 
-.CollapseBtn {
-  font-size: 16px;
-  padding: 8px 16px;
-  z-index: 20;
-  box-shadow: 0px 0px 6px lighten(@zesty-dark-blue, 20%);
-  border-radius: 4px 0 0 4px;
-
-  &:hover {
-    color: @zesty-orange;
-  }
-}
-
 .Drawer {
   position: relative;
   overflow-y: hidden !important;
@@ -20,22 +8,27 @@
   bottom: 0;
   transition: none;
 
-  // Room in Actions drawer for DrawerHandle
-  .DrawerHandlePlaceHolder {
-    height: 32px;
-  }
-
   .DrawerHandle {
-    svg {
-      font-size: 16px;
-    }
     position: absolute;
-    bottom: 10px;
+    bottom: 0;
     left: 16px;
+
     &.DrawerHandleClose {
       position: fixed;
       bottom: 0;
       left: initial;
+    }
+
+    button {
+      font-size: 16px;
+      justify-content: center;
+      border-radius: 4px 0 0 4px;
+      padding: 13px 6px;
+      box-shadow: 0px 0px 6px lighten(@zesty-dark-blue, 20%);
+
+      &:hover {
+        color: @zesty-orange;
+      }
     }
   }
 }

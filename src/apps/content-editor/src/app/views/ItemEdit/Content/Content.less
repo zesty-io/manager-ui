@@ -8,8 +8,7 @@
   .MainEditor {
     display: grid;
     grid-template-columns: 1fr auto;
-    margin: 16px 0 16px 32px;
-    // grid-gap: 32px;
+    margin: 16px 16px 32px 16px; // overscroll bottom so content nav toggle does not overlap fields
     align-items: flex-start;
 
     .Editor {
@@ -18,48 +17,51 @@
     }
     .Actions {
       background: @appBkgColor;
-      position: relative;
-      margin-bottom: 10rem;
-      margin-left: 16px;
+      height: calc(100vh - 54px - 73px - 16px);
 
-      .CollapseBtn {
-        font-size: 16px;
-        padding: 8px 16px;
-        z-index: 20;
-        box-shadow: 0px 0px 6px lighten(@zesty-dark-blue, 20%);
-        border-radius: 4px 0 0 4px;
-
-        &:hover {
-          color: @zesty-orange;
-        }
+      &.Closed {
+        margin: 0;
       }
 
-      .Drawer {
-        position: relative;
-        overflow-y: hidden !important;
-        z-index: 10;
-        bottom: 0;
-        transition: none;
+      // ??? Why is this here?
+      // .CollapseBtn {
+      //   font-size: 16px;
+      //   padding: 8px 16px;
+      //   z-index: 20;
+      //   box-shadow: 0px 0px 6px lighten(@zesty-dark-blue, 20%);
+      //   border-radius: 4px 0 0 4px;
 
-        // Room in Actions drawer for DrawerHandle
-        .DrawerHandlePlaceHolder {
-          height: 32px;
-        }
+      //   &:hover {
+      //     color: @zesty-orange;
+      //   }
+      // }
 
-        .DrawerHandle {
-          svg {
-            font-size: 16px;
-          }
-          position: absolute;
-          bottom: 10px;
-          left: 16px;
-          &.DrawerHandleClose {
-            position: fixed;
-            bottom: 0;
-            left: initial;
-          }
-        }
-      }
+      // .Drawer {
+      //   position: relative;
+      //   overflow-y: hidden !important;
+      //   z-index: 10;
+      //   bottom: 0;
+      //   transition: none;
+
+      //   // Room in Actions drawer for DrawerHandle
+      //   .DrawerHandlePlaceHolder {
+      //     height: 32px;
+      //   }
+
+      //   .DrawerHandle {
+      //     svg {
+      //       font-size: 16px;
+      //     }
+      //     position: absolute;
+      //     bottom: 10px;
+      //     left: 16px;
+      //     &.DrawerHandleClose {
+      //       position: fixed;
+      //       bottom: 0;
+      //       left: initial;
+      //     }
+      //   }
+      // }
     }
   }
 }
