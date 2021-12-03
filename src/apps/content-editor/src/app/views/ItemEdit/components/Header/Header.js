@@ -34,13 +34,9 @@ export function Header(props) {
             onChange={(val) => {
               if (val == 1) {
                 dispatch(actions.setDuoMode(true));
-                dispatch(actions.setGlobalNav(false));
-                dispatch(actions.setContentNav(false));
                 dispatch(actions.setContentActions(false));
               } else {
                 dispatch(actions.setDuoMode(false));
-                dispatch(actions.setGlobalNav(true));
-                dispatch(actions.setContentNav(true));
                 dispatch(actions.setContentActions(true));
               }
             }}
@@ -56,10 +52,6 @@ export function Header(props) {
         <div className={styles.Right}>
           <div className={styles.Links}>
             {props.item.web.path && <LiveUrl item={props.item} />}
-
-            {/* {props.item.web.path && (
-              <PreviewUrl item={props.item} instance={props.instance} />
-            )} */}
           </div>
 
           <div className={styles.Actions}>
