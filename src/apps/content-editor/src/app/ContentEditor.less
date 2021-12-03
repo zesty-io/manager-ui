@@ -7,36 +7,14 @@
   position: relative;
 
   &.OpenEditor {
-    grid-template-columns: 20vw 1fr;
-  }
-
-  .CollapseButton {
-    font-size: 16px;
-    justify-content: center;
-    border-radius: 0 4px 4px 0;
-    padding: 8px 16px;
-    box-shadow: 2px 2px 5px fade(@zesty-dark-blue, 50%);
-
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    z-index: 100;
-
-    &.TabBtn {
-      left: 20vw;
-    }
-
-    &:hover {
-      color: @zesty-orange;
-    }
+    grid-template-columns: minmax(200px, 350px) 1fr;
   }
 
   .Nav {
-    background: transparent;
-    overflow: hidden;
-    overflow-y: auto;
-    display: flex;
     align-items: flex-end;
+    background: transparent;
+    display: flex;
+    position: relative; // contains the nav toggle
 
     div {
       display: none;

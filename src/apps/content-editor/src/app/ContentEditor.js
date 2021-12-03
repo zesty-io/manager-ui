@@ -1,20 +1,14 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { actions } from "shell/store/ui";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
-import { Button } from "@zesty-io/core";
 
 import { fetchModels } from "shell/store/models";
 import { fetchNav } from "../store/navContent";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { ContentNav } from "./components/Nav";
+import { ContentNavToggle } from "./components/Nav/components/ContentNavToggle";
 
 import { Dashboard } from "./views/Dashboard";
 import { ItemList } from "./views/ItemList";
@@ -29,7 +23,6 @@ import { CSVImport } from "./views/CSVImport";
 import "@zesty-io/core/vendor.css";
 
 import styles from "./ContentEditor.less";
-
 export default function ContentEditor(props) {
   const contentModels = useSelector((state) => state.models);
   const navContent = useSelector((state) => state.navContent);
@@ -54,24 +47,6 @@ export default function ContentEditor(props) {
           ui.contentNav ? styles.OpenEditor : ""
         )}
       >
-        <Button
-          title={ui.contentNav ? "Close Content Nav" : "Open Content Nav"}
-          data-cy="contentNavButton"
-          className={cx(
-            styles.CollapseButton,
-            ui.contentNav ? styles.TabBtn : ""
-          )}
-          onClick={() => {
-            dispatch(actions.setContentNav(!ui.contentNav));
-          }}
-        >
-          {ui.contentNav ? (
-            <FontAwesomeIcon icon={faChevronLeft} />
-          ) : (
-            <FontAwesomeIcon icon={faChevronRight} />
-          )}
-        </Button>
-
         <div
           data-cy="contentNav"
           className={cx(
@@ -84,6 +59,7 @@ export default function ContentEditor(props) {
             models={contentModels}
             nav={navContent}
           />
+          <ContentNavToggle />
         </div>
         <div className={styles.Content}>
           <div className={styles.ContentWrap}>

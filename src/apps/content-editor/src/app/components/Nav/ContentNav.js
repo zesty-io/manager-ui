@@ -22,7 +22,6 @@ import ItemsFilter from "./ItemsFilter";
 import { collapseNavItem, hideNavItem } from "../../../store/navContent";
 
 import styles from "./ContentNav.less";
-
 export function ContentNav(props) {
   const dispatch = useDispatch();
   const history = useHistory();
