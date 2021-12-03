@@ -137,11 +137,11 @@ export function Preview(props) {
                 className={styles.CopyButton}
                 value={`${domain}${route}`}
               />
-              {/* <Input
-              ref={input}
-              className={styles.Route}
-              value={`${domain}${route}`}
-            /> */}
+              <Input
+                ref={input}
+                className={styles.Route}
+                value={`${domain}${route}`}
+              />
             </div>
 
             <div className={styles.Device}>

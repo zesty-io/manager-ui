@@ -26,6 +26,7 @@
     .ActionInfo {
       display: flex;
       margin-left: auto;
+      flex: 2;
     }
 
     .Url {
@@ -110,16 +111,12 @@
   }
 
   //Hide copy url text for smaller screens windows
+
   .CopyButton {
+    display: flex;
     font-size: 0;
     svg {
       margin-right: initial;
-    }
-    @media screen and (min-width: 2000px) {
-      font-size: initial;
-      svg {
-        margin-right: 8px;
-      }
     }
   }
 }
