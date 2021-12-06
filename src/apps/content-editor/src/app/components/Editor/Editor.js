@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
+import cx from "classnames";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 import { Field } from "./Field";
@@ -114,7 +114,11 @@ export default memo(function Editor({
   }, []);
 
   return (
-    <div className={ui.duoMode ? styles.DuoMode : styles.DuoModeOff}>
+    <div
+      className={
+        ui.duoMode ? styles.DuoMode : cx(styles.DuoMode, styles.DuoModeOff)
+      }
+    >
       <div className={styles.Fields}>
         {item.meta && item.meta.ZUID && (
           <Breadcrumbs itemZUID={item.meta.ZUID} />
