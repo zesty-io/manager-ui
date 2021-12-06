@@ -21,4 +21,10 @@ describe("Navigation through content editor", () => {
     cy.get('[data-value="link"]').click();
     cy.get("#CreateLinkButton").should("exist");
   });
+  it("Open and Close Global Account", () => {
+    cy.get("[data-cy=globalAccountAvatar]").click();
+    cy.get("menu").should("exist");
+    cy.get("[data-cy=globalAccountAvatar]").click();
+    cy.get("[data-cy=globalAccountAvatar] menu").should("not.exist");
+  });
 });
