@@ -11,13 +11,18 @@
 
   .Split {
     align-items: center;
-    display: grid;
-    grid-auto-columns: 1fr auto;
-    grid-auto-flow: row;
-    grid-gap: 8px;
+    // display: grid;
+    // grid-auto-columns: 1fr auto;
+    // grid-auto-flow: row;
+    // grid-gap: 8px;
 
-    @media screen and (min-width: 2000px) {
-      grid-auto-flow: column;
+    display: flex;
+
+    gap: 8px;
+
+    @media screen and (max-width: 2000px) {
+      // grid-auto-flow: column;
+      flex-wrap: wrap;
     }
 
     .Left {
@@ -33,6 +38,9 @@
       display: flex;
       align-items: center;
       flex-wrap: wrap;
+      margin-left: auto;
+      @media screen and (max-width: 2000px) {
+      }
     }
   }
 

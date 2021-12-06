@@ -132,7 +132,8 @@ export function ItemVersioning(props) {
                 title="CDN out of sync"
               />
             )}
-            Publish <span>&nbsp;Version&nbsp;</span>
+            Publish{" "}
+            <span className={styles.HideVersion}>&nbsp;Version&nbsp;</span>
             {props.item.meta.version}
           </Button>
           <Button

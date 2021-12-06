@@ -2,8 +2,13 @@
 @import "~@zesty-io/core/typography.less";
 
 .ItemNav {
-  display: flex;
-  margin: 0 16px 0 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  @media screen and (min-width: 2000px) {
+    display: flex;
+    margin: 0 16px 0 0;
+  }
 
   a {
     padding: 0 4px;
@@ -15,7 +20,8 @@
   }
 
   .Selected {
-    border-bottom: 2px solid @zesty-orange;
+    text-decoration: 2px underline @zesty-orange;
+    text-underline-position: under;
   }
 
   .AppLink {

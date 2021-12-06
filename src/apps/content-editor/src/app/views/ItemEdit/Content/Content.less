@@ -14,10 +14,14 @@
     .Editor {
       flex: 2;
       padding: 0;
+      // height: calc(100vh - 54px - 73px - 36px);
+
+      overflow: auto;
+      padding-right: 16px;
     }
     .Actions {
       background: @appBkgColor;
-      height: calc(100vh - 54px - 73px - 16px);
+      height: calc(100vh - 54px - 75px - 16px);
 
       &.Closed {
         margin: 0;

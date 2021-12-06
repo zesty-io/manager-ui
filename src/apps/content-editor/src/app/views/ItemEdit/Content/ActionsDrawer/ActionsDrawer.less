@@ -10,10 +10,8 @@
 
   .DrawerHandle {
     position: absolute;
-    bottom: 10px;
+    bottom: 0;
     right: 7px;
-    // bottom: 8px;
-    // right: 16px;
 
     &.DrawerHandleClose {
       position: fixed;
@@ -32,12 +30,11 @@
         color: @zesty-orange;
       }
     }
-    // .DrawerHandlePlaceHolder{
-    //   height: 42px;
-    // }
   }
   .DrawerContent {
     overflow: auto;
     height: 100vh;
+    //scroll (GlobalTopbar - Header - padding)
+    height: calc(100vh - 54px - 75px - 16px);
   }
 }
