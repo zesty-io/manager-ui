@@ -23,8 +23,7 @@ export default function ActionsDrawer(props) {
     <Drawer
       className={styles.Drawer}
       position="right"
-      // offset="43px"
-      width="20vw"
+      width="18vw"
       open={ui.contentActions}
     >
       <DrawerHandle
