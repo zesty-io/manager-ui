@@ -8,20 +8,21 @@
   .MainEditor {
     display: grid;
     grid-template-columns: 1fr auto;
-    margin: 16px 16px 32px 16px; // overscroll bottom so content nav toggle does not overlap fields
+    // margin: 16px 16px 32px 16px; // overscroll bottom so content nav toggle does not overlap fields
+    padding: 16px 32px;
     align-items: flex-start;
 
     .Editor {
       flex: 2;
       padding: 0;
-      // height: calc(100vh - 54px - 73px - 36px);
+      height: calc(100vh - 54px - 73px - 32px);
 
       overflow: auto;
       padding-right: 16px;
     }
     .Actions {
       background: @appBkgColor;
-      height: calc(100vh - 54px - 75px - 16px);
+      height: calc(100vh - 54px - 73px - 32px);
 
       &.Closed {
         margin: 0;
