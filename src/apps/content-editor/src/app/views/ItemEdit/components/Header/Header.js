@@ -3,7 +3,6 @@ import cx from "classnames";
 
 import { actions } from "shell/store/ui";
 
-import { LiveUrl } from "./LiveUrl";
 import { LanguageSelector } from "./LanguageSelector";
 import { useDispatch, useSelector } from "react-redux";
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
@@ -21,27 +20,6 @@ export function Header(props) {
     <header className={styles.Header}>
       <div className={cx(styles.Split)}>
         <div className={styles.Left}>
-          <ToggleButton
-            className={styles.ToggleButton}
-            name={props.name}
-            value={Number(ui.duoMode)}
-            offValue="OFF"
-            onValue={
-              <React.Fragment>
-                <FontAwesomeIcon icon={faDesktop} />
-              </React.Fragment>
-            }
-            onChange={(val) => {
-              if (val == 1) {
-                dispatch(actions.setDuoMode(true));
-                dispatch(actions.setContentActions(false));
-              } else {
-                dispatch(actions.setDuoMode(false));
-                dispatch(actions.setContentActions(true));
-              }
-            }}
-          />
-
           <ItemNavigation
             modelZUID={props.modelZUID}
             itemZUID={props.itemZUID}
@@ -50,11 +28,27 @@ export function Header(props) {
           />
         </div>
         <div className={styles.Right}>
-          <div className={styles.Links}>
-            {props.item.web.path && <LiveUrl item={props.item} />}
-          </div>
-
           <div className={styles.Actions}>
+            <ToggleButton
+              className={styles.ToggleButton}
+              name={props.name}
+              value={Number(ui.duoMode)}
+              offValue="OFF"
+              onValue={
+                <React.Fragment>
+                  <FontAwesomeIcon icon={faDesktop} />
+                </React.Fragment>
+              }
+              onChange={(val) => {
+                if (val == 1) {
+                  dispatch(actions.setDuoMode(true));
+                  dispatch(actions.setContentActions(false));
+                } else {
+                  dispatch(actions.setDuoMode(false));
+                  dispatch(actions.setContentActions(true));
+                }
+              }}
+            />
             <LanguageSelector
               className={styles.I18N}
               itemZUID={props.itemZUID}

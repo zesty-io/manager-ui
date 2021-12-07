@@ -19,20 +19,28 @@
     .ClockButton {
       padding: 13px 16px;
       border-radius: 0 3px 3px 0;
-
-      svg {
-        width: 20px;
-        height: 14px;
-      }
     }
     .Scheduled {
       background-color: @zesty-orange;
     }
   }
-  .HideVersion {
+  .Save,
+  .PublishButton {
+    padding: 13px 16px;
+    svg {
+      margin-right: 0;
+    }
+    @media screen and (min-width: 1680px) {
+      padding: 8px 16px;
+      svg {
+        margin-right: 8px;
+      }
+    }
+  }
+  .Hide {
     display: none;
 
-    @media screen and (min-width: 2000px) {
+    @media screen and (min-width: 1680px) {
       display: block;
     }
   }

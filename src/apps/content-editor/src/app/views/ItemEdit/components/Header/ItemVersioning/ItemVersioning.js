@@ -132,9 +132,9 @@ export function ItemVersioning(props) {
                 title="CDN out of sync"
               />
             )}
-            Publish{" "}
-            <span className={styles.HideVersion}>&nbsp;Version&nbsp;</span>
-            {props.item.meta.version}
+            <span className={styles.Hide}>Publish</span>
+            <span className={styles.Hide}>&nbsp;Version&nbsp;</span>
+            <span className={styles.Hide}>&nbsp;{props.item.meta.version}</span>
           </Button>
           <Button
             id="PublishScheduleButton"
@@ -160,6 +160,7 @@ export function ItemVersioning(props) {
       )}
 
       <Button
+        className={styles.Save}
         type="save"
         disabled={props.saving || !props.item.dirty}
         onClick={props.onSave}
@@ -170,9 +171,10 @@ export function ItemVersioning(props) {
         ) : (
           <FontAwesomeIcon icon={faSave} />
         )}
-        Save&nbsp;
-        <span className={styles.HideVersion}>Version&nbsp;</span>
-        {metaShortcut}
+
+        <span className={styles.Hide}>Save&nbsp;</span>
+        <span className={styles.Hide}>Version&nbsp;</span>
+        <span className={styles.Hide}>{metaShortcut}&nbsp;</span>
       </Button>
     </ButtonGroup>
   );

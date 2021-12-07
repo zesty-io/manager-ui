@@ -8,9 +8,12 @@
     background-color: @zesty-highlight !important;
   }
 
-  .VersionOption small {
+  small {
     font-size: 10px;
     color: @zesty-grey;
+    @media screen and (max-width: 1680px) {
+      display: none;
+    }
   }
 
   ul {
