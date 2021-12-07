@@ -67,7 +67,7 @@ export default function PreviewMode(props) {
   }, []);
 
   return (
-    <div className={styles.DMContainer}>
+    <div data-cy="DuoModeContainer" className={styles.DMContainer}>
       {/* <div className={styles.Notice}>
         {props.dirty && <Notice>Click Save to See Changes</Notice>}
       </div> */}
