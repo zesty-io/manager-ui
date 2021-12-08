@@ -7,7 +7,8 @@
   bottom: 0;
 
   box-shadow: 0 0 15px rgb(27 32 44 / 50%);
-  height: calc(100vh - 54px - 73px) !important;
+  //Scroll Calc (GlobalTopbar - Content Header - padding)
+  height: calc(100vh - 54px - 73px);
   right: 0rem;
   width: 20vw;
   background-color: #f2f4fb;
@@ -29,7 +30,7 @@
     box-shadow: none;
     margin-right: 0;
   }
-  .test {
+  .ActionsDrawerButton {
     position: fixed;
     bottom: 0;
     right: 0;
@@ -44,11 +45,5 @@
     &:hover {
       color: @zesty-orange;
     }
-  }
-
-  .DrawerContent {
-    overflow: auto;
-    //Scroll Calc (GlobalTopbar - Content Header - padding)
-    height: calc(100vh - 54px - 73px - 32px);
   }
 }

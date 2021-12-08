@@ -42,10 +42,10 @@ export function Header(props) {
               onChange={(val) => {
                 if (val == 1) {
                   dispatch(actions.setDuoMode(true));
-                  dispatch(actions.setContentActions(true));
+                  dispatch(actions.setContentActions(false));
                 } else {
                   dispatch(actions.setDuoMode(false));
-                  // dispatch(actions.setContentActions(false));
+                  dispatch(actions.setContentActions(true));
                 }
               }}
             />

@@ -27,7 +27,7 @@ export default function ActionsDrawer(props) {
       )}
     >
       <Button
-        className={styles.test}
+        className={styles.ActionsDrawerButton}
         data-cy="ActionsButton"
         title="Open for additional file information"
         onClick={() => {
