@@ -1,12 +1,14 @@
 import { Editor } from "../../../components/Editor";
+import cx from "classnames";
 import { Header } from "../components/Header";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
-
+import { useSelector } from "react-redux";
 import { ActionsDrawer } from "./ActionsDrawer";
 
 import styles from "./Content.less";
 
 export default function Content(props) {
+  const ui = useSelector((state) => state.ui);
   return (
     <main className={styles.Content}>
       <Header
@@ -28,7 +30,12 @@ export default function Content(props) {
         />
       </Header>
 
-      <div className={styles.MainEditor}>
+      <div
+        className={cx(
+          styles.MainEditor,
+          ui.contentActions ? styles.contentActionsOn : ""
+        )}
+      >
         <div className={styles.Editor}>
           <Editor
             // active={this.state.makeActive}

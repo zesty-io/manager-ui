@@ -10,9 +10,13 @@
 
   .MainEditor {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr;
     padding: 16px 32px;
     align-items: flex-start;
+
+    &.contentActionsOn {
+      grid-template-columns: 1fr auto;
+    }
 
     .Editor {
       flex: 2;
