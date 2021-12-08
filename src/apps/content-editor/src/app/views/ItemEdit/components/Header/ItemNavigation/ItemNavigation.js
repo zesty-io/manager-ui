@@ -58,7 +58,7 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
         )}
         to={`/content/${modelZUID}/${itemZUID}/headless`}
       >
-        Headless Options
+        Headless <span className={styles.Hide}>Options</span>
       </AppLink>
     </nav>
   );
