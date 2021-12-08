@@ -18,8 +18,12 @@
       flex: 2;
       padding: 0;
       height: @height;
-
       overflow: auto;
+      //Hide Scrollbar
+      ::-webkit-scrollbar {
+        width: 0;
+        background: transparent;
+      }
     }
     .Actions {
       background: @appBkgColor;
