@@ -9,7 +9,7 @@
   box-shadow: 0 0 15px rgb(27 32 44 / 50%);
   //Scroll Calc (GlobalTopbar - Content Header - padding)
   height: calc(100vh - 54px - 73px);
-  right: 0rem;
+  right: 0;
   width: 20vw;
   background-color: #f2f4fb;
   overflow: auto;
@@ -28,7 +28,8 @@
     position: relative;
     height: initial;
     box-shadow: none;
-    margin-right: 0;
+
+    height: calc(100vh - 54px - 73px - 16px);
   }
   .ActionsDrawerButton {
     position: fixed;
