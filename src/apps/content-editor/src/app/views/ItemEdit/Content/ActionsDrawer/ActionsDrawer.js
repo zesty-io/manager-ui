@@ -3,7 +3,6 @@ import { actions } from "shell/store/ui";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 
-import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
 import { Button } from "@zesty-io/core";
 
 import { Actions } from "../Actions";
@@ -20,46 +19,35 @@ export default function ActionsDrawer(props) {
   const dispatch = useDispatch();
 
   return (
-    <Drawer
-      className={styles.Drawer}
-      position="right"
-      width="18vw"
-      open={ui.contentActions}
+    <aside
+      data-cy="ActionsContent"
+      className={cx(
+        styles.Drawer,
+        !ui.contentActions ? styles.DrawerClose : ""
+      )}
     >
-      <DrawerHandle
-        className={cx(
-          styles.DrawerHandle,
-          !ui.contentActions ? styles.DrawerHandleClose : ""
-        )}
+      <Button
+        className={styles.test}
+        data-cy="ActionsButton"
+        title="Open for additional file information"
         onClick={() => {
           dispatch(actions.setContentActions(!ui.contentActions));
         }}
       >
-        <Button
-          data-cy="ActionsButton"
-          title="Open for additional file information"
-        >
-          {ui.contentActions ? (
-            <FontAwesomeIcon icon={faChevronRight} />
-          ) : (
-            <FontAwesomeIcon icon={faChevronLeft} />
-          )}
-        </Button>
-      </DrawerHandle>
-      <DrawerContent className={styles.DrawerContent}>
-        {ui.contentActions && (
-          <React.Fragment>
-            <Actions
-              {...props}
-              site={{}}
-              set={{
-                type: props.model.type,
-              }}
-            />
-            <div className={styles.DrawerHandlePlaceHolder}></div>
-          </React.Fragment>
+        {ui.contentActions ? (
+          <FontAwesomeIcon icon={faChevronRight} />
+        ) : (
+          <FontAwesomeIcon icon={faChevronLeft} />
         )}
-      </DrawerContent>
-    </Drawer>
+      </Button>
+
+      <Actions
+        {...props}
+        site={{}}
+        set={{
+          type: props.model.type,
+        }}
+      />
+    </aside>
   );
 }

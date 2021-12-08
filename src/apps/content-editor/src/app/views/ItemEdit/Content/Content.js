@@ -49,9 +49,8 @@ export default function Content(props) {
             onSave={props.onSave}
           />
         </div>
-        <aside data-cy="ActionsContent" className={styles.Actions}>
-          <ActionsDrawer {...props} />
-        </aside>
+
+        <ActionsDrawer className={styles.Actions} {...props} />
       </div>
     </main>
   );
