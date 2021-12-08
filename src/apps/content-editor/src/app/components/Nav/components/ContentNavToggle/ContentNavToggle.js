@@ -11,24 +11,31 @@ import {
 import { Button } from "@zesty-io/core";
 
 import styles from "./ContentNavToggle.less";
+import React from "react";
 export function ContentNavToggle() {
   const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
 
   return (
-    <Button
-      title={ui.contentNav ? "Close Content Nav" : "Open Content Nav"}
-      data-cy="contentNavButton"
-      className={cx(styles.ContentNavToggle)}
-      onClick={() => {
-        dispatch(actions.setContentNav(!ui.contentNav));
-      }}
-    >
-      {ui.contentNav ? (
+    <React.Fragment>
+      {!ui.contentNav && (
+        <Button
+          title={ui.contentNav ? "Close Content Nav" : "Open Content Nav"}
+          data-cy="contentNavButton"
+          className={cx(styles.ContentNavToggle)}
+          onMouseEnter={() => {
+            dispatch(actions.setContentNav(!ui.contentNav));
+          }}
+        >
+          {/* {ui.contentNav ? (
         <FontAwesomeIcon icon={faChevronLeft} />
       ) : (
         <FontAwesomeIcon icon={faChevronRight} />
+      )} */}
+
+          <FontAwesomeIcon icon={faChevronRight} />
+        </Button>
       )}
-    </Button>
+    </React.Fragment>
   );
 }

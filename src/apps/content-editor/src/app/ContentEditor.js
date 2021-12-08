@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
 
+import { actions } from "shell/store/ui";
+
 import { fetchModels } from "shell/store/models";
 import { fetchNav } from "../store/navContent";
 
@@ -53,6 +55,9 @@ export default function ContentEditor(props) {
             styles.Nav,
             ui.contentNav ? styles.OpenNav : styles.ClosedNav
           )}
+          onMouseLeave={() => {
+            dispatch(actions.setContentNav(!ui.contentNav));
+          }}
         >
           <ContentNav
             dispatch={dispatch}

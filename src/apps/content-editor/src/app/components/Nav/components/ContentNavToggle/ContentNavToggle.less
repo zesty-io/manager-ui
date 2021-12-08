@@ -8,8 +8,16 @@
   box-shadow: 2px 2px 5px fade(@zesty-dark-blue, 50%);
   position: absolute;
   bottom: 0;
-  right: -24px;
+  // right: -24px;
+  left: 0;
   z-index: 100;
+
+  &.ContentNavToggleOpen {
+    left: -8px;
+    &:hover {
+      left: 0;
+    }
+  }
 
   &:hover {
     color: @zesty-orange;
