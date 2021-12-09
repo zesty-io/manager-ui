@@ -39,10 +39,6 @@ export default function ContentEditor(props) {
     dispatch(fetchModels());
   }, []);
 
-  console.log("ui.contentNav", ui.contentNav);
-  console.log("-----------------------------------------------");
-  console.log("isShown ", isShown);
-
   return (
     <WithLoader
       condition={navContent.nav.length || navContent.headless.length}
