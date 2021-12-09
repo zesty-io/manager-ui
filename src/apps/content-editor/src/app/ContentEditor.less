@@ -7,45 +7,21 @@
   position: relative;
 
   &.OpenEditor {
-    // grid-template-columns: minmax(200px, 350px) 1fr;
     grid-template-columns: 15fr 85fr;
+
+    .Nav {
+      box-shadow: 0 0 15px fade(@zesty-dark-blue, 50%);
+    }
+
+    .Content {
+      box-shadow: none;
+    }
   }
 
   .Nav {
     overflow: hidden;
-
-    &.OpenNav {
-    }
-    &.ClosedNav {
-    }
+    box-shadow: none;
   }
-  // .Nav {
-  //   align-items: flex-end;
-  //   background: transparent;
-  //   display: flex;
-  //   position: relative; // contains the nav toggle
-
-  //   div {
-  //     display: none;
-  //   }
-
-  //   &.OpenNav {
-  //     display: initial;
-  //     div {
-  //       display: flex;
-  //     }
-
-  //     div:last-of-type {
-  //       flex-direction: column;
-  //     }
-  //   }
-  //   &.ClosedNav {
-  //     &:hover {
-  //       cursor: pointer;
-  //       background: darken(@appBkgColor, 2%);
-  //     }
-  //   }
-  // }
 
   .Content {
     overflow: hidden;

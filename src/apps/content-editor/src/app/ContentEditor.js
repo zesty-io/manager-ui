@@ -101,9 +101,14 @@ export default function ContentEditor(props) {
             models={contentModels}
             nav={navContent}
           />
-          <ContentNavToggle />
         </div>
-        <div className={styles.Content}>
+        <ContentNavToggle />
+        <div
+          className={cx(
+            styles.Content,
+            ui.contentNav ? styles.ContentOpen : " "
+          )}
+        >
           <div className={styles.ContentWrap}>
             <Switch>
               <Route exact path="/content" component={Dashboard} />
