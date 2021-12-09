@@ -3,7 +3,7 @@
 .ContentEditor {
   height: calc(100vh - 54px);
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 60px 1fr;
   position: relative;
 
   &.OpenEditor {
@@ -12,32 +12,40 @@
   }
 
   .Nav {
-    align-items: flex-end;
-    background: transparent;
-    display: flex;
-    position: relative; // contains the nav toggle
-
-    div {
-      display: none;
-    }
+    overflow: hidden;
 
     &.OpenNav {
-      display: initial;
-      div {
-        display: flex;
-      }
-
-      div:last-of-type {
-        flex-direction: column;
-      }
     }
     &.ClosedNav {
-      &:hover {
-        cursor: pointer;
-        background: darken(@appBkgColor, 2%);
-      }
     }
   }
+  // .Nav {
+  //   align-items: flex-end;
+  //   background: transparent;
+  //   display: flex;
+  //   position: relative; // contains the nav toggle
+
+  //   div {
+  //     display: none;
+  //   }
+
+  //   &.OpenNav {
+  //     display: initial;
+  //     div {
+  //       display: flex;
+  //     }
+
+  //     div:last-of-type {
+  //       flex-direction: column;
+  //     }
+  //   }
+  //   &.ClosedNav {
+  //     &:hover {
+  //       cursor: pointer;
+  //       background: darken(@appBkgColor, 2%);
+  //     }
+  //   }
+  // }
 
   .Content {
     overflow: hidden;
