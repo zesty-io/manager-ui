@@ -4,6 +4,7 @@
   height: calc(100vh - 54px);
   display: grid;
   grid-template-columns: 60px 1fr;
+  grid-template-rows: 1fr 43px;
   position: relative;
 
   &.OpenEditor {
@@ -21,6 +22,18 @@
   .Nav {
     overflow: hidden;
     box-shadow: none;
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+  }
+
+  .ContentNavToggle {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+  }
+
+  .Content {
+    grid-column: 2 / 3;
+    grid-row: 1 / -1;
   }
 
   .Content {

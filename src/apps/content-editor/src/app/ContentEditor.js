@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
 
+import { actions } from "shell/store/ui";
+
 import { fetchModels } from "shell/store/models";
 import { fetchNav } from "../store/navContent";
 
@@ -28,45 +30,7 @@ export default function ContentEditor(props) {
   const navContent = useSelector((state) => state.navContent);
   const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
-
-  const [isShown, setIsShown] = useState({
-    anchorEl: null,
-    hover: false,
-    button: ui.contentNav,
-  });
-
-  const onEnter = () => {
-    console.log("On enter");
-    setIsShown((prevState) => ({
-      ...prevState,
-      hover: true,
-    }));
-  };
-  const onLeave = () => {
-    console.log("On Leave");
-    if (ui.contentNav) {
-      setIsShown((prevState) => ({
-        ...prevState,
-        hover: true,
-      }));
-    } else {
-      setIsShown((prevState) => ({
-        ...prevState,
-        hover: false,
-      }));
-    }
-  };
-
-  const onClickOpen = () => {
-    console.log("On Click Open");
-    if (ui.contentNav) {
-      setIsShown((prevState) => ({
-        ...prevState,
-        hover: true,
-        button: ui.contentNav,
-      }));
-    }
-  };
+  const [isShown, setIsShown] = useState(false);
 
   useEffect(() => {
     // Kick off loading data before app mount
@@ -74,6 +38,10 @@ export default function ContentEditor(props) {
     dispatch(fetchNav());
     dispatch(fetchModels());
   }, []);
+
+  console.log("ui.contentNav", ui.contentNav);
+  console.log("-----------------------------------------------");
+  console.log("isShown ", isShown);
 
   return (
     <WithLoader
@@ -83,7 +51,7 @@ export default function ContentEditor(props) {
       <section
         className={cx(
           styles.ContentEditor,
-          ui.contentNav || isShown.hover ? styles.OpenEditor : ""
+          ui.contentNav || isShown ? styles.OpenEditor : ""
         )}
       >
         <div
@@ -92,9 +60,8 @@ export default function ContentEditor(props) {
             styles.Nav,
             ui.contentNav ? styles.OpenNav : styles.ClosedNav
           )}
-          onMouseEnter={() => onEnter()}
-          onMouseLeave={() => onLeave()}
-          onClick={() => onClickOpen()}
+          onMouseEnter={() => setIsShown(true)}
+          onMouseLeave={() => setIsShown(false)}
         >
           <ContentNav
             dispatch={dispatch}
@@ -102,13 +69,8 @@ export default function ContentEditor(props) {
             nav={navContent}
           />
         </div>
-        <ContentNavToggle />
-        <div
-          className={cx(
-            styles.Content,
-            ui.contentNav ? styles.ContentOpen : " "
-          )}
-        >
+        <ContentNavToggle className={styles.ContentNavToggle} />
+        <div className={styles.Content}>
           <div className={styles.ContentWrap}>
             <Switch>
               <Route exact path="/content" component={Dashboard} />
