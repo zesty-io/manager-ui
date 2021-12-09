@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
@@ -29,6 +29,45 @@ export default function ContentEditor(props) {
   const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
 
+  const [isShown, setIsShown] = useState({
+    anchorEl: null,
+    hover: false,
+    button: ui.contentNav,
+  });
+
+  const onEnter = () => {
+    console.log("On enter");
+    setIsShown((prevState) => ({
+      ...prevState,
+      hover: true,
+    }));
+  };
+  const onLeave = () => {
+    console.log("On Leave");
+    if (ui.contentNav) {
+      setIsShown((prevState) => ({
+        ...prevState,
+        hover: true,
+      }));
+    } else {
+      setIsShown((prevState) => ({
+        ...prevState,
+        hover: false,
+      }));
+    }
+  };
+
+  const onClickOpen = () => {
+    console.log("On Click Open");
+    if (ui.contentNav) {
+      setIsShown((prevState) => ({
+        ...prevState,
+        hover: true,
+        button: ui.contentNav,
+      }));
+    }
+  };
+
   useEffect(() => {
     // Kick off loading data before app mount
     // to decrease time to first interaction
@@ -44,7 +83,7 @@ export default function ContentEditor(props) {
       <section
         className={cx(
           styles.ContentEditor,
-          ui.contentNav ? styles.OpenEditor : ""
+          ui.contentNav || isShown.hover ? styles.OpenEditor : ""
         )}
       >
         <div
@@ -53,6 +92,9 @@ export default function ContentEditor(props) {
             styles.Nav,
             ui.contentNav ? styles.OpenNav : styles.ClosedNav
           )}
+          onMouseEnter={() => onEnter()}
+          onMouseLeave={() => onLeave()}
+          onClick={() => onClickOpen()}
         >
           <ContentNav
             dispatch={dispatch}
