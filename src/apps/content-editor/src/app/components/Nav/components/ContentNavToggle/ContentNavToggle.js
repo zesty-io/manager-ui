@@ -20,15 +20,16 @@ export function ContentNavToggle() {
     <Button
       title={ui.contentNav ? "Close Content Nav" : "Open Content Nav"}
       data-cy="contentNavButton"
-      className={cx(styles.ContentNavToggle)}
+      className={cx(
+        styles.ContentNavToggle,
+        ui.contentNav ? styles.ContentNavToggleOpen : ""
+      )}
       onClick={() => {
         dispatch(actions.setContentNav(!ui.contentNav));
       }}
     >
       {ui.contentNav ? (
         <>
-          <FontAwesomeIcon icon={faChevronLeft} />
-          &nbsp;
           <FontAwesomeIcon icon={faLock} />
         </>
       ) : (
