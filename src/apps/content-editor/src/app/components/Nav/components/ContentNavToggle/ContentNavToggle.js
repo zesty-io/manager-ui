@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
   faChevronRight,
-  faLock,
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@zesty-io/core";
 
@@ -22,16 +21,14 @@ export function ContentNavToggle() {
       data-cy="contentNavButton"
       className={cx(
         styles.ContentNavToggle,
-        ui.contentNav ? styles.ContentNavToggleOpen : ""
+        ui.contentNav || ui.contentNavHover ? styles.ContentNavToggleOpen : ""
       )}
       onClick={() => {
         dispatch(actions.setContentNav(!ui.contentNav));
       }}
     >
-      {ui.contentNav ? (
-        <>
-          <FontAwesomeIcon icon={faLock} />
-        </>
+      {ui.contentNav || ui.contentNavHover ? (
+        <FontAwesomeIcon icon={faChevronLeft} />
       ) : (
         <FontAwesomeIcon icon={faChevronRight} />
       )}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
@@ -38,7 +38,21 @@ export default function ContentEditor(props) {
     dispatch(fetchModels());
   }, []);
 
-  console.log(ui.contentNavHover);
+  // console.log("ui.contentNavHover", ui.contentNavHover);
+
+  // useEffect(() => {
+  //   if (!ui.contentNavHover ) {
+
+  //     const token = setTimeout(() => {
+  //       dispatch(actions.setContentNavHover(false));
+  //       console.log("I will turn off in two second");
+  //     }, 2000);
+
+  //     return () => {
+  //       clearTimeout(token);
+  //     };
+  //   }
+  // }, [ui.contentNavHover]);
 
   return (
     <WithLoader
