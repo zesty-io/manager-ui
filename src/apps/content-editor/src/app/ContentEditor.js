@@ -31,8 +31,6 @@ export default function ContentEditor(props) {
   const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
 
-  // const [isShown, setIsShown] = useState(false);
-
   useEffect(() => {
     // Kick off loading data before app mount
     // to decrease time to first interaction
