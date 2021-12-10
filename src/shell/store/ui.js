@@ -19,6 +19,7 @@ export const ui = createSlice({
     tabs: [],
     openNav: true,
     contentNav: true,
+    contentNavHover: false,
     contentActions: true,
     duoMode: false,
   },
@@ -37,6 +38,7 @@ export const ui = createSlice({
         state.contentNav = action.payload.contentNav;
         state.contentActions = action.payload.contentActions;
         state.duoMode = action.payload.duoMode;
+        // state. contentNavHover = action.payload.contentNavHover;
       }
     },
     setGlobalNav(state, action) {
@@ -50,6 +52,9 @@ export const ui = createSlice({
     },
     setDuoMode(state, action) {
       state.duoMode = action.payload;
+    },
+    setContentNavHover(state, action) {
+      state.contentNavHover = action.payload;
     },
   },
 });

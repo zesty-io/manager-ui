@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
 
+import { actions } from "shell/store/ui";
+
 import { fetchModels } from "shell/store/models";
 import { fetchNav } from "../store/navContent";
 
@@ -29,7 +31,7 @@ export default function ContentEditor(props) {
   const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
 
-  const [isShown, setIsShown] = useState(false);
+  // const [isShown, setIsShown] = useState(false);
 
   useEffect(() => {
     // Kick off loading data before app mount
@@ -37,6 +39,8 @@ export default function ContentEditor(props) {
     dispatch(fetchNav());
     dispatch(fetchModels());
   }, []);
+
+  console.log(ui.contentNavHover);
 
   return (
     <WithLoader
@@ -46,7 +50,7 @@ export default function ContentEditor(props) {
       <section
         className={cx(
           styles.ContentEditor,
-          ui.contentNav || isShown ? styles.OpenEditor : ""
+          ui.contentNav || ui.contentNavHover ? styles.OpenEditor : ""
         )}
       >
         <div
@@ -55,16 +59,20 @@ export default function ContentEditor(props) {
             styles.Nav,
             ui.contentNav ? styles.OpenNav : styles.ClosedNav
           )}
-          onMouseEnter={() => setIsShown(true)}
-          onMouseLeave={() => setIsShown(false)}
+          onMouseEnter={() => {
+            dispatch(actions.setContentNavHover(!ui.contentNavHover));
+          }}
+          onMouseLeave={() => {
+            dispatch(actions.setContentNavHover(!ui.contentNavHover));
+          }}
         >
           <ContentNav
             dispatch={dispatch}
             models={contentModels}
             nav={navContent}
           />
+          <ContentNavToggle />
         </div>
-        <ContentNavToggle />
         <div
           className={cx(
             styles.Content,
