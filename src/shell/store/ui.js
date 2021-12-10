@@ -38,7 +38,7 @@ export const ui = createSlice({
         state.contentNav = action.payload.contentNav;
         state.contentActions = action.payload.contentActions;
         state.duoMode = action.payload.duoMode;
-        // state. contentNavHover = action.payload.contentNavHover;
+        state.contentNavHover = action.payload.contentNavHover;
       }
     },
     setGlobalNav(state, action) {
