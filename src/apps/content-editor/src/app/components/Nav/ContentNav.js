@@ -1,5 +1,5 @@
 import { Fragment, useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import cx from "classnames";
@@ -26,6 +26,7 @@ export function ContentNav(props) {
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
+  const ui = useSelector((state) => state.ui);
 
   const [selected, setSelected] = useState(location.pathname);
   const [reorderOpen, setReorderOpen] = useState(false);
@@ -111,7 +112,12 @@ export function ContentNav(props) {
         setSearchTerm={setSearchTerm}
         searchTerm={searchTerm}
       />
-      <div className={styles.NavWrap}>
+      <div
+        className={cx(
+          styles.NavWrap,
+          !ui.contentNav ? styles.NavWrapClosed : " "
+        )}
+      >
         <div className={styles.NavTitle}>
           <h1>Content</h1>
 
