@@ -4,6 +4,7 @@ import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
 
 import { actions } from "shell/store/ui";
+import debounce from "lodash/debounce";
 
 import { fetchModels } from "shell/store/models";
 import { fetchNav } from "../store/navContent";
@@ -31,28 +32,19 @@ export default function ContentEditor(props) {
   const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
 
+  const debouncedHandleMouseLeave = debounce(
+    () => dispatch(actions.setContentNavHover(false)),
+    500
+  );
+
+  console.log(ui.contentNavHover);
+
   useEffect(() => {
     // Kick off loading data before app mount
     // to decrease time to first interaction
     dispatch(fetchNav());
     dispatch(fetchModels());
   }, []);
-
-  // console.log("ui.contentNavHover", ui.contentNavHover);
-
-  // useEffect(() => {
-  //   if (!ui.contentNavHover ) {
-
-  //     const token = setTimeout(() => {
-  //       dispatch(actions.setContentNavHover(false));
-  //       console.log("I will turn off in two second");
-  //     }, 2000);
-
-  //     return () => {
-  //       clearTimeout(token);
-  //     };
-  //   }
-  // }, [ui.contentNavHover]);
 
   return (
     <WithLoader
@@ -72,11 +64,9 @@ export default function ContentEditor(props) {
             ui.contentNav ? styles.OpenNav : styles.ClosedNav
           )}
           onMouseEnter={() => {
-            dispatch(actions.setContentNavHover(!ui.contentNavHover));
+            dispatch(actions.setContentNavHover(true));
           }}
-          onMouseLeave={() => {
-            dispatch(actions.setContentNavHover(!ui.contentNavHover));
-          }}
+          onMouseLeave={debouncedHandleMouseLeave}
         >
           <ContentNav
             dispatch={dispatch}
