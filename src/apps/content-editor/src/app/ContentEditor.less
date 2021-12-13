@@ -27,7 +27,7 @@
     grid-template-columns: 15fr 85fr;
 
     .Nav {
-      background-color: #f2f7fc;
+      background-color: @appBkgColor;
       position: absolute;
       left: 0;
       top: 0;
@@ -52,6 +52,7 @@
     overflow-x: hidden;
 
     .Nav {
+      //height - globaltopbar - contentNavbtn
       height: calc(100vh - 54px - 42px);
       overflow-y: auto;
       overflow-x: hidden;
