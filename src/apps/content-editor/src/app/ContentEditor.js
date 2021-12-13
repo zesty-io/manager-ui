@@ -56,6 +56,7 @@ export default function ContentEditor(props) {
           styles.ContentEditor,
           ui.contentNav ? styles.ContentNavOpen : "",
           ui.contentNavHover && !ui.contentNav ? styles.ContentNavHover : ""
+          // true ? styles.ContentNavHover : ""
         )}
       >
         <div
