@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
@@ -31,18 +31,26 @@ export default function ContentEditor(props) {
   const navContent = useSelector((state) => state.navContent);
   const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
+  const [mouseEnterTimer, setMouseEnterTimer] = useState(null);
+  const [mouseLeaveTimer, setMouseLeaveTimer] = useState(null);
 
-  const debouncedHandleMouseEnter = debounce(
-    () => dispatch(actions.setContentNavHover(true)),
-    500
-  );
+  const handleMouseEnter = () => {
+    const enterTimer = setTimeout(() => {
+      dispatch(actions.setContentNavHover(true));
+    }, 500);
 
-  const handleOnMouseLeave = () => {
-    dispatch(actions.setContentNavHover(false));
-    debouncedHandleMouseEnter.cancel();
+    setMouseEnterTimer(enterTimer);
   };
 
-  console.log(ui.contentNavHover);
+  const handleMouseLeave = () => {
+    const leaveTimer = setTimeout(() => {
+      dispatch(actions.setContentNavHover(false));
+    }, 500);
+    setMouseLeaveTimer(leaveTimer);
+
+    clearTimeout(mouseEnterTimer);
+    clearTimeout(mouseLeaveTimer);
+  };
 
   useEffect(() => {
     // Kick off loading data before app mount
@@ -61,18 +69,13 @@ export default function ContentEditor(props) {
           styles.ContentEditor,
           ui.contentNav ? styles.ContentNavOpen : "",
           ui.contentNavHover && !ui.contentNav ? styles.ContentNavHover : ""
-          // true ? styles.ContentNavHover : ""
         )}
       >
         <div
           data-cy="contentNav"
           className={styles.Nav}
-          // onMouseEnter={() => {
-          //   dispatch(actions.setContentNavHover(true));
-          // }}
-          // onMouseLeave={debouncedHandleMouseLeave}
-          onMouseEnter={debouncedHandleMouseEnter}
-          onMouseLeave={handleOnMouseLeave}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
           <ContentNav
             dispatch={dispatch}
