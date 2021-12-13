@@ -32,10 +32,15 @@ export default function ContentEditor(props) {
   const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
 
-  const debouncedHandleMouseLeave = debounce(
-    () => dispatch(actions.setContentNavHover(false)),
-    300
+  const debouncedHandleMouseEnter = debounce(
+    () => dispatch(actions.setContentNavHover(true)),
+    500
   );
+
+  const handleOnMouseLeave = () => {
+    dispatch(actions.setContentNavHover(false));
+    debouncedHandleMouseEnter.cancel();
+  };
 
   console.log(ui.contentNavHover);
 
@@ -62,10 +67,12 @@ export default function ContentEditor(props) {
         <div
           data-cy="contentNav"
           className={styles.Nav}
-          onMouseEnter={() => {
-            dispatch(actions.setContentNavHover(true));
-          }}
-          onMouseLeave={debouncedHandleMouseLeave}
+          // onMouseEnter={() => {
+          //   dispatch(actions.setContentNavHover(true));
+          // }}
+          // onMouseLeave={debouncedHandleMouseLeave}
+          onMouseEnter={debouncedHandleMouseEnter}
+          onMouseLeave={handleOnMouseLeave}
         >
           <ContentNav
             dispatch={dispatch}

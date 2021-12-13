@@ -27,13 +27,3 @@ export function useHover() {
   );
   return [ref, value];
 }
-
-//   useEffect(() => {
-//     let iconTimer = setTimeout(() => {
-//       setCopied(false);
-//     }, 500);
-
-//     return () => {
-//       clearTimeout(iconTimer);
-//     };
-//   }, [copied]);
