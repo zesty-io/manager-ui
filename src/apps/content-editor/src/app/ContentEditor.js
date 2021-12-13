@@ -34,7 +34,7 @@ export default function ContentEditor(props) {
 
   const debouncedHandleMouseLeave = debounce(
     () => dispatch(actions.setContentNavHover(false)),
-    500
+    300
   );
 
   console.log(ui.contentNavHover);
@@ -54,15 +54,13 @@ export default function ContentEditor(props) {
       <section
         className={cx(
           styles.ContentEditor,
-          ui.contentNav || ui.contentNavHover ? styles.OpenEditor : ""
+          ui.contentNav ? styles.ContentNavOpen : "",
+          ui.contentNavHover && !ui.contentNav ? styles.ContentNavHover : ""
         )}
       >
         <div
           data-cy="contentNav"
-          className={cx(
-            styles.Nav,
-            ui.contentNav ? styles.OpenNav : styles.ClosedNav
-          )}
+          className={styles.Nav}
           onMouseEnter={() => {
             dispatch(actions.setContentNavHover(true));
           }}
@@ -75,12 +73,7 @@ export default function ContentEditor(props) {
           />
           <ContentNavToggle />
         </div>
-        <div
-          className={cx(
-            styles.Content,
-            ui.contentNav ? styles.ContentOpen : " "
-          )}
-        >
+        <div className={styles.Content}>
           <div className={styles.ContentWrap}>
             <Switch>
               <Route exact path="/content" component={Dashboard} />

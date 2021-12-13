@@ -21,7 +21,8 @@ export function ContentNavToggle() {
       data-cy="contentNavButton"
       className={cx(
         styles.ContentNavToggle,
-        ui.contentNav || ui.contentNavHover ? styles.ContentNavToggleOpen : ""
+        ui.contentNav ? styles.ContentNavToggleOpen : "",
+        ui.contentNavHover ? styles.ContentNavHover : ""
       )}
       onClick={() => {
         dispatch(actions.setContentNav(!ui.contentNav));
