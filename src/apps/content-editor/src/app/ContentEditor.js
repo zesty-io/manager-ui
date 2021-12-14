@@ -4,7 +4,6 @@ import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
 
 import { actions } from "shell/store/ui";
-import debounce from "lodash/debounce";
 
 import { fetchModels } from "shell/store/models";
 import { fetchNav } from "../store/navContent";
@@ -69,6 +68,7 @@ export default function ContentEditor(props) {
           styles.ContentEditor,
           ui.contentNav ? styles.ContentNavOpen : "",
           ui.contentNavHover && !ui.contentNav ? styles.ContentNavHover : ""
+          // true ? styles.ContentNavHover : ""
         )}
       >
         <div

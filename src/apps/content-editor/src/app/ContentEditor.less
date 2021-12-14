@@ -23,9 +23,21 @@
     }
   }
 
-  &.ContentNavHover {
+  &.ContentNavHover,
+  &.ContentNavOpen {
     grid-template-columns: 15fr 85fr;
 
+    .Nav {
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    ::-webkit-scrollbar {
+      width: 0;
+      background: transparent;
+    }
+  }
+
+  &.ContentNavHover {
     .Nav {
       background-color: @appBkgColor;
       position: absolute;
@@ -34,8 +46,6 @@
       z-index: 10;
       height: calc(100vh - 54px);
       box-shadow: 5.6px 11.2px 11.2px hsl(0deg 0% 0% / 33%);
-      overflow-y: auto;
-      overflow-x: hidden;
     }
 
     .Content {
@@ -43,19 +53,14 @@
       top: 0;
       right: 0;
       height: 100vh;
-      width: 100vw;
+      // 100vw - globalsidebar - contentNavCollapsed
+      width: calc(100vw - 60px - 60px);
     }
   }
   &.ContentNavOpen {
-    grid-template-columns: 15fr 85fr;
-    overflow-y: auto;
-    overflow-x: hidden;
-
     .Nav {
       //height - globaltopbar - contentNavbtn
       height: calc(100vh - 54px - 42px);
-      overflow-y: auto;
-      overflow-x: hidden;
     }
   }
 }
