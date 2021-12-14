@@ -77,9 +77,11 @@ export default connect((state, props) => {
               key={`${item.meta?.ZUID}-${item.meta?.version}`}
               className={styles.VersionOption}
               value={item.meta?.version}
-              html={`Version ${item.meta?.version} <small>${moment(
-                item.web?.createdAt
-              ).format("MMM Do YYYY, [at] h:mm a")}</small>`}
+              html={`V<span>ersion</span> ${
+                item.meta?.version
+              }   <small>${moment(item.web?.createdAt).format(
+                "MMM Do YYYY, [at] h:mm a"
+              )}</small>`}
             />
           ))}
       </Select>

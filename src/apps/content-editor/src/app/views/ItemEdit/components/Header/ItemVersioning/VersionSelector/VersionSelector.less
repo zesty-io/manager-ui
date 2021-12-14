@@ -1,11 +1,17 @@
 @import "~@zesty-io/core/colors.less";
 
 .VersionSelector {
-  min-width: 150px !important;
+  min-width: 125px !important;
   max-width: 200px;
 
   &.NotLatest span span {
     background-color: @zesty-highlight !important;
+  }
+
+  @media screen and (max-width: 1366px) {
+    span {
+      display: none;
+    }
   }
 
   small {
