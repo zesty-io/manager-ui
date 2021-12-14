@@ -11,9 +11,9 @@
   .MainEditor {
     display: grid;
     grid-template-columns: 1fr 0;
-    padding: 16px 16px 16px 32px;
+    padding: 16px 32px 16px 32px;
     align-items: flex-start;
-    margin-right: 16px;
+
     ::-webkit-scrollbar {
       width: 0;
       background: transparent;
@@ -21,15 +21,14 @@
 
     &.contentActionsOn {
       grid-template-columns: 1fr auto;
-      margin-right: 0;
     }
 
     .Editor {
       flex: 2;
       padding: 0;
       height: @height;
-      //100vw - globalsidbar - contentNav collapsed - actionsDrawerBtn - padding
-      width: calc(100vw - 60px - 60px - 42px - 32px);
+      //100vw - globalsidebar - contentNav collapsed - actionsDrawerBtn - padding
+      // width: calc(100vw - 314px);
       overflow: auto;
       //Hide Scrollbar
       ::-webkit-scrollbar {
