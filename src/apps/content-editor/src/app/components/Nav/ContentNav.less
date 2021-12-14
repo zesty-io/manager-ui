@@ -63,10 +63,12 @@
       }
     }
   }
-  .HiddenNavClosed {
+  .HiddenNavClosed,
+  .Hide {
     display: none;
   }
 }
+
 .Title {
   padding: 1rem;
   letter-spacing: 0.2rem;
@@ -87,6 +89,8 @@
   width: 60px;
 }
 
-.Hide {
-  display: none;
+.HideIcon {
+  [data-icon="search"] {
+    display: none;
+  }
 }

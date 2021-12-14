@@ -72,6 +72,7 @@ export function ContentNav(props) {
     setReorderOpen(!reorderOpen);
   };
 
+  console.log(ui.contentNavHover);
   return (
     <Fragment>
       <div className={styles.Actions}>
