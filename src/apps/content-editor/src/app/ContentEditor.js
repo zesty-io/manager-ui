@@ -67,7 +67,7 @@ export default function ContentEditor(props) {
         className={cx(
           styles.ContentEditor,
           ui.contentNav ? styles.ContentNavOpen : "",
-          ui.contentNavHover ? styles.ContentNavHover : ""
+          ui.contentNavHover && !ui.contentNav ? styles.ContentNavHover : ""
           // true ? styles.ContentNavHover : ""
         )}
       >

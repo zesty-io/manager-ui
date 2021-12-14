@@ -31,6 +31,7 @@
       overflow-y: auto;
       overflow-x: hidden;
       height: calc(100vh - 54px);
+      width: 15vw;
     }
     ::-webkit-scrollbar {
       width: 0;
@@ -41,12 +42,11 @@
   &.ContentNavHover {
     .Nav {
       background-color: @appBkgColor;
+      box-shadow: 5.6px 11.2px 11.2px hsl(0deg 0% 0% / 33%);
       position: absolute;
       left: 0;
       top: 0;
       z-index: 10;
-
-      box-shadow: 5.6px 11.2px 11.2px hsl(0deg 0% 0% / 33%);
     }
 
     .Content {
