@@ -82,8 +82,8 @@ export default function ContentEditor(props) {
             models={contentModels}
             nav={navContent}
           />
-          <ContentNavToggle />
         </div>
+        {/* <ContentNavToggle /> */}
         <div className={styles.Content}>
           <div className={styles.ContentWrap}>
             <Switch>

@@ -4,6 +4,8 @@ import { useLocation, useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 
+import { ContentNavToggle } from "./components/ContentNavToggle/ContentNavToggle";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowsAlt,
@@ -201,6 +203,7 @@ export function ContentNav(props) {
             actions={actions}
           />
         </div>
+        <ContentNavToggle />
       </div>
 
       <ReorderNav isOpen={reorderOpen} toggleOpen={toggleModal} />

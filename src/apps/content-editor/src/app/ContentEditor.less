@@ -30,6 +30,9 @@
     .Nav {
       overflow-y: auto;
       overflow-x: hidden;
+      //height - globaltopbar - contentNavbtn
+      // height: calc(100vh - 54px - 42px);
+      height: calc(100vh - 54px);
     }
     ::-webkit-scrollbar {
       width: 0;
@@ -44,7 +47,7 @@
       left: 0;
       top: 0;
       z-index: 10;
-      height: calc(100vh - 54px);
+
       box-shadow: 5.6px 11.2px 11.2px hsl(0deg 0% 0% / 33%);
     }
 
@@ -59,8 +62,6 @@
   }
   &.ContentNavOpen {
     .Nav {
-      //height - globaltopbar - contentNavbtn
-      height: calc(100vh - 54px - 42px);
     }
   }
 }

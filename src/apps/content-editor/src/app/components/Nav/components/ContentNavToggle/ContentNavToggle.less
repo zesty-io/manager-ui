@@ -6,26 +6,21 @@
   border-radius: 0 4px 4px 0;
   padding: 13px 6px;
   box-shadow: 2px 2px 5px fade(@zesty-dark-blue, 50%);
-  position: fixed;
-  bottom: 0;
-  left: 60px;
+  position: absolute;
+  // bottom: 0;
+  bottom: -50px;
+  left: 0;
   z-index: 100;
-  width: 60px;
+  width: 100%;
 
   &.ContentNavHover {
     border-radius: 0;
-    position: absolute;
-    width: 100%;
-    left: 0;
-    bottom: initial;
+    // width: 15vw;
   }
 
   &.ContentNavToggleOpen {
-    width: calc(15vw - 9px);
+    // width: calc(15vw - 9px);
     border-radius: 0;
-    position: absolute;
-    bottom: 0;
-    left: 0;
   }
 
   &:hover {
