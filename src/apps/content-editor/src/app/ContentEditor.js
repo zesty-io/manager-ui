@@ -83,7 +83,9 @@ export default function ContentEditor(props) {
             nav={navContent}
           />
         </div>
-        {/* <ContentNavToggle /> */}
+        <ContentNavToggle
+          className={ui.contentNav ? styles.ContentNavToggleOpen : styles.Hide}
+        />
         <div className={styles.Content}>
           <div className={styles.ContentWrap}>
             <Switch>

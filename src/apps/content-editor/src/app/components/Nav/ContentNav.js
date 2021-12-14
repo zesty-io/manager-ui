@@ -203,7 +203,10 @@ export function ContentNav(props) {
             actions={actions}
           />
         </div>
-        <ContentNavToggle />
+
+        <ContentNavToggle
+          className={ui.contentNavHover ? styles.ContentNavHover : styles.Hide}
+        />
       </div>
 
       <ReorderNav isOpen={reorderOpen} toggleOpen={toggleModal} />
