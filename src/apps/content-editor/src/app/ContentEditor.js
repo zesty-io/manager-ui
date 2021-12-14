@@ -67,7 +67,7 @@ export default function ContentEditor(props) {
         className={cx(
           styles.ContentEditor,
           ui.contentNav ? styles.ContentNavOpen : "",
-          ui.contentNavHover && !ui.contentNav ? styles.ContentNavHover : ""
+          ui.contentNavHover ? styles.ContentNavHover : ""
           // true ? styles.ContentNavHover : ""
         )}
       >
@@ -83,9 +83,7 @@ export default function ContentEditor(props) {
             nav={navContent}
           />
         </div>
-        <ContentNavToggle
-          className={ui.contentNav ? styles.ContentNavToggleOpen : styles.Hide}
-        />
+        <ContentNavToggle />
         <div className={styles.Content}>
           <div className={styles.ContentWrap}>
             <Switch>
