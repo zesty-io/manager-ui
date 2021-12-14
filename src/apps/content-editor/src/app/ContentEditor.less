@@ -31,7 +31,6 @@
       overflow-y: auto;
       overflow-x: hidden;
       height: calc(100vh - 54px);
-      width: 15vw;
     }
     ::-webkit-scrollbar {
       width: 0;
@@ -47,6 +46,11 @@
       left: 0;
       top: 0;
       z-index: 10;
+      width: 20vw;
+
+      @media screen and (max-width: 1680px) {
+        width: 25vw;
+      }
     }
 
     .Content {
@@ -64,6 +68,11 @@
         // 100vw - GlobalSidebar - contentNavCollapsed
         width: calc(100vw - 60px - 60px);
       }
+    }
+  }
+  &.ContentNavOpen {
+    .Nav {
+      width: 15vw;
     }
   }
 }
