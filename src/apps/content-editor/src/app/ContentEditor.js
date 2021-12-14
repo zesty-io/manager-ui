@@ -84,7 +84,12 @@ export default function ContentEditor(props) {
           />
         </div>
         <ContentNavToggle />
-        <div className={styles.Content}>
+        <div
+          className={cx(
+            styles.Content,
+            ui.openNav ? styles.GlobalOpen : styles.GlobalClosed
+          )}
+        >
           <div className={styles.ContentWrap}>
             <Switch>
               <Route exact path="/content" component={Dashboard} />

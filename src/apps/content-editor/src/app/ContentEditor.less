@@ -54,8 +54,16 @@
       top: 0;
       right: 0;
       height: 100vh;
-      // 100vw - globalsidebar - contentNavCollapsed
-      width: calc(100vw - 60px - 60px);
+
+      &.GlobalOpen {
+        // 100vw - GlobalSidebar - contentNavUNCollapsed
+        width: calc(100vw - 145px - 60px);
+      }
+
+      &.GlobalClosed {
+        // 100vw - GlobalSidebar - contentNavCollapsed
+        width: calc(100vw - 60px - 60px);
+      }
     }
   }
 }
