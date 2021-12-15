@@ -7,6 +7,10 @@
   grid-gap: 12px;
   padding: 8px 0;
 
+  // let app link scroll on devices with constrained heights
+  overflow: auto;
+  max-height: calc(100vh - 290px);
+
   .SubAppLink {
     text-align: left;
     color: @zesty-field-blue;
