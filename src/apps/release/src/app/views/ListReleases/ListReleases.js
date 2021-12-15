@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import cx from "classnames";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
@@ -9,7 +10,7 @@ export function ListReleases() {
   const members = useSelector((state) => state.releaseMembers.data);
   return (
     <main className={styles.ListReleases}>
-      <Card className={styles.Card}>
+      <Card className={cx(styles.Card, styles.Create)}>
         <CardHeader>New Release</CardHeader>
         <CardContent>Setup a new release</CardContent>
         <CardFooter>

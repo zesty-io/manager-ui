@@ -49,7 +49,7 @@ export function Actions(props) {
         liveURL={liveURL}
       />
 
-      {/* <Release item={props.item} /> */}
+      <Release item={props.item} />
 
       <WidgetPublishHistory
         dispatch={props.dispatch}

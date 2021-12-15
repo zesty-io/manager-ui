@@ -18,9 +18,11 @@ export function PlanTable({ members }) {
         </tr>
       </thead>
       <tbody>
-        {members.map((member) => (
-          <PlanStep key={member.ZUID} member={member} />
-        ))}
+        <div>
+          {members.map((member) => (
+            <PlanStep key={member.ZUID} member={member} />
+          ))}
+        </div>
       </tbody>
       <tfoot>
         <tr>

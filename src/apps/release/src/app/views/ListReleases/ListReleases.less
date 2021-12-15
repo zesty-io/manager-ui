@@ -1,5 +1,6 @@
 @import "~@zesty-io/core/colors.less";
 @import "~@zesty-io/core/typography.less";
+
 .ListReleases {
   // height: calc(100vh - 225px);
   display: grid;
@@ -7,7 +8,14 @@
   grid-template-columns: repeat(auto-fill, 370px);
   grid-auto-rows: auto;
 
+  overflow: scroll;
+  height: 100%;
+
   .Card {
     margin: 0;
+  }
+
+  .Create {
+    // background-color: green;
   }
 }
