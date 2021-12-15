@@ -7,47 +7,40 @@
   grid-gap: 12px;
   padding: 8px 0;
 
-  &.OpenNav {
-    a {
-      text-align: left;
-    }
-    svg {
-      margin-right: 8px;
-    }
-  }
-  a,
-  .Collapse {
-    text-align: center;
+  .SubAppLink {
+    text-align: left;
     color: @zesty-field-blue;
     text-decoration: none;
     letter-spacing: 1px;
     padding: 8px;
     border-left: 2px solid @globalMenuBkgColor;
 
-    .title {
-      display: inline-block;
+    &:hover {
+      color: @zesty-green;
+    }
+    &:active,
+    &:focus {
+      color: @zesty-orange;
+    }
+
+    svg {
+      margin-right: 8px;
+    }
+  }
+
+  &.Closed {
+    .SubAppLink {
+      text-align: center;
+      svg {
+        margin: 0;
+      }
+      .title {
+        display: none;
+      }
     }
   }
 
   .current {
     border-left: 2px solid @zesty-orange;
-  }
-
-  .control,
-  .build,
-  .optimize,
-  .settings {
-    &:hover {
-      color: @zesty-green;
-    }
-  }
-  .control,
-  .build,
-  .optimize,
-  .settings {
-    &:active,
-    &:focus {
-      color: @zesty-orange;
-    }
   }
 }

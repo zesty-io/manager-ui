@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
@@ -20,6 +20,7 @@ export default connect((state) => {
 })(function ActivePreview(props) {
   const origin = window.location.origin;
   const location = useLocation();
+  const openNav = useSelector((state) => state.ui.openNav);
 
   function close() {
     if (preview) {
@@ -126,7 +127,7 @@ export default connect((state) => {
         icon={faEye}
         title="Preview"
       />
-      <span>Preview</span>
+      {openNav && <span>Preview</span>}
     </span>
   );
 });
