@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -64,43 +64,42 @@ export const Release = memo(function Release(props) {
       <CardContent>
         <WithLoader condition={!loading}>
           {active ? (
-            <div>
-              <p className={styles.Row}>Queue item for release</p>
-              <div className={styles.Row}>
-                <FieldTypeDropDown
-                  name="release"
-                  className={styles.SelectRelease}
-                  value={selectedRelease}
-                  onChange={setSelectedRelease}
-                  options={releases.map((release) => {
-                    return {
-                      value: release.ZUID,
-                      component: (
-                        <span>
-                          <span onClick={(evt) => evt.stopPropagation()}>
-                            <AppLink to={`/release/${release.ZUID}`}>
-                              <FontAwesomeIcon icon={faEdit} />
-                            </AppLink>
-                          </span>
-                          &nbsp;{release.name}
+            <React.Fragment>
+              <FieldTypeDropDown
+                name="release"
+                label="Queue item for release"
+                className={styles.SelectRelease}
+                value={selectedRelease}
+                onChange={setSelectedRelease}
+                options={releases.map((release) => {
+                  return {
+                    value: release.ZUID,
+                    component: (
+                      <span>
+                        <span onClick={(evt) => evt.stopPropagation()}>
+                          <AppLink to={`/release/${release.ZUID}`}>
+                            <FontAwesomeIcon icon={faEdit} />
+                          </AppLink>
                         </span>
-                      ),
-                    };
-                  })}
-                />
-                <Button
-                  onClick={onAdd}
-                  disabled={selectedRelease === "0" || addingMember}
-                >
-                  {addingMember ? (
-                    <FontAwesomeIcon icon={faSpinner} />
-                  ) : (
-                    <FontAwesomeIcon icon={faPlus} />
-                  )}
-                  Add
-                </Button>
-              </div>
-            </div>
+                        &nbsp;{release.name}
+                      </span>
+                    ),
+                  };
+                })}
+              />
+              <Button
+                className={styles.Add}
+                onClick={onAdd}
+                disabled={selectedRelease === "0" || addingMember}
+              >
+                {addingMember ? (
+                  <FontAwesomeIcon icon={faSpinner} />
+                ) : (
+                  <FontAwesomeIcon icon={faPlus} />
+                )}
+                Add
+              </Button>
+            </React.Fragment>
           ) : (
             <AppLink to={`/release/activate`}>
               <FontAwesomeIcon icon={faPowerOff} />
