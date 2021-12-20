@@ -83,6 +83,7 @@ export default function ContentEditor(props) {
             nav={navContent}
           />
         </div>
+
         <ContentNavToggle />
         <div
           className={cx(
