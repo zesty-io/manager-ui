@@ -174,10 +174,7 @@ export function ItemVersioning(props) {
         ) : (
           <FontAwesomeIcon icon={faSave} />
         )}
-
-        <span className={styles.Hide}>Save&nbsp;</span>
-        <span className={styles.Hide}>Version&nbsp;</span>
-        <span className={styles.Hide}>{metaShortcut}&nbsp;</span>
+        <span className={styles.Test}>&nbsp;Save Version {metaShortcut}</span>
       </Button>
     </ButtonGroup>
   );

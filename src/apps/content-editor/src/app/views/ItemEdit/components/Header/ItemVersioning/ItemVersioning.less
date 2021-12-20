@@ -26,12 +26,11 @@
   }
   .Save,
   .PublishButton {
-    padding: 13px 16px;
+    align-self: stretch;
     svg {
       margin-right: 0;
     }
     @media screen and (min-width: 2000px) {
-      padding: 8px 16px;
       svg {
         margin-right: 8px;
       }
@@ -42,6 +41,19 @@
 
     @media screen and (min-width: 2000px) {
       display: block;
+    }
+  }
+  .Test {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: none;
+    @media screen and (min-width: 1440px) {
+      width: 120px;
+      display: block;
+    }
+    @media screen and (min-width: 1680px) {
+      width: 100%;
     }
   }
 }
