@@ -116,6 +116,7 @@ export function ItemVersioning(props) {
       {canPublish && (
         <ButtonGroup className={styles.Publish}>
           <Button
+            title="Publish"
             className={styles.PublishButton}
             id="PublishButton"
             kind="secondary"
@@ -137,6 +138,7 @@ export function ItemVersioning(props) {
             <span className={styles.Hide}>&nbsp;{props.item.meta.version}</span>
           </Button>
           <Button
+            title="Publish Schedule"
             id="PublishScheduleButton"
             className={`${styles.ClockButton} ${
               props.item.scheduling && props.item.scheduling.isScheduled
@@ -160,6 +162,7 @@ export function ItemVersioning(props) {
       )}
 
       <Button
+        title="Save Version"
         className={styles.Save}
         type="save"
         disabled={props.saving || !props.item.dirty}

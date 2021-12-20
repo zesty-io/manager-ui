@@ -30,6 +30,7 @@ export function Header(props) {
         <div className={styles.Right}>
           <div className={styles.Actions}>
             <ToggleButton
+              title="Duo Mode Toggle"
               className={styles.ToggleButton}
               name={props.name}
               value={Number(ui.duoMode)}
