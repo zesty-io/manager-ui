@@ -6,7 +6,11 @@ describe("Head Tags", () => {
     cy.goHome();
   });
   it("creates and deletes new head tag", () => {
-    cy.get("#MainNavigation").contains("All Field Types").click();
+    cy.get("#MainNavigation")
+      .contains("All Field Types")
+      .click({ force: true });
+
+    cy.get("[data-cy=contentNavButton]").click();
 
     cy.get("[data-cy=head]").click();
 
