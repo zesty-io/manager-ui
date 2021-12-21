@@ -10,8 +10,8 @@
 
   .MainEditor {
     display: grid;
-    grid-template-columns: 1fr 60px;
-    padding: 16px 32px 16px 32px;
+    grid-template-columns: 1fr 40px;
+    padding: 16px 32px;
     align-items: flex-start;
     position: relative;
     gap: 16px;
@@ -22,16 +22,13 @@
       background: transparent;
     }
 
-    &.contentActionsOn {
-      grid-template-columns: 1fr 60px;
+    &.ContentActionsOn {
+      grid-template-columns: 1fr 23.5vw;
     }
 
     .Editor {
-      padding: 0;
-      // height: @height;
-      //100vw - globalsidebar - contentNav collapsed - actionsDrawerBtn - padding
-      // width: calc(100vw - 314px);
       overflow: auto;
+
       //Hide Scrollbar
       ::-webkit-scrollbar {
         width: 0;
@@ -46,17 +43,22 @@
     z-index: 10;
     width: 60px;
 
-    font-size: 16px;
+    font-size: @svg-icon;
     justify-content: center;
     border-radius: 4px 0 0 4px;
     padding: 13px 6px;
     box-shadow: 0px 0px 6px lighten(@zesty-dark-blue, 20%);
 
-    &:hover {
-      color: @zesty-orange;
-    }
     &.ActionsDrawerButtonHover {
       width: 25vw;
+    }
+
+    &.ActionsDrawerOpen {
+      width: 25vw;
+    }
+
+    &:hover {
+      color: @zesty-orange;
     }
   }
 }

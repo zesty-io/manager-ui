@@ -2,7 +2,6 @@
 @import "~@zesty-io/core/typography.less";
 
 .Drawer {
-  // border: 1px solid #c3cddf;
   width: 100vw;
   background: @appBkgColor;
 
@@ -26,6 +25,12 @@
 
     overflow: auto;
     padding-bottom: 50px;
+  }
+
+  &.DrawerAction {
+    width: 25vw;
+    height: calc(100vh - 54px - 63px - 65px);
+    overflow-y: scroll;
   }
 
   // @media screen and (min-width: 1680px) {

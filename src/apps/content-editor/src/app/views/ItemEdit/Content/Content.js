@@ -1,8 +1,9 @@
 import { Editor } from "../../../components/Editor";
 import cx from "classnames";
+import { actions } from "shell/store/ui";
 import { Header } from "../components/Header";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ActionsDrawer } from "./ActionsDrawer";
 import { Button } from "@zesty-io/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,6 +16,7 @@ import styles from "./Content.less";
 
 export default function Content(props) {
   const ui = useSelector((state) => state.ui);
+  const dispatch = useDispatch();
 
   return (
     <main className={styles.Content}>
@@ -40,7 +42,7 @@ export default function Content(props) {
       <div
         className={cx(
           styles.MainEditor,
-          ui.contentActions ? styles.contentActionsOn : ""
+          ui.contentActions ? styles.ContentActionsOn : ""
         )}
       >
         <div className={styles.Editor}>
@@ -62,7 +64,8 @@ export default function Content(props) {
         <Button
           className={cx(
             styles.ActionsDrawerButton,
-            ui.contentActionsHover && styles.ActionsDrawerButtonHover
+            ui.contentActionsHover ? styles.ActionsDrawerButtonHover : "",
+            ui.contentActions ? styles.ActionsDrawerOpen : ""
           )}
           data-cy="ActionsButton"
           title="Open for additional file information"
@@ -70,10 +73,10 @@ export default function Content(props) {
             dispatch(actions.setContentActions(!ui.contentActions));
           }}
         >
-          {ui.contentActions ? (
-            <FontAwesomeIcon icon={faChevronLeft} />
-          ) : (
+          {ui.contentActions || ui.contentActionsHover ? (
             <FontAwesomeIcon icon={faChevronRight} />
+          ) : (
+            <FontAwesomeIcon icon={faChevronLeft} />
           )}
         </Button>
       </div>

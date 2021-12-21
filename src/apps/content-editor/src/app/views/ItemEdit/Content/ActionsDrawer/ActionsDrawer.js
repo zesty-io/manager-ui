@@ -4,15 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import { actions } from "shell/store/ui";
 
-import { Button } from "@zesty-io/core";
-
 import { Actions } from "../Actions";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
-
 import styles from "./ActionsDrawer.less";
 
 export default function ActionsDrawer(props) {
@@ -38,12 +30,13 @@ export default function ActionsDrawer(props) {
     clearTimeout(mouseEnterTimer);
     clearTimeout(mouseLeaveTimer);
   };
-
+  console.log(ui.contentActions);
   return (
     <aside
       className={cx(
         styles.Drawer,
-        ui.contentActionsHover ? styles.DrawerHover : ""
+        ui.contentActionsHover && !ui.contentActions ? styles.DrawerHover : "",
+        ui.contentActions ? styles.DrawerAction : ""
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -56,20 +49,6 @@ export default function ActionsDrawer(props) {
           type: props.model.type,
         }}
       />
-      {/* <Button
-        className={styles.ActionsDrawerButton}
-        data-cy="ActionsButton"
-        title="Open for additional file information"
-        onClick={() => {
-          dispatch(actions.setContentActions(!ui.contentActions));
-        }}
-      >
-        {ui.contentActions ? (
-          <FontAwesomeIcon icon={faChevronRight} />
-        ) : (
-          <FontAwesomeIcon icon={faChevronLeft} />
-        )}
-      </Button> */}
     </aside>
   );
 }
