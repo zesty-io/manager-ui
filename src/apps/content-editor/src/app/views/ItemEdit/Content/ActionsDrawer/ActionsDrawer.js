@@ -1,7 +1,8 @@
-import React from "react";
-import { actions } from "shell/store/ui";
+import { useState } from "react";
+
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
+import { actions } from "shell/store/ui";
 
 import { Button } from "@zesty-io/core";
 
@@ -15,17 +16,43 @@ import {
 import styles from "./ActionsDrawer.less";
 
 export default function ActionsDrawer(props) {
-  const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
+  const ui = useSelector((state) => state.ui);
+  const [mouseEnterTimer, setMouseEnterTimer] = useState(null);
+  const [mouseLeaveTimer, setMouseLeaveTimer] = useState(null);
+
+  const handleMouseEnter = () => {
+    const enterTimer = setTimeout(() => {
+      dispatch(actions.setContentActionsHover(true));
+    }, 500);
+
+    setMouseEnterTimer(enterTimer);
+  };
+
+  const handleMouseLeave = () => {
+    const leaveTimer = setTimeout(() => {
+      dispatch(actions.setContentActionsHover(false));
+    }, 500);
+    setMouseLeaveTimer(leaveTimer);
+
+    clearTimeout(mouseEnterTimer);
+    clearTimeout(mouseLeaveTimer);
+  };
 
   return (
     <aside
       data-cy="ActionsContent"
-      className={cx(
-        styles.Drawer,
-        !ui.contentActions ? styles.DrawerClose : ""
-      )}
+      className={cx(true ? styles.Drawer : "")}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
+      <Actions
+        {...props}
+        site={{}}
+        set={{
+          type: props.model.type,
+        }}
+      />
       <Button
         className={styles.ActionsDrawerButton}
         data-cy="ActionsButton"
@@ -40,14 +67,6 @@ export default function ActionsDrawer(props) {
           <FontAwesomeIcon icon={faChevronLeft} />
         )}
       </Button>
-
-      <Actions
-        {...props}
-        site={{}}
-        set={{
-          type: props.model.type,
-        }}
-      />
     </aside>
   );
 }

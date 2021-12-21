@@ -21,6 +21,7 @@ export const ui = createSlice({
     contentNav: false,
     contentNavHover: false,
     contentActions: true,
+    contentActionsHover: false,
     duoMode: false,
   },
   reducers: {
@@ -48,6 +49,9 @@ export const ui = createSlice({
     },
     setContentActions(state, action) {
       state.contentActions = action.payload;
+    },
+    setContentActionsHover(state, action) {
+      state.contentActionsHover = action.payload;
     },
     setDuoMode(state, action) {
       state.duoMode = action.payload;

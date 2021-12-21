@@ -2,21 +2,19 @@
 @import "~@zesty-io/core/typography.less";
 
 .Drawer {
+  background: @appBkgColor;
   position: absolute;
-  z-index: 10;
-  bottom: 0;
-
-  box-shadow: 0 0 15px rgb(27 32 44 / 50%);
-  //Scroll Calc (GlobalTopbar - Content Header - padding)
-  height: calc(100vh - 54px - 63px);
+  width: 25vw;
   right: 0;
-  width: 24vw;
-  background-color: @appBkgColor;
-  overflow: auto;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 0 15px rgb(27 32 44 / 50%);
 
-  &.DrawerClose {
-    width: 0;
-  }
+  // //Scroll Calc (GlobalTopbar - Content Header - padding)
+  height: calc(100vh - 54px - 63px - 50px);
+
+  overflow: auto;
+  padding-bottom: 50px;
 
   //Hide Scrollbar
   ::-webkit-scrollbar {
@@ -31,11 +29,17 @@
     height: calc(100vh - 54px - 73px - 16px);
     margin-left: 16px;
   }
+  &:hover {
+    .ActionsDrawerButton {
+      width: 25vw;
+    }
+  }
   .ActionsDrawerButton {
     position: fixed;
     bottom: 0;
     right: 0;
     z-index: 100;
+    width: 60px;
 
     font-size: 16px;
     justify-content: center;
