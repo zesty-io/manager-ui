@@ -41,10 +41,13 @@ export default function ActionsDrawer(props) {
 
   return (
     <aside
-      data-cy="ActionsContent"
-      className={cx(true ? styles.Drawer : "")}
+      className={cx(
+        styles.Drawer,
+        ui.contentActionsHover ? styles.DrawerHover : ""
+      )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      data-cy="ActionsContent"
     >
       <Actions
         {...props}
@@ -53,7 +56,7 @@ export default function ActionsDrawer(props) {
           type: props.model.type,
         }}
       />
-      <Button
+      {/* <Button
         className={styles.ActionsDrawerButton}
         data-cy="ActionsButton"
         title="Open for additional file information"
@@ -66,7 +69,7 @@ export default function ActionsDrawer(props) {
         ) : (
           <FontAwesomeIcon icon={faChevronLeft} />
         )}
-      </Button>
+      </Button> */}
     </aside>
   );
 }

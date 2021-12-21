@@ -4,11 +4,18 @@ import { Header } from "../components/Header";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
 import { useSelector } from "react-redux";
 import { ActionsDrawer } from "./ActionsDrawer";
+import { Button } from "@zesty-io/core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./Content.less";
 
 export default function Content(props) {
   const ui = useSelector((state) => state.ui);
+
   return (
     <main className={styles.Content}>
       <Header
@@ -51,6 +58,24 @@ export default function Content(props) {
         </div>
 
         <ActionsDrawer className={styles.Actions} {...props} />
+
+        <Button
+          className={cx(
+            styles.ActionsDrawerButton,
+            ui.contentActionsHover && styles.ActionsDrawerButtonHover
+          )}
+          data-cy="ActionsButton"
+          title="Open for additional file information"
+          onClick={() => {
+            dispatch(actions.setContentActions(!ui.contentActions));
+          }}
+        >
+          {ui.contentActions ? (
+            <FontAwesomeIcon icon={faChevronLeft} />
+          ) : (
+            <FontAwesomeIcon icon={faChevronRight} />
+          )}
+        </Button>
       </div>
     </main>
   );

@@ -2,19 +2,9 @@
 @import "~@zesty-io/core/typography.less";
 
 .Drawer {
+  // border: 1px solid #c3cddf;
+  width: 100vw;
   background: @appBkgColor;
-  position: absolute;
-  width: 25vw;
-  right: 0;
-  top: 0;
-  z-index: 10;
-  box-shadow: 0 0 15px rgb(27 32 44 / 50%);
-
-  // //Scroll Calc (GlobalTopbar - Content Header - padding)
-  height: calc(100vh - 54px - 63px - 50px);
-
-  overflow: auto;
-  padding-bottom: 50px;
 
   //Hide Scrollbar
   ::-webkit-scrollbar {
@@ -22,33 +12,27 @@
     background: transparent;
   }
 
-  @media screen and (min-width: 1680px) {
-    position: relative;
-    height: initial;
-    box-shadow: none;
-    height: calc(100vh - 54px - 73px - 16px);
-    margin-left: 16px;
-  }
-  &:hover {
-    .ActionsDrawerButton {
-      width: 25vw;
-    }
-  }
-  .ActionsDrawerButton {
-    position: fixed;
-    bottom: 0;
+  &.DrawerHover {
+    width: 25vw;
+    position: absolute;
+
     right: 0;
-    z-index: 100;
-    width: 60px;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 0 15px rgb(27 32 44 / 50%);
 
-    font-size: 16px;
-    justify-content: center;
-    border-radius: 4px 0 0 4px;
-    padding: 13px 6px;
-    box-shadow: 0px 0px 6px lighten(@zesty-dark-blue, 20%);
+    // //Scroll Calc (GlobalTopbar - Content Header - padding)
+    height: calc(100vh - 54px - 63px - 50px);
 
-    &:hover {
-      color: @zesty-orange;
-    }
+    overflow: auto;
+    padding-bottom: 50px;
   }
+
+  // @media screen and (min-width: 1680px) {
+  //   position: relative;
+  //   height: initial;
+  //   box-shadow: none;
+  //   height: calc(100vh - 54px - 73px - 16px);
+  //   margin-left: 16px;
+  // }
 }
