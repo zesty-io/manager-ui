@@ -2,8 +2,14 @@
 @import "~@zesty-io/core/typography.less";
 
 .Drawer {
-  width: 100vw;
-  background: @appBkgColor;
+  background: @white;
+  width: 20vw;
+  border: 1px solid rgb(221, 221, 221);
+  border-radius: 4px;
+  padding-bottom: 50px;
+  box-shadow: rgb(0 0 0 / 12%) 0px 6px 16px;
+  height: calc(100vh - 54px - 73px - 58px);
+  overflow-y: scroll;
 
   //Hide Scrollbar
   ::-webkit-scrollbar {
@@ -12,32 +18,20 @@
   }
 
   &.DrawerHover {
-    width: 25vw;
     position: absolute;
-
+    width: 20vw;
     right: 0;
-    top: 0;
+    top: 16px;
     z-index: 10;
-    box-shadow: 0 0 15px rgb(27 32 44 / 50%);
+    box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
 
-    // //Scroll Calc (GlobalTopbar - Content Header - padding)
-    height: calc(100vh - 54px - 63px - 50px);
-
+    // //Scroll Calc (GlobalTopbar - Content Header - button - padding)
+    height: calc(100vh - 54px - 73px - 58px);
     overflow: auto;
-    padding-bottom: 50px;
   }
 
   &.DrawerAction {
-    width: 25vw;
-    height: calc(100vh - 54px - 63px - 65px);
-    overflow-y: scroll;
+    // height: calc(100vh - 54px - 73px - 58px);
+    // overflow-y: scroll;
   }
-
-  // @media screen and (min-width: 1680px) {
-  //   position: relative;
-  //   height: initial;
-  //   box-shadow: none;
-  //   height: calc(100vh - 54px - 73px - 16px);
-  //   margin-left: 16px;
-  // }
 }

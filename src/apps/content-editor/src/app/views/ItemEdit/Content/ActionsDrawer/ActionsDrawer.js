@@ -30,7 +30,7 @@ export default function ActionsDrawer(props) {
     clearTimeout(mouseEnterTimer);
     clearTimeout(mouseLeaveTimer);
   };
-  console.log(ui.contentActions);
+
   return (
     <aside
       className={cx(
