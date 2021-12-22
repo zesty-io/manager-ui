@@ -9,6 +9,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
   faChevronRight,
+  faCode,
+  faCodeBranch,
+  faEnvelope,
+  faShareAlt,
+  faSync,
+  faTrash,
+  faUnlink,
+  faUserCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./ActionsDrawer.less";
 
@@ -53,19 +61,28 @@ export default function ActionsDrawer(props) {
       >
         <ul className={styles.Quickbar}>
           <li>
-            <FontAwesomeIcon icon={faChevronLeft} />
+            <FontAwesomeIcon icon={faCodeBranch} />
           </li>
           <li>
-            <FontAwesomeIcon icon={faChevronLeft} />
+            <FontAwesomeIcon icon={faUserCheck} />
           </li>
           <li>
-            <FontAwesomeIcon icon={faChevronLeft} />
+            <FontAwesomeIcon icon={faUserCheck} />
           </li>
           <li>
-            <FontAwesomeIcon icon={faChevronLeft} />
+            <FontAwesomeIcon icon={faCode} />
           </li>
           <li>
-            <FontAwesomeIcon icon={faChevronLeft} />
+            <FontAwesomeIcon icon={faShareAlt} />
+          </li>
+          <li>
+            <FontAwesomeIcon icon={faSync} />
+          </li>
+          <li>
+            <FontAwesomeIcon icon={faUnlink} />
+          </li>
+          <li>
+            <FontAwesomeIcon icon={faTrash} />
           </li>
         </ul>
       </div>
