@@ -3,7 +3,6 @@
 
 .Drawer {
   background: @white;
-  width: 20vw;
   border: 1px solid rgb(221, 221, 221);
   border-radius: 4px;
   padding-bottom: 50px;
@@ -11,26 +10,49 @@
   height: calc(100vh - 54px - 73px - 58px);
   overflow-y: scroll;
 
+  .Quickbar {
+    height: 100vh;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    li {
+      list-style: none;
+    }
+  }
+
   //Hide Scrollbar
   ::-webkit-scrollbar {
     width: 0;
     background: transparent;
   }
 
-  &.DrawerHover {
+  .Show {
+    display: block;
+  }
+
+  .Hide {
+    display: none;
+  }
+
+  .DrawerHover {
+    background: @white;
     position: absolute;
     width: 20vw;
+    height: 100%;
     right: 0;
     top: 16px;
     z-index: 10;
     box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
-
+    display: block;
     // //Scroll Calc (GlobalTopbar - Content Header - button - padding)
     height: calc(100vh - 54px - 73px - 58px);
     overflow: auto;
   }
 
-  &.DrawerAction {
+  .DrawerAction {
+    display: block;
+    position: initial;
     // height: calc(100vh - 54px - 73px - 58px);
     // overflow-y: scroll;
   }
