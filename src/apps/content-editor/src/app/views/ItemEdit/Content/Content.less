@@ -17,9 +17,11 @@
     gap: 32px;
     height: @height;
 
+    //Hide Scrollbar
+    scrollbar-width: none; /*  FireFox */
+    -ms-overflow-style: none; /*  Edge */
     ::-webkit-scrollbar {
-      width: 0;
-      background: transparent;
+      display: none;
     }
 
     &.ContentActionsOn {
@@ -28,12 +30,6 @@
 
     .Editor {
       overflow: auto;
-
-      //Hide Scrollbar
-      ::-webkit-scrollbar {
-        width: 0;
-        background: transparent;
-      }
     }
   }
   .ActionsDrawerButton {

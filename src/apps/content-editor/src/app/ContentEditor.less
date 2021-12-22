@@ -9,6 +9,14 @@
   .Nav {
     overflow: hidden;
     box-shadow: none;
+
+    //Hide Scrollbar
+    overflow-y: scroll;
+    scrollbar-width: none; /*  FireFox */
+    -ms-overflow-style: none; /*  Edge */
+    ::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   .Content {
@@ -31,10 +39,6 @@
       overflow-y: auto;
       overflow-x: hidden;
       height: calc(100vh - 54px);
-    }
-    ::-webkit-scrollbar {
-      width: 0;
-      background: transparent;
     }
   }
 

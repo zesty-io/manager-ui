@@ -12,7 +12,13 @@
   .Fields {
     display: flex;
     flex-direction: column;
-    overflow: auto;
+    //Hide Scrollbar
+    overflow-y: scroll;
+    scrollbar-width: none; /*  FireFox */
+    -ms-overflow-style: none; /*  Edge */
+    ::-webkit-scrollbar {
+      display: none;
+    }
 
     //Scroll Calc (GlobalTopbar - Content Header - padding)
     height: calc(100vh - 54px - 73px - 22px);
