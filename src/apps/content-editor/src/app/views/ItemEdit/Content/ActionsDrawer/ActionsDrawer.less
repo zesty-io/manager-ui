@@ -10,6 +10,14 @@
   height: calc(100vh - 54px - 73px - 58px);
   overflow-y: scroll;
 
+  //FireFox
+  scrollbar-width: none;
+
+  //Hide Scrollbar
+  ::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
+  }
   .Quickbar {
     height: calc(100vh - 54px - 73px - 58px);
     align-items: center;
@@ -19,12 +27,6 @@
     li {
       list-style: none;
     }
-  }
-
-  //Hide Scrollbar
-  ::-webkit-scrollbar {
-    width: 0;
-    background: transparent;
   }
 
   .Show {
@@ -48,6 +50,15 @@
     // //Scroll Calc (GlobalTopbar - Content Header - button - padding)
     height: calc(100vh - 54px - 73px - 58px);
     overflow: auto;
+
+    //FireFox
+    scrollbar-width: none;
+
+    //Hide Scrollbar
+    ::-webkit-scrollbar {
+      width: 0;
+      background: transparent;
+    }
   }
 
   .DrawerAction {
