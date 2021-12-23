@@ -2,7 +2,7 @@
 @import "~@zesty-io/core/typography.less";
 
 //Scroll Calc (GlobalTopbar - Content Header - padding)
-@height: calc(100vh - 54px - 73px - 32px);
+@height: calc(100vh - 54px - 72px - 32px);
 
 .Content {
   height: calc(100vh - 54px);
@@ -26,8 +26,6 @@
 
     &.ContentActionsOn {
       grid-template-columns: 1fr 20vw;
-      // 100vw - GlobalSidebar - contentNavUNCollapsed
-      // width: calc(100vw - 145px - 32px);
     }
 
     .Editor {
@@ -43,7 +41,7 @@
 
     position: absolute;
     right: 0;
-    bottom: -1px;
+    bottom: 0;
     width: 60px;
     z-index: 10;
 

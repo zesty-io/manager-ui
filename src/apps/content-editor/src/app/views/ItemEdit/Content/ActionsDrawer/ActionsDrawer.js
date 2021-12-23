@@ -7,11 +7,8 @@ import { actions } from "shell/store/ui";
 import { Actions } from "../Actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faChevronLeft,
-  faChevronRight,
   faCode,
   faCodeBranch,
-  faEnvelope,
   faShareAlt,
   faSync,
   faTrash,

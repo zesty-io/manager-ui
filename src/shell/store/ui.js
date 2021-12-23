@@ -18,7 +18,7 @@ export const ui = createSlice({
     loadedTabs: false,
     tabs: [],
     openNav: true,
-    contentNav: false,
+    contentNav: true,
     contentNavHover: false,
     contentActions: true,
     contentActionsHover: false,
