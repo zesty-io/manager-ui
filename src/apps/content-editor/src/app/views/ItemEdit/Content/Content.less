@@ -26,6 +26,8 @@
 
     &.ContentActionsOn {
       grid-template-columns: 1fr 20vw;
+      // 100vw - GlobalSidebar - contentNavUNCollapsed
+      // width: calc(100vw - 145px - 32px);
     }
 
     .Editor {
@@ -41,7 +43,7 @@
 
     position: absolute;
     right: 0;
-    bottom: 0;
+    bottom: -1px;
     width: 60px;
     z-index: 10;
 

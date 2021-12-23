@@ -59,7 +59,7 @@ export default function ActionsDrawer(props) {
           ui.contentActions ? styles.Hide : ""
         )}
       >
-        <ul className={styles.Quickbar}>
+        <ul className={styles.QuickBar}>
           <li>
             <FontAwesomeIcon icon={faCodeBranch} />
           </li>
