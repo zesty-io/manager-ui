@@ -11,10 +11,11 @@
     box-shadow: none;
 
     //Hide Scrollbar
-    overflow-y: scroll;
+    // overflow-y: scroll;
     scrollbar-width: none; /*  FireFox */
     -ms-overflow-style: none; /*  Edge */
     ::-webkit-scrollbar {
+      /*  Chrome / Safari */
       display: none;
     }
   }
@@ -39,6 +40,10 @@
       overflow-y: auto;
       overflow-x: hidden;
       height: calc(100vh - 54px);
+      &::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
     }
   }
 
@@ -52,6 +57,11 @@
       top: 0;
       z-index: 10;
       width: 20vw;
+
+      ::-webkit-scrollbar {
+        /*  Chrome / Safari */
+        display: none;
+      }
 
       @media screen and (max-width: 1680px) {
         width: 25vw;
