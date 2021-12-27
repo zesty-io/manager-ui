@@ -1,7 +1,8 @@
 @import "~@zesty-io/core/colors.less";
 @import "~@zesty-io/core/typography.less";
 /* Scroll Calc (GlobalTopbar - Content Header - button - padding) */
-@height: calc(100vh - 54px - 72px - 42px);
+
+@height: calc(100vh - 54px - 73px - 42px);
 
 .Drawer {
   display: flex;
@@ -10,8 +11,7 @@
   border: 1px solid rgb(221, 221, 221);
   box-shadow: rgb(0 0 0 / 12%) 0px 6px 16px;
   height: @height;
-  margin-top: -16px;
-
+  overflow: auto;
   //Hide Scrollbar
   overflow-y: scroll;
   scrollbar-width: none; /*  FireFox */
