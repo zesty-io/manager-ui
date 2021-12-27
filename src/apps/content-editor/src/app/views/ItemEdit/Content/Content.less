@@ -10,7 +10,7 @@
 
   .MainEditor {
     display: grid;
-    grid-template-columns: 1fr 60px;
+    grid-template-columns: 1fr 40px;
     padding: 16px 0 16px 32px;
     align-items: flex-start;
     position: relative;
@@ -42,13 +42,10 @@
     position: absolute;
     right: 0;
     bottom: 0;
-    width: 60px;
+    width: 40px;
     z-index: 10;
 
-    &.ActionsDrawerButtonHover {
-      width: 20vw;
-    }
-
+    &.ActionsDrawerButtonHover,
     &.ActionsDrawerOpen {
       width: 20vw;
     }

@@ -1,6 +1,6 @@
 @import "~@zesty-io/core/colors.less";
 @import "~@zesty-io/core/typography.less";
-
+/* Scroll Calc (GlobalTopbar - Content Header - button - padding) */
 @height: calc(100vh - 54px - 72px - 42px);
 
 .Drawer {
@@ -8,21 +8,18 @@
   justify-content: center;
   background: @white;
   border: 1px solid rgb(221, 221, 221);
-  border-radius: 4px;
   box-shadow: rgb(0 0 0 / 12%) 0px 6px 16px;
   height: @height;
   margin-top: -16px;
 
+  //Hide Scrollbar
   overflow-y: scroll;
   scrollbar-width: none; /*  FireFox */
   -ms-overflow-style: none; /*  Edge */
-
-  //Hide Scrollbar
   ::-webkit-scrollbar {
     display: none;
   }
   .QuickBar {
-    // height: calc(100vh - 54px - 73px - 50px);
     align-items: center;
     display: flex;
     flex-direction: column;
@@ -45,13 +42,12 @@
     background: @white;
     position: absolute;
     width: 20vw;
-    height: 100%;
     right: 0;
     top: 0;
     z-index: 10;
     box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
     display: block;
-    // //Scroll Calc (GlobalTopbar - Content Header - button - padding)
+
     height: @height;
     overflow: auto;
 
@@ -64,9 +60,9 @@
   }
 
   .DrawerAction {
+    overflow: auto;
     display: block;
     position: initial;
     height: @height;
-    // overflow-y: scroll;
   }
 }

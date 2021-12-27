@@ -87,8 +87,9 @@ export default function ActionsDrawer(props) {
         className={cx(
           ui.contentActionsHover && !ui.contentActions
             ? styles.DrawerHover
-            : styles.Hide,
-          ui.contentActions ? styles.DrawerAction : ""
+            : ui.contentActions
+            ? styles.DrawerAction
+            : styles.Hide
         )}
       >
         <Actions
