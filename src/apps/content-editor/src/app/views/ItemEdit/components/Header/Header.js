@@ -15,6 +15,7 @@ import styles from "./Header.less";
 export function Header(props) {
   const dispatch = useDispatch();
   const ui = useSelector((state) => state.ui);
+  const slug = window.location.href.split("/").pop();
 
   return (
     <header className={styles.Header}>
@@ -29,27 +30,33 @@ export function Header(props) {
         </div>
         <div className={styles.Right}>
           <div className={styles.Actions}>
-            <ToggleButton
-              title="Duo Mode Toggle"
-              className={styles.ToggleButton}
-              name={props.name}
-              value={Number(ui.duoMode)}
-              offValue="OFF"
-              onValue={
-                <React.Fragment>
-                  <FontAwesomeIcon icon={faDesktop} />
-                </React.Fragment>
-              }
-              onChange={(val) => {
-                if (val == 1) {
-                  dispatch(actions.setDuoMode(true));
-                  dispatch(actions.setContentActions(false));
-                } else {
-                  dispatch(actions.setDuoMode(false));
-                  dispatch(actions.setContentActions(true));
-                }
-              }}
-            />
+            {slug !== "meta" &&
+              slug !== "head" &&
+              slug !== "preview" &&
+              slug !== "headless" && (
+                <ToggleButton
+                  title="Duo Mode Toggle"
+                  className={styles.ToggleButton}
+                  name={props.name}
+                  value={Number(ui.duoMode)}
+                  offValue="OFF"
+                  onValue={
+                    <React.Fragment>
+                      <FontAwesomeIcon icon={faDesktop} />
+                    </React.Fragment>
+                  }
+                  onChange={(val) => {
+                    if (val == 1) {
+                      dispatch(actions.setDuoMode(true));
+                      dispatch(actions.setContentActions(false));
+                    } else {
+                      dispatch(actions.setDuoMode(false));
+                      dispatch(actions.setContentActions(true));
+                    }
+                  }}
+                />
+              )}
+
             <LanguageSelector
               className={styles.I18N}
               itemZUID={props.itemZUID}
