@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import { Notice } from "@zesty-io/core/Notice";
 import { useSelector } from "react-redux";
 
 import styles from "./PreviewMode.less";
