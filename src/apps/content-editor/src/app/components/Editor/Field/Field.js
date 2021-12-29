@@ -448,7 +448,8 @@ export default function Field({
             (itemZUID) =>
               !itemZUID.includes("new") && // exclude new items
               allItems[itemZUID].meta.ZUID && // ensure the item has a zuid
-              allItems[itemZUID].web.pathPart // exclude items non-routeable items
+              allItems[itemZUID].web.pathPart && // exclude non-routeable items
+              allItems[itemZUID].meta.langID === langID // exclude non-relevant langs
           )
           .map((itemZUID) => {
             let item = allItems[itemZUID];
