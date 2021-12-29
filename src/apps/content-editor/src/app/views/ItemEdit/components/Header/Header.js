@@ -9,13 +9,14 @@ import { ToggleButton } from "@zesty-io/core/ToggleButton";
 
 import ItemNavigation from "./ItemNavigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDesktop } from "@fortawesome/free-solid-svg-icons";
+import { faDesktop, faWindowClose } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./Header.less";
 export function Header(props) {
   const dispatch = useDispatch();
   const ui = useSelector((state) => state.ui);
   const slug = window.location.href.split("/").pop();
+  console.log(slug);
 
   return (
     <header className={styles.Header}>
@@ -39,12 +40,21 @@ export function Header(props) {
                   className={styles.ToggleButton}
                   name={props.name}
                   value={Number(ui.duoMode)}
-                  offValue="OFF"
+                  offValue={
+                    <React.Fragment>
+                      <FontAwesomeIcon icon={faWindowClose} />
+                    </React.Fragment>
+                  }
                   onValue={
                     <React.Fragment>
                       <FontAwesomeIcon icon={faDesktop} />
                     </React.Fragment>
                   }
+                  // onValue={
+                  //   <React.Fragment>
+                  //     <FontAwesomeIcon icon={faDesktop} />
+                  //   </React.Fragment>
+                  // }
                   onChange={(val) => {
                     if (val == 1) {
                       dispatch(actions.setDuoMode(true));

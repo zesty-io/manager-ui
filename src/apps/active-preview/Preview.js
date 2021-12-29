@@ -159,7 +159,7 @@ export function Preview(props) {
                 value="fullscreen"
                 onSelect={(val) => setDevice(val)}
               >
-                <Option value="fullscreen" text="Desktop" />
+                <Option value="fullscreen" text="Viewport" />
 
                 {/*
             Generate available options from templates,
