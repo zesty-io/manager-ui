@@ -43,55 +43,49 @@ export default function ActionsDrawer(props) {
 
   return (
     <aside
-      className={cx(styles.Drawer)}
+      className={cx(
+        styles.Drawer,
+        ui.contentActionsHover && !ui.contentActions ? styles.DrawerHover : "",
+        ui.contentActions ? styles.DrawerAction : ""
+      )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       data-cy="ActionsContent"
     >
-      <div
+      <ul
         className={cx(
-          ui.contentActionsHover && !ui.contentActions
-            ? styles.Hide
-            : styles.Show,
-          ui.contentActions ? styles.Hide : ""
+          styles.QuickBar,
+          ui.contentActionsHover && styles.Hide,
+          ui.contentActions && styles.Hide
         )}
       >
-        <ul className={styles.QuickBar}>
-          <li>
-            <FontAwesomeIcon icon={faCodeBranch} />
-          </li>
-          <li>
-            <FontAwesomeIcon icon={faUserCheck} />
-          </li>
-          <li>
-            <FontAwesomeIcon icon={faUserCheck} />
-          </li>
-          <li>
-            <FontAwesomeIcon icon={faCode} />
-          </li>
-          <li>
-            <FontAwesomeIcon icon={faShareAlt} />
-          </li>
-          <li>
-            <FontAwesomeIcon icon={faSync} />
-          </li>
-          <li>
-            <FontAwesomeIcon icon={faUnlink} />
-          </li>
-          <li>
-            <FontAwesomeIcon icon={faTrash} />
-          </li>
-        </ul>
-      </div>
-      <div
-        className={cx(
-          ui.contentActionsHover && !ui.contentActions
-            ? styles.DrawerHover
-            : ui.contentActions
-            ? styles.DrawerAction
-            : styles.Hide
-        )}
-      >
+        <li>
+          <FontAwesomeIcon icon={faCodeBranch} />
+        </li>
+        <li>
+          <FontAwesomeIcon icon={faUserCheck} />
+        </li>
+        <li>
+          <FontAwesomeIcon icon={faUserCheck} />
+        </li>
+        <li>
+          <FontAwesomeIcon icon={faCode} />
+        </li>
+        <li>
+          <FontAwesomeIcon icon={faShareAlt} />
+        </li>
+        <li>
+          <FontAwesomeIcon icon={faSync} />
+        </li>
+        <li>
+          <FontAwesomeIcon icon={faUnlink} />
+        </li>
+        <li>
+          <FontAwesomeIcon icon={faTrash} />
+        </li>
+      </ul>
+
+      <div className={cx(!ui.contentActionsHover ? styles.Hide : "")}>
         <Actions
           {...props}
           site={{}}

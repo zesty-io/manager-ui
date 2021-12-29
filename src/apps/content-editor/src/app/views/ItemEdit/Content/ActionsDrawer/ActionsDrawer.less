@@ -12,6 +12,19 @@
   border-width: 0 1px 1px 1px;
   box-shadow: rgb(0 0 0 / 12%) 0px 6px 16px;
   height: @height;
+  position: relative;
+
+  transition: width 350ms ease;
+  width: 40px;
+
+  &.DrawerAction {
+    width: 20vw;
+    height: @height;
+
+    & > div {
+      display: block;
+    }
+  }
 
   //Hide Scrollbar
   overflow-y: scroll;
@@ -21,7 +34,24 @@
   ::-webkit-scrollbar {
     display: none;
   }
+
+  &.DrawerHover {
+    background-color: #fff;
+    position: absolute;
+    width: 20vw;
+    right: 0;
+    top: 0;
+    z-index: 10;
+    box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
+    display: block;
+    height: @height;
+  }
+
   .QuickBar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
     align-items: center;
     display: flex;
     flex-direction: column;
@@ -32,40 +62,10 @@
     }
   }
 
-  .Show {
-    display: block;
-  }
-
   .Hide {
     display: none;
   }
-
-  .DrawerHover,
-  .DrawerAction {
-    background: @white;
-    height: @height;
-    overflow: auto;
-
-    //Hide Scrollbar
-    scrollbar-width: none; /*  FireFox */
-    -ms-overflow-style: none; /*  Edge */
-    ::-webkit-scrollbar {
-      display: none;
-    }
-  }
-
-  .DrawerHover {
-    position: absolute;
-    width: 20vw;
-    right: 0;
-    top: 0;
-    z-index: 10;
-    box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
+  .Show {
     display: block;
-  }
-
-  .DrawerAction {
-    display: block;
-    position: initial;
   }
 }
