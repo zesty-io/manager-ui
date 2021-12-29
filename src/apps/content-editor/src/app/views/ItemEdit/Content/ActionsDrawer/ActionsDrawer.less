@@ -13,13 +13,11 @@
   box-shadow: rgb(0 0 0 / 12%) 0px 6px 16px;
   height: @height;
   position: relative;
-
-  transition: width 350ms ease;
   width: 40px;
 
   &.DrawerAction {
+    transition: width 350ms linear;
     width: 20vw;
-    height: @height;
 
     & > div {
       display: block;
@@ -45,6 +43,7 @@
     box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
     display: block;
     height: @height;
+    transition: width 350ms linear;
   }
 
   .QuickBar {
