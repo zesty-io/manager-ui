@@ -4,7 +4,7 @@ import { useLocation, useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 
-import { ContentNavToggle } from "./components/ContentNavToggle/ContentNavToggle";
+import { actions as uiActions } from "../../../../../../shell/store/ui";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -24,6 +24,7 @@ import ItemsFilter from "./ItemsFilter";
 import { collapseNavItem, hideNavItem } from "../../../store/navContent";
 
 import styles from "./ContentNav.less";
+
 export function ContentNav(props) {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -39,6 +40,27 @@ export function ContentNav(props) {
   const [filteredItems, setFilteredItems] = useState(
     props.nav.nav.sort(bySort)
   );
+
+  const [mouseEnterTimer, setMouseEnterTimer] = useState(null);
+  const [mouseLeaveTimer, setMouseLeaveTimer] = useState(null);
+
+  const handleMouseEnter = () => {
+    const enterTimer = setTimeout(() => {
+      dispatch(uiActions.setContentNavHover(true));
+    }, 500);
+
+    setMouseEnterTimer(enterTimer);
+  };
+
+  const handleMouseLeave = () => {
+    const leaveTimer = setTimeout(() => {
+      dispatch(uiActions.setContentNavHover(false));
+    }, 500);
+    setMouseLeaveTimer(leaveTimer);
+
+    clearTimeout(mouseEnterTimer);
+    clearTimeout(mouseLeaveTimer);
+  };
 
   useEffect(() => {
     setFilteredItems(props.nav.nav.sort(byLabel));
@@ -72,8 +94,18 @@ export function ContentNav(props) {
     setReorderOpen(!reorderOpen);
   };
 
+  console.log("UI Content Nav Tree: ", ui.contentNav);
   return (
-    <Fragment>
+    <div
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className={cx(
+        styles.NavContainer,
+        ui.contentNavHover && !ui.contentNav ? styles.ContentNavHover : "",
+        ui.contentNav ? styles.ContentNavOpen : ""
+        // true && !ui.contentNav ? styles.ContentNavHover : "")
+      )}
+    >
       <div className={styles.Actions}>
         <Select
           name="createItemFromModel"
@@ -206,7 +238,7 @@ export function ContentNav(props) {
       </div>
 
       <ReorderNav isOpen={reorderOpen} toggleOpen={toggleModal} />
-    </Fragment>
+    </div>
   );
 }
 

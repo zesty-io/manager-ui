@@ -30,26 +30,6 @@ export default function ContentEditor(props) {
   const navContent = useSelector((state) => state.navContent);
   const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
-  const [mouseEnterTimer, setMouseEnterTimer] = useState(null);
-  const [mouseLeaveTimer, setMouseLeaveTimer] = useState(null);
-
-  const handleMouseEnter = () => {
-    const enterTimer = setTimeout(() => {
-      dispatch(actions.setContentNavHover(true));
-    }, 500);
-
-    setMouseEnterTimer(enterTimer);
-  };
-
-  const handleMouseLeave = () => {
-    const leaveTimer = setTimeout(() => {
-      dispatch(actions.setContentNavHover(false));
-    }, 500);
-    setMouseLeaveTimer(leaveTimer);
-
-    clearTimeout(mouseEnterTimer);
-    clearTimeout(mouseLeaveTimer);
-  };
 
   useEffect(() => {
     // Kick off loading data before app mount
@@ -66,23 +46,17 @@ export default function ContentEditor(props) {
       <section
         className={cx(
           styles.ContentEditor,
-          ui.contentNav ? styles.ContentNavOpen : "",
-          ui.contentNavHover && !ui.contentNav ? styles.ContentNavHover : ""
+          ui.contentNav ? styles.ContentGridOpen : "",
+          ui.contentNavHover && !ui.contentNav ? styles.ContentGridHover : ""
           // true ? styles.ContentNavHover : ""
         )}
       >
-        <div
+        <ContentNav
           data-cy="contentNav"
-          className={styles.Nav}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <ContentNav
-            dispatch={dispatch}
-            models={contentModels}
-            nav={navContent}
-          />
-        </div>
+          dispatch={dispatch}
+          models={contentModels}
+          nav={navContent}
+        />
 
         <ContentNavToggle />
         <div
