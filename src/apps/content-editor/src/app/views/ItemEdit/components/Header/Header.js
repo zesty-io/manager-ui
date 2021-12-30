@@ -16,7 +16,6 @@ export function Header(props) {
   const dispatch = useDispatch();
   const ui = useSelector((state) => state.ui);
   const slug = window.location.href.split("/").pop();
-  console.log(slug);
 
   return (
     <header className={styles.Header}>
@@ -50,11 +49,6 @@ export function Header(props) {
                       <FontAwesomeIcon icon={faDesktop} />
                     </React.Fragment>
                   }
-                  // onValue={
-                  //   <React.Fragment>
-                  //     <FontAwesomeIcon icon={faDesktop} />
-                  //   </React.Fragment>
-                  // }
                   onChange={(val) => {
                     if (val == 1) {
                       dispatch(actions.setDuoMode(true));
