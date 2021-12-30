@@ -103,7 +103,6 @@ export function ContentNav(props) {
         styles.NavContainer,
         ui.contentNavHover && !ui.contentNav ? styles.ContentNavHover : "",
         ui.contentNav ? styles.ContentNavOpen : ""
-        // true && !ui.contentNav ? styles.ContentNavHover : "")
       )}
     >
       <div className={styles.Actions}>
