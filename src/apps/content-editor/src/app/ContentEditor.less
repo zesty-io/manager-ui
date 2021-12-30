@@ -33,7 +33,11 @@
 
   &.ContentNavHover,
   &.ContentNavOpen {
-    grid-template-columns: 20fr 80fr;
+    grid-template-columns: 20vw auto;
+
+    @media only screen and (min-width: 2000px) {
+      grid-template-columns: 15vw auto;
+    }
 
     .Nav {
       overflow-y: auto;
@@ -87,6 +91,9 @@
   &.ContentNavOpen {
     .Nav {
       width: 20vw;
+      @media only screen and (min-width: 2000px) {
+        width: 15vw;
+      }
     }
   }
 }

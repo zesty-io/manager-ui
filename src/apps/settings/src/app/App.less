@@ -7,7 +7,11 @@
 
   .AppWrap {
     display: grid;
-    grid-template-columns: 15fr 85fr;
+    grid-template-columns: 20vw auto;
+
+    @media only screen and (min-width: 2000px) {
+      grid-template-columns: 15vw auto;
+    }
 
     .OverflowWrap {
       height: calc(100vh - 54px);
