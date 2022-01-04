@@ -30,7 +30,7 @@ export function Header(props) {
 
       <ButtonGroup className={styles.Actions}>
         <Button
-          kind="save"
+          type="save"
           id="CreateItemSaveButton"
           disabled={props.saving || !props.isDirty}
           onClick={props.onSave}

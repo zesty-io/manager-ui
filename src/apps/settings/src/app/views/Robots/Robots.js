@@ -2,15 +2,10 @@ import { useEffect, useState } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { useDomain } from "shell/hooks/use-domain";
+import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEdit,
-  faFile,
-  faSave,
-  faSpinner,
-  faTextHeight,
-} from "@fortawesome/free-solid-svg-icons";
+import { faFile, faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "@zesty-io/core/Url";
 import { Button } from "@zesty-io/core/Button";
@@ -21,7 +16,6 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
-import typographystyles from "@zesty-io/core/typography.less";
 
 import styles from "./Robots.less";
 import { Divider } from "@zesty-io/core/Divider";
@@ -79,21 +73,7 @@ export default connect((state) => {
         value: Number(robots_on.value),
       }));
     });
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
-
-  const handleKeyDown = (evt) => {
-    if (
-      ((props.platform.isMac && evt.metaKey) ||
-        (!props.platform.isMac && evt.ctrlKey)) &&
-      evt.key == "s"
-    ) {
-      evt.preventDefault();
-      handleSave();
-    }
-  };
 
   const handleRobotsOn = (value) => {
     setRobotOn((prevRobotOn) => ({
@@ -138,6 +118,8 @@ export default connect((state) => {
         setLoading(true);
       });
   };
+
+  const metaShortcut = useMetaKey("s", handleSave);
 
   const makeRequest = (data) => {
     return request(
@@ -207,7 +189,7 @@ export default connect((state) => {
         </div>
 
         <Button
-          kind="save"
+          type="save"
           className={styles.SaveBtn}
           onClick={handleSave}
           disabled={loading}
@@ -217,7 +199,7 @@ export default connect((state) => {
           ) : (
             <FontAwesomeIcon icon={faSave} />
           )}
-          Save Settings
+          Save {metaShortcut}
         </Button>
       </div>
     </WithLoader>

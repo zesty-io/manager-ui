@@ -589,31 +589,29 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
   return (dispatch, getState) => {
     const instance = getState().instance;
     const item = getState().content[itemZUID];
-    let title;
 
-    if (item) {
+    let title;
+    if (item?.web) {
       title = `"${item.web.metaTitle || item.web.metaLinkText}"`;
     } else {
       title = `item ${itemZUID}`;
     }
 
     return request(
-      `${CONFIG.LEGACY_SITES_SERVICE}/${instance.ZUID}/content/items/${itemZUID}/publish-schedule/${publishZUID}`,
+      `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}/publishings/${publishZUID}`,
       {
-        method: "PATCH",
-        json: true,
-        body: {
-          take_offline_at: moment().format("YYYY-MM-DD HH:mm:ss"),
-        },
+        method: "DELETE",
       }
     )
       .then((res) => {
         if (res.error) {
           throw res.error;
         }
+
         const message = options.version
           ? `Unscheduled version ${options.version}`
           : `Unpublished ${title}`;
+
         return dispatch(
           notify({
             message,

@@ -1,5 +1,5 @@
-import { memo, useState, useEffect } from "react";
-import { connect } from "react-redux";
+import { useState } from "react";
+
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -29,7 +29,7 @@ export function Save(props) {
   const metaShortcut = useMetaKey("s", onSave);
 
   return (
-    <Button kind="save" onClick={onSave} disabled={saving}>
+    <Button type="save" onClick={onSave} disabled={saving}>
       {saving ? (
         <FontAwesomeIcon spin icon={faSpinner} />
       ) : (

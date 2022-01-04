@@ -72,7 +72,9 @@ function Header(props) {
           />
         )}
       </span>
-      <h1 className={styles.Title}>{props.field.label}</h1>
+      <h1 data-cy="fieldLabel" className={styles.Title}>
+        {props.field.label}
+      </h1>
       <small className={styles.Type}>{props.field.datatype}</small>
       <Button
         className={styles.DragHandle}
@@ -124,7 +126,7 @@ export function Footer(props) {
   return (
     <footer className={styles.FieldFooter}>
       <ButtonGroup className={styles.FieldActions}>
-        <Button kind="save" disabled={!props.field.dirty} onClick={onSave}>
+        <Button type="save" disabled={!props.field.dirty} onClick={onSave}>
           {loading ? (
             <FontAwesomeIcon icon={faSpinner} spin />
           ) : (
@@ -153,7 +155,7 @@ export function Footer(props) {
         ) : (
           <Button
             className="deactivate"
-            kind="cancel"
+            type="cancel"
             onClick={(evt) => {
               evt.preventDefault();
               setLoading(true);

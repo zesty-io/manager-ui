@@ -356,7 +356,7 @@ export default connect((state) => {
 
         <CardFooter>
           <Button
-            kind="save"
+            type="save"
             onClick={() => {
               const errors = [];
 

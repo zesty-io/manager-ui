@@ -47,9 +47,9 @@ const FieldLabel = memo((props) => {
 });
 
 // NOTE: Componetized so it can be memoized for input/render perf
-const RelatedOption = memo((props) => {
+const ResolvedOption = memo((props) => {
   return (
-    <span>
+    <span className={styles.ResolvedOption}>
       <span onClick={(evt) => evt.stopPropagation()}>
         <AppLink
           className={styles.relatedItemLink}
@@ -58,7 +58,7 @@ const RelatedOption = memo((props) => {
           <FontAwesomeIcon icon={faEdit} />
         </AppLink>
       </span>
-      &nbsp;{props.text}
+      &nbsp;{props.html}
     </span>
   );
 });
@@ -129,14 +129,30 @@ function resolveRelatedOptions(
       );
     })
     .map((itemZUID) => {
+      // Matching ItemZUID to languageZUID to get language code {key} to display in dropdown
+      let langCode = "";
+      if (items[itemZUID].siblings) {
+        const match = Object.entries(items[itemZUID].siblings).find(
+          (arr) => items[itemZUID].meta.ZUID === arr[1]
+        );
+        if (match) {
+          langCode = match[0];
+        }
+      }
+
       return {
         filterValue: items[itemZUID].data[field.name],
         value: itemZUID,
         component: (
-          <RelatedOption
+          <ResolvedOption
             modelZUID={modelZUID}
             itemZUID={itemZUID}
-            text={items[itemZUID].data[field.name]}
+            html={
+              <>
+                <span>{items[itemZUID].data[field.name]}</span>
+                <em className={styles.Language}>&nbsp;{langCode}</em>
+              </>
+            }
           />
         ),
       };

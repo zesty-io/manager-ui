@@ -1,8 +1,10 @@
 @import "~@zesty-io/core/colors.less";
 .RedirectsTableRow {
-  align-items: center;
   background-color: @white;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 135px 141px 1fr 200px 200px;
+  gap: 0 8px;
+  align-items: center;
 
   &:nth-of-type(odd) {
     background: lighten(@zesty-light-blue, 15%);
@@ -21,15 +23,17 @@
     padding: 16px;
     word-break: break-word;
 
+    svg {
+      margin-right: 8px;
+    }
+
     .internalLink {
       font-size: 1em;
+      color: @zesty-blue;
     }
     .removeBtn {
-      // line-height: initial;
+      margin-left: auto;
       align-items: center;
     }
-  }
-  .code {
-    padding: 0.6rem 3rem;
   }
 }

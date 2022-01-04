@@ -147,7 +147,7 @@ function Footer(props) {
     <CardFooter className={styles.CardFooter}>
       <ButtonGroup>
         <Button
-          kind="save"
+          type="save"
           disabled={!props.model.dirty || loading}
           onClick={() => {
             setLoading(true);

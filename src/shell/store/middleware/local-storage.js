@@ -1,17 +1,7 @@
 import idb from "utility/idb";
-import {
-  resetPlan,
-  addStep,
-  removeStep,
-  updateStep,
-  publishPending,
-  publishSuccess,
-  publishFailure,
-  publishPlanPending,
-  publishPlanSuccess,
-  publishPlanFailure,
-} from "../publishPlan";
+// import { actions } from "shell/store/releases";
 import { toggleNav } from "../ui";
+
 export const localStorage = (store) => (next) => (action) => {
   const result = next(action);
 
@@ -26,18 +16,20 @@ export const localStorage = (store) => (next) => (action) => {
         delete ui.loadedTabs;
         idb.set(`${state.instance.ZUID}:ui`, ui);
         break;
-      case `${resetPlan}`:
-      case `${addStep}`:
-      case `${removeStep}`:
-      case `${updateStep}`:
-      case `${publishPending}`:
-      case `${publishSuccess}`:
-      case `${publishFailure}`:
-      case `${publishPlanPending}`:
-      case `${publishPlanSuccess}`:
-      case `${publishPlanFailure}`:
-        idb.set(`${state.instance.ZUID}:publishPlan`, state.publishPlan);
-        break;
+
+      // case `${actions.resetPlan}`:
+      // case `${actions.addStep}`:
+      // case `${actions.removeStep}`:
+      // case `${actions.updateStep}`:
+      // case `${actions.publishPending}`:
+      // case `${actions.publishSuccess}`:
+      // case `${actions.publishFailure}`:
+      // case `${actions.publishPlanPending}`:
+      // case `${actions.publishPlanSuccess}`:
+      // case `${actions.publishPlanFailure}`:
+      //   idb.set(`${state.instance.ZUID}:publishPlan`, state.publishPlan);
+      //   break;
+
       case "FETCH_ITEM_SUCCESS":
       case "FETCH_ITEMS_SUCCESS":
       case "SEARCH_ITEMS_SUCCESS":
@@ -56,6 +48,10 @@ export const localStorage = (store) => (next) => (action) => {
 
       case "FETCH_CONTENT_NAV_SUCCESS":
         idb.set(`${state.instance.ZUID}:navContent`, state.navContent.raw);
+        break;
+
+      case "FETCH_LANGUAGES_SUCCESS":
+        idb.set(`${state.instance.ZUID}:languages`, state.languages);
         break;
     }
   } catch (err) {

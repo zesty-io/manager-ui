@@ -1,1 +1,2 @@
-export { Columns } from "./Columns";
+import Columns from "./Columns";
+export { Columns };

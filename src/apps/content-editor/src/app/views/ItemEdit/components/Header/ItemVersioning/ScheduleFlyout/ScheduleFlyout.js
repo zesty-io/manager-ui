@@ -4,10 +4,8 @@ import moment from "moment-timezone";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBan,
-  faTimesCircle,
-  faCalendar,
   faCalendarPlus,
-  faExclamationTriangle,
+  faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
@@ -134,11 +132,7 @@ export default class ScheduleFlyout extends Component {
         >
           {this.props.item.scheduling &&
           this.props.item.scheduling.isScheduled ? (
-            <section>
-              <h3 className={styles.Row}>
-                <FontAwesomeIcon icon={faCalendar} />
-                &nbsp;Scheduled Publishing
-              </h3>
+            <>
               <ModalContent>
                 <Notice className={styles.Notice}>
                   New versions can not be published while there is a version
@@ -168,29 +162,24 @@ export default class ScheduleFlyout extends Component {
                 </p>
               </ModalContent>
               <ModalFooter className={styles.ModalFooter}>
+                <Button type="cancel" onClick={this.props.toggleOpen}>
+                  <FontAwesomeIcon icon={faBan} />
+                  &nbsp;Cancel
+                </Button>
                 <Button
-                  kind="secondary"
-                  id="UnschedulePublishButton"
+                  type="warn"
+                  data-cy="UnschedulePublishButton"
                   disabled={this.state.scheduling}
                   onClick={this.handleCancelPublish}
                 >
-                  <FontAwesomeIcon icon={faBan} />
+                  <FontAwesomeIcon icon={faTrashAlt} />
                   &nbsp;Unschedule Version&nbsp;
                   {this.props.item.scheduling.version}
                 </Button>
-                <Button
-                  className={styles.Cancel}
-                  kind="cancel"
-                  onClick={this.props.toggleOpen}
-                >
-                  <FontAwesomeIcon icon={faTimesCircle} />
-                  &nbsp;Cancel (ESC)
-                </Button>
               </ModalFooter>
-            </section>
+            </>
           ) : (
-            <section>
-              <h3>Schedule Publishing</h3>
+            <>
               <ModalContent>
                 <div className={styles.Row}>
                   <FieldTypeDropDown
@@ -215,24 +204,24 @@ export default class ScheduleFlyout extends Component {
               </ModalContent>
               <ModalFooter className={styles.ModalFooter}>
                 <Button
-                  kind="save"
-                  id="SchedulePublishButton"
+                  className={styles.Cancel}
+                  type="cancel"
+                  id="SchedulePublishClose"
+                  onClick={this.props.toggleOpen}
+                >
+                  <FontAwesomeIcon icon={faBan} /> Cancel
+                </Button>
+                <Button
+                  type="save"
+                  data-cy="SchedulePublishButton"
                   onClick={this.handleSchedulePublish}
                   disabled={this.state.scheduling}
                 >
                   <FontAwesomeIcon icon={faCalendarPlus} /> Schedule Publishing
                   Version {this.props.item.meta.version}
                 </Button>
-                <Button
-                  className={styles.Cancel}
-                  kind="cancel"
-                  id="SchedulePublishClose"
-                  onClick={this.props.toggleOpen}
-                >
-                  <FontAwesomeIcon icon={faTimesCircle} /> Cancel (ESC)
-                </Button>
               </ModalFooter>
-            </section>
+            </>
           )}
         </Modal>
       )

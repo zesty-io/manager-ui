@@ -55,7 +55,6 @@ export function ToggleOptions(props) {
 
   useEffect(() => {
     if (!props.field.settings.options) {
-      console.log("update field settings", props);
       // New fields need to have their initial option state
       // saved to the app store
       props.updateFieldSetting(

@@ -12,6 +12,7 @@ import { QuickView } from "./Widgets/QuickView";
 import { WidgetQuickShare } from "./Widgets/WidgetQuickShare";
 import { WidgetListed } from "./Widgets/WidgetListed";
 import { WidgetDeleteItem } from "./Widgets/WidgetDeleteItem";
+import { Release } from "./Widgets/Release";
 
 import styles from "./Actions.less";
 export function Actions(props) {
@@ -48,7 +49,7 @@ export function Actions(props) {
         liveURL={liveURL}
       />
 
-      <WorkflowRequest itemTitle={metaTitle} fields={props.fields} />
+      {/* <Release item={props.item} /> */}
 
       <WidgetPublishHistory
         dispatch={props.dispatch}
@@ -62,10 +63,6 @@ export function Actions(props) {
         itemZUID={props.itemZUID}
       />
 
-      {props.set.type !== "dataset" && domain && (
-        <WidgetQuickShare url={liveURL} metaLinkText={metaLinkText} />
-      )}
-
       {canUpdate && (
         <WidgetListed
           dispatch={props.dispatch}
@@ -73,6 +70,12 @@ export function Actions(props) {
           listed={listed}
           sort={sort}
         />
+      )}
+
+      <WorkflowRequest itemTitle={metaTitle} fields={props.fields} />
+
+      {props.set.type !== "dataset" && domain && (
+        <WidgetQuickShare url={liveURL} metaLinkText={metaLinkText} />
       )}
 
       {canPublish && (

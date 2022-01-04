@@ -26,7 +26,7 @@ export const ItemParent = connect((state) => {
       });
 
       const [parents, setParents] = useState(
-        parentOptions(props.path, props.content)
+        parentOptions(props.currentItemLangID, props.path, props.content)
       );
 
       const onSearch = debounce((term) => {
@@ -35,7 +35,7 @@ export const ItemParent = connect((state) => {
           props.dispatch(searchItems(term)).then((res) => {
             setLoading(false);
             setParents(
-              parentOptions(props.path, {
+              parentOptions(props.currentItemLangID, props.path, {
                 ...props.content,
                 ...res?.data,
               })
@@ -63,11 +63,11 @@ export const ItemParent = connect((state) => {
             } else if (navEntry.parentZUID) {
               return findNavParent(navEntry.parentZUID, count);
             } else {
-              return false;
+              return { ZUID: "0" };
             }
           }
         } else {
-          return false;
+          return { ZUID: "0" };
         }
       };
 
@@ -78,13 +78,12 @@ export const ItemParent = connect((state) => {
         // This way we avoid an API request
         if (props.itemZUID && props.itemZUID.slice(0, 3) === "new") {
           const result = findNavParent(props.modelZUID);
-          if (result) {
-            // change for preselection
-            parentZUID = result.ZUID;
 
-            // Update redux store so if the item is saved we know it's parent
-            props.onChange(parentZUID, "parentZUID");
-          }
+          // change for preselection
+          parentZUID = result.ZUID;
+
+          // Update redux store so if the item is saved we know it's parent
+          props.onChange(parentZUID, "parentZUID");
         }
 
         // Try to preselect parent
@@ -105,7 +104,7 @@ export const ItemParent = connect((state) => {
                * API to allow it to be pre-selected while avoiding re-renders on changes to this item.
                */
               setParents(
-                parentOptions(props.path, {
+                parentOptions(props.currentItemLangID, props.path, {
                   ...props.content,
                   [res.data[0].meta.ZUID]: res.data[0],
                 })
@@ -183,7 +182,7 @@ export const ItemParent = connect((state) => {
   )
 );
 
-function parentOptions(path, items) {
+function parentOptions(currentItemLangID, path, items) {
   return (
     Object.keys(items)
       // Filter items into list of zuids
@@ -195,7 +194,8 @@ function parentOptions(path, items) {
           items[itemZUID].web &&
           items[itemZUID].web.path && // must have a path
           items[itemZUID].web.path !== "/" && // Exclude homepage
-          items[itemZUID].web.path !== path // Exclude current item
+          items[itemZUID].web.path !== path && // Exclude current item
+          items[itemZUID].meta.langID === currentItemLangID // display only relevant language options
       )
       // De-dupe list of zuids & convert to item objects
       .reduce((acc, zuid) => {

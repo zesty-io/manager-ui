@@ -1,46 +1,42 @@
 import { useEffect, useRef, useState } from "react";
-import { connect } from "react-redux";
+
+import { useSelector } from "react-redux";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 
+import { CopyButton } from "@zesty-io/core/CopyButton";
 import { Url } from "@zesty-io/core/Url";
 
 import styles from "./GlobalAccount.less";
-export default connect((state) => {
-  return {
-    user: state.user,
-    userRole: state.userRole,
-  };
-})(function GlobalAccount(props) {
+export default function GlobalAccount(props) {
+  const user = useSelector((state) => state.user);
+  const userRole = useSelector((state) => state.userRole);
   const [open, setOpen] = useState(false);
-  const ref = useRef();
+  const ref = useRef(null);
 
   useEffect(() => {
-    const handleGlobalClick = (evt) => {
-      if (ref && ref.current.contains(evt.target)) {
-        setOpen(true);
-      } else {
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
         setOpen(false);
       }
     };
-
-    window.addEventListener("click", handleGlobalClick);
-
-    return () => window.removeEventListener("click", handleGlobalClick);
-  }, [ref]);
-
+    document.addEventListener("click", handleClickOutside, true);
+    return () => {
+      document.removeEventListener("click", handleClickOutside, true);
+    };
+  });
   return (
     <section className={styles.GlobalAccount} ref={ref}>
       <img
+        data-cy="globalAccountAvatar"
         className={styles.Avatar}
-        alt={`${props.user.firstName} ${props.user.lastName} Avatar`}
-        src={`https://www.gravatar.com/avatar/${props.user.emailHash}?d=mm&s=40`}
+        alt={`${user.firstName} ${user.lastName} Avatar`}
+        src={`https://www.gravatar.com/avatar/${user.emailHash}?d=mm&s=40`}
         height="30px"
         width="30px"
-        onClick={(evt) => {
-          // evt.stopPropagation();
+        onClick={() => {
           setOpen(!open);
         }}
       />
@@ -49,12 +45,16 @@ export default connect((state) => {
         className={cx(styles.bodyText, styles.Menu, open ? null : styles.hide)}
       >
         <li>
-          {props.user.firstName} {props.user.lastName}
+          {user.firstName} {user.lastName}
         </li>
-        <li className={styles.email}>{props.user.email} </li>
+        <li className={styles.email}>{user.email} </li>
 
-        <li className={styles.zuid}>ZUID: {props.user.ZUID}</li>
-        <li className={styles.role}>Instance: {props.userRole.name}</li>
+        <li className={styles.zuid}>
+          ZUID:&nbsp;
+          <CopyButton kind="outlined" size="compact" value={user.ZUID} />
+        </li>
+
+        <li className={styles.role}>Instance: {userRole.name}</li>
 
         <li className={styles.accounts}>
           <Url href={`${CONFIG.URL_ACCOUNTS}`}>My Accounts</Url>
@@ -72,4 +72,4 @@ export default connect((state) => {
       </menu>
     </section>
   );
-});
+}

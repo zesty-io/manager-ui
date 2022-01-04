@@ -37,8 +37,9 @@ export function MediaSelected(props) {
               onClick={handleSetOpen}
             >
               <Button
+                data-cy="loadSelected"
                 className={styles.ButtonLoad}
-                kind="save"
+                type="save"
                 onClick={() => props.addImages(props.selected)}
               >
                 <FontAwesomeIcon icon={faUpload} />

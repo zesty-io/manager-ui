@@ -85,13 +85,19 @@ export function ItemVersioning(props) {
   };
 
   const handleScheduleDisable = () => {
-    // disable schedule if the item is dirty and needs to be saved
-    // if the current version is already published
-    return (
-      props.item.dirty ||
-      (props.item.publishing &&
-        props.item.publishing.version === props.item.meta.version)
-    );
+    // if schedule exists do not disable as to allow for unscheduling
+    if (props.item?.scheduling?.isScheduled) {
+      return false;
+    } else {
+      // disable schedule
+      // if the item is dirty and needs to be saved
+      // if the current version is already published
+      return (
+        props.item.dirty ||
+        (props.item.publishing &&
+          props.item.publishing.version === props.item.meta.version)
+      );
+    }
   };
 
   let publishingDisabled = false;
@@ -153,7 +159,7 @@ export function ItemVersioning(props) {
       )}
 
       <Button
-        kind="save"
+        type="save"
         disabled={props.saving || !props.item.dirty}
         onClick={props.onSave}
         id="SaveItemButton"

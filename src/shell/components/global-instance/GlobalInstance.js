@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { usePermission } from "shell/hooks/use-permissions";
 
 import { Button } from "@zesty-io/core/Button";
+import { CopyButton } from "@zesty-io/core/CopyButton";
 
 import { request } from "utility/request";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -68,7 +69,8 @@ export default function GlobalInstance(props) {
 
       <main className={cx(styles.Instance, open ? null : styles.hide)}>
         <p className={cx(styles.bodyText, styles.zuid)}>
-          ZUID: {instance.ZUID}
+          ZUID:{" "}
+          <CopyButton kind="outlined" size="compact" value={instance.ZUID} />
         </p>
 
         <Select className={styles.Select} name="instance" value={instance.ZUID}>
