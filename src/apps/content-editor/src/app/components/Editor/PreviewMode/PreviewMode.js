@@ -5,7 +5,15 @@ import styles from "./PreviewMode.less";
 export default function PreviewMode(props) {
   const origin = window.location.origin;
 
+  const instantZUID = location.pathname.split("/").pop();
+  const instantSlug = `${CONFIG.URL_PREVIEW_FULL}/-/instant/${instantZUID}.json`;
+  let iframePreview;
+
   const instance = useSelector((state) => state.instance);
+  console.log(
+    "🚀 ~ file: PreviewMode.js ~ line 13 ~ PreviewMode ~ instance",
+    instance
+  );
   const content = useSelector((state) => state.content);
 
   const preview = useRef(null);
@@ -71,6 +79,7 @@ export default function PreviewMode(props) {
       <iframe
         ref={preview}
         src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
+        // src={instantSlug}
         frameBorder="0"
       ></iframe>
     </div>
