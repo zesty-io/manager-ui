@@ -1,20 +1,13 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 
 import styles from "./PreviewMode.less";
 export default function PreviewMode(props) {
   const origin = window.location.origin;
 
-  const instantZUID = location.pathname.split("/").pop();
-  const instantSlug = `${CONFIG.URL_PREVIEW_FULL}/-/instant/${instantZUID}.json`;
-  let iframePreview;
-
   const instance = useSelector((state) => state.instance);
-  console.log(
-    "🚀 ~ file: PreviewMode.js ~ line 13 ~ PreviewMode ~ instance",
-    instance
-  );
   const content = useSelector((state) => state.content);
+  const [iframePreview, setIframePreview] = useState(``);
 
   const preview = useRef(null);
 
@@ -53,6 +46,20 @@ export default function PreviewMode(props) {
             },
             origin
           );
+          setIframePreview(
+            `${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`
+          );
+        } else {
+          preview.current.contentWindow.postMessage(
+            {
+              source: "zesty",
+              route: `/-/instant/${item.meta.ZUID}.json`,
+            },
+            origin
+          );
+          setIframePreview(
+            `${CONFIG.URL_PREVIEW_FULL}/-/instant/${item.meta.ZUID}.json`
+          );
         }
       }
     }
@@ -76,12 +83,7 @@ export default function PreviewMode(props) {
   return (
     <div data-cy="DuoModeContainer" className={styles.DMContainer}>
       {props.dirty && <div className={styles.Overlay}></div>}
-      <iframe
-        ref={preview}
-        src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
-        // src={instantSlug}
-        frameBorder="0"
-      ></iframe>
+      <iframe ref={preview} src={iframePreview} frameBorder="0"></iframe>
     </div>
   );
 }
