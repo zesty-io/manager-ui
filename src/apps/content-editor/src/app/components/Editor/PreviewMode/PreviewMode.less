@@ -3,11 +3,11 @@
 
 .DMContainer {
   display: flex;
-  flex-direction: column;
+  // flex-direction: column;
+  justify-content: center;
   align-items: center;
   position: relative;
-  justify-content: center;
-  height: calc(100vh - 54px - 73px - 32px);
+  height: 100vh;
 
   .Overlay {
     position: absolute;
@@ -22,7 +22,7 @@
 
     &::after {
       content: "Click Save to See Changes";
-      color: #fff;
+      color: @white;
       font-size: 2rem;
       position: absolute;
       top: 50%;
@@ -33,11 +33,11 @@
 
   iframe {
     width: 100%;
-    //Scroll Calc (GlobalTopbar - Content Header )
-    height: calc(100vh - 54px - 73px);
-    border: 1px solid @zesty-light-blue;
+    height: 100vh;
+    border: 3px solid @zesty-light-blue;
     box-shadow: 0 7px 30px -10px rgb(150 170 180 / 50%);
-    border-radius: 16px;
+    border-radius: 14px;
+    position: relative;
 
     zoom: 0.85;
     -ms-zoom: 0.85;
