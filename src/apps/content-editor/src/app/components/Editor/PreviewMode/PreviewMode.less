@@ -7,56 +7,66 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  height: 100vh;
+  //Scroll Calc (GlobalTopbar - Content Header - padding)
+  height: calc(100vh - 54px - 73px - 32px);
+
+  padding-right: 32px;
+  padding-top: 32px;
 
   .Overlay {
     position: absolute;
+    backdrop-filter: blur(5px);
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: rgba(26, 32, 44, 0.6);
+    // background-color: rgba(255, 255, 255, 0.02);
     z-index: 11;
     width: 100%;
-    height: 100%;
 
-    &::after {
-      content: "Click Save to See Changes";
-      color: @white;
-      font-size: 2rem;
+    border-radius: 14px;
+
+    p {
+      color: #fff;
+      font-size: 1.5rem;
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+      padding: 40px 60px;
+      border-radius: 5px;
+      background: #333;
+      font-weight: 800;
+      text-align: center;
+      box-shadow: 0 0 8px black;
     }
   }
 
   iframe {
     width: 100%;
-    height: 100vh;
-    border: 3px solid @zesty-light-blue;
+    height: 90vh;
+    border: 3px solid #efefef;
     box-shadow: 0 7px 30px -10px rgb(150 170 180 / 50%);
-    border-radius: 14px;
+    border-radius: 8px;
     position: relative;
+    border-top-width: 20px;
 
-    zoom: 0.85;
-    -ms-zoom: 0.85;
-    -moz-transform: scale(0.85);
+    zoom: 0.9;
+    -ms-zoom: 0.9;
+    -moz-transform: scale(0.9);
     -moz-transform-origin: 0 0;
-    -o-transform: scale(0.85);
+    -o-transform: scale(0.9);
     -o-transform-origin: 0 0;
-    -webkit-transform: scale(0.85);
-    -webkit-transform-origin: 0 0;
+    -webkit-transform: scale(0.9);
+    zoom: 0.9;
 
-    @media only screen and (min-width: 2000px) {
-      zoom: 0.75;
-      -ms-zoom: 0.75;
-      -moz-transform: scale(0.75);
-      -moz-transform-origin: 0 0;
-      -o-transform: scale(0.75);
-      -o-transform-origin: 0 0;
-      -webkit-transform: scale(0.75);
-      -webkit-transform-origin: 0 0;
-    }
+    // @media only screen and (min-width: 2000px) {
+    //   -ms-zoom: 0.9;
+    // -moz-transform: scale(0.9);
+    // -moz-transform-origin: 0 0;
+    // -o-transform: scale(0.9);
+    // -o-transform-origin: 0 0;
+    // -webkit-transform: scale(0.9);
+    // }
   }
 }

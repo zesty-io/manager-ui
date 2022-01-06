@@ -3,11 +3,6 @@
 .DuoMode {
   display: grid;
   grid-template-columns: 45fr 55fr;
-  gap: 96px;
-
-  @media only screen and (min-width: 2000px) {
-    gap: 128px;
-  }
 
   &.DuoModeOff {
     grid-template-columns: 1fr;
@@ -16,10 +11,10 @@
   .Fields {
     display: flex;
     flex-direction: column;
-    padding: 16px 16px 16px 96px;
+    padding: 16px 32px;
 
     @media only screen and (min-width: 2000px) {
-      padding: 16px 16px 16px 128px;
+      padding: 16px 128px 16px 128px;
     }
 
     //Hide Scrollbar

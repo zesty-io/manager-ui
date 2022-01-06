@@ -67,7 +67,12 @@ export default function PreviewMode(props) {
 
   return (
     <div data-cy="DuoModeContainer" className={styles.DMContainer}>
-      {props.dirty && <div className={styles.Overlay}></div>}
+      {props.dirty && (
+        <div className={styles.Overlay}>
+          {" "}
+          <p>Save to Update Preview </p>
+        </div>
+      )}
       <iframe
         ref={preview}
         src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
