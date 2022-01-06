@@ -4,8 +4,10 @@
 .DMContainer {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
   position: relative;
+  justify-content: center;
+  height: calc(100vh - 54px - 73px - 32px);
 
   .Overlay {
     position: absolute;
@@ -35,16 +37,26 @@
     height: calc(100vh - 54px - 73px);
     border: 1px solid @zesty-light-blue;
     box-shadow: 0 7px 30px -10px rgb(150 170 180 / 50%);
-    border-radius: 3px;
-    zoom: 0.75;
-    -ms-zoom: 0.75;
-    -moz-transform: scale(0.75);
+    border-radius: 16px;
+
+    zoom: 0.85;
+    -ms-zoom: 0.85;
+    -moz-transform: scale(0.85);
     -moz-transform-origin: 0 0;
-    -o-transform: scale(0.75);
+    -o-transform: scale(0.85);
     -o-transform-origin: 0 0;
-    -webkit-transform: scale(0.75);
+    -webkit-transform: scale(0.85);
     -webkit-transform-origin: 0 0;
 
-    width: 90%;
+    @media only screen and (min-width: 2000px) {
+      zoom: 0.75;
+      -ms-zoom: 0.75;
+      -moz-transform: scale(0.75);
+      -moz-transform-origin: 0 0;
+      -o-transform: scale(0.75);
+      -o-transform-origin: 0 0;
+      -webkit-transform: scale(0.75);
+      -webkit-transform-origin: 0 0;
+    }
   }
 }
