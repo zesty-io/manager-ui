@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 
 import styles from "./PreviewMode.less";
@@ -7,7 +7,6 @@ export default function PreviewMode(props) {
 
   const instance = useSelector((state) => state.instance);
   const content = useSelector((state) => state.content);
-  const [iframePreview, setIframePreview] = useState(``);
 
   const preview = useRef(null);
 
@@ -46,9 +45,6 @@ export default function PreviewMode(props) {
             },
             origin
           );
-          setIframePreview(
-            `${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`
-          );
         } else {
           preview.current.contentWindow.postMessage(
             {
@@ -56,9 +52,6 @@ export default function PreviewMode(props) {
               route: `/-/instant/${item.meta.ZUID}.json`,
             },
             origin
-          );
-          setIframePreview(
-            `${CONFIG.URL_PREVIEW_FULL}/-/instant/${item.meta.ZUID}.json`
           );
         }
       }
@@ -83,7 +76,11 @@ export default function PreviewMode(props) {
   return (
     <div data-cy="DuoModeContainer" className={styles.DMContainer}>
       {props.dirty && <div className={styles.Overlay}></div>}
-      <iframe ref={preview} src={iframePreview} frameBorder="0"></iframe>
+      <iframe
+        ref={preview}
+        src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
+        frameBorder="0"
+      ></iframe>
     </div>
   );
 }
