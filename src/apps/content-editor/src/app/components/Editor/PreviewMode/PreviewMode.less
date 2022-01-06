@@ -3,42 +3,49 @@
 
 .DMContainer {
   display: flex;
-  // flex-direction: column;
   justify-content: center;
   align-items: center;
   position: relative;
   //Scroll Calc (GlobalTopbar - Content Header - padding)
-  height: calc(100vh - 54px - 73px - 32px);
-
+  height: calc(100vh - 54px - 73px);
   padding-right: 32px;
-  padding-top: 32px;
+  width: 100%;
+
+  @-moz-document url-prefix() {
+    height: calc(100vh - 54px - 20px);
+  }
+
+  @media only screen and (min-width: 2000px) {
+    @-moz-document url-prefix() {
+      height: 100vh;
+    }
+  }
 
   .Overlay {
     position: absolute;
     backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    // background-color: rgba(255, 255, 255, 0.02);
     z-index: 11;
     width: 100%;
-
-    border-radius: 14px;
+    border-radius: 8px;
 
     p {
-      color: #fff;
-      font-size: 1.5rem;
+      color: @white;
+      font-size: 18px;
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       padding: 40px 60px;
       border-radius: 5px;
-      background: #333;
+      background: @zesty-tab-color;
       font-weight: 800;
       text-align: center;
-      box-shadow: 0 0 8px black;
+      box-shadow: 0 0 8px @zesty-dark-blue;
     }
   }
 
@@ -59,6 +66,10 @@
     -o-transform-origin: 0 0;
     -webkit-transform: scale(0.9);
     zoom: 0.9;
+
+    &.Blur {
+      filter: blur(4px);
+    }
 
     @media only screen and (min-width: 2000px) {
       -ms-zoom: 0.8;
