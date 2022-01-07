@@ -7,11 +7,12 @@
 }
 
 .ActivePreview {
+  display: flex;
+  flex-direction: column;
   .TopBar {
     display: flex;
-    background-color: #efefef;
-    padding: 4px 16px;
-    // padding: 16px;
+    background-color: @bright-gray;
+    padding: 16px;
     height: 40px;
     box-shadow: 2px 2px 5px rgb(27 32 44 / 50%);
 
@@ -72,7 +73,7 @@
 
   .Preview {
     //Height - TopBar
-    height: calc(100vh - 51px);
+    height: 100vh;
 
     .center {
       display: flex;
