@@ -3,13 +3,9 @@
 
 .DMContainer {
   position: relative;
-  width: 100%;
-  margin-top: 32px;
-  height: calc(100vh - 73px - 54px - 32px);
-
-  @-moz-document url-prefix() {
-    margin-top: 0;
-  }
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 
   .Overlay {
     position: absolute;
@@ -45,26 +41,13 @@
     border-radius: 8px;
     border-top-width: 16px;
 
-    position: absolute;
-    top: -36px;
-    left: 0;
-    bottom: 0;
-    right: 0;
+    align-self: stretch;
     width: 100%;
-    height: 100%;
 
-    @-moz-document url-prefix() {
-      top: 36px;
-    }
-
-    zoom: 0.9;
-    -ms-zoom: 0.9;
-    -moz-transform: scale(0.9);
-    -moz-transform-origin: 0 0;
-    -o-transform: scale(0.9);
-    -o-transform-origin: 0 0;
-    -webkit-transform: scale(0.9);
-    zoom: 0.9;
+    -ms-zoom: 0.75;
+    -moz-transform: scale(0.75);
+    -o-transform: scale(0.75);
+    -webkit-transform: scale(0.75);
 
     &.Blur {
       filter: blur(4px);
@@ -73,9 +56,7 @@
     @media only screen and (min-width: 2000px) {
       -ms-zoom: 0.8;
       -moz-transform: scale(0.8);
-      -moz-transform-origin: 0 0;
       -o-transform: scale(0.8);
-      -o-transform-origin: 0 0;
       -webkit-transform: scale(0.8);
     }
   }

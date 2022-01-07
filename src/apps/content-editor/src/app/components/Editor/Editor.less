@@ -3,23 +3,20 @@
 .DuoMode {
   display: grid;
   grid-template-columns: 30fr 70fr;
-
-  @-moz-document url-prefix() {
-    gap: 48px;
-  }
+  box-sizing: border-box;
 
   &.DuoModeOff {
     grid-template-columns: 1fr;
 
     .Fields {
-      padding: 32px 32px 32px 48px;
+      // padding: 32px 32px 32px 48px;
     }
   }
 
   .Fields {
     display: flex;
     flex-direction: column;
-    padding: 32px 0 32px 48px;
+    padding: 32px 0 32px 32px;
 
     //Hide Scrollbar
     overflow-y: scroll;
