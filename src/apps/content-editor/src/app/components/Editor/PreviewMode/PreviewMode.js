@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
+import ReactJson from "react-json-view";
 
 import styles from "./PreviewMode.less";
 export default function PreviewMode(props) {
@@ -73,14 +74,27 @@ export default function PreviewMode(props) {
     };
   }, []);
 
+  console.log("🚀 ~ file: PreviewMode.js  ~ PreviewMode ~ preview", preview);
+
+  console.log(
+    `${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`
+  );
+
   return (
     <div data-cy="DuoModeContainer" className={styles.DMContainer}>
       {props.dirty && <div className={styles.Overlay}></div>}
-      <iframe
-        ref={preview}
-        src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
-        frameBorder="0"
-      ></iframe>
+
+      {preview.current === null ? (
+        <ReactJson
+          src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
+        />
+      ) : (
+        <iframe
+          ref={preview}
+          src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
+          frameBorder="0"
+        ></iframe>
+      )}
     </div>
   );
 }
