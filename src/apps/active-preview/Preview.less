@@ -7,8 +7,6 @@
 }
 
 .ActivePreview {
-  display: flex;
-  flex-direction: column;
   .TopBar {
     display: flex;
     background-color: @bright-gray;
@@ -72,8 +70,8 @@
   }
 
   .Preview {
-    //Height - TopBar
-    height: 100vh;
+    //Height - TopBar - iframe(border-top):
+    height: calc(100vh - 57.6px - 16px;);
 
     .center {
       display: flex;
