@@ -4,6 +4,12 @@
 .DMContainer {
   position: relative;
   width: 100%;
+  margin-top: 32px;
+  height: calc(100vh - 73px - 54px - 32px);
+
+  @-moz-document url-prefix() {
+    margin-top: 0;
+  }
 
   .Overlay {
     position: absolute;
