@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import ReactJson from "react-json-view";
 
@@ -7,9 +7,11 @@ export default function PreviewMode(props) {
   const origin = window.location.origin;
 
   const instance = useSelector((state) => state.instance);
+
   const content = useSelector((state) => state.content);
 
   const preview = useRef(null);
+  const [getJSON, setGetJSON] = useState(``);
 
   function refresh() {
     if (preview.current) {
@@ -54,6 +56,10 @@ export default function PreviewMode(props) {
             },
             origin
           );
+          // setGetJSON(
+          //   `${CONFIG.URL_PREVIEW_FULL}/-/instant/${item.meta.ZUID}.json`
+          // );
+          setGetJSON(item.meta.ZUID);
         }
       }
     }
@@ -74,20 +80,15 @@ export default function PreviewMode(props) {
     };
   }, []);
 
-  console.log("🚀 ~ file: PreviewMode.js  ~ PreviewMode ~ preview", preview);
-
-  console.log(
-    `${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`
-  );
+  console.log("DAVIDDD", getJSON);
+  console.log("PREVIEW ", preview);
 
   return (
     <div data-cy="DuoModeContainer" className={styles.DMContainer}>
       {props.dirty && <div className={styles.Overlay}></div>}
 
       {preview.current === null ? (
-        <ReactJson
-          src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
-        />
+        <ReactJson src={getJSON} />
       ) : (
         <iframe
           ref={preview}
