@@ -3,15 +3,17 @@ import { useSelector } from "react-redux";
 import ReactJson from "react-json-view";
 
 import styles from "./PreviewMode.less";
+
 export default function PreviewMode(props) {
   const origin = window.location.origin;
 
   const instance = useSelector((state) => state.instance);
-
   const content = useSelector((state) => state.content);
 
+  const [getZUID, setGetZUID] = useState(``);
+  const [getItem, setGetItem] = useState("");
+
   const preview = useRef(null);
-  const [getJSON, setGetJSON] = useState(``);
 
   function refresh() {
     if (preview.current) {
@@ -48,6 +50,7 @@ export default function PreviewMode(props) {
             },
             origin
           );
+          setGetItem(getItem);
         } else {
           preview.current.contentWindow.postMessage(
             {
@@ -56,14 +59,13 @@ export default function PreviewMode(props) {
             },
             origin
           );
-          // setGetJSON(
-          //   `${CONFIG.URL_PREVIEW_FULL}/-/instant/${item.meta.ZUID}.json`
-          // );
-          setGetJSON(item.meta.ZUID);
+          setGetZUID(item.meta.ZUID);
         }
       }
     }
   }
+  console.log("getZUID: ", getZUID);
+  console.log("Item: ", getItem);
 
   useEffect(() => {
     if (preview.current) {
@@ -80,17 +82,24 @@ export default function PreviewMode(props) {
     };
   }, []);
 
-  console.log("DAVIDDD", getJSON);
-  console.log("PREVIEW ", preview);
+  const testObject = {
+    name: "Davey",
+    hungry: true,
+  };
 
   return (
     <div data-cy="DuoModeContainer" className={styles.DMContainer}>
-      {props.dirty && <div className={styles.Overlay}></div>}
-
-      {preview.current === null ? (
-        <ReactJson src={getJSON} />
+      {props.dirty && (
+        <div className={styles.Overlay}>
+          {" "}
+          <p>Save to Update Preview </p>
+        </div>
+      )}
+      {getZUID ? (
+        <ReactJson style={{ margin: "32px auto" }} src={testObject} />
       ) : (
         <iframe
+          className={props.dirty ? styles.Blur : ""}
           ref={preview}
           src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
           frameBorder="0"
