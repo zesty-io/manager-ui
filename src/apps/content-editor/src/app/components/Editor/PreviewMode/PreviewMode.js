@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import ReactJson from "react-json-view";
 
-import { WithLoader } from "@zesty-io/core/WithLoader";
-
 import styles from "./PreviewMode.less";
 
 export default function PreviewMode(props) {
