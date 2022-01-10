@@ -12,6 +12,7 @@ export default function PreviewMode(props) {
 
   const [getZUID, setGetZUID] = useState(``);
   const [getItem, setGetItem] = useState("");
+  const [getData, setGetData] = useState("");
 
   const preview = useRef(null);
 
@@ -50,7 +51,7 @@ export default function PreviewMode(props) {
             },
             origin
           );
-          setGetItem(getItem);
+          setGetItem(item);
         } else {
           preview.current.contentWindow.postMessage(
             {
@@ -82,10 +83,11 @@ export default function PreviewMode(props) {
     };
   }, []);
 
-  const testObject = {
-    name: "Davey",
-    hungry: true,
-  };
+  useEffect(() => {
+    fetch(`${CONFIG.URL_PREVIEW_FULL}/-/instant/${getZUID}.json`)
+      .then((response) => response.json())
+      .then((data) => setGetData(data));
+  }, [getData]);
 
   return (
     <div data-cy="DuoModeContainer" className={styles.DMContainer}>
@@ -96,7 +98,7 @@ export default function PreviewMode(props) {
         </div>
       )}
       {getZUID ? (
-        <ReactJson style={{ margin: "32px auto" }} src={testObject} />
+        <ReactJson style={{ margin: "32px auto" }} src={getData} />
       ) : (
         <iframe
           className={props.dirty ? styles.Blur : ""}
