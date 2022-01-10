@@ -2,10 +2,10 @@
 @import "~@zesty-io/core/typography.less";
 
 .DMContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 
   .Overlay {
     position: absolute;
@@ -13,29 +13,50 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: rgba(26, 32, 44, 0.6);
     z-index: 11;
     width: 100%;
-    height: 100%;
+    border-radius: 8px;
 
-    &::after {
-      content: "Click Save to See Changes";
-      color: #fff;
-      font-size: 2rem;
+    p {
+      color: @white;
+      font-size: 18px;
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+      padding: 40px 60px;
+      border-radius: 5px;
+      background: @zesty-tab-color;
+      font-weight: 800;
+      text-align: center;
+      box-shadow: 0 0 8px @zesty-dark-blue;
     }
   }
 
   iframe {
-    width: 100%;
-    //Scroll Calc (GlobalTopbar - Content Header )
-    height: calc(100vh - 54px - 73px);
-    border: 1px solid @zesty-light-blue;
+    border: 3px solid @bright-gray;
     box-shadow: 0 7px 30px -10px rgb(150 170 180 / 50%);
-    border-radius: 3px;
+    border-radius: 8px;
+    border-top-width: 16px;
+
+    align-self: stretch;
+    width: 100%;
+
+    -ms-zoom: 0.75;
+    -moz-transform: scale(0.75) translateY(-8%);
+    -o-transform: scale(0.75) translateY(-8%);
+    -webkit-transform: scale(0.75) translateY(-8%);
+
+    &.Blur {
+      filter: blur(3px);
+    }
+
+    @media only screen and (min-width: 2000px) {
+      -ms-zoom: 0.8;
+      -moz-transform: scale(0.8) translateY(-8%);
+      -o-transform: scale(0.8) translateY(-8%);
+      -webkit-transform: scale(0.8) translateY(-8%);
+    }
   }
 
   .ReactJson {

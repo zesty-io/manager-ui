@@ -7,12 +7,10 @@
 }
 
 .ActivePreview {
-  background-color: @appBkgColor;
   .TopBar {
-    background-color: @zesty-light-gray;
     display: flex;
-    background: linear-gradient(#ebebeb, #d5d5d5);
-    padding: 4px 16px;
+    background-color: @bright-gray;
+    padding: 16px;
     height: 40px;
     box-shadow: 2px 2px 5px rgb(27 32 44 / 50%);
 
@@ -48,7 +46,7 @@
       display: flex;
       margin: 0 8px;
       [title="Rotate device"] {
-        margin-right: 0 8px;
+        margin-right: 8px;
       }
       .Select {
         li {
@@ -72,7 +70,8 @@
   }
 
   .Preview {
-    height: calc(100vh - 53px);
+    //Height - TopBar - iframe(border-top):
+    height: calc(100vh - 58px - 16px;);
 
     .center {
       display: flex;

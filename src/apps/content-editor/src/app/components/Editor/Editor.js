@@ -166,11 +166,11 @@ export default memo(function Editor({
           </div>
         )}
       </div>
-      <div>
+      <React.Fragment>
         {ui.duoMode && (
           <PreviewMode dirty={item.dirty} version={item.meta.version} />
         )}
-      </div>
+      </React.Fragment>
     </div>
   );
 });

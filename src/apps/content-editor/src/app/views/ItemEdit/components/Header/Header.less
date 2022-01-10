@@ -3,11 +3,16 @@
 
 .Header {
   padding: 16px 32px;
+  @media only screen and (min-width: 2000px) {
+    padding: 16px 48px;
+  }
+
   z-index: 120;
   position: sticky;
   top: 0;
-  background-color: #f2f7fc;
-  border-bottom: 1px solid #e8e8e8;
+  background-color: @white;
+  border: 1px solid @bright-gray;
+  border-width: 0 0 1px 0;
 
   .Split {
     align-items: center;
