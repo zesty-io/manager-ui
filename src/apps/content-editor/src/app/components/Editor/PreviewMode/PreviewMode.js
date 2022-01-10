@@ -13,7 +13,6 @@ export default function PreviewMode(props) {
   const content = useSelector((state) => state.content);
 
   const [getZUID, setGetZUID] = useState(``);
-  const [getItem, setGetItem] = useState("");
   const [getData, setGetData] = useState("");
 
   const preview = useRef(null);
