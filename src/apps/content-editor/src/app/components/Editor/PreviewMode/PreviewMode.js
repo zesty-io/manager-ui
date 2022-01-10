@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import ReactJson from "react-json-view";
 
+import { WithLoader } from "@zesty-io/core/WithLoader";
+
 import styles from "./PreviewMode.less";
 
 export default function PreviewMode(props) {
@@ -65,8 +67,6 @@ export default function PreviewMode(props) {
       }
     }
   }
-  console.log("getZUID: ", getZUID);
-  console.log("Item: ", getItem);
 
   useEffect(() => {
     if (preview.current) {
@@ -87,7 +87,7 @@ export default function PreviewMode(props) {
     fetch(`${CONFIG.URL_PREVIEW_FULL}/-/instant/${getZUID}.json`)
       .then((response) => response.json())
       .then((data) => setGetData(data));
-  }, [getData]);
+  }, [getZUID]);
 
   return (
     <div data-cy="DuoModeContainer" className={styles.DMContainer}>
@@ -97,8 +97,11 @@ export default function PreviewMode(props) {
           <p>Save to Update Preview </p>
         </div>
       )}
+
       {getZUID ? (
-        <ReactJson style={{ margin: "32px auto" }} src={getData} />
+        <div className={styles.ReactJson}>
+          <ReactJson src={getData} />
+        </div>
       ) : (
         <iframe
           className={props.dirty ? styles.Blur : ""}
