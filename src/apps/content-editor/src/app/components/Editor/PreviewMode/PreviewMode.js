@@ -74,7 +74,7 @@ export default function PreviewMode(props) {
         </div>
       )}
       <iframe
-        className={props.dirty && styles.Blur}
+        className={props.dirty ? styles.Blur : ""}
         ref={preview}
         src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
         frameBorder="0"
