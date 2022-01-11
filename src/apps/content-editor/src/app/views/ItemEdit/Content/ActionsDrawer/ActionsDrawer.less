@@ -10,8 +10,8 @@
   background: @white;
   border: 1px solid @bright-gray;
   border-width: 0 1px 1px 1px;
-  // box-shadow: rgb(0 0 0 / 12%) 0px 6px 16px;
   height: @height;
+  transition: 1s;
 
   //Hide Scrollbar
   overflow-y: scroll;
@@ -33,11 +33,21 @@
   }
 
   .Show {
-    display: block;
+    position: absolute;
   }
 
   .Hide {
-    display: none;
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  .DrawerDefault {
+    transition: width 350ms ease;
+    width: 60px;
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
   }
 
   .DrawerHover,
@@ -62,6 +72,8 @@
     z-index: 10;
     box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
     display: block;
+    opacity: 1;
+    transition: width 350ms ease;
   }
 
   .DrawerAction {

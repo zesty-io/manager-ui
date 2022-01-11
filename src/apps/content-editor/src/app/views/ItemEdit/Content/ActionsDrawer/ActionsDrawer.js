@@ -22,6 +22,16 @@ export default function ActionsDrawer(props) {
   const ui = useSelector((state) => state.ui);
   const [mouseEnterTimer, setMouseEnterTimer] = useState(null);
   const [mouseLeaveTimer, setMouseLeaveTimer] = useState(null);
+  const icons = [
+    faCodeBranch,
+    faUserCheck,
+    faUserCheck,
+    faCode,
+    faShareAlt,
+    faSync,
+    faUnlink,
+    faTrash,
+  ];
 
   const handleMouseEnter = () => {
     const enterTimer = setTimeout(() => {
@@ -50,46 +60,26 @@ export default function ActionsDrawer(props) {
     >
       <div
         className={cx(
-          ui.contentActionsHover && !ui.contentActions
+          ui.contentActionsHover || ui.contentActions
             ? styles.Hide
-            : styles.Show,
-          ui.contentActions ? styles.Hide : ""
+            : styles.Show
         )}
       >
         <ul className={styles.QuickBar}>
-          <li>
-            <FontAwesomeIcon icon={faCodeBranch} />
-          </li>
-          <li>
-            <FontAwesomeIcon icon={faUserCheck} />
-          </li>
-          <li>
-            <FontAwesomeIcon icon={faUserCheck} />
-          </li>
-          <li>
-            <FontAwesomeIcon icon={faCode} />
-          </li>
-          <li>
-            <FontAwesomeIcon icon={faShareAlt} />
-          </li>
-          <li>
-            <FontAwesomeIcon icon={faSync} />
-          </li>
-          <li>
-            <FontAwesomeIcon icon={faUnlink} />
-          </li>
-          <li>
-            <FontAwesomeIcon icon={faTrash} />
-          </li>
+          {icons.map((i) => {
+            return (
+              <li>
+                <FontAwesomeIcon icon={i} />
+              </li>
+            );
+          })}
         </ul>
       </div>
       <div
         className={cx(
           ui.contentActionsHover && !ui.contentActions
             ? styles.DrawerHover
-            : ui.contentActions
-            ? styles.DrawerAction
-            : styles.Hide
+            : styles.DrawerDefault
         )}
       >
         <Actions
