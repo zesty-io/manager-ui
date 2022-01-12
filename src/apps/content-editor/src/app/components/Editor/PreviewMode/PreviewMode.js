@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
-import ReactJson from "react-json-view";
 
 import styles from "./PreviewMode.less";
 
@@ -9,10 +8,6 @@ export default function PreviewMode(props) {
 
   const instance = useSelector((state) => state.instance);
   const content = useSelector((state) => state.content);
-
-  const [getZUID, setGetZUID] = useState(``);
-  const [getData, setGetData] = useState("");
-
   const preview = useRef(null);
 
   function refresh() {
@@ -41,26 +36,15 @@ export default function PreviewMode(props) {
 
       if (itemZUID) {
         const item = content[itemZUID];
-
-        if (item && item.web.path) {
-          preview.current.contentWindow.postMessage(
-            {
-              source: "zesty",
-              route: item.web.path,
-            },
-            origin
-          );
-          setGetItem(item);
-        } else {
-          preview.current.contentWindow.postMessage(
-            {
-              source: "zesty",
-              route: `/-/instant/${item.meta.ZUID}.json`,
-            },
-            origin
-          );
-          setGetZUID(item.meta.ZUID);
-        }
+        preview.current.contentWindow.postMessage(
+          {
+            source: "zesty",
+            route: item?.web?.path
+              ? item.web.path
+              : `/-/instant/${item.meta.ZUID}.json`,
+          },
+          origin
+        );
       }
     }
   }
@@ -80,12 +64,6 @@ export default function PreviewMode(props) {
     };
   }, []);
 
-  useEffect(() => {
-    fetch(`${CONFIG.URL_PREVIEW_FULL}/-/instant/${getZUID}.json`)
-      .then((response) => response.json())
-      .then((data) => setGetData(data));
-  }, [getZUID]);
-
   return (
     <div data-cy="DuoModeContainer" className={styles.DMContainer}>
       {props.dirty && (
@@ -94,19 +72,12 @@ export default function PreviewMode(props) {
           <p>Save to Update Preview </p>
         </div>
       )}
-
-      {getZUID ? (
-        <div className={styles.ReactJson}>
-          <ReactJson src={getData} />
-        </div>
-      ) : (
-        <iframe
-          className={props.dirty ? styles.Blur : ""}
-          ref={preview}
-          src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
-          frameBorder="0"
-        ></iframe>
-      )}
+      <iframe
+        className={props.dirty && styles.Blur}
+        ref={preview}
+        src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
+        frameBorder="0"
+      ></iframe>
     </div>
   );
 }

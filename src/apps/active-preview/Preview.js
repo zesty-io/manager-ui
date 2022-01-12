@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import cx from "classnames";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -17,6 +16,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Meta } from "./components/Meta";
+import { JSONPreview } from "./components/JSONPreview";
 
 import api from "./api";
 
@@ -203,13 +203,17 @@ export function Preview(props) {
         <main className={styles.Preview}>
           {!loading && domain && route ? (
             device === "fullscreen" ? (
-              <iframe
-                key={refresh}
-                className={styles.Frame}
-                src={`${domain}${route}`}
-                scrolling="yes"
-                frameBorder="0"
-              />
+              route.includes(".json") ? (
+                <JSONPreview src={`${domain}${route}`} />
+              ) : (
+                <iframe
+                  key={refresh}
+                  className={styles.Frame}
+                  src={`${domain}${route}`}
+                  scrolling="yes"
+                  frameBorder="0"
+                />
+              )
             ) : (
               <div className={styles.center}>
                 {templates[device].template({
