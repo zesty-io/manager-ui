@@ -5,8 +5,6 @@ import { useHistory, useParams } from "react-router-dom";
 import isEmpty from "lodash/isEmpty";
 import { createSelector } from "@reduxjs/toolkit";
 
-import { actions } from "shell/store/ui";
-
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { Divider } from "@zesty-io/core/Divider";
 import { Header } from "./Header";
@@ -64,10 +62,6 @@ export default function ItemCreate() {
       dispatch(generateItem(modelZUID));
     }
   }, [modelZUID, item]);
-
-  useEffect(() => {
-    dispatch(actions.setDuoMode(false));
-  }, []);
 
   function handleSave(event) {
     if (
