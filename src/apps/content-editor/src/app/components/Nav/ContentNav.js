@@ -94,7 +94,6 @@ export function ContentNav(props) {
     setReorderOpen(!reorderOpen);
   };
 
-  console.log("UI Content Nav Tree: ", ui.contentNav);
   return (
     <div
       onMouseEnter={handleMouseEnter}
