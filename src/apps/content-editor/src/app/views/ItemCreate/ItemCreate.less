@@ -13,6 +13,19 @@
   ::-webkit-scrollbar {
     display: none;
   }
+  .Editor {
+    /*  Hiding and removing styles for Duo Mode item create view */
+    [data-cy="DuoModeContainer"] {
+      display: none;
+    }
+    div {
+      div {
+        padding: 0;
+        height: initial;
+        grid-column: 1 / -1;
+      }
+    }
+  }
 }
 
 .Meta {
