@@ -11,9 +11,10 @@
     display: grid;
     grid-template-columns: 1fr 40px;
 
+    transition: grid-template-columns 350ms ease;
+
     align-items: flex-start;
     position: relative;
-
     height: @height;
 
     //Hide Scrollbar
@@ -25,6 +26,7 @@
 
     &.ContentActionsOn {
       grid-template-columns: 1fr 20vw;
+      transition: grid-template-columns 350ms ease;
     }
 
     .Editor {
@@ -43,6 +45,8 @@
     bottom: 0;
     width: 40px;
     z-index: 10;
+
+    transition: width 350ms ease;
 
     &.ActionsDrawerButtonHover,
     &.ActionsDrawerOpen {

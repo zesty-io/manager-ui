@@ -55,6 +55,8 @@
     height: @height;
     overflow: auto;
 
+    transition: width 350ms ease;
+
     //Hide Scrollbar
     scrollbar-width: none; /*  FireFox */
     -ms-overflow-style: none; /*  Edge */
@@ -72,11 +74,14 @@
     box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
     display: block;
     opacity: 1;
-    transition: width 350ms ease;
   }
 
   .DrawerAction {
     display: block;
     position: initial;
+    width: 100%;
+    opacity: 1;
+    pointer-events: initial;
+    visibility: initial;
   }
 }
