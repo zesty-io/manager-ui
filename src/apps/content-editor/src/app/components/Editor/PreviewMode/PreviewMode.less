@@ -1,11 +1,19 @@
 @import "~@zesty-io/core/colors.less";
 @import "~@zesty-io/core/typography.less";
 
+@height: calc(100vh - 200px);
+
 .DMContainer {
   position: relative;
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  padding: 32px;
+  height: @height;
+
+  @media only screen and (min-width: 2000px) {
+    padding: 48px;
+  }
 
   .Overlay {
     position: absolute;
@@ -37,25 +45,11 @@
     border: 3px solid @bright-gray;
     box-shadow: 0 7px 30px -10px rgb(150 170 180 / 50%);
     border-radius: 8px;
-    border-top-width: 16px;
-
-    align-self: stretch;
     width: 100%;
-
-    -ms-zoom: 0.75;
-    -moz-transform: scale(0.75) translateY(-8%);
-    -o-transform: scale(0.75) translateY(-8%);
-    -webkit-transform: scale(0.75) translateY(-8%);
+    height: @height;
 
     &.Blur {
       filter: blur(3px);
-    }
-
-    @media only screen and (min-width: 2000px) {
-      -ms-zoom: 0.8;
-      -moz-transform: scale(0.8) translateY(-8%);
-      -o-transform: scale(0.8) translateY(-8%);
-      -webkit-transform: scale(0.8) translateY(-8%);
     }
   }
 }
