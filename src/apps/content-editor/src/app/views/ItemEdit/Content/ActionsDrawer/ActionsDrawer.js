@@ -65,7 +65,11 @@ export default function ActionsDrawer(props) {
       onMouseLeave={handleMouseLeave}
       data-cy="ActionsContent"
     >
-      <nav className={ui.contentActionsHover ? styles.Hide : ""}>
+      <nav
+        className={
+          ui.contentActionsHover || ui.contentActions ? styles.Hide : ""
+        }
+      >
         <ul>
           {icons.map((i) => {
             return (
@@ -86,7 +90,9 @@ export default function ActionsDrawer(props) {
       <div
         className={cx(
           styles.ActionsContent,
-          ui.contentActionsHover ? styles.ActionsDisplay : ""
+          ui.contentActionsHover || ui.contentActions
+            ? styles.ActionsDisplay
+            : ""
         )}
       >
         <Actions
@@ -102,8 +108,9 @@ export default function ActionsDrawer(props) {
       <Button
         className={cx(
           styles.ActionsDrawerButton,
-          ui.contentActionsHover ? styles.ActionsDrawerButtonHover : "",
-          ui.contentActions ? styles.ActionsDrawerOpen : ""
+          ui.contentActionsHover || ui.contentActions
+            ? styles.ActionsDrawerButtonHover
+            : ""
         )}
         data-cy="ActionsButton"
         title="Open for additional file information"
