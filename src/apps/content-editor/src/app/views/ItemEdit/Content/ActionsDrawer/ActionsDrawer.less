@@ -95,6 +95,15 @@
   overflow: scroll;
   transition: width 350ms ease;
 
+  //Hide Scrollbar
+  overflow-y: scroll;
+  overflow: auto;
+  scrollbar-width: none; /*  FireFox */
+  -ms-overflow-style: none; /*  Edge */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
   &.DrawerHover {
     position: absolute;
     width: 20vw;
@@ -143,6 +152,7 @@
     &.ActionsDisplay {
       opacity: 1;
       display: block;
+      padding-bottom: 42px;
     }
   }
 
@@ -157,6 +167,7 @@
       position: sticky;
       bottom: 0;
       right: 0;
+      z-index: 1;
     }
     &:hover {
       color: @zesty-orange;
