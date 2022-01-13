@@ -61,7 +61,7 @@ export default function Content(props) {
 
         <ActionsDrawer className={styles.Actions} {...props} />
 
-        <Button
+        {/* <Button
           className={cx(
             styles.ActionsDrawerButton,
             ui.contentActionsHover ? styles.ActionsDrawerButtonHover : "",
@@ -78,7 +78,7 @@ export default function Content(props) {
           ) : (
             <FontAwesomeIcon icon={faChevronLeft} />
           )}
-        </Button>
+        </Button> */}
       </div>
     </main>
   );

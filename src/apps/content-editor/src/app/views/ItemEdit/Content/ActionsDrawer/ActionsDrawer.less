@@ -4,84 +4,162 @@
 /* Scroll Calc (GlobalTopbar - Content Header - button - padding) */
 @height: calc(100vh - 54px - 73px - 42px);
 
+// .Drawer {
+//   display: flex;
+//   justify-content: center;
+//   background: @white;
+//   border: 1px solid @bright-gray;
+//   border-width: 0 1px 1px 1px;
+//   height: @height;
+
+//   //Hide Scrollbar
+//   overflow-y: scroll;
+//   overflow: auto;
+//   scrollbar-width: none; /*  FireFox */
+//   -ms-overflow-style: none; /*  Edge */
+//   ::-webkit-scrollbar {
+//     display: none;
+//   }
+//   .QuickBar {
+//     align-items: center;
+//     display: flex;
+//     flex-direction: column;
+
+//     li {
+//       list-style: none;
+//       margin: 16px 0;
+//     }
+//   }
+
+//   .Show {
+//     position: absolute;
+//   }
+
+//   .Hide {
+//     opacity: 0;
+//     pointer-events: none;
+//     visibility: hidden;
+//   }
+
+//   .DrawerDefault {
+//     transition: width 350ms ease;
+//     width: 60px;
+//     opacity: 0;
+//     pointer-events: none;
+//     visibility: hidden;
+//   }
+
+//   .DrawerHover,
+//   .DrawerAction {
+//     background: @white;
+//     height: @height;
+//     overflow: auto;
+
+//     transition: width 350ms ease;
+
+//     //Hide Scrollbar
+//     scrollbar-width: none; /*  FireFox */
+//     -ms-overflow-style: none; /*  Edge */
+//     ::-webkit-scrollbar {
+//       display: none;
+//     }
+//   }
+
+//   .DrawerHover {
+//     position: absolute;
+//     width: 20vw;
+//     right: 0;
+//     top: 0;
+//     z-index: 10;
+//     box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
+//     display: block;
+//     opacity: 1;
+//   }
+
+//   .DrawerAction {
+//     display: block;
+//     position: initial;
+//     width: 100%;
+//     opacity: 1;
+//     pointer-events: initial;
+//     visibility: initial;
+//   }
+// }
+
 .Drawer {
+  background-color: #fff;
   display: flex;
-  justify-content: center;
-  background: @white;
-  border: 1px solid @bright-gray;
-  border-width: 0 1px 1px 1px;
-  height: @height;
+  flex-direction: column;
+  height: calc(100vh - 54px - 73px);
+  width: 40px;
+  overflow: scroll;
+  transition: width 350ms ease;
 
-  //Hide Scrollbar
-  overflow-y: scroll;
-  overflow: auto;
-  scrollbar-width: none; /*  FireFox */
-  -ms-overflow-style: none; /*  Edge */
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  .QuickBar {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-
-    li {
-      list-style: none;
-      margin: 16px 0;
-    }
-  }
-
-  .Show {
-    position: absolute;
-  }
-
-  .Hide {
-    opacity: 0;
-    pointer-events: none;
-    visibility: hidden;
-  }
-
-  .DrawerDefault {
-    transition: width 350ms ease;
-    width: 60px;
-    opacity: 0;
-    pointer-events: none;
-    visibility: hidden;
-  }
-
-  .DrawerHover,
-  .DrawerAction {
-    background: @white;
-    height: @height;
-    overflow: auto;
-
-    transition: width 350ms ease;
-
-    //Hide Scrollbar
-    scrollbar-width: none; /*  FireFox */
-    -ms-overflow-style: none; /*  Edge */
-    ::-webkit-scrollbar {
-      display: none;
-    }
-  }
-
-  .DrawerHover {
+  &.DrawerHover {
     position: absolute;
     width: 20vw;
     right: 0;
     top: 0;
     z-index: 10;
     box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
-    display: block;
-    opacity: 1;
   }
 
-  .DrawerAction {
-    display: block;
-    position: initial;
+  &.DrawerLock {
     width: 100%;
+  }
+
+  .Spacer {
+    flex: 1;
+  }
+
+  .Hide {
+    display: none;
+  }
+  .QuickBar {
+    list-style: none;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin: 16px 0;
+
+    transition-property: opacity;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 0.15s;
     opacity: 1;
-    pointer-events: initial;
-    visibility: initial;
+
+    &.IconsHover {
+      opacity: 0;
+    }
+  }
+
+  .ActionsContent {
+    opacity: 0;
+    display: none;
+
+    transition-property: opacity;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 0.15s;
+
+    &.ActionsHover {
+      opacity: 1;
+      display: block;
+    }
+  }
+
+  .ActionsDrawerButton {
+    font-size: @svg-icon;
+    justify-content: center;
+    border-radius: 0;
+    padding: 13px 6px;
+    box-shadow: 2px 2px 5px fade(@zesty-dark-blue, 50%);
+
+    &.ActionsDrawerButtonHover {
+      position: sticky;
+      bottom: 0;
+      right: 0;
+    }
+    &:hover {
+      color: @zesty-orange;
+    }
   }
 }

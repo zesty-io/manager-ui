@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import { actions } from "shell/store/ui";
 
+import { Button } from "@zesty-io/core";
 import { Actions } from "../Actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,6 +15,8 @@ import {
   faTrash,
   faUnlink,
   faUserCheck,
+  faChevronLeft,
+  faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./ActionsDrawer.less";
 
@@ -53,34 +56,37 @@ export default function ActionsDrawer(props) {
 
   return (
     <aside
-      className={cx(styles.Drawer)}
+      className={cx(
+        styles.Drawer,
+        ui.contentActionsHover && !ui.contentActions ? styles.DrawerHover : "",
+        ui.contentActions ? styles.DrawerLock : ""
+      )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       data-cy="ActionsContent"
     >
-      <div
-        className={cx(
-          ui.contentActionsHover || ui.contentActions
-            ? styles.Hide
-            : styles.Show
-        )}
-      >
-        <ul className={styles.QuickBar}>
+      <nav className={ui.contentActionsHover ? styles.Hide : ""}>
+        <ul>
           {icons.map((i) => {
             return (
-              <li>
+              <li
+                className={cx(
+                  styles.QuickBar,
+                  ui.contentActionsHover || ui.contentActions
+                    ? styles.IconsHover
+                    : ""
+                )}
+              >
                 <FontAwesomeIcon icon={i} />
               </li>
             );
           })}
         </ul>
-      </div>
+      </nav>
       <div
         className={cx(
-          ui.contentActionsHover && !ui.contentActions
-            ? styles.DrawerHover
-            : styles.DrawerDefault,
-          ui.contentActions ? styles.DrawerAction : ""
+          styles.ActionsContent,
+          ui.contentActionsHover ? styles.ActionsHover : ""
         )}
       >
         <Actions
@@ -91,6 +97,26 @@ export default function ActionsDrawer(props) {
           }}
         />
       </div>
+
+      <div className={styles.Spacer}></div>
+      <Button
+        className={cx(
+          styles.ActionsDrawerButton,
+          ui.contentActionsHover ? styles.ActionsDrawerButtonHover : "",
+          ui.contentActions ? styles.ActionsDrawerOpen : ""
+        )}
+        data-cy="ActionsButton"
+        title="Open for additional file information"
+        onClick={() => {
+          dispatch(actions.setContentActions(!ui.contentActions));
+        }}
+      >
+        {ui.contentActions || ui.contentActionsHover ? (
+          <FontAwesomeIcon icon={faChevronRight} />
+        ) : (
+          <FontAwesomeIcon icon={faChevronLeft} />
+        )}
+      </Button>
     </aside>
   );
 }
