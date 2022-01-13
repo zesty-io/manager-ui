@@ -58,7 +58,7 @@ export default function ActionsDrawer(props) {
     <aside
       className={cx(
         styles.Drawer,
-        ui.contentActionsHover && !ui.contentActions ? styles.DrawerHover : "",
+        ui.contentActionsHover && !ui.contentActions ? styles.DrawerOpen : "",
         ui.contentActions ? styles.DrawerLock : ""
       )}
       onMouseEnter={handleMouseEnter}
