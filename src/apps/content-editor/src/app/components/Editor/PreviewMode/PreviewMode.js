@@ -2,12 +2,12 @@ import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 
 import styles from "./PreviewMode.less";
+
 export default function PreviewMode(props) {
   const origin = window.location.origin;
 
   const instance = useSelector((state) => state.instance);
   const content = useSelector((state) => state.content);
-
   const preview = useRef(null);
 
   function refresh() {
@@ -36,16 +36,15 @@ export default function PreviewMode(props) {
 
       if (itemZUID) {
         const item = content[itemZUID];
-
-        if (item && item.web.path) {
-          preview.current.contentWindow.postMessage(
-            {
-              source: "zesty",
-              route: item.web.path,
-            },
-            origin
-          );
-        }
+        preview.current.contentWindow.postMessage(
+          {
+            source: "zesty",
+            route: item?.web?.path
+              ? item.web.path
+              : `/-/instant/${item.meta.ZUID}.json`,
+          },
+          origin
+        );
       }
     }
   }
@@ -74,7 +73,7 @@ export default function PreviewMode(props) {
         </div>
       )}
       <iframe
-        className={props.dirty && styles.Blur}
+        className={props.dirty ? styles.Blur : ""}
         ref={preview}
         src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
         frameBorder="0"
