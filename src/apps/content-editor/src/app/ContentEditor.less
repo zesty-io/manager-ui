@@ -6,8 +6,6 @@
   grid-template-columns: 60px 1fr;
   position: relative;
 
-  transition: grid-template-columns 350ms ease; /*  FireFox */
-
   .Content {
     overflow: hidden;
     box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
@@ -26,6 +24,8 @@
   &.ContentGridHover,
   &.ContentGridOpen {
     grid-template-columns: 20vw auto;
+
+    transition: grid-template-columns 350ms ease; /*  FireFox */
 
     @media only screen and (min-width: 2000px) {
       grid-template-columns: 15vw auto;
