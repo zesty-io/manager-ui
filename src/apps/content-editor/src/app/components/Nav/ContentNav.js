@@ -4,6 +4,9 @@ import { useLocation, useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 
+// import { ContentNavToggle } from "./components/Nav/components/ContentNavToggle";
+import { ContentNavToggle } from "../Nav/components/ContentNavToggle";
+
 import { actions as uiActions } from "../../../../../../shell/store/ui";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -233,6 +236,7 @@ export function ContentNav(props) {
             actions={actions}
           />
         </div>
+        <ContentNavToggle />
       </div>
 
       <ReorderNav isOpen={reorderOpen} toggleOpen={toggleModal} />

@@ -3,14 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
 
-import { actions } from "shell/store/ui";
-
 import { fetchModels } from "shell/store/models";
 import { fetchNav } from "../store/navContent";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { ContentNav } from "./components/Nav";
-import { ContentNavToggle } from "./components/Nav/components/ContentNavToggle";
 
 import { Dashboard } from "./views/Dashboard";
 import { ItemList } from "./views/ItemList";
@@ -58,7 +55,6 @@ export default function ContentEditor(props) {
           nav={navContent}
         />
 
-        <ContentNavToggle />
         <div
           className={cx(
             styles.Content,
