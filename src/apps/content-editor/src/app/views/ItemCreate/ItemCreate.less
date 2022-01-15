@@ -5,6 +5,7 @@
   //100 - Globaltopbar - (Header + Globaltopbar) && Prevents header from being hidden after create item error
   height: calc(100vh - 54px - 130px);
   padding: 32px;
+
   //Hide Scrollbar
   overflow-y: scroll;
   overflow: auto;
@@ -15,15 +16,15 @@
   }
   .Editor {
     /*  Hiding and removing styles for Duo Mode item create view */
-    [data-cy="DuoModeContainer"] {
-      display: none;
-    }
-    div {
-      div {
+    [data-cy="DuoModeGrid"] {
+      grid-template-columns: 1fr;
+      & > div {
         padding: 0;
         height: initial;
-        grid-column: 1 / -1;
       }
+    }
+    [data-cy="DuoModeContainer"] {
+      display: none;
     }
   }
 }

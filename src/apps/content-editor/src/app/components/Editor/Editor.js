@@ -115,6 +115,7 @@ export default memo(function Editor({
 
   return (
     <div
+      data-cy="DuoModeGrid"
       className={
         ui.duoMode ? styles.DuoMode : cx(styles.DuoMode, styles.DuoModeOff)
       }
