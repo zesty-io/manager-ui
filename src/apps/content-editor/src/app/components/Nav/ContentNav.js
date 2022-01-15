@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import cx from "classnames";
-
-// import { ContentNavToggle } from "./components/Nav/components/ContentNavToggle";
 import { ContentNavToggle } from "../Nav/components/ContentNavToggle";
 
 import { actions as uiActions } from "../../../../../../shell/store/ui";
