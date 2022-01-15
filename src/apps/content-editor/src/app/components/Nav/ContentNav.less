@@ -5,6 +5,9 @@
   box-shadow: none;
   height: calc(100vh - 54px);
 
+  transition: width 350ms ease;
+  width: 60px;
+
   //Hide Scrollbar
   scrollbar-width: none; /*  FireFox */
   -ms-overflow-style: none; /*  Edge */
@@ -70,9 +73,9 @@
 }
 
 .NavWrap {
-  white-space: normal;
   position: relative;
   padding-bottom: 50px;
+  min-width: 20vw;
 
   &.NavWrapClosed {
     white-space: nowrap;
