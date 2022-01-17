@@ -71,9 +71,10 @@ export default function ActionsDrawer(props) {
         }
       >
         <ul>
-          {icons.map((i) => {
+          {icons.map((i, index) => {
             return (
               <li
+                key={index}
                 className={cx(
                   styles.QuickBar,
                   ui.contentActionsHover || ui.contentActions
