@@ -40,8 +40,8 @@ module.exports = async (env) => {
     devServer: {
       host: "0.0.0.0",
       compress: true,
-      contentBase: path.resolve(__dirname, "../../build"),
-      disableHostCheck: true,
+      // contentBase: path.resolve(__dirname, "../../build"),
+      // disableHostCheck: true,
       historyApiFallback: true,
     },
     devtool:
