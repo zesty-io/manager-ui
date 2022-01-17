@@ -16,7 +16,7 @@ import { notify } from "shell/store/notifications";
 import { FieldDescription } from "@zesty-io/core/FieldDescription";
 import { Notice } from "@zesty-io/core/Notice";
 
-import { updateSettings } from "../../../store/settings";
+import { updateSettings } from "shell/store/settings";
 
 import styles from "./SettingsStyles.less";
 import typographystyles from "@zesty-io/core/typography.less";

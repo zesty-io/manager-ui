@@ -38,6 +38,7 @@ export function Preview(props) {
   const [copied, setCopied] = useState(false);
   const [rotate, setRotate] = useState(false);
   const [instance, setInstance] = useState({});
+  const [settings, setSettings] = useState([]);
   const [domain, setDomain] = useState(props.domain);
   const [route, setRoute] = useState(props.route || "/");
   const [device, setDevice] = useState("fullscreen");
@@ -60,6 +61,9 @@ export function Preview(props) {
           // fetch(`${domain}${msg.data.route}`).finally(() =>
           //   setRoute(msg.data.route)
           // );
+        }
+        if (msg.data.settings) {
+          setSettings(msg.data.settings);
         }
         if (msg.data.refresh) {
           setRefresh(Date.now());
@@ -213,7 +217,7 @@ export function Preview(props) {
           {!loading && domain && route ? (
             device === "fullscreen" ? (
               route.includes(".json") ? (
-                <JSONPreview src={`${domain}${route}`} />
+                <JSONPreview src={`${domain}${route}`} settings={settings} />
               ) : (
                 <iframe
                   key={refresh}

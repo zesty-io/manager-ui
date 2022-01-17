@@ -14,7 +14,7 @@ import { Modal } from "@zesty-io/core/Modal";
 
 import MediaApp from "../../../../../media/src/app/MediaApp";
 import { notify } from "shell/store/notifications";
-import { saveStyleVariable } from "../../../store/settings";
+import { saveStyleVariable } from "shell/store/settings";
 
 import styles from "./Styles.less";
 import MediaStyles from "../../../../../media/src/app/MediaAppModal.less";
