@@ -204,7 +204,12 @@ export function Preview(props) {
             </div>
           </div>
         </header>
-        <main className={styles.Preview}>
+        <main
+          className={cx(
+            styles.Preview,
+            device !== "fullscreen" ? styles.Mobile : null
+          )}
+        >
           {!loading && domain && route ? (
             device === "fullscreen" ? (
               route.includes(".json") ? (
