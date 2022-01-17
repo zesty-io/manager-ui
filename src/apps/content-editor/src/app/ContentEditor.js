@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { connect } from "react-redux";
-import { Switch, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import { fetchModels } from "shell/store/models";
 import { fetchNav } from "../store/navContent";
@@ -53,7 +53,7 @@ export default connect((state) => {
             </div>
             <div className={styles.Content}>
               <div className={styles.ContentWrap}>
-                <Switch>
+                <Routes>
                   <Route exact path="/content" component={Dashboard} />
 
                   <Route
@@ -84,7 +84,7 @@ export default connect((state) => {
                   />
 
                   <Route path="*" component={NotFound} />
-                </Switch>
+                </Routes>
               </div>
             </div>
           </section>

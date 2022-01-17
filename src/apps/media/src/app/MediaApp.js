@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import cx from "classnames";
 import usePrevious from "react-use/lib/usePrevious";
-import { useHistory, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { connect } from "react-redux";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -27,7 +27,7 @@ export default connect((state) => {
     media: state.media,
   };
 })(function MediaApp(props) {
-  const history = useHistory();
+  const navigate = useNavigate();
   const params = useParams();
 
   // current file for file details modal
@@ -81,12 +81,12 @@ export default connect((state) => {
     if (!props.modal) {
       if (currentGroupID) {
         if (currentFileID) {
-          history.push(`/media/${currentGroupID}/file/${currentFileID}`);
+          navigate(`/media/${currentGroupID}/file/${currentFileID}`);
         } else {
-          history.push(`/media/${currentGroupID}`);
+          navigate(`/media/${currentGroupID}`);
         }
       } else {
-        history.push(`/media`);
+        navigate(`/media`);
       }
     }
   }

@@ -1,5 +1,5 @@
 import { memo, Fragment, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBan,
@@ -20,7 +20,7 @@ import { createFile } from "../../../../../store/files";
 
 import styles from "./CreateFile.less";
 export const CreateFile = memo(function CreateFile(props) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -64,7 +64,7 @@ export const CreateFile = memo(function CreateFile(props) {
       .then((res) => {
         if (res.status === 201) {
           setOpen(false);
-          history.push(`/code/file/${res.pathPart}/${res.data.ZUID}`);
+          navigate(`/code/file/${res.pathPart}/${res.data.ZUID}`);
         }
       })
       .catch((err) => {

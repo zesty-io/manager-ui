@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useIsMounted from "ismounted";
-import { useHistory, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import isEmpty from "lodash/isEmpty";
 import { createSelector } from "@reduxjs/toolkit";
 
@@ -27,7 +27,7 @@ const selectSortedModelFields = createSelector(
 );
 
 export default function ItemCreate() {
-  const history = useHistory();
+  const navigate = useNavigate();
   const isMounted = useIsMounted();
   const dispatch = useDispatch();
   const { modelZUID } = useParams();
@@ -121,7 +121,7 @@ export default function ItemCreate() {
         await dispatch(fetchItem(modelZUID, res.data.ZUID));
 
         // Redirect to new item after creating
-        history.push(`/content/${modelZUID}/${res.data.ZUID}`);
+        navigate(`/content/${modelZUID}/${res.data.ZUID}`);
 
         dispatch(
           notify({

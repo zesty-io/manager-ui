@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Switch, Route, Redirect } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { connect } from "react-redux";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -49,22 +49,35 @@ export default connect((state) => ({
           <SettingsNav />
           <div className={styles.OverflowWrap}>
             <main className={styles.Content}>
-              <Switch>
+              {/* <Redirect from="/settings/styles" to="/settings/styles/1" /> */}
+              {/* <Redirect from="/settings/fonts" to="/settings/fonts/browse" /> */}
+              {/* <Redirect from="/settings" to="/settings/instance/general" /> */}
+
+              <Route
+                path="/settings/styles"
+                element={<Navigate replace to="/settings/styles/1" />}
+              />
+              <Route
+                path="/settings/fonts"
+                element={<Navigate replace to="/settings/fonts/browse" />}
+              />
+              <Route
+                path="/settings"
+                element={<Navigate replace to="/settings/instance/general" />}
+              />
+
+              <Routes>
                 <Route
                   exact
                   path="/settings/styles/:category"
                   component={Styles}
                 />
-                <Redirect from="/settings/styles" to="/settings/styles/1" />
                 <Route
                   path="/settings/instance/:category"
                   component={Instance}
                 />
-
                 <Route path="/settings/fonts/browse" component={Browse} />
                 <Route path="/settings/fonts/installed" component={Installed} />
-                <Redirect from="/settings/fonts" to="/settings/fonts/browse" />
-
                 <Route path="/settings/robots" component={Robots} />
                 <Route
                   path="/settings/head"
@@ -74,13 +87,11 @@ export default connect((state) => ({
                     </div>
                   )}
                 />
-
-                <Redirect from="/settings" to="/settings/instance/general" />
                 <Redirect
                   from="/settings/instance"
                   to="/settings/instance/general"
                 />
-              </Switch>
+              </Routes>
             </main>
           </div>
         </div>

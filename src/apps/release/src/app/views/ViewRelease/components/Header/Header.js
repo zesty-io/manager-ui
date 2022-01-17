@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { createMember } from "shell/store/releaseMembers";
 import { fetchVersions } from "shell/store/contentVersions";
@@ -14,7 +14,7 @@ import styles from "./Header.less";
 export function Header({ plan }) {
   const dispatch = useDispatch();
   const params = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const releases = useSelector((state) => state.releases.data);
 
@@ -36,7 +36,7 @@ export function Header({ plan }) {
       <Select
         name="release"
         value={params.zuid}
-        onSelect={(val) => history.push(`/release/${val}`)}
+        onSelect={(val) => navigate(`/release/${val}`)}
       >
         {releases.map((release) => {
           return (

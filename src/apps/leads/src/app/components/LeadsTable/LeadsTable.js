@@ -49,7 +49,7 @@ export default connect((state) => {
      * Closes the modal and clears the selected lead from the route
      */
     closeModalAndUpdateRoute = () => {
-      this.history.push(`#!`);
+      this.navigate(`#!`);
       this.setState({
         currentLead: null,
         modalIsOpen: false,
@@ -103,7 +103,7 @@ export default connect((state) => {
      * Opens a modal with the selected lead and updates the route
      */
     openModalAndUpdateRoute = (lead) => {
-      this.history.push(`#!?lead=${lead.zuid}`);
+      this.navigate(`#!?lead=${lead.zuid}`);
       this.setState({
         currentLead: lead,
         modalIsOpen: true,

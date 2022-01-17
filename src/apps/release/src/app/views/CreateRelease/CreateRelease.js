@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router-dom";
 import cx from "classnames";
 
 import { faPlus, faSpinner } from "@fortawesome/free-solid-svg-icons";
@@ -14,7 +14,7 @@ import { createRelease, fetchReleases } from "shell/store/releases";
 import styles from "./CreateRelease.less";
 export function CreateRelease() {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -32,7 +32,7 @@ export function CreateRelease() {
         if (res.status === 201) {
           dispatch(fetchReleases(res.data.ZUID))
             .then(() => {
-              history.push(`/release/${res.data.ZUID}`);
+              navigate(`/release/${res.data.ZUID}`);
             })
             .finally(() => setLoading(false));
         }

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import {
-  Switch,
+  Routes,
   Route,
   Redirect,
   useParams,
-  useHistory,
+  useNavigate,
 } from "react-router-dom";
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
@@ -60,7 +60,7 @@ const selectItemHeadTags = createSelector(
 
 export default function ItemEdit() {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const isMounted = useIsMounted();
   const { modelZUID, itemZUID } = useParams();
   const item = useSelector((state) => state.content[itemZUID]);
@@ -261,7 +261,7 @@ export default function ItemEdit() {
       />
 
       <section>
-        <Switch>
+        <Routes>
           <Route
             exact
             path="/content/:modelZUID/:itemZUID/head"
@@ -360,7 +360,7 @@ export default function ItemEdit() {
               />
             )}
           />
-        </Switch>
+        </Routes>
       </section>
     </WithLoader>
   );

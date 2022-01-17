@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Route, Switch, useHistory } from "react-router";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import cx from "classnames";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -16,7 +16,7 @@ import { ViewRelease } from "./views/ViewRelease";
 import styles from "./ReleaseApp.less";
 export default function ReleaseApp() {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   // load versions for all ZUIDs
@@ -27,9 +27,9 @@ export default function ReleaseApp() {
       .then((res) => {
         if (!res.data?.length) {
           if (res.status === 412) {
-            history.push("/release/activate");
+            navigate("/release/activate");
           } else {
-            history.push("/release/create");
+            navigate("/release/create");
           }
         } else {
           // pre-fetch all members
@@ -44,12 +44,12 @@ export default function ReleaseApp() {
   return (
     <section className={cx(styles.ReleaseApp, styles.bodyText)}>
       <WithLoader condition={!loading} message="Starting Release">
-        <Switch>
+        <Routes>
           <Route path="/release/activate" component={Activate} />
           <Route path="/release/create" component={CreateRelease} />
           <Route path="/release/:zuid" component={ViewRelease} />
           <Route exact path="/release" component={ListReleases} />
-        </Switch>
+        </Routes>
       </WithLoader>
     </section>
   );

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,7 +10,7 @@ import { Button } from "@zesty-io/core/Button";
 
 import styles from "./SchemaNav.less";
 export default function SchemaNav(props) {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const [nav, setNav] = useState(props.nav);
@@ -30,7 +30,7 @@ export default function SchemaNav(props) {
         <Button
           className={styles.CreateModel}
           kind="secondary"
-          onClick={() => history.push("/schema/new")}
+          onClick={() => navigate("/schema/new")}
           type="save"
         >
           <FontAwesomeIcon icon={faPlus} />

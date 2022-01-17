@@ -2,7 +2,7 @@ import { memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
 import moment from "moment-timezone";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
@@ -192,12 +192,12 @@ export default memo(function Dashboard() {
 });
 
 function DashboardCardFooter(props) {
-  const history = useHistory();
+  const navigate = useNavigate();
   return (
     <CardFooter>
       <Button
         kind="secondary"
-        onClick={() => history.push(`/content/${props.contentModelZUID}/new`)}
+        onClick={() => navigate(`/content/${props.contentModelZUID}/new`)}
       >
         <FontAwesomeIcon icon={faPlus} />
         Create {props.model && props.model.label}

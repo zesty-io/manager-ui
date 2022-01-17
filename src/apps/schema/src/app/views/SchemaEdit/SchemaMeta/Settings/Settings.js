@@ -1,5 +1,5 @@
 import { Fragment, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -24,7 +24,7 @@ import { updateModel, saveModel, duplicateModel } from "shell/store/models";
 
 import styles from "./Settings.less";
 export default function Settings(props) {
-  let history = useHistory();
+  const navigate = useNavigate();
   const update = (val, name) => {
     props.dispatch(updateModel(props.model.ZUID, name, val));
   };
@@ -119,7 +119,7 @@ function Footer(props) {
       .dispatch(duplicateModel(props.model.ZUID))
       .then((res) => {
         if (res.status === 200) {
-          history.pushState(`/schema/${res.data.ZUID}/`);
+          navigateState(`/schema/${res.data.ZUID}/`);
         } else {
           props.dispatch(
             notify({

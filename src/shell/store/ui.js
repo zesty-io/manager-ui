@@ -244,9 +244,9 @@ export function closeTab(path) {
         const nextTab = state.ui.tabs[removeTabIndex + 1];
         const prevTab = state.ui.tabs[removeTabIndex - 1];
         if (nextTab) {
-          history.push(nextTab.pathname);
+          navigate(nextTab.pathname);
         } else if (prevTab) {
-          history.push(prevTab.pathname);
+          navigate(prevTab.pathname);
         }
       }
 

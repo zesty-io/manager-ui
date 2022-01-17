@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { connect } from "react-redux";
-import { useRouteMatch } from "react-router-dom";
+import { useMatch } from "react-router-dom";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -17,7 +17,7 @@ export default connect((state) => {
     status: "dev",
   };
 })(function CodeEditor(props) {
-  const match = useRouteMatch("/code/file/:fileType/:fileZUID");
+  const match = useMatch("/code/file/:fileType/:fileZUID");
 
   // On initial render load files: Templates, Stylesheets, Scripts
   useEffect(() => {

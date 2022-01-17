@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Switch, Route, Redirect } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { Sentry } from "utility/sentry";
 import cx from "classnames";
@@ -46,7 +46,10 @@ export default connect((state) => {
           <GlobalTopbar />
           <div className={styles.SubApp} data-cy="SubApp">
             <Sentry.ErrorBoundary fallback={() => <AppError />}>
-              <Switch>
+              {/* <Redirect exact from="/" to="/content" /> */}
+              <Route path="/" element={<Navigate replace to="/content" />} />
+
+              <Routes>
                 <Route path="/release" component={ReleaseApp} />
 
                 <Route path="/media/:groupID/file/:fileID" component={DamApp} />
@@ -116,9 +119,8 @@ export default connect((state) => {
                   }
                 })}
 
-                <Redirect exact from="/" to="/content" />
                 <Route path="*" component={Missing} />
-              </Switch>
+              </Routes>
             </Sentry.ErrorBoundary>
           </div>
         </main>

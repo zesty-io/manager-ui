@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Switch, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { connect } from "react-redux";
 
 import { RedirectsManager } from "../views/RedirectsManager";
@@ -11,11 +11,11 @@ export default connect((state) => state)(
       return (
         <section className={styles.HealthApp}>
           <main className={styles.wrapper}>
-            <Switch>
+            <Routes>
               <Route exact path="/seo">
                 <RedirectsManager {...this.props} />
               </Route>
-            </Switch>
+            </Routes>
           </main>
         </section>
       );

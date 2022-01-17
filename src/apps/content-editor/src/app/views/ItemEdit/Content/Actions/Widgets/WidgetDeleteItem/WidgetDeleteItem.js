@@ -1,6 +1,6 @@
 import { memo, useState, Fragment } from "react";
 import cx from "classnames";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -21,7 +21,7 @@ import { deleteItem } from "shell/store/content";
 import { closeTab } from "shell/store/ui";
 
 export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -75,7 +75,7 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
               .then((res) => {
                 if (res.status === 200) {
                   props.dispatch(closeTab(history.location.pathname));
-                  history.push("/content/" + props.modelZUID);
+                  navigate("/content/" + props.modelZUID);
                 } else {
                   // if delete fails, component is still mounted, so we can set state
                   setDeleting(false);

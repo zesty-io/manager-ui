@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router-dom";
 import cx from "classnames";
 
 import { faPlus, faSpinner } from "@fortawesome/free-solid-svg-icons";
@@ -12,7 +12,7 @@ import { activate } from "shell/store/releases";
 import styles from "./Activate.less";
 export function Activate() {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const handleActivate = () => {
@@ -20,7 +20,7 @@ export function Activate() {
     dispatch(activate())
       .then((res) => {
         if (res.status === 204) {
-          history.push(`/release/create`);
+          navigate(`/release/create`);
         }
       })
       .finally(() => setLoading(false));

@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import { Switch, Route, useRouteMatch } from "react-router-dom";
+import { Routes, Route, useMatch } from "react-router-dom";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -12,7 +12,7 @@ import styles from "./main.less";
 export default connect((state) => {
   return { navSchema: state.navSchema };
 })(function SchemaBuilder(props) {
-  const match = useRouteMatch("/schema/start");
+  const match = useMatch("/schema/start");
   const showNav = match && match.isExact;
 
   return (
@@ -26,7 +26,7 @@ export default connect((state) => {
       <section className={styles.SchemaBuilder}>
         {!showNav ? <SchemaNav nav={props.navSchema} /> : ""}
         <div className={styles.SchemaMain}>
-          <Switch>
+          <Routes>
             <Route exact path="/schema/new" component={SchemaCreate} />
             <Route
               path="/schema/:modelZUID/field/:fieldZUID"
@@ -34,7 +34,7 @@ export default connect((state) => {
             />
             <Route path="/schema/:modelZUID" component={SchemaEdit} />
             <Route path="/schema" component={SchemaCreate} />
-          </Switch>
+          </Routes>
         </div>
       </section>
     </WithLoader>

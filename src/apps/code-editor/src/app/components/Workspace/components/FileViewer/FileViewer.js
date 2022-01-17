@@ -1,7 +1,6 @@
 import { memo, useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { Switch, Route } from "react-router";
-import { Redirect } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import cx from "classnames";
 
 // TODO implement multitab: https://github.com/Microsoft/monaco-editor/issues/604#issuecomment-344214706
@@ -89,7 +88,17 @@ export const FileViewer = connect((state, props) => {
         <WithLoader condition={!loading} message="Finding File">
           {props.file && props.file.ZUID ? (
             <>
-              <Switch>
+              {/* Force Sync */}
+              {!props.file.synced && (
+                // <Redirect push to={`${location.pathname}/diff/`} />
+                <Route
+                  path="*"
+                  element={
+                    <Navigate replace to={`${location.pathname}/diff/`} />
+                  }
+                />
+              )}
+              <Routes>
                 <Route path={`${match.url}/diff`}>
                   <Differ
                     dispatch={props.dispatch}
@@ -105,11 +114,6 @@ export const FileViewer = connect((state, props) => {
                   />
                 </Route>
                 <Route path={`${match.url}`}>
-                  {/* Force Sync */}
-                  {!props.file.synced && (
-                    <Redirect push to={`${location.pathname}/diff/`} />
-                  )}
-
                   <Editor
                     dispatch={props.dispatch}
                     fileName={props.file.fileName}
@@ -125,7 +129,7 @@ export const FileViewer = connect((state, props) => {
                     lineNumber={lineNumber}
                   />
                 </Route>
-              </Switch>
+              </Routes>
 
               <FileDrawer file={props.file} match={match} />
             </>

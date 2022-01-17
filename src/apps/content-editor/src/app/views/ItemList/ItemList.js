@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, PureComponent } from "react";
 import { connect } from "react-redux";
 import { VariableSizeList as List } from "react-window";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import isEqual from "lodash/isEqual";
 import isEmpty from "lodash/isEmpty";
 
@@ -69,7 +69,7 @@ export default connect((state, props) => {
     ),
   };
 })(function ItemList(props) {
-  const history = useHistory();
+  const navigate = useNavigate();
   const _isMounted = useRef(false);
 
   // table, list dimensions
@@ -119,7 +119,7 @@ export default connect((state, props) => {
       if (items.length === 2) {
         // the first record is the list column headers so we use the second which
         // should be the first content item
-        history.push(
+        navigate(
           `/content/${items[1]?.meta?.contentModelZUID}/${items[1]?.meta?.ZUID}`
         );
       }

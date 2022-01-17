@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 import { Button } from "@zesty-io/core/Button";
 import { Notice } from "@zesty-io/core/Notice";
@@ -18,7 +18,7 @@ import {
 export const Delete = memo(function Delete(props) {
   const [open, setOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <div className={styles.DeleteBtn}>
@@ -59,7 +59,7 @@ export const Delete = memo(function Delete(props) {
                   setDeleting(false);
                   if (res.status === 200) {
                     setOpen(false);
-                    history.push("/code");
+                    navigate("/code");
                   }
                 })
                 .catch((err) => {

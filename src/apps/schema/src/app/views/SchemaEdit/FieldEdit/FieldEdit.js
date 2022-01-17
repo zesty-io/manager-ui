@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import cx from "classnames";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
@@ -51,13 +51,13 @@ export function FieldEdit(props) {
 }
 
 function Header(props) {
-  let history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <div
       className={styles.Header}
       onClick={() => {
-        history.push(
+        navigate(
           `/schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`
         );
       }}

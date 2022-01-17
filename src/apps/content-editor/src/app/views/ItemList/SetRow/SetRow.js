@@ -1,4 +1,4 @@
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import cx from "classnames";
 import { connect } from "react-redux";
 
@@ -19,15 +19,15 @@ import { PublishStatusCell } from "./PublishStatusCell";
 
 import styles from "./SetRow.less";
 export default connect()(function SetRow(props) {
-  let history = useHistory();
+  const navigate = useNavigate();
 
   const item = props.allItems[props.itemZUID];
 
   const selectRow = () => {
     if (props.itemZUID.slice(0, 3) === "new") {
-      history.push(`/content/${props.modelZUID}/new`);
+      navigate(`/content/${props.modelZUID}/new`);
     } else {
-      history.push(`/content/${props.modelZUID}/${props.itemZUID}`);
+      navigate(`/content/${props.modelZUID}/${props.itemZUID}`);
     }
   };
 

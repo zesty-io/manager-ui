@@ -1,6 +1,6 @@
 import { Fragment, useState, useEffect, useReducer } from "react";
 import { connect } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import cx from "classnames";
 
 import { request } from "utility/request";
@@ -68,7 +68,7 @@ export default connect((state) => {
     }),
   };
 })(function SchemaCreate(props) {
-  let history = useHistory();
+  const navigate = useNavigate();
 
   const [name, setName] = useState("");
   const [pathPart, setPathPart] = useState("");
@@ -424,7 +424,7 @@ export default connect((state) => {
                         );
                       }
 
-                      history.push(`/schema/${res.data.ZUID}`);
+                      navigate(`/schema/${res.data.ZUID}`);
                     } else {
                       props.dispatch(
                         notify({

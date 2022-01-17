@@ -1,7 +1,7 @@
 import { Fragment, useState, useEffect } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
-import { useHistory, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { Select, Option } from "@zesty-io/core/Select";
 
@@ -28,7 +28,7 @@ export const LanguageSelector = connect((state, props) => {
   };
 })((props) => {
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleSelect = (val) => {
     props.dispatch(selectLang(val));
@@ -38,7 +38,7 @@ export const LanguageSelector = connect((state, props) => {
     if (parts[3]) {
       const subpath = parts.slice(0, 3);
       subpath.push(props.siblings[val]);
-      history.push(`${subpath.join("/")}`);
+      navigate(`${subpath.join("/")}`);
     }
   };
 

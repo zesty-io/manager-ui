@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Switch, Route } from "react-router";
+import { Routes, Route } from "react-router-dom";
 
 import { GettingStarted } from "./components/GettingStarted";
 import { FileViewer } from "./components/FileViewer";
@@ -9,7 +9,7 @@ import styles from "./Workspace.less";
 export const Workspace = memo(function Workspace(props) {
   return (
     <div className={styles.Workspace}>
-      <Switch>
+      <Routes>
         <Route exact path="/code">
           <GettingStarted files={props.files} />
         </Route>
@@ -28,7 +28,7 @@ export const Workspace = memo(function Workspace(props) {
         <Route path="*">
           <NotFound />
         </Route>
-      </Switch>
+      </Routes>
     </div>
   );
 });

@@ -1,6 +1,6 @@
 import { Fragment, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
@@ -22,7 +22,7 @@ import { request } from "utility/request";
 import styles from "./LinkCreate.less";
 export function LinkCreate() {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const content = useSelector((state) => state.content);
   const internalLinkOptions = useMemo(() => {
     return Object.keys(content)
@@ -106,7 +106,7 @@ export function LinkCreate() {
             type: "CREATE_LINK",
           });
 
-          history.push(`/content/link/${res.data.ZUID}`);
+          navigate(`/content/link/${res.data.ZUID}`);
         }
       })
       .catch((err) => {

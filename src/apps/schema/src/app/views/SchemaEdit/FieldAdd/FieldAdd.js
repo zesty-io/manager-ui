@@ -1,5 +1,5 @@
 import { Fragment, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -21,7 +21,7 @@ import { createField } from "shell/store/fields";
 
 import styles from "./FieldAdd.less";
 export function FieldAdd(props) {
-  let history = useHistory();
+  const navigate = useNavigate();
 
   const initialState = {
     contentModelZUID: props.modelZUID,
@@ -76,7 +76,7 @@ export function FieldAdd(props) {
             })
           );
           setField(initialState);
-          history.push(`/schema/${props.modelZUID}/field/${res.data.ZUID}`);
+          navigate(`/schema/${props.modelZUID}/field/${res.data.ZUID}`);
         } else {
           props.dispatch(
             notify({

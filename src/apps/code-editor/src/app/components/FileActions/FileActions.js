@@ -1,6 +1,6 @@
 import { memo, Fragment } from "react";
 import cx from "classnames";
-import { Switch, Route, useRouteMatch } from "react-router";
+import { Routes, Route, useMatch } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -25,7 +25,7 @@ import { Delete } from "./components/Delete";
 
 import styles from "./FileActions.less";
 export const FileActions = memo(function FileActions(props) {
-  const match = useRouteMatch("/code/file/:fileType/:fileZUID");
+  const match = useMatch("/code/file/:fileType/:fileZUID");
 
   return (
     <header className={styles.FileActions}>
@@ -43,7 +43,7 @@ export const FileActions = memo(function FileActions(props) {
           <FontAwesomeIcon className={styles.FileLink} icon={faFileCode} />
         )}
 
-        <Switch>
+        <Routes>
           <Route path={`${match.url}`}>
             <div className={styles.QuickLinks}>
               {props.contentModelZUID && (
@@ -87,7 +87,7 @@ export const FileActions = memo(function FileActions(props) {
               </AppLink>
             </div>
           </Route>
-        </Switch>
+        </Routes>
 
         <div className={styles.FileName}>
           <em className={styles.ZUID}>{props.fileZUID}</em>
@@ -101,7 +101,7 @@ export const FileActions = memo(function FileActions(props) {
         </Notice>
       )}
 
-      <Switch>
+      <Routes>
         <Route path={`${match.url}/diff`}>
           <DifferActions
             dispatch={props.dispatch}
@@ -132,7 +132,7 @@ export const FileActions = memo(function FileActions(props) {
             fileName={props.fileName}
           />
         </Route>
-      </Switch>
+      </Routes>
     </header>
   );
 });

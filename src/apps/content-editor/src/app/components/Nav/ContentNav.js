@@ -1,6 +1,6 @@
 import { Fragment, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useLocation, useHistory } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 
@@ -25,7 +25,7 @@ import styles from "./ContentNav.less";
 
 export function ContentNav(props) {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const [selected, setSelected] = useState(location.pathname);
@@ -52,7 +52,7 @@ export function ContentNav(props) {
 
   const handleCreateSelect = (ZUID) => {
     if (ZUID && ZUID != "0") {
-      history.push(`/content/${ZUID}/new`);
+      navigate(`/content/${ZUID}/new`);
     }
   };
 

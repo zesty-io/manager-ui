@@ -1,5 +1,5 @@
 import { Fragment, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faBan } from "@fortawesome/free-solid-svg-icons";
@@ -42,7 +42,7 @@ function Header() {
 
 function Footer(props) {
   const [isOpen, setIsOpen] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <Fragment>
@@ -64,7 +64,7 @@ function Footer(props) {
             props
               .dispatch(deleteModel(props.model.ZUID))
               .then(() => {
-                history.push("/schema");
+                navigate("/schema");
               })
               .catch((err) => {
                 console.error(err);
