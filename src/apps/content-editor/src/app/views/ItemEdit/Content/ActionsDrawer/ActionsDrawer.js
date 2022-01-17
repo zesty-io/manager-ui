@@ -116,6 +116,7 @@ export default function ActionsDrawer(props) {
         title="Open for additional file information"
         onClick={() => {
           dispatch(actions.setContentActions(!ui.contentActions));
+          dispatch(actions.setContentActionsHover(false));
         }}
       >
         {ui.contentActions || ui.contentActionsHover ? (
