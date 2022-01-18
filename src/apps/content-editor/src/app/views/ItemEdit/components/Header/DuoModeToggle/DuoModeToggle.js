@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDesktop, faWindowClose } from "@fortawesome/free-solid-svg-icons";
@@ -6,6 +7,7 @@ import { actions } from "shell/store/ui";
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
 
 import { PreviewUrl } from "../PreviewUrl";
+import { LiveUrl } from "../LiveUrl";
 
 import styles from "./DuoModeToggle.less";
 export function DuoModeToggle(props) {
@@ -39,7 +41,10 @@ export function DuoModeToggle(props) {
 
   return unavailable ? (
     props.item.web.path && (
-      <PreviewUrl item={props.item} instance={props.instance} />
+      <Fragment>
+        <LiveUrl item={props.item} />
+        <PreviewUrl item={props.item} instance={props.instance} />
+      </Fragment>
     )
   ) : (
     <ToggleButton
