@@ -7,18 +7,19 @@ describe("Navigation through content editor", () => {
 
   it("Opens homepage item", () => {
     cy.get("#MainNavigation").then((content) => {
-      if (!content.is(":visible")) {
+      if (content.is(":visible")) {
         cy.get("[data-cy=contentNavButton]").click();
         cy.get("#MainNavigation").contains("Page").click();
         cy.contains("Page Title").should("exist");
         cy.contains("Page Content").should("exist");
       } else {
-        cy.get("#MainNavigation").contains("Page").click({ force: true });
+        cy.get("#MainNavigation").contains("Page").click();
         cy.contains("Page Title").should("exist");
         cy.contains("Page Content").should("exist");
       }
     });
   });
+
   // TODO: Modal close button is not targetable
   it.skip("Opens the reorder nav modal", () => {
     cy.get("#ReorderNavButton").click();
