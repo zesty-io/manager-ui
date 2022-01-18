@@ -13,7 +13,7 @@ describe("Navigation through content editor", () => {
         cy.contains("Page Title").should("exist");
         cy.contains("Page Content").should("exist");
       } else {
-        cy.get("#MainNavigation").contains("Page").click();
+        cy.get("#MainNavigation").contains("Page").click({ force: true });
         cy.contains("Page Title").should("exist");
         cy.contains("Page Content").should("exist");
       }
