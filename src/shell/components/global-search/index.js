@@ -7,7 +7,7 @@ import { useMetaKey } from "shell/hooks/useMetaKey";
 import ContentSearch from "shell/components/ContentSearch";
 import { notify } from "shell/store/notifications";
 
-export default function GlobalSearch(props) {
+export default function GlobalSearch() {
   const dispatch = useDispatch();
   const ref = useRef();
   const history = useHistory();
