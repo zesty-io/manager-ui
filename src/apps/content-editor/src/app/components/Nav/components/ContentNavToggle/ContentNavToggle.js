@@ -26,6 +26,7 @@ export function ContentNavToggle() {
       )}
       onClick={() => {
         dispatch(actions.setContentNav(!ui.contentNav));
+        dispatch(actions.setContentNavHover(false));
       }}
     >
       {ui.contentNav || ui.contentNavHover ? (
