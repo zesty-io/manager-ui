@@ -23,9 +23,8 @@ export function DuoModeToggle(props) {
     slug === "preview" &&
     slug === "headless";
 
-  // basic_content_api_key
   unavailable = instanceSettings.find((setting) => {
-    // if any of these settings are present then DuoMode is una
+    // if any of these settings are present then DuoMode is unavailable
     return (
       (setting.key === "basic_content_api_key" && setting.value) ||
       (setting.key === "headless_authorization_key" && setting.value) ||
