@@ -3,32 +3,35 @@
 
 .Header {
   padding: 16px 32px;
+  @media only screen and (min-width: 2000px) {
+    padding: 16px 48px;
+  }
+
   z-index: 120;
   position: sticky;
   top: 0;
-  background-color: #f2f7fc;
-  border-bottom: 1px solid #e8e8e8;
+  background-color: @white;
+  border: 1px solid @bright-gray;
+  border-width: 0 0 1px 0;
 
   .Split {
     align-items: center;
-    display: grid;
-    grid-auto-columns: 1fr auto;
-    grid-auto-flow: row;
-    grid-gap: 8px;
+    display: flex;
+    gap: 8px;
 
-    @media screen and (min-width: 2000px) {
-      grid-auto-flow: column;
+    @media screen and (max-width: 2000px) {
+      flex-wrap: wrap;
     }
 
     .Left {
       display: flex;
       align-items: center;
-      margin-right: 16px;
     }
     .Right {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
+      margin-left: auto;
     }
   }
 
@@ -40,10 +43,11 @@
   }
   .Actions {
     display: flex;
+    gap: 8px;
+    align-items: center;
   }
 
   .I18N {
-    margin-right: 8px;
     min-width: 100px;
     z-index: 30;
   }

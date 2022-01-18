@@ -25,7 +25,7 @@ import { notifications } from "./notifications";
 import { platform } from "./platform";
 import { headTags } from "./headTags";
 import media from "./media";
-import ui from "./ui";
+import { ui } from "./ui";
 import { users } from "./users";
 import { releases } from "./releases";
 import { releaseMembers } from "./releaseMembers";
@@ -94,7 +94,7 @@ function createReducer(asyncReducers) {
     notifications,
     platform,
     headTags,
-    ui,
+    ui: ui.reducer,
   };
 
   return combineReducers({

@@ -127,6 +127,7 @@ export const HeadTag = (props) => {
           onChange={(value) => dispatch(updateTagSort(tag.ZUID, value))}
         />
         <Button
+          title="Add Tag Attribute"
           kind="primary"
           onClick={() => dispatch(addTagAttribute(tag.ZUID))}
         >
@@ -134,6 +135,7 @@ export const HeadTag = (props) => {
         </Button>
         {tag.hasOwnProperty("createdAt") ? (
           <Button
+            title="Delete Head Tag"
             className={styles.Delete}
             onClick={onDelete}
             type="warn"
@@ -143,7 +145,12 @@ export const HeadTag = (props) => {
             Delete Tag
           </Button>
         ) : (
-          <Button className={styles.Delete} onClick={onCancel} type="warn">
+          <Button
+            title="Cancel"
+            className={styles.Delete}
+            onClick={onCancel}
+            type="warn"
+          >
             <FontAwesomeIcon className={styles.Del} icon={faTrash} />
             Cancel
           </Button>
@@ -185,6 +192,7 @@ export const HeadTag = (props) => {
               />
               {attr.key !== "custom" ? (
                 <Button
+                  title="Delete Tag Attribute"
                   className={styles.Del}
                   onClick={() => dispatch(deleteTagAttribute(tag.ZUID, index))}
                   type="warn"
@@ -200,6 +208,11 @@ export const HeadTag = (props) => {
       </CardContent>
       <CardFooter className={styles.CardFooter}>
         <Button
+          title={
+            tag.hasOwnProperty("createdAt")
+              ? "Save head tag"
+              : "Create head tag"
+          }
           type="save"
           id="SaveItemButton"
           disabled={saving}

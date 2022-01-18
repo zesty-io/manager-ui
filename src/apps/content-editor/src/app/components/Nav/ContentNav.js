@@ -1,8 +1,10 @@
 import { Fragment, useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import cx from "classnames";
+
+import { actions as uiActions } from "../../../../../../shell/store/ui";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -27,6 +29,7 @@ export function ContentNav(props) {
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
+  const ui = useSelector((state) => state.ui);
 
   const [selected, setSelected] = useState(location.pathname);
   const [reorderOpen, setReorderOpen] = useState(false);
@@ -37,6 +40,27 @@ export function ContentNav(props) {
   const [filteredItems, setFilteredItems] = useState(
     props.nav.nav.sort(bySort)
   );
+
+  const [mouseEnterTimer, setMouseEnterTimer] = useState(null);
+  const [mouseLeaveTimer, setMouseLeaveTimer] = useState(null);
+
+  const handleMouseEnter = () => {
+    const enterTimer = setTimeout(() => {
+      dispatch(uiActions.setContentNavHover(true));
+    }, 500);
+
+    setMouseEnterTimer(enterTimer);
+  };
+
+  const handleMouseLeave = () => {
+    const leaveTimer = setTimeout(() => {
+      dispatch(uiActions.setContentNavHover(false));
+    }, 500);
+    setMouseLeaveTimer(leaveTimer);
+
+    clearTimeout(mouseEnterTimer);
+    clearTimeout(mouseLeaveTimer);
+  };
 
   useEffect(() => {
     setFilteredItems(props.nav.nav.sort(byLabel));
@@ -71,7 +95,15 @@ export function ContentNav(props) {
   };
 
   return (
-    <Fragment>
+    <div
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className={cx(
+        styles.NavContainer,
+        ui.contentNavHover && !ui.contentNav ? styles.ContentNavHover : "",
+        ui.contentNav ? styles.ContentNavOpen : ""
+      )}
+    >
       <div className={styles.Actions}>
         <Select
           name="createItemFromModel"
@@ -112,7 +144,12 @@ export function ContentNav(props) {
         setSearchTerm={setSearchTerm}
         searchTerm={searchTerm}
       />
-      <div className={styles.NavWrap}>
+      <div
+        className={cx(
+          styles.NavWrap,
+          !ui.contentNav ? styles.NavWrapClosed : " "
+        )}
+      >
         <div className={styles.NavTitle}>
           <h1>Content</h1>
 
@@ -199,7 +236,7 @@ export function ContentNav(props) {
       </div>
 
       <ReorderNav isOpen={reorderOpen} toggleOpen={toggleModal} />
-    </Fragment>
+    </div>
   );
 }
 

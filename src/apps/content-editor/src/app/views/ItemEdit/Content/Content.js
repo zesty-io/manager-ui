@@ -1,11 +1,23 @@
 import { Editor } from "../../../components/Editor";
+import cx from "classnames";
+import { actions } from "shell/store/ui";
 import { Header } from "../components/Header";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
-
-import { Actions } from "./Actions";
+import { useDispatch, useSelector } from "react-redux";
+import { ActionsDrawer } from "./ActionsDrawer";
+import { Button } from "@zesty-io/core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./Content.less";
+
 export default function Content(props) {
+  const ui = useSelector((state) => state.ui);
+  const dispatch = useDispatch();
+
   return (
     <main className={styles.Content}>
       <Header
@@ -27,7 +39,12 @@ export default function Content(props) {
         />
       </Header>
 
-      <div className={styles.MainEditor}>
+      <div
+        className={cx(
+          styles.MainEditor,
+          ui.contentActions ? styles.ContentActionsOn : ""
+        )}
+      >
         <div className={styles.Editor}>
           <Editor
             // active={this.state.makeActive}
@@ -41,15 +58,27 @@ export default function Content(props) {
             onSave={props.onSave}
           />
         </div>
-        <div className={styles.Actions}>
-          <Actions
-            {...props}
-            site={{}}
-            set={{
-              type: props.model.type,
-            }}
-          />
-        </div>
+
+        <ActionsDrawer className={styles.Actions} {...props} />
+
+        {/* <Button
+          className={cx(
+            styles.ActionsDrawerButton,
+            ui.contentActionsHover ? styles.ActionsDrawerButtonHover : "",
+            ui.contentActions ? styles.ActionsDrawerOpen : ""
+          )}
+          data-cy="ActionsButton"
+          title="Open for additional file information"
+          onClick={() => {
+            dispatch(actions.setContentActions(!ui.contentActions));
+          }}
+        >
+          {ui.contentActions || ui.contentActionsHover ? (
+            <FontAwesomeIcon icon={faChevronRight} />
+          ) : (
+            <FontAwesomeIcon icon={faChevronLeft} />
+          )}
+        </Button> */}
       </div>
     </main>
   );

@@ -1,0 +1,85 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+/* Scroll Calc (GlobalTopbar - Content Header - button - padding) */
+@height: calc(100vh - 54px - 73px);
+
+.Drawer {
+  background-color: @white;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid @bright-gray;
+  border-width: 1px 0 0 0;
+  height: @height;
+  width: 40px;
+
+  transition: width 350ms ease;
+
+  //Hide Scrollbar
+  overflow: auto;
+  scrollbar-width: none; /*  FireFox */
+  -ms-overflow-style: none; /*  Edge */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  &.DrawerOpen {
+    position: absolute;
+    width: 20vw;
+    right: 0;
+    top: 0;
+    z-index: 10;
+    box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
+  }
+
+  &.DrawerLock {
+    width: 20vw;
+  }
+
+  .Spacer {
+    flex: 1;
+  }
+
+  .Hide {
+    display: none;
+  }
+  .QuickBar {
+    list-style: none;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin: 32px 0;
+  }
+
+  .ActionsContent {
+    display: none;
+    width: 20vw;
+
+    &.ActionsDisplay {
+      display: block;
+      padding-bottom: 8px;
+
+      @-moz-document url-prefix() {
+        padding-bottom: 32px;
+      }
+    }
+  }
+
+  .ActionsDrawerButton {
+    font-size: @svg-icon;
+    justify-content: center;
+    border-radius: 0;
+    padding: 13px 6px;
+    box-shadow: 2px 2px 5px fade(@zesty-dark-blue, 50%);
+
+    &.ActionsDrawerButtonHover {
+      position: sticky;
+      bottom: 0;
+      right: 0;
+      z-index: 1;
+    }
+    &:hover {
+      color: @zesty-orange;
+    }
+  }
+}

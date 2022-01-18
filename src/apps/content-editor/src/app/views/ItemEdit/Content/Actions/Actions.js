@@ -34,7 +34,7 @@ export function Actions(props) {
   const liveURL = domain ? `${domain}${path}` : "";
 
   return (
-    <aside className={styles.Actions}>
+    <Fragment>
       <QuickView
         fields={props.fields}
         itemZUID={props.itemZUID}
@@ -104,6 +104,6 @@ export function Actions(props) {
           modelType={type}
         />
       )}
-    </aside>
+    </Fragment>
   );
 }

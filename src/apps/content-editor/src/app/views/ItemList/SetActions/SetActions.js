@@ -60,6 +60,7 @@ export class SetActions extends Component {
             </Select>
 
             <Button
+              title="Create Item"
               kind="secondary"
               id="AddItemButton"
               className={cx(styles.Action, styles.Create)}
@@ -77,6 +78,7 @@ export class SetActions extends Component {
 
             {Boolean(this.props.isDirty) && (
               <Button
+                title="Save"
                 type="save"
                 className={cx(styles.Action, styles.Save)}
                 disabled={this.props.saving}
@@ -127,6 +129,7 @@ export class SetActions extends Component {
 
             {this.props.model && this.props.user.is_developer && (
               <Button
+                title="Edit Schema"
                 className={cx(styles.Action)}
                 onClick={() =>
                   (window.location.hash = `/schema/${this.props.modelZUID}`)
@@ -138,6 +141,7 @@ export class SetActions extends Component {
             )}
             <Link to={`/content/${this.props.modelZUID}/import`}>
               <Button
+                title="Add CSV Button"
                 kind="tertiary"
                 id="AddCSVButton"
                 className={cx(styles.Action, styles.Create)}

@@ -116,6 +116,7 @@ export function ItemVersioning(props) {
       {canPublish && (
         <ButtonGroup className={styles.Publish}>
           <Button
+            title="Publish"
             className={styles.PublishButton}
             id="PublishButton"
             kind="secondary"
@@ -132,10 +133,12 @@ export function ItemVersioning(props) {
                 title="CDN out of sync"
               />
             )}
-            Publish <span>&nbsp;Version&nbsp;</span>
-            {props.item.meta.version}
+            <span className={styles.Hide}>Publish</span>
+            <span className={styles.Hide}>&nbsp;Version&nbsp;</span>
+            <span className={styles.Hide}>&nbsp;{props.item.meta.version}</span>
           </Button>
           <Button
+            title="Publish Schedule"
             id="PublishScheduleButton"
             className={`${styles.ClockButton} ${
               props.item.scheduling && props.item.scheduling.isScheduled
@@ -159,6 +162,8 @@ export function ItemVersioning(props) {
       )}
 
       <Button
+        title="Save Version"
+        className={styles.Save}
         type="save"
         disabled={props.saving || !props.item.dirty}
         onClick={props.onSave}
@@ -169,9 +174,7 @@ export function ItemVersioning(props) {
         ) : (
           <FontAwesomeIcon icon={faSave} />
         )}
-        Save&nbsp;
-        <span className={styles.HideVersion}>Version&nbsp;</span>
-        {metaShortcut}
+        <span className={styles.Test}>&nbsp;Save Version {metaShortcut}</span>
       </Button>
     </ButtonGroup>
   );
