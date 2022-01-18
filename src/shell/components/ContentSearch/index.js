@@ -158,6 +158,7 @@ export default forwardRef((props, providedRef) => {
         onFocus={handleFocus}
         ref={providedRef}
         value={term}
+        dispatch={props.dispatch}
       />
       {term && showResults && (
         <List
