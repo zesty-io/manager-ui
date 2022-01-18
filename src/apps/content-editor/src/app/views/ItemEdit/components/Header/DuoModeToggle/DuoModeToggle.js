@@ -33,6 +33,10 @@ export function DuoModeToggle(props) {
     );
   });
 
+  if (unavailable) {
+    dispatch(actions.setDuoMode(false));
+  }
+
   return unavailable ? (
     props.item.web.path && (
       <PreviewUrl item={props.item} instance={props.instance} />
