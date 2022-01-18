@@ -74,12 +74,17 @@
 
   .Preview {
     //Height - TopBar - iframe(border-top):
-    height: calc(100vh - 58px - 16px;);
+    height: calc(100vh - 72px;);
+
+    &.Mobile {
+      overflow: auto;
+    }
 
     .center {
       display: flex;
       align-items: center;
       justify-content: center;
+      margin: 32px 0;
     }
 
     .NoDomain {
@@ -94,10 +99,11 @@
       height: 100%;
       width: 100%;
 
-      background-image: url("https://storage.googleapis.com/assets-zesty/loading.png");
-      background-position: center center;
-      background-repeat: no-repeat;
-      background-size: 10%;
+      &.FrameLoading {
+        background-image: url("https://storage.googleapis.com/assets-zesty/loading.png");
+        background-position: center center;
+        background-repeat: no-repeat;
+      }
 
       // iframe when displayed inside device css
       &.Device {

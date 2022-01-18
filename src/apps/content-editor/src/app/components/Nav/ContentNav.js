@@ -7,6 +7,8 @@ import { ContentNavToggle } from "../Nav/components/ContentNavToggle";
 
 import { actions as uiActions } from "../../../../../../shell/store/ui";
 
+import { actions as uiActions } from "../../../../../../shell/store/ui";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowsAlt,

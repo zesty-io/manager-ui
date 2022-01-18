@@ -21,93 +21,97 @@
     />
 
     <style type="text/css">
-      * {
-        margin: 0;
-        padding: 0;
-      }
-      html,
-      body {
-        background-color: #333;
-        color: #5b667d;
-        font-family: "Mulish", Arial, sans-serif;
-        font-size: 13.2px;
-        height: 100%;
-        width: 100%;
-      }
-      @-moz-document url-prefix() {
-        /* Disable scrollbar Firefox */
-        html {
-          scrollbar-width: none;
-        }
-      }
-      body {
-        margin: 0; /* remove default margin */
-        scrollbar-width: none; /* Also needed to disable scrollbar Firefox */
-        -ms-overflow-style: none; /* Disable scrollbar IE 10+ */
-        overflow-y: scroll;
-      }
-      body::-webkit-scrollbar {
-        width: 0px;
-        background: transparent; /* Disable scrollbar Chrome/Safari/Webkit */
-      }
+            * {
+              margin: 0;
+              padding: 0;
+            }
+            html,
+            body {
+              background-color: #c3cddf;
+              font-family: "Mulish", Arial, sans-serif;
+              font-size: 13.2px;
+              height: 100%;
+              width: 100%;
+            }
+            @-moz-document url-prefix() {
+              /* Disable scrollbar Firefox */
+              html {
+                scrollbar-width: none;
+              }
+            }
+            body {
+      <<<<<<< HEAD
+              margin: 0; /* remove default margin */
+              scrollbar-width: none; /* Also needed to disable scrollbar Firefox */
+              -ms-overflow-style: none; /* Disable scrollbar IE 10+ */
+              overflow-y: scroll;
+            }
+            body::-webkit-scrollbar {
+              width: 0px;
+              background: transparent; /* Disable scrollbar Chrome/Safari/Webkit */
+      =======
+              overflow: hidden;
+      >>>>>>> master
+            }
 
-      #appBoot {
-        align-items: center;
-        display: flex;
-        justify-content: center;
-        width: 100vw;
-        height: 100vh;
-      }
+            #appBoot {
+              align-items: center;
+              display: flex;
+              justify-content: center;
+              width: 100vw;
+              height: 100vh;
+            }
 
-      #center {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      #center h1 {
-        font-family: "Mulish", Arial, sans-serif;
-        font-size: 2em;
-        font-weight: 400;
-        text-shadow: 1px 1px 1px #d6e5ff;
-      }
+            #center {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+            }
+            #center h1 {
+              font-family: "Mulish", Arial, Sans-Serif;
+              font-size: 32px;
+              font-weight: 200;
+              line-height: 48px;
+              letter-spacing: 0.32px;
+            }
 
-      .loader {
-        display: flex;
-        height: 2rem;
-      }
-      .loader .bar {
-        animation: fade 1s infinite ease-in-out;
-        background-color: #5b667d;
-        margin: 0.5rem;
-        opacity: 1;
-        width: 1rem;
-      }
-      .loader .bar:nth-child(1) {
-        animation-delay: -0.16s;
-      }
-      .loader .bar:nth-child(2) {
-        animation-delay: 1s;
-      }
-      .loader .bar:nth-child(3) {
-        animation-delay: -0.32s;
-      }
-      .loader .bar:nth-child(4) {
-        animation-delay: 2s;
-      }
-      .loader .bar:nth-child(5) {
-        animation-delay: -0.16s;
-      }
+            .loader {
+              display: flex;
+              height: 2rem;
+            }
+            .loader .bar {
+              animation: fade 1s infinite ease-in-out;
+              background-color: #5b667d;
+              margin: 0.5rem;
+              opacity: 1;
+              width: 1rem;
+            }
+            .loader .bar:nth-child(1) {
+              animation-delay: -0.16s;
+            }
+            .loader .bar:nth-child(2) {
+              animation-delay: 1s;
+            }
+            .loader .bar:nth-child(3) {
+              animation-delay: -0.32s;
+            }
+            .loader .bar:nth-child(4) {
+              animation-delay: 2s;
+            }
+            .loader .bar:nth-child(5) {
+              animation-delay: -0.16s;
+            }
 
-      @keyframes fade {
-        0%,
-        80%,
-        100% {
-          opacity: 1;
-        }
-        40% {
-          opacity: 0.3;
-        }
-      }
+            @keyframes fade {
+              0%,
+              80%,
+              100% {
+                opacity: 1;
+              }
+              40% {
+                opacity: 0.3;
+              }
+            }
     </style>
   </head>
   <body>

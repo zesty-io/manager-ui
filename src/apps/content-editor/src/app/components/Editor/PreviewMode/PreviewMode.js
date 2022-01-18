@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 
+import { Notice } from "@zesty-io/core/Notice";
+
 import styles from "./PreviewMode.less";
 
 export default function PreviewMode(props) {
@@ -68,8 +70,7 @@ export default function PreviewMode(props) {
     <div data-cy="DuoModeContainer" className={styles.DMContainer}>
       {props.dirty && (
         <div className={styles.Overlay}>
-          {" "}
-          <p>Save to Update Preview </p>
+          <Notice>Save to update preview</Notice>
         </div>
       )}
       <iframe

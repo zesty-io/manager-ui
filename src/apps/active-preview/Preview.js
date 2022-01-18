@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import cx from "classnames";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -31,6 +32,7 @@ export function Preview(props) {
   const input = useRef();
 
   const [loading, setLoading] = useState(true);
+  const [frameLoading, setFrameLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(true);
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -62,6 +64,8 @@ export function Preview(props) {
         if (msg.data.refresh) {
           setRefresh(Date.now());
         }
+
+        setFrameLoading(true);
       }
     }
 
@@ -200,7 +204,12 @@ export function Preview(props) {
             </div>
           </div>
         </header>
-        <main className={styles.Preview}>
+        <main
+          className={cx(
+            styles.Preview,
+            device !== "fullscreen" ? styles.Mobile : null
+          )}
+        >
           {!loading && domain && route ? (
             device === "fullscreen" ? (
               route.includes(".json") ? (
@@ -208,10 +217,14 @@ export function Preview(props) {
               ) : (
                 <iframe
                   key={refresh}
-                  className={styles.Frame}
+                  className={cx(
+                    styles.Frame,
+                    frameLoading ? styles.FrameLoading : null
+                  )}
                   src={`${domain}${route}`}
                   scrolling="yes"
                   frameBorder="0"
+                  onLoad={() => setFrameLoading(false)}
                 />
               )
             ) : (

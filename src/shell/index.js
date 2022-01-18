@@ -74,7 +74,7 @@ try {
     .then(([languages, selectedLang, nav, models, fields, content, ui]) => {
       store.dispatch({
         type: "LOADED_LOCAL_LANGUAGES",
-        payload: languages,
+        payload: languages || [],
       });
 
       store.dispatch({
