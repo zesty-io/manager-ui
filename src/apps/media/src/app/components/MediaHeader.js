@@ -1,5 +1,5 @@
-import { memo, useState } from "react";
-import { useSelector } from "react-redux";
+import { memo, useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,14 +10,20 @@ import { MediaCreateGroupModal } from "./MediaCreateGroupModal";
 import { MediaEditGroupModal } from "./MediaEditGroupModal";
 
 import styles from "./MediaHeader.less";
+import UploadImage from "./UploadImage";
 
 export const MediaHeader = memo(function MediaHeader(props) {
+  const dispatch = useDispatch();
   const userRole = useSelector((state) => state.userRole);
   const [createGroupModal, setCreateGroupModal] = useState(false);
   const [editGroupModal, setEditGroupModal] = useState(false);
 
+  console.log(props);
+
   return (
     <header className={styles.WorkspaceHeader}>
+      <UploadImage {...props} />
+
       <h1 className={cx(styles.subheadline, styles.Title)}>
         <small className={styles.NumFiles}>({props.numFiles})</small>
         {props.searchTerm

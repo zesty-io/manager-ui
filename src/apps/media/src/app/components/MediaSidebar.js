@@ -22,7 +22,6 @@ import {
   searchFiles,
   clearSearch,
 } from "shell/store/media";
-import shared from "./MediaShared.less";
 import styles from "./MediaSidebar.less";
 import { MediaNav } from "./MediaNav";
 
