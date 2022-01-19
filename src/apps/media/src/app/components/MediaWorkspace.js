@@ -76,7 +76,6 @@ export const MediaWorkspace = memo(function MediaWorkspace(props) {
         numFiles={files.length}
         setCurrentGroupID={props.setCurrentGroupID}
         searchTerm={search.term}
-        groupID={props.groupID}
       />
       <WithLoader
         // don't show loader if we already have files from before
