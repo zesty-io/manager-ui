@@ -17,7 +17,6 @@ export const MediaHeader = memo(function MediaHeader(props) {
   const [createGroupModal, setCreateGroupModal] = useState(false);
   const [editGroupModal, setEditGroupModal] = useState(false);
 
-  console.log(props);
   const mediaSlug = window.location.href.split("/").includes("media");
 
   return (

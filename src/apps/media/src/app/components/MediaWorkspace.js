@@ -67,7 +67,6 @@ export const MediaWorkspace = memo(function MediaWorkspace(props) {
 
   drop(ref);
 
-  console.log("inside mediaworkspace ", props);
   return (
     <>
       <MediaHeader
