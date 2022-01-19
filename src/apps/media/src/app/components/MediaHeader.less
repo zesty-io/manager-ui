@@ -7,9 +7,13 @@
   background-color: #404759;
   position: relative;
   display: grid;
-  grid-template-columns: auto 1fr max-content;
+  grid-template-columns: 1fr max-content;
   column-gap: 16px;
   height: 40px;
+
+  &.WorkSpaceHeaderUpload {
+    grid-template-columns: auto 1fr max-content;
+  }
 
   .Title {
     color: @zesty-white;

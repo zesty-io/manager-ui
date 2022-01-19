@@ -1,22 +1,18 @@
-import { memo, useCallback, useState, useRef } from "react";
+import { memo, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import { Search } from "@zesty-io/core/Search";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faUpload,
   faCaretDown,
   faCaretLeft,
   faEyeSlash,
   faFolder,
-  faSearch,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import { Button } from "@zesty-io/core/Button";
 
 import {
-  uploadFile,
   closeGroup,
   hideGroup,
   searchFiles,
@@ -24,6 +20,7 @@ import {
 } from "shell/store/media";
 import styles from "./MediaSidebar.less";
 import { MediaNav } from "./MediaNav";
+import UploadImage from "./UploadImage";
 
 export const MediaSidebar = memo(function MediaSidebar(props) {
   const dispatch = useDispatch();
@@ -31,7 +28,6 @@ export const MediaSidebar = memo(function MediaSidebar(props) {
   const groups = useSelector((state) => state.media.groups);
 
   const [hiddenOpen, setHiddenOpen] = useState(false);
-  const hiddenFileInput = useRef(null);
 
   const debouncedSearch = useCallback(
     debounce((term) => {
@@ -44,21 +40,6 @@ export const MediaSidebar = memo(function MediaSidebar(props) {
     }, 650),
     []
   );
-
-  function handleUploadClick() {
-    hiddenFileInput.current.click();
-  }
-
-  function handleFileInputChange(event) {
-    Array.from(event.target.files).forEach((file) => {
-      const fileToUpload = {
-        file,
-        bin_id: props.currentBin.id,
-        group_id: props.currentGroup.id,
-      };
-      dispatch(uploadFile(fileToUpload, props.currentBin));
-    });
-  }
 
   const getVisibleChildren = (id) => {
     const group = groups[id];
@@ -117,23 +98,7 @@ export const MediaSidebar = memo(function MediaSidebar(props) {
   return (
     <nav className={cx(styles.Nav, hiddenOpen ? styles.hiddenOpen : null)}>
       <div className={styles.TopNav}>
-        <Button
-          aria-label="Upload"
-          className={styles.PadLeft}
-          kind="secondary"
-          className={styles.Upload}
-          onClick={handleUploadClick}
-        >
-          <FontAwesomeIcon icon={faUpload} />
-          <span>Upload</span>
-        </Button>
-        <input
-          type="file"
-          multiple
-          ref={hiddenFileInput}
-          onChange={handleFileInputChange}
-          style={{ display: "none" }}
-        />
+        <UploadImage {...props} />
 
         <Search
           type="search"
