@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useEffect, useState } from "react";
 import styles from "./RedirectTable.less";
 import cx from "classnames";
 
@@ -8,56 +8,33 @@ import { RedirectCreator } from "./RedirectCreator";
 import RedirectsTableHeader from "./RedirectsTableHeader";
 import RedirectsTableRow from "./RedirectsTableRow";
 
-export default class RedirectTable extends Component {
-  constructor(props) {
-    super(props);
+export default function RedirectTable(props) {
+  const [redirects, setRedirects] = useState(props.redirects);
+  const [redirectsOrder, setRedirectsOrder] = useState(
+    Object.keys(props.redirects)
+  );
+  const [sortBy, setSortBy] = useState("");
+  const [sortDirection, setSortDirection] = useState("");
 
-    this.state = {
-      redirects: this.props.redirects,
-      redirectsOrder: Object.keys(this.props.redirects),
-      sortBy: "",
-      sortDirection: "",
-    };
-  }
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.redirects != this.state.redirects) {
-      this.setState({
-        redirects: nextProps.redirects,
-        redirectsOrder: this.sort(
-          nextProps.redirects,
-          this.state.sortBy,
-          this.state.sortDirection
-        ),
-      });
-    }
-  }
-  render() {
-    return (
-      <section className={styles.RedirectsTable}>
-        <RedirectsTableHeader
-          sortBy={this.state.sortBy}
-          sortDirection={this.state.sortDirection}
-          handleSortBy={this.handleSortBy.bind(this)}
-        />
+  useEffect(
+    (nextProps) => {
+      if (nextProps != redirects) {
+        setRedirects(nextProps.redirects);
+        setRedirectsOrder(sort(nextProps.redirects));
+        setSortBy(sort(sortBy));
+        setSortDirection(sort(sortDirection));
+      }
+    },
+    [redirects, redirectsOrder, sortBy, sortDirection]
+  );
 
-        <main className={styles.TableBody}>
-          <RedirectCreator
-            options={this.props.paths}
-            siteZuid={this.props.siteZuid}
-            dispatch={this.props.dispatch}
-          />
-          {this.renderRows()}
-        </main>
-      </section>
-    );
-  }
-  renderRows() {
-    const filter = this.props.redirectsFilter;
-    var order = [...this.state.redirectsOrder];
+  const renderRows = () => {
+    const filter = props.redirectsFilter;
+    var order = [...redirectsOrder];
 
     if (filter) {
       order = order.filter((key) => {
-        const redirect = this.props.redirects[key];
+        const redirect = props.redirects[key];
         if (
           redirect.path.indexOf(filter) !== -1 ||
           String(redirect.code).indexOf(filter) !== -1 ||
@@ -73,8 +50,8 @@ export default class RedirectTable extends Component {
 
     if (order.length) {
       return order.map((key) => {
-        const redirect = this.props.redirects[key];
-        const callback = this.handleRemoveRedirect.bind(this, redirect.ZUID);
+        const redirect = props.redirects[key];
+        const callback = handleRemoveRedirect.bind(this, redirect.ZUID);
 
         return (
           <RedirectsTableRow
@@ -91,21 +68,20 @@ export default class RedirectTable extends Component {
         </div>
       );
     }
-  }
-  handleRemoveRedirect(zuid) {
-    this.props.dispatch(removeRedirect(zuid));
-  }
-  handleSortBy(el) {
-    const by = el.currentTarget.dataset.value;
-    const direction = this.state.sortDirection === "desc" ? "asc" : "desc";
+  };
 
-    this.setState({
-      sortBy: by,
-      sortDirection: direction,
-      redirectsOrder: this.sort(this.state.redirects, by, direction),
-    });
-  }
-  sort(redirects, by, direction) {
+  const handleRemoveRedirect = (zuid) => {
+    props.dispatch(removeRedirect(zuid));
+  };
+  const handleSortBy = (el) => {
+    const by = el.currentTarget.dataset.value;
+    const direction = sortDirection === "desc" ? "asc" : "desc";
+
+    setSortBy(by);
+    setSortDirection(direction);
+    setRedirectsOrder(sort(redirects, by, direction));
+  };
+  const sort = (redirects, by, direction) => {
     const mapping = {
       type: "code",
       from: "path",
@@ -141,5 +117,24 @@ export default class RedirectTable extends Component {
     } else {
       return Object.keys(redirects);
     }
-  }
+  };
+
+  return (
+    <section className={styles.RedirectsTable}>
+      <RedirectsTableHeader
+        sortBy={sortBy}
+        sortDirection={sortDirection}
+        handleSortBy={handleSortBy}
+      />
+
+      <main className={styles.TableBody}>
+        <RedirectCreator
+          options={props.paths}
+          siteZuid={props.siteZuid}
+          dispatch={props.dispatch}
+        />
+        {renderRows()}
+      </main>
+    </section>
+  );
 }
