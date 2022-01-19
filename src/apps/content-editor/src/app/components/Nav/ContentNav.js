@@ -110,6 +110,7 @@ export function ContentNav(props) {
           className={`${styles.CreateSelect} ${styles.Select} CreateItemDropdown`}
           onSelect={handleCreateSelect}
           value="0"
+          aria-label="Create Item"
         >
           <Option value="0" text="— Create Item —" />
           <Option value="link" text="Internal/External Link" />

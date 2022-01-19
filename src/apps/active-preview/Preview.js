@@ -115,6 +115,7 @@ export function Preview(props) {
         src={`${domain}${route}`}
         scrolling="yes"
         frameBorder="0"
+        title="Devices"
       />
     </div>
   );
@@ -128,6 +129,7 @@ export function Preview(props) {
               height="20px"
               width="20px"
               src="https://brand.zesty.io/zesty-io-logo-dark.svg"
+              alt="Zesty Dark Logo"
             />
             &nbsp;
             <figcaption>Active Preview</figcaption>

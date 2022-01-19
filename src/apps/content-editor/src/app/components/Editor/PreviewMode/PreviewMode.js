@@ -85,6 +85,7 @@ export default function PreviewMode(props) {
         ref={preview}
         src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
         frameBorder="0"
+        title="Duo Mode"
       ></iframe>
     </div>
   );
