@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import styles from "./RedirectTable.less";
 import cx from "classnames";
 
@@ -28,6 +28,31 @@ export default function RedirectTable(props) {
     [redirects, redirectsOrder, sortBy, sortDirection]
   );
 
+  // const usePrevious = (value) => {
+  //   const ref = useRef();
+  //   useEffect(() => {
+  //     ref.current = value;
+  //   });
+  //   return ref.current;
+  // };
+
+  // const prevRedirect = usePrevious(redirects);
+
+  // useEffect(() => {
+  //   if (prevRedirect !== redirects) {
+  //     setRedirects(prevRedirect);
+  //     setRedirectsOrder(sort(prevRedirect));
+  //     setSortBy(sort(sortBy));
+  //     setSortDirection(sort(sortDirection));
+  //   }
+  // }, [redirects, redirectsOrder, sortBy, sortDirection]);
+
+  // https://stackoverflow.com/a/53446665/6178393
+
+  const handleRemoveRedirect = (zuid) => {
+    props.dispatch(removeRedirect(zuid));
+  };
+
   const renderRows = () => {
     const filter = props.redirectsFilter;
     var order = [...redirectsOrder];
@@ -51,7 +76,7 @@ export default function RedirectTable(props) {
     if (order.length) {
       return order.map((key) => {
         const redirect = props.redirects[key];
-        const callback = handleRemoveRedirect.bind(this, redirect.ZUID);
+        const callback = handleRemoveRedirect(redirect.ZUID);
 
         return (
           <RedirectsTableRow
@@ -70,9 +95,6 @@ export default function RedirectTable(props) {
     }
   };
 
-  const handleRemoveRedirect = (zuid) => {
-    props.dispatch(removeRedirect(zuid));
-  };
   const handleSortBy = (el) => {
     const by = el.currentTarget.dataset.value;
     const direction = sortDirection === "desc" ? "asc" : "desc";
