@@ -1,18 +1,12 @@
 @import "~@zesty-io/core/colors.less";
 @import "~@zesty-io/core/typography.less";
 
-//Scroll Calc (GlobalTopbar - Content Header - padding)
-@height: calc(100vh - 54px - 73px);
-
 .Content {
-  height: calc(100vh - 54px);
-
   .MainEditor {
     display: grid;
     grid-template-columns: 1fr 40px;
     align-items: flex-start;
     position: relative;
-    height: @height;
 
     //Hide Scrollbar
     scrollbar-width: none; /*  FireFox */
