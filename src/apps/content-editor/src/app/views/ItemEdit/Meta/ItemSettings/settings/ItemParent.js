@@ -93,7 +93,7 @@ export const ItemParent = connect((state) => {
             setParent(item);
           } else {
             props.dispatch(searchItems(parentZUID)).then((res) => {
-              setParent(res.data[0]);
+              setParent(res?.data[0]);
 
               /**
                * // HACK Because we pre-load all item publishings and store them in the same reducer as the `content`
