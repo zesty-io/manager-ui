@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import cx from "classnames";
 import { useMetaKey } from "shell/hooks/useMetaKey";
+import { useSelector } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -22,6 +24,8 @@ import { useDomain } from "shell/hooks/use-domain";
 
 import styles from "./ItemVersioning.less";
 export function ItemVersioning(props) {
+  const ui = useSelector((state) => state.ui);
+
   const canPublish = usePermission("PUBLISH");
   const domain = useDomain();
 
@@ -133,9 +137,9 @@ export function ItemVersioning(props) {
                 title="CDN out of sync"
               />
             )}
-            <span className={styles.Hide}>Publish</span>
+            <span>Publish</span>
             <span className={styles.Hide}>&nbsp;Version&nbsp;</span>
-            <span className={styles.Hide}>&nbsp;{props.item.meta.version}</span>
+            <span>&nbsp;{props.item.meta.version}</span>
           </Button>
           <Button
             title="Publish Schedule"
@@ -174,9 +178,11 @@ export function ItemVersioning(props) {
         ) : (
           <FontAwesomeIcon icon={faSave} />
         )}
-        <span className={styles.SaveVersion}>
-          &nbsp;Save Version {metaShortcut}
+        <span className={styles.SaveVersion}>&nbsp;Save</span>
+        <span className={cx(ui.openNav && styles.SmHide)}>
+          &nbsp;Version&nbsp;
         </span>
+        <span className={styles.Hide}>&nbsp;{metaShortcut}</span>
       </Button>
     </ButtonGroup>
   );
