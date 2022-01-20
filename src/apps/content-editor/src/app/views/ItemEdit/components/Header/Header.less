@@ -2,6 +2,10 @@
 @import "~@zesty-io/core/typography.less";
 
 .Header {
+  box-sizing: border-box;
+  height: 101px;
+  display: flex;
+
   padding: 16px 32px;
   @media only screen and (min-width: 2000px) {
     padding: 16px 48px;
@@ -18,11 +22,9 @@
     align-items: center;
     display: flex;
     gap: 8px;
+    flex-wrap: wrap;
     justify-content: space-between;
-
-    @media screen and (max-width: 2000px) {
-      flex-wrap: wrap;
-    }
+    width: 100%;
 
     .Left {
       display: flex;
@@ -35,13 +37,6 @@
       }
     }
     .Right {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-
-      @media screen and (max-width: 1366px) {
-        margin-left: auto;
-      }
     }
   }
 
