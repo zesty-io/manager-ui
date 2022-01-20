@@ -18,6 +18,7 @@
     align-items: center;
     display: flex;
     gap: 8px;
+    justify-content: space-between;
 
     @media screen and (max-width: 2000px) {
       flex-wrap: wrap;
@@ -26,12 +27,21 @@
     .Left {
       display: flex;
       align-items: center;
+
+      .ViewLinks {
+        display: flex;
+        gap: 8px;
+        margin-left: 8px;
+      }
     }
     .Right {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      margin-left: auto;
+
+      @media screen and (max-width: 1366px) {
+        margin-left: auto;
+      }
     }
   }
 

@@ -8,19 +8,31 @@
   a {
     font-size: 14px;
 
+    svg {
+      margin-right: 8px;
+    }
+
+    @media screen and (max-width: 1366px) {
+      span {
+        display: none;
+      }
+    }
+
     @media screen and (min-width: 2000px) {
       font-size: 18px;
     }
   }
 
   .Selected {
-    text-decoration: 2px underline @zesty-orange;
-    text-underline-position: under;
-  }
-  .Hide {
-    display: none;
-    @media screen and (min-width: 2000px) {
-      display: inline-block;
+    position: relative;
+    &::after {
+      position: absolute;
+      content: "";
+      height: 2px;
+      width: 100%;
+      bottom: -2px;
+      left: 0;
+      background: @zesty-orange;
     }
   }
 }

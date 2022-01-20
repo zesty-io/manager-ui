@@ -1,5 +1,13 @@
 import cx from "classnames";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faEdit,
+  faCode,
+  faTags,
+  faDatabase,
+} from "@fortawesome/free-solid-svg-icons";
+
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./ItemNavigation.less";
@@ -23,7 +31,8 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
         )}
         to={`/content/${modelZUID}/${itemZUID}`}
       >
-        Edit Content
+        <FontAwesomeIcon icon={faEdit} title="Edit Content" />
+        <span>Edit Content</span>
       </AppLink>
       <AppLink
         title="SEO & Meta"
@@ -35,7 +44,8 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
         )}
         to={`/content/${modelZUID}/${itemZUID}/meta`}
       >
-        SEO &amp; Meta
+        <FontAwesomeIcon icon={faCode} title="SEO & Meta" />
+        <span>SEO &amp; Meta</span>
       </AppLink>
       {item.web.path && (
         <AppLink
@@ -48,7 +58,8 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
           )}
           to={`/content/${modelZUID}/${itemZUID}/head`}
         >
-          Head Tags
+          <FontAwesomeIcon icon={faTags} title="Head Tags" />
+          <span>Head Tags</span>
         </AppLink>
       )}
 
@@ -62,7 +73,8 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
         )}
         to={`/content/${modelZUID}/${itemZUID}/headless`}
       >
-        Headless <span className={styles.Hide}>Options</span>
+        <FontAwesomeIcon icon={faDatabase} title="Headless Options" />
+        <span>Headless Options</span>
       </AppLink>
     </nav>
   );
