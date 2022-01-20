@@ -22,12 +22,12 @@ export function Header(props) {
             item={props.item}
           />
 
-          {!ui.duoMode && (
+          {/* {!ui.duoMode && (
             <div className={styles.ViewLinks}>
               <LiveUrl item={props.item} />
               <PreviewUrl item={props.item} instance={props.instance} />
             </div>
-          )}
+          )} */}
         </div>
         <div className={styles.Right}>
           <div className={styles.Actions}>
