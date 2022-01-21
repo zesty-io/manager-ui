@@ -13,7 +13,9 @@ export const fetchResource =
       if (inflight.indexOf(action.uri) === -1) {
         inflight.push(action.uri);
         return request(action.uri)
-          .then(action.handler)
+          .then((res) => {
+            action.handler(res);
+          })
           .then((res) => {
             inflight.splice(inflight.indexOf(action.uri), 1);
 

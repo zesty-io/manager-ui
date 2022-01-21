@@ -1,6 +1,7 @@
 import { memo, Fragment, useState, useEffect } from "react";
 import { connect } from "react-redux";
 import debounce from "lodash/debounce";
+import { notify } from "shell/store/notifications";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { Infotip } from "@zesty-io/core/Infotip";
@@ -93,22 +94,48 @@ export const ItemParent = connect((state) => {
             setParent(item);
           } else {
             props.dispatch(searchItems(parentZUID)).then((res) => {
-              setParent(res?.data[0]);
-
-              /**
-               * // HACK Because we pre-load all item publishings and store them in the same reducer as the `content`
-               * we can't use array length comparision to determine a new parent has been added. Also since updates to the item
-               * currently being edited cause a new `content` object to be created in it's reducer we can't use
-               * referential equality checks to determine re-rendering. This scenario causes either the parent to not be pre-selected
-               * or a performance issue. To work around this we maintain the `parents` state internal and add the new parent we load from the
-               * API to allow it to be pre-selected while avoiding re-renders on changes to this item.
-               */
-              setParents(
-                parentOptions(props.currentItemLangID, props.path, {
-                  ...props.content,
-                  [res.data[0].meta.ZUID]: res.data[0],
-                })
-              );
+              if (res) {
+                if (res.data) {
+                  if (Array.isArray(res.data) && res.data.length) {
+                    setParent(res.data[0]);
+                    /**
+                     * // HACK Because we pre-load all item publishings and store them in the same reducer as the `content`
+                     * we can't use array length comparision to determine a new parent has been added. Also since updates to the item
+                     * currently being edited cause a new `content` object to be created in it's reducer we can't use
+                     * referential equality checks to determine re-rendering. This scenario causes either the parent to not be pre-selected
+                     * or a performance issue. To work around this we maintain the `parents` state internal and add the new parent we load from the
+                     * API to allow it to be pre-selected while avoiding re-renders on changes to this item.
+                     */
+                    setParents(
+                      parentOptions(props.currentItemLangID, props.path, {
+                        ...props.content,
+                        [res.data[0].meta.ZUID]: res.data[0],
+                      })
+                    );
+                  } else {
+                    props.dispatch(
+                      notify({
+                        kind: "warn",
+                        message: `Parent item not found ${res.status}`,
+                      })
+                    );
+                  }
+                } else {
+                  props.dispatch(
+                    notify({
+                      kind: "warn",
+                      message: `API failed to return data ${res.status}`,
+                    })
+                  );
+                }
+              } else {
+                props.dispatch(
+                  notify({
+                    kind: "warn",
+                    message: `API failed to return response ${res.status}`,
+                  })
+                );
+              }
             });
           }
         }

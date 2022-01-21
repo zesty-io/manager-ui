@@ -53,7 +53,6 @@ export const ItemSettings = memo(
                 path={web.path}
                 onChange={onChange}
                 currentItemLangID={props.item.meta.langID}
-                dispatch={props.dispatch}
               />
               <ItemRoute
                 ZUID={meta.ZUID}
