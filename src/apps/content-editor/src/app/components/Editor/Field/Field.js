@@ -192,11 +192,12 @@ export default function Field({
   const version = item?.meta?.version;
 
   useEffect(() => {
-    if (
-      zuid.isValid(value) &&
-      !zuid.matches(value, zuid.prefix["MEDIA_FILE"])
-    ) {
-      dispatch(searchItems(value));
+    if (value && typeof value === "string") {
+      value.split(",").forEach((z) => {
+        if (zuid.isValid(z) && !zuid.matches(z, zuid.prefix["MEDIA_FILE"])) {
+          dispatch(searchItems(z));
+        }
+      });
     }
   }, []);
 
