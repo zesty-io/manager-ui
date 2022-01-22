@@ -31,6 +31,8 @@ import { WebEnginePreview } from "./WebEnginePreview";
 import { ItemHead } from "./ItemHead";
 import { HeadlessOptions } from "./HeadlessOptions";
 
+import { NotFound } from "../NotFound";
+
 const selectSortedModelFields = createSelector(
   (state) => state.fields,
   (_, modelZUID) => modelZUID,
@@ -78,12 +80,16 @@ export default function ItemEdit() {
   const [checkingLock, setCheckingLock] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
+    setNotFound(false);
+
     // on mount and modelZUID/itemZUID update,
     // lock item and load all item data
     lockItem(itemZUID);
     load(modelZUID, itemZUID);
+
     // on unmount, release lock
     return () => {
       releaseLock(itemZUID);
@@ -121,29 +127,36 @@ export default function ItemEdit() {
 
     try {
       const itemResponse = await dispatch(fetchItem(modelZUID, itemZUID));
-      if (itemResponse.status === 404 || itemResponse.status === 400) {
+
+      if (itemResponse.status === 404) {
+        setNotFound(true);
+      }
+
+      if (itemResponse.status === 400) {
         dispatch(
           notify({
             message: itemResponse.message,
             kind: "error",
           })
         );
-        throw new Error(itemResponse.message);
       }
-      // select lang based on content lang
-      dispatch(
-        selectLang(
-          languages.find((lang) => lang.ID === itemResponse.data.meta.langID)
-            .code
-        )
-      );
 
-      // once we selectLang we can fetchFields
-      // which triggers middleware which depends on lang
-      await Promise.all([
-        dispatch(fetchFields(modelZUID)),
-        dispatch(fetchItemPublishing(modelZUID, itemZUID)),
-      ]);
+      if (itemResponse?.data?.meta?.langID) {
+        // select lang based on content lang
+        dispatch(
+          selectLang(
+            languages.find((lang) => lang.ID === itemResponse.data.meta.langID)
+              .code
+          )
+        );
+
+        // once we selectLang we can fetchFields
+        // which triggers middleware which depends on lang
+        await Promise.all([
+          dispatch(fetchFields(modelZUID)),
+          dispatch(fetchItemPublishing(modelZUID, itemZUID)),
+        ]);
+      }
     } catch (err) {
       console.error("ItemEdit:load:error", err);
       throw err;
@@ -227,7 +240,9 @@ export default function ItemEdit() {
   const handleLockedItem =
     !checkingLock && lockState.userZUID !== user.user_zuid;
 
-  return (
+  return notFound ? (
+    <NotFound />
+  ) : (
     <WithLoader
       condition={!loading && item && Object.keys(item).length}
       message={

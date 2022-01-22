@@ -8,11 +8,9 @@ export class NotFound extends Component {
   render() {
     return (
       <section className={styles.NotFound}>
-        <h1 className={styles.title}>
-          We are sorry but it seems this page is missing
-        </h1>
-        <h2 className={styles.display}>
-          If you expected something to be here please contact support with this
+        <h1 className={styles.display}>This item is missing</h1>
+        <h2 className={styles.title}>
+          If you expected an item to be here please contact support with this
           url
         </h2>
         <Url
