@@ -1,4 +1,4 @@
-import { memo, useMemo, useCallback, useState } from "react";
+import { memo, useMemo, useCallback, useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment-timezone";
@@ -188,6 +188,18 @@ export default function Field({
 
   const value = item?.data?.[name];
   const version = item?.meta?.version;
+
+  useEffect(() => {
+    // On mount, if the initial value doesn't exist in local store load from API
+    if (value && (!allItems[value] || !allItems[value].meta)) {
+      if (relatedModelZUID && value) {
+        if (value != "0") {
+          console.log("one_to_one", relatedModelZUID);
+          dispatch(fetchItem(relatedModelZUID, value));
+        }
+      }
+    }
+  }, []);
 
   function renderMediaModal() {
     return ReactDOM.createPortal(
@@ -519,15 +531,6 @@ export default function Field({
       );
 
     case "one_to_one":
-      // If the initial value doesn't exist in local store load from API
-      if (value && (!allItems[value] || !allItems[value].meta)) {
-        if (relatedModelZUID && value) {
-          if (value != "0") {
-            dispatch(fetchItem(relatedModelZUID, value));
-          }
-        }
-      }
-
       const onOneToOneOpen = useCallback(() => {
         return dispatch(
           fetchItems(relatedModelZUID, {
