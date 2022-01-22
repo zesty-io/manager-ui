@@ -1,7 +1,9 @@
-import { memo, useMemo, useCallback, useState } from "react";
+import { memo, useMemo, useCallback, useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment-timezone";
+import zuid from "zuid";
+
 import { fetchFields } from "shell/store/fields";
 import { fetchItem, fetchItems, searchItems } from "shell/store/content";
 
@@ -188,6 +190,16 @@ export default function Field({
 
   const value = item?.data?.[name];
   const version = item?.meta?.version;
+
+  useEffect(() => {
+    if (value && typeof value === "string") {
+      value.split(",").forEach((z) => {
+        if (zuid.isValid(z) && !zuid.matches(z, zuid.prefix["MEDIA_FILE"])) {
+          dispatch(searchItems(z));
+        }
+      });
+    }
+  }, []);
 
   function renderMediaModal() {
     return ReactDOM.createPortal(
@@ -492,11 +504,6 @@ export default function Field({
           value: value,
           text: `Related item: ${value}`,
         });
-
-        // load related item from API
-        if (value && value != "0") {
-          dispatch(searchItems(value));
-        }
       }
 
       const onInternalLinkSearch = useCallback(
@@ -519,15 +526,6 @@ export default function Field({
       );
 
     case "one_to_one":
-      // If the initial value doesn't exist in local store load from API
-      if (value && (!allItems[value] || !allItems[value].meta)) {
-        if (relatedModelZUID && value) {
-          if (value != "0") {
-            dispatch(fetchItem(relatedModelZUID, value));
-          }
-        }
-      }
-
       const onOneToOneOpen = useCallback(() => {
         return dispatch(
           fetchItems(relatedModelZUID, {
@@ -595,21 +593,6 @@ export default function Field({
       );
 
     case "one_to_many":
-      //TODO: we need to implement specific fetches for items
-      // when an endpoint is available for that purpose
-      // if (value) {
-      //   const resolved = resolveRelatedOptions(
-      //     allFields,
-      //     allItems,
-      //     relatedFieldZUID,
-      //     relatedModelZUID
-      //   );
-      //   if (value.split(",").length > resolved.length) {
-      //     dispatch(fetchFields(relatedModelZUID));
-      //     dispatch(fetchItems(relatedModelZUID));
-      //   }
-      // }
-
       const oneToManyOptions = useMemo(() => {
         return resolveRelatedOptions(
           allFields,
