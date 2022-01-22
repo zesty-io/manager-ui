@@ -593,21 +593,6 @@ export default function Field({
       );
 
     case "one_to_many":
-      //TODO: we need to implement specific fetches for items
-      // when an endpoint is available for that purpose
-      // if (value) {
-      //   const resolved = resolveRelatedOptions(
-      //     allFields,
-      //     allItems,
-      //     relatedFieldZUID,
-      //     relatedModelZUID
-      //   );
-      //   if (value.split(",").length > resolved.length) {
-      //     dispatch(fetchFields(relatedModelZUID));
-      //     dispatch(fetchItems(relatedModelZUID));
-      //   }
-      // }
-
       const oneToManyOptions = useMemo(() => {
         return resolveRelatedOptions(
           allFields,
