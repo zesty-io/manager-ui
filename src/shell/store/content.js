@@ -685,23 +685,35 @@ export function fetchItemPublishings() {
 
 export function checkLock(itemZUID) {
   return () => {
-    return request(
-      `${CONFIG.SERVICE_REDIS_GATEWAY}/door/knock?path=${itemZUID}`,
-      {
-        credentials: "omit",
-      }
-    );
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(
+        `${CONFIG.SERVICE_REDIS_GATEWAY}/door/knock?path=${itemZUID}`
+      );
+    } else {
+      return request(
+        `${CONFIG.SERVICE_REDIS_GATEWAY}/door/knock?path=${itemZUID}`,
+        {
+          credentials: "omit",
+        }
+      );
+    }
   };
 }
 
 export function unlock(itemZUID) {
   return () => {
-    return request(
-      `${CONFIG.SERVICE_REDIS_GATEWAY}/door/unlock?path=${itemZUID}`,
-      {
-        credentials: "omit",
-      }
-    );
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(
+        `${CONFIG.SERVICE_REDIS_GATEWAY}/door/unlock?path=${itemZUID}`
+      );
+    } else {
+      return request(
+        `${CONFIG.SERVICE_REDIS_GATEWAY}/door/unlock?path=${itemZUID}`,
+        {
+          credentials: "omit",
+        }
+      );
+    }
   };
 }
 
