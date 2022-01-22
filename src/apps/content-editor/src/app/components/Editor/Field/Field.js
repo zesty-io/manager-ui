@@ -2,6 +2,8 @@ import { memo, useMemo, useCallback, useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment-timezone";
+import zuid from "zuid";
+
 import { fetchFields } from "shell/store/fields";
 import { fetchItem, fetchItems, searchItems } from "shell/store/content";
 
@@ -190,14 +192,11 @@ export default function Field({
   const version = item?.meta?.version;
 
   useEffect(() => {
-    // On mount, if the initial value doesn't exist in local store load from API
-    if (value && (!allItems[value] || !allItems[value].meta)) {
-      if (relatedModelZUID && value) {
-        if (value != "0") {
-          console.log("one_to_one", relatedModelZUID);
-          dispatch(fetchItem(relatedModelZUID, value));
-        }
-      }
+    if (
+      zuid.isValid(value) &&
+      !zuid.matches(value, zuid.prefix["MEDIA_FILE"])
+    ) {
+      dispatch(searchItems(value));
     }
   }, []);
 
@@ -504,11 +503,6 @@ export default function Field({
           value: value,
           text: `Related item: ${value}`,
         });
-
-        // load related item from API
-        if (value && value != "0") {
-          dispatch(searchItems(value));
-        }
       }
 
       const onInternalLinkSearch = useCallback(
