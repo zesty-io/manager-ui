@@ -9,7 +9,6 @@ import {
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
-import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { notify } from "shell/store/notifications";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
@@ -70,7 +69,6 @@ export default function ItemEdit() {
     selectSortedModelFields(state, modelZUID)
   );
   const tags = useSelector((state) => selectItemHeadTags(state, itemZUID));
-  const platform = useSelector((state) => state.platform);
   const languages = useSelector((state) => state.languages);
   const user = useSelector((state) => state.user);
   const userRole = useSelector((state) => state.userRole);
@@ -80,8 +78,6 @@ export default function ItemEdit() {
   const [checkingLock, setCheckingLock] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
-  useMetaKey("s", save);
 
   useEffect(() => {
     // on mount and modelZUID/itemZUID update,
