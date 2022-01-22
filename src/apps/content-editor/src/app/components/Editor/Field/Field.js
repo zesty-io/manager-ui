@@ -502,7 +502,7 @@ export default function Field({
         // insert placeholder
         internalLinkOptions.unshift({
           value: value,
-          text: `Related item: ${value}`,
+          text: `Selected item not found: ${value}`,
         });
       }
 
@@ -557,7 +557,7 @@ export default function Field({
         value != "0" &&
         !oneToOneOptions.find((opt) => opt.value === value)
       ) {
-        //the related option is not in the array, we need ot insert it
+        //the related option is not in the array, we need to insert it
         oneToOneOptions.unshift({
           filterValue: value,
           value: value,
@@ -571,7 +571,7 @@ export default function Field({
                   <FontAwesomeIcon icon={faEdit} />
                 </AppLink>
               </span>
-              &nbsp;Selected item: {value}
+              &nbsp;Selected item not found: {value}
             </span>
           ),
         });
