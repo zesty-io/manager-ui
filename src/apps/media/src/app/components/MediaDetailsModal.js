@@ -84,8 +84,8 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             value={filename}
             label={
               <label>
-                <Infotip title="Edit Filename to update your image URL " />
-                &nbsp;Edit Filename URL
+                <Infotip title="Edit Filename to update your image URL path " />
+                &nbsp;Edit Filename URL path
               </label>
             }
             placeholder={"Image Filename"}
