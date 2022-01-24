@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDesktop, faWindowClose } from "@fortawesome/free-solid-svg-icons";
@@ -15,54 +15,61 @@ export function DuoModeToggle(props) {
 
   const ui = useSelector((state) => state.ui);
   const instanceSettings = useSelector((state) => state.settings.instance);
+  const [unavailable, setUnavailable] = useState(false);
 
-  let unavailable = false;
+  useEffect(() => {
+    const slug = window.location.href.split("/").pop();
+    let override =
+      slug === "meta" &&
+      slug === "head" &&
+      slug === "preview" &&
+      slug === "headless";
 
-  const slug = window.location.href.split("/").pop();
-  unavailable =
-    slug === "meta" &&
-    slug === "head" &&
-    slug === "preview" &&
-    slug === "headless";
+    override = instanceSettings.find((setting) => {
+      // if any of these settings are present then DuoMode is unavailable
+      return (
+        (setting.key === "basic_content_api_key" && setting.value) ||
+        (setting.key === "headless_authorization_key" && setting.value) ||
+        (setting.key === "authorization_key" && setting.value) ||
+        (setting.key === "x_frame_options" && setting.value)
+      );
+    });
 
-  unavailable = instanceSettings.find((setting) => {
-    // if any of these settings are present then DuoMode is unavailable
-    return (
-      (setting.key === "basic_content_api_key" && setting.value) ||
-      (setting.key === "headless_authorization_key" && setting.value) ||
-      (setting.key === "authorization_key" && setting.value) ||
-      (setting.key === "x_frame_options" && setting.value)
-    );
-  });
+    if (override) {
+      dispatch(actions.setDuoMode(false));
+    }
 
-  if (unavailable) {
-    dispatch(actions.setDuoMode(false));
-  }
+    setUnavailable(override);
+  }, []);
 
-  return unavailable ? (
-    props.item.web.path && (
-      <Fragment>
-        <LiveUrl item={props.item} />
-        <PreviewUrl item={props.item} instance={props.instance} />
-      </Fragment>
-    )
-  ) : (
-    <ToggleButton
-      title="Duo Mode Toggle"
-      className={styles.ToggleButton}
-      name={props.name}
-      value={Number(ui.duoMode)}
-      offValue={<FontAwesomeIcon icon={faWindowClose} />}
-      onValue={<FontAwesomeIcon icon={faDesktop} />}
-      onChange={(val) => {
-        if (val == 1) {
-          dispatch(actions.setDuoMode(true));
-          dispatch(actions.setContentActions(false));
-        } else {
-          dispatch(actions.setDuoMode(false));
-          dispatch(actions.setContentActions(true));
-        }
-      }}
-    />
+  return (
+    <Fragment>
+      {unavailable ? (
+        props.item.web.path && (
+          <Fragment>
+            <LiveUrl item={props.item} />
+            <PreviewUrl item={props.item} instance={props.instance} />
+          </Fragment>
+        )
+      ) : (
+        <ToggleButton
+          title="Duo Mode Toggle"
+          className={styles.ToggleButton}
+          name={props.name}
+          value={Number(ui.duoMode)}
+          offValue={<FontAwesomeIcon icon={faWindowClose} />}
+          onValue={<FontAwesomeIcon icon={faDesktop} />}
+          onChange={(val) => {
+            if (val == 1) {
+              dispatch(actions.setDuoMode(true));
+              dispatch(actions.setContentActions(false));
+            } else {
+              dispatch(actions.setDuoMode(false));
+              dispatch(actions.setContentActions(true));
+            }
+          }}
+        />
+      )}
+    </Fragment>
   );
 }

@@ -326,16 +326,21 @@ function fetchBins(instanceID) {
           return res.data;
         } else {
           dispatch(
-            notify({ message: "Failed loading media bins", kind: "error" })
+            notify({
+              message: `${res.status}: ${res.message}`,
+              kind: "warn",
+            })
           );
-          throw res;
         }
       },
-      error: (res) => {
+      error: (err) => {
         dispatch(
-          notify({ message: "Failed loading media bins", kind: "error" })
+          notify({
+            message: "Failed loading instance media bins",
+            kind: "error",
+          })
         );
-        throw res;
+        throw err;
       },
     });
   };
@@ -349,8 +354,23 @@ function fetchEcoBins(ecoID) {
       handler: (res) => {
         if (res.status === 200) {
           return res.data;
+        } else {
+          dispatch(
+            notify({
+              message: `${res.status}: ${res.message}`,
+              kind: "warn",
+            })
+          );
         }
-        //non-200 is not fatal
+      },
+      error: (err) => {
+        dispatch(
+          notify({
+            message: "Failed loading ecosystem media bins",
+            kind: "error",
+          })
+        );
+        throw err;
       },
     });
   };
