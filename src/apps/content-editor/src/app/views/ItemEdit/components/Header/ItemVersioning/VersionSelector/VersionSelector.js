@@ -1,5 +1,5 @@
-import { memo, useState, useEffect, useCallback } from "react";
-import { connect } from "react-redux";
+import { useState, useEffect, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import moment from "moment-timezone";
 import cx from "classnames";
 
@@ -8,47 +8,49 @@ import { Select, Option } from "@zesty-io/core/Select";
 import { fetchVersions } from "shell/store/contentVersions";
 
 import styles from "./VersionSelector.less";
-export default connect((state, props) => {
-  const versions = state.contentVersions[props.itemZUID] || [];
+export default function VersionSelector(props) {
+  const dispatch = useDispatch();
 
-  let latestVersionNum = 1;
-  if (Array.isArray(versions) && versions.length && versions[0].meta) {
-    latestVersionNum = versions[0].meta.version;
-  }
+  const versions = useSelector(
+    (state) => state.contentVersions[props.itemZUID]
+  );
+  const latestVersionNum = useSelector((state) => {
+    if (
+      state.contentVersions[props.itemZUID] &&
+      state.contentVersions[props.itemZUID][0] &&
+      state.contentVersions[props.itemZUID][0]?.meta?.version
+    ) {
+      return state.contentVersions[props.itemZUID][0].meta.version;
+    } else {
+      return 1;
+    }
+  });
 
-  return {
-    versions,
-    latestVersionNum,
-  };
-})(
-  memo(function VersionSelector(props) {
-    const [loading, setLoading] = useState(true);
-    const [selectedVersionNum, setSelectedVersionNum] = useState(
-      props.latestVersionNum
-    );
+  const [loading, setLoading] = useState(true);
+  const [selectedVersionNum, setSelectedVersionNum] =
+    useState(latestVersionNum);
 
-    // Load versions
-    useEffect(() => {
-      props
-        .dispatch(fetchVersions(props.modelZUID, props.itemZUID))
-        .finally(() => {
-          setLoading(false);
-        });
-    }, [props.modelZUID, props.itemZUID]);
+  // Load versions
+  useEffect(() => {
+    dispatch(fetchVersions(props.modelZUID, props.itemZUID)).finally(() => {
+      setLoading(false);
+    });
+  }, [props.modelZUID, props.itemZUID]);
 
-    // Update after save
-    useEffect(() => {
-      setSelectedVersionNum(props.latestVersionNum);
-    }, [props.latestVersionNum]);
+  // Update after save
+  useEffect(() => {
+    setSelectedVersionNum(latestVersionNum);
+  }, [latestVersionNum]);
 
-    // Set item editing view to selected version
-    const onSelect = (versionNumber) => {
-      const version = props.versions.find(
+  // Set item editing view to selected version
+  const onSelect = useCallback(
+    (versionNumber) => {
+      const version = versions.find(
         (version) => version.meta.version == versionNumber
       );
 
       if (version) {
-        props.dispatch({
+        dispatch({
           type: "LOAD_ITEM_VERSION",
           itemZUID: props.itemZUID,
           data: version,
@@ -56,33 +58,32 @@ export default connect((state, props) => {
 
         setSelectedVersionNum(version.meta.version);
       }
-    };
+    },
+    [props.itemZUID, versions]
+  );
 
-    return (
-      <Select
-        name="itemVersion"
-        className={cx(
-          styles.VersionSelector,
-          selectedVersionNum !== props.latestVersionNum
-            ? styles.NotLatest
-            : null
-        )}
-        value={selectedVersionNum}
-        loading={loading}
-        onSelect={onSelect}
-      >
-        {Array.isArray(props.versions) &&
-          props.versions.map((item) => (
-            <Option
-              key={`${item.meta?.ZUID}-${item.meta?.version}`}
-              className={styles.VersionOption}
-              value={item.meta?.version}
-              html={`Version ${item.meta?.version}   <small>${moment(
-                item.web?.createdAt
-              ).format("MMM Do YYYY, [at] h:mm a")}</small>`}
-            />
-          ))}
-      </Select>
-    );
-  })
-);
+  return (
+    <Select
+      name="itemVersion"
+      className={cx(
+        styles.VersionSelector,
+        selectedVersionNum !== latestVersionNum ? styles.NotLatest : null
+      )}
+      value={selectedVersionNum}
+      loading={loading}
+      onSelect={onSelect}
+    >
+      {Array.isArray(versions) &&
+        versions.map((item) => (
+          <Option
+            key={item.meta?.version}
+            className={styles.VersionOption}
+            value={item.meta?.version}
+            html={`Version ${item.meta?.version}   <small>${moment(
+              item.web?.createdAt
+            ).format("MMM Do YYYY, [at] h:mm a")}</small>`}
+          />
+        ))}
+    </Select>
+  );
+}
