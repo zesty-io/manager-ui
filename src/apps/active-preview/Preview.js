@@ -144,7 +144,9 @@ export function Preview(props) {
               <CopyButton
                 className={styles.CopyButton}
                 value={`${domain}${route}`}
-              />
+              >
+                Preview
+              </CopyButton>
               <Input
                 ref={input}
                 className={styles.Route}
