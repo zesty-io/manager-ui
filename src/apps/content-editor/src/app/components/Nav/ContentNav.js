@@ -234,6 +234,7 @@ export function ContentNav(props) {
             actions={actions}
           />
         </div>
+        <div className={styles.Spacer}></div>
         <ContentNavToggle />
       </div>
 

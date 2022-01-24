@@ -8,7 +8,6 @@ import { fetchNav } from "../store/navContent";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { ContentNav } from "./components/Nav";
-import { ContentNavToggle } from "./components/Nav/components/ContentNavToggle";
 
 import { Dashboard } from "./views/Dashboard";
 import { ItemList } from "./views/ItemList";
