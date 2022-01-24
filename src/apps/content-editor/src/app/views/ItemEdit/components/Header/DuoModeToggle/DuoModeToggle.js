@@ -39,30 +39,34 @@ export function DuoModeToggle(props) {
     dispatch(actions.setDuoMode(false));
   }
 
-  return unavailable ? (
-    props.item.web.path && (
-      <Fragment>
-        <LiveUrl item={props.item} />
-        <PreviewUrl item={props.item} instance={props.instance} />
-      </Fragment>
-    )
-  ) : (
-    <ToggleButton
-      title="Duo Mode Toggle"
-      className={styles.ToggleButton}
-      name={props.name}
-      value={Number(ui.duoMode)}
-      offValue={<FontAwesomeIcon icon={faWindowClose} />}
-      onValue={<FontAwesomeIcon icon={faDesktop} />}
-      onChange={(val) => {
-        if (val == 1) {
-          dispatch(actions.setDuoMode(true));
-          dispatch(actions.setContentActions(false));
-        } else {
-          dispatch(actions.setDuoMode(false));
-          dispatch(actions.setContentActions(true));
-        }
-      }}
-    />
+  return (
+    <Fragment>
+      {unavailable ? (
+        props.item.web.path && (
+          <Fragment>
+            <LiveUrl item={props.item} />
+            <PreviewUrl item={props.item} instance={props.instance} />
+          </Fragment>
+        )
+      ) : (
+        <ToggleButton
+          title="Duo Mode Toggle"
+          className={styles.ToggleButton}
+          name={props.name}
+          value={Number(ui.duoMode)}
+          offValue={<FontAwesomeIcon icon={faWindowClose} />}
+          onValue={<FontAwesomeIcon icon={faDesktop} />}
+          onChange={(val) => {
+            if (val == 1) {
+              dispatch(actions.setDuoMode(true));
+              dispatch(actions.setContentActions(false));
+            } else {
+              dispatch(actions.setDuoMode(false));
+              dispatch(actions.setContentActions(true));
+            }
+          }}
+        />
+      )}
+    </Fragment>
   );
 }
