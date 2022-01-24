@@ -78,31 +78,32 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             kind="outlined"
             value={props.file.url}
           />
-          <FieldTypeText
-            className={styles.Field}
-            name="filename"
-            value={filename}
-            label={
-              <label>
-                <Infotip title="Edit Filename to update your image URL " />
-                &nbsp;Edit Filename URL
-              </label>
-            }
-            placeholder={"Image Filename"}
-            onChange={(val) => setFilename(val)}
-          />
+
           <FieldTypeText
             className={styles.Field}
             name="title"
             value={title}
             label={
               <label>
-                <Infotip title=" Use for alt text with Parsley's .getImageTitle() | Image alt text is used to describe your image textually so that search engines and screen readers can understand what that image is. It’s important to note that using alt text correctly can enhance your SEO strategy" />
-                &nbsp; Alt Title
+                <Infotip title="Edit title. | Use for alt text with Parsley's .getImageTitle()" />
+                &nbsp;Title
               </label>
             }
-            placeholder={"Image ALT Title"}
+            placeholder={"Image Title"}
             onChange={(val) => setTitle(val)}
+          />
+          <FieldTypeText
+            className={styles.Field}
+            name="filename"
+            value={filename}
+            label={
+              <label>
+                <Infotip title="Edit Filename " />
+                &nbsp;Filename
+              </label>
+            }
+            placeholder={"Image Filename"}
+            onChange={(val) => setFilename(val)}
           />
 
           <dl className={styles.DescriptionList}>
