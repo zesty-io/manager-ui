@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   Switch,
   Route,
@@ -240,139 +240,143 @@ export default function ItemEdit() {
   const handleLockedItem =
     !checkingLock && lockState.userZUID !== user.user_zuid;
 
-  return notFound ? (
-    <NotFound />
-  ) : (
-    <WithLoader
-      condition={!loading && item && Object.keys(item).length}
-      message={
-        model?.label ? `Loading ${model.label} Content` : "Loading Content"
-      }
-    >
-      {handleLockedItem && (
-        <LockedItem
-          timestamp={lockState.timestamp}
-          userFirstName={lockState.firstName}
-          userLastName={lockState.lastName}
-          userEmail={lockState.email}
-          itemName={item?.web?.metaLinkText}
-          handleUnlock={forceUnlock}
-          goBack={() => history.goBack()}
-          handleLockedItem={handleLockedItem}
-        />
+  return (
+    <Fragment>
+      {notFound ? (
+        <NotFound />
+      ) : (
+        <WithLoader
+          condition={!loading && item && Object.keys(item).length}
+          message={
+            model?.label ? `Loading ${model.label} Content` : "Loading Content"
+          }
+        >
+          {handleLockedItem && (
+            <LockedItem
+              timestamp={lockState.timestamp}
+              userFirstName={lockState.firstName}
+              userLastName={lockState.lastName}
+              userEmail={lockState.email}
+              itemName={item?.web?.metaLinkText}
+              handleUnlock={forceUnlock}
+              goBack={() => history.goBack()}
+              handleLockedItem={handleLockedItem}
+            />
+          )}
+
+          <PendingEditsModal
+            show={item?.dirty}
+            title="Unsaved Changes"
+            message="You have unsaved changes that will be lost if you leave this page."
+            loading={saving}
+            onSave={save}
+            onDiscard={discard}
+          />
+
+          <section>
+            <Switch>
+              <Route
+                exact
+                path="/content/:modelZUID/:itemZUID/head"
+                render={({ match }) => {
+                  // All roles except contributor are allowed to edit the document head
+                  return userRole.name !== "Contributor" ? (
+                    <ItemHead
+                      instance={instance}
+                      modelZUID={modelZUID}
+                      model={model}
+                      itemZUID={itemZUID}
+                      item={item}
+                      tags={tags}
+                      dispatch={dispatch}
+                    />
+                  ) : (
+                    <Redirect
+                      to={`/content/${match.params.modelZUID}/${match.params.itemZUID}`}
+                    />
+                  );
+                }}
+              />
+              <Route
+                exact
+                path="/content/:modelZUID/:itemZUID/meta"
+                render={() => (
+                  <Meta
+                    instance={instance}
+                    modelZUID={modelZUID}
+                    model={model}
+                    itemZUID={itemZUID}
+                    item={item}
+                    items={items}
+                    fields={fields}
+                    user={user}
+                    onSave={save}
+                    dispatch={dispatch}
+                    saving={saving}
+                  />
+                )}
+              />
+              <Route
+                exact
+                path="/content/:modelZUID/:itemZUID/preview"
+                render={() => (
+                  <WebEnginePreview
+                    instance={instance}
+                    modelZUID={modelZUID}
+                    model={model}
+                    itemZUID={itemZUID}
+                    item={item}
+                    items={items}
+                    fields={fields}
+                    user={user}
+                    onSave={save}
+                    dispatch={dispatch}
+                    saving={saving}
+                  />
+                )}
+              />
+              <Route
+                exact
+                path="/content/:modelZUID/:itemZUID/headless"
+                render={() => (
+                  <HeadlessOptions
+                    instance={instance}
+                    modelZUID={modelZUID}
+                    model={model}
+                    itemZUID={itemZUID}
+                    item={item}
+                    items={items}
+                    fields={fields}
+                    user={user}
+                    dispatch={dispatch}
+                    saving={saving}
+                  />
+                )}
+              />
+              <Route
+                exact
+                path="/content/:modelZUID/:itemZUID"
+                render={() => (
+                  <Content
+                    instance={instance}
+                    modelZUID={modelZUID}
+                    model={model}
+                    itemZUID={itemZUID}
+                    item={item}
+                    items={items}
+                    fields={fields}
+                    user={user}
+                    onSave={save}
+                    dispatch={dispatch}
+                    loading={loading}
+                    saving={saving}
+                  />
+                )}
+              />
+            </Switch>
+          </section>
+        </WithLoader>
       )}
-
-      <PendingEditsModal
-        show={item?.dirty}
-        title="Unsaved Changes"
-        message="You have unsaved changes that will be lost if you leave this page."
-        loading={saving}
-        onSave={save}
-        onDiscard={discard}
-      />
-
-      <section>
-        <Switch>
-          <Route
-            exact
-            path="/content/:modelZUID/:itemZUID/head"
-            render={({ match }) => {
-              // All roles except contributor are allowed to edit the document head
-              return userRole.name !== "Contributor" ? (
-                <ItemHead
-                  instance={instance}
-                  modelZUID={modelZUID}
-                  model={model}
-                  itemZUID={itemZUID}
-                  item={item}
-                  tags={tags}
-                  dispatch={dispatch}
-                />
-              ) : (
-                <Redirect
-                  to={`/content/${match.params.modelZUID}/${match.params.itemZUID}`}
-                />
-              );
-            }}
-          />
-          <Route
-            exact
-            path="/content/:modelZUID/:itemZUID/meta"
-            render={() => (
-              <Meta
-                instance={instance}
-                modelZUID={modelZUID}
-                model={model}
-                itemZUID={itemZUID}
-                item={item}
-                items={items}
-                fields={fields}
-                user={user}
-                onSave={save}
-                dispatch={dispatch}
-                saving={saving}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/content/:modelZUID/:itemZUID/preview"
-            render={() => (
-              <WebEnginePreview
-                instance={instance}
-                modelZUID={modelZUID}
-                model={model}
-                itemZUID={itemZUID}
-                item={item}
-                items={items}
-                fields={fields}
-                user={user}
-                onSave={save}
-                dispatch={dispatch}
-                saving={saving}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/content/:modelZUID/:itemZUID/headless"
-            render={() => (
-              <HeadlessOptions
-                instance={instance}
-                modelZUID={modelZUID}
-                model={model}
-                itemZUID={itemZUID}
-                item={item}
-                items={items}
-                fields={fields}
-                user={user}
-                dispatch={dispatch}
-                saving={saving}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/content/:modelZUID/:itemZUID"
-            render={() => (
-              <Content
-                instance={instance}
-                modelZUID={modelZUID}
-                model={model}
-                itemZUID={itemZUID}
-                item={item}
-                items={items}
-                fields={fields}
-                user={user}
-                onSave={save}
-                dispatch={dispatch}
-                loading={loading}
-                saving={saving}
-              />
-            )}
-          />
-        </Switch>
-      </section>
-    </WithLoader>
+    </Fragment>
   );
 }
