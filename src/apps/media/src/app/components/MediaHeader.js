@@ -17,23 +17,21 @@ export const MediaHeader = memo(function MediaHeader(props) {
   const [createGroupModal, setCreateGroupModal] = useState(false);
   const [editGroupModal, setEditGroupModal] = useState(false);
 
-  const mediaSlug = window.location.href.split("/").includes("media");
-
   return (
     <header
       className={cx(
         styles.WorkspaceHeader,
-        !mediaSlug ? styles.WorkSpaceHeaderUpload : ""
+        props.groupID ? styles.WorkSpaceHeaderUpload : ""
       )}
     >
-      {!mediaSlug && <UploadImage {...props} />}
-
       <h1 className={cx(styles.subheadline, styles.Title)}>
         <small className={styles.NumFiles}>({props.numFiles})</small>
         {props.searchTerm
           ? `Search Results "${props.searchTerm}"`
           : props.currentGroup.name}
       </h1>
+
+      {props.groupID && <UploadImage {...props} />}
 
       {!props.searchTerm && (
         <div className={styles.Actions}>

@@ -221,6 +221,7 @@ export default connect((state) => {
               showDeleteGroupModal={showDeleteGroupModal}
               modal={props.modal}
               setCurrentGroupID={setCurrentGroupID}
+              groupID={props.groupID}
             />
             {
               // only show selected strip in modal context
