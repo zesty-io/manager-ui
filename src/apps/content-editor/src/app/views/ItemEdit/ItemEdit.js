@@ -80,10 +80,10 @@ export default function ItemEdit() {
   const [checkingLock, setCheckingLock] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [notFound, setNotFound] = useState(false);
+  const [notFound, setNotFound] = useState("");
 
   useEffect(() => {
-    setNotFound(false);
+    setNotFound("");
 
     // on mount and modelZUID/itemZUID update,
     // lock item and load all item data
@@ -128,17 +128,8 @@ export default function ItemEdit() {
     try {
       const itemResponse = await dispatch(fetchItem(modelZUID, itemZUID));
 
-      if (itemResponse.status === 404) {
-        setNotFound(true);
-      }
-
-      if (itemResponse.status === 400) {
-        dispatch(
-          notify({
-            message: itemResponse.message,
-            kind: "error",
-          })
-        );
+      if (itemResponse.status === 404 || itemResponse.status === 400) {
+        setNotFound(itemResponse.message || itemResponse.error);
       }
 
       if (itemResponse?.data?.meta?.langID) {
@@ -243,7 +234,7 @@ export default function ItemEdit() {
   return (
     <Fragment>
       {notFound ? (
-        <NotFound />
+        <NotFound message={notFound} />
       ) : (
         <WithLoader
           condition={!loading && item && Object.keys(item).length}
