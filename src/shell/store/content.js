@@ -321,14 +321,12 @@ export function fetchItems(modelZUID, options = {}) {
       uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items?${params}`,
       handler: (res) => {
         if (res.status === 400) {
-          console.error("fetchItems():response", res);
           dispatch(
             notify({
               kind: "warn",
               message: res.error,
             })
           );
-          throw res;
         }
 
         if (res.status === 200) {
