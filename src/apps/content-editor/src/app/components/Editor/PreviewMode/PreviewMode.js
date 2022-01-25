@@ -37,11 +37,6 @@ export default function PreviewMode(props) {
           .find((part) => part.slice(0, 2) === "7-");
       }
 
-      // basic_content_api_key
-      const apiKey = instanceSettings.find(
-        (setting) => setting.key === "basic_content_api_key" && setting.value
-      );
-
       if (itemZUID) {
         const item = content[itemZUID];
         preview.current.contentWindow.postMessage(
@@ -50,7 +45,7 @@ export default function PreviewMode(props) {
             route: item?.web?.path
               ? item.web.path
               : `/-/instant/${item.meta.ZUID}.json`,
-            settings: [apiKey],
+            settings: instanceSettings,
           },
           origin
         );
