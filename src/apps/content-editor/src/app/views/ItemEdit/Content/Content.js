@@ -4,6 +4,7 @@ import cx from "classnames";
 import { Editor } from "../../../components/Editor";
 import { Header } from "../components/Header";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
+import { PreviewMode } from "../../../components/Editor/PreviewMode";
 import { ActionsDrawer } from "./ActionsDrawer";
 
 import styles from "./Content.less";
@@ -50,7 +51,14 @@ export default function Content(props) {
             onSave={props.onSave}
           />
         </div>
-
+        <div>
+          {ui.duoMode && (
+            <PreviewMode
+              dirty={props.item.dirty}
+              version={props.item.meta.version}
+            />
+          )}
+        </div>
         <ActionsDrawer className={styles.Actions} {...props} />
       </div>
     </main>

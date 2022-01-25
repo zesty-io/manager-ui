@@ -4,7 +4,6 @@ import cx from "classnames";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 import { Field } from "./Field";
-import { PreviewMode } from "./PreviewMode";
 
 import styles from "./Editor.less";
 export default memo(function Editor({
@@ -167,11 +166,6 @@ export default memo(function Editor({
           </div>
         )}
       </div>
-      <React.Fragment>
-        {ui.duoMode && (
-          <PreviewMode dirty={item.dirty} version={item.meta.version} />
-        )}
-      </React.Fragment>
     </div>
   );
 });
