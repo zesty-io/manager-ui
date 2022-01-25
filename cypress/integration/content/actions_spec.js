@@ -19,11 +19,13 @@ describe("Actions in content editor", () => {
       .first()
       .type("{selectall}{backspace}test" + timestamp);
     cy.get("#SaveItemButton").click();
-    cy.contains("missing data in required field 1").should("exist");
+    cy.contains("missing data in required field 1", { timeout: 5000 }).should(
+      "exist"
+    );
   });
   it("save when missing required deactivated field", () => {
     cy.visit("/schema/6-556370-8sh47g");
-    cy.contains("required field 1").click();
+    cy.contains("required field 1", { timeout: 5000 }).click();
     cy.contains("Deactivate").click();
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     cy.get("input[type=text]")
