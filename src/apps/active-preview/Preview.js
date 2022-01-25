@@ -130,21 +130,34 @@ export function Preview(props) {
               src="https://brand.zesty.io/zesty-io-logo-dark.svg"
             />
             &nbsp;
-            <figcaption>Active Preview</figcaption>
+            <figcaption>ActivePreview</figcaption>
           </figure>
           <div className={styles.ActionInfo}>
-            <div className={styles.Url}>
-              <Button
-                onClick={() => setRefresh(Date.now())}
-                title="Reload current url in active preview"
+            {instance.domain && (
+              <Url
+                className={styles.Live}
+                href={`//${instance.domain}${route}`}
+                target="_blank"
+                title="Open live link in standard browser window"
               >
-                <FontAwesomeIcon icon={faSync} />
-              </Button>
+                <FontAwesomeIcon icon={faExternalLinkAlt} />
+                &nbsp;Live
+              </Url>
+            )}
 
+            <div className={styles.Url}>
               <CopyButton
                 className={styles.CopyButton}
                 value={`${domain}${route}`}
-              />
+              >
+                Preview
+              </CopyButton>
+              <Button
+                onClick={() => setRefresh(Date.now())}
+                title="Reload current url in ActivePreview"
+              >
+                <FontAwesomeIcon icon={faSync} />
+              </Button>
               <Input
                 ref={input}
                 className={styles.Route}
@@ -153,14 +166,6 @@ export function Preview(props) {
             </div>
 
             <div className={styles.Device}>
-              <Button onClick={() => setRotate(!rotate)} title="Rotate device">
-                <FontAwesomeIcon
-                  icon={faMobileAlt}
-                  style={{
-                    transform: `rotate(${rotate ? "-90deg" : "0deg"})`,
-                  }}
-                />
-              </Button>
               <Select
                 className={styles.Select}
                 name="device"
@@ -183,19 +188,15 @@ export function Preview(props) {
                     />
                   ))}
               </Select>
+              <Button onClick={() => setRotate(!rotate)} title="Rotate device">
+                <FontAwesomeIcon
+                  icon={faMobileAlt}
+                  style={{
+                    transform: `rotate(${rotate ? "-90deg" : "0deg"})`,
+                  }}
+                />
+              </Button>
             </div>
-
-            {instance.domain && (
-              <Url
-                className={styles.Live}
-                href={`//${instance.domain}${route}`}
-                target="_blank"
-                title="Open live link in standard browser window"
-              >
-                <FontAwesomeIcon icon={faExternalLinkAlt} />
-                &nbsp;Live
-              </Url>
-            )}
 
             <div className={styles.Menu}>
               <Button
