@@ -1,19 +1,10 @@
 @import "~@zesty-io/core/colors.less";
 @import "~@zesty-io/core/typography.less";
 
-//Scroll Calc (GlobalTopbar - Content Header - padding)
-@height: calc(100vh - 54px - 73px);
-
 .Content {
   height: calc(100vh - 54px);
 
   .MainEditor {
-    display: grid;
-    grid-template-columns: 1fr 1fr 40px;
-    align-items: flex-start;
-    position: relative;
-    height: @height;
-
     //Hide Scrollbar
     scrollbar-width: none; /*  FireFox */
     -ms-overflow-style: none; /*  Edge */
@@ -21,11 +12,30 @@
       display: none;
     }
 
-    &.ContentActionsOn {
-      grid-template-columns: 1fr 20vw;
-      transition: grid-template-columns 350ms ease;
+    display: grid;
+    grid-template-columns: 1fr 40px;
+    position: relative;
+    height: calc(100vh - 54px - 73px);
+    gap: 32px;
+
+    transition: grid-template-columns 350ms ease;
+
+    @media only screen and (min-width: 2000px) {
+      gap: 48px;
     }
 
+    &.DuoModeOn {
+      grid-template-columns: 40fr 60fr 40px;
+      gap: 0;
+    }
+
+    &.ContentActionsOn {
+      grid-template-columns: 1fr 20vw;
+    }
+
+    &.DuoAndActionsOn {
+      grid-template-columns: 40fr 60fr 20vw;
+    }
     .Editor {
       overflow: auto;
     }

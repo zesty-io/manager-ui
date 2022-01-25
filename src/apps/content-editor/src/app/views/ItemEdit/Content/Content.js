@@ -35,7 +35,9 @@ export default function Content(props) {
       <div
         className={cx(
           styles.MainEditor,
-          ui.contentActions ? styles.ContentActionsOn : ""
+          ui.contentActions ? styles.ContentActionsOn : "",
+          ui.duoMode ? styles.DuoModeOn : "",
+          ui.duoMode && ui.contentActions ? styles.DuoAndActionsOn : ""
         )}
       >
         <div className={styles.Editor}>
@@ -51,14 +53,14 @@ export default function Content(props) {
             onSave={props.onSave}
           />
         </div>
-        <div>
-          {ui.duoMode && (
-            <PreviewMode
-              dirty={props.item.dirty}
-              version={props.item.meta.version}
-            />
-          )}
-        </div>
+
+        {ui.duoMode && (
+          <PreviewMode
+            dirty={props.item.dirty}
+            version={props.item.meta.version}
+          />
+        )}
+
         <ActionsDrawer className={styles.Actions} {...props} />
       </div>
     </main>
