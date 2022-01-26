@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 
 import { Notice } from "@zesty-io/core/Notice";
 
+import { usePreviewLink } from "shell/hooks/usePreviewLink";
+
 import styles from "./PreviewMode.less";
 
 export default function PreviewMode(props) {
@@ -11,7 +13,14 @@ export default function PreviewMode(props) {
   const instance = useSelector((state) => state.instance);
   const content = useSelector((state) => state.content);
   const instanceSettings = useSelector((state) => state.settings.instance);
+  // const previewLock = useSelector((state) =>
+  //   state.settings.instance.find(
+  //     (setting) => setting.key === "preview_lock_password" && setting.value
+  //   )
+  // );
+
   const preview = useRef(null);
+  const previewLink = usePreviewLink();
 
   function refresh() {
     if (preview.current) {
@@ -39,13 +48,23 @@ export default function PreviewMode(props) {
 
       if (itemZUID) {
         const item = content[itemZUID];
+
+        let url = item?.web?.path
+          ? `${item.web.path}`
+          : `/-/instant/${item.meta.ZUID}.json`;
+
+        url = `${url}?_bypassError=true&__version=${props.version}`;
+
+        if (previewLock) {
+          url = `${url}&zpw=${previewLock.value}`;
+        }
+
         preview.current.contentWindow.postMessage(
           {
             source: "zesty",
-            route: item?.web?.path
-              ? item.web.path
-              : `/-/instant/${item.meta.ZUID}.json`,
+            route: previewLink,
             settings: instanceSettings,
+            version: props.version,
           },
           origin
         );
