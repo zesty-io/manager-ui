@@ -41,7 +41,6 @@ export default connect((state) => ({
         props.settings.catFonts.length
       }
       message="Starting Settings"
-      width="100vw"
       height="100vh"
     >
       <section className={styles.Settings}>
