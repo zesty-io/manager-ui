@@ -11,8 +11,6 @@ import { InputIcon } from "@zesty-io/core/InputIcon";
 import { Infotip } from "@zesty-io/core/Infotip";
 import { AppLink } from "@zesty-io/core/AppLink";
 
-import { notify } from "shell/store/notifications";
-
 import styles from "./ItemRoute.less";
 export const ItemRoute = connect((state) => {
   return {
