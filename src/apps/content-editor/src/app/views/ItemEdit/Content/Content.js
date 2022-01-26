@@ -1,11 +1,15 @@
+import { useSelector } from "react-redux";
+import cx from "classnames";
+
 import { Editor } from "../../../components/Editor";
 import { Header } from "../components/Header";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
-
-import { Actions } from "./Actions";
+import { ActionsDrawer } from "./ActionsDrawer";
 
 import styles from "./Content.less";
 export default function Content(props) {
+  const ui = useSelector((state) => state.ui);
+
   return (
     <main className={styles.Content}>
       <Header
@@ -27,7 +31,12 @@ export default function Content(props) {
         />
       </Header>
 
-      <div className={styles.MainEditor}>
+      <div
+        className={cx(
+          styles.MainEditor,
+          ui.contentActions ? styles.ContentActionsOn : ""
+        )}
+      >
         <div className={styles.Editor}>
           <Editor
             // active={this.state.makeActive}
@@ -41,15 +50,8 @@ export default function Content(props) {
             onSave={props.onSave}
           />
         </div>
-        <div className={styles.Actions}>
-          <Actions
-            {...props}
-            site={{}}
-            set={{
-              type: props.model.type,
-            }}
-          />
-        </div>
+
+        <ActionsDrawer className={styles.Actions} {...props} />
       </div>
     </main>
   );

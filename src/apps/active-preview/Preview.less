@@ -8,17 +8,26 @@
 
 .ActivePreview {
   .TopBar {
-    background-color: @zesty-light-gray;
-    border-bottom: 2px solid #888888;
     display: flex;
-    background: linear-gradient(#ebebeb, #d5d5d5);
-    padding: 4px 16px;
-    height: 40px;
+    background-color: @bright-gray;
+    padding: 16px;
+    height: 40px; /* Safari TopBar fix */
+    box-shadow: 2px 2px 5px rgb(27 32 44 / 50%);
 
     .Logo {
       display: flex;
       align-items: center;
-      margin-right: 32px;
+      margin-right: 8px;
+      // media query on iframe
+      @media screen and (max-width: 1280px) {
+        display: none;
+      }
+    }
+
+    .ActionInfo {
+      display: flex;
+      margin-left: auto;
+      flex: 2;
     }
 
     .Url {
@@ -26,14 +35,20 @@
       flex: 1;
       .Route {
         flex: 1;
+        // media query on iframe
+        @media screen and (max-width: 650px) {
+          display: none;
+        }
       }
     }
 
     .Device {
       display: flex;
-      margin: 0 16px;
+      margin: 0 8px;
+      [title="Rotate device"] {
+        margin-right: 8px;
+      }
       .Select {
-        min-width: 200px;
         li {
           small {
             color: @zesty-gray;
@@ -51,16 +66,25 @@
       display: flex;
       align-items: center;
       margin-left: 16px;
+      button {
+        align-self: stretch;
+      }
     }
   }
 
   .Preview {
-    height: calc(100vh - 53px);
+    //Height - TopBar - iframe(border-top):
+    height: calc(100vh - 72px;);
+
+    &.Mobile {
+      overflow: auto;
+    }
 
     .center {
       display: flex;
       align-items: center;
       justify-content: center;
+      margin: 32px 0;
     }
 
     .NoDomain {
@@ -75,10 +99,11 @@
       height: 100%;
       width: 100%;
 
-      background-image: url("https://storage.googleapis.com/assets-zesty/loading.png");
-      background-position: center center;
-      background-repeat: no-repeat;
-      background-size: 10%;
+      &.FrameLoading {
+        background-image: url("https://storage.googleapis.com/assets-zesty/loading.png");
+        background-position: center center;
+        background-repeat: no-repeat;
+      }
 
       // iframe when displayed inside device css
       &.Device {
@@ -91,6 +116,20 @@
         // had browser scroll bar to mimic mobile device
         width: calc(100% + 15px);
       }
+    }
+  }
+  [title~="Rotate"],
+  [title~="Reload"] {
+    margin-right: 8px;
+  }
+
+  //Hide copy url text for smaller screens windows
+
+  .CopyButton {
+    display: flex;
+    font-size: 0;
+    svg {
+      margin-right: initial;
     }
   }
 }

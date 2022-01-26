@@ -73,7 +73,7 @@ export default connect((state) => {
 
   /**
    * Create new preview window or bring focus back to pre-existing window
-   * Uses pubsub to listen for messages to update exsting preview
+   * Uses pubsub to listen for messages to update existing preview
    */
   function open() {
     console.log("ActivePreview:open");

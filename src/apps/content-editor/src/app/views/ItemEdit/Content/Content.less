@@ -1,20 +1,57 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+//Scroll Calc (GlobalTopbar - Content Header - padding)
+@height: calc(100vh - 54px - 73px);
+
 .Content {
   height: calc(100vh - 54px);
-  overflow: auto;
 
   .MainEditor {
     display: grid;
-    grid-template-columns: minmax(400px, auto) minmax(250px, 15vw);
-    margin: 16px 32px;
-    grid-gap: 32px;
+    grid-template-columns: 1fr 40px;
+    align-items: flex-start;
+    position: relative;
+    height: @height;
+
+    //Hide Scrollbar
+    scrollbar-width: none; /*  FireFox */
+    -ms-overflow-style: none; /*  Edge */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    &.ContentActionsOn {
+      grid-template-columns: 1fr 20vw;
+      transition: grid-template-columns 350ms ease;
+    }
 
     .Editor {
-      flex: 2;
-      padding: 0;
+      overflow: auto;
     }
-    .Actions {
-      position: relative;
-      background: #f2f7fc;
+  }
+  .ActionsDrawerButton {
+    font-size: @svg-icon;
+    justify-content: center;
+    border-radius: 0;
+    padding: 13px 6px;
+    box-shadow: 2px 2px 5px fade(@zesty-dark-blue, 50%);
+
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 40px;
+    z-index: 10;
+
+    transition: width 350ms ease;
+
+    &.ActionsDrawerButtonHover,
+    &.ActionsDrawerOpen {
+      width: 20vw;
+    }
+
+    &:hover {
+      color: @zesty-orange;
     }
   }
 }

@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react";
+import cx from "classnames";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { Button } from "@zesty-io/core/Button";
 import { Input } from "@zesty-io/core/Input";
 import { Url } from "@zesty-io/core/Url";
+import { CopyButton } from "@zesty-io/core/CopyButton";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCheck,
-  faCopy,
   faExternalLinkAlt,
   faSync,
   faEllipsisV,
@@ -17,6 +17,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Meta } from "./components/Meta";
+import { JSONPreview } from "./components/JSONPreview";
 
 import api from "./api";
 
@@ -31,11 +32,13 @@ export function Preview(props) {
   const input = useRef();
 
   const [loading, setLoading] = useState(true);
+  const [frameLoading, setFrameLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(true);
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [rotate, setRotate] = useState(false);
   const [instance, setInstance] = useState({});
+  const [settings, setSettings] = useState([]);
   const [domain, setDomain] = useState(props.domain);
   const [route, setRoute] = useState(props.route || "/");
   const [device, setDevice] = useState("fullscreen");
@@ -59,9 +62,14 @@ export function Preview(props) {
           //   setRoute(msg.data.route)
           // );
         }
+        if (msg.data.settings) {
+          setSettings(msg.data.settings);
+        }
         if (msg.data.refresh) {
           setRefresh(Date.now());
         }
+
+        setFrameLoading(true);
       }
     }
 
@@ -86,20 +94,6 @@ export function Preview(props) {
       })
       .finally(() => setLoading(false));
   }, []);
-
-  const handleCopy = () => {
-    input.current.focus();
-    input.current.select();
-    const result = document.execCommand("copy");
-    input.current.blur();
-
-    if (result !== "unsuccessful") {
-      // this is gross, but we dont have another way to notify
-      // the user of copy status
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
 
   /**
    * This functional component is provided to the selected template function
@@ -138,98 +132,105 @@ export function Preview(props) {
             &nbsp;
             <figcaption>Active Preview</figcaption>
           </figure>
-
-          <div className={styles.Url}>
-            <Button
-              onClick={() => setRefresh(Date.now())}
-              title="Reload current url in active preview"
-            >
-              <FontAwesomeIcon icon={faSync} />
-            </Button>
-            {copied ? (
-              <Button onClick={handleCopy} type="save">
-                <FontAwesomeIcon icon={faCheck} />
+          <div className={styles.ActionInfo}>
+            <div className={styles.Url}>
+              <Button
+                onClick={() => setRefresh(Date.now())}
+                title="Reload current url in active preview"
+              >
+                <FontAwesomeIcon icon={faSync} />
               </Button>
-            ) : (
-              <Button onClick={handleCopy}>
+
+              <CopyButton
+                className={styles.CopyButton}
+                value={`${domain}${route}`}
+              />
+              <Input
+                ref={input}
+                className={styles.Route}
+                value={`${domain}${route}`}
+              />
+            </div>
+
+            <div className={styles.Device}>
+              <Button onClick={() => setRotate(!rotate)} title="Rotate device">
                 <FontAwesomeIcon
-                  icon={faCopy}
-                  title="Copy current preview url to clipboarda"
+                  icon={faMobileAlt}
+                  style={{
+                    transform: `rotate(${rotate ? "-90deg" : "0deg"})`,
+                  }}
                 />
               </Button>
-            )}
-            <Input
-              ref={input}
-              className={styles.Route}
-              value={`${domain}${route}`}
-            />
-          </div>
+              <Select
+                className={styles.Select}
+                name="device"
+                value="fullscreen"
+                onSelect={(val) => setDevice(val)}
+              >
+                <Option value="fullscreen" text="Viewport" />
 
-          <div className={styles.Device}>
-            <Button onClick={() => setRotate(!rotate)} title="Rotate device">
-              <FontAwesomeIcon
-                icon={faMobileAlt}
-                style={{
-                  transform: `rotate(${rotate ? "-90deg" : "0deg"})`,
-                }}
-              />
-            </Button>
-            <Select
-              className={styles.Select}
-              name="device"
-              value="fullscreen"
-              onSelect={(val) => setDevice(val)}
-            >
-              <Option value="fullscreen" text="Desktop" />
-
-              {/*
+                {/*
             Generate available options from templates,
             except the initial "No Template" template
             */}
-              {Object.keys(templates)
-                .slice(1)
-                .map((template, index) => (
-                  <Option
-                    key={index}
-                    value={template}
-                    html={templates[template].option}
-                  />
-                ))}
-            </Select>
-          </div>
+                {Object.keys(templates)
+                  .slice(1)
+                  .map((template, index) => (
+                    <Option
+                      key={index}
+                      value={template}
+                      html={templates[template].option}
+                    />
+                  ))}
+              </Select>
+            </div>
 
-          {instance.domain && (
-            <Url
-              className={styles.Live}
-              href={`//${instance.domain}${route}`}
-              target="_blank"
-              title="Open live link in standard browser window"
-            >
-              <FontAwesomeIcon icon={faExternalLinkAlt} />
-              &nbsp;Live
-            </Url>
-          )}
+            {instance.domain && (
+              <Url
+                className={styles.Live}
+                href={`//${instance.domain}${route}`}
+                target="_blank"
+                title="Open live link in standard browser window"
+              >
+                <FontAwesomeIcon icon={faExternalLinkAlt} />
+                &nbsp;Live
+              </Url>
+            )}
 
-          <div className={styles.Menu}>
-            <Button
-              onClick={() => setOpen(!open)}
-              title="Additional menu options"
-            >
-              <FontAwesomeIcon icon={faEllipsisV} />
-            </Button>
-            <Meta open={open} route={route} instanceZUID={ZUID} />
+            <div className={styles.Menu}>
+              <Button
+                onClick={() => setOpen(!open)}
+                title="Additional menu options"
+              >
+                <FontAwesomeIcon icon={faEllipsisV} />
+              </Button>
+              <Meta open={open} route={route} instanceZUID={ZUID} />
+            </div>
           </div>
         </header>
-        <main className={styles.Preview}>
+        <main
+          className={cx(
+            styles.Preview,
+            device !== "fullscreen" ? styles.Mobile : null
+          )}
+        >
           {!loading && domain && route ? (
             device === "fullscreen" ? (
-              <iframe
-                key={refresh}
-                className={styles.Frame}
-                src={`${domain}${route}`}
-                scrolling="yes"
-                frameBorder="0"
-              />
+              route.includes(".json") ? (
+                <JSONPreview src={`${domain}${route}`} settings={settings} />
+              ) : (
+                <iframe
+                  key={refresh}
+                  className={cx(
+                    styles.Frame,
+                    frameLoading ? styles.FrameLoading : null
+                  )}
+                  src={`${domain}${route}`}
+                  scrolling="yes"
+                  frameBorder="0"
+                  onLoad={() => setFrameLoading(false)}
+                />
+              )
             ) : (
               <div className={styles.center}>
                 {templates[device].template({

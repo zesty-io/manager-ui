@@ -12,7 +12,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Drawer, DrawerContent } from "@zesty-io/core/Drawer";
-import { Divider } from "@zesty-io/core/Divider";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./GlobalNotifications.less";

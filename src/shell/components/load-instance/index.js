@@ -15,6 +15,7 @@ import { fetchInstances } from "shell/store/instances";
 import { fetchLangauges } from "shell/store/languages";
 import { fetchItemPublishings } from "shell/store/content";
 import { fetchFiles } from "../../../apps/code-editor/src/store/files";
+import { fetchSettings } from "shell/store/settings";
 
 import { Url } from "@zesty-io/core/Url";
 import { loadOpenNav } from "../../store/ui";
@@ -57,6 +58,7 @@ export default connect((state) => {
       props.dispatch(detectPlatform());
       props.dispatch(fetchInstances());
       props.dispatch(fetchLangauges("enabled"));
+      props.dispatch(fetchSettings());
       // Used in Publish Plan and Content sections
       props.dispatch(fetchItemPublishings());
       // Used in Code Editor, useFilePath Hook

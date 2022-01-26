@@ -5,16 +5,11 @@ import cx from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBook,
-  faHashtag,
-  faQuestion,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBook, faHashtag } from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "@zesty-io/core/Url";
 
 import GlobalHelpMenu from "shell/components/GlobalHelpMenu";
-import { ActivePreview } from "./components/ActivePreview";
 
 import styles from "./styles.less";
 export default memo(function GlobalActions(props) {
@@ -29,10 +24,6 @@ export default memo(function GlobalActions(props) {
   return (
     <div className={cx(styles.GlobalSubMenu, openNav ? styles.NavOpen : null)}>
       <div className={styles.GlobalActions}>
-        <span className={cx(styles.GlobalAction)}>
-          <ActivePreview className={styles.GlobalActionIcon} />
-        </span>
-
         <span
           ref={ref}
           onClick={() => setOpenMenu(!openMenu)}

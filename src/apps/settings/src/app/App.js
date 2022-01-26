@@ -18,7 +18,7 @@ import {
   fetchStylesCategories,
   fetchFonts,
   fetchFontsInstalled,
-} from "../store/settings";
+} from "shell/store/settings";
 
 import styles from "./App.less";
 export default connect((state) => ({
