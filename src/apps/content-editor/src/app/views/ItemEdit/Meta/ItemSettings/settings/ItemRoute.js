@@ -2,6 +2,7 @@ import { memo, Fragment, useCallback, useState, useEffect } from "react";
 import { connect, useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import { searchItems } from "shell/store/content";
+import { notify } from "shell/store/notifications";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -38,6 +39,14 @@ export const ItemRoute = connect((state) => {
 
         return dispatch(searchItems(fullPath))
           .then((res) => {
+            if (!res) {
+              props.dispatch(
+                notify({
+                  kind: "warn",
+                  message: `Path not found ${res.status}`,
+                })
+              );
+            }
             // check list of partial matches for exact path match
             const matches = res.data.filter((item) => {
               /**
