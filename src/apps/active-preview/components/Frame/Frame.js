@@ -9,8 +9,6 @@ export function Frame(props) {
     setFrameLoading(true);
   }, [props.device]);
 
-  console.log("Frame:render", frameLoading);
-
   return (
     <Fragment>
       {props.device === "fullscreen" ? (
