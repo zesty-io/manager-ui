@@ -71,20 +71,33 @@
     }
   }
 
+  .Overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    width: 100%;
+    border-radius: 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    aside {
+      font-size: 18px;
+    }
+  }
+
   .Preview {
     //Height - TopBar - iframe(border-top):
     height: calc(100vh - 72px;);
     background-color: #fff; // set to a browsers default background
+    position: relative;
 
     &.Mobile {
       overflow: auto;
-    }
-
-    .center {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 32px 0;
     }
 
     .NoDomain {
@@ -92,30 +105,6 @@
       align-items: center;
       justify-content: center;
       height: 100%;
-    }
-
-    iframe {
-      position: relative;
-      height: 100%;
-      width: 100%;
-
-      &.FrameLoading {
-        background-image: url("https://storage.googleapis.com/assets-zesty/loading.png");
-        background-position: center center;
-        background-repeat: no-repeat;
-      }
-
-      // iframe when displayed inside device css
-      &.Device {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        overflow-y: scroll;
-        background-size: 50%;
-
-        // had browser scroll bar to mimic mobile device
-        width: calc(100% + 15px);
-      }
     }
   }
 }
