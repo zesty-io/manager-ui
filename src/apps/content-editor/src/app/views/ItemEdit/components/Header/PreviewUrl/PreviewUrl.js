@@ -11,7 +11,7 @@ export function PreviewUrl(props) {
     )
   );
 
-  let url = `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}${props.item.web.path}`;
+  let url = `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}${props.item.web.path}?_bypassError=true&__version=${props.item.meta.version}`;
 
   if (previewLock) {
     url = `${url}?zpw=${previewLock.value}`;

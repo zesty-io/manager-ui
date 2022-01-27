@@ -113,8 +113,6 @@ export default memo(function Editor({
     }
   }, []);
 
-  console.log("Editor", item);
-
   return (
     <div
       data-cy="DuoModeGrid"
