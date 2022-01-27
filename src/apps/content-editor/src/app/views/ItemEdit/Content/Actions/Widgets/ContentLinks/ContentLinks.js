@@ -20,12 +20,17 @@ export const ContentLinks = memo(function ContentLinks(props) {
         </CardHeader>
         <CardContent className={styles.Content}>
           <ul>
-            <li>
-              <LiveUrl item={props.item} />
-            </li>
-            <li>
-              <PreviewUrl item={props.item} />
-            </li>
+            {props.item?.web?.path && (
+              <Fragment>
+                <li>
+                  <LiveUrl item={props.item} />
+                </li>
+                <li>
+                  <PreviewUrl item={props.item} />
+                </li>
+              </Fragment>
+            )}
+
             <li>
               <InstantUrl item={props.item} />
             </li>
