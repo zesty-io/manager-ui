@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { Notice } from "@zesty-io/core/Notice";
@@ -18,20 +18,13 @@ export default function PreviewMode(props) {
 
   const preview = useRef(null);
 
-  function refresh() {
-    if (preview.current) {
-      preview.current.contentWindow.postMessage(
-        {
-          source: "zesty",
-          refresh: true,
-        },
-        origin
-      );
-    }
-  }
+  // Track initial version provided. We use this to make a determination
+  // on whether current content has changed or the different version was
+  // picked for previewing
+  const [initialVersion] = useState(props.version);
 
   // Sends message to preview window to update route
-  function route(itemZUID) {
+  function route(itemZUID, version) {
     if (preview.current) {
       // if not a string or a string that is not a content item zuid
       // then see if location contains a routable content item
@@ -60,7 +53,7 @@ export default function PreviewMode(props) {
             source: "zesty",
             route: url,
             settings: instanceSettings,
-            version: props.version,
+            version: version,
           },
           origin
         );
@@ -71,27 +64,31 @@ export default function PreviewMode(props) {
   useEffect(() => {
     if (preview.current) {
       // Send initial route on open
-      preview.current.addEventListener("load", () => route());
+      preview.current.addEventListener("load", () =>
+        route(props.itemZUID, props.version)
+      );
+
+      // If the ActivePreview is loaded and we need to send route updates
+      const doc =
+        preview.current.contentDocument ||
+        preview.current.contentWindow.document;
+      if (doc.readyState === "complete") {
+        route(props.itemZUID, props.version);
+      }
     }
-
-    zesty.on("PREVIEW_ROUTE", route);
-    zesty.on("PREVIEW_REFRESH", refresh);
-
-    return () => {
-      zesty.off("PREVIEW_ROUTE");
-      zesty.off("PREVIEW_REFRESH");
-    };
-  }, []);
+  }, [props.itemZUID, props.version]);
 
   return (
     <div data-cy="DuoModeContainer" className={styles.DMContainer}>
-      {props.dirty && (
+      {initialVersion === props.version && props.dirty && (
         <div className={styles.Overlay}>
           <Notice>Save to update preview</Notice>
         </div>
       )}
       <iframe
-        className={props.dirty ? styles.Blur : ""}
+        className={
+          initialVersion === props.version && props.dirty ? styles.Blur : null
+        }
         ref={preview}
         src={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
         frameBorder="0"
