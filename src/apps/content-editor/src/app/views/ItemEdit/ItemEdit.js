@@ -309,25 +309,6 @@ export default function ItemEdit() {
               />
               <Route
                 exact
-                path="/content/:modelZUID/:itemZUID/preview"
-                render={() => (
-                  <WebEnginePreview
-                    instance={instance}
-                    modelZUID={modelZUID}
-                    model={model}
-                    itemZUID={itemZUID}
-                    item={item}
-                    items={items}
-                    fields={fields}
-                    user={user}
-                    onSave={save}
-                    dispatch={dispatch}
-                    saving={saving}
-                  />
-                )}
-              />
-              <Route
-                exact
                 path="/content/:modelZUID/:itemZUID/headless"
                 render={() => (
                   <HeadlessOptions
