@@ -43,7 +43,11 @@ export function content(state = {}, action) {
     case "LOAD_ITEM_VERSION":
       return {
         ...state,
-        [action.itemZUID]: { ...state[action.itemZUID], ...action.data },
+        [action.itemZUID]: {
+          ...state[action.itemZUID],
+          ...action.data,
+          dirty: false,
+        },
       };
 
     case "FETCH_ITEMS_SUCCESS":
