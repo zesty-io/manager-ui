@@ -15,6 +15,7 @@ import {
   faSync,
   faEllipsisV,
   faMobileAlt,
+  faEye,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Meta } from "./components/Meta";
@@ -115,27 +116,47 @@ export function Preview(props) {
               src="https://brand.zesty.io/zesty-io-logo-dark.svg"
             />
             &nbsp;
-            <figcaption>ActivePreview</figcaption>
-          </figure>
-          <div className={styles.ActionInfo}>
-            {instance.domain && (
+            <figcaption>
               <Url
-                className={styles.Live}
-                href={`//${instance.domain}${route}`}
+                className={styles.Link}
+                href={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
                 target="_blank"
                 title="Open live link in standard browser window"
               >
-                <FontAwesomeIcon icon={faExternalLinkAlt} />
-                &nbsp;Live
+                ActivePreview
               </Url>
-            )}
+            </figcaption>
+          </figure>
+          <div className={styles.ActionInfo}>
+            <div className={styles.Links}>
+              {instance.domain && (
+                <Url
+                  className={styles.Link}
+                  href={`//${instance.domain}${route}`}
+                  target="_blank"
+                  title="Open live link in standard browser window"
+                >
+                  <FontAwesomeIcon icon={faExternalLinkAlt} />
+                  &nbsp;Live
+                </Url>
+              )}
+              <Url
+                className={styles.Link}
+                href={`${domain}${route}`}
+                target="_blank"
+                title="Open preview link in standard browser window"
+              >
+                <FontAwesomeIcon icon={faEye} />
+                &nbsp;Preview
+              </Url>
+            </div>
 
             <div className={styles.Url}>
               <CopyButton
-                className={styles.CopyButton}
+                className={styles.PreviewCopy}
                 value={`${domain}${route}`}
               >
-                Preview
+                &nbsp;
               </CopyButton>
               <Button
                 onClick={() => setRefresh(Date.now())}

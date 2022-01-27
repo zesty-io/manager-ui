@@ -27,19 +27,25 @@
     .ActionInfo {
       flex: 2;
       display: grid;
-      grid-template-columns: 40px 1fr 184px 44px;
+      grid-template-columns: 120px 1fr 184px 44px;
       grid-gap: 16px;
 
-      .Live {
-        display: flex;
+      .Links {
+        display: grid;
+        grid-auto-flow: column;
+        grid-gap: 8px;
         align-items: center;
       }
 
       .Url {
         display: flex;
-        .CopyButton {
+
+        .PreviewCopy {
           margin-right: 3px;
-          width: 101px; // needs exact width to avoid breaking grid
+          display: flex;
+          svg {
+            margin: 0;
+          }
         }
         .Route {
           flex: 1;
