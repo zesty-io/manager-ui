@@ -7,6 +7,7 @@ import { Button } from "@zesty-io/core/Button";
 import { Input } from "@zesty-io/core/Input";
 import { Url } from "@zesty-io/core/Url";
 import { CopyButton } from "@zesty-io/core/CopyButton";
+import { Notice } from "@zesty-io/core/Notice";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,10 +15,12 @@ import {
   faSync,
   faEllipsisV,
   faMobileAlt,
+  faEye,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Meta } from "./components/Meta";
 import { JSONPreview } from "./components/JSONPreview";
+import { Frame, templates } from "./components/Frame";
 
 import api from "./api";
 
@@ -32,10 +35,8 @@ export function Preview(props) {
   const input = useRef();
 
   const [loading, setLoading] = useState(true);
-  const [frameLoading, setFrameLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(true);
   const [open, setOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [rotate, setRotate] = useState(false);
   const [instance, setInstance] = useState({});
   const [settings, setSettings] = useState([]);
@@ -43,6 +44,13 @@ export function Preview(props) {
   const [route, setRoute] = useState(props.route || "/");
   const [device, setDevice] = useState("fullscreen");
   const [refresh, setRefresh] = useState(Date.now());
+  const [version, setVersion] = useState(0);
+  const [dirty, setDirty] = useState(false);
+
+  // Track initial version sent. We use this to make a determination
+  // on whether current content has changed or the different version was
+  // picked for previewing
+  const [initialVersion, setInitialVersion] = useState(props.version);
 
   // Listen for messages
   useEffect(() => {
@@ -56,11 +64,6 @@ export function Preview(props) {
       if (msg.data.source === "zesty") {
         if (msg.data.route) {
           setRoute(msg.data.route);
-
-          // TODO: add preview CORS support from manager to allow pre-fetch
-          // fetch(`${domain}${msg.data.route}`).finally(() =>
-          //   setRoute(msg.data.route)
-          // );
         }
         if (msg.data.settings) {
           setSettings(msg.data.settings);
@@ -68,8 +71,15 @@ export function Preview(props) {
         if (msg.data.refresh) {
           setRefresh(Date.now());
         }
-
-        setFrameLoading(true);
+        if (msg.data.dirty) {
+          setDirty(msg.data.dirty);
+        }
+        if (msg.data.version) {
+          setVersion(msg.data.version);
+          if (!initialVersion) {
+            setInitialVersion(msg.data.version);
+          }
+        }
       }
     }
 
@@ -95,30 +105,6 @@ export function Preview(props) {
       .finally(() => setLoading(false));
   }, []);
 
-  /**
-   * This functional component is provided to the selected template function
-   * It needs to be setup inside the `Preview` component so it can
-   * have lexical scope access to it's state
-   */
-  const iFrame = () => (
-    <div
-      style={{
-        height: "100%",
-        width: "100%",
-        overflow: "hidden",
-        position: "relative",
-      }}
-    >
-      <iframe
-        key={refresh}
-        className={styles.Device}
-        src={`${domain}${route}`}
-        scrolling="yes"
-        frameBorder="0"
-      />
-    </div>
-  );
-
   return (
     <WithLoader condition={domain} message="Finding Domain" height="100vh">
       <section className={styles.ActivePreview}>
@@ -130,27 +116,47 @@ export function Preview(props) {
               src="https://brand.zesty.io/zesty-io-logo-dark.svg"
             />
             &nbsp;
-            <figcaption>ActivePreview</figcaption>
-          </figure>
-          <div className={styles.ActionInfo}>
-            {instance.domain && (
+            <figcaption>
               <Url
-                className={styles.Live}
-                href={`//${instance.domain}${route}`}
+                className={styles.Link}
+                href={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
                 target="_blank"
                 title="Open live link in standard browser window"
               >
-                <FontAwesomeIcon icon={faExternalLinkAlt} />
-                &nbsp;Live
+                ActivePreview
               </Url>
-            )}
+            </figcaption>
+          </figure>
+          <div className={styles.ActionInfo}>
+            <div className={styles.Links}>
+              {instance.domain && (
+                <Url
+                  className={styles.Link}
+                  href={`//${instance.domain}${route}`}
+                  target="_blank"
+                  title="Open live link in standard browser window"
+                >
+                  <FontAwesomeIcon icon={faExternalLinkAlt} />
+                  &nbsp;Live
+                </Url>
+              )}
+              <Url
+                className={styles.Link}
+                href={`${domain}${route}`}
+                target="_blank"
+                title="Open preview link in standard browser window"
+              >
+                <FontAwesomeIcon icon={faEye} />
+                &nbsp;Preview
+              </Url>
+            </div>
 
             <div className={styles.Url}>
               <CopyButton
-                className={styles.CopyButton}
+                className={styles.PreviewCopy}
                 value={`${domain}${route}`}
               >
-                Preview
+                &nbsp;
               </CopyButton>
               <Button
                 onClick={() => setRefresh(Date.now())}
@@ -215,30 +221,24 @@ export function Preview(props) {
             device !== "fullscreen" ? styles.Mobile : null
           )}
         >
+          {initialVersion === version && dirty && (
+            <div className={styles.Overlay}>
+              <Notice>Save to update preview</Notice>
+            </div>
+          )}
+
           {!loading && domain && route ? (
-            device === "fullscreen" ? (
-              route.includes(".json") ? (
-                <JSONPreview src={`${domain}${route}`} settings={settings} />
-              ) : (
-                <iframe
-                  key={refresh}
-                  className={cx(
-                    styles.Frame,
-                    frameLoading ? styles.FrameLoading : null
-                  )}
-                  src={`${domain}${route}`}
-                  scrolling="yes"
-                  frameBorder="0"
-                  onLoad={() => setFrameLoading(false)}
-                />
-              )
+            route.includes(".json") ? (
+              <JSONPreview src={`${domain}${route}`} settings={settings} />
             ) : (
-              <div className={styles.center}>
-                {templates[device].template({
-                  iFrame,
-                  orientation: rotate ? "landscape" : "portrait",
-                })}
-              </div>
+              <Frame
+                key={refresh}
+                device={device}
+                domain={domain}
+                route={route}
+                rotate={rotate}
+                blur={initialVersion === version && dirty}
+              />
             )
           ) : (
             <div className={styles.NoDomain}>
@@ -254,142 +254,3 @@ export function Preview(props) {
     </WithLoader>
   );
 }
-
-const templates = {
-  NoTemplate: {
-    option: "No Template",
-    template: () => (
-      <div className={styles.NoDomain}>
-        <h1 className={styles.headline}>No template selected</h1>
-      </div>
-    ),
-  },
-
-  /**
-   * To add a new template
-   * 1) copy existing template
-   * 2) alter markup to match mobile device
-   * 3) change object key and name references to new model
-   */
-  Iphone5: {
-    option: `<span>iPhone 5 <small>320x568px</small></span>`,
-    template: (props) => {
-      return (
-        <div className={`marvel-device iphone5s silver ${props.orientation}`}>
-          <div className="top-bar"></div>
-          <div className="sleep"></div>
-          <div className="volume"></div>
-          <div className="camera"></div>
-          <div className="sensor"></div>
-          <div className="speaker"></div>
-          <div className="screen">{props.iFrame()}</div>
-          <div className="home"></div>
-          <div className="bottom-bar"></div>
-        </div>
-      );
-    },
-  },
-  Iphone8: {
-    option: `<span>iPhone 8 <small>375x667px</small></span>`,
-    template: (props) => (
-      <div className={`marvel-device iphone8 black ${props.orientation}`}>
-        <div className="top-bar"></div>
-        <div className="sleep"></div>
-        <div className="volume"></div>
-        <div className="camera"></div>
-        <div className="sensor"></div>
-        <div className="speaker"></div>
-        <div className="screen">{props.iFrame()}</div>
-        <div className="home"></div>
-        <div className="bottom-bar"></div>
-      </div>
-    ),
-  },
-  IphoneX: {
-    option: `<span>iPhone X <small>375x812px</small></span>`,
-    template: (props) => (
-      <div className={`marvel-device iphone-x ${props.orientation}`}>
-        <div className="notch">
-          <div className="camera"></div>
-          <div className="speaker"></div>
-        </div>
-        <div className="top-bar"></div>
-        <div className="sleep"></div>
-        <div className="bottom-bar"></div>
-        <div className="volume"></div>
-        <div className="overflow">
-          <div className="shadow shadow--tr"></div>
-          <div className="shadow shadow--tl"></div>
-          <div className="shadow shadow--br"></div>
-          <div className="shadow shadow--bl"></div>
-        </div>
-        <div className="inner-shadow"></div>
-        <div className="screen">{props.iFrame()}</div>
-      </div>
-    ),
-  },
-  iPadMini: {
-    option: `<span>iPad Mini <small>576x768px</small></span>`,
-    template: (props) => (
-      <div className={`marvel-device ipad silver ${props.orientation}`}>
-        <div className="camera"></div>
-        <div className="screen">{props.iFrame()}</div>
-        <div className="home"></div>
-      </div>
-    ),
-  },
-  Note8: {
-    option: `<span>Note 8 <small>400x822px</small></span>`,
-    template: (props) => (
-      <div className={`marvel-device note8 ${props.orientation}`}>
-        <div className="inner"></div>
-        <div className="overflow">
-          <div className="shadow"></div>
-        </div>
-        <div className="speaker"></div>
-        <div className="sensors"></div>
-        <div className="more-sensors"></div>
-        <div className="sleep"></div>
-        <div className="volume"></div>
-        <div className="camera"></div>
-        <div className="screen">{props.iFrame()}</div>
-      </div>
-    ),
-  },
-  Nexus5: {
-    option: `<span>Nexus 5 <small>320x568px</small></span>`,
-    template: (props) => (
-      <div class={`marvel-device nexus5 ${props.orientation}`}>
-        <div class="top-bar"></div>
-        <div class="sleep"></div>
-        <div class="volume"></div>
-        <div class="camera"></div>
-        <div class="screen">{props.iFrame()}</div>
-      </div>
-    ),
-  },
-  HTCOne: {
-    option: `<span>HTCOne <small>320x568px</small></span>`,
-    template: (props) => (
-      <div class={`marvel-device htc-one ${props.orientation}`}>
-        <div class="top-bar"></div>
-        <div class="camera"></div>
-        <div class="sensor"></div>
-        <div class="speaker"></div>
-        <div class="screen">{props.iFrame()}</div>
-      </div>
-    ),
-  },
-  Lumina920: {
-    option: `<span>Lumina 920 <small>320x553px</small></span>`,
-    template: (props) => (
-      <div class={`marvel-device lumia920 black ${props.orientation}`}>
-        <div class="top-bar"></div>
-        <div class="volume"></div>
-        <div class="camera"></div>
-        <div class="speaker"></div>
-        <div class="screen">{props.iFrame()}</div>
-      </div>
-    ),
-  },
-};
