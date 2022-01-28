@@ -1,6 +1,5 @@
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCog,
   faEnvelope,

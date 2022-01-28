@@ -11,7 +11,7 @@ import { Search } from "@zesty-io/core/Search";
 import { Notice } from "@zesty-io/core/Notice";
 import { notify } from "shell/store/notifications";
 
-import { fetchFontsInstalled, installSiteFont } from "../../../store/settings";
+import { fetchFontsInstalled, installSiteFont } from "shell/store/settings";
 
 import styles from "./Fonts.less";
 export default connect((state) => {

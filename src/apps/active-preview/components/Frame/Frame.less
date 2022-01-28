@@ -1,0 +1,43 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.JSONPreview {
+  background-color: @white;
+  height: 100%;
+  overflow: auto;
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 32px 0;
+}
+
+.Frame {
+  position: relative;
+  height: 100%;
+  width: 100%;
+
+  &.Blur {
+    filter: blur(3px);
+  }
+
+  &.FrameLoading {
+    background-image: url("https://storage.googleapis.com/assets-zesty/loading.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+  }
+
+  // iframe when displayed inside device css
+  &.Device {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    overflow-y: scroll;
+    background-size: 50%;
+
+    // had browser scroll bar to mimic mobile device
+    width: calc(100% + 15px);
+  }
+}

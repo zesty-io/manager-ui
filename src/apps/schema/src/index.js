@@ -9,7 +9,7 @@ import { fetchModels } from "shell/store/models";
 import { navSchema } from "./store/navSchema";
 import { parents } from "./store/parents";
 
-import { fetchSettings } from "../../settings/src/store/settings";
+import { fetchSettings } from "shell/store/settings";
 
 import { SchemaBuilder } from "./app";
 

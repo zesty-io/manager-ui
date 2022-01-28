@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   Switch,
   Route,
@@ -9,7 +9,6 @@ import {
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
-import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { notify } from "shell/store/notifications";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
@@ -28,9 +27,10 @@ import { PendingEditsModal } from "../../components/PendingEditsModal";
 import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
 import { Meta } from "./Meta";
-import { WebEnginePreview } from "./WebEnginePreview";
 import { ItemHead } from "./ItemHead";
 import { HeadlessOptions } from "./HeadlessOptions";
+
+import { NotFound } from "../NotFound";
 
 const selectSortedModelFields = createSelector(
   (state) => state.fields,
@@ -70,7 +70,6 @@ export default function ItemEdit() {
     selectSortedModelFields(state, modelZUID)
   );
   const tags = useSelector((state) => selectItemHeadTags(state, itemZUID));
-  const platform = useSelector((state) => state.platform);
   const languages = useSelector((state) => state.languages);
   const user = useSelector((state) => state.user);
   const userRole = useSelector((state) => state.userRole);
@@ -80,14 +79,16 @@ export default function ItemEdit() {
   const [checkingLock, setCheckingLock] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
-  useMetaKey("s", save);
+  const [notFound, setNotFound] = useState("");
 
   useEffect(() => {
+    setNotFound("");
+
     // on mount and modelZUID/itemZUID update,
     // lock item and load all item data
     lockItem(itemZUID);
     load(modelZUID, itemZUID);
+
     // on unmount, release lock
     return () => {
       releaseLock(itemZUID);
@@ -125,29 +126,27 @@ export default function ItemEdit() {
 
     try {
       const itemResponse = await dispatch(fetchItem(modelZUID, itemZUID));
-      if (itemResponse.status === 404 || itemResponse.status === 400) {
-        dispatch(
-          notify({
-            message: itemResponse.message,
-            kind: "error",
-          })
-        );
-        throw new Error(itemResponse.message);
-      }
-      // select lang based on content lang
-      dispatch(
-        selectLang(
-          languages.find((lang) => lang.ID === itemResponse.data.meta.langID)
-            .code
-        )
-      );
 
-      // once we selectLang we can fetchFields
-      // which triggers middleware which depends on lang
-      await Promise.all([
-        dispatch(fetchFields(modelZUID)),
-        dispatch(fetchItemPublishing(modelZUID, itemZUID)),
-      ]);
+      if (itemResponse.status === 404 || itemResponse.status === 400) {
+        setNotFound(itemResponse.message || itemResponse.error);
+      }
+
+      if (itemResponse?.data?.meta?.langID) {
+        // select lang based on content lang
+        dispatch(
+          selectLang(
+            languages.find((lang) => lang.ID === itemResponse.data.meta.langID)
+              .code
+          )
+        );
+
+        // once we selectLang we can fetchFields
+        // which triggers middleware which depends on lang
+        await Promise.all([
+          dispatch(fetchFields(modelZUID)),
+          dispatch(fetchItemPublishing(modelZUID, itemZUID)),
+        ]);
+      }
     } catch (err) {
       console.error("ItemEdit:load:error", err);
       throw err;
@@ -232,136 +231,123 @@ export default function ItemEdit() {
     !checkingLock && lockState.userZUID !== user.user_zuid;
 
   return (
-    <WithLoader
-      condition={!loading && item && Object.keys(item).length}
-      message={
-        model?.label ? `Loading ${model.label} Content` : "Loading Content"
-      }
-    >
-      {handleLockedItem && (
-        <LockedItem
-          timestamp={lockState.timestamp}
-          userFirstName={lockState.firstName}
-          userLastName={lockState.lastName}
-          userEmail={lockState.email}
-          itemName={item?.web?.metaLinkText}
-          handleUnlock={forceUnlock}
-          goBack={() => history.goBack()}
-          handleLockedItem={handleLockedItem}
-        />
+    <Fragment>
+      {notFound ? (
+        <NotFound message={notFound} />
+      ) : (
+        <WithLoader
+          condition={!loading && item && Object.keys(item).length}
+          message={
+            model?.label ? `Loading ${model.label} Content` : "Loading Content"
+          }
+        >
+          {handleLockedItem && (
+            <LockedItem
+              timestamp={lockState.timestamp}
+              userFirstName={lockState.firstName}
+              userLastName={lockState.lastName}
+              userEmail={lockState.email}
+              itemName={item?.web?.metaLinkText}
+              handleUnlock={forceUnlock}
+              goBack={() => history.goBack()}
+              handleLockedItem={handleLockedItem}
+            />
+          )}
+
+          <PendingEditsModal
+            show={item?.dirty}
+            title="Unsaved Changes"
+            message="You have unsaved changes that will be lost if you leave this page."
+            loading={saving}
+            onSave={save}
+            onDiscard={discard}
+          />
+
+          <section>
+            <Switch>
+              <Route
+                exact
+                path="/content/:modelZUID/:itemZUID/head"
+                render={({ match }) => {
+                  // All roles except contributor are allowed to edit the document head
+                  return userRole.name !== "Contributor" ? (
+                    <ItemHead
+                      instance={instance}
+                      modelZUID={modelZUID}
+                      model={model}
+                      itemZUID={itemZUID}
+                      item={item}
+                      tags={tags}
+                      dispatch={dispatch}
+                    />
+                  ) : (
+                    <Redirect
+                      to={`/content/${match.params.modelZUID}/${match.params.itemZUID}`}
+                    />
+                  );
+                }}
+              />
+              <Route
+                exact
+                path="/content/:modelZUID/:itemZUID/meta"
+                render={() => (
+                  <Meta
+                    instance={instance}
+                    modelZUID={modelZUID}
+                    model={model}
+                    itemZUID={itemZUID}
+                    item={item}
+                    items={items}
+                    fields={fields}
+                    user={user}
+                    onSave={save}
+                    dispatch={dispatch}
+                    saving={saving}
+                  />
+                )}
+              />
+              <Route
+                exact
+                path="/content/:modelZUID/:itemZUID/headless"
+                render={() => (
+                  <HeadlessOptions
+                    instance={instance}
+                    modelZUID={modelZUID}
+                    model={model}
+                    itemZUID={itemZUID}
+                    item={item}
+                    items={items}
+                    fields={fields}
+                    user={user}
+                    dispatch={dispatch}
+                    saving={saving}
+                  />
+                )}
+              />
+              <Route
+                exact
+                path="/content/:modelZUID/:itemZUID"
+                render={() => (
+                  <Content
+                    instance={instance}
+                    modelZUID={modelZUID}
+                    model={model}
+                    itemZUID={itemZUID}
+                    item={item}
+                    items={items}
+                    fields={fields}
+                    user={user}
+                    onSave={save}
+                    dispatch={dispatch}
+                    loading={loading}
+                    saving={saving}
+                  />
+                )}
+              />
+            </Switch>
+          </section>
+        </WithLoader>
       )}
-
-      <PendingEditsModal
-        show={item?.dirty}
-        title="Unsaved Changes"
-        message="You have unsaved changes that will be lost if you leave this page."
-        loading={saving}
-        onSave={save}
-        onDiscard={discard}
-      />
-
-      <section>
-        <Switch>
-          <Route
-            exact
-            path="/content/:modelZUID/:itemZUID/head"
-            render={({ match }) => {
-              // All roles except contributor are allowed to edit the document head
-              return userRole.name !== "Contributor" ? (
-                <ItemHead
-                  instance={instance}
-                  modelZUID={modelZUID}
-                  model={model}
-                  itemZUID={itemZUID}
-                  item={item}
-                  tags={tags}
-                  dispatch={dispatch}
-                />
-              ) : (
-                <Redirect
-                  to={`/content/${match.params.modelZUID}/${match.params.itemZUID}`}
-                />
-              );
-            }}
-          />
-          <Route
-            exact
-            path="/content/:modelZUID/:itemZUID/meta"
-            render={() => (
-              <Meta
-                instance={instance}
-                modelZUID={modelZUID}
-                model={model}
-                itemZUID={itemZUID}
-                item={item}
-                items={items}
-                fields={fields}
-                user={user}
-                onSave={save}
-                dispatch={dispatch}
-                saving={saving}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/content/:modelZUID/:itemZUID/preview"
-            render={() => (
-              <WebEnginePreview
-                instance={instance}
-                modelZUID={modelZUID}
-                model={model}
-                itemZUID={itemZUID}
-                item={item}
-                items={items}
-                fields={fields}
-                user={user}
-                onSave={save}
-                dispatch={dispatch}
-                saving={saving}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/content/:modelZUID/:itemZUID/headless"
-            render={() => (
-              <HeadlessOptions
-                instance={instance}
-                modelZUID={modelZUID}
-                model={model}
-                itemZUID={itemZUID}
-                item={item}
-                items={items}
-                fields={fields}
-                user={user}
-                dispatch={dispatch}
-                saving={saving}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/content/:modelZUID/:itemZUID"
-            render={() => (
-              <Content
-                instance={instance}
-                modelZUID={modelZUID}
-                model={model}
-                itemZUID={itemZUID}
-                item={item}
-                items={items}
-                fields={fields}
-                user={user}
-                onSave={save}
-                dispatch={dispatch}
-                loading={loading}
-                saving={saving}
-              />
-            )}
-          />
-        </Switch>
-      </section>
-    </WithLoader>
+    </Fragment>
   );
 }

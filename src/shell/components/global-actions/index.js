@@ -2,7 +2,7 @@ import { memo, useState } from "react";
 import useOnclickOutside from "react-cool-onclickoutside";
 import cx from "classnames";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBook, faHashtag } from "@fortawesome/free-solid-svg-icons";
@@ -13,7 +13,6 @@ import GlobalHelpMenu from "shell/components/GlobalHelpMenu";
 
 import styles from "./styles.less";
 export default memo(function GlobalActions(props) {
-  const dispatch = useDispatch();
   const openNav = useSelector((state) => state.ui.openNav);
   const [openMenu, setOpenMenu] = useState(false);
 
