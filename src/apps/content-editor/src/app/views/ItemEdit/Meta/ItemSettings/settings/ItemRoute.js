@@ -53,6 +53,27 @@ export const ItemRoute = connect((state) => {
                       item.web.path === "/" + fullPath + "/"
                     );
                   });
+                  if (matches.length) {
+                    props.dispatch(
+                      notify({
+                        kind: "warn",
+                        message: (
+                          <p>
+                            URL <strong>{matches[0].web.path}</strong> is
+                            unavailable. Used by&nbsp;
+                            <AppLink
+                              to={`/content/${matches[0].meta.contentModelZUID}/${matches[0].meta.ZUID}`}
+                            >
+                              {matches[0].web.metaLinkText ||
+                                matches[0].web.metaTitle}
+                            </AppLink>
+                          </p>
+                        ),
+                      })
+                    );
+                  }
+
+                  setUnique(!matches.length);
                 } else {
                   props.dispatch(
                     notify({
@@ -77,28 +98,6 @@ export const ItemRoute = connect((state) => {
                 })
               );
             }
-
-            if (matches.length) {
-              props.dispatch(
-                notify({
-                  kind: "warn",
-                  message: (
-                    <p>
-                      URL <strong>{matches[0].web.path}</strong> is unavailable.
-                      Used by&nbsp;
-                      <AppLink
-                        to={`/content/${matches[0].meta.contentModelZUID}/${matches[0].meta.ZUID}`}
-                      >
-                        {matches[0].web.metaLinkText ||
-                          matches[0].web.metaTitle}
-                      </AppLink>
-                    </p>
-                  ),
-                })
-              );
-            }
-
-            setUnique(!matches.length);
           })
           .finally(() => setLoading(false));
       }, 500),
