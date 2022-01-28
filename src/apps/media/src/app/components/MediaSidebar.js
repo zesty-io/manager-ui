@@ -98,7 +98,10 @@ export const MediaSidebar = memo(function MediaSidebar(props) {
   return (
     <nav className={cx(styles.Nav, hiddenOpen ? styles.hiddenOpen : null)}>
       <div className={styles.TopNav}>
-        <UploadImage {...props} />
+        <UploadImage
+          currentBin={props.currentBin}
+          currentGroupID={props.currentGroup.id}
+        />
 
         <Search
           type="search"

@@ -31,7 +31,12 @@ export const MediaHeader = memo(function MediaHeader(props) {
           : props.currentGroup.name}
       </h1>
 
-      {props.groupID && <UploadImage {...props} />}
+      {props.groupID && (
+        <UploadImage
+          currentGroup={props.currentGroup}
+          currentBin={props.currentBin}
+        />
+      )}
 
       {!props.searchTerm && (
         <div className={styles.Actions}>
