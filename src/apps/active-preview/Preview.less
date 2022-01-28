@@ -17,74 +17,93 @@
     .Logo {
       display: flex;
       align-items: center;
-      margin-right: 8px;
+      margin-right: 16px;
       // media query on iframe
-      @media screen and (max-width: 1280px) {
+      @media (max-width: 1280px) {
         display: none;
       }
     }
 
     .ActionInfo {
-      display: flex;
-      margin-left: auto;
       flex: 2;
-    }
+      display: grid;
+      grid-template-columns: 120px 1fr 184px 44px;
+      grid-gap: 16px;
 
-    .Url {
-      display: flex;
-      flex: 1;
-      .Route {
-        flex: 1;
-        // media query on iframe
-        @media screen and (max-width: 650px) {
-          display: none;
+      .Links {
+        display: grid;
+        grid-auto-flow: column;
+        grid-gap: 8px;
+        align-items: center;
+      }
+
+      .Url {
+        display: flex;
+
+        .PreviewCopy {
+          margin-right: 3px;
+          display: flex;
+          svg {
+            margin: 0;
+          }
         }
-      }
-    }
-
-    .Device {
-      display: flex;
-      margin: 0 8px;
-      [title="Rotate device"] {
-        margin-right: 8px;
-      }
-      .Select {
-        li {
-          small {
-            color: @zesty-gray;
+        .Route {
+          flex: 1;
+          @media (max-width: 650px) {
+            display: none;
           }
         }
       }
-    }
 
-    .Live {
-      display: flex;
-      align-items: center;
-    }
-
-    .Menu {
-      display: flex;
-      align-items: center;
-      margin-left: 16px;
-      button {
-        align-self: stretch;
+      .Device {
+        display: flex;
+        .Select {
+          margin-right: 3px;
+          width: 140px;
+          ul {
+            width: 170px;
+          }
+          li {
+            small {
+              color: @zesty-gray;
+            }
+          }
+        }
       }
+
+      .Menu {
+        display: flex;
+      }
+    }
+  }
+
+  .Overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    width: 100%;
+    border-radius: 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    aside {
+      font-size: 18px;
     }
   }
 
   .Preview {
     //Height - TopBar - iframe(border-top):
     height: calc(100vh - 72px;);
+    background-color: #fff; // set to a browsers default background
+    position: relative;
 
     &.Mobile {
       overflow: auto;
-    }
-
-    .center {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 32px 0;
     }
 
     .NoDomain {
@@ -92,44 +111,6 @@
       align-items: center;
       justify-content: center;
       height: 100%;
-    }
-
-    iframe {
-      position: relative;
-      height: 100%;
-      width: 100%;
-
-      &.FrameLoading {
-        background-image: url("https://storage.googleapis.com/assets-zesty/loading.png");
-        background-position: center center;
-        background-repeat: no-repeat;
-      }
-
-      // iframe when displayed inside device css
-      &.Device {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        overflow-y: scroll;
-        background-size: 50%;
-
-        // had browser scroll bar to mimic mobile device
-        width: calc(100% + 15px);
-      }
-    }
-  }
-  [title~="Rotate"],
-  [title~="Reload"] {
-    margin-right: 8px;
-  }
-
-  //Hide copy url text for smaller screens windows
-
-  .CopyButton {
-    display: flex;
-    font-size: 0;
-    svg {
-      margin-right: initial;
     }
   }
 }
