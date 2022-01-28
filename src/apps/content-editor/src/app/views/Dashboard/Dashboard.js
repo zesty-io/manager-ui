@@ -78,11 +78,15 @@ export default memo(function Dashboard() {
   useEffect(() => {
     const start = moment().subtract(120, "days").format("YYYY-MM-DD");
 
-    dispatch(fetchRecentItems(user.ZUID, start)).then((res) => {
-      if (res && res.data) {
-        setFavoriteModels(getFavoriteModels(res.data));
-      }
-    });
+    dispatch(fetchRecentItems(user.ZUID, start))
+      .then((res) => {
+        if (res && res.data && Array.isArray(res.data)) {
+          setFavoriteModels(getFavoriteModels(res.data));
+        }
+      })
+      .catch((err) => {
+        console.error("fetchRecentItems: ", err);
+      });
 
     dispatch(getUserLogs());
   }, [user.ZUID]);
