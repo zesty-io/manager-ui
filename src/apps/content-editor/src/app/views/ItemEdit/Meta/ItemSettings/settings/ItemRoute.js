@@ -37,27 +37,46 @@ export const ItemRoute = connect((state) => {
 
         return dispatch(searchItems(fullPath))
           .then((res) => {
-            if (!res) {
+            if (res) {
+              if (res.data) {
+                if (Array.isArray(res.data) && res.data.length) {
+                  // check list of partial matches for exact path match
+                  const matches = res.data.filter((item) => {
+                    /**
+                     * Exclude currently viewed item zuid, as it's currently saved path would match.
+                     * Check if other results have a matching path, if so then it is already taken and
+                     * can not be used.
+                     * Result paths come with leading and trailing slashes
+                     */
+                    return (
+                      item.meta.ZUID !== props.ZUID &&
+                      item.web.path === "/" + fullPath + "/"
+                    );
+                  });
+                } else {
+                  props.dispatch(
+                    notify({
+                      kind: "warn",
+                      message: `Path not found ${res.status}`,
+                    })
+                  );
+                }
+              } else {
+                props.dispatch(
+                  notify({
+                    kind: "warn",
+                    message: `API failed to return data ${res.status}`,
+                  })
+                );
+              }
+            } else {
               props.dispatch(
                 notify({
                   kind: "warn",
-                  message: `Path not found ${res.status}`,
+                  message: `API failed to return response ${res.status}`,
                 })
               );
             }
-            // check list of partial matches for exact path match
-            const matches = res.data.filter((item) => {
-              /**
-               * Exclude currently viewed item zuid, as it's currently saved path would match.
-               * Check if other results have a matching path, if so then it is already taken and
-               * can not be used.
-               * Result paths come with leading and trailing slashes
-               */
-              return (
-                item.meta.ZUID !== props.ZUID &&
-                item.web.path === "/" + fullPath + "/"
-              );
-            });
 
             if (matches.length) {
               props.dispatch(
