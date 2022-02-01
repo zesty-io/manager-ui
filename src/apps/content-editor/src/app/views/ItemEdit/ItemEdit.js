@@ -249,7 +249,10 @@ export default function ItemEdit() {
               userEmail={lockState.email}
               itemName={item?.web?.metaLinkText}
               handleUnlock={forceUnlock}
-              goBack={() => history.goBack()}
+              goBack={(evt) => {
+                evt.stopPropagation();
+                history.goBack();
+              }}
               handleLockedItem={handleLockedItem}
             />
           )}
