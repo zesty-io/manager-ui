@@ -89,6 +89,8 @@
     "reselect": "^4.0.0",
     "showdown": "1.9.1",
     "uuid": "^8.3.2",
+    "v8-compile-cache": "^2.3.0",
+    "yocto-queue": "^1.0.0",
     "zuid": "github:zesty-io/zuid-js#v1.2.0"
   },
   "devDependencies": {

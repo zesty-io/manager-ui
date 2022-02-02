@@ -16,36 +16,14 @@ export default function RedirectTable(props) {
   const [sortBy, setSortBy] = useState("");
   const [sortDirection, setSortDirection] = useState("");
 
-  useEffect(
-    (nextProps) => {
-      if (nextProps != redirects) {
-        setRedirects(nextProps.redirects);
-        setRedirectsOrder(sort(nextProps.redirects));
-        setSortBy(sort(sortBy));
-        setSortDirection(sort(sortDirection));
-      }
-    },
-    [redirects, redirectsOrder, sortBy, sortDirection]
-  );
-
-  // const usePrevious = (value) => {
-  //   const ref = useRef();
-  //   useEffect(() => {
-  //     ref.current = value;
-  //   });
-  //   return ref.current;
-  // };
-
-  // const prevRedirect = usePrevious(redirects);
-
-  // useEffect(() => {
-  //   if (prevRedirect !== redirects) {
-  //     setRedirects(prevRedirect);
-  //     setRedirectsOrder(sort(prevRedirect));
-  //     setSortBy(sort(sortBy));
-  //     setSortDirection(sort(sortDirection));
-  //   }
-  // }, [redirects, redirectsOrder, sortBy, sortDirection]);
+  useEffect(() => {
+    // if (redirects != props.redirects) {
+    setRedirects(redirects);
+    setRedirectsOrder(sort(redirects));
+    setSortBy(sort(sortBy));
+    setSortDirection(sort(sortDirection));
+    // }
+  }, []);
 
   // https://stackoverflow.com/a/53446665/6178393
 
@@ -55,7 +33,7 @@ export default function RedirectTable(props) {
 
   const renderRows = () => {
     const filter = props.redirectsFilter;
-    var order = [...redirectsOrder];
+    let order = [...redirectsOrder];
 
     if (filter) {
       order = order.filter((key) => {
