@@ -25,10 +25,46 @@ export default function RedirectTable(props) {
     // }
   }, []);
 
-  // https://stackoverflow.com/a/53446665/6178393
-
   const handleRemoveRedirect = (zuid) => {
     props.dispatch(removeRedirect(zuid));
+  };
+
+  const sort = (redirects, by, direction) => {
+    const mapping = {
+      type: "code",
+      from: "path",
+      to: "path",
+    };
+
+    if (direction === "desc") {
+      return Object.keys(redirects).sort((a, b) => {
+        const prev = String(redirects[a][mapping[by]])?.toLowerCase().trim();
+        const next = String(redirects[b][mapping[by]])?.toLowerCase().trim();
+
+        if (prev > next) {
+          return -1;
+        }
+        if (prev < next) {
+          return 1;
+        }
+        return 0;
+      });
+    } else if (direction === "asc") {
+      return Object.keys(redirects).sort((a, b) => {
+        const prev = String(redirects[a][mapping[by]])?.toLowerCase().trim();
+        const next = String(redirects[b][mapping[by]])?.toLowerCase().trim();
+
+        if (prev < next) {
+          return -1;
+        }
+        if (prev > next) {
+          return 1;
+        }
+        return 0;
+      });
+    } else {
+      return Object.keys(redirects);
+    }
   };
 
   const renderRows = () => {
@@ -80,43 +116,6 @@ export default function RedirectTable(props) {
     setSortBy(by);
     setSortDirection(direction);
     setRedirectsOrder(sort(redirects, by, direction));
-  };
-  const sort = (redirects, by, direction) => {
-    const mapping = {
-      type: "code",
-      from: "path",
-      to: "path",
-    };
-
-    if (direction === "desc") {
-      return Object.keys(redirects).sort((a, b) => {
-        const prev = String(redirects[a][mapping[by]])?.toLowerCase().trim();
-        const next = String(redirects[b][mapping[by]])?.toLowerCase().trim();
-
-        if (prev > next) {
-          return -1;
-        }
-        if (prev < next) {
-          return 1;
-        }
-        return 0;
-      });
-    } else if (direction === "asc") {
-      return Object.keys(redirects).sort((a, b) => {
-        const prev = String(redirects[a][mapping[by]])?.toLowerCase().trim();
-        const next = String(redirects[b][mapping[by]])?.toLowerCase().trim();
-
-        if (prev < next) {
-          return -1;
-        }
-        if (prev > next) {
-          return 1;
-        }
-        return 0;
-      });
-    } else {
-      return Object.keys(redirects);
-    }
   };
 
   return (
