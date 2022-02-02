@@ -12,6 +12,8 @@ import { QuickView } from "./Widgets/QuickView";
 import { WidgetQuickShare } from "./Widgets/WidgetQuickShare";
 import { WidgetListed } from "./Widgets/WidgetListed";
 import { WidgetDeleteItem } from "./Widgets/WidgetDeleteItem";
+import { ContentLinks } from "./Widgets/ContentLinks";
+
 import { Release } from "./Widgets/Release";
 
 import styles from "./Actions.less";
@@ -48,6 +50,8 @@ export function Actions(props) {
         basicApi={basicApi}
         liveURL={liveURL}
       />
+
+      <ContentLinks item={props.item} />
 
       {/* <Release item={props.item} /> */}
 

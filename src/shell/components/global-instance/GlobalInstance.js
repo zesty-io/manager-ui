@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import cx from "classnames";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { usePermission } from "shell/hooks/use-permissions";
 
 import { Button } from "@zesty-io/core/Button";
@@ -25,6 +25,7 @@ import { notify } from "shell/store/notifications";
 import styles from "./GlobalInstance.less";
 
 export default function GlobalInstance(props) {
+  const dispatch = useDispatch();
   const instance = useSelector((state) => state.instance);
   const instances = useSelector((state) => state.instances);
   const ref = useRef();
@@ -114,11 +115,13 @@ export default function GlobalInstance(props) {
                   `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${instance.ZUID}&instance=${instance.ZUID}`
                 )
                   .catch((err) => {
-                    dispatch({
-                      kind: "warn",
-                      message: err.message,
-                      err,
-                    });
+                    dispatch(
+                      notify({
+                        kind: "warn",
+                        message: err.message,
+                        err,
+                      })
+                    );
                   })
                   .finally(() => {
                     setPurge(false);
