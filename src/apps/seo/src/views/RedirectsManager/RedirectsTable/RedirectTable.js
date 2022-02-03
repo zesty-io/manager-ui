@@ -9,19 +9,20 @@ import RedirectsTableHeader from "./RedirectsTableHeader";
 import RedirectsTableRow from "./RedirectsTableRow";
 
 export default function RedirectTable(props) {
-  // const [redirects, setRedirects] = useState(props.redirects);
+  const [redirects, setRedirects] = useState(props.redirects);
+
   const [redirectsOrder, setRedirectsOrder] = useState(
     Object.keys(props.redirects)
   );
+
   const [sortBy, setSortBy] = useState("");
   const [sortDirection, setSortDirection] = useState("");
 
   useEffect(() => {
-    // if (redirects != props.redirects) {
-    // setRedirects(redirects);
-    setRedirectsOrder(sort(redirectsOrder, sortBy, sortDirection));
-
-    // }
+    setRedirects(redirects);
+    setSortBy(sortBy);
+    setSortDirection(sortDirection);
+    setRedirectsOrder(sort(redirects, sortBy, sortDirection));
   }, []);
 
   const handleRemoveRedirect = (zuid) => {
@@ -71,7 +72,7 @@ export default function RedirectTable(props) {
     const direction = sortDirection === "desc" ? "asc" : "desc";
     setSortBy(by);
     setSortDirection(direction);
-    setRedirectsOrder(sort(redirectsOrder, by, direction));
+    setRedirectsOrder(sort(redirects, by, direction));
   };
 
   const renderRows = () => {
