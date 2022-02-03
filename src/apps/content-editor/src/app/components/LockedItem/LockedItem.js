@@ -20,8 +20,8 @@ export function LockedItem(props) {
   return (
     <Modal
       className={styles.ItemLocked}
-      open={props.handleLockedItem}
-      onClose={props.goBack}
+      open={props.isLocked}
+      onClose={props.handleCancel}
     >
       <ModalHeader className={styles.ModalHeader}>
         <h2 className={styles.headline}>
@@ -38,7 +38,7 @@ export function LockedItem(props) {
         </p>
       </ModalContent>
       <ModalFooter className={styles.ModalFooter}>
-        <Button type="cancel" onClick={props.goBack}>
+        <Button type="cancel" onClick={props.handleCancel}>
           <FontAwesomeIcon icon={faStepBackward} />
           Go Back
         </Button>
