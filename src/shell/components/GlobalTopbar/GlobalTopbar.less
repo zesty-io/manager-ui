@@ -6,7 +6,11 @@
   box-shadow: 0px 0px 3px @globalMenuBkgColor;
   height: 54px;
   display: grid;
-  grid-template-columns: minmax(200px, 350px) 1fr;
+  grid-template-columns: 20vw auto;
+
+  @media only screen and (min-width: 2000px) {
+    grid-template-columns: 15vw auto;
+  }
 
   .InstanceSearch {
     display: flex;

@@ -54,7 +54,12 @@ export default connect((state, props) => {
     <div className={styles.Head}>
       <main className={styles.Tags}>
         <h1 className={styles.Notice}>
-          <Button kind="secondary" onClick={handleAdd} data-cy="CreateHeadTag">
+          <Button
+            title="Create Head Tag"
+            kind="secondary"
+            onClick={handleAdd}
+            data-cy="CreateHeadTag"
+          >
             <FontAwesomeIcon icon={faPlus} />
             Create Head Tag
           </Button>

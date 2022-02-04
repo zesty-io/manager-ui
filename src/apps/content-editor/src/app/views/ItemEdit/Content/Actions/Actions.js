@@ -12,6 +12,8 @@ import { QuickView } from "./Widgets/QuickView";
 import { WidgetQuickShare } from "./Widgets/WidgetQuickShare";
 import { WidgetListed } from "./Widgets/WidgetListed";
 import { WidgetDeleteItem } from "./Widgets/WidgetDeleteItem";
+import { ContentLinks } from "./Widgets/ContentLinks";
+
 import { Release } from "./Widgets/Release";
 
 import styles from "./Actions.less";
@@ -34,7 +36,7 @@ export function Actions(props) {
   const liveURL = domain ? `${domain}${path}` : "";
 
   return (
-    <aside className={styles.Actions}>
+    <Fragment>
       <QuickView
         fields={props.fields}
         itemZUID={props.itemZUID}
@@ -48,6 +50,8 @@ export function Actions(props) {
         basicApi={basicApi}
         liveURL={liveURL}
       />
+
+      <ContentLinks item={props.item} />
 
       <Release item={props.item} />
 
@@ -104,6 +108,6 @@ export function Actions(props) {
           modelType={type}
         />
       )}
-    </aside>
+    </Fragment>
   );
 }

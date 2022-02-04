@@ -21,7 +21,7 @@ import LoadInstance from "./components/load-instance";
 import Shell from "./views/Shell";
 
 import { MonacoSetup } from "../apps/code-editor/src/app/components/Editor/components/MemoizedEditor/MonacoSetup";
-import { loadedUI } from "./store/ui";
+import { actions } from "shell/store/ui";
 
 // needed for Breadcrumbs in Shell
 injectReducer(store, "navContent", navContent);
@@ -74,7 +74,7 @@ try {
     .then(([languages, selectedLang, nav, models, fields, content, ui]) => {
       store.dispatch({
         type: "LOADED_LOCAL_LANGUAGES",
-        payload: languages,
+        payload: languages || [],
       });
 
       store.dispatch({
@@ -108,7 +108,7 @@ try {
         data: content,
       });
 
-      store.dispatch(loadedUI(ui));
+      store.dispatch(actions.loadedUI(ui));
     });
 } catch (err) {
   console.error("IndexedDB:get:error", err);
