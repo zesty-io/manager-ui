@@ -31,19 +31,13 @@ export const FileViewer = memo(function FileViewer(props) {
     ? files.find((file) => file.ZUID === props.match.params.fileZUID)
     : {};
 
-  console.log("🚀 ~ file: FileViewer.js ~ line 31 ~ FileViewer ~ file", file);
-
   const getFields = useSelector((state) => state.fields);
-  console.log(
-    "🚀 ~ file: FileViewer.js ~ line 35 ~ FileViewer ~ getFields",
-    getFields
-  );
 
   const fields = getFields
     ? Object.keys(getFields)
         .filter(
           (fieldZUID) =>
-            getFields[fieldZUID]?.contentModelZUID === file.contentModelZUID
+            getFields[fieldZUID].contentModelZUID === file.contentModelZUID
         )
         .reduce((acc, fieldZUID) => {
           acc.push(getFields[fieldZUID]);
@@ -51,12 +45,11 @@ export const FileViewer = memo(function FileViewer(props) {
         }, [])
     : [];
 
-  const { match, location } = props;
   const [loading, setLoading] = useState(false);
 
   let lineNumber = 0;
-  if (location.search) {
-    const params = new URLSearchParams(location.search);
+  if (props.location.search) {
+    const params = new URLSearchParams(props.location.search);
     lineNumber = params.get("line");
   }
 
@@ -70,8 +63,9 @@ export const FileViewer = memo(function FileViewer(props) {
       setLoading(true);
     }
 
-    props
-      .dispatch(fetchFile(match.params.fileZUID, match.params.fileType))
+    dispatch(
+      fetchFile(props.match.params.fileZUID, props.match.params.fileType)
+    )
       .then((res) => {
         if (file.contentModelZUID) {
           return dispatch(fetchFields(file.contentModelZUID));
@@ -85,7 +79,7 @@ export const FileViewer = memo(function FileViewer(props) {
           dispatch(
             notify({
               kind: "warn",
-              message: `Could not load ${match.params.fileType} ${match.params.fileZUID}`,
+              message: `Could not load ${props.match.params.fileType} ${props.match.params.fileZUID}`,
             })
           );
         }
@@ -93,7 +87,7 @@ export const FileViewer = memo(function FileViewer(props) {
       .finally(() => {
         setLoading(false);
       });
-  }, [match.params.fileZUID]);
+  }, [props.match.params.fileZUID]);
 
   return (
     <section className={styles.FileViewer}>
@@ -102,12 +96,12 @@ export const FileViewer = memo(function FileViewer(props) {
           <>
             <LockedFile />
             <Switch>
-              <Route path={`${match.url}/diff`}>
+              <Route path={`${props.match.url}/diff`}>
                 <Differ
                   dispatch={dispatch}
                   fileName={file.fileName}
-                  fileZUID={match.params.fileZUID}
-                  fileType={match.params.fileType}
+                  fileZUID={props.match.params.fileZUID}
+                  fileType={props.match.params.fileType}
                   contentModelZUID={file.contentModelZUID}
                   currentCode={file.code}
                   publishedVersion={file.publishedVersion}
@@ -116,17 +110,17 @@ export const FileViewer = memo(function FileViewer(props) {
                   lineNumber={lineNumber}
                 />
               </Route>
-              <Route path={`${match.url}`}>
+              <Route path={`${props.match.url}`}>
                 {/* Force Sync */}
                 {!file.synced && (
-                  <Redirect push to={`${location.pathname}/diff/`} />
+                  <Redirect push to={`${props.location.pathname}/diff/`} />
                 )}
 
                 <Editor
                   dispatch={dispatch}
                   fileName={file.fileName}
-                  fileZUID={match.params.fileZUID}
-                  fileType={match.params.fileType}
+                  fileZUID={props.match.params.fileZUID}
+                  fileType={props.match.params.fileType}
                   contentModelZUID={file.contentModelZUID}
                   publishedVersion={file.publishedVersion}
                   fields={fields}
@@ -139,7 +133,7 @@ export const FileViewer = memo(function FileViewer(props) {
               </Route>
             </Switch>
 
-            <FileDrawer file={file} match={match} />
+            <FileDrawer file={file} match={props.match} />
           </>
         ) : (
           <div className={cx(styles.FileNotFound, styles.display)}>
