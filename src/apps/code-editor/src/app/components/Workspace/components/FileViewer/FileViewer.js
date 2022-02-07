@@ -31,21 +31,25 @@ export const FileViewer = memo(function FileViewer(props) {
     ? files.find((file) => file.ZUID === props.match.params.fileZUID)
     : {};
 
-  const getFields = useSelector((state) =>
-    Object.keys(state.fields)
-      .filter(
-        (fieldZUID) =>
-          state.fields[fieldZUID].contentModelZUID === file.contentModelZUID
-      )
-      .reduce((acc, fieldZUID) => {
-        acc.push(state.fields[fieldZUID]);
-        return acc;
-      }, [])
+  console.log("🚀 ~ file: FileViewer.js ~ line 31 ~ FileViewer ~ file", file);
+
+  const getFields = useSelector((state) => state.fields);
+  console.log(
+    "🚀 ~ file: FileViewer.js ~ line 35 ~ FileViewer ~ getFields",
+    getFields
   );
 
-  const fields = getFields ? getFields : [];
-
-  console.log("🚀 ~ file: FileViewer.js ~ line 30 ~ FileViewer ~ file", file);
+  const fields = getFields
+    ? Object.keys(getFields)
+        .filter(
+          (fieldZUID) =>
+            getFields[fieldZUID]?.contentModelZUID === file.contentModelZUID
+        )
+        .reduce((acc, fieldZUID) => {
+          acc.push(getFields[fieldZUID]);
+          return acc;
+        }, [])
+    : [];
 
   const { match, location } = props;
   const [loading, setLoading] = useState(false);
