@@ -58,6 +58,8 @@ export function CreateRelease() {
           data-cy="release-name"
           label="Release Name"
           name="name"
+          maxLength={150}
+          value={name}
           onChange={(val) => setName(val.trim())}
           required
           error={error}
@@ -66,6 +68,8 @@ export function CreateRelease() {
           data-cy="release-desc"
           label="Release Description"
           name="description"
+          maxLength={150}
+          value={description}
           onChange={(val) => setDescription(val)}
         />
 
