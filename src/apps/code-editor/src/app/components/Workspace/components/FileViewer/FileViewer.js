@@ -1,7 +1,7 @@
 import { memo, useState, useEffect } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { Switch, Route } from "react-router";
-import { Redirect, useHistory } from "react-router-dom";
+import { Redirect, useHistory, useParams } from "react-router-dom";
 import useIsMounted from "ismounted";
 import cx from "classnames";
 
@@ -10,6 +10,7 @@ import cx from "classnames";
 import { notify } from "shell/store/notifications";
 import { fetchFields } from "shell/store/fields";
 import { fetchFile } from "../../../../../store/files";
+import { checkLock } from "shell/store/content";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -23,7 +24,8 @@ import styles from "./FileViewer.less";
 export const FileViewer = memo(function FileViewer(props) {
   console.log(props);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const isMounted = useIsMounted();
+  const { itemZUID } = useParams();
 
   const files = useSelector((state) => state.files);
 
@@ -44,8 +46,16 @@ export const FileViewer = memo(function FileViewer(props) {
           return acc;
         }, [])
     : [];
+  console.log("PROPS", props);
+  console.log("🚀 ~ file: FileViewer.js ~ line 33 ~ FileViewer ~ file", file);
+  console.log(
+    "🚀 ~ file: FileViewer.js ~ line 39 ~ FileViewer ~ fields",
+    fields
+  );
 
   const [loading, setLoading] = useState(false);
+  const [lockState, setLockState] = useState({});
+  const [checkingLock, setCheckingLock] = useState(false);
 
   let lineNumber = 0;
   if (props.location.search) {
@@ -88,6 +98,17 @@ export const FileViewer = memo(function FileViewer(props) {
         setLoading(false);
       });
   }, [props.match.params.fileZUID]);
+
+  async function lockFile() {
+    // setCheckingLock(true);
+    const lockResponse = await dispatch(checkLock(itemZUID));
+    console.log(
+      "🚀 ~ file: FileViewer.js ~ line 103 ~ lockFile ~ lockResponse",
+      lockResponse
+    );
+  }
+
+  lockFile();
 
   return (
     <section className={styles.FileViewer}>
