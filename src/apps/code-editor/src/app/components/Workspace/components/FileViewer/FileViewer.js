@@ -15,6 +15,7 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import { Editor } from "../../../Editor";
 import { Differ } from "../../../Differ";
 import { FileDrawer } from "../../../FileDrawer";
+import { LockedFile } from "../../../LockedFile";
 
 import styles from "./FileViewer.less";
 export const FileViewer = connect((state, props) => {
@@ -89,6 +90,7 @@ export const FileViewer = connect((state, props) => {
         <WithLoader condition={!loading} message="Finding File">
           {props.file && props.file.ZUID ? (
             <>
+              <LockedFile />
               <Switch>
                 <Route path={`${match.url}/diff`}>
                   <Differ
