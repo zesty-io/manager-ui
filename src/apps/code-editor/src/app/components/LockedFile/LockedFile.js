@@ -19,7 +19,7 @@ import styles from "./LockedFile.less";
 
 export function LockedFile(props) {
   return (
-    <Modal className={styles.ItemLocked} open={true}>
+    <Modal className={styles.ItemLocked} open={false}>
       <ModalHeader className={styles.ModalHeader}>
         <h2 className={styles.headline}>
           <FontAwesomeIcon icon={faLock} /> Item Locked
