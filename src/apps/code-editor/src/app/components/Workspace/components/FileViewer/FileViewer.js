@@ -10,7 +10,7 @@ import cx from "classnames";
 import { notify } from "shell/store/notifications";
 import { fetchFields } from "shell/store/fields";
 import { fetchFile } from "../../../../../store/files";
-import { checkLock } from "shell/store/content";
+import { checkLock, lock, unlock } from "shell/store/content";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -26,6 +26,7 @@ export const FileViewer = memo(function FileViewer(props) {
   const dispatch = useDispatch();
   const isMounted = useIsMounted();
   const { itemZUID } = useParams();
+  const user = useSelector((state) => state.user);
 
   const files = useSelector((state) => state.files);
 
@@ -100,15 +101,44 @@ export const FileViewer = memo(function FileViewer(props) {
   }, [props.match.params.fileZUID]);
 
   async function lockFile() {
-    // setCheckingLock(true);
+    setCheckingLock(true);
     const lockResponse = await dispatch(checkLock(itemZUID));
     console.log(
       "🚀 ~ file: FileViewer.js ~ line 103 ~ lockFile ~ lockResponse",
       lockResponse
     );
+    try {
+      if (isMounted.current) {
+        if (!lockResponse.userZUID) {
+          dispatch(lock(itemZUID));
+          setLockState({ userZUID: user.ZUID });
+        } else {
+          setLockState(lockResponse);
+        }
+      }
+    } catch (err) {
+      if (isMounted.current) {
+        setLockState({ userZUID: user.ZUID });
+      }
+    } finally {
+      if (isMounted.current) {
+        setCheckingLock(false);
+      }
+    }
   }
 
-  lockFile();
+  function releaseLock(itemZUID) {
+    if (lockState.userZUID === user.ZUID) {
+      dispatch(unlock(itemZUID));
+    }
+  }
+
+  function forceUnlock() {
+    dispatch(unlock(itemZUID)).then(() => {
+      dispatch(lock(itemZUID));
+    });
+    setLockState({ userZUID: user.ZUID });
+  }
 
   return (
     <section className={styles.FileViewer}>
