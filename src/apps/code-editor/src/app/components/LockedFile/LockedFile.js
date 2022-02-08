@@ -18,8 +18,13 @@ import { Button } from "@zesty-io/core/Button";
 import styles from "./LockedFile.less";
 
 export function LockedFile(props) {
+  console.log(props);
   return (
-    <Modal className={styles.ItemLocked} open={false}>
+    <Modal
+      className={styles.ItemLocked}
+      open={true}
+      onClose={props.handleCancel}
+    >
       <ModalHeader className={styles.ModalHeader}>
         <h2 className={styles.headline}>
           <FontAwesomeIcon icon={faLock} /> Item Locked
@@ -27,19 +32,22 @@ export function LockedFile(props) {
       </ModalHeader>
       <ModalContent className={styles.ModalContent}>
         <p className={styles.subheadline}>
-          David Naimi is viewing{" "}
-          <strong className={styles.ItemName}>site name here</strong> since{" "}
-          {/* {moment.unix(props.timestamp).format("MMMM Do YYYY, [at] h:mm a")}. */}
-          Unlock this item to ignore this warning and possibly overwrite David's
-          changes.
+          {props.userFirstName} {props.userLastName} is viewing{" "}
+          <strong className={styles.ItemName}>
+            props.itemName coming soon
+          </strong>{" "}
+          since{" "}
+          {moment.unix(props.timestamp).format("MMMM Do YYYY, [at] h:mm a")}.
+          Unlock this item to ignore this warning and possibly overwrite{" "}
+          {props.userFirstName}'s changes.
         </p>
       </ModalContent>
       <ModalFooter className={styles.ModalFooter}>
-        <Button type="cancel">
+        <Button type="cancel" onClick={props.handleCancel}>
           <FontAwesomeIcon icon={faStepBackward} />
           Go Back
         </Button>
-        <Button type="save">
+        <Button type="save" onClick={props.handleUnlock}>
           <FontAwesomeIcon icon={faUnlock} />
           Unlock
         </Button>
