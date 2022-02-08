@@ -9,6 +9,7 @@ import cx from "classnames";
 
 import { notify } from "shell/store/notifications";
 import { fetchFields } from "shell/store/fields";
+import { checkLock, lock, unlock } from "shell/store/content";
 import { fetchFile } from "../../../../../store/files";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -105,12 +106,12 @@ export const FileViewer = connect((state, props) => {
     async function lockItem() {
       setCheckingLock(true);
       try {
-        const lockResponse = await dispatch(checkLock(props.file.ZUID));
+        const lockResponse = await props.dispatch(checkLock(props.file.ZUID));
 
         // If no one has a lock then give lock to current user
         if (isMounted.current) {
           if (!lockResponse.userZUID) {
-            dispatch(lock(props.file.ZUID));
+            props.dispatch(lock(props.file.ZUID));
             setLockState({ userZUID: props.user.ZUID });
           } else {
             setLockState(lockResponse);
@@ -130,23 +131,17 @@ export const FileViewer = connect((state, props) => {
 
     function releaseLock(fileZUID) {
       if (lockState.userZUID === props.user.ZUID) {
-        dispatch(unlock(fileZUID));
+        props.dispatch(unlock(fileZUID));
       }
     }
 
     function forceUnlock() {
       // Transfer item lock to current session user
-      dispatch(unlock(props.file.ZUID)).then(() => {
-        dispatch(lock(props.file.ZUID));
+      props.dispatch(unlock(props.file.ZUID)).then(() => {
+        props.dispatch(lock(props.file.ZUID));
       });
       setLockState({ userZUID: props.user.ZUID });
     }
-
-    console.log("lockState", lockState);
-    console.log(
-      "🚀 ~ file: FileViewer.js ~ line 143 ~ forceUnlock ~ props.user.ZUID",
-      props.user
-    );
 
     const isLocked = !checkingLock && lockState.userZUID !== props.user.ZUID;
 
@@ -155,17 +150,17 @@ export const FileViewer = connect((state, props) => {
         <WithLoader condition={!loading} message="Finding File">
           {props.file && props.file.ZUID ? (
             <>
-              {true && (
+              {isLocked && (
                 <LockedFile
                   timestamp={lockState.timestamp}
                   userFirstName={lockState.firstName}
                   userLastName={lockState.lastName}
                   userEmail={lockState.email}
-                  // itemName={item?.web?.metaLinkText}
+                  itemName={props.file.fileName}
                   handleUnlock={forceUnlock}
                   handleCancel={(evt) => {
                     evt.stopPropagation();
-                    history.goBack();
+                    props.history.goBack();
                   }}
                   isLocked={isLocked}
                 />

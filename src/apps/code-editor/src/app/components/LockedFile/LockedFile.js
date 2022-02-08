@@ -18,11 +18,10 @@ import { Button } from "@zesty-io/core/Button";
 import styles from "./LockedFile.less";
 
 export function LockedFile(props) {
-  console.log(props);
   return (
     <Modal
       className={styles.ItemLocked}
-      open={true}
+      open={props.isLocked}
       onClose={props.handleCancel}
     >
       <ModalHeader className={styles.ModalHeader}>
@@ -32,9 +31,13 @@ export function LockedFile(props) {
       </ModalHeader>
       <ModalContent className={styles.ModalContent}>
         <p className={styles.subheadline}>
-          {props.userFirstName} {props.userLastName} is viewing{" "}
+          <strong>
+            {" "}
+            {props.userFirstName} {props.userLastName}{" "}
+          </strong>{" "}
+          is viewing{" "}
           <strong className={styles.ItemName}>
-            props.itemName coming soon
+            <em> {props.itemName}</em>
           </strong>{" "}
           since{" "}
           {moment.unix(props.timestamp).format("MMMM Do YYYY, [at] h:mm a")}.
