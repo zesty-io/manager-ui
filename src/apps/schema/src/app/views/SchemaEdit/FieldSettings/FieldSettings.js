@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useRef, useEffect } from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -17,8 +17,6 @@ import {
   faMoneyBillAlt,
   faIdCard,
   faExclamationTriangle,
-  faImage,
-  faCalendarTimes,
   faCalendarAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
@@ -39,6 +37,26 @@ export default function FieldSettings(props) {
   const field = FIELD_TYPES.find(
     (field) => field.value === props.field.datatype
   );
+
+  /**
+   *  Added a useRef workaround to get FieldTypeText Field Label & Field Name to
+   * to autopopulate on initial create item. This also resolves the input cursor jump to end  on input on item edit.
+   * helper reference https://stackoverflow.com/a/57773476/6178393
+   *
+   */
+  const fieldLabelRef = useRef();
+  const fieldNameRef = useRef();
+  const cursorRef = useRef(0);
+
+  useEffect(() => {
+    fieldLabelRef.current.selectionStart = cursorRef.current;
+    fieldLabelRef.current.selectionEnd = cursorRef.current;
+  }, [props.field.label]);
+
+  useEffect(() => {
+    fieldNameRef.current.selectionStart = cursorRef.current;
+    fieldNameRef.current.selectionEnd = cursorRef.current;
+  }, [props.field.name]);
 
   return (
     <div className={cx(styles.DefaultSettings, props.className)}>
@@ -68,9 +86,11 @@ export default function FieldSettings(props) {
             className={styles.Setting}
             name="label"
             label="Field Label"
-            defaultValue={props.field.label}
+            value={props.field.label}
+            ref={fieldLabelRef}
             maxLength="200"
             onChange={(val, key) => {
+              cursorRef.current = fieldLabelRef.current.selectionStart;
               if (props.new && props.updateMultipleValues) {
                 props.updateMultipleValues({
                   [key]: val, // dynamic property key, name of field
@@ -82,12 +102,16 @@ export default function FieldSettings(props) {
             }}
           />
           <FieldTypeText
+            ref={fieldNameRef}
             className={styles.Setting}
             name="name"
             label="Field Name (Parsley Code Reference). Can not contain spaces, uppercase or special characters."
-            defaultValue={props.field.name}
+            value={props.field.name}
             maxLength="50"
-            onChange={(val, name) => props.updateValue(formatName(val), name)}
+            onChange={(val, name) => {
+              cursorRef.current = fieldNameRef.current.selectionStart;
+              props.updateValue(formatName(val), name);
+            }}
           />
 
           <FieldTypeBinary
