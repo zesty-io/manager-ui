@@ -17,34 +17,11 @@
     padding: 48px;
   }
 
-  .Overlay {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 10;
-    width: 100%;
-    border-radius: 8px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    aside {
-      font-size: 18px;
-    }
-  }
-
   iframe {
     border: 3px solid @bright-gray;
     box-shadow: 0 7px 30px -10px rgb(150 170 180 / 50%);
     border-radius: 8px;
     width: 100%;
     height: @height;
-
-    &.Blur {
-      filter: blur(3px);
-    }
   }
 }

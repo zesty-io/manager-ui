@@ -7,7 +7,7 @@ describe("Navigation through content editor", () => {
 
   it("Opens homepage item", () => {
     cy.get("#MainNavigation").then((content) => {
-      if (!content.is(":visible")) {
+      if (content.is(":visible")) {
         cy.get("[data-cy=contentNavButton]").click();
         cy.get("#MainNavigation").contains("Page").click();
         cy.contains("Page Title").should("exist");

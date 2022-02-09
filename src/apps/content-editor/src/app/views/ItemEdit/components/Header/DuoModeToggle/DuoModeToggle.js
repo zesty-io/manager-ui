@@ -48,7 +48,7 @@ export function DuoModeToggle(props) {
         props.item.web.path && (
           <Fragment>
             <LiveUrl item={props.item} />
-            <PreviewUrl item={props.item} instance={props.instance} />
+            <PreviewUrl item={props.item} />
           </Fragment>
         )
       ) : (
