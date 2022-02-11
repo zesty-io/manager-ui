@@ -49,7 +49,7 @@ export const FileViewer = connect((state, props) => {
     const [loading, setLoading] = useState(false);
 
     const [lockState, setLockState] = useState({});
-    const [checkingLock, setCheckingLock] = useState(false);
+    const [checkingLock, setCheckingLock] = useState(true);
 
     let lineNumber = 0;
     if (location.search) {
@@ -59,49 +59,44 @@ export const FileViewer = connect((state, props) => {
 
     // If we don't have the file on hand, fetch it from the api
     useEffect(() => {
-      // If we already have the file on hand let the refresh happen in the background
-      if (!props.file || !props.file.ZUID) {
-        setLoading(true);
-      }
-      if (props.file.contentModelZUID && !props.fields.length) {
-        setLoading(true);
-      }
-
-      props
-        .dispatch(fetchFile(match.params.fileZUID, match.params.fileType))
-        .then((res) => {
-          if (props.file.contentModelZUID) {
-            return props.dispatch(fetchFields(props.file.contentModelZUID));
-          } else {
-            res;
-          }
-        })
-        .catch((err) => {
-          if (err !== "duplicate request") {
-            console.error(err);
-            props.dispatch(
-              notify({
-                kind: "warn",
-                message: `Could not load ${match.params.fileType} ${match.params.fileZUID}`,
-              })
-            );
-          }
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }, [match.params.fileZUID]);
-
-    useEffect(() => {
-      // on mount and modelZUID/itemZUID update,
-      // lock item and load all item data
+      load(props.file);
       lockItem(props.file.ZUID);
 
       // on unmount, release lock
       return () => {
         releaseLock(props.file.ZUID);
       };
-    }, [props.file.ZUID]);
+    }, [match.params.fileZUID]);
+
+    async function load(file) {
+      try {
+        // If we already have the file on hand let the refresh happen in the background
+        if (!file || !file.ZUID) {
+          setLoading(true);
+        }
+        if (file.contentModelZUID && !props.fields.length) {
+          setLoading(true);
+        }
+        await props.dispatch(
+          fetchFile(match.params.fileZUID, match.params.fileType)
+        );
+        if (file.contentModelZUID) {
+          await props.dispatch(fetchFields(file.contentModelZUID));
+        }
+      } catch (err) {
+        if (err !== "duplicate request") {
+          console.error(err);
+          props.dispatch(
+            notify({
+              kind: "warn",
+              message: `Could not load ${match.params.fileType} ${match.params.fileZUID}`,
+            })
+          );
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
 
     async function lockItem() {
       setCheckingLock(true);
@@ -147,7 +142,10 @@ export const FileViewer = connect((state, props) => {
 
     return (
       <section className={styles.FileViewer}>
-        <WithLoader condition={!loading} message="Finding File">
+        <WithLoader
+          condition={!loading && !checkingLock}
+          message="Finding File"
+        >
           {props.file && props.file.ZUID ? (
             <>
               {isLocked && (
