@@ -60,13 +60,12 @@ export const FileViewer = connect((state, props) => {
     // If we don't have the file on hand, fetch it from the api
     useEffect(() => {
       load(props.file);
-      lockItem(props.file.ZUID);
+      lockItem(props.file.ZUID); // check if there is a user currently editing the file
 
-      // on unmount, release lock
       return () => {
-        releaseLock(props.file.ZUID);
+        releaseLock(props.file.ZUID); // on unmount, release lock
       };
-    }, [match.params.fileZUID]);
+    }, [match.params.fileZUID, props.file.ZUID]);
 
     async function load(file) {
       try {
@@ -138,12 +137,12 @@ export const FileViewer = connect((state, props) => {
       setLockState({ userZUID: props.user.ZUID });
     }
 
-    const isLocked = !checkingLock && lockState.userZUID !== props.user.ZUID;
+    const isLocked = !checkingLock && lockState.userZUID !== props.user.ZUID; //show lock modal
 
     return (
       <section className={styles.FileViewer}>
         <WithLoader
-          condition={!loading && !checkingLock}
+          condition={!loading && !checkingLock} //falsey shows loader
           message="Finding File"
         >
           {props.file && props.file.ZUID ? (
