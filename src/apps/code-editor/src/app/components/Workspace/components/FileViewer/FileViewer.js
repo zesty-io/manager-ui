@@ -72,15 +72,11 @@ export const FileViewer = connect((state, props) => {
           const response = await props.dispatch(
             fetchFile(match.params.fileZUID, match.params.fileType)
           );
-          console.log(
-            "🚀 ~ file: FileViewer.js ~ line 73 ~ loadFile ~ response",
-            response
-          );
 
-          if (!props.file.ZUID) {
-            await lockItem(response.data.ZUID);
-          } else {
+          if (props.file.ZUID) {
             lockItem(props.file.ZUID);
+          } else {
+            await lockItem(response.data.ZUID);
           }
 
           if (props.file.contentModelZUID) {
@@ -114,11 +110,6 @@ export const FileViewer = connect((state, props) => {
     }, [match.params.fileZUID, props.file.ZUID]);
 
     async function lockItem(file) {
-      console.log(
-        "🚀 ~ file: FileViewer.js ~ line 117 ~ lockItem ~ file",
-        file
-      );
-
       setCheckingLock(true);
       try {
         const lockResponse = await props.dispatch(checkLock(file));
@@ -158,6 +149,11 @@ export const FileViewer = connect((state, props) => {
     }
 
     const isLocked = !checkingLock && lockState.userZUID !== props.user.ZUID;
+    console.log(
+      "🚀 ~ file: FileViewer.js ~ line 152 ~ FileViewer ~ checkingLock",
+      checkingLock
+    );
+    // console.log("🚀 ~ file: FileViewer.js ~ line 152 ~ FileViewer ~ isLocked", isLocked)
 
     return (
       <section className={styles.FileViewer}>
