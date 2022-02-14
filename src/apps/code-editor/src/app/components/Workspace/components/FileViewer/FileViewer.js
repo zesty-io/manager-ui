@@ -49,7 +49,7 @@ export const FileViewer = connect((state, props) => {
     const [loading, setLoading] = useState(false);
 
     const [lockState, setLockState] = useState({});
-    const [checkingLock, setCheckingLock] = useState(false);
+    const [checkingLock, setCheckingLock] = useState(true);
 
     let lineNumber = 0;
     if (location.search) {
@@ -140,20 +140,15 @@ export const FileViewer = connect((state, props) => {
       }
     }
 
-    function forceUnlock(file) {
+    function forceUnlock() {
       // Transfer item lock to current session user
-      props.dispatch(unlock(file)).then(() => {
-        props.dispatch(lock(file));
+      props.dispatch(unlock(props.file.ZUID)).then(() => {
+        props.dispatch(lock(props.file.ZUID));
       });
       setLockState({ userZUID: props.user.ZUID });
     }
 
     const isLocked = !checkingLock && lockState.userZUID !== props.user.ZUID;
-    console.log(
-      "🚀 ~ file: FileViewer.js ~ line 152 ~ FileViewer ~ checkingLock",
-      checkingLock
-    );
-    // console.log("🚀 ~ file: FileViewer.js ~ line 152 ~ FileViewer ~ isLocked", isLocked)
 
     return (
       <section className={styles.FileViewer}>
