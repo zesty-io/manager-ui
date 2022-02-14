@@ -2,7 +2,7 @@ import { memo, useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Switch, Route } from "react-router";
 import useIsMounted from "ismounted";
-import { Redirect } from "react-router-dom";
+import { Redirect, useParams } from "react-router-dom";
 import cx from "classnames";
 
 // TODO implement multitab: https://github.com/Microsoft/monaco-editor/issues/604#issuecomment-344214706
@@ -44,12 +44,15 @@ export const FileViewer = connect((state, props) => {
   };
 })(
   memo(function FileViewer(props) {
+    const { fileZUID } = useParams();
+
     const isMounted = useIsMounted();
     const { match, location } = props;
     const [loading, setLoading] = useState(false);
 
     const [lockState, setLockState] = useState({});
     const [checkingLock, setCheckingLock] = useState(true);
+    const [test, setTest] = useState("");
 
     let lineNumber = 0;
     if (location.search) {
@@ -67,47 +70,14 @@ export const FileViewer = connect((state, props) => {
         setLoading(true);
       }
 
-      async function loadFile() {
-        try {
-          const response = await props.dispatch(
-            fetchFile(match.params.fileZUID, match.params.fileType)
-          );
-
-          if (props.file.ZUID) {
-            lockItem(props.file.ZUID);
-          } else {
-            await lockItem(response.data.ZUID);
-          }
-
-          if (props.file.contentModelZUID) {
-            const getFields = await props.dispatch(
-              fetchFields(props.file.contentModelZUID)
-            );
-            return getFields;
-          } else {
-            response;
-          }
-        } catch (err) {
-          if (err !== "duplicate request") {
-            console.error(err);
-            props.dispatch(
-              notify({
-                kind: "warn",
-                message: `Could not load ${match.params.fileType} ${match.params.fileZUID}`,
-              })
-            );
-          }
-        } finally {
-          setLoading(false);
-        }
-      }
       loadFile();
+      lockItem(fileZUID);
 
-      // on unmount, release lock
+      // on unmount, release lock /////////////////////////////////////////////////////////////////////
       return () => {
-        releaseLock(props.file.ZUID);
+        releaseLock(fileZUID);
       };
-    }, [match.params.fileZUID, props.file.ZUID]);
+    }, [match.params.fileZUID, fileZUID]);
 
     async function lockItem(file) {
       setCheckingLock(true);
@@ -133,10 +103,38 @@ export const FileViewer = connect((state, props) => {
         }
       }
     }
+    async function loadFile() {
+      try {
+        const response = await props.dispatch(
+          fetchFile(match.params.fileZUID, match.params.fileType)
+        );
 
-    function releaseLock(file) {
+        if (props.file.contentModelZUID) {
+          const getFields = await props.dispatch(
+            fetchFields(props.file.contentModelZUID)
+          );
+          return getFields;
+        } else {
+          response;
+        }
+      } catch (err) {
+        if (err !== "duplicate request") {
+          console.error(err);
+          props.dispatch(
+            notify({
+              kind: "warn",
+              message: `Could not load ${match.params.fileType} ${match.params.fileZUID}`,
+            })
+          );
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function releaseLock() {
       if (lockState.userZUID === props.user.ZUID) {
-        props.dispatch(unlock(file));
+        props.dispatch(unlock(fileZUID));
       }
     }
 
