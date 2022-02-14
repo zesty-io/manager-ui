@@ -138,8 +138,8 @@ export const FileViewer = connect((state, props) => {
 
     function forceUnlock() {
       // Transfer item lock to current session user
-      props.dispatch(unlock(props.file.ZUID)).then(() => {
-        props.dispatch(lock(props.file.ZUID));
+      props.dispatch(unlock(fileZUID)).then(() => {
+        props.dispatch(lock(fileZUID));
       });
       setLockState({ userZUID: props.user.ZUID });
     }
