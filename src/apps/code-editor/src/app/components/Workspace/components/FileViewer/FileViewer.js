@@ -1,7 +1,7 @@
 import { memo, useState, useEffect } from "react";
 import { connect } from "react-redux";
-import useIsMounted from "ismounted";
 import { Switch, Route } from "react-router";
+import useIsMounted from "ismounted";
 import { Redirect } from "react-router-dom";
 import cx from "classnames";
 
@@ -9,8 +9,8 @@ import cx from "classnames";
 
 import { notify } from "shell/store/notifications";
 import { fetchFields } from "shell/store/fields";
-import { checkLock, lock, unlock } from "shell/store/content";
 import { fetchFile } from "../../../../../store/files";
+import { checkLock, lock, unlock } from "shell/store/content";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -49,7 +49,7 @@ export const FileViewer = connect((state, props) => {
     const [loading, setLoading] = useState(false);
 
     const [lockState, setLockState] = useState({});
-    const [checkingLock, setCheckingLock] = useState(true);
+    const [checkingLock, setCheckingLock] = useState(false);
 
     let lineNumber = 0;
     if (location.search) {
@@ -69,14 +69,27 @@ export const FileViewer = connect((state, props) => {
 
       async function loadFile() {
         try {
-          const fileResponse = await props.dispatch(
+          const response = await props.dispatch(
             fetchFile(match.params.fileZUID, match.params.fileType)
           );
+          console.log(
+            "🚀 ~ file: FileViewer.js ~ line 73 ~ loadFile ~ response",
+            response
+          );
 
-          await lockItem(fileResponse.data.ZUID);
+          if (!props.file.ZUID) {
+            await lockItem(response.data.ZUID);
+          } else {
+            lockItem(props.file.ZUID);
+          }
 
           if (props.file.contentModelZUID) {
-            await props.dispatch(fetchFields(props.file.contentModelZUID));
+            const getFields = await props.dispatch(
+              fetchFields(props.file.contentModelZUID)
+            );
+            return getFields;
+          } else {
+            response;
           }
         } catch (err) {
           if (err !== "duplicate request") {
@@ -92,19 +105,23 @@ export const FileViewer = connect((state, props) => {
           setLoading(false);
         }
       }
-
       loadFile();
 
+      // on unmount, release lock
       return () => {
-        releaseLock(props.file.ZUID); // on unmount, release lock
+        releaseLock(props.file.ZUID);
       };
     }, [match.params.fileZUID, props.file.ZUID]);
 
     async function lockItem(file) {
+      console.log(
+        "🚀 ~ file: FileViewer.js ~ line 117 ~ lockItem ~ file",
+        file
+      );
+
       setCheckingLock(true);
       try {
         const lockResponse = await props.dispatch(checkLock(file));
-
         // If no one has a lock then give lock to current user
         if (isMounted.current) {
           if (!lockResponse.userZUID) {
@@ -126,28 +143,25 @@ export const FileViewer = connect((state, props) => {
       }
     }
 
-    function releaseLock(fileZUID) {
+    function releaseLock(file) {
       if (lockState.userZUID === props.user.ZUID) {
-        props.dispatch(unlock(fileZUID));
+        props.dispatch(unlock(file));
       }
     }
 
-    function forceUnlock() {
+    function forceUnlock(file) {
       // Transfer item lock to current session user
-      props.dispatch(unlock(props.file.ZUID)).then(() => {
-        props.dispatch(lock(props.file.ZUID));
+      props.dispatch(unlock(file)).then(() => {
+        props.dispatch(lock(file));
       });
       setLockState({ userZUID: props.user.ZUID });
     }
 
-    const isLocked = !checkingLock && lockState.userZUID !== props.user.ZUID; //show lock modal
+    const isLocked = !checkingLock && lockState.userZUID !== props.user.ZUID;
 
     return (
       <section className={styles.FileViewer}>
-        <WithLoader
-          condition={!loading} //falsey shows loader
-          message="Finding File"
-        >
+        <WithLoader condition={!loading} message="Finding File">
           {props.file && props.file.ZUID ? (
             <>
               {isLocked && (
