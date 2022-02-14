@@ -45,14 +45,12 @@ export const FileViewer = connect((state, props) => {
 })(
   memo(function FileViewer(props) {
     const { fileZUID } = useParams();
-
     const isMounted = useIsMounted();
     const { match, location } = props;
     const [loading, setLoading] = useState(false);
 
     const [lockState, setLockState] = useState({});
-    const [checkingLock, setCheckingLock] = useState(true);
-    const [test, setTest] = useState("");
+    const [checkingLock, setCheckingLock] = useState(false);
 
     let lineNumber = 0;
     if (location.search) {
@@ -73,7 +71,7 @@ export const FileViewer = connect((state, props) => {
       loadFile();
       lockItem(fileZUID);
 
-      // on unmount, release lock /////////////////////////////////////////////////////////////////////
+      // on unmount, release lock
       return () => {
         releaseLock(fileZUID);
       };
