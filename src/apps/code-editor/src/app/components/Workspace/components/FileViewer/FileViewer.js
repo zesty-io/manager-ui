@@ -75,7 +75,7 @@ export const FileViewer = connect((state, props) => {
       return () => {
         releaseLock(fileZUID);
       };
-    }, [match.params.fileZUID, fileZUID]);
+    }, [match.params.fileZUID]);
 
     async function loadFile() {
       try {
