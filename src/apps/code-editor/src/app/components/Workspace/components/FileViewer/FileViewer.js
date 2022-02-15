@@ -52,6 +52,8 @@ export const FileViewer = connect((state, props) => {
     const [lockState, setLockState] = useState({});
     const [checkingLock, setCheckingLock] = useState(false);
 
+    const [isLock, setIsLock] = useState(false);
+
     let lineNumber = 0;
     if (location.search) {
       const params = new URLSearchParams(location.search);
@@ -74,6 +76,7 @@ export const FileViewer = connect((state, props) => {
       // on unmount, release lock
       return () => {
         releaseLock(fileZUID);
+        setIsLock(false);
       };
     }, [match.params.fileZUID]);
 
@@ -113,9 +116,11 @@ export const FileViewer = connect((state, props) => {
         if (isMounted.current) {
           if (!lockResponse.userZUID) {
             props.dispatch(lock(file));
+            setIsLock(true);
             setLockState({ userZUID: props.user.ZUID });
           } else {
             setLockState(lockResponse);
+            setIsLock(true);
           }
         }
       } catch (err) {
@@ -144,7 +149,8 @@ export const FileViewer = connect((state, props) => {
       setLockState({ userZUID: props.user.ZUID });
     }
 
-    const isLocked = !checkingLock && lockState.userZUID !== props.user.ZUID;
+    const isLocked =
+      isLock && !checkingLock && lockState.userZUID !== props.user.ZUID;
 
     return (
       <section className={styles.FileViewer}>
