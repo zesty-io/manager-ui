@@ -77,30 +77,6 @@ export const FileViewer = connect((state, props) => {
       };
     }, [match.params.fileZUID, fileZUID]);
 
-    async function lockItem(file) {
-      setCheckingLock(true);
-      try {
-        const lockResponse = await props.dispatch(checkLock(file));
-        // If no one has a lock then give lock to current user
-        if (isMounted.current) {
-          if (!lockResponse.userZUID) {
-            props.dispatch(lock(file));
-            setLockState({ userZUID: props.user.ZUID });
-          } else {
-            setLockState(lockResponse);
-          }
-        }
-      } catch (err) {
-        // If service is unavailable allow all users ownership
-        if (isMounted.current) {
-          setLockState({ userZUID: props.user.ZUID });
-        }
-      } finally {
-        if (isMounted.current) {
-          setCheckingLock(false);
-        }
-      }
-    }
     async function loadFile() {
       try {
         const response = await props.dispatch(
@@ -127,6 +103,30 @@ export const FileViewer = connect((state, props) => {
         }
       } finally {
         setLoading(false);
+      }
+    }
+    async function lockItem(file) {
+      setCheckingLock(true);
+      try {
+        const lockResponse = await props.dispatch(checkLock(file));
+        // If no one has a lock then give lock to current user
+        if (isMounted.current) {
+          if (!lockResponse.userZUID) {
+            props.dispatch(lock(file));
+            setLockState({ userZUID: props.user.ZUID });
+          } else {
+            setLockState(lockResponse);
+          }
+        }
+      } catch (err) {
+        // If service is unavailable allow all users ownership
+        if (isMounted.current) {
+          setLockState({ userZUID: props.user.ZUID });
+        }
+      } finally {
+        if (isMounted.current) {
+          setCheckingLock(false);
+        }
       }
     }
 
