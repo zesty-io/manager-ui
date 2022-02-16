@@ -220,7 +220,6 @@ export default connect((state, props) => {
         setBackgroundLoading(false);
       }
     } catch (err) {
-      console.error("ItemList:load:error", err);
       if (_isMounted.current) {
         setInitialLoading(false);
         setBackgroundLoading(false);

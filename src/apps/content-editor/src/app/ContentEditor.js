@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
@@ -22,7 +22,7 @@ import { CSVImport } from "./views/CSVImport";
 import "@zesty-io/core/vendor.css";
 
 import styles from "./ContentEditor.less";
-export default function ContentEditor(props) {
+export default function ContentEditor() {
   const contentModels = useSelector((state) => state.models);
   const navContent = useSelector((state) => state.navContent);
   const ui = useSelector((state) => state.ui);
@@ -63,9 +63,7 @@ export default function ContentEditor(props) {
           <div className={styles.ContentWrap}>
             <Switch>
               <Route exact path="/content" component={Dashboard} />
-
               <Route exact path="/content/link/new" component={LinkCreate} />
-
               <Route
                 exact
                 path="/content/:modelZUID/new"
@@ -82,7 +80,6 @@ export default function ContentEditor(props) {
                 component={ItemEdit}
               />
               <Route exact path="/content/:modelZUID" component={ItemList} />
-
               <Route path="*" component={NotFound} />
             </Switch>
           </div>
