@@ -1,8 +1,7 @@
 import { memo, useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Switch, Route } from "react-router";
-import useIsMounted from "ismounted";
-import { Redirect, useParams } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import cx from "classnames";
 
 // TODO implement multitab: https://github.com/Microsoft/monaco-editor/issues/604#issuecomment-344214706
@@ -10,14 +9,13 @@ import cx from "classnames";
 import { notify } from "shell/store/notifications";
 import { fetchFields } from "shell/store/fields";
 import { fetchFile } from "../../../../../store/files";
-import { checkLock, lock, unlock } from "shell/store/content";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { Editor } from "../../../Editor";
 import { Differ } from "../../../Differ";
 import { FileDrawer } from "../../../FileDrawer";
-import { LockedFile } from "../../../LockedFile/LockedFile";
+import { LockedView } from "../../../LockedView";
 
 import styles from "./FileViewer.less";
 export const FileViewer = connect((state, props) => {
@@ -44,13 +42,8 @@ export const FileViewer = connect((state, props) => {
   };
 })(
   memo(function FileViewer(props) {
-    const { fileZUID } = useParams();
-    const isMounted = useIsMounted();
     const { match, location } = props;
     const [loading, setLoading] = useState(false);
-
-    const [lockState, setLockState] = useState({});
-    const [checkingLock, setCheckingLock] = useState(false);
 
     let lineNumber = 0;
     if (location.search) {
@@ -69,38 +62,8 @@ export const FileViewer = connect((state, props) => {
       }
 
       loadFile();
-      lockItem(fileZUID);
+    }, [match.params.fileZUID]);
 
-      // on unmount, release lock
-      return () => {
-        releaseLock(fileZUID);
-      };
-    }, [match.params.fileZUID, fileZUID]);
-
-    async function lockItem(file) {
-      setCheckingLock(true);
-      try {
-        const lockResponse = await props.dispatch(checkLock(file));
-        // If no one has a lock then give lock to current user
-        if (isMounted.current) {
-          if (!lockResponse.userZUID) {
-            props.dispatch(lock(file));
-            setLockState({ userZUID: props.user.ZUID });
-          } else {
-            setLockState(lockResponse);
-          }
-        }
-      } catch (err) {
-        // If service is unavailable allow all users ownership
-        if (isMounted.current) {
-          setLockState({ userZUID: props.user.ZUID });
-        }
-      } finally {
-        if (isMounted.current) {
-          setCheckingLock(false);
-        }
-      }
-    }
     async function loadFile() {
       try {
         const response = await props.dispatch(
@@ -130,42 +93,12 @@ export const FileViewer = connect((state, props) => {
       }
     }
 
-    function releaseLock() {
-      if (lockState.userZUID === props.user.ZUID) {
-        props.dispatch(unlock(fileZUID));
-      }
-    }
-
-    function forceUnlock() {
-      // Transfer item lock to current session user
-      props.dispatch(unlock(fileZUID)).then(() => {
-        props.dispatch(lock(fileZUID));
-      });
-      setLockState({ userZUID: props.user.ZUID });
-    }
-
-    const isLocked = !checkingLock && lockState.userZUID !== props.user.ZUID;
-
     return (
       <section className={styles.FileViewer}>
         <WithLoader condition={!loading} message="Finding File">
           {props.file && props.file.ZUID ? (
             <>
-              {isLocked && (
-                <LockedFile
-                  timestamp={lockState.timestamp}
-                  userFirstName={lockState.firstName}
-                  userLastName={lockState.lastName}
-                  userEmail={lockState.email}
-                  itemName={props.file.fileName}
-                  handleUnlock={forceUnlock}
-                  handleCancel={(evt) => {
-                    evt.stopPropagation();
-                    props.history.goBack();
-                  }}
-                  isLocked={isLocked}
-                />
-              )}
+              <LockedView ZUID={props.file.ZUID} name={props.file.fileName} />
               <Switch>
                 <Route path={`${match.url}/diff`}>
                   <Differ
