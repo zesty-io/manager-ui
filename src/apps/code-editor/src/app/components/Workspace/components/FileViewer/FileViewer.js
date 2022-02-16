@@ -38,7 +38,6 @@ export const FileViewer = connect((state, props) => {
   return {
     file: file ? file : {},
     fields,
-    user: state.user,
   };
 })(
   memo(function FileViewer(props) {
@@ -61,37 +60,30 @@ export const FileViewer = connect((state, props) => {
         setLoading(true);
       }
 
-      loadFile();
+      props
+        .dispatch(fetchFile(match.params.fileZUID, match.params.fileType))
+        .then((res) => {
+          if (props.file.contentModelZUID) {
+            return props.dispatch(fetchFields(props.file.contentModelZUID));
+          } else {
+            res;
+          }
+        })
+        .catch((err) => {
+          if (err !== "duplicate request") {
+            console.error(err);
+            props.dispatch(
+              notify({
+                kind: "warn",
+                message: `Could not load ${match.params.fileType} ${match.params.fileZUID}`,
+              })
+            );
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }, [match.params.fileZUID]);
-
-    async function loadFile() {
-      try {
-        const response = await props.dispatch(
-          fetchFile(match.params.fileZUID, match.params.fileType)
-        );
-
-        if (props.file.contentModelZUID) {
-          const getFields = await props.dispatch(
-            fetchFields(props.file.contentModelZUID)
-          );
-          return getFields;
-        } else {
-          response;
-        }
-      } catch (err) {
-        if (err !== "duplicate request") {
-          console.error(err);
-          props.dispatch(
-            notify({
-              kind: "warn",
-              message: `Could not load ${match.params.fileType} ${match.params.fileZUID}`,
-            })
-          );
-        }
-      } finally {
-        setLoading(false);
-      }
-    }
 
     return (
       <section className={styles.FileViewer}>
