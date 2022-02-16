@@ -22,6 +22,8 @@
   &.ContentGridOpen {
     grid-template-columns: 20vw auto;
 
+    transition: grid-template-columns 350ms ease; /* FireFox */
+
     @media only screen and (min-width: 2000px) {
       grid-template-columns: 15vw auto;
     }

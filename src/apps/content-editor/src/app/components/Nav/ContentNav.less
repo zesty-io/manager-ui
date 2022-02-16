@@ -10,21 +10,23 @@
     transform: translateX(0);
   }
 }
-// .closeNav {
-//   from {
-//     opacity: 1;
-//     transform: translateX(0);
-//   }
-//   to {
-//     opacity: 0;
-//     transform: translateX(-100%);
-//   }
-// }
+@keyframes closeNav {
+  from {
+    opacity: 1;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
 
 .NavContainer {
   overflow: hidden;
   box-shadow: none;
   height: calc(100vh - 54px);
+  background-color: @appBkgColor;
+  position: relative;
 
   //Hide Scrollbar
   scrollbar-width: none; /*  FireFox */
@@ -34,13 +36,13 @@
     display: none;
   }
 
+  animation: closeNav 0.3s ease-out forwards;
+
   &.ContentNavHover,
   &.ContentNavOpen {
     background-color: @appBkgColor;
 
     animation: openNav 0.3s ease-out forwards;
-    position: relative;
-    z-index: 100;
 
     overflow-y: auto;
     overflow-x: hidden;
