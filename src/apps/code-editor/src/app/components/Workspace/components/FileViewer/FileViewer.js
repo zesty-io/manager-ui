@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from "react";
+import { memo, useState, useEffect, Fragment } from "react";
 import { connect } from "react-redux";
 import { Switch, Route } from "react-router";
 import { Redirect } from "react-router-dom";
@@ -97,7 +97,7 @@ export const FileViewer = connect((state, props) => {
       <section className={styles.FileViewer}>
         <WithLoader condition={!loading} message="Finding File">
           {props.file && props.file.ZUID ? (
-            <>
+            <Fragment>
               <LockedView ZUID={props.file.ZUID} name={props.file.fileName} />
               <Switch>
                 <Route path={`${match.url}/diff`}>
@@ -138,7 +138,7 @@ export const FileViewer = connect((state, props) => {
               </Switch>
 
               <FileDrawer file={props.file} match={match} />
-            </>
+            </Fragment>
           ) : (
             <div className={cx(styles.FileNotFound, styles.display)}>
               File Not Found
