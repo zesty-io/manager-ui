@@ -27,7 +27,7 @@ export function RedirectCreator(props) {
 
   const determineTerm = (term) => {
     // ContentSearch return Object while Search return string
-    let contentSearchValue = term.meta ? term.web.path : term;
+    let contentSearchValue = term?.meta ? term.web.path : term;
     setContentSearchValue(contentSearchValue);
 
     term = term.meta ? term.meta.ZUID : term;
