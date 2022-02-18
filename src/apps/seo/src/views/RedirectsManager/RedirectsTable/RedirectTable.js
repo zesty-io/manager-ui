@@ -23,7 +23,9 @@ export default function RedirectTable(props) {
     setSortBy(sortBy);
     setSortDirection(sortDirection);
     setRedirectsOrder(sort(redirects, sortBy, sortDirection));
-  }, []);
+  }, [redirects]);
+
+  console.log(redirectsOrder);
 
   const handleRemoveRedirect = (zuid) => {
     props.dispatch(removeRedirect(zuid));
@@ -98,12 +100,16 @@ export default function RedirectTable(props) {
     if (order.length) {
       return order.map((key) => {
         const redirect = props.redirects[key];
-        const callback = handleRemoveRedirect(redirect.ZUID);
+        console.log(
+          "🚀 ~ file: RedirectTable.js ~ line 102 ~ returnorder.map ~ redirect",
+          redirect
+        );
+        // const callback = handleRemoveRedirect(redirect.ZUID);
 
         return (
           <RedirectsTableRow
             key={key}
-            removeRedirect={callback}
+            removeRedirect={() => handleRemoveRedirect(redirect.ZUID)}
             {...redirect}
           />
         );
