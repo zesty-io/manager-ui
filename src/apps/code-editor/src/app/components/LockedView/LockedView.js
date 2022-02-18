@@ -104,7 +104,7 @@ export function LockedView(props) {
     >
       <ModalHeader className={styles.ModalHeader}>
         <h2 className={styles.headline}>
-          <FontAwesomeIcon icon={faLock} /> Item Locked
+          <FontAwesomeIcon icon={faLock} /> Locked
         </h2>
       </ModalHeader>
       <ModalContent className={styles.ModalContent}>
