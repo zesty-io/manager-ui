@@ -103,7 +103,7 @@ export default function ItemEdit() {
       if (isMounted.current) {
         if (!lockResponse.userZUID) {
           dispatch(lock(itemZUID));
-          setLockState({ userZUID: user.user_zuid });
+          setLockState({ userZUID: user.ZUID });
         } else {
           setLockState(lockResponse);
         }
@@ -111,7 +111,7 @@ export default function ItemEdit() {
     } catch (err) {
       // If service is unavailable allow all users ownership
       if (isMounted.current) {
-        setLockState({ userZUID: user.user_zuid });
+        setLockState({ userZUID: user.ZUID });
       }
     } finally {
       if (isMounted.current) {
@@ -158,7 +158,7 @@ export default function ItemEdit() {
   }
 
   function releaseLock(itemZUID) {
-    if (lockState.userZUID === user.user_zuid) {
+    if (lockState.userZUID === user.ZUID) {
       dispatch(unlock(itemZUID));
     }
   }
@@ -168,7 +168,7 @@ export default function ItemEdit() {
     dispatch(unlock(itemZUID)).then(() => {
       dispatch(lock(itemZUID));
     });
-    setLockState({ userZUID: user.user_zuid });
+    setLockState({ userZUID: user.ZUID });
   }
 
   async function save() {
@@ -227,8 +227,7 @@ export default function ItemEdit() {
     return dispatch(fetchItem(modelZUID, itemZUID));
   }
 
-  const handleLockedItem =
-    !checkingLock && lockState.userZUID !== user.user_zuid;
+  const isLocked = !checkingLock && lockState.userZUID !== user.ZUID;
 
   return (
     <Fragment>
@@ -241,7 +240,7 @@ export default function ItemEdit() {
             model?.label ? `Loading ${model.label} Content` : "Loading Content"
           }
         >
-          {handleLockedItem && (
+          {isLocked && (
             <LockedItem
               timestamp={lockState.timestamp}
               userFirstName={lockState.firstName}
@@ -249,8 +248,11 @@ export default function ItemEdit() {
               userEmail={lockState.email}
               itemName={item?.web?.metaLinkText}
               handleUnlock={forceUnlock}
-              goBack={() => history.goBack()}
-              handleLockedItem={handleLockedItem}
+              handleCancel={(evt) => {
+                evt.stopPropagation();
+                history.goBack();
+              }}
+              isLocked={isLocked}
             />
           )}
 
