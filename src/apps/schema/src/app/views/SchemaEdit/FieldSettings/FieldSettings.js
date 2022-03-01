@@ -1,4 +1,4 @@
-import { Fragment, useRef, useEffect } from "react";
+import { Fragment } from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -38,26 +38,6 @@ export default function FieldSettings(props) {
     (field) => field.value === props.field.datatype
   );
 
-  /**
-   *  Added a useRef workaround to get FieldTypeText Field Label & Field Name to
-   * to autopopulate on initial create item. This also resolves the input cursor jump to end  on input on item edit.
-   * helper reference https://stackoverflow.com/a/57773476/6178393
-   *
-   */
-  const fieldLabelRef = useRef();
-  const fieldNameRef = useRef();
-  const cursorRef = useRef(0);
-
-  useEffect(() => {
-    fieldLabelRef.current.selectionStart = cursorRef.current;
-    fieldLabelRef.current.selectionEnd = cursorRef.current;
-  }, [props.field.label]);
-
-  useEffect(() => {
-    fieldNameRef.current.selectionStart = cursorRef.current;
-    fieldNameRef.current.selectionEnd = cursorRef.current;
-  }, [props.field.name]);
-
   return (
     <div className={cx(styles.DefaultSettings, props.className)}>
       {field && (
@@ -86,30 +66,30 @@ export default function FieldSettings(props) {
             className={styles.Setting}
             name="label"
             label="Field Label"
-            value={props.field.label}
-            ref={fieldLabelRef}
+            {...(props.new
+              ? { value: props.field.label }
+              : { defaultValue: props.field.label })}
             maxLength="200"
             onChange={(val, key) => {
-              cursorRef.current = fieldLabelRef.current.selectionStart;
               if (props.new && props.updateMultipleValues) {
                 props.updateMultipleValues({
                   [key]: val, // dynamic property key, name of field
                   name: formatName(val), // literal name key
                 });
               } else {
-                props.updateValue(val, key);
+                props.updateValue(formatName(val), key);
               }
             }}
           />
           <FieldTypeText
-            ref={fieldNameRef}
             className={styles.Setting}
             name="name"
             label="Field Name (Parsley Code Reference). Can not contain spaces, uppercase or special characters."
-            value={props.field.name}
+            {...(props.new
+              ? { value: props.field.name }
+              : { defaultValue: props.field.name })}
             maxLength="50"
             onChange={(val, name) => {
-              cursorRef.current = fieldNameRef.current.selectionStart;
               props.updateValue(formatName(val), name);
             }}
           />
