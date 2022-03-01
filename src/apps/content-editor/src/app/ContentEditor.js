@@ -39,10 +39,9 @@ export default function ContentEditor() {
     dispatch(fetchModels());
   }, []);
 
-  console.log("navContent", navContent);
   return (
     <Fragment>
-      {navContent.headless.length === 0 ? (
+      {navContent.raw.length === 0 ? (
         <div className={styles.SchemaRedirect}>
           <h1 className={styles.display}>Please create a new content model</h1>
           <AppLink to={`schema/new`}>
