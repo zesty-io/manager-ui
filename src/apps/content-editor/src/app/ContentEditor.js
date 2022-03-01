@@ -39,11 +39,12 @@ export default function ContentEditor() {
     dispatch(fetchModels());
   }, []);
 
+  console.log("navContent", navContent);
   return (
     <Fragment>
       {navContent.headless.length === 0 ? (
         <div className={styles.SchemaRedirect}>
-          <h1 className={styles.headline}>Please create a new content model</h1>
+          <h1 className={styles.display}>Please create a new content model</h1>
           <AppLink to={`schema/new`}>
             <FontAwesomeIcon icon={faDatabase} />
             &nbsp; Schema
@@ -112,8 +113,6 @@ export default function ContentEditor() {
           </section>
         </WithLoader>
       )}
-      console.log("🚀 ~ file: ContentEditor.js ~ line 121 ~ ContentEditor ~
-      navContent.headless.length", navContent.headless.length)
     </Fragment>
   );
 }
