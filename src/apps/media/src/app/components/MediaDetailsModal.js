@@ -41,6 +41,8 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
 
   const metaShortcut = useMetaKey("s", saveFile);
 
+  const baseUrl = props.file.url.split("/").slice(0, -1).join("");
+
   return (
     <Modal
       className={styles.Modal}
@@ -73,23 +75,26 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
         </div>
 
         <div className={styles.FieldsContainer}>
-          <CopyButton
-            className={styles.CopyButton}
-            kind="outlined"
-            value={props.file.url}
-          />
           <FieldTypeText
-            className={styles.Field}
+            className={styles.InputCopyCombo}
             name="filename"
             value={filename}
             label={
               <label>
-                <Infotip title="Edit Filename to update your image URL path " />
+                <Infotip
+                  className={styles.InfotipFileName}
+                  title="Edit Filename to update your image URL path "
+                />
                 &nbsp;Edit Filename URL path
               </label>
             }
             placeholder={"Image Filename"}
             onChange={(val) => setFilename(val)}
+          />
+          <CopyButton
+            className={cx(styles.CopyButton, styles.InputCopyCombo)}
+            kind="outlined"
+            value={`${baseUrl}/${filename}`}
           />
           <FieldTypeText
             className={styles.Field}
@@ -97,7 +102,10 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             value={title}
             label={
               <label>
-                <Infotip title=" Use for alt text with Parsley's .getImageTitle() | Image alt text is used to describe your image textually so that search engines and screen readers can understand what that image is. It’s important to note that using alt text correctly can enhance your SEO strategy" />
+                <Infotip
+                  className={styles.InfotipTitle}
+                  title=" Use for alt text with Parsley's .getImageTitle() | Image alt text is used to describe your image textually so that search engines and screen readers can understand what that image is. It’s important to note that using alt text correctly can enhance your SEO strategy"
+                />
                 &nbsp; Alt Title
               </label>
             }

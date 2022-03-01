@@ -34,6 +34,17 @@
       }
     }
 
+    .InputCopyCombo {
+      input {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+      &.CopyButton {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+      }
+    }
+
     .Field input,
     .CopyButton {
       margin-bottom: 16px;
@@ -66,6 +77,22 @@
   .ButtonGroup {
     button {
       margin-left: 16px;
+    }
+  }
+
+  .InfotipTitle {
+    &:hover {
+      small {
+        width: 500px;
+      }
+    }
+  }
+
+  .InfotipFileName {
+    &:hover {
+      small {
+        width: 315px;
+      }
     }
   }
 }
