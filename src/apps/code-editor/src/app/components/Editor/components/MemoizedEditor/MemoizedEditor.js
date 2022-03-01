@@ -29,6 +29,13 @@ export const MemoizedEditor = memo(
       ref.current.editor.setModel(model);
     }, [props.fileName]);
 
+    useEffect(() => {
+      if (!ref.current?.editor) return;
+      if (props.code !== ref.current.editor.getValue()) {
+        ref.current.editor.getModel().setValue(props.code);
+      }
+    }, [props.code]);
+
     return (
       <MonacoEditor
         ref={ref}
