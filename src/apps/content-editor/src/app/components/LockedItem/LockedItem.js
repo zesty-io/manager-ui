@@ -31,7 +31,7 @@ export function LockedItem(props) {
       <ModalContent className={styles.ModalContent}>
         <p className={styles.subheadline}>
           {props.userFirstName} {props.userLastName} is viewing{" "}
-          <strong className={styles.ItemName}>{props.sitemName}</strong> since{" "}
+          <strong className={styles.ItemName}>{props.itemName}</strong> since{" "}
           {moment.unix(props.timestamp).format("MMMM Do YYYY, [at] h:mm a")}.
           Unlock this item to ignore this warning and possibly overwrite{" "}
           {props.userFirstName}'s changes.
