@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import styles from "./RedirectTable.less";
 import cx from "classnames";
 
@@ -19,13 +19,9 @@ export default function RedirectTable(props) {
   const [sortDirection, setSortDirection] = useState("");
 
   useEffect(() => {
-    setRedirects(redirects);
-    setSortBy(sortBy);
-    setSortDirection(sortDirection);
-    setRedirectsOrder(sort(redirects, sortBy, sortDirection));
-  }, [redirects]);
-
-  console.log(redirectsOrder);
+    setRedirects(props.redirects);
+    setRedirectsOrder(sort(props.redirects, sortBy, sortDirection));
+  }, [props.redirects]);
 
   const handleRemoveRedirect = (zuid) => {
     props.dispatch(removeRedirect(zuid));
@@ -79,7 +75,7 @@ export default function RedirectTable(props) {
 
   const renderRows = () => {
     const filter = props.redirectsFilter;
-    let order = redirectsOrder;
+    let order = [...redirectsOrder];
 
     if (filter) {
       order = order.filter((key) => {
@@ -100,11 +96,6 @@ export default function RedirectTable(props) {
     if (order.length) {
       return order.map((key) => {
         const redirect = props.redirects[key];
-        console.log(
-          "🚀 ~ file: RedirectTable.js ~ line 102 ~ returnorder.map ~ redirect",
-          redirect
-        );
-        // const callback = handleRemoveRedirect(redirect.ZUID);
 
         return (
           <RedirectsTableRow
