@@ -73,7 +73,6 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             &nbsp;View Original File
           </Url>
         </div>
-
         <div className={styles.FieldsContainer}>
           <FieldTypeText
             className={styles.InputCopyCombo}
@@ -89,7 +88,8 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
               </label>
             }
             placeholder={"Image Filename"}
-            onChange={(val) => setFilename(val)}
+            // Replaces all non-alphanumeric characters (excluding '.') with '-' to reflect the filename transformation done on the BE
+            onChange={(val) => setFilename(val.replaceAll(/[^a-z\d-.]/gi, "-"))}
           />
           <CopyButton
             className={cx(styles.CopyButton, styles.InputCopyCombo)}
