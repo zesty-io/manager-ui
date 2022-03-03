@@ -18,6 +18,7 @@ import {
 import { ReorderNav } from "../ReorderNav";
 import { Nav } from "@zesty-io/core/Nav";
 import { Button } from "@zesty-io/core/Button";
+import { Notice } from "@zesty-io/core/Notice";
 import { Select, Option } from "@zesty-io/core/Select";
 
 import ItemsFilter from "./ItemsFilter";
@@ -162,10 +163,8 @@ export function ContentNav(props) {
         </div>
         {searchTerm && filteredItems.length === 0 && (
           <>
-            <h1 className={cx(styles.NavTitle, styles.NoResults)}>
-              {" "}
-              No Search Results for "{searchTerm}"{" "}
-            </h1>
+            <Notice>No Search Results for "{searchTerm}</Notice>
+
             <Button
               className={styles.ButtonClear}
               kind="secondary"
