@@ -15,8 +15,8 @@ const ItemsFilter = (props) => {
       placeholder="Filter items by name, zuid or path"
       value={props.searchTerm}
       onChange={(term) => {
-        term = term.trim().toLowerCase();
         props.setSearchTerm(term);
+        term = term.trimStart().toLowerCase();
         if (term != "") {
           props.setFilteredItems(
             props.nav.raw.filter((f) => {
