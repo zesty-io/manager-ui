@@ -1,4 +1,4 @@
-import { useEffect, Fragment } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
@@ -32,28 +32,33 @@ export default function ContentEditor() {
   const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
+    setLoading(true);
+
     // Kick off loading data before app mount
     // to decrease time to first interaction
-    dispatch(fetchNav());
+    dispatch(fetchNav()).then((_) => setLoading(false));
     dispatch(fetchModels());
   }, []);
 
+  console.table(navContent);
+
   return (
     <Fragment>
-      {navContent.raw.length === 0 ? (
-        <div className={styles.SchemaRedirect}>
-          <h1 className={styles.display}>Please create a new content model</h1>
-          <AppLink to={`schema/new`}>
-            <FontAwesomeIcon icon={faDatabase} />
-            &nbsp; Schema
-          </AppLink>
-        </div>
-      ) : (
-        <WithLoader
-          condition={navContent.headless.length}
-          message="Starting Content Editor"
-        >
+      <WithLoader condition={!loading} message="Starting Content Editor">
+        {navContent.raw.length === 0 ? (
+          <div className={styles.SchemaRedirect}>
+            <h1 className={styles.display}>
+              Please create a new content model
+            </h1>
+            <AppLink to={`schema/new`}>
+              <FontAwesomeIcon icon={faDatabase} />
+              &nbsp; Schema
+            </AppLink>
+          </div>
+        ) : (
           <section
             className={cx(
               styles.ContentEditor,
@@ -110,8 +115,8 @@ export default function ContentEditor() {
               </div>
             </div>
           </section>
-        </WithLoader>
-      )}
+        )}
+      </WithLoader>
     </Fragment>
   );
 }
