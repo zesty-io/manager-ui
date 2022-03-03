@@ -17,8 +17,6 @@ import {
   faMoneyBillAlt,
   faIdCard,
   faExclamationTriangle,
-  faImage,
-  faCalendarTimes,
   faCalendarAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
@@ -68,7 +66,9 @@ export default function FieldSettings(props) {
             className={styles.Setting}
             name="label"
             label="Field Label"
-            defaultValue={props.field.label}
+            {...(props.new
+              ? { value: props.field.label }
+              : { defaultValue: props.field.label })}
             maxLength="200"
             onChange={(val, key) => {
               if (props.new && props.updateMultipleValues) {
@@ -77,7 +77,7 @@ export default function FieldSettings(props) {
                   name: formatName(val), // literal name key
                 });
               } else {
-                props.updateValue(val, key);
+                props.updateValue(formatName(val), key);
               }
             }}
           />
@@ -85,9 +85,13 @@ export default function FieldSettings(props) {
             className={styles.Setting}
             name="name"
             label="Field Name (Parsley Code Reference). Can not contain spaces, uppercase or special characters."
-            defaultValue={props.field.name}
+            {...(props.new
+              ? { value: props.field.name }
+              : { defaultValue: props.field.name })}
             maxLength="50"
-            onChange={(val, name) => props.updateValue(formatName(val), name)}
+            onChange={(val, name) => {
+              props.updateValue(formatName(val), name);
+            }}
           />
 
           <FieldTypeBinary
