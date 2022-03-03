@@ -41,6 +41,8 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
 
   const metaShortcut = useMetaKey("s", saveFile);
 
+  const baseUrl = props.file.url.split("/").slice(0, -1).join("");
+
   return (
     <Modal
       className={styles.Modal}
@@ -71,39 +73,44 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             &nbsp;View Original File
           </Url>
         </div>
-
         <div className={styles.FieldsContainer}>
-          <CopyButton
-            className={styles.CopyButton}
-            kind="outlined"
-            value={props.file.url}
+          <FieldTypeText
+            className={styles.InputCopyCombo}
+            name="filename"
+            value={filename}
+            label={
+              <label>
+                <Infotip
+                  className={styles.InfotipFileName}
+                  title="URL Filename "
+                />
+                &nbsp;URL Filename
+              </label>
+            }
+            placeholder={"Image Filename"}
+            // Replaces all non-alphanumeric characters (excluding '.') with '-' to reflect the filename transformation done on the BE
+            onChange={(val) => setFilename(val.replaceAll(/[^a-z\d-.]/gi, "-"))}
           />
-
+          <CopyButton
+            className={cx(styles.CopyButton, styles.InputCopyCombo)}
+            kind="outlined"
+            value={`${baseUrl}/${filename}`}
+          />
           <FieldTypeText
             className={styles.Field}
             name="title"
             value={title}
             label={
               <label>
-                <Infotip title="Edit title. | Use for alt text with Parsley's .getImageTitle()" />
-                &nbsp;Title
+                <Infotip
+                  className={styles.InfotipTitle}
+                  title=" Use for alt text with Parsley's .getImageTitle() | Image alt text is used to describe your image textually so that search engines and screen readers can understand what that image is. It’s important to note that using alt text correctly can enhance your SEO strategy"
+                />
+                &nbsp; Alt Title
               </label>
             }
-            placeholder={"Image Title"}
+            placeholder={"Image ALT Title"}
             onChange={(val) => setTitle(val)}
-          />
-          <FieldTypeText
-            className={styles.Field}
-            name="filename"
-            value={filename}
-            label={
-              <label>
-                <Infotip title="Edit Filename " />
-                &nbsp;Filename
-              </label>
-            }
-            placeholder={"Image Filename"}
-            onChange={(val) => setFilename(val)}
           />
 
           <dl className={styles.DescriptionList}>
