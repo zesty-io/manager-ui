@@ -163,7 +163,7 @@ export function ContentNav(props) {
         </div>
         {searchTerm && filteredItems.length === 0 && (
           <>
-            <Notice>No Search Results for "{searchTerm}</Notice>
+            <Notice>No Search Results for "{searchTerm}"</Notice>
 
             <Button
               className={styles.ButtonClear}
