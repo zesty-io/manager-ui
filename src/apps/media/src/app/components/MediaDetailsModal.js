@@ -41,7 +41,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
 
   const metaShortcut = useMetaKey("s", saveFile);
 
-  const baseUrl = props.file.url.split("/").slice(0, -1).join("");
+  const baseUrl = props.file.url.substring(0, props.file.url.lastIndexOf("/"));
 
   return (
     <Modal
