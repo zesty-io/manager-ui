@@ -22,11 +22,13 @@ export default function SchemaBuilder() {
 
   useEffect(() => {
     setLoading(true);
-    Promise.all([dispatch(fetchModels()), dispatch(fetchSettings())]).then(
-      () => {
+    Promise.all([dispatch(fetchModels()), dispatch(fetchSettings())])
+      .then(() => {
         setLoading(false);
-      }
-    );
+      })
+      .catch((e) => {
+        throw e;
+      });
   }, []);
 
   return (
