@@ -77,7 +77,7 @@ export default function FieldSettings(props) {
                   name: formatName(val), // literal name key
                 });
               } else {
-                props.updateValue(formatName(val), key);
+                props.updateValue(val, key);
               }
             }}
           />
