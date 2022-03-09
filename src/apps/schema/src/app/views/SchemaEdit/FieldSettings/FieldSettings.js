@@ -90,7 +90,7 @@ export default function FieldSettings(props) {
               : { defaultValue: props.field.name })}
             maxLength="50"
             onChange={(val, name) => {
-              props.updateValue(formatName(val), name);
+              props.updateValue(val, name);
             }}
           />
 
