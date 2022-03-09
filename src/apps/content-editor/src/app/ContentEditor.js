@@ -43,8 +43,6 @@ export default function ContentEditor() {
     dispatch(fetchModels());
   }, []);
 
-  console.table(navContent);
-
   return (
     <Fragment>
       <WithLoader condition={!loading} message="Starting Content Editor">
