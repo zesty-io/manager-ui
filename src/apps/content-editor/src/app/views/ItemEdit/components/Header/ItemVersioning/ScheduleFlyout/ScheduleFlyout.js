@@ -46,6 +46,13 @@ export default class ScheduleFlyout extends Component {
     });
   }
 
+  componentDidUpdate(prevProps) {
+    // Resets selectedTime when flyout is toggled
+    if (prevProps.isOpen !== this.props.isOpen) {
+      this.setState({ selectedTime: moment().format(UTC_FORMAT) });
+    }
+  }
+
   handleCancelPublish = () => {
     this.setState({
       scheduling: true,
