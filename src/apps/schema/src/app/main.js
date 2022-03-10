@@ -10,6 +10,7 @@ import { GettingStarted } from "./views/GettingStarted";
 
 import { fetchModels } from "shell/store/models";
 import { fetchSettings } from "shell/store/settings";
+import { notify } from "shell/store/notifications";
 
 import styles from "./main.less";
 export default function SchemaBuilder() {
@@ -27,7 +28,13 @@ export default function SchemaBuilder() {
         setLoading(false);
       })
       .catch((e) => {
-        throw e;
+        setLoading(false);
+        dispatch(
+          notify({
+            kind: "warn",
+            message: "Failed to load Schema Builder",
+          })
+        );
       });
   }, []);
 
