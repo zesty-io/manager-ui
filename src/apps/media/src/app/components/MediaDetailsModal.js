@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import { useMetaKey } from "shell/hooks/useMetaKey";
@@ -18,12 +18,14 @@ import { Button } from "@zesty-io/core/Button";
 import { Infotip } from "@zesty-io/core/Infotip";
 import { Url } from "@zesty-io/core/Url";
 import { CopyButton } from "@zesty-io/core/CopyButton";
+import { Input } from "@zesty-io/core/Input";
 
 import { MediaImage } from "./MediaImage";
 import { editFile } from "shell/store/media";
 
 import shared from "./MediaShared.less";
 import styles from "./MediaDetailsModal.less";
+import { Option, Select } from "@zesty-io/core/Select";
 
 export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
   const dispatch = useDispatch();
@@ -33,6 +35,16 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
   const [title, setTitle] = useState(props.file.title);
   const [filename, setFilename] = useState(props.file.filename);
 
+  //state for image dimensions
+  const [imageDimensions, setImageDimensions] = useState();
+
+  //state for image settings
+  const [imageSettings, setImageSettings] = useState({
+    width: "",
+    height: "",
+    optimize: "",
+  });
+
   function saveFile() {
     dispatch(editFile(props.file.id, { title, filename })).then(() => {
       props.onClose();
@@ -41,7 +53,32 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
 
   const metaShortcut = useMetaKey("s", saveFile);
 
+  const imageTypes = ["jpg", "jpeg", "png", "gif"];
+
   const baseUrl = props.file.url.substring(0, props.file.url.lastIndexOf("/"));
+
+  const generateImageSettingsQueryParams = () => {
+    const queries = Object.keys(imageSettings).filter(
+      (key) =>
+        imageSettings[key] && imageSettings[key] !== imageDimensions?.[key]
+    );
+    return queries.map((query) => `${query}=${imageSettings[query]}`).join("&");
+  };
+
+  // Get image dimensions
+  useEffect(() => {
+    const img = new Image();
+    img.src = props.file.url;
+
+    img.onload = () => {
+      setImageDimensions({ height: img.height, width: img.width });
+      setImageSettings({
+        ...imageSettings,
+        height: img.height,
+        width: img.width,
+      });
+    };
+  }, [props.file.url]);
 
   return (
     <Modal
@@ -63,15 +100,62 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
               <MediaImage file={props.file} params={"?w=350&type=fit"} />
             </Url>
           </figure>
-          <Url
-            className={styles.ViewOriginal}
-            target="_blank"
-            title="Original Image"
-            href={props.file.url}
-          >
-            <FontAwesomeIcon icon={faLink} />
-            &nbsp;View Original File
-          </Url>
+          {imageTypes.includes(props.file.filename.split(".").pop()) && (
+            <>
+              <div className={styles.ImageControls}>
+                <label htmlFor="width">Width: </label>
+                <Input
+                  type="number"
+                  name="width"
+                  id="width"
+                  min={0}
+                  onChange={(evt) =>
+                    setImageSettings({
+                      ...imageSettings,
+                      width: Number(evt.target.value),
+                    })
+                  }
+                  value={imageSettings.width}
+                />
+                <label htmlFor="height">Height: </label>
+                <Input
+                  type="number"
+                  name="height"
+                  id="height"
+                  min={0}
+                  onChange={(evt) =>
+                    setImageSettings({
+                      ...imageSettings,
+                      height: Number(evt.target.value),
+                    })
+                  }
+                  value={imageSettings.height}
+                />
+                <Select
+                  name="optimize"
+                  selection={{ value: imageSettings.optimize }}
+                  onSelect={(value) =>
+                    setImageSettings({
+                      ...imageSettings,
+                      optimize: value,
+                    })
+                  }
+                >
+                  <Option key="optimization" value={null} text="Optimization" />
+                  <Option key="Low" value="low" text="Low" />
+                  <Option key="medium" value="medium" text="Medium" />
+                  <Option key="high" value="high" text="High" />
+                </Select>
+              </div>
+              <CopyButton
+                className={styles.otfLink}
+                kind="outlined"
+                value={`${
+                  props.file.url
+                }?${generateImageSettingsQueryParams()}`}
+              />
+            </>
+          )}
         </div>
         <div className={styles.FieldsContainer}>
           <FieldTypeText

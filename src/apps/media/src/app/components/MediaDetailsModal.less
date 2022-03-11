@@ -3,8 +3,6 @@
 
 .Modal {
   max-width: 65%;
-  padding: 16px;
-  margin: 1% auto 0;
 
   @media only screen and (min-width: 2000px) {
     margin: 5% auto 0;
@@ -12,13 +10,8 @@
   }
 
   .ModalContent {
-    // working modal for small screens
-    @media only screen and (max-width: 1280px) {
-      display: flex;
-    }
-
     display: grid;
-    grid-template-columns: 350px 500px;
+    grid-template-columns: 400px 500px;
     gap: 16px;
     justify-content: center;
     background-color: @white;
@@ -50,6 +43,11 @@
       margin-bottom: 16px;
     }
 
+    .otfLink {
+      word-break: break-all;
+      width: 100%;
+    }
+
     .Delete {
       margin-top: 16px;
     }
@@ -70,6 +68,21 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+    }
+
+    .ImageControls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 16px;
+
+      label {
+        margin-right: 4px;
+      }
+
+      input {
+        max-width: 50px;
       }
     }
   }
