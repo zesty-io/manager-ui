@@ -78,6 +78,29 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
     };
   }, [props.file.url]);
 
+  const generateImageSettingsQueryParams = () => {
+    const queries = Object.keys(imageSettings).filter(
+      (key) =>
+        imageSettings[key] && imageSettings[key] !== imageDimensions?.[key]
+    );
+    return queries.map((query) => `${query}=${imageSettings[query]}`).join("&");
+  };
+
+  // Get image dimensions
+  useEffect(() => {
+    const img = new Image();
+    img.src = props.file.url;
+
+    img.onload = () => {
+      setImageDimensions({ height: img.height, width: img.width });
+      setImageSettings({
+        ...imageSettings,
+        height: img.height,
+        width: img.width,
+      });
+    };
+  }, [props.file.url]);
+
   return (
     <Modal
       className={styles.Modal}
