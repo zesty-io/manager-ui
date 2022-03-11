@@ -53,6 +53,8 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
 
   const metaShortcut = useMetaKey("s", saveFile);
 
+  const imageTypes = ["jpg", "jpeg", "png", "gif"];
+
   const baseUrl = props.file.url.substring(0, props.file.url.lastIndexOf("/"));
 
   const generateImageSettingsQueryParams = () => {
@@ -98,55 +100,59 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
               <MediaImage file={props.file} params={"?w=350&type=fit"} />
             </Url>
           </figure>
-          <div className={styles.ImageControls}>
-            <label for="width">Width: </label>
-            <Input
-              type="number"
-              name="width"
-              id="width"
-              min={0}
-              onChange={(evt) =>
-                setImageSettings({
-                  ...imageSettings,
-                  width: Number(evt.target.value),
-                })
-              }
-              value={imageSettings.width}
-            />
-            <label for="height">Height: </label>
-            <Input
-              type="number"
-              name="height"
-              id="height"
-              min={0}
-              onChange={(evt) =>
-                setImageSettings({
-                  ...imageSettings,
-                  height: Number(evt.target.value),
-                })
-              }
-              value={imageSettings.height}
-            />
-            <Select
-              name="optimize"
-              selection={{ value: imageSettings.optimize }}
-              onSelect={(value) =>
-                setImageSettings({
-                  ...imageSettings,
-                  optimize: value,
-                })
-              }
-            >
-              <Option key="optimization" value={null} text="Optimization" />
-              <Option key="Low" value="low" text="Low" />
-              <Option key="medium" value="medium" text="Medium" />
-              <Option key="high" value="high" text="High" />
-            </Select>
-          </div>
-          <CopyButton
-            kind="outlined"
-            value={`${baseUrl}/${filename}?${generateImageSettingsQueryParams()}`}
-          />
+          {imageTypes.includes(props.file.filename.split(".").pop()) && (
+            <>
+              <div className={styles.ImageControls}>
+                <label for="width">Width: </label>
+                <Input
+                  type="number"
+                  name="width"
+                  id="width"
+                  min={0}
+                  onChange={(evt) =>
+                    setImageSettings({
+                      ...imageSettings,
+                      width: Number(evt.target.value),
+                    })
+                  }
+                  value={imageSettings.width}
+                />
+                <label for="height">Height: </label>
+                <Input
+                  type="number"
+                  name="height"
+                  id="height"
+                  min={0}
+                  onChange={(evt) =>
+                    setImageSettings({
+                      ...imageSettings,
+                      height: Number(evt.target.value),
+                    })
+                  }
+                  value={imageSettings.height}
+                />
+                <Select
+                  name="optimize"
+                  selection={{ value: imageSettings.optimize }}
+                  onSelect={(value) =>
+                    setImageSettings({
+                      ...imageSettings,
+                      optimize: value,
+                    })
+                  }
+                >
+                  <Option key="optimization" value={null} text="Optimization" />
+                  <Option key="Low" value="low" text="Low" />
+                  <Option key="medium" value="medium" text="Medium" />
+                  <Option key="high" value="high" text="High" />
+                </Select>
+              </div>
+              <CopyButton
+                kind="outlined"
+                value={`${baseUrl}/${filename}?${generateImageSettingsQueryParams()}`}
+              />
+            </>
+          )}
         </div>
         <div className={styles.FieldsContainer}>
           <FieldTypeText
