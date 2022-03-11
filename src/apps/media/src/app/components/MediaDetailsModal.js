@@ -4,12 +4,7 @@ import cx from "classnames";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faLink,
-  faSave,
-  faTrash,
-  faBan,
-} from "@fortawesome/free-solid-svg-icons";
+import { faSave, faTrash, faBan } from "@fortawesome/free-solid-svg-icons";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
@@ -40,9 +35,10 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
 
   //state for image settings
   const [imageSettings, setImageSettings] = useState({
-    width: "",
-    height: "",
-    optimize: "",
+    width: 0,
+    height: 0,
+    optimize: "medium",
+    fit: "none",
   });
 
   function saveFile() {
@@ -52,17 +48,12 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
   }
 
   const metaShortcut = useMetaKey("s", saveFile);
-
   const imageTypes = ["jpg", "jpeg", "png", "gif"];
 
-  const baseUrl = props.file.url.substring(0, props.file.url.lastIndexOf("/"));
-
   const generateImageSettingsQueryParams = () => {
-    const queries = Object.keys(imageSettings).filter(
-      (key) =>
-        imageSettings[key] && imageSettings[key] !== imageDimensions?.[key]
-    );
-    return queries.map((query) => `${query}=${imageSettings[query]}`).join("&");
+    return `?${Object.keys(imageSettings)
+      .map((key) => `${key}=${imageSettings[key]}`)
+      .join("&")}`;
   };
 
   // Get image dimensions
@@ -95,107 +86,142 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             <Url
               target="_blank"
               title="Select to download original image in new page"
-              href={props.file.url}
+              href={`${props.file.url}${generateImageSettingsQueryParams()}`}
             >
-              <MediaImage file={props.file} params={"?w=350&type=fit"} />
+              <MediaImage
+                src={`${props.file.url}${generateImageSettingsQueryParams()}`}
+                file={props.file}
+              />
             </Url>
           </figure>
-          {imageTypes.includes(props.file.filename.split(".").pop()) && (
-            <>
-              <div className={styles.ImageControls}>
-                <label htmlFor="width">Width: </label>
-                <Input
-                  type="number"
-                  name="width"
-                  id="width"
-                  min={0}
-                  onChange={(evt) =>
-                    setImageSettings({
-                      ...imageSettings,
-                      width: Number(evt.target.value),
-                    })
-                  }
-                  value={imageSettings.width}
-                />
-                <label htmlFor="height">Height: </label>
-                <Input
-                  type="number"
-                  name="height"
-                  id="height"
-                  min={0}
-                  onChange={(evt) =>
-                    setImageSettings({
-                      ...imageSettings,
-                      height: Number(evt.target.value),
-                    })
-                  }
-                  value={imageSettings.height}
-                />
-                <Select
-                  name="optimize"
-                  selection={{ value: imageSettings.optimize }}
-                  onSelect={(value) =>
-                    setImageSettings({
-                      ...imageSettings,
-                      optimize: value,
-                    })
-                  }
-                >
-                  <Option key="optimization" value={null} text="Optimization" />
-                  <Option key="Low" value="low" text="Low" />
-                  <Option key="medium" value="medium" text="Medium" />
-                  <Option key="high" value="high" text="High" />
-                </Select>
-              </div>
-              <CopyButton
-                className={styles.otfLink}
-                kind="outlined"
-                value={`${
-                  props.file.url
-                }?${generateImageSettingsQueryParams()}`}
-              />
-            </>
-          )}
         </div>
-        <div className={styles.FieldsContainer}>
-          <FieldTypeText
-            className={styles.InputCopyCombo}
-            name="filename"
-            value={filename}
-            label={
-              <label>
-                <Infotip
-                  className={styles.InfotipFileName}
-                  title="URL Filename "
-                />
-                &nbsp;URL Filename
-              </label>
-            }
-            placeholder={"Image Filename"}
-            // Replaces all non-alphanumeric characters (excluding '.') with '-' to reflect the filename transformation done on the BE
-            onChange={(val) => setFilename(val.replaceAll(/[^a-z\d-.]/gi, "-"))}
-          />
-          <CopyButton
-            className={cx(styles.CopyButton, styles.InputCopyCombo)}
-            kind="outlined"
-            value={`${baseUrl}/${filename}`}
-          />
-          <FieldTypeText
-            className={styles.Field}
-            name="title"
-            value={title}
-            label={
-              <label>
-                <Infotip
-                  className={styles.InfotipTitle}
-                  title=" Use for alt text with Parsley's .getImageTitle() | Image alt text is used to describe your image textually so that search engines and screen readers can understand what that image is. It’s important to note that using alt text correctly can enhance your SEO strategy"
-                />
-                &nbsp; Alt Title
-              </label>
-            }
-            placeholder={"Image ALT Title"}
-            onChange={(val) => setTitle(val)}
-          />
+        <div className={styles.Meta}>
+          <div className={styles.FieldsContainer}>
+            <FieldTypeText
+              className={styles.Field}
+              name="filename"
+              value={filename}
+              label={
+                <label>
+                  <Infotip
+                    className={styles.InfotipFileName}
+                    title="URL Filename "
+                  />
+                  &nbsp;URL Filename
+                </label>
+              }
+              placeholder={"Image Filename"}
+              // Replaces all non-alphanumeric characters (excluding '.') with '-' to reflect the filename transformation done on the BE
+              onChange={(val) =>
+                setFilename(val.replaceAll(/[^a-z\d-.]/gi, "-"))
+              }
+            />
+            <FieldTypeText
+              className={styles.Field}
+              name="title"
+              value={title}
+              label={
+                <label>
+                  <Infotip
+                    className={styles.InfotipTitle}
+                    title=" Use for alt text with Parsley's .getImageTitle() | Image alt text is used to describe your image textually so that search engines and screen readers can understand what that image is. It’s important to note that using alt text correctly can enhance your SEO strategy"
+                  />
+                  &nbsp; Alt Title
+                </label>
+              }
+              placeholder={"Image ALT Title"}
+              onChange={(val) => setTitle(val)}
+            />
+          </div>
+
+          <div className={styles.editor}>
+            {imageTypes.includes(props.file.filename.split(".").pop()) && (
+              <>
+                <h3>
+                  <Url
+                    target="_blank"
+                    href="https://zesty.org/services/media-storage-micro-dam/on-the-fly-media-optimization-and-dynamic-image-manipulation"
+                  >
+                    On-The-Fly Image Editor
+                  </Url>
+                </h3>
+                <div className={styles.ImageControls}>
+                  <div>
+                    <label htmlFor="optimize">Optimize: </label>
+                    <Select
+                      name="optimize"
+                      value={imageSettings.optimize}
+                      onSelect={(value) =>
+                        setImageSettings({
+                          ...imageSettings,
+                          optimize: value,
+                        })
+                      }
+                    >
+                      <Option key="high" value="high" text="High" />
+                      <Option key="medium" value="medium" text="Medium" />
+                      <Option key="low" value="low" text="Low" />
+                    </Select>
+                  </div>
+                  <div>
+                    <label htmlFor="fit">Fit: </label>
+                    <Select
+                      name="fit"
+                      value={imageSettings.fit}
+                      onSelect={(value) =>
+                        setImageSettings({
+                          ...imageSettings,
+                          fit: value,
+                        })
+                      }
+                    >
+                      <Option key="none" value="none" text="none" />
+                      <Option key="bounds" value="bounds" text="Bounds" />
+                      <Option key="cover" value="cover" text="Cover" />
+                      <Option key="crop" value="crop" text="Crop" />
+                    </Select>
+                  </div>
+                  <div>
+                    <label htmlFor="width">Width: </label>
+                    <Input
+                      type="number"
+                      name="width"
+                      id="width"
+                      min={0}
+                      onChange={(evt) =>
+                        setImageSettings({
+                          ...imageSettings,
+                          width: Number(evt.target.value),
+                        })
+                      }
+                      value={imageSettings.width}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="height">Height: </label>
+                    <Input
+                      type="number"
+                      name="height"
+                      id="height"
+                      min={0}
+                      onChange={(evt) =>
+                        setImageSettings({
+                          ...imageSettings,
+                          height: Number(evt.target.value),
+                        })
+                      }
+                      value={imageSettings.height}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+            <CopyButton
+              className={styles.otfLink}
+              kind="outlined"
+              value={`${props.file.url}${generateImageSettingsQueryParams()}`}
+            />
+          </div>
 
           <dl className={styles.DescriptionList}>
             <dt>ZUID:</dt>
@@ -225,11 +251,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
           {
             /* Hide for Contributor */
             userRole.name !== "Contributor" ? (
-              <Button
-                type="warn"
-                onClick={props.showDeleteFileModal}
-                className={styles.Delete}
-              >
+              <Button type="warn" onClick={props.showDeleteFileModal}>
                 <FontAwesomeIcon icon={faTrash} />
                 <span>Delete</span>
               </Button>

@@ -2,23 +2,21 @@
 @import "~@zesty-io/core/colors.less";
 
 .Modal {
-  max-width: 65%;
-
-  @media only screen and (min-width: 2000px) {
-    margin: 5% auto 0;
-    padding: 32px;
-  }
+  max-width: 1150px;
+  max-height: calc(calc(100% - 10% - 74px));
+  margin: 5% auto 0;
 
   .ModalContent {
     display: grid;
-    grid-template-columns: 400px 500px;
+    grid-template-columns: 600px 500px;
     gap: 16px;
-    justify-content: center;
     background-color: @white;
-    padding: 16px;
 
     .Picture {
-      margin-bottom: 8px;
+      height: 600px;
+      width: 600px;
+      overflow: auto;
+
       img {
         display: block;
         margin: auto;
@@ -27,36 +25,21 @@
       }
     }
 
-    .InputCopyCombo {
-      input {
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
+    .Meta {
+      padding: 16px;
+    }
+
+    .FieldsContainer {
+      label {
+        margin-bottom: 16px;
       }
-      &.CopyButton {
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-      }
-    }
-
-    .Field input,
-    .CopyButton {
-      margin-bottom: 16px;
-    }
-
-    .otfLink {
-      word-break: break-all;
-      width: 100%;
-    }
-
-    .Delete {
-      margin-top: 16px;
-    }
-
-    .CopyButton {
-      width: 100%;
     }
 
     .DescriptionList {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+
       & > * {
         padding: 4px 0;
       }
@@ -71,18 +54,31 @@
       }
     }
 
-    .ImageControls {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      margin-bottom: 16px;
+    .editor {
+      margin: 32px 0;
 
-      label {
-        margin-right: 4px;
+      h3 {
+        margin-bottom: 4px;
       }
 
-      input {
-        max-width: 50px;
+      .ImageControls {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 8px;
+
+        label {
+          margin-right: 4px;
+        }
+
+        input {
+          max-width: 50px;
+        }
+      }
+
+      .otfLink {
+        word-break: break-all;
+        width: 100%;
       }
     }
   }

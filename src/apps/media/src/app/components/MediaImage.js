@@ -27,10 +27,9 @@ export const MediaImage = forwardRef(function MediaImage(props, ref) {
     case "gif":
     case "svg":
     case "webp":
-      const src = `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${props.file.id}/getimage/${props.params}`;
       const options = {
-        "data-src": props.lazy ? src : null,
-        src: props.lazy ? "/images/FFFFFF-0.png" : src,
+        "data-src": props.lazy ? props.src : null,
+        src: props.lazy ? "/images/FFFFFF-0.png" : props.src,
       };
       return <img {...options} ref={ref} alt={props.file.title} />;
     case "html":
