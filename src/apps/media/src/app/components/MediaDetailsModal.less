@@ -3,8 +3,8 @@
 
 .Modal {
   max-width: 1150px;
-  max-height: calc(calc(100% - 10% - 74px));
-  margin: 5% auto 0;
+  max-height: calc(calc(100% - 2% - 74px));
+  margin: 1% auto 0;
 
   .ModalContent {
     display: grid;
@@ -54,6 +54,19 @@
       }
     }
 
+    .info {
+      list-style: none;
+      margin: 0;
+      li {
+        margin-bottom: 12px;
+      }
+      span {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 3px;
+      }
+    }
+
     .editor {
       margin: 32px 0;
 
@@ -79,6 +92,7 @@
       .otfLink {
         word-break: break-all;
         width: 100%;
+        margin-bottom: 8px;
       }
     }
   }

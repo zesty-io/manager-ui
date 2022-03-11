@@ -4,7 +4,12 @@ import cx from "classnames";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSave, faTrash, faBan } from "@fortawesome/free-solid-svg-icons";
+import {
+  faLink,
+  faSave,
+  faTrash,
+  faBan,
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
@@ -50,10 +55,12 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
   const metaShortcut = useMetaKey("s", saveFile);
   const imageTypes = ["jpg", "jpeg", "png", "gif"];
 
-  const generateImageSettingsQueryParams = () => {
-    return `?${Object.keys(imageSettings)
+  const genImageURL = () => {
+    const params = `${Object.keys(imageSettings)
       .map((key) => `${key}=${imageSettings[key]}`)
       .join("&")}`;
+
+    return `${props.file.url}?${params}`;
   };
 
   // Get image dimensions
@@ -86,12 +93,9 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             <Url
               target="_blank"
               title="Select to download original image in new page"
-              href={`${props.file.url}${generateImageSettingsQueryParams()}`}
+              href={`${genImageURL()}`}
             >
-              <MediaImage
-                src={`${props.file.url}${generateImageSettingsQueryParams()}`}
-                file={props.file}
-              />
+              <MediaImage src={`${genImageURL()}`} file={props.file} />
             </Url>
           </figure>
         </div>
@@ -124,12 +128,11 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
                 <label>
                   <Infotip
                     className={styles.InfotipTitle}
-                    title=" Use for alt text with Parsley's .getImageTitle() | Image alt text is used to describe your image textually so that search engines and screen readers can understand what that image is. It’s important to note that using alt text correctly can enhance your SEO strategy"
+                    title="Use for alt text with Parsley's .getImageTitle() | Image alt text is used to describe your image textually so that search engines and screen readers can understand what that image is. It’s important to note that using alt text correctly can enhance your SEO strategy"
                   />
-                  &nbsp; Alt Title
+                  &nbsp;Alt Text
                 </label>
               }
-              placeholder={"Image ALT Title"}
               onChange={(val) => setTitle(val)}
             />
           </div>
@@ -219,26 +222,31 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             <CopyButton
               className={styles.otfLink}
               kind="outlined"
-              value={`${props.file.url}${generateImageSettingsQueryParams()}`}
+              value={`${genImageURL()}`}
             />
           </div>
 
-          <dl className={styles.DescriptionList}>
-            <dt>ZUID:</dt>
-            <dd>
+          <ul className={styles.info}>
+            <li>
+              <span>ZUID:</span>
               <CopyButton
                 kind="outlined"
                 size="compact"
                 value={props.file.id}
               />
-            </dd>
-            {props.file.updated_at && (
-              <>
-                <dt> Created at: </dt>
-                <dd>{props.file.updated_at}</dd>
-              </>
-            )}
-          </dl>
+            </li>
+            <li>
+              <span>Created at:</span>
+              {props.file.updated_at}
+            </li>
+            <li>
+              {" "}
+              <Url target="_blank" title="Original Image" href={props.file.url}>
+                <FontAwesomeIcon icon={faLink} />
+                &nbsp;View Original File
+              </Url>
+            </li>
+          </ul>
         </div>
       </ModalContent>
       <ModalFooter className={shared.ModalFooter}>
