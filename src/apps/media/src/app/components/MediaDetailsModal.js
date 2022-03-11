@@ -103,7 +103,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
           {imageTypes.includes(props.file.filename.split(".").pop()) && (
             <>
               <div className={styles.ImageControls}>
-                <label for="width">Width: </label>
+                <label htmlFor="width">Width: </label>
                 <Input
                   type="number"
                   name="width"
@@ -117,7 +117,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
                   }
                   value={imageSettings.width}
                 />
-                <label for="height">Height: </label>
+                <label htmlFor="height">Height: </label>
                 <Input
                   type="number"
                   name="height"
@@ -149,7 +149,9 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
               </div>
               <CopyButton
                 kind="outlined"
-                value={`${baseUrl}/${filename}?${generateImageSettingsQueryParams()}`}
+                value={`${
+                  props.file.url
+                }?${generateImageSettingsQueryParams()}`}
               />
             </>
           )}
