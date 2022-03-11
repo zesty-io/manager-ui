@@ -39,7 +39,11 @@ export default function ContentEditor() {
 
     // Kick off loading data before app mount
     // to decrease time to first interaction
-    dispatch(fetchNav()).then((_) => setLoading(false));
+    dispatch(fetchNav())
+      .then((_) => setLoading(false))
+      .catch((e) => {
+        throw e;
+      });
     dispatch(fetchModels());
   }, []);
 
