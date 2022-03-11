@@ -148,6 +148,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
                 </Select>
               </div>
               <CopyButton
+                className={styles.otfLink}
                 kind="outlined"
                 value={`${
                   props.file.url
