@@ -37,10 +37,20 @@ export const MemoizedEditor = memo(
       // Bring browser focus to the editor text
       ref.current.editor.focus();
 
-      // Set previous cursor position
-      if (codeEditorPosition) {
-        ref.current.editor.setPosition(codeEditorPosition);
+      // Restore previous cursor position
+      if (codeEditorPosition?.[props.fileZUID]) {
+        ref.current.editor.setPosition(codeEditorPosition[props.fileZUID]);
       }
+
+      // Saves cursor position to the store on file change
+      return () => {
+        dispatch(
+          actions.setCodeEditorPosition({
+            ...codeEditorPosition,
+            [props.fileZUID]: ref.current.editor.getPosition(),
+          })
+        );
+      };
     }, [props.fileName]);
 
     useEffect(() => {
@@ -83,10 +93,15 @@ export const MemoizedEditor = memo(
             theme: "parsleyDark",
           });
         }}
-        // Set cursor position to state before unmounting
-        editorWillUnmount={(editor) =>
-          dispatch(actions.setCodeEditorPosition(editor.getPosition()))
-        }
+        // Save cursor position to store before unmounting
+        editorWillUnmount={(editor) => {
+          dispatch(
+            actions.setCodeEditorPosition({
+              ...codeEditorPosition,
+              [props.fileZUID]: editor.getPosition(),
+            })
+          );
+        }}
       />
     );
   },
