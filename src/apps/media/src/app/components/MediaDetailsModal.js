@@ -39,7 +39,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
   const [imageSettings, setImageSettings] = useState({
     width: 0,
     height: 0,
-    optimize: "medium",
+    optimize: "none",
     fit: "none",
   });
 
@@ -158,6 +158,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
                         })
                       }
                     >
+                      <Option key="none" value="none" text="— None —" />
                       <Option key="high" value="high" text="High" />
                       <Option key="medium" value="medium" text="Medium" />
                       <Option key="low" value="low" text="Low" />
@@ -175,7 +176,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
                         })
                       }
                     >
-                      <Option key="none" value="none" text="none" />
+                      <Option key="none" value="none" text="— None —" />
                       <Option key="bounds" value="bounds" text="Bounds" />
                       <Option key="cover" value="cover" text="Cover" />
                       <Option key="crop" value="crop" text="Crop" />
