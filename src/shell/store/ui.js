@@ -23,6 +23,7 @@ export const ui = createSlice({
     contentActions: true,
     contentActionsHover: false,
     duoMode: false,
+    codeEditorPosition: null,
   },
   reducers: {
     loadTabsSuccess(state, action) {
@@ -58,6 +59,9 @@ export const ui = createSlice({
     },
     setContentNavHover(state, action) {
       state.contentNavHover = action.payload;
+    },
+    setCodeEditorPosition(state, action) {
+      state.codeEditorPosition = action.payload;
     },
   },
 });

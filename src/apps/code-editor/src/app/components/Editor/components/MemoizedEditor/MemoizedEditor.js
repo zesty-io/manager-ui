@@ -1,7 +1,9 @@
 import { memo, useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import MonacoEditor from "react-monaco-editor";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { resolveMonacoLang, updateFileCode } from "../../../../../store/files";
+import { actions } from "shell/store/ui";
 
 /**
  * We memoize this component because we need to short circuit the redux->react->component update cycle
@@ -10,6 +12,10 @@ import { resolveMonacoLang, updateFileCode } from "../../../../../store/files";
  */
 export const MemoizedEditor = memo(
   function MemoizedEditor(props) {
+    const dispatch = useDispatch();
+    const codeEditorPosition = useSelector(
+      (state) => state.ui.codeEditorPosition
+    );
     const ref = useRef();
 
     // use one model per filename and setModel when filename changes
@@ -27,6 +33,14 @@ export const MemoizedEditor = memo(
         monaco.editor.createModel(props.code, language, filenameURI);
 
       ref.current.editor.setModel(model);
+
+      // Bring browser focus to the editor text
+      ref.current.editor.focus();
+
+      // Set previous cursor position
+      if (codeEditorPosition) {
+        ref.current.editor.setPosition(codeEditorPosition);
+      }
     }, [props.fileName]);
 
     useEffect(() => {
@@ -69,6 +83,10 @@ export const MemoizedEditor = memo(
             theme: "parsleyDark",
           });
         }}
+        // Set cursor position to state before unmounting
+        editorWillUnmount={(editor) =>
+          dispatch(actions.setCodeEditorPosition(editor.getPosition()))
+        }
       />
     );
   },
