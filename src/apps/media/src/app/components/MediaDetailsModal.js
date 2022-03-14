@@ -138,20 +138,21 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
           </div>
 
           <div className={styles.editor}>
-            <h3>
-              <Url
-                target="_blank"
-                href="https://zesty.org/services/media-storage-micro-dam/on-the-fly-media-optimization-and-dynamic-image-manipulation"
-              >
-                On-The-Fly Image Editor
-              </Url>
-            </h3>
-            {imageTypes.includes(props.file.filename.split(".").pop()) ? (
+            {imageTypes.includes(props.file.filename.split(".").pop()) && (
               <>
+                <h3>
+                  <Url
+                    target="_blank"
+                    href="https://zesty.org/services/media-storage-micro-dam/on-the-fly-media-optimization-and-dynamic-image-manipulation"
+                  >
+                    On-The-Fly Image Editor
+                  </Url>
+                </h3>
                 <div className={styles.ImageControls}>
                   <div>
                     <label htmlFor="optimize">Optimize: </label>
                     <Select
+                      className={styles.Select}
                       name="optimize"
                       value={imageSettings.optimize}
                       onSelect={(value) =>
@@ -170,6 +171,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
                   <div>
                     <label htmlFor="fit">Fit: </label>
                     <Select
+                      className={styles.Select}
                       name="fit"
                       value={imageSettings.fit}
                       onSelect={(value) =>
@@ -219,10 +221,6 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
                   </div>
                 </div>
               </>
-            ) : (
-              <Notice className={styles.OTFNotice}>
-                On-The-Fly image editing can not be used with this file
-              </Notice>
             )}
             <CopyButton
               className={styles.OTFLink}
