@@ -19,13 +19,14 @@ import { Infotip } from "@zesty-io/core/Infotip";
 import { Url } from "@zesty-io/core/Url";
 import { CopyButton } from "@zesty-io/core/CopyButton";
 import { Input } from "@zesty-io/core/Input";
+import { Notice } from "@zesty-io/core/Notice";
+import { Option, Select } from "@zesty-io/core/Select";
 
 import { MediaImage } from "./MediaImage";
 import { editFile } from "shell/store/media";
 
 import shared from "./MediaShared.less";
 import styles from "./MediaDetailsModal.less";
-import { Option, Select } from "@zesty-io/core/Select";
 
 export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
   const dispatch = useDispatch();
@@ -58,21 +59,23 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
       .map((key) => `${key}=${imageSettings[key]}`)
       .join("&")}`;
 
-    return `${props.file.url}?${params}`;
+    return params ? `${props.file.url}?${params}` : props.file.url;
   };
 
-  // Get image dimensions
   useEffect(() => {
-    const img = new Image();
-    img.src = props.file.url;
+    // Get image dimensions for support types
+    if (imageTypes.includes(props.file.filename.split(".").pop())) {
+      const img = new Image();
+      img.src = props.file.url;
 
-    img.onload = () => {
-      setImageSettings({
-        ...imageSettings,
-        height: img.height,
-        width: img.width,
-      });
-    };
+      img.onload = () => {
+        setImageSettings({
+          ...imageSettings,
+          height: img.height,
+          width: img.width,
+        });
+      };
+    }
   }, [props.file.url]);
 
   return (
@@ -135,16 +138,16 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
           </div>
 
           <div className={styles.editor}>
-            {imageTypes.includes(props.file.filename.split(".").pop()) && (
+            <h3>
+              <Url
+                target="_blank"
+                href="https://zesty.org/services/media-storage-micro-dam/on-the-fly-media-optimization-and-dynamic-image-manipulation"
+              >
+                On-The-Fly Image Editor
+              </Url>
+            </h3>
+            {imageTypes.includes(props.file.filename.split(".").pop()) ? (
               <>
-                <h3>
-                  <Url
-                    target="_blank"
-                    href="https://zesty.org/services/media-storage-micro-dam/on-the-fly-media-optimization-and-dynamic-image-manipulation"
-                  >
-                    On-The-Fly Image Editor
-                  </Url>
-                </h3>
                 <div className={styles.ImageControls}>
                   <div>
                     <label htmlFor="optimize">Optimize: </label>
@@ -216,9 +219,13 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
                   </div>
                 </div>
               </>
+            ) : (
+              <Notice className={styles.OTFNotice}>
+                On-The-Fly image editing can not be used with this file
+              </Notice>
             )}
             <CopyButton
-              className={styles.otfLink}
+              className={styles.OTFLink}
               kind="outlined"
               value={`${genImageURL()}`}
             />
