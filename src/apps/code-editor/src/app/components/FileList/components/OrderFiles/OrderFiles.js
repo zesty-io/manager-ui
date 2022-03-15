@@ -100,7 +100,6 @@ export default connect((state, props) => {
   };
 
   const handleClose = () => {
-    console.log("Hello world!");
     setOpen(false);
     setFiles(props.fileHeaders);
   };
