@@ -99,6 +99,12 @@ export default connect((state, props) => {
       });
   };
 
+  const handleClose = () => {
+    console.log("Hello world!");
+    setOpen(false);
+    setFiles(props.fileHeaders);
+  };
+
   return (
     <Fragment>
       <Button
@@ -112,8 +118,9 @@ export default connect((state, props) => {
       {open && (
         <Modal
           className={styles.OrderFilesModal}
+          type="global"
           open={open}
-          onClose={() => setOpen(false)}
+          onClose={handleClose}
         >
           <ModalHeader>
             <h2>Order {props.typePathPart}</h2>
@@ -173,7 +180,7 @@ export default connect((state, props) => {
             >
               <FontAwesomeIcon icon={faSave} /> Save Order
             </Button>
-            <Button type="cancel" onClick={() => setOpen(false)}>
+            <Button type="cancel" onClick={handleClose}>
               <FontAwesomeIcon icon={faBan} /> Cancel (ESC)
             </Button>
           </ModalFooter>
