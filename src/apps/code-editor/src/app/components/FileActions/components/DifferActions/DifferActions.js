@@ -45,7 +45,7 @@ export const DifferActions = memo(function DifferActions(props) {
       );
     }
 
-    history.push(`/code/file/views/${props.fileZUID}`);
+    history.push(`/code/file/${props.fileType}/${props.fileZUID}`);
   }
 
   function resolveSync() {
@@ -73,12 +73,13 @@ export const DifferActions = memo(function DifferActions(props) {
   }
 
   useEffect(() => {
+    console.log("im in", props.fileType);
     props.setLoading(true);
     props
       .dispatch(fetchFileVersions(props.fileZUID, props.fileType))
       .then((res) => {
         props.setLoading(false);
-
+        console.log("from fetch", res, props.status);
         let versions = res.data
           .filter((v) => v.status === props.status)
           .sort((a, b) => {
@@ -136,6 +137,8 @@ export const DifferActions = memo(function DifferActions(props) {
       value: version.version,
     };
   });
+
+  console.log("testing options", versions, options);
 
   return (
     <div className={styles.DifferActions}>
