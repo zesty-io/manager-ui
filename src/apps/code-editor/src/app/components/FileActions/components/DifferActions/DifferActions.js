@@ -78,6 +78,7 @@ export const DifferActions = memo(function DifferActions(props) {
       .dispatch(fetchFileVersions(props.fileZUID, props.fileType))
       .then((res) => {
         props.setLoading(false);
+
         let versions = res.data
           .filter((v) => v.status === props.status)
           .sort((a, b) => {
