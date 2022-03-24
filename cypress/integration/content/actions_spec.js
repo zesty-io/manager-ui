@@ -32,7 +32,7 @@ describe("Actions in content editor", () => {
       .first()
       .type("{selectall}{backspace}test" + timestamp);
     cy.get("#SaveItemButton").click();
-    cy.contains("Saved a new test version").should("exist");
+    cy.contains("Saved a new test (en-US) version").should("exist");
   });
   it("Saves homepage item metadata", () => {
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
