@@ -548,7 +548,7 @@ export function uploadFile(file, bin) {
       dispatch(
         notify({
           message:
-            "Failed uploading file. Individual file size must be 500MB or smaller",
+            "Failed uploading file. Individual file size must be 32MB or smaller",
           kind: "error",
         })
       );
