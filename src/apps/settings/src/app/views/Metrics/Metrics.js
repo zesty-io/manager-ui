@@ -204,12 +204,35 @@ const Body = ({ usageData, requestData }) => {
     );
   };
 
-  const reqs = {};
+  const TopReqAll = ({ req }) => {
+    const count = req.RequestCount;
+    const throughput = req.DataThroughputInGB;
+    return (
+      <tr>
+        <td>{req.Code}</td>
+        <td>{count}</td>
+        <td>{throughput}</td>
+      </tr>
+    );
+  };
+
+  const reqs = { other: 0 };
   for (let i = 0; i < requestData.ResponseCodes.length; i++) {
     const code = requestData.ResponseCodes[i].Code;
     const count = requestData.ResponseCodes[i].RequestCount;
-    reqs[code] = count;
+    switch (code) {
+      case 200:
+      case 301:
+      case 404:
+      case 403:
+        reqs[code] = count;
+        break;
+      default:
+        reqs.other += count;
+        break;
+    }
   }
+  console.log({ reqs });
 
   return (
     <>
@@ -320,7 +343,7 @@ const Body = ({ usageData, requestData }) => {
           <div>
             <p class="heading">Media Bandwidth</p>
             <p class="title is-info" id="mediaThroughput">
-              0
+              {totalMediaThroughput} GB
             </p>
           </div>
         </div>
@@ -383,7 +406,7 @@ const Body = ({ usageData, requestData }) => {
           <div>
             <p class="heading">Other</p>
             <p class="title" id="otherRequests">
-              0
+              {reqs["other"]}
             </p>
           </div>
         </div>
@@ -526,7 +549,11 @@ const Body = ({ usageData, requestData }) => {
               <th>Bandwidth</th>
             </tr>
           </thead>
-          <tbody id="requestsAll"></tbody>
+          <tbody id="requestsAll">
+            {requestData.ResponseCodes.map((req) => (
+              <TopReqAll req={req} />
+            ))}
+          </tbody>
         </table>
       </div>
       <section class="hero is-dark">
