@@ -48,6 +48,23 @@ export function DropdownOptions(props) {
     );
   };
 
+  const deleteOption = (optionIndex) => {
+    // Update internal state
+    const newOptions = [...options];
+    newOptions.splice(optionIndex, 1);
+    setOptions(newOptions);
+
+    // Notify store of new options
+    props.updateFieldSetting(
+      // convert to expected api shape
+      newOptions.reduce((acc, option) => {
+        acc[option.key] = option.value;
+        return acc;
+      }, {}),
+      "options"
+    );
+  };
+
   return (
     <div className={styles.FieldSettings}>
       {options.map((option, i) => (
@@ -72,9 +89,7 @@ export function DropdownOptions(props) {
           <Button
             type="warn"
             onClick={() => {
-              const newOptions = [...options];
-              newOptions.splice(i, 1);
-              setOptions(newOptions);
+              deleteOption(i);
             }}
           >
             <FontAwesomeIcon icon={faTrash} />
