@@ -82,7 +82,9 @@ export default connect((state) => {
      */
     deleteLead = (leadZuid) => {
       this.setState({ loading: true });
-      this.props.dispatch(deleteLead(leadZuid));
+      this.props
+        .dispatch(deleteLead(leadZuid))
+        .then(() => this.setLoading({ loading: false }));
     };
 
     /**
