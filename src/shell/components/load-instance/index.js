@@ -29,6 +29,7 @@ export default connect((state) => {
     products: state.products,
     languages: state.languages,
     files: state.files,
+    role: state.userRole.systemRole.name,
   };
 })(
   memo(function LoadInstance(props) {
@@ -66,6 +67,27 @@ export default connect((state) => {
       props.dispatch(fetchFiles("stylesheets"));
       props.dispatch(fetchFiles("scripts"));
     }, []);
+
+    useEffect(() => {
+      if (window.Appcues) {
+        window.Appcues.identify(
+          props.user.ZUID, // unique, required
+          {
+            createdAt: props.user.createdAt, // Unix timestamp of user signup date
+
+            role: props.role, // Current user’s role or permissions
+            accountId: props.instance.ZUID, // Current user's account ID
+            firstName: props.user.firstName, // current user's first name
+
+            // additional suggestions
+
+            companyName: props.instance.name, // Current user’s company name
+            email: props.user.email, // Current user's email
+            staff: props.user.staff, // Zesty staff
+          }
+        );
+      }
+    }, [props.user, props.instance]);
 
     return (
       <>
