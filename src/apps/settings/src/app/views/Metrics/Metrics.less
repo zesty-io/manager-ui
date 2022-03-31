@@ -1,0 +1,68 @@
+@import "~@zesty-io/core/colors.less";
+.IsSuccess {
+  color: #009e6c;
+}
+.IsDanger {
+  color: #ff3860;
+}
+.IsWarning {
+  color: #ffdd57;
+}
+.IsInfo {
+  color: #00d1b2;
+}
+.IsOrange {
+  color: orange;
+}
+
+.MetricsTableRow {
+  background-color: @white;
+  display: grid;
+  grid-template-columns: 1fr 135px 141px 1fr 200px 200px;
+  gap: 0 8px;
+  align-items: center;
+
+  &:nth-of-type(odd) {
+    background: lighten(@zesty-light-blue, 15%);
+  }
+
+  &:hover,
+  &:focus,
+  &:active,
+  &:nth-of-type(odd):hover,
+  &:nth-of-type(odd):focus,
+  &:nth-of-type(odd):active {
+    background-color: lighten(@zesty-field-blue, 10%);
+  }
+
+  .MetricsTableRowCell {
+    padding: 16px;
+    word-break: break-word;
+
+    svg {
+      margin-right: 8px;
+    }
+
+    .internalLink {
+      font-size: 1em;
+      color: @zesty-blue;
+    }
+    .removeBtn {
+      margin-left: auto;
+      align-items: center;
+    }
+  }
+}
+
+.MetricsTable {
+  width: 100%;
+  .TableBody {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid @zesty-light-blue;
+    border-radius: 4px;
+    .noResults {
+      margin: 16px;
+    }
+  }
+}

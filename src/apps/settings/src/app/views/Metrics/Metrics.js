@@ -19,6 +19,7 @@ import { request } from "utility/request";
 
 import styles from "./Metrics.less";
 import { Divider } from "@zesty-io/core/Divider";
+import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
 const getEndpointUrls = (zuid) => {
   // TODO see if this url can be converted to a prettier one
@@ -42,7 +43,7 @@ const numberWithCommas = (x) => {
 
 const floatWithCommas = (x) => {
   x = x.toFixed(2);
-  var parts = x.toString().split(".");
+  let parts = x.toString().split(".");
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return parts.join(".");
 };
@@ -101,14 +102,14 @@ const Body = ({ usageData, requestData }) => {
     const throughput = floatWithCommas(media.ThroughtputGB) + "GB";
 
     return (
-      <tr>
-        <td class="fixedTD">
-          <a class="fixedTD" href={fullPath} target="_blank">
+      <tr className={cx(styles.MetricsTableRow)}>
+        <td className={cx(styles.MetricsTableRowCell, "fixedTD")}>
+          <a className="fixedTD" href={fullPath} target="_blank">
             {path}
           </a>
         </td>
-        <td>{requests}</td>
-        <td>{throughput}</td>
+        <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
+        <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
       </tr>
     );
   };
@@ -116,22 +117,22 @@ const Body = ({ usageData, requestData }) => {
   const TopReq200 = ({ req }) => {
     if (req == undefined) return null;
 
-    var fullPath = req.FullPath;
-    var path = req.Path;
+    const fullPath = req.FullPath;
+    let path = req.Path;
     path = path.length > 39 ? path.substring(0, 42) + "..." : path;
 
-    var requests = numberWithCommas(req.RequestCount);
-    var throughput = floatWithCommas(req.DataThroughputInGB) + "GB";
+    const requests = numberWithCommas(req.RequestCount);
+    const throughput = floatWithCommas(req.DataThroughputInGB) + "GB";
     //#requests200TableRows
     return (
-      <tr>
-        <td class="fixedTD">
+      <tr className={cx(styles.MetricsTableRow)}>
+        <td className={cx(styles.MetricsTableRowCell, "fixedTD")}>
           <a href={fullPath} target="_blank">
             {path}
           </a>
         </td>
-        <td>{requests}</td>
-        <td>{throughput}</td>
+        <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
+        <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
       </tr>
     );
   };
@@ -146,15 +147,15 @@ const Body = ({ usageData, requestData }) => {
     const throughput = floatWithCommas(req.DataThroughputInGB) + "GB";
     //#requests404TableRows
     return (
-      <tr>
-        <td class="fixedTD">
+      <tr className={cx(styles.MetricsTableRow)}>
+        <td className={cx(styles.MetricsTableRowCell, "fixedTD")}>
           <a href={fullPath} target="_blank">
             {path}
-            <span class="has-text-grey-light">[{req.Host}]</span>'
+            <span className="has-text-grey-light">[{req.Host}]</span>'
           </a>
         </td>
-        <td>{requests}</td>
-        <td>{throughput}</td>
+        <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
+        <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
       </tr>
     );
   };
@@ -164,19 +165,19 @@ const Body = ({ usageData, requestData }) => {
     let path = req.Path;
     path = path.length > 30 ? path.substring(0, 30) + "..." : path;
 
-    var requests = numberWithCommas(req.RequestCount);
-    var throughput = floatWithCommas(req.DataThroughputInGB) + "GB";
+    const requests = numberWithCommas(req.RequestCount);
+    const throughput = floatWithCommas(req.DataThroughputInGB) + "GB";
     //#requests301TableRows
     return (
-      <tr>
-        <td class="fixedTD">
+      <tr className={cx(styles.MetricsTableRow)}>
+        <td className={cx(styles.MetricsTableRowCell, "fixedTD")}>
           <a href={fullPath} target="_blank">
             {path}
-            <span class="has-text-grey-light">[{req.Host}]</span>
+            <span className="has-text-grey-light">[{req.Host}]</span>
           </a>
         </td>
-        <td>{requests}</td>
-        <td>{throughput}</td>
+        <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
+        <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
       </tr>
     );
   };
@@ -187,19 +188,19 @@ const Body = ({ usageData, requestData }) => {
     let path = req.Path;
     path = path.length > 100 ? path.substring(0, 97) + "..." : path;
 
-    var requests = numberWithCommas(req.RequestCount);
-    var throughput = floatWithCommas(req.DataThroughputInGB) + "GB";
+    const requests = numberWithCommas(req.RequestCount);
+    const throughput = floatWithCommas(req.DataThroughputInGB) + "GB";
     //#requests403TableRows
     return (
-      <tr>
-        <td class="fixedTD">
+      <tr className={cx(styles.MetricsTableRow)}>
+        <td className={cx(styles.MetricsTableRowCell, "fixedTD")}>
           <a href={fullPath} target="_blank">
             {path}
-            <span class="has-text-grey-light">[{req.Host}]</span>
+            <span className="has-text-grey-light">[{req.Host}]</span>
           </a>
         </td>
-        <td>{requests}</td>
-        <td>{throughput}</td>
+        <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
+        <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
       </tr>
     );
   };
@@ -208,10 +209,10 @@ const Body = ({ usageData, requestData }) => {
     const count = req.RequestCount;
     const throughput = req.DataThroughputInGB;
     return (
-      <tr>
-        <td>{req.Code}</td>
-        <td>{count}</td>
-        <td>{throughput}</td>
+      <tr className={cx(styles.MetricsTableRow)}>
+        <td className={cx(styles.MetricsTableRowCell)}>{req.Code}</td>
+        <td className={cx(styles.MetricsTableRowCell)}>{count}</td>
+        <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
       </tr>
     );
   };
@@ -236,35 +237,35 @@ const Body = ({ usageData, requestData }) => {
 
   return (
     <>
-      <section class="hero is-dark">
-        <div class="hero-body zesty-header">
-          <div class="container">
-            <div class="columns">
-              <div class="column">
-                <h1 class="subtitle">
+      <section className="hero is-dark">
+        <div className="hero-body zesty-header">
+          <div className="container">
+            <div className="columns">
+              <div className="column">
+                <h1 className="subtitle">
                   <strong>Zesty.io</strong> Usage Report{" "}
-                  <span class="monthNameYear">Month 20XX</span>
+                  <span className="monthNameYear">Month 20XX</span>
                 </h1>
               </div>
-              <div class="column has-text-right"></div>
+              <div className="column has-text-right"></div>
             </div>
           </div>
         </div>
       </section>
-      <section class="hero is-medium is-primary is-bold">
-        <div class="hero-body custom-hero">
-          <div class="container">
-            <div class="columns is-mobile">
-              <div class="column">
-                <h1 class="title">
+      <section className="hero is-medium is-primary is-bold">
+        <div className="hero-body custom-hero">
+          <div className="container">
+            <div className="columns is-mobile">
+              <div className="column">
+                <h1 className="title">
                   <span id="siteName">{usageData.Account.Name}</span>
                 </h1>
-                <h2 class="subtitle">
-                  <span class="monthNameYear">Month 20XX</span> Report for
+                <h2 className="subtitle">
+                  <span className="monthNameYear">Month 20XX</span> Report for
                   <strong id="siteURL">{usageData.Account.Domain}</strong>
                 </h2>
               </div>
-              <div class="column has-text-right">
+              <div className="column has-text-right">
                 <p>
                   <strong>Instance ZUID:</strong>{" "}
                   <span id="instanceZUID">{usageData.Account.Zuid}</span>
@@ -280,153 +281,180 @@ const Body = ({ usageData, requestData }) => {
           </div>
         </div>
       </section>
-      <div class="container">
-        <div class="notification">
-          <h2 class="has-text-centered">
-            <strong>Total Usage Breakdown</strong>
-          </h2>
-        </div>
-        <nav class="level">
-          <div class="level-item has-text-centered">
-            <div>
-              <p class="heading">Total Bandwidth</p>
-              <h1 class="title totalThroughput">
-                {floatWithCommas(totalThroughput)} GB
-              </h1>
-              <br />
-              <br />
-              <br />
-              <p class="heading">Total Requests</p>
-              <h1 class="title totalRequests" id="totalRequests">
-                {numberWithCommas(totalRequests)}
-              </h1>
+      <Card>
+        <CardHeader>
+          <div className="notification">
+            <h2 className="has-text-centered">
+              <strong>Total Usage Breakdown</strong>
+            </h2>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <nav className="level">
+            <div className="level-item has-text-centered">
+              <div>
+                <p className="heading">Total Bandwidth</p>
+                <h1 className="title totalThroughput">
+                  {floatWithCommas(totalThroughput)} GB
+                </h1>
+                <br />
+                <br />
+                <br />
+                <p className="heading">Total Requests</p>
+                <h1 className="title totalRequests" id="totalRequests">
+                  {numberWithCommas(totalRequests)}
+                </h1>
+              </div>
             </div>
+            <div className="level-item has-text-centered">
+              <div
+                id="chart1"
+                className="level-item ct-chart ct-perfect-fourth"
+              ></div>
+            </div>
+            <div className="level-item has-text-centered">
+              <div
+                id="chart2"
+                className="level-item ct-chart ct-perfect-fourth"
+              ></div>
+            </div>
+          </nav>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <div className="notification">
+            <h2 className="has-text-centered">
+              <strong>Bandwidth Breakdown</strong>
+            </h2>
           </div>
-          <div class="level-item has-text-centered">
-            <div
-              id="chart1"
-              class="level-item ct-chart ct-perfect-fourth"
-            ></div>
-          </div>
-          <div class="level-item has-text-centered">
-            <div
-              id="chart2"
-              class="level-item ct-chart ct-perfect-fourth"
-            ></div>
-          </div>
-        </nav>
-      </div>
-      <div class="notification">
-        <h2 class="has-text-centered">
-          <strong>Bandwidth Breakdown</strong>
-        </h2>
-      </div>
-      <nav class="level">
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading">Total Bandwidth</p>
-            <p class="title totalThroughput">
-              {floatWithCommas(totalThroughput)} GB
-            </p>
-          </div>
-        </div>
+        </CardHeader>
+        <CardContent>
+          <nav className="level">
+            <div className="level-item has-text-centered">
+              <div>
+                <p className="heading">Total Bandwidth</p>
+                <p className="title totalThroughput">
+                  {floatWithCommas(totalThroughput)} GB
+                </p>
+              </div>
+            </div>
 
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading">HTML/CSS/Javascript Bandwidth</p>
-            <p class="title is-success requestThroughput">
-              {floatWithCommas(totalRequestThroughput)} GB
-            </p>
-          </div>
-        </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading">Media Bandwidth</p>
-            <p class="title is-info" id="mediaThroughput">
-              {totalMediaThroughput} GB
-            </p>
-          </div>
-        </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading">Successful Media Requests</p>
-            <p class="title is-info" id="requestsMedia">
-              {numberWithCommas(usageData.MediaConsumption.TotalRequests)}
-            </p>
-          </div>
-        </div>
-      </nav>
+            <div className="level-item has-text-centered">
+              <div>
+                <p className="heading">HTML/CSS/Javascript Bandwidth</p>
+                <p
+                  className={cx(
+                    styles.title,
+                    styles.IsSuccess,
+                    styles.requestThroughput
+                  )}
+                >
+                  {floatWithCommas(totalRequestThroughput)} GB
+                </p>
+              </div>
+            </div>
+            <div className="level-item has-text-centered">
+              <div>
+                <p className="heading">Media Bandwidth</p>
+                <p className={cx("title", styles.IsInfo)} id="mediaThroughput">
+                  {totalMediaThroughput} GB
+                </p>
+              </div>
+            </div>
+            <div className="level-item has-text-centered">
+              <div>
+                <p className="heading">Successful Media Requests</p>
+                <p className={cx("title", styles.IsInfo)} id="requestsMedia">
+                  {numberWithCommas(usageData.MediaConsumption.TotalRequests)}
+                </p>
+              </div>
+            </div>
+          </nav>
+        </CardContent>
+      </Card>
       <br />
 
-      <div class="notification">
-        <h2 class="has-text-centered">
-          <strong>
-            Platform Request Breakdown (<span id="totalAllRequests"></span>{" "}
-            Total)
-          </strong>
-        </h2>
-      </div>
-      <nav class="level">
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading">Successful Page Loads (200)</p>
-            <p class="title is-success" id="requests200">
-              {reqs["200"]}
-            </p>
-          </div>
-        </div>
+      <Card>
+        <CardHeader>
+          <h2 className="has-text-centered">
+            <strong>
+              Platform Request Breakdown (<span id="totalAllRequests"></span>{" "}
+              Total)
+            </strong>
+          </h2>
+        </CardHeader>
+        <CardContent>
+          <nav className="level">
+            <div className="level-item has-text-centered">
+              <div>
+                <p className="heading">Successful Page Loads (200)</p>
+                <p className={cx("title", styles.IsSuccess)} id="requests200">
+                  {reqs["200"]}
+                </p>
+              </div>
+            </div>
 
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading">Page Redirects (301)</p>
-            <p class="title is-warning" id="requests301">
-              {reqs["301"]}
-            </p>
-          </div>
-        </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading">Failing Not Found (404)</p>
-            <p class="title is-orange" id="requests404">
-              {reqs["404"]}
-            </p>
-          </div>
-        </div>
+            <div className="level-item has-text-centered">
+              <div>
+                <p className="heading">Page Redirects (301)</p>
+                <p className={cx("title", styles.IsWarning)} id="requests301">
+                  {reqs["301"]}
+                </p>
+              </div>
+            </div>
+            <div className="level-item has-text-centered">
+              <div>
+                <p className="heading">Failing Not Found (404)</p>
+                <p className={cx(styles.IsOrange)} id="requests404">
+                  {reqs["404"]}
+                </p>
+              </div>
+            </div>
 
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading">Malicious/Deflected (403)</p>
-            <p class="title is-danger" id="requests403">
-              {reqs["403"]}
-            </p>
-          </div>
-        </div>
+            <div className="level-item has-text-centered">
+              <div>
+                <p className="heading">Malicious/Deflected (403)</p>
+                <p className={cx("title", styles.IsDanger)} id="requests403">
+                  {reqs["403"]}
+                </p>
+              </div>
+            </div>
 
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading">Other</p>
-            <p class="title" id="otherRequests">
-              {reqs["other"]}
-            </p>
-          </div>
-        </div>
-      </nav>
+            <div className="level-item has-text-centered">
+              <div>
+                <p className="heading">Other</p>
+                <p className="title" id="otherRequests">
+                  {reqs["other"]}
+                </p>
+              </div>
+            </div>
+          </nav>
+        </CardContent>
+      </Card>
 
       <br />
-      <div class="container">
-        <div class="columns is-mobile">
-          <div class="column is-half">
-            <div class="notification has-text-centered">
-              <h2 class="is-success">
+      <div className="container">
+        <div className="columns is-mobile">
+          <div className="column is-half">
+            <div className="notification has-text-centered">
+              <h2 className={cx(styles.IsSuccess)}>
                 <strong>Top Requested Pages</strong>
               </h2>
             </div>
-            <table class="table is-striped is-fullwidth">
+            <table
+              className={cx(
+                styles.MetricsTable,
+                "table",
+                "is-striped",
+                "is-fullwidth"
+              )}
+            >
               <thead>
-                <tr>
-                  <th>URL</th>
-                  <th>Requests</th>
-                  <th>Bandwidth</th>
+                <tr className={cx(styles.MetricsTableRow)}>
+                  <th className={cx(styles.MetricsTableRowCell)}>URL</th>
+                  <th className={cx(styles.MetricsTableRowCell)}>Requests</th>
+                  <th className={cx(styles.MetricsTableRowCell)}>Bandwidth</th>
                 </tr>
               </thead>
               <tbody id="requests200TableRows">
@@ -438,18 +466,25 @@ const Body = ({ usageData, requestData }) => {
               </tbody>
             </table>
           </div>
-          <div class="column is-half">
-            <div class="notification has-text-centered">
-              <h2 class="is-info">
+          <div className="column is-half">
+            <div className="notification has-text-centered">
+              <h2 className={cx(styles.IsInfo)}>
                 <strong>Top Requested Media</strong>
               </h2>
             </div>
-            <table class="table is-striped is-fullwidth">
+            <table
+              className={cx(
+                styles.MetricsTable,
+                "table",
+                "is-striped",
+                "is-fullwidth"
+              )}
+            >
               <thead>
-                <tr>
-                  <th>File Name</th>
-                  <th>Request</th>
-                  <th>Bandwidth</th>
+                <tr className={cx(styles.MetricsTableRow)}>
+                  <th className={cx(styles.MetricsTableRowCell)}>File Name</th>
+                  <th className={cx(styles.MetricsTableRowCell)}>Request</th>
+                  <th className={cx(styles.MetricsTableRowCell)}>Bandwidth</th>
                 </tr>
               </thead>
               <tbody id="mediaTableRows">
@@ -461,20 +496,27 @@ const Body = ({ usageData, requestData }) => {
           </div>
         </div>
       </div>
-      <div class="container">
-        <div class="columns is-mobile">
-          <div class="column is-half">
-            <div class="notification has-text-centered">
-              <h2 class="is-orange">
+      <div className="container">
+        <div className="columns is-mobile">
+          <div className="column is-half">
+            <div className="notification has-text-centered">
+              <h2 className={cx(styles.IsOrange)}>
                 <strong>Top File Not Found (404)</strong>
               </h2>
             </div>
-            <table class="table is-striped is-fullwidth">
+            <table
+              className={cx(
+                styles.MetricsTable,
+                "table",
+                "is-striped",
+                "is-fullwidth"
+              )}
+            >
               <thead>
-                <tr>
-                  <th>URL</th>
-                  <th>Requests</th>
-                  <th>Bandwidth</th>
+                <tr className={cx(styles.MetricsTableRow)}>
+                  <th className={cx(styles.MetricsTableRowCell)}>URL</th>
+                  <th className={cx(styles.MetricsTableRowCell)}>Request</th>
+                  <th className={cx(styles.MetricsTableRowCell)}>Bandwidth</th>
                 </tr>
               </thead>
               <tbody id="requests404TableRows">
@@ -486,18 +528,25 @@ const Body = ({ usageData, requestData }) => {
               </tbody>
             </table>
           </div>
-          <div class="column is-half">
-            <div class="notification has-text-centered">
-              <h2 class="is-warning">
+          <div className="column is-half">
+            <div className="notification has-text-centered">
+              <h2 className={cx(styles.IsWarning)}>
                 <strong>Top 301 Redirects</strong>
               </h2>
             </div>
-            <table class="table is-striped is-fullwidth">
+            <table
+              className={cx(
+                styles.MetricsTable,
+                "table",
+                "is-striped",
+                "is-fullwidth"
+              )}
+            >
               <thead>
-                <tr>
-                  <th>URL</th>
-                  <th>Requests</th>
-                  <th>Bandwidth</th>
+                <tr className={cx(styles.MetricsTableRow)}>
+                  <th className={cx(styles.MetricsTableRowCell)}>URL</th>
+                  <th className={cx(styles.MetricsTableRowCell)}>Request</th>
+                  <th className={cx(styles.MetricsTableRowCell)}>Bandwidth</th>
                 </tr>
               </thead>
               <tbody id="requests301TableRows">
@@ -511,18 +560,25 @@ const Body = ({ usageData, requestData }) => {
           </div>
         </div>
       </div>
-      <div class="container">
-        <div class="notification has-text-centered">
-          <h2 class="is-danger">
+      <div className="container">
+        <div className="notification has-text-centered">
+          <h2 className={cx(styles.IsDanger)}>
             <strong>Top Malicous / Deflected Requests</strong>
           </h2>
         </div>
-        <table class="table is-striped is-fullwidth">
+        <table
+          className={cx(
+            styles.MetricsTable,
+            "table",
+            "is-striped",
+            "is-fullwidth"
+          )}
+        >
           <thead>
-            <tr>
-              <th>URL</th>
-              <th>Requests</th>
-              <th>Bandwidth</th>
+            <tr className={cx(styles.MetricsTableRow)}>
+              <th className={cx(styles.MetricsTableRowCell)}>URL</th>
+              <th className={cx(styles.MetricsTableRowCell)}>Request</th>
+              <th className={cx(styles.MetricsTableRowCell)}>Bandwidth</th>
             </tr>
           </thead>
           <tbody id="requests403TableRows">
@@ -535,18 +591,25 @@ const Body = ({ usageData, requestData }) => {
         </table>
       </div>
 
-      <div class="container">
-        <div class="notification has-text-centered">
+      <div className="container">
+        <div className="notification has-text-centered">
           <h2>
             <strong>All Response Codes</strong>
           </h2>
         </div>
-        <table class="table is-striped is-fullwidth">
+        <table
+          className={cx(
+            "table",
+            "is-striped",
+            "is-fullwidth",
+            styles.MetricsTable
+          )}
+        >
           <thead>
-            <tr>
-              <th>Code</th>
-              <th>Requests</th>
-              <th>Bandwidth</th>
+            <tr className={cx(styles.MetricsTableRow)}>
+              <th className={cx(styles.MetricsTableRowCell)}>Code</th>
+              <th className={cx(styles.MetricsTableRowCell)}>Requests</th>
+              <th className={cx(styles.MetricsTableRowCell)}>Bandwidth</th>
             </tr>
           </thead>
           <tbody id="requestsAll">
@@ -556,16 +619,16 @@ const Body = ({ usageData, requestData }) => {
           </tbody>
         </table>
       </div>
-      <section class="hero is-dark">
-        <div class="hero-body zesty-header">
-          <div class="container">
-            <div class="columns">
-              <div class="column">
-                <h1 class="subtitle">
+      <section className="hero is-dark">
+        <div className="hero-body zesty-header">
+          <div className="container">
+            <div className="columns">
+              <div className="column">
+                <h1 className="subtitle">
                   <strong>Zesty.io</strong> Usage Report
                 </h1>
               </div>
-              <div class="column has-text-right"></div>
+              <div className="column has-text-right"></div>
             </div>
           </div>
         </div>
