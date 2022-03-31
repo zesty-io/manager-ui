@@ -68,13 +68,6 @@ export default connect((state) => {
       props.dispatch(fetchFiles("scripts"));
     }, []);
 
-    console.log(
-      "🚀 ~ file: index.js ~ line 72 ~ user ~ props.user",
-      props.user
-    );
-    console.log("🚀 ~ file: index.js ~ line 72 ~INSTANCE", props.instance);
-    console.log("🚀 ~ file: index.js ~ line 72 ~ROLE", props.role);
-
     useEffect(() => {
       if (window.pendo) {
         if (props.user.email && props.instance && props.role) {
