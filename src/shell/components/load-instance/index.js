@@ -29,6 +29,7 @@ export default connect((state) => {
     products: state.products,
     languages: state.languages,
     files: state.files,
+    role: state.userRole.systemRole.name,
   };
 })(
   memo(function LoadInstance(props) {
@@ -66,6 +67,41 @@ export default connect((state) => {
       props.dispatch(fetchFiles("stylesheets"));
       props.dispatch(fetchFiles("scripts"));
     }, []);
+
+    console.log(
+      "🚀 ~ file: index.js ~ line 72 ~ user ~ props.user",
+      props.user
+    );
+    console.log("🚀 ~ file: index.js ~ line 72 ~INSTANCE", props.instance);
+    console.log("🚀 ~ file: index.js ~ line 72 ~ROLE", props.role);
+
+    useEffect(() => {
+      if (window.pendo) {
+        if (props.user.email && props.instance && props.role) {
+          // in your authentication promise handler or callback
+          pendo.initialize({
+            visitor: {
+              id: props.user.ZUID, // Required if user is logged in
+              email: props.user.email, // Recommended if using Pendo Feedback, or NPS Email
+              firstName: props.user.firstName,
+              lastName: props.user.lastName,
+              role: props.role, // Optional
+              // You can add any additional visitor level key-values here,
+              // as long as it's not one of the above reserved names.
+              staff: props.user.staff, // Zesty staff
+            },
+
+            account: {
+              id: props.instance.ZUID, // Required if using Pendo Feedback
+              name: props.instance.name, // Optional
+              creationDate: props.user.createdAt, // Optional
+              // You can add any additional account level key-values here,
+              // as long as it's not one of the above reserved names.
+            },
+          });
+        }
+      }
+    }, [props.user, props.instance, props.role]);
 
     return (
       <>
