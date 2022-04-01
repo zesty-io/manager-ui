@@ -69,7 +69,7 @@ export default connect((state) => {
     }, []);
 
     useEffect(() => {
-      if (window.Appcues) {
+      if (window.Appcues && props.user && props.instance && props.role) {
         window.Appcues.identify(
           props.user.ZUID, // unique, required
           {
@@ -87,7 +87,7 @@ export default connect((state) => {
           }
         );
       }
-    }, [props.user, props.instance]);
+    }, [props.user, props.instance, props.role]);
 
     return (
       <>
