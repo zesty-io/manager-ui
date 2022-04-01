@@ -20,6 +20,7 @@ import { request } from "utility/request";
 import styles from "./Metrics.less";
 import { Divider } from "@zesty-io/core/Divider";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+import { Pie, Bar } from "react-chartjs-2";
 
 const getEndpointUrls = (zuid) => {
   // TODO see if this url can be converted to a prettier one
@@ -89,6 +90,38 @@ const Body = ({ usageData, requestData }) => {
 
   let totalRequests = totalPageRequests + totalMediaRequests;
   let totalThroughput = totalMediaThroughput + totalRequestThroughput;
+
+  const colors = [
+    "#009e6c",
+    "#00d1b2",
+    "#ffdd57",
+    "#ff3860",
+    "#747474",
+    "orange",
+  ];
+
+  const pieChartData = {
+    labels: ["Media Requests", "Page Requests"],
+    datasets: [
+      {
+        data: [totalMediaRequests, totalPageRequests],
+        backgroundColor: colors,
+      },
+    ],
+  };
+  const barChartLabels = [];
+  const barChartSeries = [];
+  for (let req of requestData.ResponseCodes) {
+    barChartLabels.push(req.Code);
+    barChartSeries.push(req.RequestCount);
+  }
+
+  const barChartData = {
+    labels: barChartLabels,
+    datasets: [
+      { data: barChartSeries, label: "Requests", backgroundColor: colors },
+    ],
+  };
 
   const Media = ({ media }) => {
     console.log(media);
@@ -308,15 +341,19 @@ const Body = ({ usageData, requestData }) => {
             </div>
             <div className="level-item has-text-centered">
               <div
-                id="chart1"
+                id="chart2"
                 className="level-item ct-chart ct-perfect-fourth"
-              ></div>
+              >
+                <Pie data={pieChartData} />
+              </div>
             </div>
             <div className="level-item has-text-centered">
               <div
                 id="chart2"
                 className="level-item ct-chart ct-perfect-fourth"
-              ></div>
+              >
+                <Bar data={barChartData} />
+              </div>
             </div>
           </nav>
         </CardContent>
