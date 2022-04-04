@@ -1,18 +1,37 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
 .IsSuccess {
-  color: #009e6c;
+  color: @zesty-green;
 }
 .IsDanger {
-  color: #ff3860;
+  color: @zesty-red;
 }
 .IsWarning {
   color: #ffdd57;
 }
 .IsInfo {
-  color: #00d1b2;
+  color: @zesty-blue;
 }
 .IsOrange {
-  color: orange;
+  color: @zesty-orange;
+}
+
+.BtnGroup {
+  padding: 0 16px;
+  button:not(:last-child) {
+    margin-right: 8px;
+  }
+}
+
+.CardContentHeader {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.CardContentGraphs {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr;
+  gap: 16px;
 }
 
 .MetricsTableRow {

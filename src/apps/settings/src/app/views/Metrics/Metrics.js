@@ -80,7 +80,7 @@ export default connect((state) => {
   const bodyProps = { usageData, requestData };
   return (
     <>
-      <ButtonGroup>
+      <ButtonGroup className={styles.BtnGroup}>
         <Button
           onClick={() => setTimePeriod(1)}
           text="Past day"
@@ -97,7 +97,12 @@ export default connect((state) => {
           disabled={timePeriod === 30}
         />
       </ButtonGroup>
-      <WithLoader condition={usageData} message="Loading billing metrics...">
+      <WithLoader
+        width="100%"
+        height="calc(100vh - 54px)"
+        condition={usageData}
+        message="Loading billing metrics..."
+      >
         <WithLoader
           condition={requestData}
           message="Loading billing metrics..."
@@ -120,12 +125,12 @@ const Body = ({ usageData, requestData }) => {
   let totalThroughput = totalMediaThroughput + totalRequestThroughput;
 
   const colors = [
-    "#009e6c",
-    "#00d1b2",
+    "#75bf25",
+    "#497edf",
     "#ffdd57",
-    "#ff3860",
-    "#747474",
-    "orange",
+    "#e53c05",
+    "#404759",
+    "#f17829",
   ];
 
   const pieChartData = {
@@ -296,66 +301,56 @@ const Body = ({ usageData, requestData }) => {
 
   return (
     <>
+      <header>
+        <Card>
+          <CardHeader>
+            <h1 className={styles.headline}>
+              <strong>Zesty.io</strong> Usage Report{" "}
+              <span className="monthNameYear">Month 20XX</span>
+            </h1>
+          </CardHeader>
+
+          <CardContent className={styles.CardContentHeader}>
+            <h1 className={styles.title}>{usageData.Account.Name}</h1>
+            <h2 className={styles.subheadline}>
+              Month 20XX Report for &nbsp;{usageData.Account.Domain}
+            </h2>
+            <aside>
+              <p>Instance ZUID: {usageData.Account.Zuid}</p>
+              <p>Legacy ID: {usageData.Account.ID}</p>
+              <p>CDN URL: {usageData.Account.CdnURL}</p>
+            </aside>
+          </CardContent>
+        </Card>
+      </header>
+      {/* Total Usage Breakdown */}
       <section>
-        <div className="hero-body zesty-header">
-          <h1 className="subtitle">
-            <strong>Zesty.io</strong> Usage Report{" "}
-            <span className="monthNameYear">Month 20XX</span>
-          </h1>
-        </div>
+        <Card>
+          <CardHeader>
+            <h2>
+              <strong>Total Usage Breakdown</strong>
+            </h2>
+          </CardHeader>
+          <CardContent className={styles.CardContentGraphs}>
+            <div>
+              <p>Total Bandwidth</p>
+              <h1>{floatWithCommas(totalThroughput)} GB</h1>
+              <p>Total Requests</p>
+              <h1 id="totalRequests">{numberWithCommas(totalRequests)}</h1>
+            </div>
+
+            <div id="chart2">
+              <Pie data={pieChartData} width="100%" height="auto" />
+            </div>
+
+            <div id="chart2">
+              <Bar data={barChartData} width="100%" height="auto" />
+            </div>
+          </CardContent>
+        </Card>
       </section>
-      <section>
-        <div>
-          <h1>
-            <span id="siteName">{usageData.Account.Name}</span>
-          </h1>
-          <h2>
-            <span className="monthNameYear">Month 20XX</span> Report for
-            <strong id="siteURL">{usageData.Account.Domain}</strong>
-          </h2>
-        </div>
-        <div>
-          <p>
-            <strong>Instance ZUID:</strong>{" "}
-            <span id="instanceZUID">{usageData.Account.Zuid}</span>
-            <br />
-            <strong>Legacy ID:</strong>{" "}
-            <span id="instanceID">{usageData.Account.ID}</span>
-            <br />
-            <strong>CDN URL:</strong>{" "}
-            <span id="cdnURL">{usageData.Account.CdnURL}</span>
-          </p>
-        </div>
-      </section>
-      <Card>
-        <CardHeader>
-          <h2>
-            <strong>Total Usage Breakdown</strong>
-          </h2>
-        </CardHeader>
-        <CardContent>
-          <nav>
-            <div>
-              <div>
-                <p>Total Bandwidth</p>
-                <h1>{floatWithCommas(totalThroughput)} GB</h1>
-                <p>Total Requests</p>
-                <h1 id="totalRequests">{numberWithCommas(totalRequests)}</h1>
-              </div>
-            </div>
-            <div>
-              <div id="chart2">
-                <Pie data={pieChartData} />
-              </div>
-            </div>
-            <div>
-              <div id="chart2">
-                <Bar data={barChartData} />
-              </div>
-            </div>
-          </nav>
-        </CardContent>
-      </Card>
+
+      {/* Bandwidth Breakdown */}
       <Card>
         <CardHeader>
           <h2>
@@ -405,7 +400,6 @@ const Body = ({ usageData, requestData }) => {
         </CardContent>
       </Card>
       <br />
-
       <Card>
         <CardHeader>
           <h2>
@@ -582,7 +576,6 @@ const Body = ({ usageData, requestData }) => {
           </tbody>
         </table>
       </div>
-
       <div>
         <div>
           <h2>
