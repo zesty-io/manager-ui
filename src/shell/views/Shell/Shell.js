@@ -1,5 +1,5 @@
-import { memo } from "react";
-import { Switch, Route, Redirect } from "react-router-dom";
+import { memo, useEffect } from "react";
+import { Switch, Route, Redirect, useLocation } from "react-router-dom";
 import { connect } from "react-redux";
 import { Sentry } from "utility/sentry";
 import cx from "classnames";
@@ -33,6 +33,14 @@ export default connect((state) => {
   memo(function Shell(props) {
     const dispatch = useDispatch();
     const openNav = useSelector((state) => state.ui.openNav);
+
+    let location = useLocation();
+
+    useEffect(() => {
+      if (window.Appcues) {
+        window.Appcues.page();
+      }
+    }, [location]);
 
     return (
       <section className={cx(styles.Shell, openNav ? null : styles.NavClosed)}>
