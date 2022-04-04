@@ -44,13 +44,6 @@ export default function ItemCreate() {
   const [saving, setSaving] = useState(false);
   const [active, setActive] = useState();
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleSave);
-    return () => {
-      window.removeEventListener("keydown", handleSave);
-    };
-  }, []);
-
   // on mount and update modelZUID, load item fields
   useEffect(() => {
     loadItemFields(modelZUID);
@@ -62,17 +55,6 @@ export default function ItemCreate() {
       dispatch(generateItem(modelZUID));
     }
   }, [modelZUID, item]);
-
-  function handleSave(event) {
-    if (
-      ((platform.isMac && event.metaKey) ||
-        (!platform.isMac && event.ctrlKey)) &&
-      event.key == "s"
-    ) {
-      event.preventDefault();
-      save();
-    }
-  }
 
   async function loadItemFields(modelZUID) {
     setLoading(true);

@@ -545,7 +545,13 @@ export function uploadFile(file, bin) {
   return (dispatch, getState) => {
     function handleError() {
       dispatch(fileUploadError(file));
-      dispatch(notify({ message: "Failed uploading file", kind: "error" }));
+      dispatch(
+        notify({
+          message:
+            "Failed uploading file. Individual file size must be 32MB or smaller",
+          kind: "error",
+        })
+      );
     }
 
     file.filename = file.file.name;

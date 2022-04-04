@@ -7,7 +7,7 @@ describe("Actions in content editor", () => {
 
   const timestamp = Date.now();
 
-  it("not save when missing required Field", () => {
+  it("Not save when missing required Field", () => {
     // TODO: update field ZUID to be correct synced ZUID when prod syncs down
     cy.visit("/schema/6-556370-8sh47g");
 
@@ -19,11 +19,11 @@ describe("Actions in content editor", () => {
       .first()
       .type("{selectall}{backspace}test" + timestamp);
     cy.get("#SaveItemButton").click();
-    cy.contains("missing data in required field 1", { timeout: 5000 }).should(
-      "exist"
-    );
+    cy.contains("You are missing data in required field 1", {
+      timeout: 5000,
+    }).should("exist");
   });
-  it("save when missing required deactivated field", () => {
+  it("Save when missing required deactivated field", () => {
     cy.visit("/schema/6-556370-8sh47g");
     cy.contains("required field 1", { timeout: 5000 }).click();
     cy.contains("Deactivate").click();
@@ -32,7 +32,7 @@ describe("Actions in content editor", () => {
       .first()
       .type("{selectall}{backspace}test" + timestamp);
     cy.get("#SaveItemButton").click();
-    cy.contains("Saved a new test version").should("exist");
+    cy.contains("Saved a new test (en-US) version").should("exist");
   });
   it("Saves homepage item metadata", () => {
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");

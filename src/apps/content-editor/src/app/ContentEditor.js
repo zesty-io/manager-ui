@@ -1,11 +1,14 @@
-import { useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDatabase } from "@fortawesome/free-solid-svg-icons";
 
 import { fetchModels } from "shell/store/models";
 import { fetchNav } from "../store/navContent";
 
+import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { ContentNav } from "./components/Nav";
 import { ContentNavToggle } from "./components/Nav/components/ContentNavToggle";
@@ -29,65 +32,93 @@ export default function ContentEditor() {
   const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
+    setLoading(true);
+
     // Kick off loading data before app mount
     // to decrease time to first interaction
-    dispatch(fetchNav());
+    dispatch(fetchNav())
+      .then((_) => setLoading(false))
+      .catch((e) => {
+        throw e;
+      });
     dispatch(fetchModels());
   }, []);
 
   return (
-    <WithLoader
-      condition={navContent.nav.length || navContent.headless.length}
-      message="Starting Content Editor"
-    >
-      <section
-        className={cx(
-          styles.ContentEditor,
-          ui.contentNav ? styles.ContentGridOpen : "",
-          ui.contentNavHover && !ui.contentNav ? styles.ContentGridHover : ""
-          // true ? styles.ContentNavHover : ""
-        )}
-      >
-        <ContentNav
-          data-cy="contentNav"
-          dispatch={dispatch}
-          models={contentModels}
-          nav={navContent}
-        />
-
-        <ContentNavToggle />
-        <div
-          className={cx(
-            styles.Content,
-            ui.openNav ? styles.GlobalOpen : styles.GlobalClosed
-          )}
-        >
-          <div className={styles.ContentWrap}>
-            <Switch>
-              <Route exact path="/content" component={Dashboard} />
-              <Route exact path="/content/link/new" component={LinkCreate} />
-              <Route
-                exact
-                path="/content/:modelZUID/new"
-                component={ItemCreate}
-              />
-              <Route path="/content/link/:linkZUID" component={LinkEdit} />
-              <Route
-                exact
-                path="/content/:modelZUID/import"
-                component={CSVImport}
-              />
-              <Route
-                path="/content/:modelZUID/:itemZUID"
-                component={ItemEdit}
-              />
-              <Route exact path="/content/:modelZUID" component={ItemList} />
-              <Route path="*" component={NotFound} />
-            </Switch>
+    <Fragment>
+      <WithLoader condition={!loading} message="Starting Content Editor">
+        {navContent.raw.length === 0 ? (
+          <div className={styles.SchemaRedirect}>
+            <h1 className={styles.display}>
+              Please create a new content model
+            </h1>
+            <AppLink to={`schema/new`}>
+              <FontAwesomeIcon icon={faDatabase} />
+              &nbsp; Schema
+            </AppLink>
           </div>
-        </div>
-      </section>
-    </WithLoader>
+        ) : (
+          <section
+            className={cx(
+              styles.ContentEditor,
+              ui.contentNav ? styles.ContentGridOpen : "",
+              ui.contentNavHover && !ui.contentNav
+                ? styles.ContentGridHover
+                : ""
+            )}
+          >
+            <ContentNav
+              data-cy="contentNav"
+              dispatch={dispatch}
+              models={contentModels}
+              nav={navContent}
+            />
+
+            <ContentNavToggle />
+            <div
+              className={cx(
+                styles.Content,
+                ui.openNav ? styles.GlobalOpen : styles.GlobalClosed
+              )}
+            >
+              <div className={styles.ContentWrap}>
+                <Switch>
+                  <Route exact path="/content" component={Dashboard} />
+                  <Route
+                    exact
+                    path="/content/link/new"
+                    component={LinkCreate}
+                  />
+                  <Route
+                    exact
+                    path="/content/:modelZUID/new"
+                    component={ItemCreate}
+                  />
+                  <Route path="/content/link/:linkZUID" component={LinkEdit} />
+                  <Route
+                    exact
+                    path="/content/:modelZUID/import"
+                    component={CSVImport}
+                  />
+                  <Route
+                    path="/content/:modelZUID/:itemZUID"
+                    component={ItemEdit}
+                  />
+                  <Route
+                    exact
+                    path="/content/:modelZUID"
+                    component={ItemList}
+                  />
+                  <Route path="*" component={NotFound} />
+                </Switch>
+              </div>
+            </div>
+          </section>
+        )}
+      </WithLoader>
+    </Fragment>
   );
 }
