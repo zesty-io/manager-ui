@@ -9,6 +9,7 @@ import { faFile, faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "@zesty-io/core/Url";
 import { Button } from "@zesty-io/core/Button";
+import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Notice } from "@zesty-io/core/Notice";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
@@ -22,12 +23,23 @@ import { Divider } from "@zesty-io/core/Divider";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Pie, Bar } from "react-chartjs-2";
 
-const getEndpointUrls = (zuid) => {
+// Returns a date range representing the last N days
+// TODO double & triple check this
+const getDates = (numDays) => {
+  const end = new Date();
+  const start = new Date(end);
+
+  start.setDate(start.getDate() - numDays);
+
+  return { start, end };
+};
+
+const getEndpointUrls = ({ zuid, start, end }) => {
   // TODO see if this url can be converted to a prettier one
   const base = "https://metrics-api-m3rbwjxm5q-uc.a.run.app/accounts";
   // TODO add date ranges
-  const dateStart = "2021-09-01";
-  const dateEnd = "2021-09-30";
+  const dateStart = start.toISOString().split("T")[0];
+  const dateEnd = end.toISOString().split("T")[0];
 
   const params = `dateStart=${dateStart}&dateEnd=${dateEnd}`;
   const usageEndPoint = `${base}/${zuid}/usage?${params}`;
@@ -55,13 +67,23 @@ export default connect((state) => {
   };
 })(function Metrics(props) {
   console.log(props);
-  const { usageEndPoint, requestsEndPoint } = getEndpointUrls(props.zuid);
+  const [timePeriod, setTimePeriod] = useState(30);
+  const { start, end } = getDates(timePeriod);
+  const { zuid } = props;
+  const { usageEndPoint, requestsEndPoint } = getEndpointUrls({
+    zuid,
+    start,
+    end,
+  });
   const [loading, setLoading] = useState();
   const [usageData, setUsageData] = useState();
   const [requestData, setRequestsData] = useState();
 
   useEffect(async () => {
     console.log("start effect");
+    setUsageData();
+    setRequestsData();
+    setLoading();
     const usageReq = request(usageEndPoint);
     const requestsReq = request(requestsEndPoint);
     const usageData = await usageReq;
@@ -71,17 +93,36 @@ export default connect((state) => {
     setRequestsData(requestData);
     setLoading(true);
     console.log("end effect");
-  }, []);
+  }, [timePeriod]);
 
-  const bodyProps = { usageData, requestData };
+  const bodyProps = { usageData, requestData, timePeriod, setTimePeriod };
   return (
-    <WithLoader condition={loading} message="Loading billing metrics...">
-      <Body {...bodyProps} />
-    </WithLoader>
+    <>
+      <ButtonGroup>
+        <Button
+          onClick={() => setTimePeriod(1)}
+          text="Past day"
+          disabled={timePeriod === 1}
+        />
+        <Button
+          onClick={() => setTimePeriod(7)}
+          text="Past 7 days"
+          disabled={timePeriod === 7}
+        />
+        <Button
+          onClick={() => setTimePeriod(30)}
+          text="Past 30 days"
+          disabled={timePeriod === 30}
+        />
+      </ButtonGroup>
+      <WithLoader condition={loading} message="Loading billing metrics...">
+        <Body {...bodyProps} />
+      </WithLoader>
+    </>
   );
 });
 
-const Body = ({ usageData, requestData }) => {
+const Body = ({ usageData, requestData, timePeriod, setTimePeriod }) => {
   let totalMediaThroughput = usageData.MediaConsumption.TotalGBs;
   let totalMediaRequests = usageData.MediaConsumption.TotalRequests;
 
