@@ -69,6 +69,7 @@ export default connect((state) => {
     }, []);
 
     useEffect(() => {
+      //Appcues
       if (window.Appcues && props.user && props.instance && props.role) {
         window.Appcues.identify(
           props.user.ZUID, // unique, required
@@ -87,6 +88,31 @@ export default connect((state) => {
           }
         );
       }
+      //Pendo
+      if (window.pendo && props.user && props.instance && props.role) {
+        // in your authentication promise handler or callback
+        pendo.initialize({
+          visitor: {
+            id: props.user.ZUID, // Required if user is logged in
+            email: props.user.email, // Recommended if using Pendo Feedback, or NPS Email
+            firstName: props.user.firstName,
+            lastName: props.user.lastName,
+            role: props.role, // Optional
+            // You can add any additional visitor level key-values here,
+            // as long as it's not one of the above reserved names.
+            staff: props.user.staff, // Zesty staff
+          },
+
+          account: {
+            id: props.instance.ZUID, // Required if using Pendo Feedback
+            name: props.instance.name, // Optional
+            creationDate: props.user.createdAt, // Optional
+            // You can add any additional account level key-values here,
+            // as long as it's not one of the above reserved names.
+          },
+        });
+      }
+      //Check if pendo is running correctly open browser console and run pendo.validateInstall()
     }, [props.user, props.instance, props.role]);
 
     return (
