@@ -324,7 +324,7 @@ const Body = ({ usageData, requestData }) => {
         </Card>
       </header>
       {/* Total Usage Breakdown */}
-      <section>
+      <figure>
         <Card>
           <CardHeader>
             <h2>
@@ -352,7 +352,7 @@ const Body = ({ usageData, requestData }) => {
             </div>
           </CardContent>
         </Card>
-      </section>
+      </figure>
 
       {/* Bandwidth Breakdown */}
       <section>
@@ -461,158 +461,174 @@ const Body = ({ usageData, requestData }) => {
           </CardContent>
         </Card>
       </section>
-      <section>
-        <Card>
-          <CardHeader>
-            <h2 className={cx(styles.IsSuccess)}>Top Requested Pages</h2>
-          </CardHeader>
-          <CardContent>
-            <table className={cx(styles.MetricsTable)}>
-              <thead>
-                <tr className={cx(styles.MetricsTableRow)}>
-                  <th className={cx(styles.MetricsTableRowCell)}>URL</th>
-                  <th className={cx(styles.MetricsTableRowCell)}>Requests</th>
-                  <th className={cx(styles.MetricsTableRowCell)}>Bandwidth</th>
-                </tr>
-              </thead>
-              <tbody id="requests200TableRows">
-                {requestData.TopRequestByFilePathAndResponseCode[0].TopPaths.map(
-                  (req) => (
-                    <TopReq200Row req={req} />
-                  )
-                )}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-      </section>
-      <section>
-        <Card>
-          <CardHeader>
-            <h2 className={cx(styles.IsInfo)}>Top Requested Media</h2>
-          </CardHeader>
-          <CardContent>
-            <table className={cx(styles.MetricsTable)}>
-              <thead>
-                <tr className={cx(styles.MetricsTableRow)}>
-                  <th className={cx(styles.MetricsTableRowCell)}>File Name</th>
-                  <th className={cx(styles.MetricsTableRowCell)}>Request</th>
-                  <th className={cx(styles.MetricsTableRowCell)}>Bandwidth</th>
-                </tr>
-              </thead>
-              <tbody id="mediaTableRows">
-                {usageData.TopMedia.map((m) => (
-                  <Media media={m} />
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-      </section>
+      <main className={styles.TableContainer}>
+        <section>
+          <Card>
+            <CardHeader>
+              <h2 className={cx(styles.IsSuccess)}>Top Requested Pages</h2>
+            </CardHeader>
+            <CardContent>
+              <table className={cx(styles.MetricsTable)}>
+                <thead>
+                  <tr className={cx(styles.MetricsTableRow)}>
+                    <th className={cx(styles.MetricsTableRowCell)}>URL</th>
+                    <th className={cx(styles.MetricsTableRowCell)}>Requests</th>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      Bandwidth
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="requests200TableRows">
+                  {requestData.TopRequestByFilePathAndResponseCode[0].TopPaths.map(
+                    (req) => (
+                      <TopReq200Row req={req} />
+                    )
+                  )}
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
+        </section>
+        <section>
+          <Card>
+            <CardHeader>
+              <h2 className={cx(styles.IsInfo)}>Top Requested Media</h2>
+            </CardHeader>
+            <CardContent>
+              <table className={cx(styles.MetricsTable)}>
+                <thead>
+                  <tr className={cx(styles.MetricsTableRow)}>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      File Name
+                    </th>
+                    <th className={cx(styles.MetricsTableRowCell)}>Request</th>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      Bandwidth
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="mediaTableRows">
+                  {usageData.TopMedia.map((m) => (
+                    <Media media={m} />
+                  ))}
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
+        </section>
 
-      <section>
-        <Card>
-          <CardHeader>
-            <h2 className={cx(styles.IsOrange)}>Top File Not Found (404)</h2>
-          </CardHeader>
-          <CardContent>
-            <table className={cx(styles.MetricsTable)}>
-              <thead>
-                <tr className={cx(styles.MetricsTableRow)}>
-                  <th className={cx(styles.MetricsTableRowCell)}>URL</th>
-                  <th className={cx(styles.MetricsTableRowCell)}>Request</th>
-                  <th className={cx(styles.MetricsTableRowCell)}>Bandwidth</th>
-                </tr>
-              </thead>
-              <tbody id="requests404TableRows">
-                {requestData.TopRequestByFilePathAndResponseCode[2].TopPaths.map(
-                  (req) => (
-                    <TopReq404Row req={req} />
-                  )
-                )}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-      </section>
-      <section>
-        <Card>
-          <CardHeader>
-            <h2 className={cx(styles.IsWarning)}>
-              <strong>Top 301 Redirects</strong>
-            </h2>
-          </CardHeader>
-          <CardContent>
-            <table className={cx(styles.MetricsTable)}>
-              <thead>
-                <tr className={cx(styles.MetricsTableRow)}>
-                  <th className={cx(styles.MetricsTableRowCell)}>URL</th>
-                  <th className={cx(styles.MetricsTableRowCell)}>Request</th>
-                  <th className={cx(styles.MetricsTableRowCell)}>Bandwidth</th>
-                </tr>
-              </thead>
-              <tbody id="requests301TableRows">
-                {requestData.TopRequestByFilePathAndResponseCode[1].TopPaths.map(
-                  (req) => (
-                    <TopReq301Row req={req} />
-                  )
-                )}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-      </section>
-      <section>
-        <Card>
-          <CardHeader>
-            <h2 className={cx(styles.IsDanger)}>
-              Top Malicous / Deflected Requests
-            </h2>
-          </CardHeader>
-          <CardContent>
-            <table className={cx(styles.MetricsTable)}>
-              <thead>
-                <tr className={cx(styles.MetricsTableRow)}>
-                  <th className={cx(styles.MetricsTableRowCell)}>URL</th>
-                  <th className={cx(styles.MetricsTableRowCell)}>Request</th>
-                  <th className={cx(styles.MetricsTableRowCell)}>Bandwidth</th>
-                </tr>
-              </thead>
-              <tbody id="requests403TableRows">
-                {requestData.TopRequestByFilePathAndResponseCode[3].TopPaths.map(
-                  (req) => (
-                    <TopReq403Row req={req} />
-                  )
-                )}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-      </section>
+        <section>
+          <Card>
+            <CardHeader>
+              <h2 className={cx(styles.IsOrange)}>Top File Not Found (404)</h2>
+            </CardHeader>
+            <CardContent>
+              <table className={cx(styles.MetricsTable)}>
+                <thead>
+                  <tr className={cx(styles.MetricsTableRow)}>
+                    <th className={cx(styles.MetricsTableRowCell)}>URL</th>
+                    <th className={cx(styles.MetricsTableRowCell)}>Request</th>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      Bandwidth
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="requests404TableRows">
+                  {requestData.TopRequestByFilePathAndResponseCode[2].TopPaths.map(
+                    (req) => (
+                      <TopReq404Row req={req} />
+                    )
+                  )}
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
+        </section>
+        <section>
+          <Card>
+            <CardHeader>
+              <h2 className={cx(styles.IsWarning)}>
+                <strong>Top 301 Redirects</strong>
+              </h2>
+            </CardHeader>
+            <CardContent>
+              <table className={cx(styles.MetricsTable)}>
+                <thead>
+                  <tr className={cx(styles.MetricsTableRow)}>
+                    <th className={cx(styles.MetricsTableRowCell)}>URL</th>
+                    <th className={cx(styles.MetricsTableRowCell)}>Request</th>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      Bandwidth
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="requests301TableRows">
+                  {requestData.TopRequestByFilePathAndResponseCode[1].TopPaths.map(
+                    (req) => (
+                      <TopReq301Row req={req} />
+                    )
+                  )}
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
+        </section>
+        <section>
+          <Card>
+            <CardHeader>
+              <h2 className={cx(styles.IsDanger)}>
+                Top Malicous / Deflected Requests
+              </h2>
+            </CardHeader>
+            <CardContent>
+              <table className={cx(styles.MetricsTable)}>
+                <thead>
+                  <tr className={cx(styles.MetricsTableRow)}>
+                    <th className={cx(styles.MetricsTableRowCell)}>URL</th>
+                    <th className={cx(styles.MetricsTableRowCell)}>Request</th>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      Bandwidth
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="requests403TableRows">
+                  {requestData.TopRequestByFilePathAndResponseCode[3].TopPaths.map(
+                    (req) => (
+                      <TopReq403Row req={req} />
+                    )
+                  )}
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
+        </section>
 
-      <section>
-        <Card>
-          <CardContent>
-            <h2>All Response Codes</h2>
-          </CardContent>
-          <CardContent>
-            <table className={cx(styles.MetricsTable)}>
-              <thead>
-                <tr className={cx(styles.MetricsTableRow)}>
-                  <th className={cx(styles.MetricsTableRowCell)}>Code</th>
-                  <th className={cx(styles.MetricsTableRowCell)}>Requests</th>
-                  <th className={cx(styles.MetricsTableRowCell)}>Bandwidth</th>
-                </tr>
-              </thead>
-              <tbody id="requestsAll">
-                {requestData.ResponseCodes.map((req) => (
-                  <TopReqAllRow req={req} />
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-      </section>
+        <section>
+          <Card>
+            <CardHeader>
+              <h2>All Response Codes</h2>
+            </CardHeader>
+            <CardContent>
+              <table className={cx(styles.MetricsTable)}>
+                <thead>
+                  <tr className={cx(styles.MetricsTableRow)}>
+                    <th className={cx(styles.MetricsTableRowCell)}>Code</th>
+                    <th className={cx(styles.MetricsTableRowCell)}>Requests</th>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      Bandwidth
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="requestsAll">
+                  {requestData.ResponseCodes.map((req) => (
+                    <TopReqAllRow req={req} />
+                  ))}
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
+        </section>
+      </main>
     </>
   );
 };
