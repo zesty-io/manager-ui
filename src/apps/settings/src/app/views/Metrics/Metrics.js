@@ -2,21 +2,13 @@ import { useEffect, useState } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowRight,
-  faAsterisk,
-  faExternalLinkAlt,
-  faFile,
-  faFileAlt,
-  faLink,
-  faTrashAlt,
-  faBan,
-} from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "@zesty-io/core/Url";
 import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { WithLoader } from "@zesty-io/core/WithLoader";
+import { CopyButton } from "@zesty-io/core/CopyButton";
 
 import { request } from "utility/request";
 
@@ -332,8 +324,23 @@ const Body = ({ usageData, requestData }) => {
               Month 20XX Report for &nbsp;{usageData.Account.Domain}
             </h2>
             <aside>
-              <p>Instance ZUID: {usageData.Account.Zuid}</p>
-              <p>CDN URL: {usageData.Account.CdnURL}</p>
+              <p>
+                Instance ZUID:&nbsp;
+                <CopyButton
+                  kind="outlined"
+                  size="compact"
+                  value={usageData.Account.Zuid}
+                />
+              </p>
+
+              <p>
+                CDN URL:&nbsp;
+                <CopyButton
+                  kind="outlined"
+                  size="compact"
+                  value={usageData.Account.CdnURL}
+                />
+              </p>
             </aside>
           </CardContent>
         </Card>
