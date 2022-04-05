@@ -1,6 +1,17 @@
 import { useEffect, useState } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowRight,
+  faAsterisk,
+  faExternalLinkAlt,
+  faFile,
+  faFileAlt,
+  faLink,
+  faTrashAlt,
+  faBan,
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "@zesty-io/core/Url";
 import { Button } from "@zesty-io/core/Button";
@@ -80,23 +91,28 @@ export default connect((state) => {
   const bodyProps = { usageData, requestData };
   return (
     <>
-      <ButtonGroup className={styles.BtnGroup}>
-        <Button
-          onClick={() => setTimePeriod(1)}
-          text="Past day"
-          disabled={timePeriod === 1}
-        />
-        <Button
-          onClick={() => setTimePeriod(7)}
-          text="Past 7 days"
-          disabled={timePeriod === 7}
-        />
-        <Button
-          onClick={() => setTimePeriod(30)}
-          text="Past 30 days"
-          disabled={timePeriod === 30}
-        />
-      </ButtonGroup>
+      <section className={styles.MetricsHeader}>
+        <ButtonGroup className={styles.BtnGroup}>
+          <Button
+            onClick={() => setTimePeriod(1)}
+            text="Past day"
+            disabled={timePeriod === 1}
+          />
+          <Button
+            onClick={() => setTimePeriod(7)}
+            text="Past 7 days"
+            disabled={timePeriod === 7}
+          />
+          <Button
+            onClick={() => setTimePeriod(30)}
+            text="Past 30 days"
+            disabled={timePeriod === 30}
+          />
+        </ButtonGroup>
+
+        <h1 className={styles.headline}>Zesty.io Usage Report Month 20XX</h1>
+      </section>
+
       <WithLoader
         width="100%"
         height="calc(100vh - 54px)"
@@ -169,9 +185,10 @@ const Body = ({ usageData, requestData }) => {
     return (
       <tr className={cx(styles.MetricsTableRow)}>
         <td className={cx(styles.MetricsTableRowCell)}>
-          <a href={fullPath} target="_blank">
-            {path}
-          </a>
+          <Url href={fullPath} target="_blank" title="Redirect URL">
+            <FontAwesomeIcon icon={faExternalLinkAlt} />
+            &nbsp;<code>{path}</code>
+          </Url>
         </td>
         <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
         <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
@@ -192,9 +209,10 @@ const Body = ({ usageData, requestData }) => {
     return (
       <tr className={cx(styles.MetricsTableRow)}>
         <td className={cx(styles.MetricsTableRowCell)}>
-          <a href={fullPath} target="_blank">
-            {path}
-          </a>
+          <Url href={fullPath} target="_blank" title="Redirect URL">
+            <FontAwesomeIcon icon={faExternalLinkAlt} />
+            &nbsp;<code>{path}</code>
+          </Url>
         </td>
         <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
         <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
@@ -214,10 +232,10 @@ const Body = ({ usageData, requestData }) => {
     return (
       <tr className={cx(styles.MetricsTableRow)}>
         <td className={cx(styles.MetricsTableRowCell)}>
-          <a href={fullPath} target="_blank">
-            {path}
-            <span>[{req.Host}]</span>'
-          </a>
+          <Url href={fullPath} target="_blank" title="Redirect URL">
+            <FontAwesomeIcon icon={faExternalLinkAlt} />
+            &nbsp;<code>{path}</code>
+          </Url>
         </td>
         <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
         <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
@@ -236,10 +254,11 @@ const Body = ({ usageData, requestData }) => {
     return (
       <tr className={cx(styles.MetricsTableRow)}>
         <td className={cx(styles.MetricsTableRowCell, "fixedTD")}>
-          <a href={fullPath} target="_blank">
-            {path}
+          <Url href={fullPath} target="_blank" title="Redirect URL">
+            <FontAwesomeIcon icon={faExternalLinkAlt} />
+            &nbsp;<code>{path}</code>
             <span>[{req.Host}]</span>
-          </a>
+          </Url>
         </td>
         <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
         <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
@@ -259,10 +278,11 @@ const Body = ({ usageData, requestData }) => {
     return (
       <tr className={cx(styles.MetricsTableRow)}>
         <td className={cx(styles.MetricsTableRowCell)}>
-          <a href={fullPath} target="_blank">
-            {path}
+          <Url href={fullPath} target="_blank" title="Redirect URL">
+            <FontAwesomeIcon icon={faExternalLinkAlt} />
+            &nbsp;<code>{path}</code>
             <span>[{req.Host}]</span>
-          </a>
+          </Url>
         </td>
         <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
         <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
@@ -304,20 +324,15 @@ const Body = ({ usageData, requestData }) => {
       <header>
         <Card>
           <CardHeader>
-            <h1 className={styles.headline}>
-              <strong>Zesty.io</strong> Usage Report{" "}
-              <span className="monthNameYear">Month 20XX</span>
-            </h1>
+            <h1 className={styles.title}>{usageData.Account.Name}</h1>
           </CardHeader>
 
           <CardContent className={styles.CardContentHeader}>
-            <h1 className={styles.title}>{usageData.Account.Name}</h1>
             <h2 className={styles.subheadline}>
               Month 20XX Report for &nbsp;{usageData.Account.Domain}
             </h2>
             <aside>
               <p>Instance ZUID: {usageData.Account.Zuid}</p>
-              <p>Legacy ID: {usageData.Account.ID}</p>
               <p>CDN URL: {usageData.Account.CdnURL}</p>
             </aside>
           </CardContent>
@@ -344,11 +359,11 @@ const Body = ({ usageData, requestData }) => {
             </div>
 
             <div id="chart2">
-              <Pie data={pieChartData} width="100%" height="auto" />
+              <Pie data={pieChartData} max-width="100%" height="auto" />
             </div>
 
             <div id="chart2">
-              <Bar data={barChartData} width="100%" height="auto" />
+              <Bar data={barChartData} max-width="100%" height="auto" />
             </div>
           </CardContent>
         </Card>

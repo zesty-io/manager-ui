@@ -16,8 +16,13 @@
   color: @zesty-orange;
 }
 
-.BtnGroup {
+.MetricsHeader {
+  display: flex;
+  justify-content: space-between;
   padding: 0 16px;
+}
+
+.BtnGroup {
   button:not(:last-child) {
     margin-right: 8px;
   }
@@ -30,8 +35,20 @@
 
 .CardContentGraphs {
   display: grid;
-  grid-template-columns: auto 1fr 1fr;
+  grid-template-columns: minmax(100px, 200px) repeat(
+      auto-fit,
+      minmax(320px, 1fr)
+    );
   gap: 16px;
+  align-items: center;
+  @media only screen and (max-width: 1300px) {
+    grid-template-columns: auto;
+    grid-template-rows: 1fr 1fr 1fr;
+    justify-items: center;
+  }
+}
+.GraphTitles {
+  justify-self: center;
 }
 
 .CardContentBandwidth {
@@ -44,10 +61,6 @@
   display: grid;
   grid-template-columns: repeat(5, auto);
   gap: 16px;
-}
-
-.GraphTitles {
-  align-self: center;
 }
 
 .MetricsTableRow {
