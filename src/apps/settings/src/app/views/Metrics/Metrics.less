@@ -83,6 +83,9 @@
       margin: 16px;
     }
   }
+  > thead {
+    font-size: 14px;
+  }
 }
 
 .MetricsTableRow {
@@ -104,6 +107,13 @@
 
   .MetricsTableRowCell {
     padding: 16px;
+    a {
+      display: inline-block;
+      max-width: 500px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
     svg {
       margin-right: 8px;
@@ -124,6 +134,5 @@
   .TableContainer {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
   }
 }
