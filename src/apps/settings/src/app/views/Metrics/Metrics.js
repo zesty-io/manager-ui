@@ -332,11 +332,15 @@ const Body = ({ usageData, requestData }) => {
             </h2>
           </CardHeader>
           <CardContent className={styles.CardContentGraphs}>
-            <div>
+            <div className={styles.GraphTitles}>
               <p>Total Bandwidth</p>
-              <h1>{floatWithCommas(totalThroughput)} GB</h1>
+              <h1 className={styles.title}>
+                {floatWithCommas(totalThroughput)} GB
+              </h1>
               <p>Total Requests</p>
-              <h1 id="totalRequests">{numberWithCommas(totalRequests)}</h1>
+              <h1 className={styles.title}>
+                {numberWithCommas(totalRequests)}
+              </h1>
             </div>
 
             <div id="chart2">
@@ -351,118 +355,118 @@ const Body = ({ usageData, requestData }) => {
       </section>
 
       {/* Bandwidth Breakdown */}
-      <Card>
-        <CardHeader>
-          <h2>
-            <strong>Bandwidth Breakdown</strong>
-          </h2>
-        </CardHeader>
-        <CardContent>
-          <nav>
+      <section>
+        <Card>
+          <CardHeader>
+            <h2>
+              <strong>Bandwidth Breakdown</strong>
+            </h2>
+          </CardHeader>
+          <CardContent className={styles.CardContentBandwidth}>
             <div>
-              <div>
-                <p>Total Bandwidth</p>
-                <p>{floatWithCommas(totalThroughput)} GB</p>
-              </div>
+              <p>Total Bandwidth</p>
+              <p className={styles.headline}>
+                {floatWithCommas(totalThroughput)} GB
+              </p>
             </div>
 
             <div>
-              <div>
-                <p>HTML/CSS/Javascript Bandwidth</p>
-                <p
-                  className={cx(
-                    styles.title,
-                    styles.IsSuccess,
-                    styles.requestThroughput
-                  )}
-                >
-                  {floatWithCommas(totalRequestThroughput)} GB
-                </p>
-              </div>
-            </div>
-            <div>
-              <div>
-                <p>Media Bandwidth</p>
-                <p className={cx(styles.IsInfo)} id="mediaThroughput">
-                  {totalMediaThroughput} GB
-                </p>
-              </div>
-            </div>
-            <div>
-              <div>
-                <p>Successful Media Requests</p>
-                <p className={cx(styles.IsInfo)} id="requestsMedia">
-                  {numberWithCommas(usageData.MediaConsumption.TotalRequests)}
-                </p>
-              </div>
-            </div>
-          </nav>
-        </CardContent>
-      </Card>
-      <br />
-      <Card>
-        <CardHeader>
-          <h2>
-            <strong>
-              Platform Request Breakdown (<span id="totalAllRequests"></span>{" "}
-              Total)
-            </strong>
-          </h2>
-        </CardHeader>
-        <CardContent>
-          <nav>
-            <div>
-              <div>
-                <p>Successful Page Loads (200)</p>
-                <p className={cx(styles.IsSuccess)} id="requests200">
-                  {reqs["200"]}
-                </p>
-              </div>
+              <p>HTML/CSS/Javascript Bandwidth</p>
+              <p
+                className={cx(
+                  styles.headline,
+                  styles.IsSuccess,
+                  styles.requestThroughput
+                )}
+              >
+                {floatWithCommas(totalRequestThroughput)} GB
+              </p>
             </div>
 
             <div>
-              <div>
-                <p>Page Redirects (301)</p>
-                <p className={cx(styles.IsWarning)} id="requests301">
-                  {reqs["301"]}
-                </p>
-              </div>
-            </div>
-            <div>
-              <div>
-                <p>Failing Not Found (404)</p>
-                <p className={cx(styles.IsOrange)} id="requests404">
-                  {reqs["404"]}
-                </p>
-              </div>
+              <p>Media Bandwidth</p>
+              <p
+                className={cx(styles.headline, styles.IsInfo)}
+                id="mediaThroughput"
+              >
+                {totalMediaThroughput} GB
+              </p>
             </div>
 
             <div>
-              <div>
-                <p>Malicious/Deflected (403)</p>
-                <p className={cx(styles.IsDanger)} id="requests403">
-                  {reqs["403"]}
-                </p>
-              </div>
+              <p>Successful Media Requests</p>
+              <p
+                className={cx(styles.IsInfo, styles.headline)}
+                id="requestsMedia"
+              >
+                {numberWithCommas(usageData.MediaConsumption.TotalRequests)}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section>
+        <Card>
+          <CardHeader>
+            <h2>Platform Request Breakdown ( Total)</h2>
+          </CardHeader>
+          <CardContent className={styles.CardContentRequest}>
+            <div>
+              <p>Successful Page Loads (200)</p>
+              <p
+                className={cx(styles.IsSuccess, styles.headline)}
+                id="requests200"
+              >
+                {reqs["200"]}
+              </p>
             </div>
 
             <div>
-              <div>
-                <p>Other</p>
-                <p id="otherRequests">{reqs["other"]}</p>
-              </div>
+              <p>Page Redirects (301)</p>
+              <p
+                className={cx(styles.IsWarning, styles.headline)}
+                id="requests301"
+              >
+                {reqs["301"]}
+              </p>
             </div>
-          </nav>
-        </CardContent>
-      </Card>
-      <div>
-        <div>
-          <div>
+
             <div>
-              <h2 className={cx(styles.IsSuccess)}>
-                <strong>Top Requested Pages</strong>
-              </h2>
+              <p>Failing Not Found (404)</p>
+              <p
+                className={cx(styles.IsOrange, styles.headline)}
+                id="requests404"
+              >
+                {reqs["404"]}
+              </p>
             </div>
+
+            <div>
+              <p>Malicious/Deflected (403)</p>
+              <p
+                className={cx(styles.IsDanger, styles.headline)}
+                id="requests403"
+              >
+                {reqs["403"]}
+              </p>
+            </div>
+
+            <div>
+              <p>Other</p>
+              <p className={styles.headline} id="otherRequests">
+                {reqs["other"]}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+      <section>
+        <Card>
+          <CardHeader>
+            <h2 className={cx(styles.IsSuccess)}>Top Requested Pages</h2>
+          </CardHeader>
+          <CardContent>
             <table className={cx(styles.MetricsTable)}>
               <thead>
                 <tr className={cx(styles.MetricsTableRow)}>
@@ -479,13 +483,15 @@ const Body = ({ usageData, requestData }) => {
                 )}
               </tbody>
             </table>
-          </div>
-          <div>
-            <div>
-              <h2 className={cx(styles.IsInfo)}>
-                <strong>Top Requested Media</strong>
-              </h2>
-            </div>
+          </CardContent>
+        </Card>
+      </section>
+      <section>
+        <Card>
+          <CardHeader>
+            <h2 className={cx(styles.IsInfo)}>Top Requested Media</h2>
+          </CardHeader>
+          <CardContent>
             <table className={cx(styles.MetricsTable)}>
               <thead>
                 <tr className={cx(styles.MetricsTableRow)}>
@@ -500,17 +506,16 @@ const Body = ({ usageData, requestData }) => {
                 ))}
               </tbody>
             </table>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div>
-          <div>
-            <div>
-              <h2 className={cx(styles.IsOrange)}>
-                <strong>Top File Not Found (404)</strong>
-              </h2>
-            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section>
+        <Card>
+          <CardHeader>
+            <h2 className={cx(styles.IsOrange)}>Top File Not Found (404)</h2>
+          </CardHeader>
+          <CardContent>
             <table className={cx(styles.MetricsTable)}>
               <thead>
                 <tr className={cx(styles.MetricsTableRow)}>
@@ -527,13 +532,17 @@ const Body = ({ usageData, requestData }) => {
                 )}
               </tbody>
             </table>
-          </div>
-          <div>
-            <div>
-              <h2 className={cx(styles.IsWarning)}>
-                <strong>Top 301 Redirects</strong>
-              </h2>
-            </div>
+          </CardContent>
+        </Card>
+      </section>
+      <section>
+        <Card>
+          <CardHeader>
+            <h2 className={cx(styles.IsWarning)}>
+              <strong>Top 301 Redirects</strong>
+            </h2>
+          </CardHeader>
+          <CardContent>
             <table className={cx(styles.MetricsTable)}>
               <thead>
                 <tr className={cx(styles.MetricsTableRow)}>
@@ -550,65 +559,59 @@ const Body = ({ usageData, requestData }) => {
                 )}
               </tbody>
             </table>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div>
-          <h2 className={cx(styles.IsDanger)}>
-            <strong>Top Malicous / Deflected Requests</strong>
-          </h2>
-        </div>
-        <table className={cx(styles.MetricsTable)}>
-          <thead>
-            <tr className={cx(styles.MetricsTableRow)}>
-              <th className={cx(styles.MetricsTableRowCell)}>URL</th>
-              <th className={cx(styles.MetricsTableRowCell)}>Request</th>
-              <th className={cx(styles.MetricsTableRowCell)}>Bandwidth</th>
-            </tr>
-          </thead>
-          <tbody id="requests403TableRows">
-            {requestData.TopRequestByFilePathAndResponseCode[3].TopPaths.map(
-              (req) => (
-                <TopReq403Row req={req} />
-              )
-            )}
-          </tbody>
-        </table>
-      </div>
-      <div>
-        <div>
-          <h2>
-            <strong>All Response Codes</strong>
-          </h2>
-        </div>
-        <table className={cx(styles.MetricsTable)}>
-          <thead>
-            <tr className={cx(styles.MetricsTableRow)}>
-              <th className={cx(styles.MetricsTableRowCell)}>Code</th>
-              <th className={cx(styles.MetricsTableRowCell)}>Requests</th>
-              <th className={cx(styles.MetricsTableRowCell)}>Bandwidth</th>
-            </tr>
-          </thead>
-          <tbody id="requestsAll">
-            {requestData.ResponseCodes.map((req) => (
-              <TopReqAllRow req={req} />
-            ))}
-          </tbody>
-        </table>
-      </div>
+          </CardContent>
+        </Card>
+      </section>
       <section>
-        <div>
-          <div>
-            <div>
-              <div>
-                <h1>
-                  <strong>Zesty.io</strong> Usage Report
-                </h1>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Card>
+          <CardHeader>
+            <h2 className={cx(styles.IsDanger)}>
+              Top Malicous / Deflected Requests
+            </h2>
+          </CardHeader>
+          <CardContent>
+            <table className={cx(styles.MetricsTable)}>
+              <thead>
+                <tr className={cx(styles.MetricsTableRow)}>
+                  <th className={cx(styles.MetricsTableRowCell)}>URL</th>
+                  <th className={cx(styles.MetricsTableRowCell)}>Request</th>
+                  <th className={cx(styles.MetricsTableRowCell)}>Bandwidth</th>
+                </tr>
+              </thead>
+              <tbody id="requests403TableRows">
+                {requestData.TopRequestByFilePathAndResponseCode[3].TopPaths.map(
+                  (req) => (
+                    <TopReq403Row req={req} />
+                  )
+                )}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section>
+        <Card>
+          <CardContent>
+            <h2>All Response Codes</h2>
+          </CardContent>
+          <CardContent>
+            <table className={cx(styles.MetricsTable)}>
+              <thead>
+                <tr className={cx(styles.MetricsTableRow)}>
+                  <th className={cx(styles.MetricsTableRowCell)}>Code</th>
+                  <th className={cx(styles.MetricsTableRowCell)}>Requests</th>
+                  <th className={cx(styles.MetricsTableRowCell)}>Bandwidth</th>
+                </tr>
+              </thead>
+              <tbody id="requestsAll">
+                {requestData.ResponseCodes.map((req) => (
+                  <TopReqAllRow req={req} />
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
       </section>
     </>
   );
