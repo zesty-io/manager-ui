@@ -69,6 +69,9 @@ export default connect((state) => {
   const [usageData, setUsageData] = useState();
   const [requestData, setRequestsData] = useState();
 
+  let StartDisplay = start.toString().split(" ").slice(0, 3).join(" ");
+  let EndDisplay = end.toString().split(" ").slice(0, 3).join(" ");
+
   useEffect(async () => {
     setUsageData();
     setRequestsData();
@@ -80,7 +83,13 @@ export default connect((state) => {
     setRequestsData(requestData);
   }, [timePeriod]);
 
-  const bodyProps = { usageData, requestData };
+  const bodyProps = {
+    usageData,
+    requestData,
+    StartDisplay,
+    EndDisplay,
+    timePeriod,
+  };
   return (
     <>
       <section className={styles.MetricsHeader}>
@@ -102,7 +111,7 @@ export default connect((state) => {
           />
         </ButtonGroup>
 
-        <h1 className={styles.headline}>Zesty.io Usage Report Month 20XX</h1>
+        <h1 className={styles.subheadline}>Zesty.io Usage Report </h1>
       </section>
 
       <WithLoader
@@ -122,7 +131,13 @@ export default connect((state) => {
   );
 });
 
-const Body = ({ usageData, requestData }) => {
+const Body = ({
+  usageData,
+  requestData,
+  StartDisplay,
+  EndDisplay,
+  timePeriod,
+}) => {
   let totalMediaThroughput = usageData.MediaConsumption.TotalGBs;
   let totalMediaRequests = usageData.MediaConsumption.TotalRequests;
 
@@ -320,9 +335,11 @@ const Body = ({ usageData, requestData }) => {
           </CardHeader>
 
           <CardContent className={styles.CardContentHeader}>
-            <h2 className={styles.subheadline}>
-              Month 20XX Report for &nbsp;{usageData.Account.Domain}
-            </h2>
+            <h1 className={styles.headline}>
+              {`Usage Report for ${timePeriod} ${
+                timePeriod > 1 ? "days" : "day"
+              } : ${StartDisplay} - ${EndDisplay}`}
+            </h1>
             <aside>
               <p>
                 Instance ZUID:&nbsp;
@@ -356,11 +373,11 @@ const Body = ({ usageData, requestData }) => {
           <CardContent className={styles.CardContentGraphs}>
             <div className={styles.GraphTitles}>
               <p>Total Bandwidth</p>
-              <h1 className={styles.title}>
+              <h1 className={styles.headline}>
                 {floatWithCommas(totalThroughput)} GB
               </h1>
               <p>Total Requests</p>
-              <h1 className={styles.title}>
+              <h1 className={styles.headline}>
                 {numberWithCommas(totalRequests)}
               </h1>
             </div>
@@ -407,20 +424,14 @@ const Body = ({ usageData, requestData }) => {
 
             <div>
               <p>Media Bandwidth</p>
-              <p
-                className={cx(styles.headline, styles.IsInfo)}
-                id="mediaThroughput"
-              >
+              <p className={cx(styles.headline, styles.IsInfo)}>
                 {totalMediaThroughput} GB
               </p>
             </div>
 
             <div>
               <p>Successful Media Requests</p>
-              <p
-                className={cx(styles.IsInfo, styles.headline)}
-                id="requestsMedia"
-              >
+              <p className={cx(styles.IsInfo, styles.headline)}>
                 {numberWithCommas(usageData.MediaConsumption.TotalRequests)}
               </p>
             </div>
@@ -436,49 +447,35 @@ const Body = ({ usageData, requestData }) => {
           <CardContent className={styles.CardContentRequest}>
             <div>
               <p>Successful Page Loads (200)</p>
-              <p
-                className={cx(styles.IsSuccess, styles.headline)}
-                id="requests200"
-              >
+              <p className={cx(styles.IsSuccess, styles.headline)}>
                 {reqs["200"]}
               </p>
             </div>
 
             <div>
               <p>Page Redirects (301)</p>
-              <p
-                className={cx(styles.IsWarning, styles.headline)}
-                id="requests301"
-              >
+              <p className={cx(styles.IsWarning, styles.headline)}>
                 {reqs["301"]}
               </p>
             </div>
 
             <div>
               <p>Failing Not Found (404)</p>
-              <p
-                className={cx(styles.IsOrange, styles.headline)}
-                id="requests404"
-              >
+              <p className={cx(styles.IsOrange, styles.headline)}>
                 {reqs["404"]}
               </p>
             </div>
 
             <div>
               <p>Malicious/Deflected (403)</p>
-              <p
-                className={cx(styles.IsDanger, styles.headline)}
-                id="requests403"
-              >
+              <p className={cx(styles.IsDanger, styles.headline)}>
                 {reqs["403"]}
               </p>
             </div>
 
             <div>
               <p>Other</p>
-              <p className={styles.headline} id="otherRequests">
-                {reqs["other"]}
-              </p>
+              <p className={styles.headline}>{reqs["other"]}</p>
             </div>
           </CardContent>
         </Card>
@@ -500,7 +497,7 @@ const Body = ({ usageData, requestData }) => {
                     </th>
                   </tr>
                 </thead>
-                <tbody id="requests200TableRows">
+                <tbody>
                   {requestData.TopRequestByFilePathAndResponseCode[0].TopPaths.map(
                     (req) => (
                       <TopReq200Row req={req} />
@@ -529,7 +526,7 @@ const Body = ({ usageData, requestData }) => {
                     </th>
                   </tr>
                 </thead>
-                <tbody id="mediaTableRows">
+                <tbody>
                   {usageData.TopMedia.map((m) => (
                     <Media media={m} />
                   ))}
@@ -555,7 +552,7 @@ const Body = ({ usageData, requestData }) => {
                     </th>
                   </tr>
                 </thead>
-                <tbody id="requests404TableRows">
+                <tbody>
                   {requestData.TopRequestByFilePathAndResponseCode[2].TopPaths.map(
                     (req) => (
                       <TopReq404Row req={req} />
@@ -584,7 +581,7 @@ const Body = ({ usageData, requestData }) => {
                     </th>
                   </tr>
                 </thead>
-                <tbody id="requests301TableRows">
+                <tbody>
                   {requestData.TopRequestByFilePathAndResponseCode[1].TopPaths.map(
                     (req) => (
                       <TopReq301Row req={req} />
@@ -613,7 +610,7 @@ const Body = ({ usageData, requestData }) => {
                     </th>
                   </tr>
                 </thead>
-                <tbody id="requests403TableRows">
+                <tbody>
                   {requestData.TopRequestByFilePathAndResponseCode[3].TopPaths.map(
                     (req) => (
                       <TopReq403Row req={req} />
@@ -641,7 +638,7 @@ const Body = ({ usageData, requestData }) => {
                     </th>
                   </tr>
                 </thead>
-                <tbody id="requestsAll">
+                <tbody>
                   {requestData.ResponseCodes.map((req) => (
                     <TopReqAllRow req={req} />
                   ))}

@@ -7,7 +7,7 @@
   color: @zesty-red;
 }
 .IsWarning {
-  color: #ffdd57;
+  color: #d7b141;
 }
 .IsInfo {
   color: @zesty-blue;
@@ -70,6 +70,21 @@
   gap: 16px;
 }
 
+.MetricsTable {
+  border-collapse: collapse;
+  text-align: left;
+  width: 100%;
+  .TableBody {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid @zesty-light-blue;
+    border-radius: 4px;
+    .noResults {
+      margin: 16px;
+    }
+  }
+}
+
 .MetricsTableRow {
   background-color: @white;
   align-items: center;
@@ -101,21 +116,6 @@
     .removeBtn {
       margin-left: auto;
       align-items: center;
-    }
-  }
-}
-
-.MetricsTable {
-  border-collapse: collapse;
-  text-align: left;
-  width: 100%;
-  .TableBody {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid @zesty-light-blue;
-    border-radius: 4px;
-    .noResults {
-      margin: 16px;
     }
   }
 }
