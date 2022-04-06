@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import cx from "classnames";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import TopReq from "./TopReq";
 
 import { Url } from "@zesty-io/core/Url";
 import { Button } from "@zesty-io/core/Button";
@@ -53,14 +54,10 @@ const floatWithCommas = (x) => {
   return parts.join(".");
 };
 
-export default connect((state) => {
-  return {
-    zuid: state.instance.ZUID,
-  };
-})(function Metrics(props) {
+export default function Metrics(props) {
+  const zuid = useSelector((state) => state.instance.ZUID);
   const [timePeriod, setTimePeriod] = useState(30);
   const { start, end } = getDates(timePeriod);
-  const { zuid } = props;
   const { usageEndPoint, requestsEndPoint } = getEndpointUrls({
     zuid,
     start,
@@ -129,7 +126,7 @@ export default connect((state) => {
       </WithLoader>
     </>
   );
-});
+}
 
 const Body = ({
   usageData,
@@ -195,100 +192,6 @@ const Body = ({
           <Url href={fullPath} target="_blank" title="Redirect URL">
             <FontAwesomeIcon icon={faExternalLinkAlt} />
             &nbsp;<code>{path}</code>
-          </Url>
-        </td>
-        <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
-        <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
-      </tr>
-    );
-  };
-
-  const TopReq200Row = ({ req }) => {
-    if (req == undefined) return null;
-
-    const fullPath = req.FullPath;
-    let path = req.Path;
-    path = path.length > 39 ? path.substring(0, 42) + "..." : path;
-
-    const requests = numberWithCommas(req.RequestCount);
-    const throughput = floatWithCommas(req.DataThroughputInGB) + "GB";
-    //#requests200TableRows
-    return (
-      <tr className={cx(styles.MetricsTableRow)}>
-        <td className={cx(styles.MetricsTableRowCell)}>
-          <Url href={fullPath} target="_blank" title="Redirect URL">
-            <FontAwesomeIcon icon={faExternalLinkAlt} />
-            &nbsp;<code>{path}</code>
-          </Url>
-        </td>
-        <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
-        <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
-      </tr>
-    );
-  };
-
-  const TopReq404Row = ({ req }) => {
-    if (req == undefined) return null;
-    const fullPath = req.FullPath;
-    const path =
-      req.Path.length > 30 ? req.Path.substring(0, 30) + "..." : req.Path;
-
-    const requests = numberWithCommas(req.RequestCount);
-    const throughput = floatWithCommas(req.DataThroughputInGB) + "GB";
-    //#requests404TableRows
-    return (
-      <tr className={cx(styles.MetricsTableRow)}>
-        <td className={cx(styles.MetricsTableRowCell)}>
-          <Url href={fullPath} target="_blank" title="Redirect URL">
-            <FontAwesomeIcon icon={faExternalLinkAlt} />
-            &nbsp;<code>{path}</code>
-          </Url>
-        </td>
-        <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
-        <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
-      </tr>
-    );
-  };
-  const TopReq301Row = ({ req }) => {
-    if (req == undefined) return null;
-    const fullPath = req.FullPath;
-    let path = req.Path;
-    path = path.length > 30 ? path.substring(0, 30) + "..." : path;
-
-    const requests = numberWithCommas(req.RequestCount);
-    const throughput = floatWithCommas(req.DataThroughputInGB) + "GB";
-    //#requests301TableRows
-    return (
-      <tr className={cx(styles.MetricsTableRow)}>
-        <td className={cx(styles.MetricsTableRowCell, "fixedTD")}>
-          <Url href={fullPath} target="_blank" title="Redirect URL">
-            <FontAwesomeIcon icon={faExternalLinkAlt} />
-            &nbsp;<code>{path}</code>
-            <span>[{req.Host}]</span>
-          </Url>
-        </td>
-        <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
-        <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
-      </tr>
-    );
-  };
-
-  const TopReq403Row = ({ req }) => {
-    if (req == undefined) return null;
-    const fullPath = req.FullPath;
-    let path = req.Path;
-    path = path.length > 100 ? path.substring(0, 97) + "..." : path;
-
-    const requests = numberWithCommas(req.RequestCount);
-    const throughput = floatWithCommas(req.DataThroughputInGB) + "GB";
-    //#requests403TableRows
-    return (
-      <tr className={cx(styles.MetricsTableRow)}>
-        <td className={cx(styles.MetricsTableRowCell)}>
-          <Url href={fullPath} target="_blank" title="Redirect URL">
-            <FontAwesomeIcon icon={faExternalLinkAlt} />
-            &nbsp;<code>{path}</code>
-            <span>[{req.Host}]</span>
           </Url>
         </td>
         <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
@@ -498,9 +401,18 @@ const Body = ({
                   </tr>
                 </thead>
                 <tbody>
+                  {/* Top Request Pages 200 */}
                   {requestData.TopRequestByFilePathAndResponseCode[0].TopPaths.map(
                     (req) => (
-                      <TopReq200Row req={req} />
+                      <TopReq
+                        req={req}
+                        path={
+                          (req.Path =
+                            req.Path.length > 39
+                              ? req.Path.substring(0, 42) + "..."
+                              : req.Path)
+                        }
+                      />
                     )
                   )}
                 </tbody>
@@ -553,9 +465,17 @@ const Body = ({
                   </tr>
                 </thead>
                 <tbody>
+                  {/* Top Request 404 */}
                   {requestData.TopRequestByFilePathAndResponseCode[2].TopPaths.map(
                     (req) => (
-                      <TopReq404Row req={req} />
+                      <TopReq
+                        req={req}
+                        path={
+                          req.Path.length > 30
+                            ? req.Path.substring(0, 30) + "..."
+                            : req.Path
+                        }
+                      />
                     )
                   )}
                 </tbody>
@@ -582,9 +502,18 @@ const Body = ({
                   </tr>
                 </thead>
                 <tbody>
+                  {/* Top Requested 301 */}
                   {requestData.TopRequestByFilePathAndResponseCode[1].TopPaths.map(
                     (req) => (
-                      <TopReq301Row req={req} />
+                      <TopReq
+                        req={req}
+                        path={
+                          (req.Path =
+                            req.Path.length > 30
+                              ? req.Path.substring(0, 30) + "..."
+                              : req.Path)
+                        }
+                      />
                     )
                   )}
                 </tbody>
@@ -611,9 +540,18 @@ const Body = ({
                   </tr>
                 </thead>
                 <tbody>
+                  {/* Top Request 403 */}
                   {requestData.TopRequestByFilePathAndResponseCode[3].TopPaths.map(
                     (req) => (
-                      <TopReq403Row req={req} />
+                      <TopReq
+                        req={req}
+                        path={
+                          (req.Path =
+                            req.Path.length > 100
+                              ? req.Path.substring(0, 97) + "..."
+                              : req.Path)
+                        }
+                      />
                     )
                   )}
                 </tbody>
