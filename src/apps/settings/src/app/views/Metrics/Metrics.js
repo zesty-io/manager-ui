@@ -298,8 +298,8 @@ const Body = ({
   };
 
   const TopReqAllRow = ({ req }) => {
-    const count = req.RequestCount;
-    const throughput = req.DataThroughputInGB;
+    const count = numberWithCommas(req.RequestCount);
+    const throughput = floatWithCommas(req.DataThroughputInGB) + "GB";
     return (
       <tr className={cx(styles.MetricsTableRow)}>
         <td className={cx(styles.MetricsTableRowCell)}>{req.Code}</td>
@@ -425,7 +425,7 @@ const Body = ({
             <div>
               <p>Media Bandwidth</p>
               <p className={cx(styles.headline, styles.IsInfo)}>
-                {totalMediaThroughput} GB
+                {floatWithCommas(totalMediaThroughput)} GB
               </p>
             </div>
 
