@@ -22,7 +22,7 @@ export function CreateRelease() {
   const [error, setError] = useState("");
 
   const handleCreate = () => {
-    if (!name) {
+    if (!name.trim()) {
       setError("Missing required release name");
       return;
     }
@@ -31,7 +31,7 @@ export function CreateRelease() {
     setLoading(true);
     dispatch(
       createRelease({
-        name,
+        name: name.trim(),
         description,
       })
     )
@@ -60,7 +60,7 @@ export function CreateRelease() {
           name="name"
           maxLength={150}
           value={name}
-          onChange={(val) => setName(val.trim())}
+          onChange={(val) => setName(val)}
           required
           error={error}
         />
