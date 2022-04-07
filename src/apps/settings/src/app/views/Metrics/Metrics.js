@@ -403,9 +403,10 @@ const Body = ({
                 <tbody>
                   {/* Top Request Pages 200 */}
                   {requestData.TopRequestByFilePathAndResponseCode[0].TopPaths.map(
-                    (req) => (
+                    (req, i) => (
                       <TopReq
                         req={req}
+                        key={i}
                         path={
                           (req.Path =
                             req.Path.length > 39
@@ -439,8 +440,8 @@ const Body = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {usageData.TopMedia.map((m) => (
-                    <Media media={m} />
+                  {usageData.TopMedia.map((m, i) => (
+                    <Media media={m} key={i} />
                   ))}
                 </tbody>
               </table>
@@ -467,9 +468,10 @@ const Body = ({
                 <tbody>
                   {/* Top Request 404 */}
                   {requestData.TopRequestByFilePathAndResponseCode[2].TopPaths.map(
-                    (req) => (
+                    (req, i) => (
                       <TopReq
                         req={req}
+                        key={i}
                         path={
                           req.Path.length > 30
                             ? req.Path.substring(0, 30) + "..."
@@ -504,9 +506,10 @@ const Body = ({
                 <tbody>
                   {/* Top Requested 301 */}
                   {requestData.TopRequestByFilePathAndResponseCode[1].TopPaths.map(
-                    (req) => (
+                    (req, i) => (
                       <TopReq
                         req={req}
+                        key={i}
                         path={
                           (req.Path =
                             req.Path.length > 30
@@ -542,9 +545,10 @@ const Body = ({
                 <tbody>
                   {/* Top Request 403 */}
                   {requestData.TopRequestByFilePathAndResponseCode[3].TopPaths.map(
-                    (req) => (
+                    (req, i) => (
                       <TopReq
                         req={req}
+                        key={i}
                         path={
                           (req.Path =
                             req.Path.length > 100
@@ -577,8 +581,8 @@ const Body = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {requestData.ResponseCodes.map((req) => (
-                    <TopReqAllRow req={req} />
+                  {requestData.ResponseCodes.map((req, i) => (
+                    <TopReqAllRow req={req} key={i} />
                   ))}
                 </tbody>
               </table>
