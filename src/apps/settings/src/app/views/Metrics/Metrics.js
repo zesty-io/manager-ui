@@ -212,6 +212,8 @@ const Body = ({
     );
   };
 
+  // Calculate number of requests for each type
+  // This is a map of req code -> number of reqs
   const reqs = { other: 0 };
   for (let i = 0; i < requestData.ResponseCodes.length; i++) {
     const code = requestData.ResponseCodes[i].Code;
@@ -345,40 +347,42 @@ const Body = ({
       <section>
         <Card>
           <CardHeader>
-            <h2>Platform Request Breakdown ( Total)</h2>
+            <h2>Platform Request Breakdown (Total)</h2>
           </CardHeader>
           <CardContent className={styles.CardContentRequest}>
             <div>
               <p>Successful Page Loads (200)</p>
               <p className={cx(styles.IsSuccess, styles.headline)}>
-                {reqs["200"]}
+                {numberWithCommas(reqs["200"])}
               </p>
             </div>
 
             <div>
               <p>Page Redirects (301)</p>
               <p className={cx(styles.IsWarning, styles.headline)}>
-                {reqs["301"]}
+                {numberWithCommas(reqs["301"])}
               </p>
             </div>
 
             <div>
               <p>Failing Not Found (404)</p>
               <p className={cx(styles.IsOrange, styles.headline)}>
-                {reqs["404"]}
+                {numberWithCommas(reqs["404"])}
               </p>
             </div>
 
             <div>
               <p>Malicious/Deflected (403)</p>
               <p className={cx(styles.IsDanger, styles.headline)}>
-                {reqs["403"]}
+                {numberWithCommas(reqs["403"])}
               </p>
             </div>
 
             <div>
               <p>Other</p>
-              <p className={styles.headline}>{reqs["other"]}</p>
+              <p className={styles.headline}>
+                {numberWithCommas(reqs["other"])}
+              </p>
             </div>
           </CardContent>
         </Card>
