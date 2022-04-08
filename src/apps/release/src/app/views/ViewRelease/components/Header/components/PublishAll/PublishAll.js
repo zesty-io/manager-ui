@@ -42,7 +42,7 @@ export const PublishAll = memo(function PublishAll() {
         disabled={!canPublish || loading}
       >
         <FontAwesomeIcon icon={faCloudUploadAlt} />
-        &nbsp;Publish All
+        Publish All
       </Button>
 
       <Modal
@@ -67,7 +67,7 @@ export const PublishAll = memo(function PublishAll() {
             ) : (
               <>
                 <FontAwesomeIcon icon={faCheckCircle} />
-                Publish All
+                &nbsp;Publish All
               </>
             )}
           </Button>
