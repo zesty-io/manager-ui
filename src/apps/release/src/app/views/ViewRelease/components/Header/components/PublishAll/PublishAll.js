@@ -37,7 +37,7 @@ export const PublishAll = memo(function PublishAll() {
   return (
     <div>
       <Button
-        type="alt"
+        title="Publish All"
         onClick={() => setOpen(true)}
         disabled={!canPublish || loading}
       >

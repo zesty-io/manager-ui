@@ -1,21 +1,36 @@
 @import "~@zesty-io/core/colors.less";
 @import "~@zesty-io/core/typography.less";
 
+.ReleaseHeader {
+  padding-left: 16px;
+  padding-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.CardHeader,
+.CardContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .ListReleases {
-  // height: calc(100vh - 225px);
   display: grid;
   grid-gap: 16px;
-  grid-template-columns: repeat(auto-fill, 370px);
+  // grid-template-columns: repeat(auto-fill, 370px);
   grid-auto-rows: auto;
+  padding-left: 16px;
 
-  overflow: scroll;
+  overflow: auto;
   height: 100%;
 
   .Card {
     margin: 0;
   }
 
-  .Create {
-    // background-color: green;
+  .Members {
+    font-size: 12px;
   }
 }

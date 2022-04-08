@@ -1,35 +1,52 @@
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import cx from "classnames";
 
 import { AppLink } from "@zesty-io/core/AppLink";
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import { Button } from "@zesty-io/core/Button";
+import { Search } from "@zesty-io/core/Search";
+
+import { Release } from "./Release";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./ListReleases.less";
 export function ListReleases() {
   const releases = useSelector((state) => state.releases.data);
-  const members = useSelector((state) => state.releaseMembers.data);
-  return (
-    <main className={styles.ListReleases}>
-      <Card className={cx(styles.Card, styles.Create)}>
-        <CardHeader>New Release</CardHeader>
-        <CardContent>Setup a new release</CardContent>
-        <CardFooter>
-          <AppLink to={`/release/create`}>Create Release</AppLink>
-        </CardFooter>
-      </Card>
 
-      {releases.map((release) => {
-        return (
-          <Card key={release.ZUID} className={styles.Card}>
-            <CardHeader>{release.name}</CardHeader>
-            <CardContent>{release.description}</CardContent>
-            <CardFooter>
-              <p>{members[release.ZUID]?.length} members</p>
-              <AppLink to={`/release/${release.ZUID}`}>View Release</AppLink>
-            </CardFooter>
-          </Card>
-        );
-      })}
-    </main>
+  const [query, setQuery] = useState("");
+
+  return (
+    <>
+      <section className={styles.ReleaseHeader}>
+        <AppLink className={styles.Create} to={`/release/create`}>
+          <Button data-cy="release-createBtn" size="large">
+            <FontAwesomeIcon icon={faPlus} /> Create Release
+          </Button>
+        </AppLink>
+        <Search
+          placeholder="Search Release Title"
+          onChange={(value) => {
+            setQuery(value);
+          }}
+        />
+      </section>
+      <section className={styles.ListReleases}>
+        {releases
+          .filter((release) => {
+            if (query === "") {
+              return release;
+            } else if (
+              release.name.toLowerCase().includes(query.toLowerCase())
+            ) {
+              return release;
+            }
+          })
+          .map((release) => (
+            <Release key={release.ZUID} release={release}></Release>
+          ))}
+      </section>
+    </>
   );
 }
