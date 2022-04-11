@@ -17,15 +17,18 @@ import styles from "./Metrics.less";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Pie, Bar } from "react-chartjs-2";
 
-// Returns a date range representing the last N days
-// TODO double & triple check this
+/*
+  Returns a date range representing the last N days
+  The API returns data from 0:00 UTC on startDate thru 23:59 on endDate
+*/
 const getDates = (numDays) => {
-  const end = new Date();
-  const start = new Date(end);
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
 
+  const start = new Date();
   start.setDate(start.getDate() - numDays);
 
-  return { start, end };
+  return { start, end: yesterday };
 };
 
 const getEndpointUrls = ({ zuid, start, end }) => {
