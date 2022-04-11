@@ -32,8 +32,7 @@ const getDates = (numDays) => {
 };
 
 const getEndpointUrls = ({ zuid, start, end }) => {
-  // TODO see if this url can be converted to a prettier one
-  const base = "https://metrics-api-m3rbwjxm5q-uc.a.run.app/accounts";
+  const base = `${CONFIG.API_METRICS}/accounts`;
   const dateStart = start.toISOString().split("T")[0];
   const dateEnd = end.toISOString().split("T")[0];
 
