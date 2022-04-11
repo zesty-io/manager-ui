@@ -286,11 +286,11 @@ const Body = ({
             </div>
 
             <div id="chart2">
-              <Pie data={pieChartData} max-width="100%" height="auto" />
+              <Pie data={pieChartData} max-width="100%" />
             </div>
 
             <div id="chart2">
-              <Bar data={barChartData} max-width="100%" height="auto" />
+              <Bar data={barChartData} max-width="100%" />
             </div>
           </CardContent>
         </Card>
