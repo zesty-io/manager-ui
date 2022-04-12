@@ -61,7 +61,7 @@ export function Header({ plan }) {
         })}
       </Select>
       <ContentSearch
-        placeholder="Search for items to include in your release"
+        placeholder="Search by ZUID or Meta Title to include in your release "
         onSelect={onSelect}
         keepResultsOnSelect={true}
       />
