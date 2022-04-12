@@ -2,8 +2,6 @@ import { useSelector } from "react-redux";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 
@@ -16,10 +14,7 @@ export function Release(props) {
     <tr className={styles.ReleaseStep}>
       <td>{props.release.name}</td>
       <td>{props.release.description}</td>
-      <td>
-        {members[props.release.ZUID]?.length}
-        {/* <span className={styles.Members}>members</span>{" "} */}
-      </td>
+      <td>{members[props.release.ZUID]?.length}</td>
 
       <td>
         <AppLink to={`/release/${props.release.ZUID}`}>
