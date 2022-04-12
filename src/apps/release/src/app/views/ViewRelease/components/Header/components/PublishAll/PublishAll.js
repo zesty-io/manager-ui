@@ -37,6 +37,7 @@ export const PublishAll = memo(function PublishAll() {
   return (
     <div>
       <Button
+        type="secondary"
         title="Publish All"
         onClick={() => setOpen(true)}
         disabled={!canPublish || loading}
@@ -58,6 +59,10 @@ export const PublishAll = memo(function PublishAll() {
           </Notice>
         </ModalContent>
         <ModalFooter className={styles.ModalFooter}>
+          <Button type="cancel" onClick={() => setOpen(false)}>
+            <FontAwesomeIcon icon={faBan} />
+            Cancel (ESC)
+          </Button>
           <Button type="save" disabled={loading} onClick={onPublishAll}>
             {loading ? (
               <>
@@ -70,10 +75,6 @@ export const PublishAll = memo(function PublishAll() {
                 &nbsp;Publish All
               </>
             )}
-          </Button>
-          <Button type="cancel" onClick={() => setOpen(false)}>
-            <FontAwesomeIcon icon={faBan} />
-            Cancel (ESC)
           </Button>
         </ModalFooter>
       </Modal>
