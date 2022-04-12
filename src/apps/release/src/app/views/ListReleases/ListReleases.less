@@ -33,8 +33,7 @@
   tbody {
     tr {
       display: grid;
-      grid-template-columns: 200px minmax(200px, 1fr) 100px auto;
-
+      grid-template-columns: minmax(200px, 1fr) 275px 100px 1fr;
       column-gap: 16px;
       padding: 12px;
 
@@ -68,13 +67,10 @@
   td {
     text-align: left;
 
-    &:nth-child(2) {
-      @media only screen and (max-width: 2000px) {
-        width: 600px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+    &:nth-child(4) {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 }

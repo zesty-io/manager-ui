@@ -2,6 +2,9 @@ import { PlanStep } from "../PlanStep";
 
 import styles from "./PlanTable.less";
 export function PlanTable({ members }) {
+  const onSortTitle = () => {
+    console.log("Sort me");
+  };
   return (
     <table data-cy="PlanTable" className={styles.PlanTable}>
       <thead>
@@ -10,7 +13,9 @@ export function PlanTable({ members }) {
           <th className={styles.subheadline}>Version</th>
 
           {/* sorting by title would be cool but could be a stretch goal */}
-          <th className={styles.subheadline}>Title</th>
+          <th className={styles.subheadline} onClick={onSortTitle}>
+            Title
+          </th>
 
           <th className={styles.subheadline}>Last Publish</th>
           <th className={styles.subheadline}>Preview</th>

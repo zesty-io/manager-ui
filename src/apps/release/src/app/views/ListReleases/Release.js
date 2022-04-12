@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import moment from "moment";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 
@@ -12,16 +13,16 @@ export function Release(props) {
 
   return (
     <tr className={styles.ReleaseStep}>
-      <td>{props.release.name}</td>
-      <td>{props.release.description}</td>
-      <td>{members[props.release.ZUID]?.length}</td>
-
       <td>
         <AppLink to={`/release/${props.release.ZUID}`}>
-          <FontAwesomeIcon icon={faLink} />
-          &nbsp; View Release
+          {props.release.name}
         </AppLink>
       </td>
+      <td>
+        {moment(props.release.createdAt).format("hh:mm A on MMMM Do, YYYY Z")}
+      </td>
+      <td>{members[props.release.ZUID]?.length}</td>
+      <td>{props.release.description}</td>
     </tr>
   );
 }
