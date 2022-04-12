@@ -13,22 +13,20 @@ export function Release(props) {
   const members = useSelector((state) => state.releaseMembers.data);
 
   return (
-    <Card className={styles.Card}>
-      <CardHeader className={styles.CardHeader}>
-        <p>{props.release.name}</p>
-        <p className={styles.title}>
-          {members[props.release.ZUID]?.length}{" "}
-          <span className={styles.Members}>members</span>{" "}
-        </p>
-      </CardHeader>
-      <CardContent className={styles.CardContent}>
-        <p>{props.release.description}</p>
+    <tr className={styles.ReleaseStep}>
+      <td>{props.release.name}</td>
+      <td>{props.release.description}</td>
+      <td>
+        {members[props.release.ZUID]?.length}
+        {/* <span className={styles.Members}>members</span>{" "} */}
+      </td>
+
+      <td>
         <AppLink to={`/release/${props.release.ZUID}`}>
           <FontAwesomeIcon icon={faLink} />
           &nbsp; View Release
         </AppLink>
-      </CardContent>
-      <CardFooter></CardFooter>
-    </Card>
+      </td>
+    </tr>
   );
 }

@@ -2,35 +2,106 @@
 @import "~@zesty-io/core/typography.less";
 
 .ReleaseHeader {
-  padding-left: 16px;
-  padding-bottom: 16px;
+  padding: 0 0 16px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.CardHeader,
-.CardContent {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+// .CardHeader,
+// .CardContent {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+// }
 
-.ListReleases {
-  display: grid;
-  grid-gap: 16px;
-  // grid-template-columns: repeat(auto-fill, 370px);
-  grid-auto-rows: auto;
-  padding-left: 16px;
+// .ListReleases {
+//   display: grid;
+//   grid-gap: 16px;
+//   // grid-template-columns: repeat(auto-fill, 370px);
+//   grid-auto-rows: auto;
+//   padding-left: 16px;
 
-  overflow: auto;
-  height: 100%;
+//   overflow: auto;
+//   height: 100%;
 
-  .Card {
-    margin: 0;
+//   .Card {
+//     margin: 0;
+//   }
+
+//   .Members {
+//     font-size: 12px;
+//   }
+// }
+
+.ReleaseTable {
+  width: 100%;
+  border-collapse: collapse;
+  tbody {
+    border: 1px solid @zesty-light-blue;
+    border-radius: 4px 4px 0 0;
+
+    // Structure
+    max-height: calc(100vh - 225px);
+    height: 100vh;
+    overflow-y: scroll;
+
+    display: block;
   }
 
-  .Members {
-    font-size: 12px;
+  thead {
+    tr {
+      border-left: 4px solid @appBkgColor;
+    }
+  }
+
+  thead,
+  tbody {
+    tr {
+      display: grid;
+      // grid-template-columns: 60px 200px minmax(200px, 1fr) minmax(auto, 400px) 100px 90px;
+      grid-template-columns: 200px minmax(200px, 1fr) 100px auto;
+
+      column-gap: 16px;
+      padding: 12px;
+
+      th {
+        text-align: left;
+      }
+    }
+  }
+}
+
+.ReleaseStep {
+  align-items: center;
+  background-color: @white;
+  border-left: 4px solid @white;
+
+  &:nth-of-type(odd) {
+    background: lighten(@zesty-light-blue, 15%);
+    border-left: 4px solid lighten(@zesty-light-blue, 15%);
+  }
+
+  &:hover,
+  &:focus,
+  &:active,
+  &:nth-of-type(odd):hover,
+  &:nth-of-type(odd):focus,
+  &:nth-of-type(odd):active {
+    background-color: lighten(@zesty-field-blue, 10%);
+    border-left: 4px solid lighten(@zesty-field-blue, 10%);
+  }
+
+  td {
+    text-align: left;
+
+    &:nth-child(2) {
+      @media only screen and (max-width: 2000px) {
+        width: 600px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
   }
 }

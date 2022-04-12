@@ -32,21 +32,34 @@ export function ListReleases() {
           }}
         />
       </section>
-      <section className={styles.ListReleases}>
-        {releases
-          .filter((release) => {
-            if (query === "") {
-              return release;
-            } else if (
-              release.name.toLowerCase().includes(query.toLowerCase())
-            ) {
-              return release;
-            }
-          })
-          .map((release) => (
-            <Release key={release.ZUID} release={release}></Release>
-          ))}
-      </section>
+
+      <table data-cy="ReleaseTable" className={styles.ReleaseTable}>
+        <thead>
+          <tr>
+            <th className={styles.subheadline}>Title</th>
+            <th className={styles.subheadline}>Description</th>
+            <th className={styles.subheadline}>Members</th>
+            <th className={styles.subheadline}>View Release</th>
+          </tr>
+        </thead>
+        <tbody>
+          <div>
+            {releases
+              .filter((release) => {
+                if (query === "") {
+                  return release;
+                } else if (
+                  release.name.toLowerCase().includes(query.toLowerCase())
+                ) {
+                  return release;
+                }
+              })
+              .map((release) => (
+                <Release key={release.ZUID} release={release}></Release>
+              ))}
+          </div>
+        </tbody>
+      </table>
     </>
   );
 }

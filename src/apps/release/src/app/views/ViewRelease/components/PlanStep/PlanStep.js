@@ -69,8 +69,6 @@ export function PlanStep(props) {
     );
   };
 
-  console.log("🚀 ~ file: PlanStep.js ~ line 24 ~ PlanStep ~ props", props);
-
   return (
     <tr
       className={cx(
