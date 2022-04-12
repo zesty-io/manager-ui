@@ -55,13 +55,13 @@ export const DeleteRelease = memo(function DeleteRelease() {
           <Notice>Deleting a release is a permenant action.</Notice>
         </ModalContent>
         <ModalFooter className={styles.ModalFooter}>
-          <Button disabled={loading} onClick={onDeleteRelease}>
-            <FontAwesomeIcon icon={faCheckCircle} />
-            &nbsp;Delete Release
-          </Button>
           <Button type="cancel" onClick={() => setOpen(false)}>
             <FontAwesomeIcon icon={faBan} />
             Cancel (ESC)
+          </Button>
+          <Button type="warn" disabled={loading} onClick={onDeleteRelease}>
+            <FontAwesomeIcon icon={faCheckCircle} />
+            &nbsp;Delete Release
           </Button>
         </ModalFooter>
       </Modal>

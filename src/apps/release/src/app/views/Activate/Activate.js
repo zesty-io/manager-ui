@@ -29,8 +29,10 @@ export function Activate() {
   return (
     <div className={cx(styles.Activate, styles.bodyText)}>
       <div>
-        <h1>Releases</h1>
-        <p>Publish groups of content at the same time.</p>
+        <h1 className={styles.headline}>Releases</h1>
+        <p className={styles.title}>
+          Publish groups of content at the same time.
+        </p>
 
         <Button
           disabled={loading}

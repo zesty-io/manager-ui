@@ -113,7 +113,6 @@ export function PlanStep(props) {
         >
           {/* Use icon matched to items model type */}
           <FontAwesomeIcon icon={faDatabase} />
-          {/* {console.log("ITEM", item)} */}
           {/* Use meta title. Show warning with link to edit if meta title is missing. */}
           &nbsp;
           {item.web.metaTitle ? item.web.metaTitle : "Missing Item Meta Title"}

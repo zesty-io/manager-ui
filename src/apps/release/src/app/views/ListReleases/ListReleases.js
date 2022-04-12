@@ -1,10 +1,8 @@
-import { useState } from "react";
 import { useSelector } from "react-redux";
 import cx from "classnames";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Button } from "@zesty-io/core/Button";
-import { Search } from "@zesty-io/core/Search";
 
 import { Release } from "./Release";
 
@@ -14,8 +12,6 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import styles from "./ListReleases.less";
 export function ListReleases() {
   const releases = useSelector((state) => state.releases.data);
-
-  const [query, setQuery] = useState("");
 
   return (
     <>
@@ -37,11 +33,9 @@ export function ListReleases() {
           </tr>
         </thead>
         <tbody>
-          <div>
-            {releases.map((release) => (
-              <Release key={release.ZUID} release={release}></Release>
-            ))}
-          </div>
+          {releases.map((release) => (
+            <Release key={release.ZUID} release={release}></Release>
+          ))}
         </tbody>
       </table>
     </>
