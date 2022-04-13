@@ -38,8 +38,12 @@ export function PlanStep(props) {
 
   const options = versions
     ? versions.map((content) => {
+        let html = `Version ${content.meta.version} [${moment(
+          content.meta.createdAt
+        ).format("MMM Do YYYY, [at] h:mm a")}]`;
+
         return {
-          text: `Version ${content.meta.version}`,
+          text: html,
           value: content.meta.version,
         };
       })
