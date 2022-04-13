@@ -83,7 +83,6 @@ export function PlanStep(props) {
     );
   };
 
-  console.log("OPTIONS: ", options);
   return (
     <tr
       className={cx(
