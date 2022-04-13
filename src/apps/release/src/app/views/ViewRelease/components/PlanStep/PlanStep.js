@@ -38,9 +38,19 @@ export function PlanStep(props) {
 
   const options = versions
     ? versions.map((content) => {
-        let html = `Version ${content.meta.version} [${moment(
-          content.meta.createdAt
-        ).format("MMM Do YYYY, [at] h:mm a")}]`;
+        let html = (
+          <p>
+            Version {content.meta.version}{" "}
+            <small>
+              {" "}
+              [
+              {moment(content.meta.createdAt).format(
+                "MMM Do YYYY, [at] h:mm a"
+              )}
+              ]{" "}
+            </small>
+          </p>
+        );
 
         return {
           text: html,
@@ -73,6 +83,7 @@ export function PlanStep(props) {
     );
   };
 
+  console.log("OPTIONS: ", options);
   return (
     <tr
       className={cx(
