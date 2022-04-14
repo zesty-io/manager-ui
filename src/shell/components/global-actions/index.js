@@ -31,7 +31,7 @@ export default memo(function GlobalActions(props) {
         >
           <FontAwesomeIcon icon={faBook} className={styles.GlobalActionIcon} />
           {openMenu && <GlobalHelpMenu />}
-          <span>Docs</span>
+          {openNav && <span>Docs</span>}
         </span>
 
         <Url
@@ -46,7 +46,7 @@ export default memo(function GlobalActions(props) {
             width="16px"
             height="16px"
           />
-          <span className={styles.GlobalAction}>Zesty.io</span>
+          {openNav && <span className={styles.GlobalAction}>Zesty.io</span>}
         </Url>
 
         <div className={styles.AppVersion}>
@@ -55,7 +55,7 @@ export default memo(function GlobalActions(props) {
             title="View source code commit"
             target="_blank"
           >
-            <FontAwesomeIcon icon={faHashtag} />
+            {openNav && <FontAwesomeIcon icon={faHashtag} />}
             <span className={styles.VersionNumber}>
               {CONFIG?.build?.data?.gitCommit}
             </span>

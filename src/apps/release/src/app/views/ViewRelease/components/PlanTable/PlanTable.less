@@ -9,8 +9,7 @@
     border-radius: 4px 4px 0 0;
 
     // Structure
-    max-height: calc(100vh - 225px);
-    overflow-y: scroll;
+    height: 100%;
 
     display: block;
   }
@@ -25,7 +24,9 @@
   tbody {
     tr {
       display: grid;
-      grid-template-columns: 60px 200px minmax(200px, 1fr) minmax(auto, 400px) 100px 90px;
+      grid-template-columns:
+        60px minmax(200px, 400px) 200px minmax(200px, 1fr) minmax(auto, 400px)
+        90px;
       column-gap: 16px;
       padding: 12px;
 

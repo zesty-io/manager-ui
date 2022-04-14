@@ -50,7 +50,13 @@ export function fetchProducts() {
         data = ["content", "media", "leads", "analytics", "seo"];
         break;
       case "31-71cfc74-p0bl1shr":
-        data = ["content", "media", "leads", "analytics"];
+        data = [
+          "content",
+          "media",
+          "leads",
+          "analytics",
+          // "release"
+        ];
         break;
       case "31-71cfc74-c0ntr1b0t0r":
         data = ["content", "media"];
