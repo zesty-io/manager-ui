@@ -30,7 +30,7 @@ export function fetchProducts() {
           "seo",
           "audit-trail",
           "settings",
-          "release",
+          // "release",
         ];
         break;
       case "31-71cfc74-d3v3l0p3r":
@@ -43,17 +43,23 @@ export function fetchProducts() {
           "analytics",
           "seo",
           "settings",
-          "release",
+          // "release",
         ];
         break;
       case "31-71cfc74-s30":
-        data = ["content", "media", "leads", "analytics", "seo", "release"];
+        data = ["content", "media", "leads", "analytics", "seo"];
         break;
       case "31-71cfc74-p0bl1shr":
-        data = ["content", "media", "leads", "analytics", "release"];
+        data = [
+          "content",
+          "media",
+          "leads",
+          "analytics",
+          // "release"
+        ];
         break;
       case "31-71cfc74-c0ntr1b0t0r":
-        data = ["content", "media", "release"];
+        data = ["content", "media"];
         break;
       case "31-71cfc74-m3d14":
         data = ["media"];
@@ -73,7 +79,7 @@ export function fetchProducts() {
         "seo",
         "audit-trail",
         "settings",
-        "release",
+        // "release",
       ];
     }
 
