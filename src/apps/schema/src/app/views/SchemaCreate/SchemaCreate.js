@@ -106,7 +106,15 @@ export default connect((state) => {
               : "dataset",
           };
         case "type":
-          return { ...state, type: action.payload };
+          return {
+            ...state,
+            url:
+              action.payload === "templateset" || action.payload === "pageset"
+                ? 1
+                : 0,
+            multiple: action.payload === "pageset" ? 1 : 0,
+            type: action.payload,
+          };
         default:
           return state;
       }
