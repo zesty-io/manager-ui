@@ -43,14 +43,21 @@ export default function ReleaseApp() {
 
   return (
     <section className={cx(styles.ReleaseApp, styles.bodyText)}>
-      <WithLoader condition={!loading} message="Starting Release">
-        <Switch>
-          <Route path="/release/activate" component={Activate} />
-          <Route path="/release/create" component={CreateRelease} />
-          <Route path="/release/:zuid" component={ViewRelease} />
-          <Route exact path="/release" component={ListReleases} />
-        </Switch>
-      </WithLoader>
+      <main>
+        <WithLoader
+          condition={!loading}
+          message="Starting Release"
+          width="100vw"
+          height="100vh"
+        >
+          <Switch>
+            <Route path="/release/activate" component={Activate} />
+            <Route path="/release/create" component={CreateRelease} />
+            <Route path="/release/:zuid" component={ViewRelease} />
+            <Route exact path="/release" component={ListReleases} />
+          </Switch>
+        </WithLoader>
+      </main>
     </section>
   );
 }

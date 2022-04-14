@@ -38,8 +38,22 @@ export function PlanStep(props) {
 
   const options = versions
     ? versions.map((content) => {
+        let html = (
+          <p>
+            Version {content.meta.version}{" "}
+            <small>
+              {" "}
+              [
+              {moment(content.meta.createdAt).format(
+                "MMM Do YYYY, [at] h:mm a"
+              )}
+              ]{" "}
+            </small>
+          </p>
+        );
+
         return {
-          text: `Version ${content.meta.version}`,
+          text: html,
           value: content.meta.version,
         };
       })
@@ -93,6 +107,21 @@ export function PlanStep(props) {
       </td>
 
       <td>
+        {/* Preview link should include specific selected version */}
+        {item.web.path ? (
+          <Url
+            target="_blank"
+            title={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${props.member.version}`}
+            href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${props.member.version}`}
+          >
+            <FontAwesomeIcon icon={faEye} />
+          </Url>
+        ) : (
+          <FontAwesomeIcon icon={faEyeSlash} />
+        )}
+      </td>
+
+      <td>
         <AppLink
           to={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
         >
@@ -112,20 +141,6 @@ export function PlanStep(props) {
           : "Never published"}
       </td>
 
-      <td>
-        {/* Preview link should include specific selected version */}
-        {item.web.path ? (
-          <Url
-            target="_blank"
-            title={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${props.member.version}`}
-            href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${props.member.version}`}
-          >
-            <FontAwesomeIcon icon={faEye} />
-          </Url>
-        ) : (
-          <FontAwesomeIcon icon={faEyeSlash} />
-        )}
-      </td>
       <td data-cy="release-member-delete">
         {loading ? (
           <FontAwesomeIcon icon={faSpinner} spin />

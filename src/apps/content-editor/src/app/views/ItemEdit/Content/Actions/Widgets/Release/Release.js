@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -57,24 +57,18 @@ export const Release = memo(function Release(props) {
   return (
     <Card className={styles.Release}>
       <CardHeader>
-        <FontAwesomeIcon icon={faRocket} /> Releases
+        <AppLink to="/release">
+          <FontAwesomeIcon icon={faRocket} /> Releases
+        </AppLink>
       </CardHeader>
       <CardContent>
         <WithLoader condition={!loading}>
           {active ? (
-            <div className={styles.Row}>
-              <Button
-                onClick={onAdd}
-                disabled={selectedRelease === "0" || addingMember}
-              >
-                {addingMember ? (
-                  <FontAwesomeIcon icon={faSpinner} />
-                ) : (
-                  <FontAwesomeIcon icon={faPlus} />
-                )}
-              </Button>
+            <React.Fragment>
               <FieldTypeDropDown
                 name="release"
+                label="Queue item for release"
+                className={styles.SelectRelease}
                 value={selectedRelease}
                 onChange={setSelectedRelease}
                 options={releases.map((release) => {
@@ -93,11 +87,23 @@ export const Release = memo(function Release(props) {
                   };
                 })}
               />
-            </div>
+              <Button
+                className={styles.Add}
+                onClick={onAdd}
+                disabled={selectedRelease === "0" || addingMember}
+              >
+                {addingMember ? (
+                  <FontAwesomeIcon icon={faSpinner} />
+                ) : (
+                  <FontAwesomeIcon icon={faPlus} />
+                )}
+                Add
+              </Button>
+            </React.Fragment>
           ) : (
             <AppLink to={`/release/activate`}>
               <FontAwesomeIcon icon={faPowerOff} />
-              &nbsp;Activate Releases App
+              &nbsp;Activate Releases
             </AppLink>
           )}
         </WithLoader>

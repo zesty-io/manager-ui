@@ -9,18 +9,20 @@ export function PlanTable({ members }) {
           <th className={styles.subheadline}>Lang</th>
           <th className={styles.subheadline}>Version</th>
 
+          <th className={styles.subheadline}>Preview</th>
           {/* sorting by title would be cool but could be a stretch goal */}
           <th className={styles.subheadline}>Title</th>
 
           <th className={styles.subheadline}>Last Publish</th>
-          <th className={styles.subheadline}>Preview</th>
           <th className={styles.subheadline}>Remove</th>
         </tr>
       </thead>
       <tbody>
-        {members.map((member) => (
-          <PlanStep key={member.ZUID} member={member} />
-        ))}
+        <div>
+          {members.map((member) => (
+            <PlanStep key={member.ZUID} member={member} />
+          ))}
+        </div>
       </tbody>
       <tfoot>
         <tr>
