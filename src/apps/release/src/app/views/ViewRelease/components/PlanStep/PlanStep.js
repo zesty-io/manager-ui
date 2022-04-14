@@ -30,6 +30,10 @@ export function PlanStep(props) {
     (state) => state.contentVersions[props.member.resourceZUID]
   );
 
+  const isPublishAt = useSelector(
+    (state) => state.content[props.member.resourceZUID]
+  );
+
   const lang = useSelector((state) =>
     state.languages.find((lang) => lang.ID === item.meta.langID)
   );
@@ -40,6 +44,11 @@ export function PlanStep(props) {
     ? versions.map((content) => {
         let html = (
           <p>
+            {content.meta.version === isPublishAt?.publishing?.version ? (
+              <strong>Live </strong>
+            ) : (
+              ""
+            )}
             Version {content.meta.version}{" "}
             <small>
               {" "}
