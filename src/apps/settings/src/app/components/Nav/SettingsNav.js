@@ -37,14 +37,12 @@ export default connect((state) => {
       path: "#",
       icon: faGlobe,
     },
-    /*
     {
       label: "Metrics",
       children: null,
       path: "/settings/metrics",
       icon: faChartLine,
     },
-    */
   ];
   const treeGlobal = [
     {
