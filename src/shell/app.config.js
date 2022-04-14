@@ -5,7 +5,6 @@ module.exports = {
     ENV: "production",
 
     API_ACCOUNTS: "https://accounts.api.zesty.io/v1",
-    //TODO: update this once the domain is working
     API_METRICS: "https://metrics.api.zesty.io",
     API_INSTANCE: ".api.zesty.io/v1",
     API_INSTANCE_PROTOCOL: "https://",
@@ -48,8 +47,7 @@ module.exports = {
     ENV: "stage",
 
     API_ACCOUNTS: "https://accounts.api.stage.zesty.io/v1",
-    //TODO: update this once the domain is working
-    API_METRICS: "https://metrics-api-2shb2p2dtq-uc.a.run.app",
+    API_METRICS: "https://metrics.api.stage.zesty.io",
     API_INSTANCE: ".api.stage.zesty.io/v1",
     API_INSTANCE_PROTOCOL: "https://",
 
