@@ -17,21 +17,37 @@ import {
   faEyeSlash,
   faSpinner,
   faTimes,
+  faFile,
+  faListAlt,
+  faExternalLinkSquareAlt,
+  faLink,
+  faHome,
 } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./PlanStep.less";
+
+const ICONS = {
+  templateset: faFile,
+  pageset: faListAlt,
+  dataset: faDatabase,
+  external: faExternalLinkSquareAlt,
+  internal: faLink,
+  item: faFile,
+  homepage: faHome,
+  socialfeed: faDatabase,
+};
+
 export function PlanStep(props) {
+  console.log("🚀 ~ file: PlanStep.js ~ line 41 ~ PlanStep ~ props", props);
   const dispatch = useDispatch();
   const params = useParams();
 
   const instanceID = useSelector((state) => state.instance.randomHashID);
   const item = useSelector((state) => state.content[props.member.resourceZUID]);
+  console.log("🚀 ~ file: PlanStep.js ~ line 47 ~ PlanStep ~ item", item);
+
   const versions = useSelector(
     (state) => state.contentVersions[props.member.resourceZUID]
-  );
-
-  const isPublishAt = useSelector(
-    (state) => state.content[props.member.resourceZUID]
   );
 
   const lang = useSelector((state) =>
@@ -44,7 +60,7 @@ export function PlanStep(props) {
     ? versions.map((content) => {
         let html = (
           <p>
-            {content.meta.version === isPublishAt?.publishing?.version ? (
+            {content.meta.version === item?.publishing?.version ? (
               <strong>Live </strong>
             ) : (
               ""
