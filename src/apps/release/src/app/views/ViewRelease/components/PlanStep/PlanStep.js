@@ -38,13 +38,11 @@ const ICONS = {
 };
 
 export function PlanStep(props) {
-  console.log("🚀 ~ file: PlanStep.js ~ line 41 ~ PlanStep ~ props", props);
   const dispatch = useDispatch();
   const params = useParams();
 
   const instanceID = useSelector((state) => state.instance.randomHashID);
   const item = useSelector((state) => state.content[props.member.resourceZUID]);
-  console.log("🚀 ~ file: PlanStep.js ~ line 47 ~ PlanStep ~ item", item);
 
   const versions = useSelector(
     (state) => state.contentVersions[props.member.resourceZUID]
