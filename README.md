@@ -52,14 +52,14 @@ _e.g. linux: `/etc/hosts`_
 windows: `c:\windows\system32\drivers\etc\hosts`
 
 ```
-127.0.0.1 <YOUR_UNIQUE_INSTANCE_ZUID>.manager.zesty.io
+127.0.0.1  YOUR_UNIQUE_INSTANCE_ZUID.manager.zesty.io
 ```
 
 ## Start the application
 
 1. Install dependencies: `npm install`
-2. Start webpack: `npm run serve:webpack -- --env.NODE_ENV=production`
-3. Load the app in your browser: `<YOUR_UNIQUE_INSTANCE_ZUID>.manager.zesty.io:8080`
+2. Start webpack: `npm run start`
+3. Load the app in your browser: `YOUR_UNIQUE_INSTANCE_ZUID.manager.zesty.io:8080`
 
 ## Tests
 

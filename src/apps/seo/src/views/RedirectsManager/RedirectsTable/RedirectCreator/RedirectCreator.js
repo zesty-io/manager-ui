@@ -27,7 +27,7 @@ export function RedirectCreator(props) {
 
   const determineTerm = (term) => {
     // ContentSearch return Object while Search return string
-    let contentSearchValue = term.meta ? term.web.path : term;
+    let contentSearchValue = term?.meta ? term.web.path : term;
     setContentSearchValue(contentSearchValue);
 
     term = term.meta ? term.meta.ZUID : term;
@@ -61,6 +61,7 @@ export function RedirectCreator(props) {
           value={from}
           placeholder="URL path to redirect from"
           onChange={(evt) => setFrom(evt.target.value)}
+          error={!!from.length && !from.startsWith("/")}
         />
       </span>
       <span className={styles.RedirectCreatorCell}>
@@ -101,7 +102,12 @@ export function RedirectCreator(props) {
         )}
       </span>
       <span className={styles.RedirectCreatorCell}>
-        <Button className="save" type="save" onClick={handleCreateRedirect}>
+        <Button
+          className="save"
+          type="save"
+          onClick={handleCreateRedirect}
+          disabled={!from.length || !from.startsWith("/")}
+        >
           <FontAwesomeIcon icon={faPlus} />
           Create Redirect
         </Button>

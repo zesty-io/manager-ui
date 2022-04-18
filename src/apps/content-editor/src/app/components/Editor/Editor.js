@@ -4,7 +4,6 @@ import cx from "classnames";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 import { Field } from "./Field";
-import { PreviewMode } from "./PreviewMode";
 
 import styles from "./Editor.less";
 export default memo(function Editor({
@@ -114,68 +113,50 @@ export default memo(function Editor({
   }, []);
 
   return (
-    <div
-      data-cy="DuoModeGrid"
-      className={
-        ui.duoMode ? styles.DuoMode : cx(styles.DuoMode, styles.DuoModeOff)
-      }
-    >
-      <div className={styles.Fields}>
-        {item.meta && item.meta.ZUID && (
-          <Breadcrumbs itemZUID={item.meta.ZUID} />
-        )}
+    <div className={styles.Fields}>
+      {item.meta && item.meta.ZUID && <Breadcrumbs itemZUID={item.meta.ZUID} />}
 
-        {fields.length ? (
-          fields
-            .filter((field) => !field.deletedAt)
-            .map((field) => {
-              return (
-                <div
-                  key={`${field.ZUID}`}
-                  id={field.ZUID}
-                  className={styles.Field}
-                >
-                  <Field
-                    ZUID={field.ZUID}
-                    contentModelZUID={field.contentModelZUID}
-                    active={active === field.ZUID}
-                    name={field.name}
-                    label={field.label}
-                    description={field.description}
-                    required={field.required}
-                    relatedFieldZUID={field.relatedFieldZUID}
-                    relatedModelZUID={field.relatedModelZUID}
-                    datatype={field.datatype}
-                    options={field.options}
-                    settings={field.settings}
-                    onChange={onChange}
-                    onSave={onSave}
-                    item={item}
-                    langID={item?.meta?.langID}
-                  />
-                </div>
-              );
-            })
-        ) : (
-          <div className={styles.NoFields}>
-            <h1 className={styles.Display}>No fields have been added</h1>
-            <h2 className={styles.SubHead}>
-              Use the{" "}
-              <AppLink to={`/schema/${model.ZUID}`}>Schema Builder</AppLink> to
-              define your items content
-            </h2>
-          </div>
-        )}
-      </div>
-      <React.Fragment>
-        {ui.duoMode && (
-          <PreviewMode
-            dirty={item.dirty}
-            itemZUID={item.meta.ZUID}
-            version={item.meta.version}
-          />
-        )}
-      </React.Fragment>
+      {fields.length ? (
+        fields
+          .filter((field) => !field.deletedAt)
+          .map((field) => {
+            return (
+              <div
+                key={`${field.ZUID}`}
+                id={field.ZUID}
+                className={styles.Field}
+              >
+                <Field
+                  ZUID={field.ZUID}
+                  contentModelZUID={field.contentModelZUID}
+                  active={active === field.ZUID}
+                  name={field.name}
+                  label={field.label}
+                  description={field.description}
+                  required={field.required}
+                  relatedFieldZUID={field.relatedFieldZUID}
+                  relatedModelZUID={field.relatedModelZUID}
+                  datatype={field.datatype}
+                  options={field.options}
+                  settings={field.settings}
+                  onChange={onChange}
+                  onSave={onSave}
+                  item={item}
+                  langID={item?.meta?.langID}
+                />
+              </div>
+            );
+          })
+      ) : (
+        <div className={styles.NoFields}>
+          <h1 className={styles.Display}>No fields have been added</h1>
+          <h2 className={styles.SubHead}>
+            Use the{" "}
+            <AppLink to={`/schema/${model.ZUID}`}>Schema Builder</AppLink> to
+            define your items content
+          </h2>
+        </div>
+      )}
     </div>
   );
 });

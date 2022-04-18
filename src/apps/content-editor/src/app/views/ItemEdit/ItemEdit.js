@@ -199,7 +199,9 @@ export default function ItemEdit() {
         notify({
           message: `Saved a new ${
             item && item.web.metaLinkText ? item.web.metaLinkText : ""
-          } version`,
+          } (${
+            languages.find((lang) => lang.ID === item.meta.langID)?.code
+          }) version`,
           kind: "save",
         })
       );

@@ -52,7 +52,7 @@ export function navSchema(state = [], action) {
         {
           ...action.payload,
           path: `/schema/${action.payload.ZUID}`,
-          icon: action.payload.type,
+          icon: ICONS[action.payload.type],
         },
       ].sort(sortNav);
 

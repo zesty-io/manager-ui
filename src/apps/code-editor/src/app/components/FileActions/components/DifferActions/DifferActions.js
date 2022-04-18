@@ -45,7 +45,7 @@ export const DifferActions = memo(function DifferActions(props) {
       );
     }
 
-    history.push(`/code/file/views/${props.fileZUID}`);
+    history.push(`/code/file/${props.fileType}/${props.fileZUID}`);
   }
 
   function resolveSync() {

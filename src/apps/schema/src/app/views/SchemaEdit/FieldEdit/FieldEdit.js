@@ -113,7 +113,7 @@ export function Footer(props) {
           props.dispatch(
             notify({
               kind: "warn",
-              message: `Failed tyring to save field: ${props.field.name}`,
+              message: `Failed trying to save field: ${props.field.name}`,
             })
           );
         }
