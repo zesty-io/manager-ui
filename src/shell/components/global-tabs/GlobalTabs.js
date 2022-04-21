@@ -7,7 +7,19 @@ import debounce from "lodash/debounce";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTimesCircle,
+  faDatabase,
+  faEye,
+  faEyeSlash,
+  faSpinner,
+  faTimes,
+  faFile,
+  faListAlt,
+  faExternalLinkSquareAlt,
+  faLink,
+  faHome,
+} from "@fortawesome/free-solid-svg-icons";
 
 import { closeTab, openTab, loadTabs, rebuildTabs } from "shell/store/ui";
 
@@ -18,15 +30,29 @@ const MAX_TAB_WIDTH = 200;
 const TAB_PADDING = 16;
 const TAB_BORDER = 1;
 
+const ICONS = {
+  templateset: faFile,
+  pageset: faListAlt,
+  dataset: faDatabase,
+  external: faExternalLinkSquareAlt,
+  internal: faLink,
+  item: faFile,
+  homepage: faHome,
+  socialfeed: faDatabase,
+};
+
 export default memo(function GlobalTabs() {
   const location = useLocation();
+
   const dispatch = useDispatch();
   const tabs = useSelector((state) => state.ui.tabs);
+
   const instanceZUID = useSelector((state) => state.instance.ZUID);
   const loadedTabs = useSelector((state) => state.ui.loadedTabs);
   const prevPath = usePrevious(location.pathname);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const models = useSelector((state) => state.models);
+
   const content = useSelector((state) => state.content);
   const files = useSelector((state) => state.files);
   const mediaGroups = useSelector((state) => state.media.groups);
@@ -115,7 +141,18 @@ export default memo(function GlobalTabs() {
               className={cx(styles.Route, isActiveTab ? styles.active : null)}
             >
               <AppLink to={`${tab.pathname}`}>
-                {tab.icon && <FontAwesomeIcon icon={tab.icon} />}
+                {tab.icon && (
+                  <FontAwesomeIcon
+                    icon={
+                      // in schema view show matching dataset icon
+                      location.pathname.includes("/schema")
+                        ? ICONS[
+                            models[tab.pathname.split("/").slice(-1)[0]]?.type
+                          ]
+                        : tab.icon
+                    }
+                  />
+                )}
                 &nbsp;
                 {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
               </AppLink>
