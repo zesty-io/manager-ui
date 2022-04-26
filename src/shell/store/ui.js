@@ -86,7 +86,6 @@ export const { actions, reducer } = ui;
 
 // Thunk helper functions
 function parsePath(path) {
-  console.log("🚀 ~ file: ui.js ~ line 73 ~ parsePath ~ path", path);
   let parts = path.split("/").filter((part) => part);
   let zuid = null;
   let prefix = null;
