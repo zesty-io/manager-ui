@@ -2,10 +2,25 @@
 @import "~@zesty-io/core/typography.less";
 
 .Release {
+  .CardContent {
+    display: flex;
+    flex-direction: column;
+    .ReleaseWrap {
+      display: flex;
+      & > div {
+        flex: 1;
+      }
+    }
+  }
   .SelectRelease ul {
     padding: 0;
   }
   .Add {
+    align-self: end;
+    margin-top: 8px;
+    margin-left: 8px;
+  }
+  .VersionRelease {
     margin-top: 8px;
   }
 }

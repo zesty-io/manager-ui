@@ -17,7 +17,7 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { fetchReleases } from "shell/store/releases";
-import { createMember } from "shell/store/releaseMembers";
+import { createMember, fetchMembers } from "shell/store/releaseMembers";
 
 import styles from "./Release.less";
 export const Release = memo(function Release(props) {
@@ -43,6 +43,7 @@ export const Release = memo(function Release(props) {
 
   useEffect(() => {
     setLoading(true);
+
     dispatch(fetchReleases())
       .then((res) => {
         if (!res.data?.length) {
@@ -61,10 +62,10 @@ export const Release = memo(function Release(props) {
           <FontAwesomeIcon icon={faRocket} /> Releases
         </AppLink>
       </CardHeader>
-      <CardContent>
+      <CardContent className={styles.CardContent}>
         <WithLoader condition={!loading}>
           {active ? (
-            <React.Fragment>
+            <section className={styles.ReleaseWrap}>
               <FieldTypeDropDown
                 name="release"
                 label="Queue item for release"
@@ -99,7 +100,7 @@ export const Release = memo(function Release(props) {
                 )}
                 Add
               </Button>
-            </React.Fragment>
+            </section>
           ) : (
             <AppLink to={`/release/activate`}>
               <FontAwesomeIcon icon={faPowerOff} />
@@ -107,6 +108,11 @@ export const Release = memo(function Release(props) {
             </AppLink>
           )}
         </WithLoader>
+
+        <p className={styles.VersionRelease}>
+          {/* `Homepage`` Version `177` is in Release: `HABIBI` */}
+          {`${props.item.web.metaTitle} Version ${props.item.web.version} is in Release : ${releaseName}`}
+        </p>
       </CardContent>
     </Card>
   );
