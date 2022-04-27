@@ -25,6 +25,8 @@ import { Option, Select } from "@zesty-io/core/Select";
 import { MediaImage } from "./MediaImage";
 import { editFile } from "shell/store/media";
 
+import { formatMediaFilename } from "../../../../../utility/formatMediaFileName";
+
 import shared from "./MediaShared.less";
 import styles from "./MediaDetailsModal.less";
 
@@ -116,9 +118,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
               }
               placeholder={"Image Filename"}
               // Replaces all non-alphanumeric characters (excluding '.') with '-' to reflect the filename transformation done on the BE
-              onChange={(val) =>
-                setFilename(val.replaceAll(/[^a-z\d-.]/gi, "-"))
-              }
+              onChange={(val) => setFilename(formatMediaFilename(val))}
             />
             <FieldTypeText
               className={styles.Field}
