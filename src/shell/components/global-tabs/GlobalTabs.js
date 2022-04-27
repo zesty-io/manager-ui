@@ -20,13 +20,16 @@ const TAB_BORDER = 1;
 
 export default memo(function GlobalTabs() {
   const location = useLocation();
+
   const dispatch = useDispatch();
   const tabs = useSelector((state) => state.ui.tabs);
+
   const instanceZUID = useSelector((state) => state.instance.ZUID);
   const loadedTabs = useSelector((state) => state.ui.loadedTabs);
   const prevPath = usePrevious(location.pathname);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const models = useSelector((state) => state.models);
+
   const content = useSelector((state) => state.content);
   const files = useSelector((state) => state.files);
   const mediaGroups = useSelector((state) => state.media.groups);
