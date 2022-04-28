@@ -16,6 +16,7 @@ import { request } from "utility/request";
 import styles from "./Metrics.less";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Pie, Bar } from "react-chartjs-2";
+import { Notice } from "@zesty-io/core";
 
 /*
   Returns a date range representing the last N days
@@ -36,9 +37,9 @@ const getEndpointUrls = ({ zuid, start, end }) => {
   const dateStart = start.toISOString().split("T")[0];
   const dateEnd = end.toISOString().split("T")[0];
 
-  const params = `dateStart=${dateStart}&dateEnd=${dateEnd}`;
-  const usageEndPoint = `${base}/${zuid}/usage?${params}`;
-  const requestsEndPoint = `${base}/${zuid}/requests?${params}`;
+  const dateParams = `dateStart=${dateStart}&dateEnd=${dateEnd}`;
+  const usageEndPoint = `${base}/${zuid}/usage?${dateParams}`;
+  const requestsEndPoint = `${base}/${zuid}/requests?${dateParams}`;
   return {
     usageEndPoint,
     requestsEndPoint,
@@ -125,7 +126,38 @@ export default function Metrics(props) {
   );
 }
 
-const Body = ({
+const ErrorMessage = ({ status }) => {
+  const getMessage = (status) => {
+    switch (status) {
+      case 401:
+        return "You must log in to view this";
+      case 403:
+        return "You do not have permission to access metrics for this instance";
+      case 404:
+        return "This instance does not exist";
+      case 500:
+      case 502:
+      case 503:
+      case 504:
+        return "The metrics server has encountered an error and was not able to process your request";
+      default:
+        return "An unknown error has occured while trying to calculate the metrics for this instance";
+    }
+  };
+  return <Notice className={styles.ErrorMessage}>{getMessage(status)}</Notice>;
+};
+const Body = ({ requestData, usageData, ...rest }) => {
+  if (requestData && requestData.status != 200)
+    return <ErrorMessage status={requestData.status} />;
+  else if (usageData && usageData.status != 200)
+    return <ErrorMessage status={usageData.status} />;
+  else
+    return (
+      <Content requestData={requestData} usageData={usageData} {...rest} />
+    );
+};
+
+const Content = ({
   usageData,
   requestData,
   StartDisplay,
