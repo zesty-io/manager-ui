@@ -1,5 +1,7 @@
 import React, { memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import isEqual from "lodash/isEqual";
+import flatten from "lodash/flatten";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -23,11 +25,13 @@ import styles from "./Release.less";
 export const Release = memo(function Release(props) {
   const dispatch = useDispatch();
   const releases = useSelector((state) => state.releases.data);
+  console.log("🚀 ~ file: Release.js ~ line 26 ~ Release ~ releases", releases);
 
   const [loading, setLoading] = useState(false);
   const [addingMember, setAddingMember] = useState(false);
   const [active, setActive] = useState(true);
   const [selectedRelease, setSelectedRelease] = useState("0");
+  const [releaseName, setReleaseName] = useState([]);
 
   const onAdd = () => {
     setAddingMember(true);
@@ -54,6 +58,30 @@ export const Release = memo(function Release(props) {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    const request = releases.map((release) => {
+      return dispatch(fetchMembers(release.ZUID));
+    });
+
+    Promise.all(request).then((res) => {
+      let test = res.map((x) =>
+        x.data.filter((zuid) => zuid.resourceZUID === props.item.meta.ZUID)
+      );
+
+      console.log(
+        "🚀 ~ file: Release.js ~ line 72 ~ Promise.all ~ test",
+        flatten(test)
+      );
+
+      let result = flatten(test).map((x) =>
+        releases.find((y) => y.ZUID === x.releaseZUID)
+      );
+
+      console.log("🚀 ~ file: Release.js  ~ result", result);
+      setReleaseName(result);
+    });
+  }, [releases]);
 
   return (
     <Card className={styles.Release}>
@@ -109,10 +137,13 @@ export const Release = memo(function Release(props) {
           )}
         </WithLoader>
 
-        <p className={styles.VersionRelease}>
+        <ul className={styles.VersionRelease}>
           {/* `Homepage`` Version `177` is in Release: `HABIBI` */}
-          {`${props.item.web.metaTitle} Version ${props.item.web.version} is in Release : ${releaseName}`}
-        </p>
+          {`${props.item.web.metaTitle} Version ${props.item.web.version} is in Release : `}
+          {releaseName.map((item) => {
+            return <li>{item.name}</li>;
+          })}
+        </ul>
       </CardContent>
     </Card>
   );
