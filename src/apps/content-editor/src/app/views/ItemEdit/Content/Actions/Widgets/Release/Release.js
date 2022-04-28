@@ -1,6 +1,5 @@
 import React, { memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import isEqual from "lodash/isEqual";
 import flatten from "lodash/flatten";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -25,13 +24,12 @@ import styles from "./Release.less";
 export const Release = memo(function Release(props) {
   const dispatch = useDispatch();
   const releases = useSelector((state) => state.releases.data);
-  console.log("🚀 ~ file: Release.js ~ line 26 ~ Release ~ releases", releases);
 
   const [loading, setLoading] = useState(false);
   const [addingMember, setAddingMember] = useState(false);
   const [active, setActive] = useState(true);
   const [selectedRelease, setSelectedRelease] = useState("0");
-  const [releaseName, setReleaseName] = useState([]);
+  const [releaseInfo, setReleaseInfo] = useState([]);
 
   const onAdd = () => {
     setAddingMember(true);
@@ -47,7 +45,6 @@ export const Release = memo(function Release(props) {
 
   useEffect(() => {
     setLoading(true);
-
     dispatch(fetchReleases())
       .then((res) => {
         if (!res.data?.length) {
@@ -65,23 +62,20 @@ export const Release = memo(function Release(props) {
     });
 
     Promise.all(request).then((res) => {
-      let test = res.map((x) =>
+      let members = res.map((x) =>
         x.data.filter((zuid) => zuid.resourceZUID === props.item.meta.ZUID)
       );
 
-      console.log(
-        "🚀 ~ file: Release.js ~ line 72 ~ Promise.all ~ test",
-        flatten(test)
-      );
+      let result = flatten(members).map((x) => {
+        return {
+          ...releases.find((y) => y.ZUID === x.releaseZUID),
+          version: x.version,
+        };
+      });
 
-      let result = flatten(test).map((x) =>
-        releases.find((y) => y.ZUID === x.releaseZUID)
-      );
-
-      console.log("🚀 ~ file: Release.js  ~ result", result);
-      setReleaseName(result);
+      setReleaseInfo(result);
     });
-  }, [releases]);
+  }, [releases, addingMember]);
 
   return (
     <Card className={styles.Release}>
@@ -138,10 +132,13 @@ export const Release = memo(function Release(props) {
         </WithLoader>
 
         <ul className={styles.VersionRelease}>
-          {/* `Homepage`` Version `177` is in Release: `HABIBI` */}
-          {`${props.item.web.metaTitle} Version ${props.item.web.version} is in Release : `}
-          {releaseName.map((item) => {
-            return <li>{item.name}</li>;
+          {releaseInfo.map((item, i) => {
+            return (
+              <li key={i}>
+                <AppLink to={`/release/${item.ZUID}`}>{item.name}:</AppLink>
+                <span>&nbsp;Version{item.version}</span>
+              </li>
+            );
           })}
         </ul>
       </CardContent>
