@@ -243,7 +243,13 @@ const Content = ({
 
   // Calculate number of requests for each type
   // This is a map of req code -> number of reqs
-  const reqs = { other: 0 };
+  const reqs = {
+    other: 0,
+    200: 0,
+    301: 0,
+    404: 0,
+    403: 0,
+  };
   for (let i = 0; i < requestData.ResponseCodes.length; i++) {
     const code = requestData.ResponseCodes[i].Code;
     const count = requestData.ResponseCodes[i].RequestCount;
@@ -435,7 +441,7 @@ const Content = ({
                 </thead>
                 <tbody>
                   {/* Top Request Pages 200 */}
-                  {requestData.TopRequestByFilePathAndResponseCode[0].TopPaths.map(
+                  {requestData.TopRequestByFilePathAndResponseCode[0].TopPaths?.map(
                     (req, i) => (
                       <TopReq
                         req={req}
@@ -500,7 +506,7 @@ const Content = ({
                 </thead>
                 <tbody>
                   {/* Top Request 404 */}
-                  {requestData.TopRequestByFilePathAndResponseCode[2].TopPaths.map(
+                  {requestData.TopRequestByFilePathAndResponseCode[2].TopPaths?.map(
                     (req, i) => (
                       <TopReq
                         req={req}
@@ -538,7 +544,7 @@ const Content = ({
                 </thead>
                 <tbody>
                   {/* Top Requested 301 */}
-                  {requestData.TopRequestByFilePathAndResponseCode[1].TopPaths.map(
+                  {requestData.TopRequestByFilePathAndResponseCode[1].TopPaths?.map(
                     (req, i) => (
                       <TopReq
                         req={req}
@@ -577,7 +583,7 @@ const Content = ({
                 </thead>
                 <tbody>
                   {/* Top Request 403 */}
-                  {requestData.TopRequestByFilePathAndResponseCode[3].TopPaths.map(
+                  {requestData.TopRequestByFilePathAndResponseCode[3].TopPaths?.map(
                     (req, i) => (
                       <TopReq
                         req={req}
