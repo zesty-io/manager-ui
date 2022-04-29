@@ -22,6 +22,8 @@ export function navCode(
   state = {
     raw: [],
     tree: [],
+    stylesheetsTree: [],
+    scriptsTree: [],
   },
   action
 ) {
@@ -49,7 +51,9 @@ export function navCode(
 
       return {
         raw: files,
-        tree: buildNavTree(files),
+        tree: buildNavTree(files, "views"),
+        stylesheetsTree: buildNavTree(files, "stylesheets"),
+        scriptsTree: buildNavTree(files, "scripts"),
       };
 
     // blend header sort data into our nav
@@ -71,7 +75,9 @@ export function navCode(
 
       return {
         raw: files,
-        tree: buildNavTree(files),
+        tree: buildNavTree(files, "views"),
+        stylesheetsTree: buildNavTree(files, "stylesheets"),
+        scriptsTree: buildNavTree(files, "scripts"),
       };
 
     case "COLLAPSE_DIRECTORY":
@@ -90,7 +96,9 @@ export function navCode(
 
       return {
         raw: files,
-        tree: buildNavTree(files),
+        tree: buildNavTree(files, "views"),
+        stylesheetsTree: buildNavTree(files, "stylesheets"),
+        scriptsTree: buildNavTree(files, "scripts"),
       };
 
     case "SAVE_FILE_SUCCESS":
@@ -109,7 +117,9 @@ export function navCode(
 
       return {
         raw: files,
-        tree: buildNavTree(files),
+        tree: buildNavTree(files, "views"),
+        stylesheetsTree: buildNavTree(files, "stylesheets"),
+        scriptsTree: buildNavTree(files, "scripts"),
       };
 
     case "PUBLISH_FILE_SUCCESS":
@@ -125,7 +135,9 @@ export function navCode(
 
       return {
         raw: files,
-        tree: buildNavTree(files),
+        tree: buildNavTree(files, "views"),
+        stylesheetsTree: buildNavTree(files, "stylesheets"),
+        scriptsTree: buildNavTree(files, "scripts"),
       };
 
     case "DELETE_FILE_SUCCESS":
@@ -137,7 +149,9 @@ export function navCode(
 
       return {
         raw: files,
-        tree: buildNavTree(files),
+        tree: buildNavTree(files, "views"),
+        stylesheetsTree: buildNavTree(files, "stylesheets"),
+        scriptsTree: buildNavTree(files, "scripts"),
       };
 
     default:
@@ -199,45 +213,50 @@ function resolveNavData(file) {
   return node;
 }
 
-export const buildNavTree = (nodes) => {
+export const buildNavTree = (nodes, type) => {
   const tree = [];
+  let map = nodes
+    .filter(
+      (node) =>
+        resolvePathPart(node.type) === type ||
+        resolvePathPart(node.type) === "directory"
+    )
+    .reduce((acc, node) => {
+      // Remove the first "/" to have a consistent file name split
+      const fileNameParts = node.fileName.replace(/^\//, "").split("/");
+      fileNameParts.reduce((prevParts, part, i) => {
+        // Are we at the last part of the filename, the "file"
+        if (fileNameParts.length === i + 1) {
+          acc[node.ZUID] = {
+            ...node,
 
-  let map = nodes.reduce((acc, node) => {
-    // Remove the first "/" to have a consistent file name split
-    const fileNameParts = node.fileName.replace(/^\//, "").split("/");
-    fileNameParts.reduce((prevParts, part, i) => {
-      // Are we at the last part of the filename, the "file"
-      if (fileNameParts.length === i + 1) {
-        acc[node.ZUID] = {
-          ...node,
+            // if this was a string split by "/" use the last part as the label
+            label: fileNameParts.length > 1 ? part : node.label,
+            parentZUID: prevParts, // previous path parts
+          };
+          acc[node.ZUID].children = [];
+        } else {
+          // When it's the first path part use it-as-is to avoid prefixing a forward slash
+          let combinedParts = i === 0 ? part : `${prevParts}/${part}`;
 
-          // if this was a string split by "/" use the last part as the label
-          label: fileNameParts.length > 1 ? part : node.label,
-          parentZUID: prevParts, // previous path parts
-        };
-        acc[node.ZUID].children = [];
-      } else {
-        // When it's the first path part use it-as-is to avoid prefixing a forward slash
-        let combinedParts = i === 0 ? part : `${prevParts}/${part}`;
+          // Add directo to map
+          acc[combinedParts] = {
+            type: "directory",
+            ZUID: null,
+            isLive: true, // ensure upload action is not shown
+            closed: node.closed ? true : false,
+            label: part, // current file name part
+            path: combinedParts, // previous parent parts combined with current part
+            parentZUID: prevParts, // previous path parts
+            children: [],
+          };
 
-        // Add directo to map
-        acc[combinedParts] = {
-          type: "directory",
-          ZUID: null,
-          isLive: true, // ensure upload action is not shown
-          closed: node.closed ? true : false,
-          label: part, // current file name part
-          path: combinedParts, // previous parent parts combined with current part
-          parentZUID: prevParts, // previous path parts
-          children: [],
-        };
+          return combinedParts;
+        }
+      }, "");
 
-        return combinedParts;
-      }
-    }, "");
-
-    return acc;
-  }, {});
+      return acc;
+    }, {});
 
   Object.keys(map).forEach((key) => {
     const node = { ...map[key] };
