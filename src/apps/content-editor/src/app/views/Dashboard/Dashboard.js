@@ -3,9 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
 import moment from "moment-timezone";
 import { useHistory } from "react-router-dom";
+import Button from "@mui/material/Button";
+import Icon from "@mui/material/Icon";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faPlus,
   faCode,
   faCog,
   faDatabase,
@@ -13,7 +15,7 @@ import {
   faClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
-import { Button } from "@zesty-io/core/Button";
+
 import { AppLink } from "@zesty-io/core/AppLink";
 import { AccountInfo } from "./components/AccountInfo";
 import { ChartDashboard } from "./components/ChartDashboard";
@@ -200,10 +202,11 @@ function DashboardCardFooter(props) {
   return (
     <CardFooter>
       <Button
-        kind="secondary"
+        type="secondary"
+        variant="contained"
         onClick={() => history.push(`/content/${props.contentModelZUID}/new`)}
+        startIcon={<Icon>add</Icon>}
       >
-        <FontAwesomeIcon icon={faPlus} />
         Create {props.model && props.model.label}
       </Button>
     </CardFooter>
