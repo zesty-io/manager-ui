@@ -4,9 +4,10 @@ import debounce from "lodash/debounce";
 import { notify } from "shell/store/notifications";
 
 import { Select, Option } from "@zesty-io/core/Select";
-import { Infotip } from "@zesty-io/core/Infotip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
+import Tooltip from "@mui/material/Tooltip";
+import InfoIcon from "@mui/icons-material/Info";
 
 import { searchItems } from "shell/store/content";
 
@@ -144,7 +145,13 @@ export const ItemParent = connect((state) => {
       return (
         <article className={styles.ItemParent} data-cy="itemParent">
           <label>
-            <Infotip title="Set which page this one will be nested beneath. This effects both automatically generated navigation and the URL structure for this page." />
+            <Tooltip
+              title="Set which page this one will be nested beneath. This effects both automatically generated navigation and the URL structure for this page."
+              arrow
+              placement="top-start"
+            >
+              <InfoIcon />
+            </Tooltip>
             &nbsp; Select this Page's Parent
           </label>
 

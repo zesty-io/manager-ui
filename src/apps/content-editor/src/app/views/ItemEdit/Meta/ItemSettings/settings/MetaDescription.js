@@ -4,7 +4,8 @@ import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
-import { Infotip } from "@zesty-io/core/Infotip";
+import InfoIcon from "@mui/icons-material/Info";
+import Tooltip from "@mui/material/Tooltip";
 
 import { notify } from "shell/store/notifications";
 
@@ -67,7 +68,13 @@ export default connect()(function MetaDescription({
         name="metaDescription"
         label={
           <label>
-            <Infotip title="This is the description search engines should use in their results. This field is limited to 160 characters, the maximum amount search engines will display." />
+            <Tooltip
+              title="This is the description search engines should use in their results. This field is limited to 160 characters, the maximum amount search engines will display."
+              arrow
+              placement="top-start"
+            >
+              <InfoIcon />
+            </Tooltip>
             &nbsp;Meta Description
           </label>
         }
