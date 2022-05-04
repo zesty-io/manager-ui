@@ -5,7 +5,8 @@ import moment from "moment-timezone";
 import { useHistory } from "react-router-dom";
 
 import Button from "@mui/material/Button";
-import Icon from "@mui/material/Icon";
+
+import AddIcon from "@mui/icons-material/Add";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -205,7 +206,7 @@ function DashboardCardFooter(props) {
       <Button
         variant="contained"
         onClick={() => history.push(`/content/${props.contentModelZUID}/new`)}
-        startIcon={<Icon>add</Icon>}
+        startIcon={<AddIcon />}
       >
         Create {props.model && props.model.label}
       </Button>
