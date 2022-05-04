@@ -13,6 +13,13 @@ import {
   updateTagType,
 } from "shell/store/headTags";
 
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
@@ -21,7 +28,6 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { Button } from "@zesty-io/core/Button";
 import { Card, CardContent, CardFooter, CardHeader } from "@zesty-io/core/Card";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
@@ -128,20 +134,21 @@ export const HeadTag = (props) => {
         />
         <Button
           title="Add Tag Attribute"
-          kind="primary"
+          variant="contained"
           onClick={() => dispatch(addTagAttribute(tag.ZUID))}
+          startIcon={<AddIcon />}
         >
-          <FontAwesomeIcon icon={faPlus} /> Add attribute
+          Add attribute
         </Button>
         {tag.hasOwnProperty("createdAt") ? (
           <Button
             title="Delete Head Tag"
             className={styles.Delete}
             onClick={onDelete}
-            type="warn"
+            type="error"
             id="DelteHeadtag"
+            startIcon={<DeleteIcon />}
           >
-            <FontAwesomeIcon className={styles.Del} icon={faTrash} />
             Delete Tag
           </Button>
         ) : (
@@ -149,9 +156,9 @@ export const HeadTag = (props) => {
             title="Cancel"
             className={styles.Delete}
             onClick={onCancel}
-            type="warn"
+            type="error"
+            startIcon={<DeleteIcon />}
           >
-            <FontAwesomeIcon className={styles.Del} icon={faTrash} />
             Cancel
           </Button>
         )}
@@ -193,12 +200,11 @@ export const HeadTag = (props) => {
               {attr.key !== "custom" ? (
                 <Button
                   title="Delete Tag Attribute"
-                  className={styles.Del}
+                  // className={styles.Del}
                   onClick={() => dispatch(deleteTagAttribute(tag.ZUID, index))}
-                  type="warn"
-                >
-                  <FontAwesomeIcon className={styles.Del} icon={faTrash} />
-                </Button>
+                  type="error"
+                  startIcon={<DeleteIcon />}
+                ></Button>
               ) : (
                 <div style={{ width: "40px" }}></div>
               )}
@@ -213,16 +219,12 @@ export const HeadTag = (props) => {
               ? "Save head tag"
               : "Create head tag"
           }
-          type="save"
+          type="success"
           id="SaveItemButton"
           disabled={saving}
           onClick={tag.hasOwnProperty("createdAt") ? onSave : onCreate}
+          startIcon={saving ? <CircularProgress /> : <SaveIcon />}
         >
-          {saving ? (
-            <FontAwesomeIcon spin icon={faSpinner} />
-          ) : (
-            <FontAwesomeIcon icon={faSave} />
-          )}
           {tag.hasOwnProperty("createdAt")
             ? "Save head tag"
             : "Create head tag"}
