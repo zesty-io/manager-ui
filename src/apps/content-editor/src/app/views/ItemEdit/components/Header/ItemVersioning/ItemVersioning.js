@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Icon from "@mui/material/Icon";
 import CircularProgress from "@mui/material/CircularProgress";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import { ScheduleFlyout } from "./ScheduleFlyout";
 import { VersionSelector } from "./VersionSelector";
@@ -16,8 +18,9 @@ import { usePermission } from "shell/hooks/use-permissions";
 import { useDomain } from "shell/hooks/use-domain";
 
 import styles from "./ItemVersioning.less";
-import { Box } from "@mui/system";
+
 export function ItemVersioning(props) {
+  const matches = useMediaQuery("(min-width:1750px)");
   const canPublish = usePermission("PUBLISH");
   const domain = useDomain();
 
@@ -135,7 +138,11 @@ export function ItemVersioning(props) {
                 component="span"
                 sx={{ display: { xs: "none", xl: "block" } }}
               >
-                Publish Version {props.item.meta.version}
+                Publish&nbsp;
+              </Box>
+
+              <Box component="span">
+                {matches ? `Version ${props.item.meta.version}` : ""}
               </Box>
             </Button>
 
@@ -182,8 +189,9 @@ export function ItemVersioning(props) {
           }
         >
           <Box component="span" sx={{ display: { xs: "none", xl: "block" } }}>
-            &nbsp;Save Version {metaShortcut}{" "}
+            &nbsp;Save
           </Box>
+          <Box component="span">{matches ? `Version ${metaShortcut}` : ""}</Box>
         </Button>
       </Stack>
     </div>
