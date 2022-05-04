@@ -97,13 +97,22 @@ export default function Metrics(props) {
     <>
       <section className={styles.MetricsHeader}>
         <ButtonGroup variant="contained">
-          <Button onClick={() => setTimePeriod(1)} disabled={timePeriod === 1}>
+          <Button
+            title="Past Day"
+            onClick={() => setTimePeriod(1)}
+            disabled={timePeriod === 1}
+          >
             Past day
           </Button>
-          <Button onClick={() => setTimePeriod(7)} disabled={timePeriod === 7}>
+          <Button
+            title="Past Day Week"
+            onClick={() => setTimePeriod(7)}
+            disabled={timePeriod === 7}
+          >
             Past 7 days
           </Button>
           <Button
+            title="Past 30 Days"
             onClick={() => setTimePeriod(30)}
             disabled={timePeriod === 30}
           >
