@@ -4,13 +4,17 @@ import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faSpinner, faCog } from "@fortawesome/free-solid-svg-icons";
 
+import Button from "@mui/material/Button";
+import SaveIcon from "@mui/icons-material/Save";
+import CircularProgress from "@mui/material/CircularProgress";
+
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldLabel } from "@zesty-io/core/FieldLabel";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { Select, Option } from "@zesty-io/core/Select";
 import { Divider } from "@zesty-io/core/Divider";
-import { Button } from "@zesty-io/core/Button";
+
 import { Docs } from "@zesty-io/core/Docs";
 import { notify } from "shell/store/notifications";
 import { FieldDescription } from "@zesty-io/core/FieldDescription";
@@ -125,18 +129,14 @@ export default connect((state) => {
               </Notice>
             )}
             <Button
-              className={styles.ButtonSave}
+              variant="contained"
               id="saveSettings"
-              type="save"
-              className={styles.saveButton}
+              type="success"
               onClick={saveFields}
               disabled={saving || dirtyFields.length === 0}
+              startIcon={saving ? <CircularProgress /> : <SaveIcon />}
+              sx={{ alignSelf: "flex-end" }}
             >
-              {saving ? (
-                <FontAwesomeIcon spin icon={faSpinner} />
-              ) : (
-                <FontAwesomeIcon icon={faSave} />
-              )}
               Save Settings
             </Button>
           </div>
@@ -156,7 +156,7 @@ export default connect((state) => {
                   <div key={field.ZUID} className={styles.column}>
                     <div className={styles.labelRow}>
                       <FieldLabel label={field.keyFriendly} />{" "}
-                      <span>&nbsp;</span> <Docs subject={`${field.key}`} />
+                      <Docs subject={`${field.key}`} />
                     </div>
                     <div className={styles.selectProtocol}>
                       <Select
