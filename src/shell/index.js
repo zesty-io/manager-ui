@@ -7,6 +7,7 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { theme } from "@zesty-io/material";
 
 import idb from "utility/idb";
 import observable from "@riotjs/observable";
@@ -40,8 +41,6 @@ const instanceZUID = store.getState().instance.ZUID;
 window.CONFIG.API_INSTANCE = `${window.CONFIG.API_INSTANCE_PROTOCOL}${instanceZUID}${window.CONFIG.API_INSTANCE}`;
 
 MonacoSetup(store);
-
-const theme = createTheme({});
 
 const App = Sentry.withProfiler(() => (
   <StrictMode>
