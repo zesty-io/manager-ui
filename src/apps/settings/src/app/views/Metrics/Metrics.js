@@ -6,10 +6,14 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import TopReq from "./TopReq";
 
 import { Url } from "@zesty-io/core/Url";
-import { Button } from "@zesty-io/core/Button";
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
+
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { CopyButton } from "@zesty-io/core/CopyButton";
+
+import Button from "@mui/material/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import DateRangeIcon from "@mui/icons-material/DateRange";
 
 import { request } from "utility/request";
 
@@ -92,22 +96,19 @@ export default function Metrics(props) {
   return (
     <>
       <section className={styles.MetricsHeader}>
-        <ButtonGroup className={styles.BtnGroup}>
-          <Button
-            onClick={() => setTimePeriod(1)}
-            text="Past day"
-            disabled={timePeriod === 1}
-          />
-          <Button
-            onClick={() => setTimePeriod(7)}
-            text="Past 7 days"
-            disabled={timePeriod === 7}
-          />
+        <ButtonGroup variant="contained">
+          <Button onClick={() => setTimePeriod(1)} disabled={timePeriod === 1}>
+            Past day
+          </Button>
+          <Button onClick={() => setTimePeriod(7)} disabled={timePeriod === 7}>
+            Past 7 days
+          </Button>
           <Button
             onClick={() => setTimePeriod(30)}
-            text="Past 30 days"
             disabled={timePeriod === 30}
-          />
+          >
+            Past 30 days
+          </Button>
         </ButtonGroup>
 
         <h1 className={styles.subheadline}>Zesty.io Usage Report </h1>
