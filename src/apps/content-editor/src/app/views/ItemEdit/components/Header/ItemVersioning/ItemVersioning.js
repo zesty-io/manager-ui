@@ -136,9 +136,9 @@ export function ItemVersioning(props) {
             >
               <Box
                 component="span"
-                sx={{ display: { xs: "none", xl: "block" } }}
+                sx={{ display: { xs: "none", xl: "block" }, marginRight: 0.5 }}
               >
-                Publish&nbsp;
+                Publish
               </Box>
 
               <Box component="span">
@@ -188,8 +188,11 @@ export function ItemVersioning(props) {
             props.saving ? <CircularProgress size="1rem" /> : <Icon>save</Icon>
           }
         >
-          <Box component="span" sx={{ display: { xs: "none", xl: "block" } }}>
-            &nbsp;Save
+          <Box
+            component="span"
+            sx={{ display: { xs: "none", xl: "block" }, marginRight: 0.5 }}
+          >
+            Save
           </Box>
           <Box component="span">{matches ? `Version ${metaShortcut}` : ""}</Box>
         </Button>
