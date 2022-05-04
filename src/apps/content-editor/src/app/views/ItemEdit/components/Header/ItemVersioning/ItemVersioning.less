@@ -1,16 +1,6 @@
 @import "~@zesty-io/core/colors.less";
 
 .Actions {
-  display: flex;
-  flex-wrap: wrap;
-
-  & > * {
-    margin: 0 0 0 8px !important;
-  }
-  & div:first-child {
-    margin-left: 0 !important;
-  }
-
   .Publish {
     .PublishButton {
       border-radius: 3px 0 0 3px;
@@ -22,14 +12,6 @@
     }
     .Scheduled {
       background-color: @zesty-orange;
-    }
-  }
-
-  .Hide {
-    display: none;
-
-    @media screen and (min-width: 2000px) {
-      display: block;
     }
   }
 }

@@ -1,19 +1,11 @@
 import { useEffect, useState } from "react";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSave,
-  faSpinner,
-  faCalendar,
-  faCheckCircle,
-  faCloudUploadAlt,
-} from "@fortawesome/free-solid-svg-icons";
-
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Icon from "@mui/material/Icon";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { ScheduleFlyout } from "./ScheduleFlyout";
 import { VersionSelector } from "./VersionSelector";
@@ -186,11 +178,7 @@ export function ItemVersioning(props) {
           onClick={props.onSave}
           id="SaveItemButton"
           startIcon={
-            props.saving ? (
-              <FontAwesomeIcon icon={faSpinner} spin />
-            ) : (
-              <Icon>save</Icon>
-            )
+            props.saving ? <CircularProgress size="1rem" /> : <Icon>save</Icon>
           }
         >
           <Box component="span" sx={{ display: { xs: "none", xl: "block" } }}>
