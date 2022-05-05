@@ -16,6 +16,7 @@ import {
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 
+import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
@@ -146,7 +147,6 @@ export const HeadTag = (props) => {
             className={styles.Delete}
             onClick={onDelete}
             type="error"
-            id="DelteHeadtag"
             startIcon={<DeleteIcon />}
           >
             Delete Tag
@@ -198,13 +198,14 @@ export const HeadTag = (props) => {
                 }
               />
               {attr.key !== "custom" ? (
-                <Button
-                  title="Delete Tag Attribute"
-                  // className={styles.Del}
-                  onClick={() => dispatch(deleteTagAttribute(tag.ZUID, index))}
+                <IconButton
+                  variant="contained"
                   type="error"
-                  startIcon={<DeleteIcon />}
-                ></Button>
+                  title="Delete Tag Attribute"
+                  onClick={() => dispatch(deleteTagAttribute(tag.ZUID, index))}
+                >
+                  <DeleteIcon />
+                </IconButton>
               ) : (
                 <div style={{ width: "40px" }}></div>
               )}
