@@ -8,6 +8,7 @@ import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { CopyButton } from "@zesty-io/core/CopyButton";
 import { Url } from "@zesty-io/core/Url";
+import Link from "@mui/material/Link";
 
 import styles from "./GlobalAccount.less";
 export default function GlobalAccount(props) {
@@ -57,7 +58,13 @@ export default function GlobalAccount(props) {
         <li className={styles.role}>Instance: {userRole.name}</li>
 
         <li className={styles.accounts}>
-          <Url href={`${CONFIG.URL_ACCOUNTS}`}>My Accounts</Url>
+          <Link
+            href={`${CONFIG.URL_ACCOUNTS}`}
+            underline="none"
+            color="secondary"
+          >
+            My Accounts
+          </Link>
         </li>
         <li>
           <Url
