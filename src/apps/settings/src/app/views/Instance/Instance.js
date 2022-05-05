@@ -131,7 +131,7 @@ export default connect((state) => {
             <Button
               variant="contained"
               id="saveSettings"
-              type="success"
+              color="success"
               onClick={saveFields}
               disabled={saving || dirtyFields.length === 0}
               startIcon={saving ? <CircularProgress /> : <SaveIcon />}
