@@ -44,9 +44,9 @@ MonacoSetup(store);
 
 const App = Sentry.withProfiler(() => (
   <StrictMode>
-    <ThemeProvider theme={theme}>
-      <Provider store={store}>
-        <Sentry.ErrorBoundary fallback={() => <AppError />}>
+    <Sentry.ErrorBoundary fallback={() => <AppError />}>
+      <ThemeProvider theme={theme}>
+        <Provider store={store}>
           <Router history={history}>
             <PrivateRoute>
               <LoadInstance>
@@ -54,9 +54,9 @@ const App = Sentry.withProfiler(() => (
               </LoadInstance>
             </PrivateRoute>
           </Router>
-        </Sentry.ErrorBoundary>
-      </Provider>
-    </ThemeProvider>
+        </Provider>
+      </ThemeProvider>
+    </Sentry.ErrorBoundary>
   </StrictMode>
 ));
 
