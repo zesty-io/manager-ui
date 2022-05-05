@@ -56,6 +56,7 @@ export default connect((state, props) => {
           <Button
             title="Create Head Tag"
             variant="contained"
+            color="secondary"
             onClick={handleAdd}
             data-cy="CreateHeadTag"
             startIcon={<AddIcon />}

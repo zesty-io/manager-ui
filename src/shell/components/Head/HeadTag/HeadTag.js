@@ -143,21 +143,28 @@ export const HeadTag = (props) => {
         </Button>
         {tag.hasOwnProperty("createdAt") ? (
           <Button
+            variant="contained"
             title="Delete Head Tag"
-            className={styles.Delete}
             onClick={onDelete}
-            type="error"
+            color="error"
             startIcon={<DeleteIcon />}
+            sx={{
+              display: "none",
+              marginLeft: "auto",
+            }}
           >
             Delete Tag
           </Button>
         ) : (
           <Button
             title="Cancel"
-            className={styles.Delete}
             onClick={onCancel}
             type="error"
             startIcon={<DeleteIcon />}
+            sx={{
+              display: "none",
+              marginLeft: "auto",
+            }}
           >
             Cancel
           </Button>
@@ -198,14 +205,18 @@ export const HeadTag = (props) => {
                 }
               />
               {attr.key !== "custom" ? (
-                <IconButton
+                <Button
                   variant="contained"
-                  type="error"
+                  color="error"
                   title="Delete Tag Attribute"
                   onClick={() => dispatch(deleteTagAttribute(tag.ZUID, index))}
+                  sx={{
+                    visibility: "hidden",
+                    height: "40px",
+                  }}
                 >
                   <DeleteIcon />
-                </IconButton>
+                </Button>
               ) : (
                 <div style={{ width: "40px" }}></div>
               )}
@@ -220,7 +231,8 @@ export const HeadTag = (props) => {
               ? "Save head tag"
               : "Create head tag"
           }
-          type="success"
+          color="success"
+          variant="contained"
           id="SaveItemButton"
           disabled={saving}
           onClick={tag.hasOwnProperty("createdAt") ? onSave : onCreate}
