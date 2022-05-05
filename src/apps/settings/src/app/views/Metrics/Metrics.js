@@ -12,8 +12,6 @@ import { CopyButton } from "@zesty-io/core/CopyButton";
 
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import DateRangeIcon from "@mui/icons-material/DateRange";
 
 import { request } from "utility/request";
 
