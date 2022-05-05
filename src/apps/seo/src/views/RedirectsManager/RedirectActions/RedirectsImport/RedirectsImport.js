@@ -1,6 +1,5 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUpload } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "@zesty-io/core/Button";
+import Button from "@mui/material/Button";
+import UploadIcon from "@mui/icons-material/Upload";
 
 import styles from "./RedirectsImport.less";
 export default function RedirectsImport(props) {
@@ -14,11 +13,12 @@ export default function RedirectsImport(props) {
         onChange={props.onChange}
       />
       <Button
+        variant="contained"
         onClick={() => {
           fileInput.click();
         }}
+        startIcon={<UploadIcon />}
       >
-        <FontAwesomeIcon icon={faUpload} />
         Import CSV/XML
       </Button>
     </div>
