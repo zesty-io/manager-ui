@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSave, faSpinner, faCog } from "@fortawesome/free-solid-svg-icons";
+import { faCog } from "@fortawesome/free-solid-svg-icons";
 
 import Button from "@mui/material/Button";
 import SaveIcon from "@mui/icons-material/Save";
@@ -134,7 +134,9 @@ export default connect((state) => {
               color="success"
               onClick={saveFields}
               disabled={saving || dirtyFields.length === 0}
-              startIcon={saving ? <CircularProgress /> : <SaveIcon />}
+              startIcon={
+                saving ? <CircularProgress size="1rem" /> : <SaveIcon />
+              }
               sx={{ alignSelf: "flex-end" }}
             >
               Save Settings

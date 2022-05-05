@@ -227,7 +227,7 @@ export const HeadTag = (props) => {
           id="SaveItemButton"
           disabled={saving}
           onClick={tag.hasOwnProperty("createdAt") ? onSave : onCreate}
-          startIcon={saving ? <CircularProgress /> : <SaveIcon />}
+          startIcon={saving ? <CircularProgress size="1rem" /> : <SaveIcon />}
         >
           {tag.hasOwnProperty("createdAt")
             ? "Save head tag"

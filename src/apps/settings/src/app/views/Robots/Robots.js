@@ -4,11 +4,15 @@ import { connect } from "react-redux";
 import { useDomain } from "shell/hooks/use-domain";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import SaveIcon from "@mui/icons-material/Save";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFile, faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faFile } from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "@zesty-io/core/Url";
-import { Button } from "@zesty-io/core/Button";
+
 import { Notice } from "@zesty-io/core/Notice";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
@@ -189,16 +193,13 @@ export default connect((state) => {
         </div>
 
         <Button
-          type="save"
-          className={styles.SaveBtn}
+          variant="contained"
+          color="success"
           onClick={handleSave}
           disabled={loading}
+          startIcon={loading ? <CircularProgress size="1rem" /> : <SaveIcon />}
+          sx={{ alignSelf: "flex-start" }}
         >
-          {loading ? (
-            <FontAwesomeIcon spin icon={faSpinner} />
-          ) : (
-            <FontAwesomeIcon icon={faSave} />
-          )}
           Save {metaShortcut}
         </Button>
       </div>
