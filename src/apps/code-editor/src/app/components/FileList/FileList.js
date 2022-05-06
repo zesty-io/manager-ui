@@ -23,25 +23,22 @@ export const FileList = memo(function FileList(props) {
     props.navCode.tree.sort(byLabel)
   );
 
+  const [stylesheetsShownFiles, setStylesheetsShownFiles] = useState(
+    props.navCode.stylesheetsTree.sort(byLabel)
+  );
+
+  const [scriptsShownFiles, setScriptsShownFiles] = useState(
+    props.navCode.scriptsTree.sort(byLabel)
+  );
+
   let { pathname } = useLocation();
   let hashPath = `/${pathname}`;
 
   useEffect(() => {
     setShownFiles(props.navCode.tree.sort(byLabel));
+    setStylesheetsShownFiles(props.navCode.stylesheetsTree.sort(byLabel));
+    setScriptsShownFiles(props.navCode.scriptsTree.sort(byLabel));
   }, [props.navCode]);
-
-  const views = shownFiles.filter((file) => {
-    let pathPart = resolvePathPart(file.type);
-    return pathPart !== "scripts" && pathPart !== "stylesheets";
-  });
-
-  const js = shownFiles
-    .filter((file) => resolvePathPart(file.type) === "scripts")
-    .sort(byOrder);
-
-  const css = shownFiles
-    .filter((file) => resolvePathPart(file.type) === "stylesheets")
-    .sort(byOrder);
 
   const collapseNode = (node) => {
     props.dispatch(collapseNavItem(node.path));
@@ -90,7 +87,7 @@ export const FileList = memo(function FileList(props) {
           <Nav
             name="views"
             selected={hashPath}
-            tree={views}
+            tree={shownFiles}
             actions={actions}
             collapseNode={collapseNode}
           />
@@ -112,7 +109,7 @@ export const FileList = memo(function FileList(props) {
           <Nav
             name="css"
             selected={hashPath}
-            tree={css}
+            tree={stylesheetsShownFiles}
             actions={actions}
             collapseNode={collapseNode}
           />
@@ -133,7 +130,7 @@ export const FileList = memo(function FileList(props) {
           <Nav
             name="js"
             selected={hashPath}
-            tree={js}
+            tree={scriptsShownFiles}
             actions={actions}
             collapseNode={collapseNode}
           />
