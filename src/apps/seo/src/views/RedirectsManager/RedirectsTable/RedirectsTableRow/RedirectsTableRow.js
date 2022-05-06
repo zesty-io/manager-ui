@@ -119,15 +119,14 @@ export default function RedirectsTableRow(props) {
         <Button
           variant="contained"
           color="error"
-          className={cx(styles.removeBtn, "button deleteButton")}
+          size="small"
           onClick={props.removeRedirect}
-          startIcon={<DeleteIcon />}
           sx={{
             marginLeft: "auto",
             alignItems: "center",
           }}
         >
-          Remove
+          <DeleteIcon />
         </Button>
       </span>
     </div>
