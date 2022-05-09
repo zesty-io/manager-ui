@@ -8,15 +8,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import StorageIcon from "@mui/icons-material/Storage";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBolt,
-  faCode,
-  faDatabase,
-  faEdit,
-  faFileCode,
-  faHistory,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBolt, faFileCode } from "@fortawesome/free-solid-svg-icons";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Url } from "@zesty-io/core/Url";
