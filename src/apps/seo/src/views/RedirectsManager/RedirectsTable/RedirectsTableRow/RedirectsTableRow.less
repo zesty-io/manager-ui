@@ -22,11 +22,13 @@
   .RedirectsTableRowCell {
     padding: 16px;
     word-break: break-word;
-
+    // push remove button to far right
     display: flex;
 
-    .mr {
-      margin-right: 8px;
+    :not(button) {
+      svg {
+        margin-right: 8px;
+      }
     }
 
     .internalLink {

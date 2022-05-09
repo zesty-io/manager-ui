@@ -15,7 +15,6 @@ import {
   faFile,
   faFileAlt,
   faLink,
-  faTrashAlt,
   faBan,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -126,7 +125,7 @@ export default function RedirectsTableRow(props) {
             alignItems: "center",
           }}
         >
-          <DeleteIcon />
+          <DeleteIcon fontSize="small" />
         </Button>
       </span>
     </div>
