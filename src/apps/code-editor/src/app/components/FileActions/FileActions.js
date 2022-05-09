@@ -2,6 +2,11 @@ import { memo, Fragment } from "react";
 import cx from "classnames";
 import { Switch, Route, useRouteMatch } from "react-router";
 
+import Button from "@mui/material/Button";
+import HistoryIcon from "@mui/icons-material/History";
+import EditIcon from "@mui/icons-material/Edit";
+import StorageIcon from "@mui/icons-material/Storage";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBolt,
@@ -13,11 +18,9 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Url } from "@zesty-io/core/Url";
 import { Notice } from "@zesty-io/core/Notice";
-// import { Infotip } from "@zesty-io/core/Infotip";
 
 import { DifferActions } from "./components/DifferActions";
 import { EditorActions } from "./components/EditorActions";
@@ -53,8 +56,8 @@ export const FileActions = memo(function FileActions(props) {
                     to={`/content/${props.contentModelZUID}`}
                     title="Edit Related Content"
                   >
-                    <Button>
-                      <FontAwesomeIcon icon={faEdit} />
+                    <Button variant="contained" size="small">
+                      <EditIcon />
                     </Button>
                   </AppLink>
 
@@ -63,8 +66,8 @@ export const FileActions = memo(function FileActions(props) {
                     to={`/schema/${props.contentModelZUID}`}
                     title="Edit Related Model"
                   >
-                    <Button>
-                      <FontAwesomeIcon icon={faDatabase} />
+                    <Button variant="contained" size="small">
+                      <StorageIcon />
                     </Button>
                   </AppLink>
                 </Fragment>
@@ -81,8 +84,8 @@ export const FileActions = memo(function FileActions(props) {
                 }`}
                 title="Diff Versions"
               >
-                <Button>
-                  <FontAwesomeIcon icon={faHistory} />
+                <Button variant="contained" size="small">
+                  <HistoryIcon />
                 </Button>
               </AppLink>
             </div>

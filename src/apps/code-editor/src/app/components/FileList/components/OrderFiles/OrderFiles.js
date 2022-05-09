@@ -1,6 +1,13 @@
 import { Fragment, useState, useEffect } from "react";
 import { connect } from "react-redux";
 
+import Button from "@mui/material/Button";
+
+import ReorderIcon from "@mui/icons-material/Reorder";
+import SaveIcon from "@mui/icons-material/Save";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowsAlt,
@@ -14,7 +21,7 @@ import { Draggable } from "./components/Draggable";
 
 import { Url } from "@zesty-io/core/Url";
 import { Notice } from "@zesty-io/core/Notice";
-import { Button } from "@zesty-io/core/Button";
+
 import {
   Modal,
   ModalContent,
@@ -107,11 +114,12 @@ export default connect((state, props) => {
   return (
     <Fragment>
       <Button
+        variant="contained"
         onClick={() => setOpen(true)}
         title="Change combine and pre-process order"
+        startIcon={<ZoomOutMapIcon />}
       >
-        <FontAwesomeIcon icon={faArrowsAlt} />
-        <span>Order</span>
+        Order
       </Button>
 
       {open && (
@@ -172,15 +180,21 @@ export default connect((state, props) => {
           </ModalContent>
           <ModalFooter>
             <Button
+              variant="contained"
               data-cy="saveOrder"
-              type="save"
+              color="success"
               onClick={handleSaveSort}
               disabled={loading}
+              startIcon={<SaveIcon />}
             >
-              <FontAwesomeIcon icon={faSave} /> Save Order
+              Save Order
             </Button>
-            <Button type="cancel" onClick={handleClose}>
-              <FontAwesomeIcon icon={faBan} /> Cancel (ESC)
+            <Button
+              variant="contained"
+              onClick={handleClose}
+              startIcon={<DoDisturbAltIcon />}
+            >
+              Cancel (ESC)
             </Button>
           </ModalFooter>
         </Modal>

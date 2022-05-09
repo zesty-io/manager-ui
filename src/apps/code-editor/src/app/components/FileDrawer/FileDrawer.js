@@ -4,10 +4,13 @@ import moment from "moment";
 import cx from "classnames";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
+import Button from "@mui/material/Button";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 
-import { Button } from "@zesty-io/core/Button";
 import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -97,12 +100,12 @@ export const FileDrawer = memo(function FileDrawer(props) {
       open={open}
     >
       <DrawerHandle className={styles.DrawerHandle} onClick={handleSetOpen}>
-        <Button title="Open for additional file information">
-          {open ? (
-            <FontAwesomeIcon icon={faChevronDown} />
-          ) : (
-            <FontAwesomeIcon icon={faChevronUp} />
-          )}
+        <Button
+          variant="contained"
+          size="small"
+          title="Open for additional file information"
+        >
+          {open ? <ExpandMoreIcon /> : <ExpandLessIcon />}
         </Button>
 
         {open ? null : (

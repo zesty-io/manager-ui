@@ -1,20 +1,20 @@
 import { memo, useState } from "react";
 import { useHistory } from "react-router";
 
-import { Button } from "@zesty-io/core/Button";
+import Button from "@mui/material/Button";
+import ErrorIcon from "@mui/icons-material/Error";
+import CircularProgress from "@mui/material/CircularProgress";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import DoDisturbIcon from "@mui/icons-material/DoDisturb";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 import { Notice } from "@zesty-io/core/Notice";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 
 import { deleteFile } from "../../../../../store/files";
 
 import styles from "./Delete.less";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBan,
-  faCheckCircle,
-  faExclamationCircle,
-  faSpinner,
-} from "@fortawesome/free-solid-svg-icons";
+
 export const Delete = memo(function Delete(props) {
   const [open, setOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -24,11 +24,20 @@ export const Delete = memo(function Delete(props) {
     <div className={styles.DeleteBtn}>
       {props.fileName !== "loader" ? (
         <Button
-          type="warn"
+          variant="contained"
+          color="error"
           onClick={() => setOpen(true)}
-          className={styles.Button}
+          // className={styles.Button}
+          startIcon={<DeleteIcon />}
+          sx={{
+            backgroundColor: "#2d2a2a",
+            color: "#9a9b9c",
+            "&:hover": {
+              backgroundColor: "#9a2803 ",
+              color: "#fff",
+            },
+          }}
         >
-          <FontAwesomeIcon icon={faExclamationCircle} />
           Delete
         </Button>
       ) : (
@@ -49,7 +58,8 @@ export const Delete = memo(function Delete(props) {
         </ModalContent>
         <ModalFooter className={styles.ModalFooter}>
           <Button
-            type="save"
+            variant="contained"
+            color="error"
             disabled={deleting}
             onClick={() => {
               setDeleting(true);
@@ -66,16 +76,16 @@ export const Delete = memo(function Delete(props) {
                   setDeleting(false);
                 });
             }}
+            startIcon={deleting ? <CircularProgress /> : <DeleteIcon />}
           >
-            {deleting ? (
-              <FontAwesomeIcon spin icon={faSpinner} />
-            ) : (
-              <FontAwesomeIcon icon={faCheckCircle} />
-            )}
             Delete File
           </Button>
-          <Button type="cancel" onClick={() => setOpen(false)}>
-            <FontAwesomeIcon icon={faBan} />
+
+          <Button
+            variant="contained"
+            onClick={() => setOpen(false)}
+            startIcon={<DoDisturbIcon />}
+          >
             Cancel (ESC)
           </Button>
         </ModalFooter>

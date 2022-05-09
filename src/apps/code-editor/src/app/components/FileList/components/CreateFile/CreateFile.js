@@ -1,14 +1,16 @@
 import { memo, Fragment, useState } from "react";
 import { useHistory } from "react-router-dom";
+
+import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBan,
   faCheckCircle,
-  faPlus,
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Option } from "@zesty-io/core/Select";
@@ -78,13 +80,14 @@ export const CreateFile = memo(function CreateFile(props) {
   return (
     <Fragment>
       <Button
-        className={styles.CreateFileBtn}
+        variant="contained"
+        color="secondary"
         onClick={() => setOpen(true)}
-        kind="secondary"
         title="Create File"
+        startIcon={<AddIcon />}
+        sx={{ justifyContent: "flex-start" }}
       >
-        <FontAwesomeIcon icon={faPlus} />
-        <span className={styles.CreateFileBtnTxt}>Create File</span>
+        <span>Create File</span>
       </Button>
 
       {open && (
