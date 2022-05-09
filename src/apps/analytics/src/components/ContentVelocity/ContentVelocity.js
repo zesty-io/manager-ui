@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartLine } from "@fortawesome/free-solid-svg-icons";
 
