@@ -27,7 +27,6 @@ export const Delete = memo(function Delete(props) {
           variant="contained"
           color="error"
           onClick={() => setOpen(true)}
-          // className={styles.Button}
           startIcon={<DeleteIcon />}
           sx={{
             backgroundColor: "#2d2a2a",

@@ -183,7 +183,6 @@ export const DifferActions = memo(function DifferActions(props) {
           <Button
             variant="contained"
             color="success"
-            className={styles.Button}
             onClick={loadVersion}
             startIcon={<HistoryIcon />}
             sx={{ ml: 1 }}
@@ -194,7 +193,6 @@ export const DifferActions = memo(function DifferActions(props) {
           <AppLink to={`/code/file/${props.fileType}/${props.fileZUID}`}>
             <Button
               variant="contained"
-              className={styles.Button}
               startIcon={<DoDisturbAltIcon />}
               sx={{ ml: 1 }}
             >
