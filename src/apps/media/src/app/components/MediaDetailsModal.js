@@ -11,7 +11,7 @@ import {
   faBan,
 } from "@fortawesome/free-solid-svg-icons";
 import Tooltip from "@mui/material/Tooltip";
-import InfoIcon from "@mui/icons-material/Info";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
@@ -116,7 +116,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
                     arrow
                     placement="top-start"
                   >
-                    <InfoIcon />
+                    <InfoIcon fontSize="small" />
                   </Tooltip>
                   &nbsp;URL Filename
                 </label>
@@ -137,7 +137,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
                     arrow
                     placement="top-start"
                   >
-                    <InfoIcon />
+                    <InfoIcon fontSize="small" />
                   </Tooltip>
                   &nbsp;Alt Text
                 </label>

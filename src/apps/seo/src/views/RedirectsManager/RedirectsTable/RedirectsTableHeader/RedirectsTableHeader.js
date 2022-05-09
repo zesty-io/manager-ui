@@ -5,7 +5,7 @@ import {
   faSortAlphaUp,
 } from "@fortawesome/free-solid-svg-icons";
 import Tooltip from "@mui/material/Tooltip";
-import InfoIcon from "@mui/icons-material/Info";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import styles from "./RedirectsTableHeader.less";
 
@@ -23,7 +23,7 @@ export default function RedirectsTableHeader(props) {
           arrow
           placement="top-start"
         >
-          <InfoIcon />
+          <InfoIcon fontSize="small" />
         </Tooltip>
         &nbsp;
         <span
@@ -58,7 +58,7 @@ export default function RedirectsTableHeader(props) {
           arrow
           placement="top-start"
         >
-          <InfoIcon />
+          <InfoIcon fontSize="small" />
         </Tooltip>
         <span
           className={cx(
@@ -89,7 +89,7 @@ export default function RedirectsTableHeader(props) {
           arrow
           placement="top-start"
         >
-          <InfoIcon />
+          <InfoIcon fontSize="small" />
         </Tooltip>
         <span className={cx(styles.subheadline, styles.column)}>
           &nbsp;Redirect Type

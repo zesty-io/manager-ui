@@ -7,7 +7,7 @@ import { Select, Option } from "@zesty-io/core/Select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
 import Tooltip from "@mui/material/Tooltip";
-import InfoIcon from "@mui/icons-material/Info";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { searchItems } from "shell/store/content";
 
@@ -150,7 +150,7 @@ export const ItemParent = connect((state) => {
               arrow
               placement="top-start"
             >
-              <InfoIcon />
+              <InfoIcon fontSize="small" />
             </Tooltip>
             &nbsp; Select this Page's Parent
           </label>

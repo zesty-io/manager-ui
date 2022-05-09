@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
-import InfoIcon from "@mui/icons-material/Info";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 import Tooltip from "@mui/material/Tooltip";
 
 import { notify } from "shell/store/notifications";
@@ -73,7 +73,7 @@ export default connect()(function MetaDescription({
               arrow
               placement="top-start"
             >
-              <InfoIcon />
+              <InfoIcon fontSize="small" />
             </Tooltip>
             &nbsp;Meta Description
           </label>

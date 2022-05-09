@@ -4,7 +4,7 @@ import cx from "classnames";
 
 import { Nav } from "@zesty-io/core/Nav";
 import Tooltip from "@mui/material/Tooltip";
-import InfoIcon from "@mui/icons-material/Info";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { CreateFile } from "./components/CreateFile";
 import { OrderFiles } from "./components/OrderFiles";
@@ -100,7 +100,7 @@ export const FileList = memo(function FileList(props) {
               arrow
               placement="top-start"
             >
-              <InfoIcon />
+              <InfoIcon fontSize="small" />
             </Tooltip>
             &nbsp;
             <h1>site.css</h1>
@@ -121,7 +121,7 @@ export const FileList = memo(function FileList(props) {
               arrow
               placement="top-start"
             >
-              <InfoIcon />
+              <InfoIcon fontSize="small" />
             </Tooltip>
             &nbsp;
             <h1>site.js</h1>

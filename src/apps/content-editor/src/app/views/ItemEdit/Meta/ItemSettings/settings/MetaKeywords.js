@@ -1,7 +1,7 @@
 import { memo } from "react";
 
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
-import InfoIcon from "@mui/icons-material/Info";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 import Tooltip from "@mui/material/Tooltip";
 
 import styles from "./MetaKeywords.less";
@@ -20,7 +20,7 @@ export const MetaKeywords = memo(function MetaKeywords({
               arrow
               placement="top-start"
             >
-              <InfoIcon />
+              <InfoIcon fontSize="small" />
             </Tooltip>
             &nbsp;Meta Keywords
           </label>

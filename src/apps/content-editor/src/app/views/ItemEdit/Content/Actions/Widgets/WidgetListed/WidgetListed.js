@@ -7,7 +7,7 @@ import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import Tooltip from "@mui/material/Tooltip";
-import InfoIcon from "@mui/icons-material/Info";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import styles from "./WidgetListed.less";
 export const WidgetListed = memo(function WidgetListed(props) {
@@ -29,7 +29,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
                 arrow
                 placement="top-start"
               >
-                <InfoIcon />
+                <InfoIcon fontSize="small" />
               </Tooltip>
               &nbsp;Available in Loops
             </span>
@@ -56,7 +56,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
                 arrow
                 placement="top-start"
               >
-                <InfoIcon />
+                <InfoIcon fontSize="small" />
               </Tooltip>
               &nbsp;Automated Navigation Order
             </span>
