@@ -10,7 +10,6 @@ import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { Select, Option } from "@zesty-io/core/Select";
-// import { Button } from "@zesty-io/core/Button";
 import { Modal } from "@zesty-io/core/Modal";
 
 import MediaApp from "../../../../../media/src/app/MediaApp";
@@ -317,7 +316,6 @@ export default connect((state) => {
         variant="contained"
         color="success"
         id="SaveSettings"
-        className={styles.SaveBtn}
         onClick={saveSettings}
         disabled={saving || dirtyFields.length === 0}
         startIcon={saving ? <CircularProgress size="1rem" /> : <SaveIcon />}
