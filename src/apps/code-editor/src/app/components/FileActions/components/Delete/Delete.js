@@ -76,7 +76,9 @@ export const Delete = memo(function Delete(props) {
                   setDeleting(false);
                 });
             }}
-            startIcon={deleting ? <CircularProgress /> : <DeleteIcon />}
+            startIcon={
+              deleting ? <CircularProgress size="1rem" /> : <DeleteIcon />
+            }
           >
             Delete File
           </Button>

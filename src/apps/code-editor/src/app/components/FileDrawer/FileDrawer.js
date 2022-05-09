@@ -8,9 +8,6 @@ import Button from "@mui/material/Button";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
-
 import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 

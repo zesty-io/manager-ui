@@ -28,7 +28,7 @@ export const Publish = memo(function Publish(props) {
             props.dispatch(fetchFiles("scripts"));
           });
       }}
-      startIcon={publishing ? <CircularProgress /> : <UploadIcon />}
+      startIcon={publishing ? <CircularProgress size="1rem" /> : <UploadIcon />}
     >
       Publish
       <span className={styles.HideSmall}>&nbsp;Version {props.version}</span>
