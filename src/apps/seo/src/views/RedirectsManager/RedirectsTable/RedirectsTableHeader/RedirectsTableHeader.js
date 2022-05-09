@@ -17,12 +17,7 @@ export default function RedirectsTableHeader(props) {
         data-value="from"
         onClick={props.handleSortBy}
       >
-        <Tooltip
-          className={styles.InfoTip}
-          title="File Path Only"
-          arrow
-          placement="top-start"
-        >
+        <Tooltip title="File Path Only" arrow placement="top-start">
           <InfoIcon fontSize="small" />
         </Tooltip>
         &nbsp;
@@ -49,7 +44,6 @@ export default function RedirectsTableHeader(props) {
         onClick={props.handleSortBy}
       >
         <Tooltip
-          className={styles.InfoTip}
           title={
             <>
               301: Moved Permanently <br /> 302: Temporarily Moved
@@ -78,7 +72,6 @@ export default function RedirectsTableHeader(props) {
       </span>
       <span className={cx(styles.RedirectsTableHeaderCell, styles.code)}>
         <Tooltip
-          className={styles.InfoTip}
           title={
             <>
               Internal E.g. /about

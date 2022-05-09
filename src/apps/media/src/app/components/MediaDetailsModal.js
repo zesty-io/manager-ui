@@ -110,12 +110,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
               value={filename}
               label={
                 <label>
-                  <Tooltip
-                    className={styles.InfotipFileName}
-                    title="URL Filename "
-                    arrow
-                    placement="top-start"
-                  >
+                  <Tooltip title="URL Filename " arrow placement="top-start">
                     <InfoIcon fontSize="small" />
                   </Tooltip>
                   &nbsp;URL Filename
@@ -132,7 +127,6 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
               label={
                 <label>
                   <Tooltip
-                    className={styles.InfotipTitle}
                     title="Use for alt text with Parsley's .getImageTitle() | Image alt text is used to describe your image textually so that search engines and screen readers can understand what that image is. It’s important to note that using alt text correctly can enhance your SEO strategy"
                     arrow
                     placement="top-start"
