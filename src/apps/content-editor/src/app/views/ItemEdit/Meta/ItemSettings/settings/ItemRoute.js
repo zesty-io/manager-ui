@@ -6,9 +6,10 @@ import { notify } from "shell/store/notifications";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+import Tooltip from "@mui/material/Tooltip";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 import { Input } from "@zesty-io/core/Input";
 import { InputIcon } from "@zesty-io/core/InputIcon";
-import { Infotip } from "@zesty-io/core/Infotip";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./ItemRoute.less";
@@ -136,7 +137,13 @@ export const ItemRoute = connect((state) => {
     return (
       <article className={styles.ItemRoute} data-cy="itemRoute">
         <label>
-          <Infotip title="Path parts must be unique within your instance, lowercased and can not contain non-alphnumeric characters. This ensures you create SEO friendly structured and crawlable URLs." />
+          <Tooltip
+            title="Path parts must be unique within your instance, lowercased and can not contain non-alphnumeric characters. This ensures you create SEO friendly structured and crawlable URLs."
+            arrow
+            placement="top-start"
+          >
+            <InfoIcon fontSize="small" />
+          </Tooltip>
           &nbsp;URL Path Part
         </label>
 
