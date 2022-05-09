@@ -60,7 +60,7 @@ export default connect((state, props) => {
             onClick={handleAdd}
             data-cy="CreateHeadTag"
             startIcon={<AddIcon />}
-            sx={{ mr: 1, minWidth: "200px" }}
+            sx={{ mr: 1, minWidth: "185px" }}
           >
             Create Head Tag
           </Button>

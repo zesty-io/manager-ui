@@ -206,7 +206,7 @@ export const HeadTag = (props) => {
                     height: "40px",
                   }}
                 >
-                  <DeleteIcon />
+                  <DeleteIcon fontSize="small" />
                 </Button>
               ) : (
                 <div style={{ width: "40px" }}></div>
