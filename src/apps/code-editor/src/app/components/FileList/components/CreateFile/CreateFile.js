@@ -3,6 +3,9 @@ import { useHistory } from "react-router-dom";
 
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+import CircularProgress from "@mui/material/CircularProgress";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -173,26 +176,23 @@ export const CreateFile = memo(function CreateFile(props) {
           <ModalFooter>
             <ButtonGroup className={styles.ModalActions}>
               <Button
-                type="save"
+                variant="contained"
+                color="success"
                 onClick={handleCreateFile}
                 disabled={type === "" || type === "0" || loading}
+                startIcon={loading ? <CircularProgress /> : <CheckCircleIcon />}
               >
-                {loading ? (
-                  <FontAwesomeIcon spin icon={faSpinner} />
-                ) : (
-                  <FontAwesomeIcon icon={faCheckCircle} />
-                )}
                 Create File
               </Button>
               <Button
-                type="cancel"
+                variant="contained"
                 onClick={() => {
                   setName("");
                   setType("");
                   setOpen(false);
                 }}
+                startIcon={<DoDisturbAltIcon />}
               >
-                <FontAwesomeIcon icon={faBan} />
                 Cancel (ESC)
               </Button>
             </ButtonGroup>
