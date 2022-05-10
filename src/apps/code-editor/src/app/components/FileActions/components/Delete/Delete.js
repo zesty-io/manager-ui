@@ -2,9 +2,7 @@ import { memo, useState } from "react";
 import { useHistory } from "react-router";
 
 import Button from "@mui/material/Button";
-
 import CircularProgress from "@mui/material/CircularProgress";
-
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -25,15 +23,11 @@ export const Delete = memo(function Delete(props) {
       {props.fileName !== "loader" ? (
         <Button
           variant="contained"
-          color="error"
           onClick={() => setOpen(true)}
           startIcon={<DeleteIcon />}
           sx={{
-            backgroundColor: "#2d2a2a",
-            color: "#9a9b9c",
             "&:hover": {
-              backgroundColor: "#9a2803 ",
-              color: "#fff",
+              backgroundColor: "error.main",
             },
           }}
         >

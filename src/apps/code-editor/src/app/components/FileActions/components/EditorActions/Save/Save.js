@@ -34,7 +34,7 @@ export function Save(props) {
       onClick={onSave}
       disabled={saving}
       startIcon={saving ? <CircularProgress size="1rem" /> : <SaveIcon />}
-      sx={{ my: 0, mx: 0.5 }}
+      sx={{ mx: 0.5 }}
     >
       Save&nbsp;
       <span className={styles.HideSmall}>{metaShortcut}</span>

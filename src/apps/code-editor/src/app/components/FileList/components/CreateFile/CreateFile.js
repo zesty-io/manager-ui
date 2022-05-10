@@ -7,13 +7,6 @@ import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBan,
-  faCheckCircle,
-  faSpinner,
-} from "@fortawesome/free-solid-svg-icons";
-
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Option } from "@zesty-io/core/Select";

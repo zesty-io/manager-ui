@@ -1,5 +1,4 @@
 import { memo, useState, useEffect } from "react";
-import cx from "classnames";
 
 import moment from "moment-timezone";
 import { useHistory } from "react-router";
@@ -206,7 +205,6 @@ export const DifferActions = memo(function DifferActions(props) {
           <Button
             variant="contained"
             onClick={resolveSync}
-            type="alt"
             disabled={saving}
             sx={{ ml: 1 }}
           >
