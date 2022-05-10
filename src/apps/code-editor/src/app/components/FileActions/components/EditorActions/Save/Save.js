@@ -33,7 +33,7 @@ export function Save(props) {
       color="success"
       onClick={onSave}
       disabled={saving}
-      startIcon={saving ? <CircularProgress size="1rem" /> : <SaveIcon />}
+      startIcon={saving ? <CircularProgress size="20px" /> : <SaveIcon />}
       sx={{ mx: 0.5 }}
     >
       Save&nbsp;

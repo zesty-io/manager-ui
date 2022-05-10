@@ -208,7 +208,7 @@ export const DifferActions = memo(function DifferActions(props) {
             disabled={saving}
             sx={{ ml: 1 }}
           >
-            {saving ? <CircularProgress size="1rem" /> : <SaveIcon />}
+            {saving ? <CircularProgress size="20px" /> : <SaveIcon />}
             Save Version {selectedVersion}
           </Button>
         </>

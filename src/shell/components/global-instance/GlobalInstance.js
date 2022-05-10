@@ -131,7 +131,7 @@ export default function GlobalInstance(props) {
                   });
               }}
               startIcon={
-                purge ? <CircularProgress size="1rem" /> : <ErrorOutlineIcon />
+                purge ? <CircularProgress size="20px" /> : <ErrorOutlineIcon />
               }
             >
               Refresh Instance Cache

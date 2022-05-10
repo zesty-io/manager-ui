@@ -49,7 +49,7 @@ export const FileActions = memo(function FileActions(props) {
                     title="Edit Related Content"
                   >
                     <Button variant="contained" size="small">
-                      <EditIcon />
+                      <EditIcon fontSize="small" />
                     </Button>
                   </AppLink>
 
@@ -59,7 +59,7 @@ export const FileActions = memo(function FileActions(props) {
                     title="Edit Related Model"
                   >
                     <Button variant="contained" size="small">
-                      <StorageIcon />
+                      <StorageIcon fontSize="small" />
                     </Button>
                   </AppLink>
                 </Fragment>
@@ -77,7 +77,7 @@ export const FileActions = memo(function FileActions(props) {
                 title="Diff Versions"
               >
                 <Button variant="contained" size="small">
-                  <HistoryIcon />
+                  <HistoryIcon fontSize="small" />
                 </Button>
               </AppLink>
             </div>

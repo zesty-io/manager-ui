@@ -318,7 +318,7 @@ export default connect((state) => {
         id="SaveSettings"
         onClick={saveSettings}
         disabled={saving || dirtyFields.length === 0}
-        startIcon={saving ? <CircularProgress size="1rem" /> : <SaveIcon />}
+        startIcon={saving ? <CircularProgress size="20px" /> : <SaveIcon />}
       >
         Save Settings
       </Button>
