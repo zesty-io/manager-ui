@@ -180,7 +180,13 @@ export const CreateFile = memo(function CreateFile(props) {
                 color="success"
                 onClick={handleCreateFile}
                 disabled={type === "" || type === "0" || loading}
-                startIcon={loading ? <CircularProgress /> : <CheckCircleIcon />}
+                startIcon={
+                  loading ? (
+                    <CircularProgress size="1rem" />
+                  ) : (
+                    <CheckCircleIcon />
+                  )
+                }
               >
                 Create File
               </Button>

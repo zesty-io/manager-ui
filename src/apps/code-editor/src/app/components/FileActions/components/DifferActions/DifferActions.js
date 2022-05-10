@@ -1,4 +1,5 @@
 import { memo, useState, useEffect } from "react";
+import cx from "classnames";
 
 import moment from "moment-timezone";
 import { useHistory } from "react-router";
@@ -185,7 +186,7 @@ export const DifferActions = memo(function DifferActions(props) {
             color="success"
             onClick={loadVersion}
             startIcon={<HistoryIcon />}
-            sx={{ ml: 1 }}
+            sx={{ ml: 1, minWidth: "fit-content" }}
           >
             <span className={styles.Hide}>Load Version&nbsp;</span>{" "}
             {selectedVersion}

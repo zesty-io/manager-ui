@@ -2,9 +2,9 @@ import { memo, useState } from "react";
 import { useHistory } from "react-router";
 
 import Button from "@mui/material/Button";
-import ErrorIcon from "@mui/icons-material/Error";
+
 import CircularProgress from "@mui/material/CircularProgress";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import DeleteIcon from "@mui/icons-material/Delete";
 

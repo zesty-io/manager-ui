@@ -12,6 +12,10 @@
 
   .VersionSelector {
     width: 200px;
+    //prevent broken layout with open nav + diff checker view
+    @media only screen and (max-width: 1440px) {
+      width: 100px;
+    }
 
     ul {
       min-width: 350px;
