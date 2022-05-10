@@ -3,6 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faLink,
@@ -16,7 +21,7 @@ import InfoIcon from "@mui/icons-material/InfoOutlined";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { Button } from "@zesty-io/core/Button";
+
 import { Url } from "@zesty-io/core/Url";
 import { CopyButton } from "@zesty-io/core/CopyButton";
 import { Input } from "@zesty-io/core/Input";
@@ -256,24 +261,34 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
         </div>
       </ModalContent>
       <ModalFooter className={shared.ModalFooter}>
-        <Button type="cancel" onClick={props.onClose}>
-          <FontAwesomeIcon icon={faBan} />
-          <span>Cancel</span>
-        </Button>
+        {
+          /* Hide for Contributor */
+          userRole.name !== "Contributor" ? (
+            <Button
+              variant="contained"
+              color="error"
+              onClick={props.showDeleteFileModal}
+              startIcon={<DeleteIcon />}
+            >
+              Delete
+            </Button>
+          ) : null
+        }
 
         <ButtonGroup className={styles.ButtonGroup}>
-          {
-            /* Hide for Contributor */
-            userRole.name !== "Contributor" ? (
-              <Button type="warn" onClick={props.showDeleteFileModal}>
-                <FontAwesomeIcon icon={faTrash} />
-                <span>Delete</span>
-              </Button>
-            ) : null
-          }
-
-          <Button type="save" onClick={saveFile}>
-            <FontAwesomeIcon icon={faSave} />
+          <Button
+            variant="contained"
+            onClick={props.onClose}
+            startIcon={<DoDisturbAltIcon />}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={saveFile}
+            startIcon={<SaveIcon />}
+          >
             Save {metaShortcut}
           </Button>
         </ButtonGroup>
