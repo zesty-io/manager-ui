@@ -10,14 +10,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import PauseCircleIcon from "@mui/icons-material/PauseCircle";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faExpandArrowsAlt,
-  faSpinner,
-  faSave,
-  faPlayCircle,
-  faPauseCircle,
-  faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 

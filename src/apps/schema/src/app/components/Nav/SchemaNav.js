@@ -29,8 +29,8 @@ export default function SchemaNav(props) {
       <div className={styles.Actions}>
         <Button
           variant="contained"
-          className={styles.CreateModel}
           color="secondary"
+          className={styles.CreateModel}
           onClick={() => history.push("/schema/new")}
           startIcon={<AddIcon />}
           sx={{
