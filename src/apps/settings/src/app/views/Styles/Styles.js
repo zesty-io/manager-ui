@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import SaveIcon from "@mui/icons-material/Save";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { Select, Option } from "@zesty-io/core/Select";
-import { Button } from "@zesty-io/core/Button";
 import { Modal } from "@zesty-io/core/Modal";
 
 import MediaApp from "../../../../../media/src/app/MediaApp";
@@ -313,17 +313,13 @@ export default connect((state) => {
         </div>
       ))}
       <Button
+        variant="contained"
+        color="success"
         id="SaveSettings"
-        type="save"
-        className={styles.SaveBtn}
         onClick={saveSettings}
         disabled={saving || dirtyFields.length === 0}
+        startIcon={saving ? <CircularProgress size="1rem" /> : <SaveIcon />}
       >
-        {saving ? (
-          <FontAwesomeIcon spin icon={faSpinner} />
-        ) : (
-          <FontAwesomeIcon icon={faSave} />
-        )}
         Save Settings
       </Button>
     </>

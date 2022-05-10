@@ -1,19 +1,17 @@
 import { memo } from "react";
-import cx from "classnames";
+
+import Button from "@mui/material/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
 
 import { Search } from "@zesty-io/core/Search";
-import { Button } from "@zesty-io/core/Button";
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 
 import styles from "./styles.less";
 export default memo(function AuditControls(props) {
   return (
     <header className={styles.auditControls}>
-      <ButtonGroup className={styles.btnGroup}>
+      <ButtonGroup variant="contained">
         <Button
-          className={cx(styles.child, {
-            [styles.selected]: props.filter === 1,
-          })}
+          color={props.filter === 1 ? "secondary" : "primary"}
           onClick={() => {
             if (props.filter === 1) {
               props.setFilter(-1);
@@ -25,9 +23,7 @@ export default memo(function AuditControls(props) {
           Today
         </Button>
         <Button
-          className={cx(styles.child, {
-            [styles.selected]: props.filter === 7,
-          })}
+          color={props.filter === 7 ? "secondary" : "primary"}
           onClick={() => {
             if (props.filter === 7) {
               props.setFilter(-1);
@@ -39,9 +35,7 @@ export default memo(function AuditControls(props) {
           Last Week
         </Button>
         <Button
-          className={cx(styles.child, {
-            [styles.selected]: props.filter === 30,
-          })}
+          color={props.filter === 30 ? "secondary" : "primary"}
           onClick={() => {
             if (props.filter === 30) {
               props.setFilter(-1);

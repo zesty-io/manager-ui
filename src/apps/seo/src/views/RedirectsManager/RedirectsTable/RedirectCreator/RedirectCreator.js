@@ -1,9 +1,9 @@
 import { useState } from "react";
 import cx from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-import { Button } from "@zesty-io/core/Button";
+import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
+
 import { Input } from "@zesty-io/core/Input";
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
 import { Select, Option } from "@zesty-io/core/Select";
@@ -103,12 +103,12 @@ export function RedirectCreator(props) {
       </span>
       <span className={styles.RedirectCreatorCell}>
         <Button
-          className="save"
-          type="save"
+          variant="contained"
+          color="success"
           onClick={handleCreateRedirect}
           disabled={!from.length || !from.startsWith("/")}
+          startIcon={<AddIcon />}
         >
-          <FontAwesomeIcon icon={faPlus} />
           Create Redirect
         </Button>
       </span>

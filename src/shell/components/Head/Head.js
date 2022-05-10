@@ -2,11 +2,10 @@ import { useEffect } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
 
 import { Notice } from "@zesty-io/core/Notice";
-import { Button } from "@zesty-io/core/Button";
 
 import { HeadTag } from "./HeadTag";
 import { Preview } from "./Preview";
@@ -53,23 +52,26 @@ export default connect((state, props) => {
   return (
     <div className={styles.Head}>
       <main className={styles.Tags}>
-        <h1 className={styles.Notice}>
+        <div className={styles.Notice}>
           <Button
             title="Create Head Tag"
-            kind="secondary"
+            variant="contained"
+            color="secondary"
             onClick={handleAdd}
             data-cy="CreateHeadTag"
+            startIcon={<AddIcon />}
+            sx={{ mr: 1, minWidth: "185px" }}
           >
-            <FontAwesomeIcon icon={faPlus} />
             Create Head Tag
           </Button>
-
-          <Notice>
-            Head tags are not versioned. Once saved they will take effect when
-            the page(s) are next cached. Caching occurs on publish or every 24
-            hours.
-          </Notice>
-        </h1>
+          <h1>
+            <Notice>
+              Head tags are not versioned. Once saved they will take effect when
+              the page(s) are next cached. Caching occurs on publish or every 24
+              hours.
+            </Notice>
+          </h1>
+        </div>
 
         {props.tags.length ? (
           props.tags.map((tag, index) => {

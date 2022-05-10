@@ -1,4 +1,5 @@
 @import "~@zesty-io/core/colors.less";
+
 .HeadTag {
   &:hover,
   &:focus {
@@ -12,17 +13,14 @@
   .CardHeader {
     align-items: flex-end;
     display: flex;
+    gap: 8px;
 
-    & > * {
-      margin-right: 8px;
+    svg {
+      margin-right: 0;
     }
 
     .DropDown {
       width: 210px;
-    }
-    .Delete {
-      display: none;
-      margin-left: auto;
     }
   }
 
@@ -30,6 +28,7 @@
     align-items: flex-end;
     display: flex;
     margin: 8px 0;
+    gap: 8px;
 
     &:hover,
     &:focus {
@@ -38,19 +37,8 @@
       }
     }
 
-    & > * {
-      margin-right: 8px;
-    }
-
     .Value {
       width: 100%;
-    }
-
-    button {
-      visibility: hidden;
-      margin-left: auto;
-      margin: 0 0 4px 0;
-      height: 40px;
     }
   }
   .CardFooter {
