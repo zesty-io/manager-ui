@@ -2,15 +2,13 @@ import { memo, useState } from "react";
 import { connect } from "react-redux";
 import cx from "classnames";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSignInAlt,
-  faCheckCircle,
-  faSpinner,
-} from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 
 import { Modal, ModalContent } from "@zesty-io/core/Modal";
-import { Button } from "@zesty-io/core/Button";
+
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { Input } from "@zesty-io/core/Input";
 import { Notice } from "@zesty-io/core/Notice";
@@ -105,8 +103,11 @@ export default connect((state) => {
                 <Input name="token" type="text" autoComplete="off" />
               </label>
 
-              <Button>
-                <FontAwesomeIcon icon={faCheckCircle} />
+              <Button
+                type="submit"
+                variant="contained"
+                startIcon={<CheckCircleOutlineIcon />}
+              >
                 Confirm Login
               </Button>
             </form>
@@ -133,12 +134,13 @@ export default connect((state) => {
                 label="Password"
                 tabIndex="2"
               />
-              <Button>
-                {loading ? (
-                  <FontAwesomeIcon icon={faSpinner} spin />
-                ) : (
-                  <FontAwesomeIcon icon={faSignInAlt} />
-                )}
+              <Button
+                type="submit"
+                variant="contained"
+                startIcon={
+                  loading ? <CircularProgress size="1rem" /> : <ExitToAppIcon />
+                }
+              >
                 Resume Session
               </Button>
             </form>
