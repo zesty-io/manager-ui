@@ -6,6 +6,8 @@ import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import Tooltip from "@mui/material/Tooltip";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { Url } from "@zesty-io/core/Url";
 import { Button } from "@zesty-io/core/Button";
@@ -146,8 +148,19 @@ export default connect((state) => {
         <div className={styles.Row}>
           <FieldTypeBinary
             name="settings[general][robots_on]"
-            label={robotOn.keyFriendly}
-            tooltip={robotOn.tips}
+            label={
+              robotOn.tips ? (
+                <>
+                  <Tooltip title={robotOn.tips} arrow placement="top-start">
+                    <InfoIcon fontSize="small" />
+                  </Tooltip>
+                  &nbsp;
+                  {robotOn.keyFriendly}
+                </>
+              ) : (
+                robotOn.keyFriendly
+              )
+            }
             value={Boolean(robotOn.value)}
             offValue="No"
             onValue="Yes"
@@ -168,8 +181,19 @@ export default connect((state) => {
           <FieldTypeTextarea
             className={styles.CustomRules}
             name="settings[general][robots_text]"
-            label={robotText.keyFriendly}
-            tooltip={robotText.tips}
+            label={
+              robotText.tips ? (
+                <>
+                  <Tooltip title={robotText.tips} arrow placement="top-start">
+                    <InfoIcon fontSize="small" />
+                  </Tooltip>
+                  &nbsp;
+                  {robotText.keyFriendly}
+                </>
+              ) : (
+                robotText.keyFriendly
+              )
+            }
             onChange={handleRobotsText}
             defaultValue={robotText.value}
           />

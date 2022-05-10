@@ -3,6 +3,8 @@ import { connect } from "react-redux";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faSpinner, faCog } from "@fortawesome/free-solid-svg-icons";
+import Tooltip from "@mui/material/Tooltip";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldLabel } from "@zesty-io/core/FieldLabel";
@@ -184,8 +186,19 @@ export default connect((state) => {
                       key={field.ZUID}
                       name={field.key}
                       value={fieldValues[field.key]}
-                      label={field.keyFriendly}
-                      tooltip={`Activating the WWW setting requires DNS setup of both the apex domain and www sub-domain. ${field.tips}`}
+                      label={
+                        <>
+                          <Tooltip
+                            title={`Activating the WWW setting requires DNS setup of both the apex domain and www sub-domain. ${field.tips}`}
+                            arrow
+                            placement="top-start"
+                          >
+                            <InfoIcon fontSize="small" />
+                          </Tooltip>
+                          &nbsp;
+                          {field.keyFriendly}
+                        </>
+                      }
                       onValue="On"
                       offValue="Off"
                       onChange={setValue}
@@ -199,8 +212,23 @@ export default connect((state) => {
                       key={field.ZUID}
                       name={field.key}
                       value={fieldValues[field.key]}
-                      label={field.keyFriendly}
-                      tooltip={field.tips}
+                      label={
+                        field.tips ? (
+                          <>
+                            <Tooltip
+                              title={field.tips}
+                              arrow
+                              placement="top-start"
+                            >
+                              <InfoIcon fontSize="small" />
+                            </Tooltip>
+                            &nbsp;
+                            {field.keyFriendly}
+                          </>
+                        ) : (
+                          field.keyFriendly
+                        )
+                      }
                       onValue="On"
                       offValue="Off"
                       onChange={setValue}
@@ -215,8 +243,23 @@ export default connect((state) => {
                     key={field.ZUID}
                     name={field.key}
                     value={fieldValues[field.key]}
-                    label={field.keyFriendly}
-                    tooltip={field.tips}
+                    label={
+                      field.tips ? (
+                        <>
+                          <Tooltip
+                            title={field.tips}
+                            arrow
+                            placement="top-start"
+                          >
+                            <InfoIcon fontSize="small" />
+                          </Tooltip>
+                          &nbsp;
+                          {field.keyFriendly}
+                        </>
+                      ) : (
+                        field.keyFriendly
+                      )
+                    }
                     onChange={setValue}
                   />
                 </div>
