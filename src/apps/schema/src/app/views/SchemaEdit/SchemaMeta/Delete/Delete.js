@@ -1,6 +1,10 @@
 import { Fragment, useState } from "react";
 import { useHistory } from "react-router-dom";
 
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faBan } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -9,7 +13,6 @@ import {
   CardFooter,
 } from "@zesty-io/core/CollapsibleCard";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
-import { Button } from "@zesty-io/core/Button";
 
 import { notify } from "shell/store/notifications";
 import { deleteModel } from "shell/store/models";
@@ -47,8 +50,12 @@ function Footer(props) {
   return (
     <Fragment>
       <CardFooter>
-        <Button type="warn" onClick={() => setIsOpen(true)}>
-          <FontAwesomeIcon icon={faTrash} />
+        <Button
+          variant="contained"
+          color="error"
+          onClick={() => setIsOpen(true)}
+          startIcon={<DeleteIcon />}
+        >
           Delete Model
         </Button>
       </CardFooter>
@@ -58,8 +65,9 @@ function Footer(props) {
         prompt={`Are you sure you want to delete the model: ${props.model.label}?`}
       >
         <Button
+          variant="contained"
+          color="error"
           id="deleteConfirmButton"
-          type="warn"
           onClick={() => {
             props
               .dispatch(deleteModel(props.model.ZUID))
@@ -79,16 +87,16 @@ function Footer(props) {
                 );
               });
           }}
+          startIcon={<DeleteIcon />}
         >
-          <FontAwesomeIcon icon={faTrash} />
           Delete
         </Button>
         <Button
+          variant="contained"
           id="deleteCancelButton"
-          type="cancel"
           onClick={() => setIsOpen(false)}
+          startIcon={<DoDisturbAltIcon />}
         >
-          <FontAwesomeIcon icon={faBan} />
           Cancel
         </Button>
       </ConfirmDialog>
