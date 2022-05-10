@@ -76,7 +76,6 @@ function Header(props) {
       <small className={styles.Type}>{props.field.datatype}</small>
       <Button
         variant="contained"
-        className={styles.DragHandle}
         draggable="true"
         onClick={(evt) => {
           // Prevent the card toggle
