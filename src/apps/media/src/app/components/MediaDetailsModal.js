@@ -10,12 +10,13 @@ import {
   faTrash,
   faBan,
 } from "@fortawesome/free-solid-svg-icons";
+import Tooltip from "@mui/material/Tooltip";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
-import { Infotip } from "@zesty-io/core/Infotip";
 import { Url } from "@zesty-io/core/Url";
 import { CopyButton } from "@zesty-io/core/CopyButton";
 import { Input } from "@zesty-io/core/Input";
@@ -109,10 +110,9 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
               value={filename}
               label={
                 <label>
-                  <Infotip
-                    className={styles.InfotipFileName}
-                    title="URL Filename "
-                  />
+                  <Tooltip title="URL Filename " arrow placement="top-start">
+                    <InfoIcon fontSize="small" />
+                  </Tooltip>
                   &nbsp;URL Filename
                 </label>
               }
@@ -126,10 +126,13 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
               value={title}
               label={
                 <label>
-                  <Infotip
-                    className={styles.InfotipTitle}
+                  <Tooltip
                     title="Use for alt text with Parsley's .getImageTitle() | Image alt text is used to describe your image textually so that search engines and screen readers can understand what that image is. It’s important to note that using alt text correctly can enhance your SEO strategy"
-                  />
+                    arrow
+                    placement="top-start"
+                  >
+                    <InfoIcon fontSize="small" />
+                  </Tooltip>
                   &nbsp;Alt Text
                 </label>
               }

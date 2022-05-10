@@ -1,7 +1,8 @@
 import { memo } from "react";
 
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
-import { Infotip } from "@zesty-io/core/Infotip";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
+import Tooltip from "@mui/material/Tooltip";
 
 import styles from "./MetaKeywords.less";
 export const MetaKeywords = memo(function MetaKeywords({
@@ -14,7 +15,13 @@ export const MetaKeywords = memo(function MetaKeywords({
         name="metaKeywords"
         label={
           <label>
-            <Infotip title="Keywords are comma separated words or phrase that describe your page. In 2011 Google denounced keywords; keywords are only used against your page ranking. Use them with caution." />
+            <Tooltip
+              title="Keywords are comma separated words or phrase that describe your page. In 2011 Google denounced keywords; keywords are only used against your page ranking. Use them with caution."
+              arrow
+              placement="top-start"
+            >
+              <InfoIcon fontSize="small" />
+            </Tooltip>
             &nbsp;Meta Keywords
           </label>
         }

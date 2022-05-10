@@ -3,7 +3,8 @@ import { useLocation } from "react-router-dom";
 import cx from "classnames";
 
 import { Nav } from "@zesty-io/core/Nav";
-import { Infotip } from "@zesty-io/core/Infotip";
+import Tooltip from "@mui/material/Tooltip";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { CreateFile } from "./components/CreateFile";
 import { OrderFiles } from "./components/OrderFiles";
@@ -92,10 +93,15 @@ export const FileList = memo(function FileList(props) {
           />
 
           <header className={styles.Title}>
-            <Infotip>
-              Site.css is a dynamically created file from the instance
-              stylesheet files
-            </Infotip>
+            {/* TODO: Make this visible on the background */}
+            <Tooltip
+              title="Site.css is a dynamically created file from the instance
+              stylesheet files"
+              arrow
+              placement="top-start"
+            >
+              <InfoIcon fontSize="small" />
+            </Tooltip>
             &nbsp;
             <h1>site.css</h1>
             <OrderFiles type="text/css" />
@@ -109,10 +115,14 @@ export const FileList = memo(function FileList(props) {
           />
 
           <header className={styles.Title}>
-            <Infotip>
-              Site.js is a dynamically created file from the instance JavaScript
-              files
-            </Infotip>
+            {/* TODO: Make this visible on the background */}
+            <Tooltip
+              title="Site.js is a dynamically created file from the instance JavaScript files"
+              arrow
+              placement="top-start"
+            >
+              <InfoIcon fontSize="small" />
+            </Tooltip>
             &nbsp;
             <h1>site.js</h1>
             <OrderFiles type="text/javascript" />

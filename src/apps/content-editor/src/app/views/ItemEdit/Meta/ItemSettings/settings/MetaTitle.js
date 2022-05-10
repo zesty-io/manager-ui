@@ -1,7 +1,9 @@
 import { memo } from "react";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { Infotip } from "@zesty-io/core/Infotip";
+
+import Tooltip from "@mui/material/Tooltip";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import styles from "./MetaTitle.less";
 export const MetaTitle = memo(function MetaTitle({ meta_title, onChange }) {
@@ -11,7 +13,13 @@ export const MetaTitle = memo(function MetaTitle({ meta_title, onChange }) {
         name="metaTitle"
         label={
           <label>
-            <Infotip title="This is the title search engines should use in their results. The maximum amount of characters search engines show is 65 characters, but your title can be longer." />
+            <Tooltip
+              title="This is the title search engines should use in their results. The maximum amount of characters search engines show is 65 characters, but your title can be longer."
+              arrow
+              placement="top-start"
+            >
+              <InfoIcon fontSize="small" />
+            </Tooltip>
             &nbsp;Meta Title
           </label>
         }

@@ -6,7 +6,8 @@ import { faCode } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
-import { Infotip } from "@zesty-io/core/Infotip";
+import Tooltip from "@mui/material/Tooltip";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import styles from "./WidgetListed.less";
 export const WidgetListed = memo(function WidgetListed(props) {
@@ -23,7 +24,13 @@ export const WidgetListed = memo(function WidgetListed(props) {
           name="listed"
           label={
             <span>
-              <Infotip title="Determines if this item will be available in Parsley loops. A common example of this is listing a blog post as an entry on an article listing page." />
+              <Tooltip
+                title="Determines if this item will be available in Parsley loops. A common example of this is listing a blog post as an entry on an article listing page."
+                arrow
+                placement="top-start"
+              >
+                <InfoIcon fontSize="small" />
+              </Tooltip>
               &nbsp;Available in Loops
             </span>
           }
@@ -44,7 +51,13 @@ export const WidgetListed = memo(function WidgetListed(props) {
           name="sort"
           label={
             <span>
-              <Infotip title="Automated Navigation Order controls the output of the automated parsley {{navigation}} and {{sectionlinks}}. It can also be used in an each loop like: {{each items as items sort by z.sort}} calls." />
+              <Tooltip
+                title="Automated Navigation Order controls the output of the automated parsley {{navigation}} and {{sectionlinks}}. It can also be used in an each loop like: {{each items as items sort by z.sort}} calls."
+                arrow
+                placement="top-start"
+              >
+                <InfoIcon fontSize="small" />
+              </Tooltip>
               &nbsp;Automated Navigation Order
             </span>
           }

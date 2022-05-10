@@ -17,7 +17,6 @@ import { Button } from "@zesty-io/core/Button";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Url } from "@zesty-io/core/Url";
 import { Notice } from "@zesty-io/core/Notice";
-// import { Infotip } from "@zesty-io/core/Infotip";
 
 import { DifferActions } from "./components/DifferActions";
 import { EditorActions } from "./components/EditorActions";

@@ -2,7 +2,8 @@ import { memo, useState } from "react";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { Input } from "@zesty-io/core/Input";
-import { Infotip } from "@zesty-io/core/Infotip";
+import Tooltip from "@mui/material/Tooltip";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 import { FieldLabel } from "@zesty-io/core/FieldLabel";
 
 const CANONICAL_OPTS = [
@@ -53,7 +54,13 @@ export const CanonicalTag = memo(function CanonicalTag(props) {
         name="canonicaltag"
         label={
           <label>
-            <Infotip title="Canonical tags help search engines understand authoritative links and can help prevent duplicate content issues. Zesty.io auto creates tags on demand based on your settings." />
+            <Tooltip
+              title="Canonical tags help search engines understand authoritative links and can help prevent duplicate content issues. Zesty.io auto creates tags on demand based on your settings."
+              arrow
+              placement="top-start"
+            >
+              <InfoIcon fontSize="small" />
+            </Tooltip>
             &nbsp;Canonical Tag
           </label>
         }
