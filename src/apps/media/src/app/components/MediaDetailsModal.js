@@ -9,12 +9,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faLink,
-  faSave,
-  faTrash,
-  faBan,
-} from "@fortawesome/free-solid-svg-icons";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
 import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
