@@ -109,7 +109,6 @@ export const MediaWorkspaceItem = memo(function MediaWorkspaceItem(props) {
             fullWidth
             sx={{
               borderRadius: "0",
-
               cursor: "pointer",
             }}
           >
