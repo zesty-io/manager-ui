@@ -20,7 +20,6 @@ import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Url } from "@zesty-io/core/Url";
 import { CopyButton } from "@zesty-io/core/CopyButton";
 import { Input } from "@zesty-io/core/Input";
-import { Notice } from "@zesty-io/core/Notice";
 import { Option, Select } from "@zesty-io/core/Select";
 
 import { MediaImage } from "./MediaImage";
