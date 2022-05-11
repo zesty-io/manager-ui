@@ -7,9 +7,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
-
 import { MediaCreateGroupModal } from "./MediaCreateGroupModal";
 import { MediaEditGroupModal } from "./MediaEditGroupModal";
 
