@@ -148,6 +148,16 @@ function Footer(props) {
       <ButtonGroup>
         <Button
           variant="contained"
+          onClick={duplicate}
+          disabled={loading}
+          startIcon={
+            loading ? <CircularProgress size="20px" /> : <FileCopyIcon />
+          }
+        >
+          Duplicate Model
+        </Button>
+        <Button
+          variant="contained"
           color="success"
           disabled={!props.model.dirty || loading}
           onClick={() => {
@@ -187,16 +197,6 @@ function Footer(props) {
           startIcon={loading ? <CircularProgress size="20px" /> : <SaveIcon />}
         >
           Save Model
-        </Button>
-        <Button
-          variant="contained"
-          onClick={duplicate}
-          disabled={loading}
-          startIcon={
-            loading ? <CircularProgress size="20px" /> : <FileCopyIcon />
-          }
-        >
-          Duplicate Model
         </Button>
       </ButtonGroup>
     </CardFooter>

@@ -125,16 +125,6 @@ export function Footer(props) {
   return (
     <footer className={styles.FieldFooter}>
       <ButtonGroup className={styles.FieldActions}>
-        <Button
-          variant="contained"
-          color="success"
-          disabled={!props.field.dirty}
-          onClick={onSave}
-          startIcon={loading ? <CircularProgress size="20px" /> : <SaveIcon />}
-        >
-          Save {metaShortcut}
-        </Button>
-
         {props.field.deletedAt ? (
           <Button
             variant="contained"
@@ -168,6 +158,15 @@ export function Footer(props) {
             Deactivate
           </Button>
         )}
+        <Button
+          variant="contained"
+          color="success"
+          disabled={!props.field.dirty}
+          onClick={onSave}
+          startIcon={loading ? <CircularProgress size="20px" /> : <SaveIcon />}
+        >
+          Save {metaShortcut}
+        </Button>
       </ButtonGroup>
     </footer>
   );

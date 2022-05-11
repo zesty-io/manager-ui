@@ -66,6 +66,14 @@ function Footer(props) {
       >
         <Button
           variant="contained"
+          id="deleteCancelButton"
+          onClick={() => setIsOpen(false)}
+          startIcon={<DoDisturbAltIcon />}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
           color="error"
           id="deleteConfirmButton"
           onClick={() => {
@@ -90,14 +98,6 @@ function Footer(props) {
           startIcon={<DeleteIcon />}
         >
           Delete
-        </Button>
-        <Button
-          variant="contained"
-          id="deleteCancelButton"
-          onClick={() => setIsOpen(false)}
-          startIcon={<DoDisturbAltIcon />}
-        >
-          Cancel
         </Button>
       </ConfirmDialog>
     </Fragment>
