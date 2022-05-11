@@ -85,7 +85,7 @@ function Header(props) {
         onDragStart={props.onDragStart}
         sx={{ cursor: "move" }}
       >
-        <ZoomOutMapIcon fontSize="small" />
+        <ZoomOutMapIcon fontSize="small" sx={{ mr: "0 !important" }} />
       </Button>
     </div>
   );
