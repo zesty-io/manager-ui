@@ -1,6 +1,13 @@
 import { memo, useState, useEffect } from "react";
 import { Prompt } from "react-router-dom";
 
+import Stack from "@mui/material/Stack";
+import Button from "@mui/material/Button";
+import SaveIcon from "@mui/icons-material/Save";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CircularProgress from "@mui/material/CircularProgress";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSave,
@@ -9,7 +16,6 @@ import {
   faBan,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import {
   Modal,
@@ -79,28 +85,39 @@ export default memo(function PendingEditsModal(props) {
           <p>{props.message}</p>
         </ModalContent>
         <ModalFooter>
-          <ButtonGroup className={styles.Actions}>
-            <Button disabled={loading} type="save" onClick={handler}>
-              {loading ? (
-                <FontAwesomeIcon icon={faSpinner} spin />
-              ) : (
-                <FontAwesomeIcon icon={faSave} />
-              )}
-              Save
-            </Button>
-            <Button disabled={loading} type="warn" onClick={handler}>
-              {loading ? (
-                <FontAwesomeIcon icon={faSpinner} spin />
-              ) : (
-                <FontAwesomeIcon icon={faTrash} />
-              )}
-              Discard
-            </Button>
-            <Button disabled={loading} type="cancel" onClick={handler}>
-              <FontAwesomeIcon icon={faBan} />
+          <Stack direction="row" spacing={1}>
+            <Button
+              variant="contained"
+              disabled={loading}
+              onClick={handler}
+              startIcon={<DoDisturbAltIcon />}
+            >
               Cancel (ESC)
             </Button>
-          </ButtonGroup>
+            <Button
+              variant="contained"
+              color="error"
+              disabled={loading}
+              onClick={handler}
+              startIcon={
+                loading ? <CircularProgress size="20px" /> : <DeleteIcon />
+              }
+            >
+              Discard
+            </Button>
+
+            <Button
+              variant="contained"
+              color="success"
+              disabled={loading}
+              onClick={handler}
+              startIcon={
+                loading ? <CircularProgress size="20px" /> : <SaveIcon />
+              }
+            >
+              Save
+            </Button>
+          </Stack>
         </ModalFooter>
       </Modal>
     </>
