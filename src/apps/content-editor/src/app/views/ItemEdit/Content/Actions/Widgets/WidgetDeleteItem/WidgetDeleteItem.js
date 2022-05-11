@@ -2,6 +2,10 @@ import { memo, useState, Fragment } from "react";
 import cx from "classnames";
 import { useHistory } from "react-router-dom";
 
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBan,
@@ -9,7 +13,7 @@ import {
   faTrash,
   faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "@zesty-io/core/Button";
+
 import {
   CollapsibleCard,
   CardContent,
@@ -45,16 +49,16 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
         </CardContent>
         <CardFooter>
           <Button
+            variant="contained"
+            color="error"
             type="warn"
             id="DeleteItemButton"
             onClick={() => setConfirmOpen(true)}
             disabled={deleting}
+            startIcon={
+              deleting ? <CircularProgress size="20px" /> : <DeleteIcon />
+            }
           >
-            {deleting ? (
-              <FontAwesomeIcon icon={faSpinner} spin />
-            ) : (
-              <FontAwesomeIcon icon={faTrashAlt} />
-            )}
             Delete
           </Button>
         </CardFooter>
@@ -65,8 +69,18 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
           ${props.metaTitle}`}
       >
         <Button
+          variant="contained"
+          id="deleteCancelButton"
+          onClick={() => setConfirmOpen(false)}
+          startIcon={<DoDisturbAltIcon />}
+        >
+          Cancel
+        </Button>
+
+        <Button
+          variant="contained"
+          color="error"
           id="deleteConfirmButton"
-          type="warn"
           onClick={() => {
             setConfirmOpen(false);
             setDeleting(true);
@@ -82,17 +96,9 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
                 }
               });
           }}
+          startIcon={<DeleteIcon />}
         >
-          <FontAwesomeIcon icon={faTrash} />
           Delete
-        </Button>
-        <Button
-          id="deleteCancelButton"
-          type="cancel"
-          onClick={() => setConfirmOpen(false)}
-        >
-          <FontAwesomeIcon icon={faBan} />
-          Cancel
         </Button>
       </ConfirmDialog>
     </Fragment>
