@@ -2,18 +2,21 @@ import { Component } from "react";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 
+import Button from "@mui/material/Button";
+
+import SaveIcon from "@mui/icons-material/Save";
+import StorageIcon from "@mui/icons-material/Storage";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faSave,
   faPlus,
   faSpinner,
   faTimesCircle,
   faUpload,
-  faDatabase,
   faBolt,
-  faSync,
 } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "@zesty-io/core/Button";
+
 import { Search } from "@zesty-io/core/Search";
 import { Select, Option } from "@zesty-io/core/Select";
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -60,8 +63,9 @@ export class SetActions extends Component {
             </Select>
 
             <Button
+              variant="contained"
+              color="secondary"
               title="Create Item"
-              kind="secondary"
               id="AddItemButton"
               className={cx(styles.Action, styles.Create)}
             >
@@ -78,17 +82,20 @@ export class SetActions extends Component {
 
             {Boolean(this.props.isDirty) && (
               <Button
+                variant="contained"
+                color="success"
                 title="Save"
-                type="save"
                 className={cx(styles.Action, styles.Save)}
                 disabled={this.props.saving}
                 onClick={this.props.onSaveAll}
+                startIcon={
+                  this.props.saving ? (
+                    <CircularProgress size="20px" />
+                  ) : (
+                    <SaveIcon />
+                  )
+                }
               >
-                {this.props.saving ? (
-                  <FontAwesomeIcon spin icon={faSync} />
-                ) : (
-                  <FontAwesomeIcon icon={faSave} />
-                )}
                 Save All Changes
               </Button>
             )}
@@ -129,24 +136,25 @@ export class SetActions extends Component {
 
             {this.props.model && this.props.user.is_developer && (
               <Button
+                variant="contained"
                 title="Edit Schema"
                 className={cx(styles.Action)}
                 onClick={() =>
                   (window.location.hash = `/schema/${this.props.modelZUID}`)
                 }
+                startIcon={<StorageIcon />}
               >
-                <FontAwesomeIcon icon={faDatabase} />
                 Edit Schema
               </Button>
             )}
             <Link to={`/content/${this.props.modelZUID}/import`}>
               <Button
+                variant="contained"
                 title="Add CSV Button"
-                kind="tertiary"
                 id="AddCSVButton"
                 className={cx(styles.Action, styles.Create)}
+                startIcon={<FileUploadIcon />}
               >
-                <FontAwesomeIcon icon={faUpload} />
                 Import CSV
               </Button>
             </Link>
