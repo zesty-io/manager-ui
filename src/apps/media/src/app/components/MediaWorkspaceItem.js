@@ -5,9 +5,8 @@ import Button from "@mui/material/Button";
 
 import CheckIcon from "@mui/icons-material/Check";
 import SettingsIcon from "@mui/icons-material/Settings";
+import EditIcon from "@mui/icons-material/Edit";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCog } from "@fortawesome/free-solid-svg-icons";
 import Observer from "@researchgate/react-intersection-observer";
 
 import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
@@ -105,14 +104,17 @@ export const MediaWorkspaceItem = memo(function MediaWorkspaceItem(props) {
           )}
           <Button
             variant="contained"
-            className={styles.FooterButton}
             onClick={showFileDetails}
-            startIcon={<SettingsIcon />}
+            startIcon={<EditIcon />}
+            fullWidth
+            sx={{
+              borderRadius: "0",
+
+              cursor: "pointer",
+            }}
           >
             {/* <FontAwesomeIcon className={styles.Cog} icon={faCog} /> */}
-            <h1 className={cx(styles.Preview, styles.caption)}>
-              {props.file.filename}
-            </h1>
+            <span className={cx(styles.Preview)}>{props.file.filename}</span>
           </Button>
         </CardFooter>
       </Card>
