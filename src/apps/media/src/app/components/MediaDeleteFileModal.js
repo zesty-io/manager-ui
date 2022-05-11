@@ -2,7 +2,6 @@ import { useDispatch } from "react-redux";
 
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
-import SaveIcon from "@mui/icons-material/Save";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
 import {
@@ -44,6 +43,13 @@ export function MediaDeleteFileModal(props) {
       <ModalFooter className={styles.Footer}>
         <Button
           variant="contained"
+          onClick={props.onClose}
+          startIcon={<DoDisturbAltIcon />}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
           color="error"
           onClick={() =>
             dispatch(deleteFile(props.file)).then(() => {
@@ -53,13 +59,6 @@ export function MediaDeleteFileModal(props) {
           startIcon={<DeleteIcon />}
         >
           Delete
-        </Button>
-        <Button
-          variant="contained"
-          onClick={props.onClose}
-          startIcon={<DoDisturbAltIcon />}
-        >
-          Cancel
         </Button>
       </ModalFooter>
     </Modal>

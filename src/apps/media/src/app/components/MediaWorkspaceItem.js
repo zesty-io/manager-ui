@@ -112,7 +112,6 @@ export const MediaWorkspaceItem = memo(function MediaWorkspaceItem(props) {
               cursor: "pointer",
             }}
           >
-            {/* <FontAwesomeIcon className={styles.Cog} icon={faCog} /> */}
             <span className={cx(styles.Preview)}>{props.file.filename}</span>
           </Button>
         </CardFooter>
