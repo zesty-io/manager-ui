@@ -73,23 +73,20 @@ export const MediaWorkspaceItem = memo(function MediaWorkspaceItem(props) {
           {props.modal ? (
             <Button
               variant="contained"
-              // className={styles.Check}
+              className={styles.Check}
               aria-label="Checked"
+              size="small"
               sx={{
                 position: "absolute",
                 top: "0",
                 left: "0",
                 cursor: "pointer",
-                backgroundColor: "secondary.main",
-                width: "16px",
-                height: "16px",
+                backgroundColor: "primary.light",
                 margin: "1px",
-                borderRadius: "2px",
-                minWidth: "auto",
                 opacity: "0",
+                minWidth: "auto",
                 "&:hover": {
                   opacity: "1",
-                  backgroundColor: "secondary.main",
                 },
               }}
             >

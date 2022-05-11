@@ -99,10 +99,7 @@ export function MediaSelected(props) {
                             left: "0",
                             cursor: "pointer",
                             backgroundColor: "secondary.main",
-                            width: "16px",
-                            height: "16px",
-                            margin: "1px",
-                            borderRadius: "2px",
+
                             minWidth: "auto",
                           }}
                         >
