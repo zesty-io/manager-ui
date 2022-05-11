@@ -1,5 +1,11 @@
 import { memo, useCallback, useState } from "react";
 import cx from "classnames";
+
+import Button from "@mui/material/Button";
+
+import CheckIcon from "@mui/icons-material/Check";
+import SettingsIcon from "@mui/icons-material/Settings";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faCog } from "@fortawesome/free-solid-svg-icons";
 import Observer from "@researchgate/react-intersection-observer";
@@ -65,9 +71,30 @@ export const MediaWorkspaceItem = memo(function MediaWorkspaceItem(props) {
             ) : null}
           </figure>
           {props.modal ? (
-            <button className={styles.Check} aria-label="Checked">
-              <FontAwesomeIcon icon={faCheck} />
-            </button>
+            <Button
+              variant="contained"
+              // className={styles.Check}
+              aria-label="Checked"
+              sx={{
+                position: "absolute",
+                top: "0",
+                left: "0",
+                cursor: "pointer",
+                backgroundColor: "secondary.main",
+                width: "16px",
+                height: "16px",
+                margin: "1px",
+                borderRadius: "2px",
+                minWidth: "auto",
+                opacity: "0",
+                "&:hover": {
+                  opacity: "1",
+                  backgroundColor: "secondary.main",
+                },
+              }}
+            >
+              <CheckIcon fontSize="small" />
+            </Button>
           ) : null}
         </CardContent>
         <CardFooter className={styles.CardFooter}>
@@ -79,12 +106,17 @@ export const MediaWorkspaceItem = memo(function MediaWorkspaceItem(props) {
               }}
             ></div>
           )}
-          <button className={styles.FooterButton} onClick={showFileDetails}>
-            <FontAwesomeIcon className={styles.Cog} icon={faCog} />
+          <Button
+            variant="contained"
+            className={styles.FooterButton}
+            onClick={showFileDetails}
+            startIcon={<SettingsIcon />}
+          >
+            {/* <FontAwesomeIcon className={styles.Cog} icon={faCog} /> */}
             <h1 className={cx(styles.Preview, styles.caption)}>
               {props.file.filename}
             </h1>
-          </button>
+          </Button>
         </CardFooter>
       </Card>
     </div>

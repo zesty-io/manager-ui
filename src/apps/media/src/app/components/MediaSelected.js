@@ -5,15 +5,8 @@ import Button from "@mui/material/Button";
 import UploadIcon from "@mui/icons-material/Upload";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CheckIcon from "@mui/icons-material/Check";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCheck,
-  faUpload,
-  faChevronDown,
-  faChevronUp,
-} from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
 import { Card, CardContent } from "@zesty-io/core/Card";
@@ -48,7 +41,6 @@ export function MediaSelected(props) {
                 variant="contained"
                 color="success"
                 data-cy="loadSelected"
-                className={styles.ButtonLoad}
                 onClick={() => props.addImages(props.selected)}
                 startIcon={<UploadIcon />}
               >
@@ -97,13 +89,25 @@ export function MediaSelected(props) {
                             params={"?w=200&h=200&type=fit"}
                           />
                         </figure>
-                        <button
+                        <Button
                           variant="contained"
-                          className={styles.Check}
+                          size="small"
                           aria-label="Checked"
+                          sx={{
+                            position: "absolute",
+                            top: "0",
+                            left: "0",
+                            cursor: "pointer",
+                            backgroundColor: "secondary.main",
+                            width: "16px",
+                            height: "16px",
+                            margin: "1px",
+                            borderRadius: "2px",
+                            minWidth: "auto",
+                          }}
                         >
-                          <CheckCircleIcon fontSize="small" />
-                        </button>
+                          <CheckIcon fontSize="small" />
+                        </Button>
                       </CardContent>
                     </Card>
                   );
