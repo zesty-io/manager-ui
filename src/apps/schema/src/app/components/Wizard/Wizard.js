@@ -75,7 +75,7 @@ export function Wizard(props) {
                           variant="contained"
                           onClick={() => next(child.props.onNext)}
                           disabled={child.props.locked}
-                          sx={{ backgroundColor: "error.success" }}
+                          color="success"
                         >
                           <ChevronRightIcon fontSize="small" />
                           {child.props.labelButtonNext
