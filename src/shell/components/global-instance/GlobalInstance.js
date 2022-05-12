@@ -5,6 +5,7 @@ import { usePermission } from "shell/hooks/use-permissions";
 
 import Button from "@mui/material/Button";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { CopyButton } from "@zesty-io/core/CopyButton";
 
