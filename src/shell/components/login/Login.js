@@ -138,7 +138,7 @@ export default connect((state) => {
                 type="submit"
                 variant="contained"
                 startIcon={
-                  loading ? <CircularProgress size="1rem" /> : <ExitToAppIcon />
+                  loading ? <CircularProgress size="20px" /> : <ExitToAppIcon />
                 }
               >
                 Resume Session

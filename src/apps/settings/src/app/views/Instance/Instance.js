@@ -135,7 +135,7 @@ export default connect((state) => {
               onClick={saveFields}
               disabled={saving || dirtyFields.length === 0}
               startIcon={
-                saving ? <CircularProgress size="1rem" /> : <SaveIcon />
+                saving ? <CircularProgress size="20px" /> : <SaveIcon />
               }
               sx={{ alignSelf: "flex-end" }}
             >
