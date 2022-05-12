@@ -197,7 +197,7 @@ export default connect((state) => {
           color="success"
           onClick={handleSave}
           disabled={loading}
-          startIcon={loading ? <CircularProgress size="1rem" /> : <SaveIcon />}
+          startIcon={loading ? <CircularProgress size="20px" /> : <SaveIcon />}
           sx={{ alignSelf: "flex-start" }}
         >
           Save {metaShortcut}

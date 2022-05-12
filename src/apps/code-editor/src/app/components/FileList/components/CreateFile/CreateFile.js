@@ -175,7 +175,7 @@ export const CreateFile = memo(function CreateFile(props) {
                 disabled={type === "" || type === "0" || loading}
                 startIcon={
                   loading ? (
-                    <CircularProgress size="1rem" />
+                    <CircularProgress size="20px" />
                   ) : (
                     <CheckCircleIcon />
                   )
