@@ -8,14 +8,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CircularProgress from "@mui/material/CircularProgress";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSave,
-  faTrash,
-  faSpinner,
-  faBan,
-} from "@fortawesome/free-solid-svg-icons";
-
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import {
   Modal,
@@ -45,8 +37,9 @@ export default memo(function PendingEditsModal(props) {
     };
   }, []);
 
-  const handler = (evt) => {
-    switch (evt.currentTarget.attributes["type"].value) {
+  const handler = (action) => {
+    console.log(action);
+    switch (action) {
       case "save":
         setLoading(true);
         props.onSave().then(() => {
@@ -54,16 +47,20 @@ export default memo(function PendingEditsModal(props) {
           setOpen(false);
           answer(true);
         });
-      case "warn":
+        break;
+      case "delete":
         setLoading(true);
         props.onDiscard().then(() => {
           setLoading(false);
           setOpen(false);
           answer(true);
         });
+        break;
       case "cancel":
         setOpen(false);
         answer(false);
+      default:
+        break;
     }
   };
 
@@ -89,7 +86,7 @@ export default memo(function PendingEditsModal(props) {
             <Button
               variant="contained"
               disabled={loading}
-              onClick={handler}
+              onClick={() => handler("cancel")}
               startIcon={<DoDisturbAltIcon />}
             >
               Cancel (ESC)
@@ -98,7 +95,7 @@ export default memo(function PendingEditsModal(props) {
               variant="contained"
               color="error"
               disabled={loading}
-              onClick={handler}
+              onClick={() => handler("delete")}
               startIcon={
                 loading ? <CircularProgress size="20px" /> : <DeleteIcon />
               }
@@ -110,7 +107,7 @@ export default memo(function PendingEditsModal(props) {
               variant="contained"
               color="success"
               disabled={loading}
-              onClick={handler}
+              onClick={() => handler("save")}
               startIcon={
                 loading ? <CircularProgress size="20px" /> : <SaveIcon />
               }
