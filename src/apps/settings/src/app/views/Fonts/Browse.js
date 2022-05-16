@@ -2,11 +2,15 @@ import { useState, useEffect, useCallback } from "react";
 import { connect } from "react-redux";
 import debounce from "lodash/debounce";
 
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import AddIcon from "@mui/icons-material/Add";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { Button } from "@zesty-io/core/Button";
+
 import { Search } from "@zesty-io/core/Search";
 import { Notice } from "@zesty-io/core/Notice";
 import { notify } from "shell/store/notifications";
@@ -233,17 +237,16 @@ export default connect((state) => {
               </div>
               <div>
                 <Button
-                  type="save"
+                  variant="contained"
+                  color="success"
                   id="InstallFont"
                   className={styles.SaveBtn}
                   onClick={() => onUpdateFont(itemFont.family)}
                   disabled={saving || !variantsSelected[itemFont.family]}
+                  startIcon={
+                    saving ? <CircularProgress size="20px" /> : <AddIcon />
+                  }
                 >
-                  {saving ? (
-                    <FontAwesomeIcon spin icon={faSpinner} />
-                  ) : (
-                    <FontAwesomeIcon icon={faPlus} />
-                  )}{" "}
                   Add
                 </Button>
               </div>
@@ -353,7 +356,8 @@ export default connect((state) => {
       {renderFontsList()}
       <div className={styles.Pagination}>
         <Button
-          kind="secondary"
+          variant="contained"
+          color="secondary"
           onClick={() => changePage("prev")}
           disabled={!validateActionPage("prev")}
         >
@@ -363,7 +367,8 @@ export default connect((state) => {
           {`${pagination.current} / ${pagination.total}`}
         </div>
         <Button
-          kind="secondary"
+          variant="contained"
+          color="secondary"
           onClick={() => changePage("next")}
           disabled={!validateActionPage("next")}
         >
