@@ -53,7 +53,7 @@ export function Actions(props) {
 
       <ContentLinks item={props.item} />
 
-      {/* <Release item={props.item} /> */}
+      <Release item={props.item} />
 
       <WidgetPublishHistory
         dispatch={props.dispatch}

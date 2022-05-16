@@ -7,11 +7,9 @@ import AddIcon from "@mui/icons-material/Add";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faPlus,
   faRocket,
   faEdit,
   faPowerOff,
-  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
