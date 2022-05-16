@@ -1,37 +1,39 @@
 import { useDispatch, useSelector } from "react-redux";
-import cx from "classnames";
 
 import { actions } from "shell/store/ui";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
-import { Button } from "@zesty-io/core";
+import Button from "@mui/material/Button";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 
-import styles from "./ContentNavToggle.less";
 export function ContentNavToggle() {
   const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
 
   return (
     <Button
+      variant="contained"
       title={ui.contentNav ? "Close Content Nav" : "Open Content Nav"}
       data-cy="contentNavButton"
-      className={cx(
-        styles.ContentNavToggle,
-        ui.contentNav ? styles.ContentNavToggleOpen : "",
-        ui.contentNavHover ? styles.ContentNavHover : ""
-      )}
       onClick={() => {
         dispatch(actions.setContentNav(!ui.contentNav));
       }}
+      fullWidth
+      sx={{
+        position: "sticky",
+        bottom: "0",
+        borderRadius: "0",
+        padding: "13px 6px",
+        boxShadow: " 2px 2px 5px fade(primary, 50%)",
+        "&:hover": {
+          color: "warning.main",
+        },
+      }}
     >
       {ui.contentNav || ui.contentNavHover ? (
-        <FontAwesomeIcon icon={faChevronLeft} />
+        <ChevronLeftIcon />
       ) : (
-        <FontAwesomeIcon icon={faChevronRight} />
+        <ChevronRightIcon />
       )}
     </Button>
   );

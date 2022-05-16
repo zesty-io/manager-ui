@@ -121,6 +121,10 @@ export default function ActionsDrawer(props) {
           padding: "13px 6px",
           minWidth: "initial",
           zIndex: "1",
+          boxShadow: " 2px 2px 5px fade(primary, 50%)",
+          "&:hover": {
+            color: "warning.main",
+          },
         }}
       >
         {ui.contentActions || ui.contentActionsHover ? (

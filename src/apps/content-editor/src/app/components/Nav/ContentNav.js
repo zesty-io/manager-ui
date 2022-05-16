@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import cx from "classnames";
+import { ContentNavToggle } from "./components/ContentNavToggle";
 
 import { actions as uiActions } from "../../../../../../shell/store/ui";
 
@@ -235,6 +236,7 @@ export function ContentNav(props) {
       </div>
 
       <ReorderNav isOpen={reorderOpen} toggleOpen={toggleModal} />
+      <ContentNavToggle />
     </div>
   );
 }
