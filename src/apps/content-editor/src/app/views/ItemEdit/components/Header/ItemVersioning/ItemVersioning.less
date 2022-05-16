@@ -1,41 +1,6 @@
 @import "~@zesty-io/core/colors.less";
 
 .Actions {
-  display: flex;
-  flex-wrap: wrap;
-
-  & > * {
-    margin: 0 0 0 8px !important;
-  }
-  & div:first-child {
-    margin-left: 0 !important;
-  }
-
-  .Publish {
-    .PublishButton {
-      border-radius: 3px 0 0 3px;
-      border-right: 1px solid #fff;
-    }
-    .ClockButton {
-      padding: 13px 16px;
-      border-radius: 0 3px 3px 0;
-    }
-    .Scheduled {
-      background-color: @zesty-orange;
-    }
-  }
-  .Save,
-  .PublishButton {
-    align-self: stretch;
-    svg {
-      margin-right: 0;
-    }
-    @media screen and (min-width: 2000px) {
-      svg {
-        margin-right: 8px;
-      }
-    }
-  }
   .Hide {
     display: none;
 
@@ -43,7 +8,7 @@
       display: block;
     }
   }
-  .Test {
+  .SaveVersion {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
