@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import cx from "classnames";
 
+import Button from "@mui/material/Button";
+import SyncIcon from "@mui/icons-material/Sync";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import MobileScreenShareIcon from "@mui/icons-material/MobileScreenShare";
+
 import { Select, Option } from "@zesty-io/core/Select";
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import { Button } from "@zesty-io/core/Button";
+
 import { Input } from "@zesty-io/core/Input";
 import { Url } from "@zesty-io/core/Url";
 import { CopyButton } from "@zesty-io/core/CopyButton";
@@ -159,10 +164,11 @@ export function Preview(props) {
                 &nbsp;
               </CopyButton>
               <Button
+                variant="contained"
                 onClick={() => setRefresh(Date.now())}
                 title="Reload current url in ActivePreview"
               >
-                <FontAwesomeIcon icon={faSync} />
+                <SyncIcon fontSize="small" />
               </Button>
               <Input
                 ref={input}
@@ -194,10 +200,14 @@ export function Preview(props) {
                     />
                   ))}
               </Select>
-              <Button onClick={() => setRotate(!rotate)} title="Rotate device">
-                <FontAwesomeIcon
-                  icon={faMobileAlt}
-                  style={{
+              <Button
+                variant="contained"
+                onClick={() => setRotate(!rotate)}
+                title="Rotate device"
+              >
+                <MobileScreenShareIcon
+                  fontSize="small"
+                  sx={{
                     transform: `rotate(${rotate ? "-90deg" : "0deg"})`,
                   }}
                 />
@@ -206,10 +216,11 @@ export function Preview(props) {
 
             <div className={styles.Menu}>
               <Button
+                variant="contained"
                 onClick={() => setOpen(!open)}
                 title="Additional menu options"
               >
-                <FontAwesomeIcon icon={faEllipsisV} />
+                <MoreVertIcon fontSize="small" />
               </Button>
               <Meta open={open} route={route} instanceZUID={ZUID} />
             </div>
