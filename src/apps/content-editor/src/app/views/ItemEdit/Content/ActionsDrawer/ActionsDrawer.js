@@ -4,7 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import { actions } from "shell/store/ui";
 
-import { Button } from "@zesty-io/core";
+import Button from "@mui/material/Button";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+
 import { Actions } from "../Actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -15,8 +18,6 @@ import {
   faTrash,
   faUnlink,
   faUserCheck,
-  faChevronLeft,
-  faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./ActionsDrawer.less";
 
@@ -107,6 +108,7 @@ export default function ActionsDrawer(props) {
 
       <div className={styles.Spacer}></div>
       <Button
+        variant="contained"
         className={cx(
           styles.ActionsDrawerButton,
           ui.contentActionsHover || ui.contentActions
@@ -118,11 +120,27 @@ export default function ActionsDrawer(props) {
         onClick={() => {
           dispatch(actions.setContentActions(!ui.contentActions));
         }}
+        sx={{
+          borderRadius: "0",
+          padding: "13px 6px",
+          justifyContent: "center",
+          minWidth: "initial",
+          ...(ui.contentActionsHover ||
+            (ui.contentActions && {
+              position: "sticky",
+              bottom: "0",
+              right: "0",
+              zIndex: "1",
+            })),
+          "&:hover": {
+            color: "warning.main",
+          },
+        }}
       >
         {ui.contentActions || ui.contentActionsHover ? (
-          <FontAwesomeIcon icon={faChevronRight} />
+          <ChevronRightIcon />
         ) : (
-          <FontAwesomeIcon icon={faChevronLeft} />
+          <ChevronLeftIcon />
         )}
       </Button>
     </aside>

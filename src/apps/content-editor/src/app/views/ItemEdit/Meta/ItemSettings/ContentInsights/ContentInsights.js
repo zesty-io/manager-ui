@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
-import { Url } from "@zesty-io/core/Url";
-import { Button } from "@zesty-io/core/Button";
+import Button from "@mui/material/Button";
+
 import { Divider } from "@zesty-io/core/Divider";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { faCheck, faSearchDollar } from "@fortawesome/free-solid-svg-icons";
@@ -335,7 +335,7 @@ export function ContentInsights(props) {
           })}
           {!showAllWords && (
             <Button
-              kind="outlined"
+              variant="outlined"
               size="small"
               className={styles.toggleButton}
               onClick={() => setShowAllWords(true)}
@@ -345,7 +345,7 @@ export function ContentInsights(props) {
           )}
           {showAllWords && (
             <Button
-              kind="outlined"
+              variant="outlined"
               size="small"
               className={styles.toggleButton}
               onClick={() => setShowAllWords(false)}

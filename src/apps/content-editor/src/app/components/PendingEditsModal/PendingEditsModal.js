@@ -8,7 +8,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CircularProgress from "@mui/material/CircularProgress";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import {
   Modal,
   ModalHeader,
