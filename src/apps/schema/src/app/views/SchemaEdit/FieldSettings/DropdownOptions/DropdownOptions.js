@@ -88,6 +88,8 @@ export function DropdownOptions(props) {
           />
           <Button
             variant="contained"
+            size="small"
+            color="error"
             onClick={() => {
               deleteOption(i);
             }}
