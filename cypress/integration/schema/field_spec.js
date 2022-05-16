@@ -10,13 +10,13 @@ describe("Fields", () => {
     const fieldLabel = `Text Field: ${timestamp}`;
     const fieldName = `text_field_${timestamp}`;
 
-    cy.get(".FieldAdd .Select").click();
+    cy.get(".Select").click();
 
-    cy.get(".FieldAdd .selections .options li[data-value='text']").click();
+    cy.get(".selections .options li[data-value='text']").click();
 
-    cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
-    cy.get('.FieldAdd input[name="name"]').type(fieldName);
-    cy.get('.FieldAdd footer button[data-cy="create-model"]').click();
+    cy.get('input[name="label"]').type(fieldLabel);
+    cy.get('input[name="name"]').type(fieldName);
+    cy.get('foter button[data-cy="create-model"]').click();
 
     // Find the newly created field
     cy.contains(".Fields article header h1", fieldLabel, {
