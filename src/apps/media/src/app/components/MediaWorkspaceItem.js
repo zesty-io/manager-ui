@@ -1,7 +1,12 @@
 import { memo, useCallback, useState } from "react";
 import cx from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCog } from "@fortawesome/free-solid-svg-icons";
+
+import Button from "@mui/material/Button";
+
+import CheckIcon from "@mui/icons-material/Check";
+import SettingsIcon from "@mui/icons-material/Settings";
+import EditIcon from "@mui/icons-material/Edit";
+
 import Observer from "@researchgate/react-intersection-observer";
 
 import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
@@ -65,9 +70,27 @@ export const MediaWorkspaceItem = memo(function MediaWorkspaceItem(props) {
             ) : null}
           </figure>
           {props.modal ? (
-            <button className={styles.Check} aria-label="Checked">
-              <FontAwesomeIcon icon={faCheck} />
-            </button>
+            <Button
+              variant="contained"
+              className={styles.Check}
+              aria-label="Checked"
+              size="small"
+              sx={{
+                position: "absolute",
+                top: "0",
+                left: "0",
+                cursor: "pointer",
+                backgroundColor: "primary.light",
+                margin: "1px",
+                opacity: "0",
+                minWidth: "auto",
+                "&:hover": {
+                  opacity: "1",
+                },
+              }}
+            >
+              <CheckIcon fontSize="small" />
+            </Button>
           ) : null}
         </CardContent>
         <CardFooter className={styles.CardFooter}>
@@ -79,12 +102,18 @@ export const MediaWorkspaceItem = memo(function MediaWorkspaceItem(props) {
               }}
             ></div>
           )}
-          <button className={styles.FooterButton} onClick={showFileDetails}>
-            <FontAwesomeIcon className={styles.Cog} icon={faCog} />
-            <h1 className={cx(styles.Preview, styles.caption)}>
-              {props.file.filename}
-            </h1>
-          </button>
+          <Button
+            variant="contained"
+            onClick={showFileDetails}
+            startIcon={<EditIcon />}
+            fullWidth
+            sx={{
+              borderRadius: "0",
+              cursor: "pointer",
+            }}
+          >
+            <span className={cx(styles.Preview)}>{props.file.filename}</span>
+          </Button>
         </CardFooter>
       </Card>
     </div>
