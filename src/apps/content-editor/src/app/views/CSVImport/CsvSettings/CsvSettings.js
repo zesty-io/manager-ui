@@ -1,5 +1,6 @@
 import { Component } from "react";
-import { Select, Option, Input } from "@zesty-io/core";
+import { Select, Option } from "@zesty-io/core";
+import TextField from "@mui/material/TextField";
 
 import styles from "./CsvSettings.less";
 export const CsvSettings = (props) => {
@@ -179,7 +180,7 @@ class CanonicalTag extends Component {
                   Only list comma-separated parameter names. Do not include
                   values, ampersands, equals, or spaces.
                 </small>
-                <Input
+                <TextField
                   type="text"
                   name="canonicalQueryParamWhitelist"
                   value={this.state.whitelist}
@@ -188,6 +189,9 @@ class CanonicalTag extends Component {
                   size="small"
                   variant="outlined"
                   color="primary"
+                  InputProps={{
+                    sx: { backgroundColor: "primary.contrastText" },
+                  }}
                   fullWidth
                 />
               </div>
@@ -200,7 +204,7 @@ class CanonicalTag extends Component {
                   For Custom Paths: begin with a forward slash. For Custom URL:
                   begin with http:// or https://
                 </small>
-                <Input
+                <TextField
                   type="text"
                   name="canonicalTagCustomValue"
                   value={this.state.custom}
@@ -209,6 +213,9 @@ class CanonicalTag extends Component {
                   size="small"
                   variant="outlined"
                   color="primary"
+                  InputProps={{
+                    sx: { backgroundColor: "primary.contrastText" },
+                  }}
                   fullWidth
                 />
               </div>
