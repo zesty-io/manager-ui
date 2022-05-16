@@ -167,7 +167,6 @@ export function ItemVersioning(props) {
         variant="contained"
         color="success"
         title="Save Version"
-        className={styles.Save}
         disabled={props.saving || !props.item.dirty}
         onClick={props.onSave}
         id="SaveItemButton"
