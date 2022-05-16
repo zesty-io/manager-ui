@@ -185,6 +185,10 @@ class CanonicalTag extends Component {
                   value={this.state.whitelist}
                   onChange={this.handleWhitelist}
                   placeholder="page,category"
+                  size="small"
+                  variant="outlined"
+                  color="primary"
+                  fullWidth
                 />
               </div>
             ) : null}
@@ -202,6 +206,10 @@ class CanonicalTag extends Component {
                   value={this.state.custom}
                   onChange={this.handleCustom}
                   placeholder="/page/example/ or https://example.com/"
+                  size="small"
+                  variant="outlined"
+                  color="primary"
+                  fullWidth
                 />
               </div>
             ) : null}

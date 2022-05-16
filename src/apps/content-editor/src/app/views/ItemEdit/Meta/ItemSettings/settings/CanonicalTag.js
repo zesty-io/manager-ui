@@ -1,8 +1,8 @@
 import { memo, useState } from "react";
 
 import { Select, Option } from "@zesty-io/core/Select";
-import { Input } from "@zesty-io/core/Input";
 import Tooltip from "@mui/material/Tooltip";
+import TextField from "@mui/material/TextField";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 import { FieldLabel } from "@zesty-io/core/FieldLabel";
 
@@ -96,13 +96,20 @@ export const CanonicalTag = memo(function CanonicalTag(props) {
                 Only list comma-separated parameter names. Do not include
                 values, ampersands, equals, or spaces.
               </small>
-              <Input
+              <TextField
                 type="text"
                 name="canonicalQueryParamWhitelist"
                 value={whitelist}
-                className={styles.Input}
                 onChange={handleWhitelist}
                 placeholder="page,category"
+                size="small"
+                variant="outlined"
+                color="primary"
+                sx={{
+                  backgroundColor: "primary.contrastText",
+                  mt: "8px",
+                }}
+                fullWidth
               />
             </div>
           ) : null}
@@ -114,13 +121,20 @@ export const CanonicalTag = memo(function CanonicalTag(props) {
                 For Custom Paths: begin with a forward slash. For Custom URL:
                 begin with http:// or https://
               </small>
-              <Input
+              <TextField
                 type="text"
                 name="canonicalTagCustomValue"
                 value={custom}
                 onChange={handleCustom}
-                className={styles.Input}
                 placeholder="/page/example/ or https://example.com/"
+                size="small"
+                variant="outlined"
+                color="primary"
+                sx={{
+                  backgroundColor: "primary.contrastText",
+                  mt: "8px",
+                }}
+                fullWidth
               />
             </div>
           ) : null}

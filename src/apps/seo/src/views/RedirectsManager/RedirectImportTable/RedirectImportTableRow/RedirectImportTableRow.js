@@ -4,8 +4,8 @@ import cx from "classnames";
 import Button from "@mui/material/Button";
 
 import AddIcon from "@mui/icons-material/Add";
+import TextField from "@mui/material/TextField";
 
-import { Input } from "@zesty-io/core/Input";
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
 import { Select, Option } from "@zesty-io/core/Select";
 
@@ -86,12 +86,23 @@ function RedirectImportTableRow(props) {
             })}
           </Select>
         ) : (
-          <Input onChange={handlePathTarget} defaultValue={props.target} />
+          <TextField
+            onChange={handlePathTarget}
+            defaultValue={props.target}
+            size="small"
+            variant="outlined"
+            color="primary"
+            sx={{ backgroundColor: "primary.contrastText" }}
+          />
         )}
-        <Input
+        <TextField
           onChange={handleQuery}
           placeholder="Redirect query string"
           defaultValue={props.query_string}
+          size="small"
+          variant="outlined"
+          color="primary"
+          sx={{ backgroundColor: "primary.contrastText" }}
         />
       </span>
 
