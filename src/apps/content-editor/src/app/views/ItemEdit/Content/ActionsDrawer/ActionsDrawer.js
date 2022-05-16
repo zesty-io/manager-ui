@@ -109,32 +109,18 @@ export default function ActionsDrawer(props) {
       <div className={styles.Spacer}></div>
       <Button
         variant="contained"
-        className={cx(
-          styles.ActionsDrawerButton,
-          ui.contentActionsHover || ui.contentActions
-            ? styles.ActionsDrawerButtonHover
-            : ""
-        )}
         data-cy="ActionsButton"
         title="Open for additional file information"
         onClick={() => {
           dispatch(actions.setContentActions(!ui.contentActions));
         }}
         sx={{
+          position: "sticky",
+          bottom: "0",
           borderRadius: "0",
           padding: "13px 6px",
-          justifyContent: "center",
           minWidth: "initial",
-          ...(ui.contentActionsHover ||
-            (ui.contentActions && {
-              position: "sticky",
-              bottom: "0",
-              right: "0",
-              zIndex: "1",
-            })),
-          "&:hover": {
-            color: "warning.main",
-          },
+          zIndex: "1",
         }}
       >
         {ui.contentActions || ui.contentActionsHover ? (
