@@ -16,7 +16,7 @@ describe("Fields", () => {
 
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
     cy.get('.FieldAdd input[name="name"]').type(fieldName);
-    cy.get('.FieldAdd footer button[type="save"]').click();
+    cy.get('.FieldAdd footer button[data-cy="create-model"]').click();
 
     // Find the newly created field
     cy.contains(".Fields article header h1", fieldLabel, {

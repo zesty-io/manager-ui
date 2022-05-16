@@ -369,6 +369,7 @@ export default connect((state) => {
           <Button
             variant="contained"
             color="success"
+            data-cy="create-schema"
             onClick={() => {
               const errors = [];
 
