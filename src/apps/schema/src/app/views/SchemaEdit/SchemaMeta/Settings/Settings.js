@@ -1,13 +1,14 @@
 import { Fragment, useState } from "react";
 import { useHistory } from "react-router-dom";
 
+import Button from "@mui/material/Button";
+
+import CircularProgress from "@mui/material/CircularProgress";
+import SaveIcon from "@mui/icons-material/Save";
+import FileCopyIcon from "@mui/icons-material/FileCopy";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSpinner,
-  faSave,
-  faClone,
-  faCog,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCog } from "@fortawesome/free-solid-svg-icons";
 import {
   CollapsibleCard,
   CardContent,
@@ -16,7 +17,6 @@ import {
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { Button } from "@zesty-io/core/Button";
 
 import { Parent } from "./Parent";
 import { notify } from "shell/store/notifications";
@@ -147,7 +147,18 @@ function Footer(props) {
     <CardFooter className={styles.CardFooter}>
       <ButtonGroup>
         <Button
-          type="save"
+          variant="contained"
+          onClick={duplicate}
+          disabled={loading}
+          startIcon={
+            loading ? <CircularProgress size="20px" /> : <FileCopyIcon />
+          }
+        >
+          Duplicate Model
+        </Button>
+        <Button
+          variant="contained"
+          color="success"
           disabled={!props.model.dirty || loading}
           onClick={() => {
             setLoading(true);
@@ -183,21 +194,9 @@ function Footer(props) {
                 setLoading(false);
               });
           }}
+          startIcon={loading ? <CircularProgress size="20px" /> : <SaveIcon />}
         >
-          {loading ? (
-            <FontAwesomeIcon icon={faSpinner} spin />
-          ) : (
-            <FontAwesomeIcon icon={faSave} />
-          )}
           Save Model
-        </Button>
-        <Button onClick={duplicate} disabled={loading}>
-          {loading ? (
-            <FontAwesomeIcon icon={faSpinner} spin />
-          ) : (
-            <FontAwesomeIcon icon={faClone} />
-          )}
-          Duplicate Model
         </Button>
       </ButtonGroup>
     </CardFooter>

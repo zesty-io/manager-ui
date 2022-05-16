@@ -1,13 +1,9 @@
 import { Fragment, useState, useEffect } from "react";
 import cx from "classnames";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
-
-import { Button } from "@zesty-io/core/Button";
+import Button from "@mui/material/Button";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 import styles from "./Wizard.less";
 export function Wizard(props) {
@@ -70,25 +66,18 @@ export function Wizard(props) {
                       })}
                     >
                       {showBack(child.props.showBack) && (
-                        <Button
-                          type="cancel"
-                          onClick={prev}
-                          className={styles.Button}
-                        >
-                          <FontAwesomeIcon icon={faChevronLeft} /> Back
+                        <Button variant="contained" onClick={prev}>
+                          <ChevronLeftIcon fontSize="small" />
                         </Button>
                       )}
                       {step < props.children.length && (
                         <Button
-                          className={cx(styles.Button, styles.NextButton)}
-                          kind="primary"
+                          variant="contained"
                           onClick={() => next(child.props.onNext)}
                           disabled={child.props.locked}
+                          color="success"
                         >
-                          <FontAwesomeIcon
-                            className={styles.ButtonIcon}
-                            icon={faChevronRight}
-                          />
+                          <ChevronRightIcon fontSize="small" />
                           {child.props.labelButtonNext
                             ? child.props.labelButtonNext
                             : "Continue"}
