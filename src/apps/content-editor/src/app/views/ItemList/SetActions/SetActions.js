@@ -8,6 +8,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import StorageIcon from "@mui/icons-material/Storage";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
+import AddIcon from "@mui/icons-material/Add";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSpinner, faBolt } from "@fortawesome/free-solid-svg-icons";
@@ -57,23 +58,19 @@ export class SetActions extends Component {
               <Option text="Un-Published" value="unpublished" />
             </Select>
 
-            <Button
-              variant="contained"
-              color="secondary"
-              title="Create Item"
-              id="AddItemButton"
-              className={cx(styles.Action, styles.Create)}
-            >
-              <AppLink
-                className={styles.AppLink}
-                to={`/content/${this.props.modelZUID}/new`}
+            <AppLink to={`/content/${this.props.modelZUID}/new`}>
+              <Button
+                variant="contained"
+                color="secondary"
+                title="Create Item"
+                id="AddItemButton"
+                startIcon={<AddIcon />}
               >
-                <FontAwesomeIcon icon={faPlus} />
                 {this.props.model
                   ? `Create ${this.props.model.label} Item`
-                  : "Create Model Item"}
-              </AppLink>
-            </Button>
+                  : "Create Model Item"}{" "}
+              </Button>
+            </AppLink>
 
             {Boolean(this.props.isDirty) && (
               <Button
