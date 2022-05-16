@@ -5,14 +5,10 @@ import { useHistory } from "react-router-dom";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBan,
-  faSpinner,
-  faTrash,
-  faTrashAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 import {
   CollapsibleCard,

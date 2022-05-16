@@ -1,6 +1,10 @@
 import React, { memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import AddIcon from "@mui/icons-material/Add";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
@@ -12,7 +16,7 @@ import {
 
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
-import { Button } from "@zesty-io/core/Button";
+
 import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -88,15 +92,14 @@ export const Release = memo(function Release(props) {
                 })}
               />
               <Button
+                variant="contained"
                 className={styles.Add}
                 onClick={onAdd}
                 disabled={selectedRelease === "0" || addingMember}
+                startIcon={
+                  addingMember ? <CircularProgress size="20px" /> : <AddIcon />
+                }
               >
-                {addingMember ? (
-                  <FontAwesomeIcon icon={faSpinner} />
-                ) : (
-                  <FontAwesomeIcon icon={faPlus} />
-                )}
                 Add
               </Button>
             </React.Fragment>
