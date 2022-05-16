@@ -3,19 +3,14 @@ import { Link } from "react-router-dom";
 import cx from "classnames";
 
 import Button from "@mui/material/Button";
+import CloseIcon from "@mui/icons-material/Close";
 
 import SaveIcon from "@mui/icons-material/Save";
 import StorageIcon from "@mui/icons-material/Storage";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlus,
-  faSpinner,
-  faTimesCircle,
-  faUpload,
-  faBolt,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSpinner, faBolt } from "@fortawesome/free-solid-svg-icons";
 
 import { Search } from "@zesty-io/core/Search";
 import { Select, Option } from "@zesty-io/core/Select";
@@ -85,7 +80,6 @@ export class SetActions extends Component {
                 variant="contained"
                 color="success"
                 title="Save"
-                className={cx(styles.Action, styles.Save)}
                 disabled={this.props.saving}
                 onClick={this.props.onSaveAll}
                 startIcon={
@@ -106,13 +100,16 @@ export class SetActions extends Component {
               </span>
             )}
             {this.props.isSorted && (
-              <span
-                className={styles.ResetSort}
+              <Button
+                variant="contained"
                 onClick={() => this.props.resetSort()}
+                startIcon={<CloseIcon />}
+                sx={{
+                  cursor: "pointer",
+                }}
               >
-                <FontAwesomeIcon icon={faTimesCircle} />
-                <p>&nbsp;Clear Sort</p>
-              </span>
+                Clear Sort
+              </Button>
             )}
           </div>
           <div className={styles.Right}>
@@ -152,7 +149,6 @@ export class SetActions extends Component {
                 variant="contained"
                 title="Add CSV Button"
                 id="AddCSVButton"
-                className={cx(styles.Action, styles.Create)}
                 startIcon={<FileUploadIcon />}
               >
                 Import CSV
