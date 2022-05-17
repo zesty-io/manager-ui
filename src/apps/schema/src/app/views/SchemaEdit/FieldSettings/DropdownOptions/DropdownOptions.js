@@ -5,7 +5,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-
+import { formatName } from "utility/formatName";
 import { updateField } from "shell/store/fields";
 
 import styles from "./DropdownOptions.less";
