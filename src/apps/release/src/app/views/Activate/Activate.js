@@ -3,9 +3,12 @@ import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import cx from "classnames";
 
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import AddIcon from "@mui/icons-material/Add";
+
 import { faPlus, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button } from "@zesty-io/core/Button";
 
 import { activate } from "shell/store/releases";
 
@@ -35,17 +38,14 @@ export function Activate() {
         </p>
 
         <Button
+          variant="contained"
+          color="success"
           disabled={loading}
           className={styles.Add}
-          kind="save"
           size="large"
           onClick={handleActivate}
+          startIcon={loading ? <CircularProgress size="20px" /> : <AddIcon />}
         >
-          {loading ? (
-            <FontAwesomeIcon icon={faSpinner} />
-          ) : (
-            <FontAwesomeIcon icon={faPlus} />
-          )}
           Activate Release App
         </Button>
       </div>
