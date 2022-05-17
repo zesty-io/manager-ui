@@ -285,7 +285,6 @@ const List = connect((state) => {
             size="small"
             variant="outlined"
             color="primary"
-            sx={{ backgroundColor: "primary.contrastText" }}
             fullWidth
           />
         </div>

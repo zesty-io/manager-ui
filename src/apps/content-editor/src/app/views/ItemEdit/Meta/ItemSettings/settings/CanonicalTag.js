@@ -105,10 +105,7 @@ export const CanonicalTag = memo(function CanonicalTag(props) {
                 size="small"
                 variant="outlined"
                 color="primary"
-                sx={{
-                  backgroundColor: "primary.contrastText",
-                  mt: "8px",
-                }}
+                sx={{ mt: 1 }}
                 fullWidth
               />
             </div>
@@ -130,10 +127,7 @@ export const CanonicalTag = memo(function CanonicalTag(props) {
                 size="small"
                 variant="outlined"
                 color="primary"
-                sx={{
-                  backgroundColor: "primary.contrastText",
-                  mt: "8px",
-                }}
+                sx={{ mt: 1 }}
                 fullWidth
               />
             </div>

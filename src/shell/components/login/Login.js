@@ -107,10 +107,7 @@ export default connect((state) => {
                   size="small"
                   variant="outlined"
                   color="primary"
-                  sx={{
-                    backgroundColor: "primary.contrastText",
-                    mb: "16px",
-                  }}
+                  sx={{ mb: 2 }}
                   fullWidth
                 />
               </label>

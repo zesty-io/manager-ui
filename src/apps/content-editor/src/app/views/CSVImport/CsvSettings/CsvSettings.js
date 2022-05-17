@@ -189,9 +189,6 @@ class CanonicalTag extends Component {
                   size="small"
                   variant="outlined"
                   color="primary"
-                  InputProps={{
-                    sx: { backgroundColor: "primary.contrastText" },
-                  }}
                   fullWidth
                 />
               </div>
@@ -213,9 +210,6 @@ class CanonicalTag extends Component {
                   size="small"
                   variant="outlined"
                   color="primary"
-                  InputProps={{
-                    sx: { backgroundColor: "primary.contrastText" },
-                  }}
                   fullWidth
                 />
               </div>

@@ -64,7 +64,6 @@ export function RedirectCreator(props) {
           size="small"
           variant="outlined"
           color="primary"
-          sx={{ backgroundColor: "primary.contrastText" }}
         />
       </span>
       <span className={styles.RedirectCreatorCell}>

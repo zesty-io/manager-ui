@@ -92,7 +92,6 @@ function RedirectImportTableRow(props) {
             size="small"
             variant="outlined"
             color="primary"
-            sx={{ backgroundColor: "primary.contrastText" }}
           />
         )}
         <TextField
@@ -102,7 +101,6 @@ function RedirectImportTableRow(props) {
           size="small"
           variant="outlined"
           color="primary"
-          sx={{ backgroundColor: "primary.contrastText" }}
         />
       </span>
 
