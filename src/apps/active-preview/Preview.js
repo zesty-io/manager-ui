@@ -166,12 +166,16 @@ export function Preview(props) {
               </Button>
               <TextField
                 ref={input}
-                InputProps={{ className: styles.Route }}
                 value={`${domain}${route}`}
                 size="small"
                 variant="outlined"
                 color="primary"
-                sx={{ backgroundColor: "primary.contrastText" }}
+                sx={{
+                  "@media (max-width: 650px)": {
+                    display: "none",
+                  },
+                }}
+                InputProps={{ sx: { flex: 1 } }}
                 fullWidth
               />
             </div>
