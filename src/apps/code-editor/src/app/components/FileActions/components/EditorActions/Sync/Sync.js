@@ -1,15 +1,13 @@
 import { memo, useState } from "react";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBan,
-  faCheckCircle,
-  faSpinner,
-  faSync,
-} from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import SyncIcon from "@mui/icons-material/Sync";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
 import { Notice } from "@zesty-io/core/Notice";
-import { Button } from "@zesty-io/core/Button";
+
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 
@@ -39,12 +37,11 @@ export const Sync = memo(function Sync(props) {
 
   return (
     <div>
-      <Button type="alt" onClick={() => setOpen(true)}>
-        {loading ? (
-          <FontAwesomeIcon spin icon={faSpinner} />
-        ) : (
-          <FontAwesomeIcon icon={faSync} />
-        )}
+      <Button
+        variant="contained"
+        onClick={() => setOpen(true)}
+        startIcon={loading ? <CircularProgress size="20px" /> : <SyncIcon />}
+      >
         Sync
       </Button>
 
@@ -63,16 +60,22 @@ export const Sync = memo(function Sync(props) {
         </ModalContent>
         <ModalFooter>
           <ButtonGroup className={styles.ModalActions}>
-            <Button type="save" onClick={handleSync} disabled={loading}>
-              {loading ? (
-                <FontAwesomeIcon spin icon={faSpinner} />
-              ) : (
-                <FontAwesomeIcon icon={faCheckCircle} />
-              )}
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleSync}
+              disabled={loading}
+              startIcon={
+                loading ? <CircularProgress size="20px" /> : <CheckCircleIcon />
+              }
+            >
               Sync File
             </Button>
-            <Button type="cancel" onClick={() => setOpen(false)}>
-              <FontAwesomeIcon icon={faBan} />
+            <Button
+              variant="contained"
+              onClick={() => setOpen(false)}
+              startIcon={<DoDisturbAltIcon />}
+            >
               Cancel (ESC)
             </Button>
           </ButtonGroup>
