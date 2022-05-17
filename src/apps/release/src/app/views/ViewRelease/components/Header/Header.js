@@ -8,9 +8,6 @@ import { fetchVersions } from "shell/store/contentVersions";
 import Button from "@mui/material/Button";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-
 import ContentSearch from "shell/components/ContentSearch";
 import { Select, Option } from "@zesty-io/core/Select";
 import { AppLink } from "@zesty-io/core/AppLink";

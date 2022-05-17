@@ -13,20 +13,23 @@ import debounce from "lodash/debounce";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCalendar,
   faDatabase,
   faExclamationTriangle,
   faFile,
   faListAlt,
-  faSort,
-  faSortAlphaDown,
-  faUser,
   faEye,
 } from "@fortawesome/free-solid-svg-icons";
 
+import Button from "@mui/material/Button";
+import SortIcon from "@mui/icons-material/Sort";
+import SortByAlphaIcon from "@mui/icons-material/SortByAlpha";
+import PersonIcon from "@mui/icons-material/Person";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import PersonSearchIcon from "@mui/icons-material/PersonSearch";
+
 import { Search } from "@zesty-io/core/Search";
 import { Loader } from "@zesty-io/core/Loader";
-import { Button } from "@zesty-io/core/Button";
+
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Input } from "@zesty-io/core/Input";
 import { Url } from "@zesty-io/core/Url";
@@ -260,20 +263,40 @@ const List = connect((state) => {
         <div className={styles.SortBy}>
           <p className={styles.Title}>Sort By</p>
           <ButtonGroup>
-            <Button onClick={() => setSortType("default")}>
-              <FontAwesomeIcon icon={faSort} /> Default
+            <Button
+              variant="contained"
+              onClick={() => setSortType("default")}
+              startIcon={<SortIcon />}
+            >
+              Default
             </Button>
-            <Button onClick={() => setSortType("alpha")}>
-              <FontAwesomeIcon icon={faSortAlphaDown} /> Title
+            <Button
+              variant="contained"
+              onClick={() => setSortType("alpha")}
+              startIcon={<SortByAlphaIcon />}
+            >
+              Title
             </Button>
-            <Button onClick={() => setSortType("edited")}>
-              <FontAwesomeIcon icon={faCalendar} /> Edited
+            <Button
+              variant="contained"
+              onClick={() => setSortType("edited")}
+              startIcon={<CalendarMonthIcon />}
+            >
+              Edited
             </Button>
-            <Button onClick={() => setSortType("created")}>
-              <FontAwesomeIcon icon={faCalendar} /> Created
+            <Button
+              variant="contained"
+              onClick={() => setSortType("created")}
+              startIcon={<PersonSearchIcon />}
+            >
+              Created
             </Button>
-            <Button onClick={() => setSortType("user")}>
-              <FontAwesomeIcon icon={faUser} /> User
+            <Button
+              variant="contained"
+              onClick={() => setSortType("user")}
+              startIcon={<PersonIcon />}
+            >
+              User
             </Button>
           </ButtonGroup>
         </div>
