@@ -42,7 +42,7 @@ describe("Fields", () => {
           .clear()
           .type(newFieldLabel);
 
-        cy.get("[data-cy=fieldSave]").eq(1).click();
+        cy.get("[data-cy=fieldSave]").last().should("not.be.disabled").click();
 
         cy.get('.Fields article input[name="label"]')
           .last()
@@ -51,9 +51,6 @@ describe("Fields", () => {
   });
 
   it("Deactivate", () => {
-    // cy.get(".Fields article footer button.deactivate").last().click({
-    //   timeout: 10000,
-    // });
     cy.get("[data-cy=deactivated]").eq(0).click();
   });
 
