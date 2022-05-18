@@ -5,6 +5,7 @@ import cx from "classnames";
 
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
+import ToggleButton from "@mui/material/ToggleButton";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
@@ -156,6 +157,9 @@ export default connect((state) => {
           <h1 className={styles.headline}>
             You are creating a new content model
           </h1>
+          <ToggleButton value="bold" aria-label="bold">
+            ON
+          </ToggleButton>
         </CardHeader>
         <CardContent className={styles.CardContent}>
           <section className={cx(styles.Step, styles.SchemaType)}>
