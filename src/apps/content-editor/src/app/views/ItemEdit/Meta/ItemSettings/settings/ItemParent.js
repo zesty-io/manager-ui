@@ -152,7 +152,7 @@ export const ItemParent = connect((state) => {
             >
               <InfoIcon fontSize="small" />
             </Tooltip>
-            &nbsp; Select this Page's Parent
+            &nbsp;Select this Page's Parent
           </label>
 
           {/*

@@ -3,18 +3,16 @@ import { useHistory } from "react-router-dom";
 import cx from "classnames";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
+import Button from "@mui/material/Button";
+import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
+import CircularProgress from "@mui/material/CircularProgress";
+import SaveIcon from "@mui/icons-material/Save";
+import PauseCircleIcon from "@mui/icons-material/PauseCircle";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faExpandArrowsAlt,
-  faSpinner,
-  faSave,
-  faPlayCircle,
-  faPauseCircle,
-  faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { Button } from "@zesty-io/core/Button";
 
 import { FieldSettings } from "../FieldSettings";
 
@@ -77,7 +75,7 @@ function Header(props) {
       </h1>
       <small className={styles.Type}>{props.field.datatype}</small>
       <Button
-        className={styles.DragHandle}
+        variant="contained"
         draggable="true"
         onClick={(evt) => {
           // Prevent the card toggle
@@ -85,8 +83,9 @@ function Header(props) {
           evt.stopPropagation();
         }}
         onDragStart={props.onDragStart}
+        sx={{ cursor: "move" }}
       >
-        <FontAwesomeIcon icon={faExpandArrowsAlt} />
+        <ZoomOutMapIcon fontSize="small" sx={{ mr: "0 !important" }} />
       </Button>
     </div>
   );
@@ -126,17 +125,9 @@ export function Footer(props) {
   return (
     <footer className={styles.FieldFooter}>
       <ButtonGroup className={styles.FieldActions}>
-        <Button type="save" disabled={!props.field.dirty} onClick={onSave}>
-          {loading ? (
-            <FontAwesomeIcon icon={faSpinner} spin />
-          ) : (
-            <FontAwesomeIcon icon={faSave} />
-          )}
-          Save {metaShortcut}
-        </Button>
-
         {props.field.deletedAt ? (
           <Button
+            variant="contained"
             onClick={(evt) => {
               evt.preventDefault();
               setLoading(true);
@@ -144,18 +135,16 @@ export function Footer(props) {
                 activateField(props.field.contentModelZUID, props.field.ZUID)
               );
             }}
+            startIcon={
+              loading ? <CircularProgress size="20px" /> : <PauseCircleIcon />
+            }
           >
-            {loading ? (
-              <FontAwesomeIcon icon={faSpinner} spin />
-            ) : (
-              <FontAwesomeIcon icon={faPlayCircle} />
-            )}
             Reactivate
           </Button>
         ) : (
           <Button
-            className="deactivate"
-            type="cancel"
+            variant="contained"
+            data-cy="deactivated"
             onClick={(evt) => {
               evt.preventDefault();
               setLoading(true);
@@ -163,15 +152,23 @@ export function Footer(props) {
                 deactivateField(props.field.contentModelZUID, props.field.ZUID)
               );
             }}
+            startIcon={
+              loading ? <CircularProgress size="20px" /> : <PauseCircleIcon />
+            }
           >
-            {loading ? (
-              <FontAwesomeIcon icon={faSpinner} spin />
-            ) : (
-              <FontAwesomeIcon icon={faPauseCircle} />
-            )}
             Deactivate
           </Button>
         )}
+        <Button
+          variant="contained"
+          color="success"
+          data-cy="fieldSave"
+          disabled={!props.field.dirty}
+          onClick={onSave}
+          startIcon={loading ? <CircularProgress size="20px" /> : <SaveIcon />}
+        >
+          Save {metaShortcut}
+        </Button>
       </ButtonGroup>
     </footer>
   );
