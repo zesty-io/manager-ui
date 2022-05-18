@@ -6,9 +6,6 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import AddIcon from "@mui/icons-material/Add";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faSpinner } from "@fortawesome/free-solid-svg-icons";
-
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 
 import { Search } from "@zesty-io/core/Search";
