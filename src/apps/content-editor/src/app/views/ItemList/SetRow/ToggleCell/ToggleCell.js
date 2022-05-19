@@ -14,8 +14,6 @@ export const ToggleCell = memo(function ToggleCell(props) {
   if (props.field.settings && props.field.settings.options) {
     let options = Object.values(props.field.settings.options);
 
-    console.log(props);
-
     if (Array.isArray(options) && options.length) {
       if (options[0].length > 3 || options[1].length > 3) {
         return (
