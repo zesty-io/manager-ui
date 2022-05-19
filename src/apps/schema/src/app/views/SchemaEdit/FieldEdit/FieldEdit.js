@@ -166,6 +166,7 @@ export function Footer(props) {
         ) : (
           <Button
             variant="contained"
+            data-cy="deactivated"
             onClick={(evt) => {
               evt.preventDefault();
               setLoading(true);
@@ -183,6 +184,7 @@ export function Footer(props) {
         <Button
           variant="contained"
           color="success"
+          data-cy="fieldSave"
           disabled={!props.field.dirty}
           onClick={saveOrWarn}
           startIcon={loading ? <CircularProgress size="20px" /> : <SaveIcon />}

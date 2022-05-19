@@ -256,6 +256,7 @@ export default function Field({
           value={value}
           onChange={onChange}
           type="url"
+          maxLength={2000}
         />
       );
 
