@@ -193,7 +193,12 @@ export function Footer(props) {
         </Button>
         <ConfirmDialog
           isOpen={warningIsOpen}
-          prompt="This could break your experience (e.g. your Parsley code)"
+          title="Test"
+          prompt="Changing the reference name could break JSON endpoints or
+            Parsley Views that expect the name as it was. You can change the
+            Field Label without needing to change the reference_name. Only
+            proceed if you are confident it will not affect your production
+            code."
         >
           <Button
             variant="contained"
