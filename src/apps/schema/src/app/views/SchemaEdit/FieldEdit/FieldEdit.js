@@ -106,7 +106,6 @@ export function Footer(props) {
   //const [name, setName] = useState(props.field.name)
 
   const save = () => {
-    console.log("save");
     setLoading(true);
     return props
       .dispatch(saveField(props.field.contentModelZUID, props.field.ZUID))
@@ -135,40 +134,15 @@ export function Footer(props) {
   };
 
   const warn = () => {
-    console.log("warn");
     setWarningIsOpen(true);
   };
 
   const saveOrWarn = () => {
-    //if(props.field.breakingChangeDirty) warn()
-    //else save()
-    console.log("saveOrWarn");
-    console.log(props.field.name);
-    console.log(props.originalFieldName);
-    console.log(props.field.name === props.originalFieldName);
     if (props.field.name === props.originalFieldName) save();
     else warn();
   };
 
-  /*
-  const saveAndCloseWarning = async () => {
-    console.log('saveAndCloseWarning')
-    await save()
-    setWarningIsOpen(close)
-  }
-  */
-
-  /*
-  const discard = () => {
-    dispatch({
-      type: "MARK_ITEM_DIRTY",
-      props.field.ZUID
-    })
-  }
-  */
-
   const metaShortcut = useMetaKey("s", saveOrWarn);
-  console.log(props);
 
   return (
     <footer className={styles.FieldFooter}>
