@@ -12,6 +12,9 @@ export function fields(state = {}, action) {
       return { ...state, [action.payload.fieldZUID]: action.payload.data };
 
     case "SET_FIELD_VALUE":
+      const breakingChangeDirty =
+        state[action.payload.fieldZUID].breakingChangeDirty ||
+        action.payload.key === "name";
       return {
         ...state,
         [action.payload.fieldZUID]: {
@@ -21,6 +24,7 @@ export function fields(state = {}, action) {
           [action.payload.key]: action.payload.value,
           // Mark as updated
           dirty: true,
+          breakingChangeDirty,
         },
       };
 
@@ -48,6 +52,7 @@ export function fields(state = {}, action) {
         [action.payload.fieldZUID]: {
           ...state[action.payload.fieldZUID],
           dirty: false,
+          breakingChangeDirty: false,
         },
       };
 
