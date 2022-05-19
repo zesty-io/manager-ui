@@ -1,5 +1,7 @@
-import { ToggleButton } from "@zesty-io/core/ToggleButton";
 import cx from "classnames";
+
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
 
 import styles from "./ImportTableRowDisabled.less";
 
@@ -14,13 +16,10 @@ export default function ImportTableRowDisabled({
     <div className={styles.ImportTableRowDisabled}>
       <span className={styles.RowCell}>{path}</span>
       <span className={styles.RedirectCreatorCell}>
-        <ToggleButton
-          className={styles.code}
-          name="redirectType"
-          value={code}
-          offValue="302"
-          onValue="301"
-        />
+        <ToggleButtonGroup color="secondary" value={code} size="small" disabled>
+          <ToggleButton value={302}>302</ToggleButton>
+          <ToggleButton value={301}>301</ToggleButton>
+        </ToggleButtonGroup>
       </span>
       <span className={styles.RowCell}>
         {target}
