@@ -5,8 +5,7 @@ import Button from "@mui/material/Button";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import AddIcon from "@mui/icons-material/Add";
-
-import { Input } from "@zesty-io/core/Input";
+import TextField from "@mui/material/TextField";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { Search } from "@zesty-io/core/Search";
@@ -56,14 +55,16 @@ export function RedirectCreator(props) {
   return (
     <div className={styles.RedirectCreator}>
       <span className={styles.RedirectCreatorCell}>
-        <Input
-          className={styles.from}
+        <TextField
           name="redirectFrom"
           type="text"
           value={from}
           placeholder="URL path to redirect from"
           onChange={(evt) => setFrom(evt.target.value)}
           error={!!from.length && !from.startsWith("/")}
+          size="small"
+          variant="outlined"
+          color="primary"
         />
       </span>
       <span className={styles.RedirectCreatorCell}>

@@ -235,25 +235,36 @@ export function fileOpen(fileZUID, env, open) {
 
 export function fetchFiles(type) {
   return (dispatch) => {
-    return request(`${CONFIG.API_INSTANCE}/web/${type}`)
-      .then((res) => {
-        if (res.status === 200) {
+    const requests = [
+      request(`${CONFIG.API_INSTANCE}/web/${type}?status=dev`),
+      request(`${CONFIG.API_INSTANCE}/web/${type}?status=live`),
+    ];
+    return Promise.all(requests)
+      .then(([resDev, resLive]) => {
+        if (resDev.status === 200 && resLive.status === 200) {
           dispatch({
             type: "FETCH_FILES_SUCCESS",
             payload: {
-              files: res.data,
+              files: [...resDev.data, ...resLive.data],
             },
           });
-        } else {
+        } else if (resDev.status !== 200) {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to load instance ${type}. ${res.status} | ${res.error}`,
+              message: `Failed to load instance ${type} dev files. ${resDev.status} | ${resDev.error}`,
+            })
+          );
+        } else if (resLive.status !== 200) {
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `Failed to load instance ${type} live files. ${resLive.status} | ${resLive.error}`,
             })
           );
         }
 
-        return res;
+        return [resDev, resLive];
       })
       .catch((err) => {
         console.error(err);

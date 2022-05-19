@@ -6,8 +6,7 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 
 import AddIcon from "@mui/icons-material/Add";
-
-import { Input } from "@zesty-io/core/Input";
+import TextField from "@mui/material/TextField";
 
 import { Select, Option } from "@zesty-io/core/Select";
 
@@ -89,12 +88,21 @@ function RedirectImportTableRow(props) {
             })}
           </Select>
         ) : (
-          <Input onChange={handlePathTarget} defaultValue={props.target} />
+          <TextField
+            onChange={handlePathTarget}
+            defaultValue={props.target}
+            size="small"
+            variant="outlined"
+            color="primary"
+          />
         )}
-        <Input
+        <TextField
           onChange={handleQuery}
           placeholder="Redirect query string"
           defaultValue={props.query_string}
+          size="small"
+          variant="outlined"
+          color="primary"
         />
       </span>
 

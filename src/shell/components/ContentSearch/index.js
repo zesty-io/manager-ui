@@ -23,12 +23,12 @@ import {
   faUser,
   faEye,
 } from "@fortawesome/free-solid-svg-icons";
+import TextField from "@mui/material/TextField";
 
 import { Search } from "@zesty-io/core/Search";
 import { Loader } from "@zesty-io/core/Loader";
 import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { Input } from "@zesty-io/core/Input";
 import { Url } from "@zesty-io/core/Url";
 
 import { searchItems } from "shell/store/content";
@@ -280,7 +280,13 @@ const List = connect((state) => {
 
         <div className={styles.FilterBy}>
           <p className={styles.Title}>Filter By</p>
-          <Input onChange={(evt) => setFilterTerm(evt.target.value)} />
+          <TextField
+            onChange={(evt) => setFilterTerm(evt.target.value)}
+            size="small"
+            variant="outlined"
+            color="primary"
+            fullWidth
+          />
         </div>
       </li>
 
