@@ -11,7 +11,6 @@ import DesktopWindowsIcon from "@mui/icons-material/DesktopWindows";
 import { PreviewUrl } from "../PreviewUrl";
 import { LiveUrl } from "../LiveUrl";
 
-import styles from "./DuoModeToggle.less";
 export function DuoModeToggle(props) {
   const dispatch = useDispatch();
 
@@ -71,7 +70,7 @@ export function DuoModeToggle(props) {
           }}
         >
           <ToggleButton value={0}>
-            <CloseIcon CloseIcon fontSize="small" />
+            <CloseIcon fontSize="small" />
           </ToggleButton>
           <ToggleButton value={1}>
             <DesktopWindowsIcon fontSize="small" />
