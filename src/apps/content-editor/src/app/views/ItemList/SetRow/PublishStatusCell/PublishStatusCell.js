@@ -3,8 +3,8 @@ import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock, faEye, faCircle } from "@fortawesome/free-solid-svg-icons";
+import Link from "@mui/material/Link";
 
-import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./PublishStatusCell.less";
@@ -40,7 +40,9 @@ export const PublishStatusCell = memo(function PublishStatusCell(props) {
     );
   } else {
     return (
-      <Url
+      <Link
+        underline="none"
+        color="secondary"
         className={cx(styles.PublishStatusCell)}
         href={`${CONFIG.URL_PREVIEW_FULL}${props.item.web.path}`}
         target="_blank"
@@ -57,7 +59,7 @@ export const PublishStatusCell = memo(function PublishStatusCell(props) {
         ) : (
           <FontAwesomeIcon icon={faEye} className={styles.Unpublished} />
         )}
-      </Url>
+      </Link>
     );
   }
 });

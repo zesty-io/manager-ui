@@ -1,9 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome, faLink, faUnlink } from "@fortawesome/free-solid-svg-icons";
-import { Url } from "@zesty-io/core/Url";
 
 import { useDomain } from "shell/hooks/use-domain";
 import styles from "./LiveUrl.less";
+
+import Link from "@mui/material/Link";
 
 export function LiveUrl(props) {
   const domain = useDomain();
@@ -13,7 +14,9 @@ export function LiveUrl(props) {
   const url = domain + pathPart;
 
   return props.item.publishing && props.item.publishing.isPublished ? (
-    <Url
+    <Link
+      underline="none"
+      color="secondary"
       target="_blank"
       title="Live Published"
       href={url}
@@ -26,7 +29,7 @@ export function LiveUrl(props) {
       )}
       &nbsp;
       <span>Live</span>
-    </Url>
+    </Link>
   ) : (
     <span className={styles.Unpublished}>
       <FontAwesomeIcon icon={faUnlink} />

@@ -9,9 +9,9 @@ import StorageIcon from "@mui/icons-material/Storage";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBolt, faFileCode } from "@fortawesome/free-solid-svg-icons";
+import Link from "@mui/material/Link";
 
 import { AppLink } from "@zesty-io/core/AppLink";
-import { Url } from "@zesty-io/core/Url";
 import { Notice } from "@zesty-io/core/Notice";
 import { CopyButton } from "@zesty-io/core/CopyButton";
 
@@ -27,14 +27,16 @@ export const FileActions = memo(function FileActions(props) {
     <header className={styles.FileActions}>
       <div className={styles.FileMeta}>
         {props.contentModelZUID ? (
-          <Url
+          <Link
+            underline="none"
+            color="secondary"
             className={styles.FileLink}
             href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.contentModelZUID}.json`}
             target="_blank"
             title="Preview JSON"
           >
             <FontAwesomeIcon icon={faBolt} />
-          </Url>
+          </Link>
         ) : (
           <FontAwesomeIcon className={styles.FileLink} icon={faFileCode} />
         )}

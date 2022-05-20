@@ -18,6 +18,8 @@ import { Search } from "@zesty-io/core/Search";
 import { Select, Option } from "@zesty-io/core/Select";
 import { AppLink } from "@zesty-io/core/AppLink";
 
+import MuiLink from "@mui/material/Link";
+
 import { LanguageSelector } from "../../ItemEdit/components/Header/LanguageSelector";
 
 import styles from "./SetActions.less";
@@ -112,7 +114,9 @@ export class SetActions extends Component {
             <span>{this.props.itemCount} Total Items</span>
 
             {this.props.instance.basicApi ? (
-              <Url
+              <MuiLink
+                underline="none"
+                color="secondary"
                 className={styles.InstantApi}
                 target="_blank"
                 title="Instant API"
@@ -124,7 +128,7 @@ export class SetActions extends Component {
               >
                 <FontAwesomeIcon icon={faBolt} />
                 &nbsp;Instant API
-              </Url>
+              </MuiLink>
             ) : null}
 
             {this.props.model && this.props.user.is_developer && (

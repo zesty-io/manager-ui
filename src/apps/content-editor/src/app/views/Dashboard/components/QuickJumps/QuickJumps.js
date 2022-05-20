@@ -2,9 +2,9 @@ import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import Link from "@mui/material/Link";
 
 import { Card, CardContent } from "@zesty-io/core/Card";
-import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./QuickJumps.less";
@@ -23,7 +23,9 @@ export function QuickJumps(props) {
             {props.cardTitle}
           </AppLink>
 
-          <Url
+          <Link
+            underline="none"
+            color="secondary"
             href={props.docsLink}
             target="_blank"
             title={props.docsLink}
@@ -31,7 +33,7 @@ export function QuickJumps(props) {
           >
             <FontAwesomeIcon icon={faExternalLinkAlt} />
             &nbsp;Documentation
-          </Url>
+          </Link>
         </CardContent>
       </Card>
     </div>

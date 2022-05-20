@@ -18,9 +18,15 @@ export function PreviewUrl(props) {
   }
 
   return (
-    <Url target="_blank" title={url} href={url}>
+    <Link
+      underline="none"
+      color="secondary"
+      target="_blank"
+      title={url}
+      href={url}
+    >
       <FontAwesomeIcon icon={faEye} />
       &nbsp;Preview {props.item.meta.version}
-    </Url>
+    </Link>
   );
 }

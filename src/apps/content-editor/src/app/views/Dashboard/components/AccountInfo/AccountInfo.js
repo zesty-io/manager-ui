@@ -8,8 +8,8 @@ import {
   faGlobeAmericas,
   faCog,
 } from "@fortawesome/free-solid-svg-icons";
+import Link from "@mui/material/Link";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
-import { Url } from "@zesty-io/core/Url";
 import styles from "./AccountInfo.less";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { useDomain } from "shell/hooks/use-domain";
@@ -46,7 +46,9 @@ export function AccountInfo(props) {
 
           <div className={styles.Links}>
             {domain && (
-              <Url
+              <Link
+                underline="none"
+                color="secondary"
                 className={styles.Live}
                 href={domain}
                 target="_blank"
@@ -54,23 +56,27 @@ export function AccountInfo(props) {
               >
                 <FontAwesomeIcon icon={faHome} />
                 &nbsp;View Live Domain
-              </Url>
+              </Link>
             )}
-            <Url
+            <Link
+              underline="none"
+              color="secondary"
               target="_blank"
               title={`${CONFIG.URL_PREVIEW_PROTOCOL}${props.randomHashID}${CONFIG.URL_PREVIEW}`}
               href={`${CONFIG.URL_PREVIEW_PROTOCOL}${props.randomHashID}${CONFIG.URL_PREVIEW}`}
             >
               <FontAwesomeIcon icon={faEye} />
               &nbsp;View WebEngine Preview
-            </Url>
-            <Url
+            </Link>
+            <Link
+              underline="none"
+              color="secondary"
               title="Open this instance accounts overview"
               href={`${CONFIG.URL_ACCOUNTS}/instances/${props.instanceZUID}`}
             >
               <FontAwesomeIcon icon={faUser} />
               &nbsp; Instance Admin
-            </Url>
+            </Link>
             {!faviconURL ? (
               <AppLink to="/settings/head" title="Set Favicon">
                 <FontAwesomeIcon icon={faCog} />
