@@ -543,17 +543,6 @@ export function fetchGroupFiles(groupZUID) {
 
 export function uploadFile(file, bin) {
   return (dispatch, getState) => {
-    function handleError() {
-      dispatch(fileUploadError(file));
-      dispatch(
-        notify({
-          message:
-            "Failed uploading file. Individual file size must be 32MB or smaller",
-          kind: "error",
-        })
-      );
-    }
-
     file.filename = file.file.name;
     file.uploadID = uuidv4();
     file.progress = 0;
@@ -585,7 +574,24 @@ export function uploadFile(file, bin) {
         uploadedFile.uploadID = file.uploadID;
         dispatch(fileUploadSuccess(uploadedFile));
       } else {
-        handleError();
+        if (req.status === 413) {
+          dispatch(
+            notify({
+              message:
+                "Failed uploading file. Individual file size must be 32MB or smaller",
+              kind: "error",
+            })
+          );
+        } else {
+          dispatch(
+            notify({
+              message: "Failed uploading file. Server failure",
+              kind: "error",
+            })
+          );
+        }
+
+        dispatch(fileUploadError(file));
       }
     });
     req.addEventListener("abort", handleError);
