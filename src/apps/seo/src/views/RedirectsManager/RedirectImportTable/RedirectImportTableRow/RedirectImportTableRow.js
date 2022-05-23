@@ -57,7 +57,9 @@ function RedirectImportTableRow(props) {
           size="small"
           exclusive
           onChange={(e, val) => {
-            if (val !== null) setCode(val);
+            if (val !== null) {
+              setCode(val);
+            }
           }}
         >
           <ToggleButton value={302}>302</ToggleButton>

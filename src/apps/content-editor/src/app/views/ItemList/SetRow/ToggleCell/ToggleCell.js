@@ -27,7 +27,7 @@ export const ToggleCell = memo(function ToggleCell(props) {
                   props.onChange(val, props.name);
                 }
               }}
-              onClick={(e) => e.stopPropagation()}
+              onClick={(evt) => evt.stopPropagation()}
               exclusive
             >
               <ToggleButton value={0}>False</ToggleButton>
