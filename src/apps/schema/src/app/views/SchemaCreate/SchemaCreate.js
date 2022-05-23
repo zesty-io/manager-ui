@@ -5,7 +5,6 @@ import cx from "classnames";
 
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
-import ToggleButton from "@mui/material/ToggleButton";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
