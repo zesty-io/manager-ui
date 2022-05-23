@@ -4,13 +4,17 @@ import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
 
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import FormLabel from "@mui/material/FormLabel";
 import Button from "@mui/material/Button";
 import SaveIcon from "@mui/icons-material/Save";
 import CircularProgress from "@mui/material/CircularProgress";
 
+import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
+
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldLabel } from "@zesty-io/core/FieldLabel";
-import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { Select, Option } from "@zesty-io/core/Select";
 import { Divider } from "@zesty-io/core/Divider";
@@ -192,6 +196,19 @@ export default connect((state) => {
                       offValue="Off"
                       onChange={setValue}
                     />
+                    <ToggleButtonGroup
+                      color="secondary"
+                      size="small"
+                      value={fieldValues[field.key]}
+                      onChange={(e, val) => {
+                        if (val !== null) {
+                          props.onChange(val, props.name);
+                        }
+                      }}
+                    >
+                      <ToggleButton value={"on"}>On Davey</ToggleButton>
+                      <ToggleButton value={"off"}>Off Davey</ToggleButton>
+                    </ToggleButtonGroup>
                   </div>
                 );
               } else {
