@@ -302,8 +302,7 @@ export function ContentInsights(props) {
         </div>
         <Divider
           sx={{
-            mt: 1,
-            mb: 1,
+            my: 1,
           }}
         />
         <h4>Content and Meta Matched Words</h4>
@@ -326,8 +325,7 @@ export function ContentInsights(props) {
         </div>
         <Divider
           sx={{
-            mt: 1,
-            mb: 1,
+            my: 1,
           }}
         />
         <h4>
@@ -381,8 +379,7 @@ export function ContentInsights(props) {
         )}
         <Divider
           sx={{
-            mt: 1,
-            mb: 1,
+            my: 1,
           }}
         />
         <h4>Words Occurrences from the URL, Meta Title and Description</h4>
