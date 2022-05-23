@@ -4,6 +4,8 @@ import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
 
+import Stack from "@mui/material/Stack";
+import Tooltip from "@mui/material/Tooltip";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import FormLabel from "@mui/material/FormLabel";
@@ -29,7 +31,6 @@ import { updateSettings } from "shell/store/settings";
 
 import styles from "./SettingsStyles.less";
 import typographystyles from "@zesty-io/core/typography.less";
-import { Tooltip } from "chart.js";
 
 export default connect((state) => {
   return {
@@ -188,49 +189,69 @@ export default connect((state) => {
               } else if (field.key === "preferred_domain_prefix") {
                 return (
                   <div key={field.ZUID} className={styles.column}>
-                    <FieldTypeBinary
-                      key={field.ZUID}
-                      name={field.key}
-                      value={fieldValues[field.key]}
-                      label={field.keyFriendly}
-                      tooltip={`Activating the WWW setting requires DNS setup of both the apex domain and www sub-domain. ${field.tips}`}
-                      onValue="On"
-                      offValue="Off"
-                      onChange={setValue}
-                    />
+                    <FormLabel sx={{ color: "primary.dark" }}>
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        sx={{
+                          my: 1,
+                        }}
+                      >
+                        <Tooltip
+                          title={`Activating the WWW setting requires DNS setup of both the apex domain and www sub-domain.`}
+                        >
+                          <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                        </Tooltip>
+                        {field.keyFriendly}
+                      </Stack>
+                    </FormLabel>
                     <ToggleButtonGroup
                       color="secondary"
                       size="small"
                       value={fieldValues[field.key]}
-                      onChange={setValue}
+                      exclusive
+                      onChange={(e, val) => {
+                        if (val !== null) {
+                          setValue(val, field.key);
+                        }
+                      }}
                     >
-                      <FormLabel>
-                        <Tooltip
-                          title={`Activating the WWW setting requires DNS setup of both the apex domain and www sub-domain. ${field.tips}`}
-                        >
-                          <InfoIcon fontSize="small" />
-                        </Tooltip>
-                        {field.keyFriendly}
-                      </FormLabel>
-
-                      <ToggleButton value={"on"}>On </ToggleButton>
-                      <ToggleButton value={"off"}>Off </ToggleButton>
+                      <ToggleButton value={"0"}>Off </ToggleButton>
+                      <ToggleButton value={"1"}>On </ToggleButton>
                     </ToggleButtonGroup>
                   </div>
                 );
               } else {
                 return (
                   <div key={field.ZUID} className={styles.column}>
-                    <FieldTypeBinary
-                      key={field.ZUID}
-                      name={field.key}
+                    <FormLabel sx={{ color: "primary.dark" }}>
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        sx={{
+                          my: 1,
+                        }}
+                      >
+                        <Tooltip title={field.tips}>
+                          <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                        </Tooltip>
+                        {field.keyFriendly}
+                      </Stack>
+                    </FormLabel>
+                    <ToggleButtonGroup
+                      color="secondary"
+                      size="small"
                       value={fieldValues[field.key]}
-                      label={field.keyFriendly}
-                      tooltip={field.tips}
-                      onValue="On"
-                      offValue="Off"
-                      onChange={setValue}
-                    />
+                      exclusive
+                      onChange={(e, val) => {
+                        if (val !== null) {
+                          setValue(val, field.key);
+                        }
+                      }}
+                    >
+                      <ToggleButton value={"0"}>Off </ToggleButton>
+                      <ToggleButton value={"1"}>On </ToggleButton>
+                    </ToggleButtonGroup>
                   </div>
                 );
               }
