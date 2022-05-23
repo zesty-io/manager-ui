@@ -9,6 +9,7 @@ import ToggleButton from "@mui/material/ToggleButton";
 import FormLabel from "@mui/material/FormLabel";
 import Button from "@mui/material/Button";
 import SaveIcon from "@mui/icons-material/Save";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
@@ -28,6 +29,7 @@ import { updateSettings } from "shell/store/settings";
 
 import styles from "./SettingsStyles.less";
 import typographystyles from "@zesty-io/core/typography.less";
+import { Tooltip } from "chart.js";
 
 export default connect((state) => {
   return {
@@ -200,14 +202,19 @@ export default connect((state) => {
                       color="secondary"
                       size="small"
                       value={fieldValues[field.key]}
-                      onChange={(e, val) => {
-                        if (val !== null) {
-                          props.onChange(val, props.name);
-                        }
-                      }}
+                      onChange={setValue}
                     >
-                      <ToggleButton value={"on"}>On Davey</ToggleButton>
-                      <ToggleButton value={"off"}>Off Davey</ToggleButton>
+                      <FormLabel>
+                        <Tooltip
+                          title={`Activating the WWW setting requires DNS setup of both the apex domain and www sub-domain. ${field.tips}`}
+                        >
+                          <InfoIcon fontSize="small" />
+                        </Tooltip>
+                        {field.keyFriendly}
+                      </FormLabel>
+
+                      <ToggleButton value={"on"}>On </ToggleButton>
+                      <ToggleButton value={"off"}>Off </ToggleButton>
                     </ToggleButtonGroup>
                   </div>
                 );
