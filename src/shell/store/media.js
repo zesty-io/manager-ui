@@ -541,6 +541,43 @@ export function fetchGroupFiles(groupZUID) {
   };
 }
 
+async function directBucketUpload(file) {
+  console.log(file);
+
+  // try {
+  //   // step 1)
+  //   // get signed url
+  //   return request(`${CONFIG.SERVICE_MEDIA_STORAGE}/signed-url`).then((res) => {
+  //     // step 2)
+  //     // upload to bucket
+  //     return request(res.url, {
+  //       method: "POST",
+  //     }).then((res) => {
+  //       // step 3)
+  //       // inform media-manager
+  //       return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file`, {
+  //         method: "POST",
+  //       }).then((res) => {
+  //         if (success) {
+  //           notify({
+  //             kind: "sucess",
+  //             message: "file uploaded",
+  //           });
+  //         } else {
+  //           throw res;
+  //         }
+  //       });
+  //     });
+  //   });
+  // } catch (err) {
+  //   console.error(err);
+  //   notify({
+  //     kind: "warn",
+  //     message: "failed uploading file",
+  //   });
+  // }
+}
+
 export function uploadFile(file, bin) {
   return (dispatch, getState) => {
     file.filename = file.file.name;
@@ -549,56 +586,60 @@ export function uploadFile(file, bin) {
     file.loading = true;
     file.url = URL.createObjectURL(file.file);
 
-    const data = new FormData();
-    data.append("file", file.file);
-    data.append("bin_id", file.bin_id);
-    data.append("group_id", file.group_id);
-    data.append("user_id", getState().user.ZUID);
+    if (file.file.size > 32000) {
+      directBucketUpload(file);
+    } else {
+      const data = new FormData();
+      data.append("file", file.file);
+      data.append("bin_id", file.bin_id);
+      data.append("group_id", file.group_id);
+      data.append("user_id", getState().user.ZUID);
 
-    const req = new XMLHttpRequest();
-    req.withCredentials = true;
-    req.open(
-      "POST",
-      `${CONFIG.SERVICE_MEDIA_STORAGE}/upload/${bin.storage_driver}/${bin.storage_name}`
-    );
+      const req = new XMLHttpRequest();
+      req.withCredentials = true;
+      req.open(
+        "POST",
+        `${CONFIG.SERVICE_MEDIA_STORAGE}/upload/${bin.storage_driver}/${bin.storage_name}`
+      );
 
-    req.upload.addEventListener("progress", function (e) {
-      file.progress = (e.loaded / e.total) * 100;
-      dispatch(fileUploadProgress(file));
-    });
+      req.upload.addEventListener("progress", function (e) {
+        file.progress = (e.loaded / e.total) * 100;
+        dispatch(fileUploadProgress(file));
+      });
 
-    req.addEventListener("load", function (e) {
-      if (req.status === 201) {
-        const response = JSON.parse(req.response);
-        const uploadedFile = response.data[0];
-        uploadedFile.uploadID = file.uploadID;
-        dispatch(fileUploadSuccess(uploadedFile));
-      } else {
-        if (req.status === 413) {
-          dispatch(
-            notify({
-              message:
-                "Failed uploading file. Individual file size must be 32MB or smaller",
-              kind: "error",
-            })
-          );
+      req.addEventListener("load", function (e) {
+        if (req.status === 201) {
+          const response = JSON.parse(req.response);
+          const uploadedFile = response.data[0];
+          uploadedFile.uploadID = file.uploadID;
+          dispatch(fileUploadSuccess(uploadedFile));
         } else {
-          dispatch(
-            notify({
-              message: "Failed uploading file. Server failure",
-              kind: "error",
-            })
-          );
+          if (req.status === 413) {
+            dispatch(
+              notify({
+                message:
+                  "Failed uploading file. Individual file size must be 32MB or smaller",
+                kind: "error",
+              })
+            );
+          } else {
+            dispatch(
+              notify({
+                message: "Failed uploading file. Server failure",
+                kind: "error",
+              })
+            );
+          }
+
+          dispatch(fileUploadError(file));
         }
+      });
+      req.addEventListener("abort", handleError);
+      req.addEventListener("error", handleError);
 
-        dispatch(fileUploadError(file));
-      }
-    });
-    req.addEventListener("abort", handleError);
-    req.addEventListener("error", handleError);
-
-    dispatch(fileUploadStart(file));
-    req.send(data);
+      dispatch(fileUploadStart(file));
+      req.send(data);
+    }
   };
 }
 
