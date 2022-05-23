@@ -21,7 +21,6 @@ import { Url } from "@zesty-io/core/Url";
 
 import { Notice } from "@zesty-io/core/Notice";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
-import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { notify } from "shell/store/notifications";
@@ -154,15 +153,6 @@ export default connect((state) => {
         <Divider />
 
         <div className={styles.Row}>
-          {/* <FieldTypeBinary
-            name="settings[general][robots_on]"
-            label={robotOn.keyFriendly}
-            tooltip={robotOn.tips}
-            value={Boolean(robotOn.value)}
-            offValue="No"
-            onValue="Yes"
-            onChange={handleRobotsOn}
-          /> */}
           <FormLabel sx={{ color: "primary.dark" }}>
             <Stack
               direction="row"
