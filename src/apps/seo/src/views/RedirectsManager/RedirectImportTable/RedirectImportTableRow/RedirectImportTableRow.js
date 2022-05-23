@@ -15,7 +15,6 @@ import { importTarget } from "../../../../store/imports";
 import { importQuery } from "../../../../store/imports";
 
 import styles from "./RedirectImportTableRow.less";
-import { clearConfigCache } from "prettier";
 
 function RedirectImportTableRow(props) {
   const [code, setCode] = useState(301); // Toggle defaults to 301
