@@ -14,8 +14,6 @@ import SaveIcon from "@mui/icons-material/Save";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 import CircularProgress from "@mui/material/CircularProgress";
 
-import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
-
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldLabel } from "@zesty-io/core/FieldLabel";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";

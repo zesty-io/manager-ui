@@ -5,8 +5,14 @@ import { useDomain } from "shell/hooks/use-domain";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Tooltip from "@mui/material/Tooltip";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import FormLabel from "@mui/material/FormLabel";
 import CircularProgress from "@mui/material/CircularProgress";
 import SaveIcon from "@mui/icons-material/Save";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
@@ -148,7 +154,7 @@ export default connect((state) => {
         <Divider />
 
         <div className={styles.Row}>
-          <FieldTypeBinary
+          {/* <FieldTypeBinary
             name="settings[general][robots_on]"
             label={robotOn.keyFriendly}
             tooltip={robotOn.tips}
@@ -156,7 +162,35 @@ export default connect((state) => {
             offValue="No"
             onValue="Yes"
             onChange={handleRobotsOn}
-          />
+          /> */}
+          <FormLabel sx={{ color: "primary.dark" }}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              sx={{
+                my: 1,
+              }}
+            >
+              <Tooltip title={robotOn.tips} arrow placement="top-start">
+                <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+              </Tooltip>
+              {robotOn.keyFriendly}
+            </Stack>
+          </FormLabel>
+          <ToggleButtonGroup
+            color="secondary"
+            size="small"
+            value={robotOn.value}
+            exclusive
+            onChange={(e, val) => {
+              if (val !== null) {
+                handleRobotsOn(val);
+              }
+            }}
+          >
+            <ToggleButton value={0}>No </ToggleButton>
+            <ToggleButton value={1}>Yes </ToggleButton>
+          </ToggleButtonGroup>
         </div>
 
         <div className={cx(styles.IframeWrapper, styles.Row)}>
