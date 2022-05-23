@@ -148,10 +148,8 @@ export default connect((state) => {
         </h1>
         <Divider
           sx={{
-            mt: 1,
-            mr: 2,
-            mb: 1,
-            ml: 2,
+            my: 1,
+            mx: 2,
           }}
         />
 

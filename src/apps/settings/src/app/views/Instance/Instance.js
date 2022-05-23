@@ -147,10 +147,8 @@ export default connect((state) => {
       </div>
       <Divider
         sx={{
-          mt: 1,
-          mr: 2,
-          mb: 1,
-          ml: 2,
+          my: 1,
+          mx: 2,
         }}
       />
       <div className={styles.row}>
@@ -159,10 +157,8 @@ export default connect((state) => {
             i % 2 == 0 && (
               <Divider
                 sx={{
-                  mt: 1,
-                  mr: 2,
-                  mb: 1,
-                  ml: 2,
+                  my: 1,
+                  mx: 2,
                 }}
               />
             );
