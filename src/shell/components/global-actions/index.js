@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBook, faHashtag } from "@fortawesome/free-solid-svg-icons";
 
-import { Url } from "@zesty-io/core/Url";
+import Link from "@mui/material/Link";
 
 import GlobalHelpMenu from "shell/components/GlobalHelpMenu";
 
@@ -34,7 +34,9 @@ export default memo(function GlobalActions(props) {
           {openNav && <span>Docs</span>}
         </span>
 
-        <Url
+        <Link
+          underline="none"
+          color="secondary"
           href={`https://zesty.io`}
           title="Zesty.io"
           target="_blank"
@@ -47,10 +49,12 @@ export default memo(function GlobalActions(props) {
             height="16px"
           />
           {openNav && <span className={styles.GlobalAction}>Zesty.io</span>}
-        </Url>
+        </Link>
 
         <div className={styles.AppVersion}>
-          <Url
+          <Link
+            underline="none"
+            color="secondary"
             href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
             title="View source code commit"
             target="_blank"
@@ -59,7 +63,7 @@ export default memo(function GlobalActions(props) {
             <span className={styles.VersionNumber}>
               {CONFIG?.build?.data?.gitCommit}
             </span>
-          </Url>
+          </Link>
         </div>
       </div>
     </div>

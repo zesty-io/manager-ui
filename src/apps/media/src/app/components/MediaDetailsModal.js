@@ -12,12 +12,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
+import Link from "@mui/material/Link";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Button } from "@zesty-io/core/Button";
-import { Url } from "@zesty-io/core/Url";
 import { CopyButton } from "@zesty-io/core/CopyButton";
 import { Input } from "@zesty-io/core/Input";
 import { Notice } from "@zesty-io/core/Notice";
@@ -93,13 +93,15 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
           <figure
             className={cx(styles.Picture, shared.Checkered, shared.Cmodal)}
           >
-            <Url
+            <Link
+              underline="none"
+              color="secondary"
               target="_blank"
               title="Select to download original image in new page"
               href={`${genImageURL()}`}
             >
               <MediaImage src={`${genImageURL()}`} file={props.file} />
-            </Url>
+            </Link>
           </figure>
         </div>
         <div className={styles.Meta}>
@@ -144,12 +146,14 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             {imageTypes.includes(props.file.filename.split(".").pop()) && (
               <>
                 <h3>
-                  <Url
+                  <Link
+                    underline="none"
+                    color="secondary"
                     target="_blank"
                     href="https://zesty.org/services/media-storage-micro-dam/on-the-fly-media-optimization-and-dynamic-image-manipulation"
                   >
                     On-The-Fly Image Editor
-                  </Url>
+                  </Link>
                 </h3>
                 <div className={styles.ImageControls}>
                   <div>
@@ -247,10 +251,16 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             </li>
             <li>
               {" "}
-              <Url target="_blank" title="Original Image" href={props.file.url}>
+              <Link
+                underline="none"
+                color="secondary"
+                target="_blank"
+                title="Original Image"
+                href={props.file.url}
+              >
                 <FontAwesomeIcon icon={faLink} />
                 &nbsp;View Original File
-              </Url>
+              </Link>
             </li>
           </ul>
         </div>

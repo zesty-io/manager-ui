@@ -6,6 +6,7 @@ import cx from "classnames";
 
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
+import MuiLink from "@mui/material/Link";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -17,8 +18,6 @@ import {
   faLink,
   faBan,
 } from "@fortawesome/free-solid-svg-icons";
-
-import { Url } from "@zesty-io/core/Url";
 
 import styles from "./RedirectsTableRow.less";
 export default function RedirectsTableRow(props) {
@@ -83,14 +82,14 @@ export default function RedirectsTableRow(props) {
       {props.targetType === "page" ? (
         <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
           {findTarget ? (
-            <Link
+            <MuiLink
               className={styles.internalLink}
               to={`/content/${modelZuid}/${props.target}`}
             >
               <FontAwesomeIcon className={styles.icon} icon={faLink} />
               &nbsp;
               <code>{path}</code>
-            </Link>
+            </MuiLink>
           ) : (
             <code>
               <FontAwesomeIcon className={styles.icon} icon={faBan} />
@@ -100,10 +99,16 @@ export default function RedirectsTableRow(props) {
         </span>
       ) : props.targetType === "external" ? (
         <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
-          <Url href={props.target} target="_blank" title="Redirect URL">
+          <MuiLink
+            underline="none"
+            color="secondary"
+            href={props.target}
+            target="_blank"
+            title="Redirect URL"
+          >
             <FontAwesomeIcon icon={faExternalLinkAlt} className={styles.mr} />
             &nbsp;<code>{props.target}</code>
-          </Url>
+          </MuiLink>
         </span>
       ) : (
         <span className={cx(styles.RedirectsTableRowCell, styles.to)}>

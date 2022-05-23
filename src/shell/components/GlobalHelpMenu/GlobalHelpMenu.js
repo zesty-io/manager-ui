@@ -5,9 +5,10 @@ import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComments, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
+import Link from "@mui/material/Link";
+
 import { Button } from "@zesty-io/core/Button";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
-import { Url } from "@zesty-io/core/Url";
 
 import styles from "./styles.less";
 
@@ -149,36 +150,57 @@ export default connect((state) => {
     <section className={styles.helpMenu}>
       <header>
         {props.instance.planID && (
-          <Url target="_blank" href="mailto:support@zesty.io">
+          <Link
+            underline="none"
+            color="secondary"
+            target="_blank"
+            href="mailto:support@zesty.io"
+          >
             <Button className={styles.Button} kind="" title="Support">
               <FontAwesomeIcon icon={faEnvelope} />
               support@zesty.io
             </Button>
-          </Url>
+          </Link>
         )}
 
-        <Url target="_blank" href="https://chat.zesty.io">
+        <Link
+          underline="none"
+          color="secondary"
+          target="_blank"
+          href="https://chat.zesty.io"
+        >
           <Button className={styles.Button} type="alt" title="Chat">
             <FontAwesomeIcon icon={faComments} />
             chat.zesty.io
           </Button>
-        </Url>
+        </Link>
       </header>
 
       <div className={styles.helpModules}>
         <Card className={cx(styles.helpModule, styles.primary)}>
           <CardHeader className={styles.subheadline}>
-            <Url target="_blank" href="https://zesty.org/">
+            <Link
+              underline="none"
+              color="secondary"
+              target="_blank"
+              href="https://zesty.org/"
+            >
               zesty.org
-            </Url>
+            </Link>
           </CardHeader>
           <CardContent>
             <ul className={styles.helpBox}>
               {links.map((link) => (
                 <li key={link.name} className={styles.bodyText}>
-                  <Url title={link.url} target="_blank" href={link.url}>
+                  <Link
+                    underline="none"
+                    color="secondary"
+                    title={link.url}
+                    target="_blank"
+                    href={link.url}
+                  >
                     {link.name}
-                  </Url>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -190,31 +212,37 @@ export default connect((state) => {
           <CardContent>
             <ul className={styles.helpBox}>
               <li className={styles.bodyText}>
-                <Url
+                <Link
+                  underline="none"
+                  color="secondary"
                   title="Instances API"
                   target="_blank"
                   href="https://instances-api.zesty.org/"
                 >
                   Instances API
-                </Url>
+                </Link>
               </li>
               <li className={styles.bodyText}>
-                <Url
+                <Link
+                  underline="none"
+                  color="secondary"
                   title="Accounts API"
                   target="_blank"
                   href="https://accounts-api.zesty.org/"
                 >
                   Accounts API
-                </Url>
+                </Link>
               </li>
               <li className={styles.bodyText}>
-                <Url
+                <Link
+                  underline="none"
+                  color="secondary"
                   title="Auth API"
                   target="_blank"
                   href="https://auth-api.zesty.org/"
                 >
                   Auth API
-                </Url>
+                </Link>
               </li>
             </ul>
           </CardContent>
@@ -225,31 +253,37 @@ export default connect((state) => {
           <CardContent>
             <ul className={styles.helpBox}>
               <li className={styles.bodyText}>
-                <Url
+                <Link
+                  underline="none"
+                  color="secondary"
                   title="SDK"
                   target="_blank"
                   href="https://github.com/zesty-io/node-sdk"
                 >
                   SDK
-                </Url>
+                </Link>
               </li>
               <li className={styles.bodyText}>
-                <Url
+                <Link
+                  underline="none"
+                  color="secondary"
                   title="CLI"
                   target="_blank"
                   href="https://github.com/zesty-io/cli"
                 >
                   CLI
-                </Url>
+                </Link>
               </li>
               <li className={styles.bodyText}>
-                <Url
+                <Link
+                  underline="none"
+                  color="secondary"
                   title="Report a Bug"
                   target="_blank"
                   href="https://github.com/zesty-io/manager-ui/issues/new?assignees=&labels=&template=bug_report.md&title="
                 >
                   Report a Bug
-                </Url>
+                </Link>
               </li>
             </ul>
           </CardContent>

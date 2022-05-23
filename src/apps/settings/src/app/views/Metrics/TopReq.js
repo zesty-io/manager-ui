@@ -1,7 +1,8 @@
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import { Url } from "@zesty-io/core/Url";
+
+import Link from "@mui/material/Link";
 
 import styles from "./Metrics.less";
 
@@ -27,10 +28,16 @@ const TopReq = ({ req, path }) => {
   return (
     <tr className={cx(styles.MetricsTableRow)}>
       <td className={cx(styles.MetricsTableRowCell)}>
-        <Url href={fullPath} target="_blank" title="Redirect URL">
+        <Link
+          underline="none"
+          color="secondary"
+          href={fullPath}
+          target="_blank"
+          title="Redirect URL"
+        >
           <FontAwesomeIcon icon={faExternalLinkAlt} />
           &nbsp;<code>{path}</code>
-        </Url>
+        </Link>
       </td>
       <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
       <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>

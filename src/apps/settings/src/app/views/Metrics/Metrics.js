@@ -5,13 +5,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import TopReq from "./TopReq";
 
-import { Url } from "@zesty-io/core/Url";
-
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { CopyButton } from "@zesty-io/core/CopyButton";
 
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
+import Link from "@mui/material/Link";
 
 import { request } from "utility/request";
 
@@ -226,10 +225,16 @@ const Content = ({
     return (
       <tr className={cx(styles.MetricsTableRow)}>
         <td className={cx(styles.MetricsTableRowCell)}>
-          <Url href={fullPath} target="_blank" title="Redirect URL">
+          <Link
+            underline="none"
+            color="secondary"
+            href={fullPath}
+            target="_blank"
+            title="Redirect URL"
+          >
             <FontAwesomeIcon icon={faExternalLinkAlt} />
             &nbsp;<code>{path}</code>
-          </Url>
+          </Link>
         </td>
         <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
         <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
