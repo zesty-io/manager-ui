@@ -12,13 +12,13 @@ describe("Actions in content editor", () => {
     cy.visit("/schema/6-556370-8sh47g");
 
     cy.get("[data-cy=fieldLabel]").contains("required field 1").click();
-    cy.contains("Reactivate").click();
+    cy.get("[data-cy=Reactivate]").click();
 
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     cy.get("input[type=text]")
       .first()
       .type("{selectall}{backspace}test" + timestamp);
-    cy.get("#SaveItemButton").click();
+    cy.get("[data-cy=SaveItemButton]").click();
     cy.contains("You are missing data in required field 1", {
       timeout: 5000,
     }).should("exist");
@@ -31,7 +31,7 @@ describe("Actions in content editor", () => {
     cy.get("input[type=text]")
       .first()
       .type("{selectall}{backspace}test" + timestamp);
-    cy.get("#SaveItemButton").click();
+    cy.get("[data-cy=SaveItemButton]").click();
     cy.contains("Saved a new test (en-US) version").should("exist");
   });
   it("Saves homepage item metadata", () => {
@@ -45,7 +45,7 @@ describe("Actions in content editor", () => {
     cy.get("textarea")
       .first()
       .should("have.value", "This is an item meta description");
-    cy.get("#SaveItemButton").click();
+    cy.get("[data-cy=SaveItemButton]").click();
     cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
   });
 

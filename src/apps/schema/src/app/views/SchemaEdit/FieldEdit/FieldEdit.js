@@ -149,6 +149,7 @@ export function Footer(props) {
       <ButtonGroup className={styles.FieldActions}>
         {props.field.deletedAt ? (
           <Button
+            data-cy="Reactivate"
             variant="contained"
             onClick={(evt) => {
               evt.preventDefault();

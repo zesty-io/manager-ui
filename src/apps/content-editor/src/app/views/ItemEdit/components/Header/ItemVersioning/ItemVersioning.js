@@ -162,12 +162,12 @@ export function ItemVersioning(props) {
       )}
 
       <Button
+        data-cy="SaveItemButton"
         title="Save Version"
         className={styles.Save}
         type="save"
         disabled={props.saving || !props.item.dirty}
         onClick={props.onSave}
-        id="SaveItemButton"
       >
         {props.saving ? (
           <FontAwesomeIcon icon={faSpinner} spin />
