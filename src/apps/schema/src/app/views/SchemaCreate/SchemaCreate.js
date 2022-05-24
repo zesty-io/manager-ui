@@ -22,7 +22,6 @@ import {
   faListAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
-import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
