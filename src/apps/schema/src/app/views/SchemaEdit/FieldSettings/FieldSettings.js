@@ -21,15 +21,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import Stack from "@mui/material/Stack";
-import Tooltip from "@mui/material/Tooltip";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import FormLabel from "@mui/material/FormLabel";
-import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
-import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 
 import { Url } from "@zesty-io/core/Url";
 

@@ -4,7 +4,13 @@ import { useHistory } from "react-router-dom";
 import cx from "classnames";
 
 import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import FormLabel from "@mui/material/FormLabel";
+import Tooltip from "@mui/material/Tooltip";
 import AddIcon from "@mui/icons-material/Add";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
@@ -14,7 +20,6 @@ import {
   faDatabase,
   faFile,
   faListAlt,
-  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
@@ -167,35 +172,69 @@ export default connect((state) => {
             </p>
 
             <div className={styles.questionnaire}>
-              <FieldTypeBinary
-                name="url"
-                label="Will this content be a public webpage and need a url?"
-                offValue={"No"}
-                onValue={"Yes"}
+              <FormLabel sx={{ color: "primary.dark" }}>
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  sx={{
+                    my: 1,
+                  }}
+                >
+                  Will this content be a public webpage and need a url?
+                </Stack>
+              </FormLabel>
+              <ToggleButtonGroup
+                color="secondary"
+                size="small"
                 value={url}
-                onChange={(val) =>
-                  setType({
-                    type: "url",
-                    payload: val,
-                  })
-                }
-              />
+                exclusive
+                onChange={(e, val) => {
+                  if (val !== null) {
+                    setType({
+                      type: "url",
+                      payload: val,
+                    });
+                  }
+                }}
+              >
+                <ToggleButton value={0}>No </ToggleButton>
+                <ToggleButton value={1}>Yes </ToggleButton>
+              </ToggleButtonGroup>
             </div>
 
             <div className={styles.questionnaire}>
-              <FieldTypeBinary
-                name="multiple"
-                label="Will this content have multiple entries?"
-                offValue={"No"}
-                onValue={"Yes"}
+              <FormLabel sx={{ color: "primary.dark" }}>
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  sx={{
+                    my: 1,
+                  }}
+                >
+                  Will this content have multiple entries?
+                </Stack>
+              </FormLabel>
+              <ToggleButtonGroup
+                color="secondary"
+                size="small"
                 value={multiple}
-                onChange={(val) =>
-                  setType({
-                    type: "multiple",
-                    payload: val,
-                  })
-                }
-              />
+                exclusive
+                onChange={(e, val) => {
+                  console.log(
+                    "🚀 ~ file: SchemaCreate.js ~ line 213 ~ connect ~ val",
+                    val
+                  );
+                  if (val !== null) {
+                    setType({
+                      type: "multiple",
+                      payload: val,
+                    });
+                  }
+                }}
+              >
+                <ToggleButton value={0}>No </ToggleButton>
+                <ToggleButton value={1}>Yes </ToggleButton>
+              </ToggleButtonGroup>
             </div>
 
             <FieldTypeDropDown
@@ -351,16 +390,39 @@ export default connect((state) => {
             />
 
             <div className={styles.questionnaire}>
-              <FieldTypeBinary
-                name="listed"
-                label="Should this model be listed?"
-                description="Listed models have their content items available to programatic
-                navigation calls."
-                offValue="No"
-                onValue="Yes"
-                value={Number(listed)}
-                onChange={() => setListed(!listed)}
-              />
+              <FormLabel sx={{ color: "primary.dark" }}>
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  sx={{
+                    my: 1,
+                  }}
+                >
+                  <Tooltip
+                    placement="top-start"
+                    arrow
+                    title={`Listed models have their content items available to programmatic
+                navigation calls.`}
+                  >
+                    <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                  </Tooltip>
+                  Should this model be listed?
+                </Stack>
+              </FormLabel>
+              <ToggleButtonGroup
+                color="secondary"
+                size="small"
+                value={listed}
+                exclusive
+                onChange={(e, val) => {
+                  if (val !== null) {
+                    setListed(val);
+                  }
+                }}
+              >
+                <ToggleButton value={false}>Off </ToggleButton>
+                <ToggleButton value={true}>On </ToggleButton>
+              </ToggleButtonGroup>
             </div>
           </section>
         </CardContent>
