@@ -329,7 +329,7 @@ export function ContentInsights(props) {
           }}
         />
         <h4>
-          Word Occurrences from this Content Item (not the fully rendered page)
+          Word occurrences from this Content Item (not the fully rendered page)
         </h4>
         <div className={styles.wordBank}>
           {wordArray.map((item, i) => {
@@ -382,7 +382,7 @@ export function ContentInsights(props) {
             my: 1,
           }}
         />
-        <h4>Words Occurrences from the URL, Meta Title and Description</h4>
+        <h4>Word occurrences from the URL, Meta Title and Description</h4>
         <div className={styles.wordBank}>
           {metaWordArray.map((item, i) => {
             return (
