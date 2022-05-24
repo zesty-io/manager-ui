@@ -3,6 +3,13 @@ import { memo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode } from "@fortawesome/free-solid-svg-icons";
 
+import Stack from "@mui/material/Stack";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import FormLabel from "@mui/material/FormLabel";
+
+import Box from "@mui/material/Box";
+
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
@@ -20,32 +27,44 @@ export const WidgetListed = memo(function WidgetListed(props) {
         </span>
       </CardHeader>
       <CardContent>
-        <FieldTypeBinary
-          name="listed"
-          label={
-            <span>
-              <Tooltip
-                title="Determines if this item will be available in Parsley loops. A common example of this is listing a blog post as an entry on an article listing page."
-                arrow
-                placement="top-start"
-              >
-                <InfoIcon fontSize="small" />
-              </Tooltip>
-              &nbsp;Available in Loops
-            </span>
-          }
-          value={Number(props.listed)}
-          offValue="No"
-          onValue="Yes"
-          onChange={() => {
-            props.dispatch({
-              type: "SET_ITEM_META",
-              itemZUID: props.itemZUID,
-              key: "listed",
-              value: !props.listed, // flip and emit boolean value
-            });
+        <FormLabel sx={{ color: "primary.dark" }}>
+          <Stack
+            direction="row"
+            alignItems="center"
+            sx={{
+              mb: 1,
+            }}
+          >
+            <Tooltip
+              title="Determines if this item will be available in Parsley loops. A common example of this is listing a blog post as an entry on an article listing page."
+              arrow
+              placement="top-start"
+            >
+              <InfoIcon fontSize="small" />
+            </Tooltip>
+            Available in Loops
+          </Stack>
+        </FormLabel>
+        <ToggleButtonGroup
+          color="secondary"
+          size="small"
+          value={props.listed}
+          exclusive
+          onChange={(e, val) => {
+            if (val !== null) {
+              props.dispatch({
+                type: "SET_ITEM_META",
+                itemZUID: props.itemZUID,
+                key: "listed",
+                value: val,
+              });
+            }
           }}
-        />
+          sx={{ mb: 1 }}
+        >
+          <ToggleButton value={false}>No </ToggleButton>
+          <ToggleButton value={true}>Yes </ToggleButton>
+        </ToggleButtonGroup>
 
         <FieldTypeSort
           name="sort"
