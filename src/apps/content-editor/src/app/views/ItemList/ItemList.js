@@ -5,10 +5,12 @@ import { useHistory } from "react-router-dom";
 import isEqual from "lodash/isEqual";
 import isEmpty from "lodash/isEmpty";
 
+import Button from "@mui/material/Button";
+import ClearIcon from "@mui/icons-material/Clear";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import { Button } from "@zesty-io/core/Button";
 
 import { SetActions } from "./SetActions";
 import { SetColumns } from "./SetColumns";
@@ -648,8 +650,12 @@ export default connect((state, props) => {
               <h1>{`No ${
                 props.model && props.model.label
               } items are displayed, filters are in place. `}</h1>
-              <Button kind="secondary" onClick={clearFilters}>
-                <FontAwesomeIcon icon={faTimes} />
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={clearFilters}
+                startIcon={<ClearIcon />}
+              >
                 Clear Filters
               </Button>
             </div>
