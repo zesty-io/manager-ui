@@ -219,10 +219,6 @@ export default connect((state) => {
                 value={multiple}
                 exclusive
                 onChange={(e, val) => {
-                  console.log(
-                    "🚀 ~ file: SchemaCreate.js ~ line 213 ~ connect ~ val",
-                    val
-                  );
                   if (val !== null) {
                     setType({
                       type: "multiple",
