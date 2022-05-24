@@ -8,11 +8,9 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import FormLabel from "@mui/material/FormLabel";
 
-import Box from "@mui/material/Box";
-
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
-import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
+
 import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
