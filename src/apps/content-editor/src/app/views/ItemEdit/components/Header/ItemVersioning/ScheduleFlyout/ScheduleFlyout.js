@@ -1,17 +1,15 @@
 import { Component } from "react";
 import moment from "moment-timezone";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBan,
-  faCalendarPlus,
-  faTrashAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Notice } from "@zesty-io/core/Notice";
 import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
-import { Button } from "@zesty-io/core/Button";
+
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
 import { publish, unpublish } from "shell/store/content";
@@ -169,18 +167,22 @@ export default class ScheduleFlyout extends Component {
                 </p>
               </ModalContent>
               <ModalFooter className={styles.ModalFooter}>
-                <Button type="cancel" onClick={this.props.toggleOpen}>
-                  <FontAwesomeIcon icon={faBan} />
-                  &nbsp;Cancel
+                <Button
+                  variant="contained"
+                  onClick={this.props.toggleOpen}
+                  startIcon={<DoDisturbAltIcon />}
+                >
+                  Cancel
                 </Button>
                 <Button
-                  type="warn"
+                  variant="contained"
+                  color="error"
                   data-cy="UnschedulePublishButton"
                   disabled={this.state.scheduling}
                   onClick={this.handleCancelPublish}
+                  startIcon={<DeleteIcon />}
                 >
-                  <FontAwesomeIcon icon={faTrashAlt} />
-                  &nbsp;Unschedule Version&nbsp;
+                  Unschedule Version&nbsp;
                   {this.props.item.scheduling.version}
                 </Button>
               </ModalFooter>
@@ -211,21 +213,24 @@ export default class ScheduleFlyout extends Component {
               </ModalContent>
               <ModalFooter className={styles.ModalFooter}>
                 <Button
+                  variant="contained"
                   className={styles.Cancel}
-                  type="cancel"
                   id="SchedulePublishClose"
                   onClick={this.props.toggleOpen}
+                  startIcon={<DoDisturbAltIcon />}
                 >
-                  <FontAwesomeIcon icon={faBan} /> Cancel
+                  Cancel
                 </Button>
                 <Button
+                  variant="contained"
+                  color="success"
                   type="save"
                   data-cy="SchedulePublishButton"
                   onClick={this.handleSchedulePublish}
                   disabled={this.state.scheduling}
+                  startIcon={<CalendarMonthIcon />}
                 >
-                  <FontAwesomeIcon icon={faCalendarPlus} /> Schedule Publishing
-                  Version {this.props.item.meta.version}
+                  Schedule Publishing Version {this.props.item.meta.version}
                 </Button>
               </ModalFooter>
             </>

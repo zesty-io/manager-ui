@@ -1,6 +1,11 @@
 import { Header } from "../components/Header";
 import { Url } from "@zesty-io/core/Url";
 import React, { useState, useEffect } from "react";
+
+import Button from "@mui/material/Button";
+import CodeIcon from "@mui/icons-material/Code";
+import SettingsIcon from "@mui/icons-material/Settings";
+
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -10,13 +15,11 @@ import {
   faProjectDiagram,
   faNewspaper,
   faUnlockAlt,
-  faCogs,
 } from "@fortawesome/free-solid-svg-icons";
 import { faNpm } from "@fortawesome/free-brands-svg-icons";
 import { Docs } from "@zesty-io/core/Docs";
 import { Divider } from "@zesty-io/core/Divider";
 import { AppLink } from "@zesty-io/core/AppLink";
-import { Button } from "@zesty-io/core/Button";
 
 import styles from "./HeadlessOptions.less";
 export function HeadlessOptions(props) {
@@ -145,8 +148,11 @@ export function HeadlessOptions(props) {
               </p>
               <Divider />
               <AppLink to={`/settings/instance/general`} title="Edit Settings">
-                <Button size="small">
-                  <FontAwesomeIcon icon={faCogs} />
+                <Button
+                  variant="contained"
+                  size="small"
+                  startIcon={<SettingsIcon />}
+                >
                   Edit General Settings
                 </Button>
               </AppLink>
@@ -330,8 +336,11 @@ export function HeadlessOptions(props) {
                   </p>
                   <Divider />
                   <AppLink to={`/code`} title="Edit Code">
-                    <Button size="small">
-                      <FontAwesomeIcon icon={faCode} />
+                    <Button
+                      variant="contained"
+                      size="small"
+                      startIcon={<CodeIcon />}
+                    >
                       Open Code App
                     </Button>
                   </AppLink>

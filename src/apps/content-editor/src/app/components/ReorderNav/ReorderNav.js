@@ -1,9 +1,10 @@
 import { Component } from "react";
 import { connect } from "react-redux";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSave, faBackward } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "@zesty-io/core/Button";
+import Button from "@mui/material/Button";
+import FastRewindIcon from "@mui/icons-material/FastRewind";
+import SaveIcon from "@mui/icons-material/Save";
+
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
@@ -129,23 +130,23 @@ class ReorderNav extends Component {
             </span>
           </ModalContent>
           <ModalFooter className={styles.ModalFooter}>
-            <ButtonGroup className={styles.ButtonGroup}>
-              <Button
-                onClick={() => this.setState({ current: "root" })}
-                disabled={this.state.current === "root"}
-              >
-                <FontAwesomeIcon icon={faBackward} />
-                Return to Root
-              </Button>
-              <Button
-                type="save"
-                onClick={this.requestForReorder}
-                disabled={!this.state.dirty || this.state.requesting}
-              >
-                <FontAwesomeIcon icon={faSave} />
-                Save Changes
-              </Button>
-            </ButtonGroup>
+            <Button
+              variant="contained"
+              onClick={() => this.setState({ current: "root" })}
+              disabled={this.state.current === "root"}
+              startIcon={<FastRewindIcon />}
+            >
+              Return to Root
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={this.requestForReorder}
+              disabled={!this.state.dirty || this.state.requesting}
+              startIcon={<SaveIcon />}
+            >
+              Save Changes
+            </Button>
           </ModalFooter>
         </Modal>
       )

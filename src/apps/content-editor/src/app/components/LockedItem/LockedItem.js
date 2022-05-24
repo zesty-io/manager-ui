@@ -1,5 +1,9 @@
 import moment from "moment-timezone";
 
+import Button from "@mui/material/Button";
+import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faLock,
@@ -13,7 +17,6 @@ import {
   ModalContent,
   ModalFooter,
 } from "@zesty-io/core/Modal";
-import { Button } from "@zesty-io/core/Button";
 
 import styles from "./LockedItem.less";
 export function LockedItem(props) {
@@ -38,12 +41,19 @@ export function LockedItem(props) {
         </p>
       </ModalContent>
       <ModalFooter className={styles.ModalFooter}>
-        <Button type="cancel" onClick={props.handleCancel}>
-          <FontAwesomeIcon icon={faStepBackward} />
+        <Button
+          variant="contained"
+          onClick={props.handleCancel}
+          startIcon={<SkipPreviousIcon />}
+        >
           Go Back
         </Button>
-        <Button type="save" onClick={props.handleUnlock}>
-          <FontAwesomeIcon icon={faUnlock} />
+        <Button
+          variant="contained"
+          color="success"
+          onClick={props.handleUnlock}
+          startIcon={<LockOpenIcon />}
+        >
           Unlock
         </Button>
       </ModalFooter>

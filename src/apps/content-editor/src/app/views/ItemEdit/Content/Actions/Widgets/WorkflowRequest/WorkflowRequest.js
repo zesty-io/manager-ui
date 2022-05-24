@@ -1,10 +1,11 @@
 import { memo, useState } from "react";
+
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import SaveIcon from "@mui/icons-material/Save";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSave,
-  faSpinner,
-  faEnvelope,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -13,7 +14,7 @@ import {
   CardContent,
   CardFooter,
 } from "@zesty-io/core/CollapsibleCard";
-import { Button } from "@zesty-io/core/Button";
+
 import { Textarea } from "@zesty-io/core/Textarea";
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
@@ -163,16 +164,13 @@ ${
       </CardContent>
       <CardFooter>
         <Button
+          variant="contained"
           id="WorkflowRequestSendButton"
           className={styles.Button}
           onClick={handleSend}
           disabled={sending}
+          startIcon={sending ? <CircularProgress size="20px" /> : <SaveIcon />}
         >
-          {sending ? (
-            <FontAwesomeIcon icon={faSpinner} spin />
-          ) : (
-            <FontAwesomeIcon icon={faSave} />
-          )}
           Send Email
         </Button>
       </CardFooter>
