@@ -242,7 +242,7 @@ describe("Content Specs", () => {
           .click()
           .clear()
           .type(`## Editing in the markdown field type _${TIMESTAMP}_`);
-        cy.get("#SaveItemButton").click();
+        cy.get("[data-cy=SaveItemButton]").click();
         cy.contains("Saved a new ").should("exist");
         cy.get("#12-796b3c-8n93rc")
           .find("textarea")
@@ -255,7 +255,7 @@ describe("Content Specs", () => {
         cy.get('[data-value="7-480ab4-wg7x7j"]')
           .last()
           .click({ timeout: 3000 });
-        cy.get("#SaveItemButton").click();
+        cy.get("[data-cy=SaveItemButton]").click();
         cy.contains("Saved a new ", { timeout: 3000 }).should("exist");
         // testing tag deletion
         cy.get('[href="/content/6-675028-84dq4s/7-480ab4-wg7x7j"]').should(
@@ -283,7 +283,7 @@ describe("Content Specs", () => {
           .should("contain", "zesty.pw");
       });
       it("Saves Content updates", () => {
-        cy.get("#SaveItemButton").click();
+        cy.get("[data-cy=SaveItemButton]").click();
         cy.contains("Saved a new ", { timeout: 3000 }).should("exist");
       });
     });
