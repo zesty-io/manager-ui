@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import { Search } from "@zesty-io/core/Search";
 
+import { searchFiles } from "../../../../../shell/store/media";
+
 import Button from "@mui/material/Button";
 
 import FileUploadIcon from "@mui/icons-material/FileUpload";
