@@ -20,7 +20,6 @@ export function LiveUrl(props) {
       target="_blank"
       title="Live Published"
       href={url}
-      className={styles.Published}
     >
       {props.item.web.pathPart === "zesty_home" ? (
         <FontAwesomeIcon icon={faHome} />

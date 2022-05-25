@@ -42,12 +42,18 @@ export default function LinkedContent(props) {
                   <Link
                     underline="none"
                     color="secondary"
-                    className={styles.Link}
+                    sx={{
+                      alignItems: "baseline",
+                      display: "flex",
+                      margin: 0,
+                      textShadow: "non",
+                    }}
                     href={`${CONFIG.URL_PREVIEW_FULL}${item.web.path}`}
                     target="_blank"
                     title="Preview Item Webpage"
                   >
-                    <FontAwesomeIcon icon={faEye} /> <em>{item.web.path}</em>
+                    <FontAwesomeIcon icon={faEye} />{" "}
+                    <em sx={{ pr: 1 }}>{item.web.path}</em>
                   </Link>
                 </p>
               </li>

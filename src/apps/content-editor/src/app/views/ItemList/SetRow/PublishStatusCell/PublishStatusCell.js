@@ -43,21 +43,34 @@ export const PublishStatusCell = memo(function PublishStatusCell(props) {
       <Link
         underline="none"
         color="secondary"
-        className={cx(styles.PublishStatusCell)}
         href={`${CONFIG.URL_PREVIEW_FULL}${props.item.web.path}`}
+        sx={{
+          alignItems: "center",
+          display: "flex",
+          justifyContent: "center",
+          // TODO why does this have to be 40px and not 5?
+          flexBasis: "40px",
+          flexGrow: 0,
+          flexShrink: 0,
+          m: 0,
+          borderBottom: "1px solid rgba(26, 32, 44, 0.12)",
+          "&:hover": {
+            backgroundColor: "#f7f7f7",
+          },
+        }}
         target="_blank"
         title="Opens item preview in a new tab"
       >
         {props.item &&
         props.item.scheduling &&
         props.item.scheduling.isScheduled ? (
-          <FontAwesomeIcon icon={faClock} className={styles.Scheduled} />
+          <FontAwesomeIcon icon={faClock} sx={{ color: "warning.main" }} />
         ) : props.item &&
           props.item.publishing &&
           props.item.publishing.isPublished ? (
-          <FontAwesomeIcon icon={faEye} className={styles.Published} />
+          <FontAwesomeIcon icon={faEye} sx={{ color: "success.main" }} />
         ) : (
-          <FontAwesomeIcon icon={faEye} className={styles.Unpublished} />
+          <FontAwesomeIcon icon={faEye} sx={{ color: "primary.main" }} />
         )}
       </Link>
     );

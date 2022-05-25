@@ -69,7 +69,7 @@ export default function FileStatus(props) {
                 <Link
                   underline="none"
                   color="secondary"
-                  className={styles.FileLink}
+                  sx={{ textShadow: "none" }}
                   href={`${CONFIG.URL_PREVIEW_FULL}/-/ajax/${props.file.fileName}/`}
                   target="_blank"
                   title={`Preview ${props.file.fileName} Webpage`}
@@ -82,7 +82,7 @@ export default function FileStatus(props) {
                 <Link
                   underline="none"
                   color="secondary"
-                  className={styles.FileLink}
+                  sx={{ textShadow: "none" }}
                   href={`${CONFIG.URL_PREVIEW_FULL}/-/custom/${props.file.fileName}/`}
                   target="_blank"
                   title={`Preview ${props.file.fileName} Webpage`}
@@ -95,7 +95,7 @@ export default function FileStatus(props) {
                 <Link
                   underline="none"
                   color="secondary"
-                  className={styles.FileLink}
+                  sx={{ textShadow: "none" }}
                   href={`${CONFIG.URL_PREVIEW_FULL}/site.js`}
                   target="_blank"
                   title="Preview Javascript Webpage"
@@ -108,7 +108,7 @@ export default function FileStatus(props) {
                 <Link
                   underline="none"
                   color="secondary"
-                  className={styles.FileLink}
+                  sx={{ textShadow: "none" }}
                   href={`${CONFIG.URL_PREVIEW_FULL}/site.css`}
                   target="_blank"
                   title="Preview CSS Webpage"
@@ -120,7 +120,7 @@ export default function FileStatus(props) {
               <Link
                 underline="none"
                 color="secondary"
-                className={styles.FileLink}
+                sx={{ textShadow: "none" }}
                 href={`${CONFIG.URL_PREVIEW_FULL}${props.items[0].web.path}`}
                 target="_blank"
                 title={`Preview ${props.items[0].web.path} Webpage `}
@@ -132,7 +132,7 @@ export default function FileStatus(props) {
               <Link
                 underline="none"
                 color="secondary"
-                className={styles.FileLink}
+                sx={{ textShadow: "none" }}
                 href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}/${props.file.fileName}`}
                 target="_blank"
                 title={`"WebEngine ${props.file.fileName} Link"`}
@@ -172,7 +172,7 @@ export default function FileStatus(props) {
               <Link
                 underline="none"
                 color="secondary"
-                className={styles.FileLink}
+                sx={{ textShadow: "none" }}
                 href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.file.contentModelZUID}.json`}
                 target="_blank"
                 title={`Preview ${props.file.contentModelZUID} JSON`}
