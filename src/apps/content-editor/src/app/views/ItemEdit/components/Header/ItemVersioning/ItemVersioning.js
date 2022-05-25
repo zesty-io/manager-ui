@@ -161,13 +161,13 @@ export function ItemVersioning(props) {
             >
               <CalendarMonthIcon fontSize="small" />
             </Button>
-            <ScheduleFlyout
-              isOpen={open}
-              item={props.item}
-              dispatch={props.dispatch}
-              toggleOpen={toggleScheduleModal}
-            />
           </ButtonGroup>
+          <ScheduleFlyout
+            isOpen={open}
+            item={props.item}
+            dispatch={props.dispatch}
+            toggleOpen={toggleScheduleModal}
+          />
         </Stack>
       )}
 
