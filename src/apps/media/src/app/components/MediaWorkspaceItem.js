@@ -4,9 +4,7 @@ import cx from "classnames";
 import Button from "@mui/material/Button";
 
 import CheckIcon from "@mui/icons-material/Check";
-import SettingsIcon from "@mui/icons-material/Settings";
 import EditIcon from "@mui/icons-material/Edit";
-
 import Observer from "@researchgate/react-intersection-observer";
 
 import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";

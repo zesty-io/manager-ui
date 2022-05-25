@@ -8,11 +8,13 @@ import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import CircularProgress from "@mui/material/CircularProgress";
 import SaveIcon from "@mui/icons-material/Save";
 import PauseCircleIcon from "@mui/icons-material/PauseCircle";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
+import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
 import { FieldSettings } from "../FieldSettings";
 
@@ -27,6 +29,8 @@ import {
 import styles from "./FieldEdit.less";
 import { notify } from "shell/store/notifications";
 export function FieldEdit(props) {
+  const [originalFieldName, setOriginalFieldName] = useState(props.field.name);
+
   return (
     <CollapsibleCard
       className={styles.Card}
@@ -43,7 +47,11 @@ export function FieldEdit(props) {
         }}
         field={props.field}
       />
-      <Footer {...props} />
+      <Footer
+        {...props}
+        originalFieldName={originalFieldName}
+        setOriginalFieldName={setOriginalFieldName}
+      />
     </CollapsibleCard>
   );
 }
@@ -93,15 +101,19 @@ function Header(props) {
 
 export function Footer(props) {
   const [loading, setLoading] = useState(false);
+  const [warningIsOpen, setWarningIsOpen] = useState(false);
 
-  const onSave = () => {
+  //const [name, setName] = useState(props.field.name)
+
+  const save = () => {
     setLoading(true);
-    props
+    return props
       .dispatch(saveField(props.field.contentModelZUID, props.field.ZUID))
       .then((res) => {
         setLoading(false);
 
         if (res.status === 200) {
+          props.setOriginalFieldName(props.field.name);
           props.dispatch(
             notify({
               kind: "save",
@@ -117,10 +129,20 @@ export function Footer(props) {
           );
         }
       })
-      .catch(() => setLoading(false));
+      .catch(() => setLoading(false))
+      .finally(() => setWarningIsOpen(false));
   };
 
-  const metaShortcut = useMetaKey("s", onSave);
+  const warn = () => {
+    setWarningIsOpen(true);
+  };
+
+  const saveOrWarn = () => {
+    if (props.field.name === props.originalFieldName) save();
+    else warn();
+  };
+
+  const metaShortcut = useMetaKey("s", saveOrWarn);
 
   return (
     <footer className={styles.FieldFooter}>
@@ -164,11 +186,40 @@ export function Footer(props) {
           color="success"
           data-cy="fieldSave"
           disabled={!props.field.dirty}
-          onClick={onSave}
+          onClick={saveOrWarn}
           startIcon={loading ? <CircularProgress size="20px" /> : <SaveIcon />}
         >
           Save {metaShortcut}
         </Button>
+        <ConfirmDialog
+          isOpen={warningIsOpen}
+          title="Test"
+          prompt="Changing the reference name could break JSON endpoints or
+            Parsley Views that expect the name as it was. You can change the
+            Field Label without needing to change the reference_name. Only
+            proceed if you are confident it will not affect your production
+            code."
+        >
+          <Button
+            variant="contained"
+            id="editCancelButton"
+            onClick={() => setWarningIsOpen(false)}
+            startIcon={<DoDisturbAltIcon />}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            id="editConfirmButton"
+            onClick={save}
+            startIcon={
+              loading ? <CircularProgress size="20px" /> : <SaveIcon />
+            }
+          >
+            Save Changes
+          </Button>
+        </ConfirmDialog>
       </ButtonGroup>
     </footer>
   );

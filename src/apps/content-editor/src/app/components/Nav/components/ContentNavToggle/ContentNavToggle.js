@@ -20,6 +20,7 @@ export function ContentNavToggle() {
       }}
       fullWidth
       sx={{
+        marginTop: "auto",
         position: "sticky",
         bottom: "0",
         borderRadius: "0",

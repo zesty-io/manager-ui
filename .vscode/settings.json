@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["subheadline"]
+  "cSpell.words": ["subheadline"],
+  "nuxt.isNuxtApp": false
 }

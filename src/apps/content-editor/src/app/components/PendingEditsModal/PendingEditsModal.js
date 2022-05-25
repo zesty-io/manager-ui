@@ -37,7 +37,6 @@ export default memo(function PendingEditsModal(props) {
   }, []);
 
   const handler = (action) => {
-    console.log(action);
     switch (action) {
       case "save":
         setLoading(true);

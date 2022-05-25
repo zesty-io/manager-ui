@@ -8,8 +8,6 @@ import MobileScreenShareIcon from "@mui/icons-material/MobileScreenShare";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { WithLoader } from "@zesty-io/core/WithLoader";
-
-import { Input } from "@zesty-io/core/Input";
 import { Url } from "@zesty-io/core/Url";
 import { CopyButton } from "@zesty-io/core/CopyButton";
 import { Notice } from "@zesty-io/core/Notice";
@@ -22,6 +20,7 @@ import {
   faMobileAlt,
   faEye,
 } from "@fortawesome/free-solid-svg-icons";
+import TextField from "@mui/material/TextField";
 
 import { Meta } from "./components/Meta";
 import { JSONPreview } from "./components/JSONPreview";
@@ -170,10 +169,19 @@ export function Preview(props) {
               >
                 <SyncIcon fontSize="small" />
               </Button>
-              <Input
+              <TextField
                 ref={input}
-                className={styles.Route}
                 value={`${domain}${route}`}
+                size="small"
+                variant="outlined"
+                color="primary"
+                sx={{
+                  "@media (max-width: 650px)": {
+                    display: "none",
+                  },
+                }}
+                InputProps={{ sx: { flex: 1 } }}
+                fullWidth
               />
             </div>
 
