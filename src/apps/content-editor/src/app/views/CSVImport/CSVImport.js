@@ -5,10 +5,13 @@ import chunk from "lodash/chunk";
 import { VariableSizeList } from "react-window";
 import cx from "classnames";
 
+import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faUpload } from "@fortawesome/free-solid-svg-icons";
 
-import { Button } from "@zesty-io/core/Button";
 import { Notice } from "@zesty-io/core";
 
 import { Columns } from "./Columns";
@@ -328,20 +331,21 @@ class CSVImport extends Component {
               onChange={this.handleFile}
             />
             <label htmlFor="csv">
-              <FontAwesomeIcon icon={faUpload} />
+              <FileUploadIcon fontSize="small" />
               Open CSV File
             </label>
           </form>
           <Button
-            type="save"
+            variant="contained"
+            color="success"
             disabled={
               this.state.complete ||
               this.state.inFlight ||
               !this.state.fieldMaps
             }
             onClick={this.handleCreateItems}
+            startIcon={<AddIcon />}
           >
-            <FontAwesomeIcon icon={faPlus} />
             Create Items
           </Button>
 

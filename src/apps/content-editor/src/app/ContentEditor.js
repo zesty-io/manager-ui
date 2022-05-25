@@ -11,7 +11,6 @@ import { fetchNav } from "../store/navContent";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { ContentNav } from "./components/Nav";
-import { ContentNavToggle } from "./components/Nav/components/ContentNavToggle";
 
 import { Dashboard } from "./views/Dashboard";
 import { ItemList } from "./views/ItemList";
@@ -77,7 +76,6 @@ export default function ContentEditor() {
               nav={navContent}
             />
 
-            <ContentNavToggle />
             <div
               className={cx(
                 styles.Content,
