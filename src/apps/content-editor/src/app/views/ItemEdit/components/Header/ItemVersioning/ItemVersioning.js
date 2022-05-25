@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMetaKey } from "shell/hooks/useMetaKey";
+import cx from "classnames";
 
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Button from "@mui/material/Button";
@@ -130,8 +131,15 @@ export function ItemVersioning(props) {
                   <BackupIcon title="CDN out of sync" />
                 )
               }
+              sx={{
+                "& span": {
+                  m: 0,
+                },
+              }}
             >
-              <span className={styles.Hide}>Publish</span>
+              <span className={cx(styles.Hide, styles.PublishText)}>
+                Publish
+              </span>
               <span className={styles.Hide}>&nbsp;Version&nbsp;</span>
               <span className={styles.Hide}>
                 &nbsp;{props.item.meta.version}
