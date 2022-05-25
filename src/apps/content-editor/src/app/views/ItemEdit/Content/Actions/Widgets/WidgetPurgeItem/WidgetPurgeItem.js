@@ -1,9 +1,14 @@
 import { memo, useState } from "react";
+
+import Button from "@mui/material/Button";
+
+import SyncIcon from "@mui/icons-material/Sync";
+import CircularProgress from "@mui/material/CircularProgress";
+
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSync, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "@zesty-io/core/Button";
+import { faSync } from "@fortawesome/free-solid-svg-icons";
 
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
@@ -27,13 +32,16 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
       </CardContent>
       <CardFooter className={SharedWidgetStyles.FooterSpacing}>
         {loading ? (
-          <Button className={SharedWidgetStyles.Button} disabled={loading}>
-            <FontAwesomeIcon icon={faSpinner} spin />
-            Refreshing Cached Item&hellip;
+          <Button
+            variant="contained"
+            disabled={loading}
+            startIcon={<CircularProgress size="20px" />}
+          >
+            Refreshing Cached Item
           </Button>
         ) : (
           <Button
-            className={SharedWidgetStyles.Button}
+            variant="contained"
             id="RefreshCache"
             onClick={() => {
               setLoading(true);
@@ -61,8 +69,8 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
                   );
                 });
             }}
+            startIcon={<SyncIcon />}
           >
-            <FontAwesomeIcon icon={faSync} />
             Refresh Cached Item
           </Button>
         )}

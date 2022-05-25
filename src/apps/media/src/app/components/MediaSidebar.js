@@ -3,26 +3,26 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import { Search } from "@zesty-io/core/Search";
 
+import Button from "@mui/material/Button";
+
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faUpload,
   faCaretDown,
   faCaretLeft,
   faEyeSlash,
   faFolder,
-  faSearch,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import { Button } from "@zesty-io/core/Button";
 
 import {
   uploadFile,
   closeGroup,
   hideGroup,
-  searchFiles,
   clearSearch,
 } from "shell/store/media";
-import shared from "./MediaShared.less";
+
 import styles from "./MediaSidebar.less";
 import { MediaNav } from "./MediaNav";
 
@@ -119,14 +119,18 @@ export const MediaSidebar = memo(function MediaSidebar(props) {
     <nav className={cx(styles.Nav, hiddenOpen ? styles.hiddenOpen : null)}>
       <div className={styles.TopNav}>
         <Button
+          variant="contained"
+          color="secondary"
           aria-label="Upload"
           className={styles.PadLeft}
           kind="secondary"
-          className={styles.Upload}
           onClick={handleUploadClick}
+          startIcon={<FileUploadIcon />}
+          sx={{
+            justifyContent: "flex-start",
+          }}
         >
-          <FontAwesomeIcon icon={faUpload} />
-          <span>Upload</span>
+          Upload
         </Button>
         <input
           type="file"

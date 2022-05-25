@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
-import { Input } from "@zesty-io/core/Input";
+import TextField from "@mui/material/TextField";
 import { InputIcon } from "@zesty-io/core/InputIcon";
 import { AppLink } from "@zesty-io/core/AppLink";
 
@@ -155,12 +155,15 @@ export const ItemRoute = connect((state) => {
             </h1>
           ) : (
             <Fragment>
-              <Input
-                type={"text"}
+              <TextField
+                type="text"
                 name="pathPart"
-                className={styles.Part}
                 value={pathPart}
                 onChange={onChange}
+                size="small"
+                variant="outlined"
+                color="primary"
+                fullWidth
               />
 
               {loading && (
