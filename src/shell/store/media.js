@@ -583,6 +583,9 @@ export function uploadFile(file, bin) {
       dispatch(fileUploadProgress(file));
     });
 
+    req.addEventListener("abort", handleError);
+    req.addEventListener("error", handleError);
+
     if (file.file.size > 32000000) {
       /**
        * GAE has an inherint 32mb limit at their global nginx load balancer
@@ -611,7 +614,7 @@ export function uploadFile(file, bin) {
               cdnUrl: `${bin.cdn_base_url}/${file.filename}`,
             },
           }).then((res) => {
-            console.log("/file", res);
+            // console.log("/file", res);
             if (res.status === 201) {
               dispatch(
                 fileUploadSuccess({
@@ -631,6 +634,10 @@ export function uploadFile(file, bin) {
           console.log("fail");
         }
       });
+
+      // When sending directly to bucket it needs to be just the file
+      // and not the extra meta data for the zesty services
+      req.send(file.file);
     } else {
       // This is posting to a Zesty service so it must include credentials
       req.withCredentials = true;
@@ -666,13 +673,11 @@ export function uploadFile(file, bin) {
           dispatch(fileUploadError(file));
         }
       });
+
+      req.send(data);
     }
 
-    req.addEventListener("abort", handleError);
-    req.addEventListener("error", handleError);
-
     dispatch(fileUploadStart(file));
-    req.send(data);
   };
 }
 
