@@ -561,8 +561,6 @@ function handleError(err) {
 
 export function uploadFile(file, bin) {
   return async (dispatch, getState) => {
-    // console.log("uploadFile", file, bin);
-
     const userZUID = getState().user.ZUID;
     const data = new FormData();
     const req = new XMLHttpRequest();
@@ -588,15 +586,14 @@ export function uploadFile(file, bin) {
 
     if (file.file.size > 32000000) {
       /**
-       * GAE has an inherint 32mb limit at their global nginx load balancer
+       * GAE has an inherent 32mb limit at their global nginx load balancer
        * We use a signed url for large file uploads directly to the assocaited bucket
        */
 
       const signedUrl = await getSignedUrl(file, bin);
       req.open("PUT", signedUrl);
 
-      // The sent content-type needs to match what was provided when
-      // generating the signed url
+      // The sent content-type needs to match what was provided when generating the signed url
       // @see https://medium.com/imersotechblog/upload-files-to-google-cloud-storage-gcs-from-the-browser-159810bb11e3
       req.setRequestHeader("Content-Type", file.file.type);
 
@@ -613,25 +610,37 @@ export function uploadFile(file, bin) {
               title: file.filename,
               cdnUrl: `${bin.cdn_base_url}/${file.filename}`,
             },
-          }).then((res) => {
-            // console.log("/file", res);
-            if (res.status === 201) {
+          })
+            .then((res) => {
+              if (res.status === 201) {
+                dispatch(
+                  fileUploadSuccess({
+                    ...res.data,
+                    uploadID: file.uploadID,
+                  })
+                );
+              } else {
+                throw res;
+              }
+            })
+            .catch((err) => {
+              console.error(err);
               dispatch(
-                fileUploadSuccess({
-                  ...res.data,
-                  uploadID: file.uploadID,
+                notify({
+                  message:
+                    "Failed creating file record after signed url upload",
+                  kind: "error",
                 })
               );
-              notify({
-                kind: "success",
-                message: "Large file uploaded",
-              });
-            } else {
-              throw res;
-            }
-          });
+            });
         } else {
-          console.log("fail");
+          dispatch(
+            notify({
+              message: "Failed uploading file to signed url",
+              kind: "error",
+            })
+          );
+          dispatch(fileUploadError(file));
         }
       });
 
@@ -639,6 +648,9 @@ export function uploadFile(file, bin) {
       // and not the extra meta data for the zesty services
       req.send(file.file);
     } else {
+      // NOTE: historic method for file uploads. We may want to consider replacing
+      // this with the signed url flow, regardless of file size
+
       // This is posting to a Zesty service so it must include credentials
       req.withCredentials = true;
       req.open(
@@ -652,24 +664,12 @@ export function uploadFile(file, bin) {
           uploadedFile.uploadID = file.uploadID;
           dispatch(fileUploadSuccess(uploadedFile));
         } else {
-          // TODO: defunct now that large files are handled?
-          if (req.status === 413) {
-            dispatch(
-              notify({
-                message:
-                  "Failed uploading file. Individual file size must be 32MB or smaller",
-                kind: "error",
-              })
-            );
-          } else {
-            dispatch(
-              notify({
-                message: "Failed uploading file. Server failure",
-                kind: "error",
-              })
-            );
-          }
-
+          dispatch(
+            notify({
+              message: "Failed uploading file",
+              kind: "error",
+            })
+          );
           dispatch(fileUploadError(file));
         }
       });
