@@ -80,3 +80,14 @@ To run the tests on your machine you will need to create a `cypress.env.json` fi
 
 Connect to Zesty Material Design Systems
 `npm link @zesty-io/material`
+
+## MUI Notes
+
+[MUI ToggleButtonGroup API](https://mui.com/material-ui/api/toggle-button-group/)
+
+ToggleButtonGroup
+We are adding `exclusive` prop to only allow one of the child values to be selected.
+
+OnChange value: of the selected buttons. When exclusive is true this is a single value; when false an array of selected values. If no value is selected and exclusive is true the value is `null`; when false an empty array.
+
+In some case when sending null this will break the togglebutton UI, thus the reasoning for adding toggleHandlers that checks `null` through the codebase.

@@ -52,6 +52,11 @@ export function RedirectCreator(props) {
       });
   };
 
+  const handleToggle = (val) => {
+    if (val === null) return;
+    setCode(val);
+  };
+
   return (
     <div className={styles.RedirectCreator}>
       <span className={styles.RedirectCreatorCell}>
@@ -73,11 +78,9 @@ export function RedirectCreator(props) {
           value={code}
           size="small"
           exclusive
-          onChange={(e, val) => {
-            if (val !== null) setCode(val);
-          }}
+          onChange={(evt, val) => handleToggle(val)}
         >
-          <ToggleButton value={302}>302</ToggleButton>
+          <ToggleButton value={302}>302 David</ToggleButton>
           <ToggleButton value={301}>301</ToggleButton>
         </ToggleButtonGroup>
       </span>
