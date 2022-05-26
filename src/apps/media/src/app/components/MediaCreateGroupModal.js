@@ -45,7 +45,7 @@ export function MediaCreateGroupModal(props) {
           <Button
             variant="contained"
             color="success"
-            onClick={handleCreateGroup}
+            type="save"
             startIcon={<SaveIcon />}
           >
             Create
