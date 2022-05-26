@@ -46,7 +46,6 @@ export default function LinkedContent(props) {
                       alignItems: "baseline",
                       display: "flex",
                       margin: 0,
-                      textShadow: "non",
                     }}
                     href={`${CONFIG.URL_PREVIEW_FULL}${item.web.path}`}
                     target="_blank"
