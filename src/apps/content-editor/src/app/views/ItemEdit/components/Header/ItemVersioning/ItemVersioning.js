@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { useMetaKey } from "shell/hooks/useMetaKey";
+import cx from "classnames";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSave,
-  faSpinner,
-  faCalendar,
-  faCheckCircle,
-  faCloudUploadAlt,
-} from "@fortawesome/free-solid-svg-icons";
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { Button } from "@zesty-io/core/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import CircularProgress from "@mui/material/CircularProgress";
+import SaveIcon from "@mui/icons-material/Save";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import BackupIcon from "@mui/icons-material/Backup";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
 import { ScheduleFlyout } from "./ScheduleFlyout";
 import { VersionSelector } from "./VersionSelector";
@@ -110,72 +109,83 @@ export function ItemVersioning(props) {
   useEffect(() => checkCache(), []);
 
   return (
-    <ButtonGroup className={styles.Actions}>
+    <Stack direction="row" spacing={1} className={styles.Actions}>
       <VersionSelector modelZUID={props.modelZUID} itemZUID={props.itemZUID} />
 
       {canPublish && (
-        <ButtonGroup className={styles.Publish}>
-          <Button
-            title="Publish"
-            className={styles.PublishButton}
-            id="PublishButton"
-            kind="secondary"
-            disabled={publishingDisabled || false}
-            onClick={handlePublish}
-          >
-            {publishing ? (
-              <FontAwesomeIcon icon={faSpinner} spin />
-            ) : cached ? (
-              <FontAwesomeIcon icon={faCheckCircle} title="CDN in sync" />
-            ) : (
-              <FontAwesomeIcon
-                icon={faCloudUploadAlt}
-                title="CDN out of sync"
-              />
-            )}
-            <span className={styles.Hide}>Publish</span>
-            <span className={styles.Hide}>&nbsp;Version&nbsp;</span>
-            <span className={styles.Hide}>&nbsp;{props.item.meta.version}</span>
-          </Button>
-          <Button
-            title="Publish Schedule"
-            id="PublishScheduleButton"
-            className={`${styles.ClockButton} ${
-              props.item.scheduling && props.item.scheduling.isScheduled
-                ? styles.Scheduled
-                : ""
-            }
-              `}
-            kind={open ? "tertiary" : "secondary"}
-            disabled={schedulingDisabled || false}
-            onClick={toggleScheduleModal}
-          >
-            <FontAwesomeIcon icon={faCalendar} />
-          </Button>
+        <Stack direction="row" spacing={1} className={styles.Publish}>
+          <ButtonGroup variant="contained">
+            <Button
+              variant="contained"
+              color="secondary"
+              title="Publish"
+              id="PublishButton"
+              disabled={publishingDisabled || false}
+              onClick={handlePublish}
+              startIcon={
+                publishing ? (
+                  <CircularProgress size="20px" />
+                ) : cached ? (
+                  <CheckCircleIcon title="CDN in sync" />
+                ) : (
+                  <BackupIcon title="CDN out of sync" />
+                )
+              }
+              sx={{
+                "& span": {
+                  m: 0,
+                },
+              }}
+            >
+              <span className={cx(styles.Hide, styles.PublishText)}>
+                Publish
+              </span>
+              <span className={styles.Hide}>&nbsp;Version&nbsp;</span>
+              <span className={styles.Hide}>
+                &nbsp;{props.item.meta.version}
+              </span>
+            </Button>
+            <Button
+              variant="contained"
+              color={open ? "primary" : "secondary"}
+              title="Publish Schedule"
+              id="PublishScheduleButton"
+              disabled={schedulingDisabled || false}
+              onClick={toggleScheduleModal}
+              sx={{
+                ...(props.item.scheduling &&
+                  props.item.scheduling.isScheduled && {
+                    backgroundColor: "warning.main",
+                  }),
+              }}
+            >
+              <CalendarMonthIcon fontSize="small" />
+            </Button>
+          </ButtonGroup>
           <ScheduleFlyout
             isOpen={open}
             item={props.item}
             dispatch={props.dispatch}
             toggleOpen={toggleScheduleModal}
           />
-        </ButtonGroup>
+        </Stack>
       )}
 
       <Button
+        variant="contained"
+        color="success"
         title="Save Version"
-        className={styles.Save}
-        type="save"
         disabled={props.saving || !props.item.dirty}
         onClick={props.onSave}
         id="SaveItemButton"
+        startIcon={
+          props.saving ? <CircularProgress size="20px" /> : <SaveIcon />
+        }
       >
-        {props.saving ? (
-          <FontAwesomeIcon icon={faSpinner} spin />
-        ) : (
-          <FontAwesomeIcon icon={faSave} />
-        )}
-        <span className={styles.Test}>&nbsp;Save Version {metaShortcut}</span>
+        <span className={styles.SaveVersion}>
+          &nbsp;Save Version {metaShortcut}
+        </span>
       </Button>
-    </ButtonGroup>
+    </Stack>
   );
 }

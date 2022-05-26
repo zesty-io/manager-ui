@@ -20,6 +20,7 @@ export default function ImportTableRowDisabled({
           value={code}
           offValue="302"
           onValue="301"
+          disabled
         />
       </span>
       <span className={styles.RowCell}>
