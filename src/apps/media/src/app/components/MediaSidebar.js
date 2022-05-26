@@ -21,6 +21,7 @@ import {
   closeGroup,
   hideGroup,
   clearSearch,
+  searchFiles,
 } from "shell/store/media";
 
 import styles from "./MediaSidebar.less";

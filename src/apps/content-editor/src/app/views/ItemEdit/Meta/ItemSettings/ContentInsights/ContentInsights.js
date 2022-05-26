@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
+import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
 
-import { Divider } from "@zesty-io/core/Divider";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { faCheck, faSearchDollar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -299,7 +299,11 @@ export function ContentInsights(props) {
             Unique Words* <span>{totalUniqueNonCommonWords}</span>
           </div>
         </div>
-        <Divider className={styles.divider} />
+        <Divider
+          sx={{
+            my: 1,
+          }}
+        />
         <h4>Content and Meta Matched Words</h4>
         <div className={styles.wordBank}>
           {metaWordArray.map((item, i) => {
@@ -318,9 +322,13 @@ export function ContentInsights(props) {
             }
           })}
         </div>
-        <Divider className={styles.divider} />
+        <Divider
+          sx={{
+            my: 1,
+          }}
+        />
         <h4>
-          Word Occurences from this Content Item (not the fully rendered page)
+          Word occurrences from this Content Item (not the fully rendered page)
         </h4>
         <div className={styles.wordBank}>
           {wordArray.map((item, i) => {
@@ -368,8 +376,12 @@ export function ContentInsights(props) {
             })}
           </div>
         )}
-        <Divider className={styles.divider} />
-        <h4>Words Occurences from the URL, Meta Title and Description</h4>
+        <Divider
+          sx={{
+            my: 1,
+          }}
+        />
+        <h4>Word occurrences from the URL, Meta Title and Description</h4>
         <div className={styles.wordBank}>
           {metaWordArray.map((item, i) => {
             return (
