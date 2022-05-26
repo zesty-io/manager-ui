@@ -541,79 +541,111 @@ export function fetchGroupFiles(groupZUID) {
   };
 }
 
-async function directBucketUpload(file) {
-  console.log(file);
+async function getSignedUrl(file, bin) {
+  try {
+    return request(
+      `${CONFIG.SERVICE_MEDIA_STORAGE}/signed-url/${bin.storage_name}/${file.file.name}`
+    ).then((res) => res.data.url);
+  } catch (err) {
+    console.error(err);
+    notify({
+      kind: "warn",
+      message: "Failed getting signed url for large file upload",
+    });
+  }
+}
 
-  // try {
-  //   // step 1)
-  //   // get signed url
-  //   return request(`${CONFIG.SERVICE_MEDIA_STORAGE}/signed-url`).then((res) => {
-  //     // step 2)
-  //     // upload to bucket
-  //     return request(res.url, {
-  //       method: "POST",
-  //     }).then((res) => {
-  //       // step 3)
-  //       // inform media-manager
-  //       return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file`, {
-  //         method: "POST",
-  //       }).then((res) => {
-  //         if (success) {
-  //           notify({
-  //             kind: "sucess",
-  //             message: "file uploaded",
-  //           });
-  //         } else {
-  //           throw res;
-  //         }
-  //       });
-  //     });
-  //   });
-  // } catch (err) {
-  //   console.error(err);
-  //   notify({
-  //     kind: "warn",
-  //     message: "failed uploading file",
-  //   });
-  // }
+function handleError(err) {
+  console.log(err);
 }
 
 export function uploadFile(file, bin) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
+    // console.log("uploadFile", file, bin);
+
+    const userZUID = getState().user.ZUID;
+    const data = new FormData();
+    const req = new XMLHttpRequest();
+
     file.filename = file.file.name;
     file.uploadID = uuidv4();
     file.progress = 0;
     file.loading = true;
     file.url = URL.createObjectURL(file.file);
 
-    if (file.file.size > 32000) {
-      directBucketUpload(file);
-    } else {
-      const data = new FormData();
-      data.append("file", file.file);
-      data.append("bin_id", file.bin_id);
-      data.append("group_id", file.group_id);
-      data.append("user_id", getState().user.ZUID);
+    data.append("file", file.file);
+    data.append("bin_id", file.bin_id);
+    data.append("group_id", file.group_id);
+    data.append("user_id", userZUID);
 
-      const req = new XMLHttpRequest();
+    req.upload.addEventListener("progress", function (e) {
+      file.progress = (e.loaded / e.total) * 100;
+      dispatch(fileUploadProgress(file));
+    });
+
+    if (file.file.size > 32000000) {
+      /**
+       * GAE has an inherint 32mb limit at their global nginx load balancer
+       * We use a signed url for large file uploads directly to the assocaited bucket
+       */
+
+      const signedUrl = await getSignedUrl(file, bin);
+      req.open("PUT", signedUrl);
+
+      // The sent content-type needs to match what was provided when
+      // generating the signed url
+      // @see https://medium.com/imersotechblog/upload-files-to-google-cloud-storage-gcs-from-the-browser-159810bb11e3
+      req.setRequestHeader("Content-Type", file.file.type);
+
+      req.addEventListener("load", () => {
+        if (req.status === 200) {
+          return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file`, {
+            method: "POST",
+            json: true,
+            body: {
+              bin_id: file.bin_id,
+              group_id: file.group_id,
+              created_by: userZUID,
+              filename: file.filename,
+              title: file.filename,
+              cdnUrl: `${bin.cdn_base_url}/${file.filename}`,
+            },
+          }).then((res) => {
+            console.log("/file", res);
+            if (res.status === 201) {
+              dispatch(
+                fileUploadSuccess({
+                  ...res.data,
+                  uploadID: file.uploadID,
+                })
+              );
+              notify({
+                kind: "success",
+                message: "Large file uploaded",
+              });
+            } else {
+              throw res;
+            }
+          });
+        } else {
+          console.log("fail");
+        }
+      });
+    } else {
+      // This is posting to a Zesty service so it must include credentials
       req.withCredentials = true;
       req.open(
         "POST",
         `${CONFIG.SERVICE_MEDIA_STORAGE}/upload/${bin.storage_driver}/${bin.storage_name}`
       );
-
-      req.upload.addEventListener("progress", function (e) {
-        file.progress = (e.loaded / e.total) * 100;
-        dispatch(fileUploadProgress(file));
-      });
-
-      req.addEventListener("load", function (e) {
+      req.addEventListener("load", () => {
         if (req.status === 201) {
           const response = JSON.parse(req.response);
           const uploadedFile = response.data[0];
           uploadedFile.uploadID = file.uploadID;
           dispatch(fileUploadSuccess(uploadedFile));
         } else {
+          // TODO: defunct now that large files are handled?
           if (req.status === 413) {
             dispatch(
               notify({
@@ -634,12 +666,13 @@ export function uploadFile(file, bin) {
           dispatch(fileUploadError(file));
         }
       });
-      req.addEventListener("abort", handleError);
-      req.addEventListener("error", handleError);
-
-      dispatch(fileUploadStart(file));
-      req.send(data);
     }
+
+    req.addEventListener("abort", handleError);
+    req.addEventListener("error", handleError);
+
+    dispatch(fileUploadStart(file));
+    req.send(data);
   };
 }
 
