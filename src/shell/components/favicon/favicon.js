@@ -273,27 +273,25 @@ export default connect((state) => {
             Manage Instance Head Tags
           </AppLink>
         </ModalContent>
-        <ModalFooter>
-          <ButtonGroup className={styles.Actions}>
-            <Button
-              variant="contained"
-              color="success"
-              data-cy="faviconSave"
-              onClick={handleSave}
-              startIcon={
-                loading ? <CircularProgress size="20px" /> : <SaveIcon />
-              }
-            >
-              Save Favicon
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleClose}
-              startIcon={<DoDisturbAltIcon />}
-            >
-              Cancel (ESC)
-            </Button>
-          </ButtonGroup>
+        <ModalFooter className={styles.Actions}>
+          <Button
+            variant="contained"
+            onClick={handleClose}
+            startIcon={<DoDisturbAltIcon />}
+          >
+            Cancel (ESC)
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            data-cy="faviconSave"
+            onClick={handleSave}
+            startIcon={
+              loading ? <CircularProgress size="20px" /> : <SaveIcon />
+            }
+          >
+            Save Favicon
+          </Button>
         </ModalFooter>
       </Modal>
     </div>
