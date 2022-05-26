@@ -39,6 +39,7 @@ export const Sync = memo(function Sync(props) {
     <div>
       <Button
         variant="contained"
+        color="warning"
         onClick={() => setOpen(true)}
         startIcon={loading ? <CircularProgress size="20px" /> : <SyncIcon />}
       >
