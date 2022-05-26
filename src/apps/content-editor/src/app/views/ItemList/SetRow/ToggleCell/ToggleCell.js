@@ -22,11 +22,7 @@ export const ToggleCell = memo(function ToggleCell(props) {
               color="secondary"
               value={props.value}
               size="small"
-              onChange={(e, val) => {
-                if (val !== null) {
-                  props.onChange(val, props.name);
-                }
-              }}
+              onChange={(evt, val) => props.onChange(val, props.name)}
               onClick={(evt) => evt.stopPropagation()}
               exclusive
             >
@@ -42,11 +38,7 @@ export const ToggleCell = memo(function ToggleCell(props) {
               color="secondary"
               size="small"
               value={props.value}
-              onChange={(e, val) => {
-                if (val !== null) {
-                  props.onChange(val, props.name);
-                }
-              }}
+              onChange={(evt, val) => props.onChange(val, props.name)}
             >
               <ToggleButton value={options[0]}>False</ToggleButton>
               <ToggleButton value={options[1]}>True</ToggleButton>
