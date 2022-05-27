@@ -6,12 +6,6 @@ import AuditTrail from "./views/AuditTrail";
 import Analytics from "./views/Analytics";
 import Metrics from "./views/Metrics";
 
-import {
-  faChartLine,
-  faChartPie,
-  faHistory,
-} from "@fortawesome/free-solid-svg-icons";
-
 export function ReportingApp() {
   return (
     <Box sx={{ display: "flex", height: "100%" }}>
