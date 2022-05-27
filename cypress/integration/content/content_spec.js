@@ -122,7 +122,7 @@ describe("Content Specs", () => {
           .find("input")
           .focus()
           .clear()
-          .type(`http://www.zesty.pw/${TIMESTAMP}`);
+          .type(`http://www.zesty.pw/${TIMESTAMP}`, { timeout: 3000 });
       });
 
       it("Internal Link Field", () => {
