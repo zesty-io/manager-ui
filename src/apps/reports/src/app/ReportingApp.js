@@ -15,10 +15,10 @@ export function ReportingApp() {
       </Box>
       <Box sx={{ boxShadow: 3, flex: 1 }}>
         <Switch>
-          <Route path="/reporting/audit-trail" component={AuditTrail} />
-          <Route path="/reporting/analytics" component={Analytics} />
-          <Route path="/reporting/metrics" component={Metrics} />
-          <Redirect to="/reporting/audit-trail" />
+          <Route path="/reports/audit-trail" component={AuditTrail} />
+          <Route path="/reports/analytics" component={Analytics} />
+          <Route path="/reports/metrics" component={Metrics} />
+          <Redirect to="/reports/audit-trail" />
         </Switch>
       </Box>
     </Box>

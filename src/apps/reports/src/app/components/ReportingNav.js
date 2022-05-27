@@ -18,17 +18,17 @@ export function ReportingNav() {
   const tree = [
     {
       label: "Audit Trail",
-      path: "/reporting/audit-trail",
+      path: "/reports/audit-trail",
       icon: faHistory,
     },
     {
       label: "Analytics",
-      path: "/reporting/analytics",
+      path: "/reports/analytics",
       icon: faChartLine,
     },
     {
       label: "Metrics",
-      path: "/reporting/metrics",
+      path: "/reports/metrics",
       icon: faChartPie,
     },
   ];

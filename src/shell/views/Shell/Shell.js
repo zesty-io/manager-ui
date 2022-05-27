@@ -15,7 +15,7 @@ import Missing from "shell/components/missing";
 import ContentApp from "apps/content-editor/src";
 import DamApp from "apps/media/src";
 import ReleaseApp from "apps/release/src";
-import ReportingApp from "apps/reporting/src";
+import ReportingApp from "apps/reports/src";
 import CodeApp from "apps/code-editor/src";
 import LeadsApp from "apps/leads/src";
 import SchemaApp from "apps/schema/src";
@@ -62,11 +62,11 @@ export default connect((state) => {
                           component={ContentApp}
                         />
                       );
-                    case "reporting":
+                    case "reports":
                       return (
                         <Route
                           key={product}
-                          path="/reporting"
+                          path="/reports"
                           component={ReportingApp}
                         />
                       );

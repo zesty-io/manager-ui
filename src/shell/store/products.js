@@ -27,7 +27,7 @@ export function fetchProducts() {
           "code",
           "leads",
           "seo",
-          "reporting",
+          "reports",
           "settings",
           // "release",
         ];
@@ -40,20 +40,20 @@ export function fetchProducts() {
           "code",
           "leads",
           "seo",
-          "reporting",
+          "reports",
           "settings",
           // "release",
         ];
         break;
       case "31-71cfc74-s30":
-        data = ["content", "media", "leads", "seo", "reporting"];
+        data = ["content", "media", "leads", "seo", "reports"];
         break;
       case "31-71cfc74-p0bl1shr":
         data = [
           "content",
           "media",
           "leads",
-          "reporting",
+          "reports",
           // "release"
         ];
         break;
@@ -75,7 +75,7 @@ export function fetchProducts() {
         "code",
         "leads",
         "seo",
-        "reporting",
+        "reports",
         "settings",
         // "release",
       ];

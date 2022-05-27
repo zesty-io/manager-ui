@@ -30,7 +30,7 @@ export default memo(function GlobalMenu() {
     schema: faDatabase,
     code: faCode,
     leads: faAddressCard,
-    reporting: faChartLine,
+    reports: faChartLine,
     seo: faBullseye,
     settings: faCog,
     release: faRocket,
