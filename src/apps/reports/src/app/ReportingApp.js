@@ -16,8 +16,8 @@ export function ReportingApp() {
       <Box sx={{ boxShadow: 3, flex: 1 }}>
         <Switch>
           <Route path="/reports/audit-trail" component={AuditTrail} />
-          <Route path="/reports/analytics" component={Analytics} />
           <Route path="/reports/metrics" component={Metrics} />
+          <Route path="/reports/analytics" component={Analytics} />
           <Redirect to="/reports/audit-trail" />
         </Switch>
       </Box>

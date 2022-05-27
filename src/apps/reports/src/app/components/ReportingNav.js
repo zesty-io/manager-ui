@@ -22,14 +22,14 @@ export function ReportingNav() {
       icon: faHistory,
     },
     {
-      label: "Analytics",
-      path: "/reports/analytics",
-      icon: faChartLine,
-    },
-    {
       label: "Metrics",
       path: "/reports/metrics",
       icon: faChartPie,
+    },
+    {
+      label: "Analytics",
+      path: "/reports/analytics",
+      icon: faChartLine,
     },
   ];
 
