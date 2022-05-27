@@ -15,8 +15,7 @@ import Missing from "shell/components/missing";
 import ContentApp from "apps/content-editor/src";
 import DamApp from "apps/media/src";
 import ReleaseApp from "apps/release/src";
-import AuditTrailApp from "apps/audit-trail/src";
-import AnalyticsApp from "apps/analytics/src";
+import ReportingApp from "apps/reporting/src";
 import CodeApp from "apps/code-editor/src";
 import LeadsApp from "apps/leads/src";
 import SchemaApp from "apps/schema/src";
@@ -63,20 +62,12 @@ export default connect((state) => {
                           component={ContentApp}
                         />
                       );
-                    case "audit-trail":
+                    case "reporting":
                       return (
                         <Route
                           key={product}
-                          path="/audit-trail"
-                          component={AuditTrailApp}
-                        />
-                      );
-                    case "analytics":
-                      return (
-                        <Route
-                          key={product}
-                          path="/analytics"
-                          component={AnalyticsApp}
+                          path="/reporting"
+                          component={ReportingApp}
                         />
                       );
                     case "code":
