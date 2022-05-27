@@ -10,7 +10,7 @@ export function ReportingApp() {
   return (
     <Box sx={{ display: "flex", height: "100%" }}>
       <Box sx={{ pt: 2, pl: 2, minWidth: 150 }}>
-        <Typography sx={{ mb: 1 }}>REPORTING</Typography>
+        <Typography sx={{ mb: 1 }}>REPORTS</Typography>
         <ReportingNav />
       </Box>
       <Box sx={{ boxShadow: 3, flex: 1 }}>
