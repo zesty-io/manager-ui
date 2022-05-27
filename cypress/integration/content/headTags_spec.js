@@ -13,7 +13,7 @@ describe("Head Tags", () => {
 
     cy.get("[data-cy=contentNavButton]").click();
 
-    cy.get("[data-cy=head]").click();
+    cy.get("[data-cy=head]").click({ force: true });
 
     cy.contains("Create Head Tag").click();
 
