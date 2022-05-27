@@ -144,6 +144,11 @@ export default connect((state) => {
     );
   };
 
+  const handleToggle = (val) => {
+    if (val === null) return;
+    handleRobotsOn(val);
+  };
+
   return (
     <WithLoader condition={robotOn.ZUID} message="Finding robots.txt settings">
       <div className={styles.Robots}>
@@ -178,11 +183,7 @@ export default connect((state) => {
             size="small"
             value={robotOn.value}
             exclusive
-            onChange={(e, val) => {
-              if (val !== null) {
-                handleRobotsOn(val);
-              }
-            }}
+            onChange={(evt, val) => handleToggle(val)}
           >
             <ToggleButton value={0}>No </ToggleButton>
             <ToggleButton value={1}>Yes </ToggleButton>

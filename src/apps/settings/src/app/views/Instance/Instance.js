@@ -115,6 +115,11 @@ export default connect((state) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
+  const handleToggle = (val, field) => {
+    if (val === null) return;
+    setValue(val, field);
+  };
+
   let i = 0;
   return (
     <div className={styles.Settings}>
@@ -221,11 +226,7 @@ export default connect((state) => {
                       size="small"
                       value={fieldValues[field.key]}
                       exclusive
-                      onChange={(e, val) => {
-                        if (val !== null) {
-                          setValue(val, field.key);
-                        }
-                      }}
+                      onChange={(evt, val) => handleToggle(val, field.key)}
                     >
                       <ToggleButton value={"0"}>Off </ToggleButton>
                       <ToggleButton value={"1"}>On </ToggleButton>
@@ -254,13 +255,9 @@ export default connect((state) => {
                       size="small"
                       value={fieldValues[field.key]}
                       exclusive
-                      onChange={(e, val) => {
-                        if (val !== null) {
-                          setValue(val, field.key);
-                        }
-                      }}
+                      onChange={(evt, val) => handleToggle(val, field.key)}
                     >
-                      <ToggleButton value={"0"}>Off </ToggleButton>
+                      <ToggleButton value={"0"}>Off</ToggleButton>
                       <ToggleButton value={"1"}>On </ToggleButton>
                     </ToggleButtonGroup>
                   </div>
