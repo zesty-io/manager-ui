@@ -67,6 +67,9 @@ Functional UI tests are run with cypress.io
 
 To run the tests on your machine you will need to create a `cypress.env.json` file at the root of the repository, add the following JSON and replace the email/password with valid credentials.
 
+Terminal
+`npm run test:open`
+
 ```json
 {
   "email": "EMAIL",

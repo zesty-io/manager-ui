@@ -1,11 +1,16 @@
 import { useDispatch } from "react-redux";
+
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+
 import {
   Modal,
   ModalHeader,
   ModalContent,
   ModalFooter,
 } from "@zesty-io/core/Modal";
-import { Button } from "@zesty-io/core/Button";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBan,
@@ -36,20 +41,24 @@ export function MediaDeleteFileModal(props) {
         </p>
       </ModalContent>
       <ModalFooter className={styles.Footer}>
-        <Button type="cancel" onClick={props.onClose}>
-          <FontAwesomeIcon icon={faBan} />
-          <span>Cancel</span>
-        </Button>
-
         <Button
+          variant="contained"
+          onClick={props.onClose}
+          startIcon={<DoDisturbAltIcon />}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          color="error"
           onClick={() =>
             dispatch(deleteFile(props.file)).then(() => {
               props.onDelete();
             })
           }
+          startIcon={<DeleteIcon />}
         >
-          <FontAwesomeIcon icon={faCheck} />
-          <span>Delete</span>
+          Delete
         </Button>
       </ModalFooter>
     </Modal>

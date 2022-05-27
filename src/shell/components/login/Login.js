@@ -149,6 +149,7 @@ export default connect((state) => {
                 startIcon={
                   loading ? <CircularProgress size="20px" /> : <ExitToAppIcon />
                 }
+                sx={{ mt: 1 }}
               >
                 Resume Session
               </Button>

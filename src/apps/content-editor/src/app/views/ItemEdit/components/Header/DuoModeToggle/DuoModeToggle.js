@@ -27,7 +27,12 @@ export function DuoModeToggle(props) {
 
     override = instanceSettings.find((setting) => {
       // if any of these settings are present then DuoMode is unavailable
-      return setting.key === "authorization_key" && setting.value;
+      return (
+        (setting.key === "basic_content_api_key" && setting.value) ||
+        (setting.key === "headless_authorization_key" && setting.value) ||
+        (setting.key === "authorization_key" && setting.value) ||
+        (setting.key === "x_frame_options" && setting.value)
+      );
     });
 
     if (override) {

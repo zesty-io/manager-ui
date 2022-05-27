@@ -35,7 +35,8 @@ export const MediaImage = forwardRef(function MediaImage(props, ref) {
         "data-src": props.lazy ? src : null,
         src: props.lazy ? "/images/FFFFFF-0.png" : src,
       };
-      return <img {...options} ref={ref} src={src} />;
+      // IMPORTANT: DO NOT REMOVE LAZY. Unless you have a VERY good reason
+      return <img loading="lazy" {...options} ref={ref} src={src} />;
     case "html":
     case "js":
     case "less":
