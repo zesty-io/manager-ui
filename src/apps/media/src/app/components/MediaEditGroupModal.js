@@ -32,7 +32,7 @@ export function MediaEditGroupModal(props) {
       onClose={props.onClose}
     >
       <ModalContent>
-        <form className={styles.SearchForm}>
+        <form className={styles.SearchForm} onSubmit={handleEditGroup}>
           <input
             className={shared.Input}
             autoFocus
@@ -45,7 +45,7 @@ export function MediaEditGroupModal(props) {
           <Button
             variant="contained"
             color="success"
-            onClick={handleEditGroup}
+            type="submit"
             startIcon={<SaveIcon />}
           >
             Save
