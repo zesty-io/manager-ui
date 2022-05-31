@@ -555,10 +555,6 @@ async function getSignedUrl(file, bin) {
   }
 }
 
-function handleError(err) {
-  console.log(err);
-}
-
 export function uploadFile(file, bin) {
   return async (dispatch, getState) => {
     const userZUID = getState().user.ZUID;
@@ -581,6 +577,15 @@ export function uploadFile(file, bin) {
       dispatch(fileUploadProgress(file));
     });
 
+    function handleError() {
+      dispatch(fileUploadError(file));
+      dispatch(
+        notify({
+          message: "Failed uploading file",
+          kind: "error",
+        })
+      );
+    }
     req.addEventListener("abort", handleError);
     req.addEventListener("error", handleError);
 
@@ -625,6 +630,7 @@ export function uploadFile(file, bin) {
             })
             .catch((err) => {
               console.error(err);
+              dispatch(fileUploadError(file));
               dispatch(
                 notify({
                   message:
@@ -634,13 +640,13 @@ export function uploadFile(file, bin) {
               );
             });
         } else {
+          dispatch(fileUploadError(file));
           dispatch(
             notify({
               message: "Failed uploading file to signed url",
               kind: "error",
             })
           );
-          dispatch(fileUploadError(file));
         }
       });
 
