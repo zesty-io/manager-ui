@@ -126,7 +126,7 @@ export default function Metrics(props) {
         width="100%"
         height="calc(100vh - 54px)"
         condition={usageData && requestData}
-        message="Loading billing metrics..."
+        message="Loading usage data"
       >
         <Body {...bodyProps} />
       </WithLoader>
