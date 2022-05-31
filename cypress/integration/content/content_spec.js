@@ -103,9 +103,9 @@ describe("Content Specs", () => {
           .find("textarea")
           .click({ force: true })
           .clear()
-          .type(`${TIMESTAMP}`)
+          .type(`## Editing in the markdown field type _${TIMESTAMP}_`)
           .contains(`${TIMESTAMP}`);
-        cy.get("#SaveItemButton").click();
+        cy.get("#SaveItemButton").click({ force: true });
 
         cy.contains("Saved a new ", { timeout: 3000 }).should("exist");
         cy.get("#12-796b3c-8n93rc")
