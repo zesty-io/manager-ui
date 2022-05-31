@@ -13,7 +13,7 @@ export function ReportingApp() {
         <Typography sx={{ mb: 1 }}>REPORTS</Typography>
         <ReportingNav />
       </Box>
-      <Box sx={{ boxShadow: 3, flex: 1 }}>
+      <Box sx={{ boxShadow: 3, flex: 1, overflowY: "scroll" }}>
         <Switch>
           <Route path="/reports/audit-trail" component={AuditTrail} />
           <Route path="/reports/metrics" component={Metrics} />
