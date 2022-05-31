@@ -97,6 +97,22 @@ describe("Content Specs", () => {
           .contains(`${TIMESTAMP}`);
       });
 
+      it("Markdown Field", () => {
+        cy.get("#12-796b3c-8n93rc")
+          .should("exist")
+          .find("textarea")
+          .click({ force: true })
+          .clear()
+          .type(`${TIMESTAMP}`)
+          .contains(`${TIMESTAMP}`);
+        cy.get("#SaveItemButton").click();
+
+        cy.contains("Saved a new ", { timeout: 3000 }).should("exist");
+        cy.get("#12-796b3c-8n93rc")
+          .find("textarea")
+          .should("contain", TIMESTAMP);
+      });
+
       it("Dropdown Field", () => {
         cy.get("#12-f3152c-kjz88l")
           .should("exist")
@@ -321,17 +337,6 @@ describe("Content Specs", () => {
           cy.get("[data-cy=ActionsContent]").should("not.be.visible");
         }
       });
-    });
-    it("Markdown Field", () => {
-      cy.get("#12-796b3c-8n93rc")
-        .should("exist")
-        .find("textarea")
-        .focus()
-        .clear()
-        .type(`## Editing in the markdown field type _${TIMESTAMP}_`);
-      cy.get("#SaveItemButton").click({ force: true });
-      cy.contains("Saved a new ").should("exist");
-      cy.get("#12-796b3c-8n93rc").find("textarea").should("contain", TIMESTAMP);
     });
 
     it("Check Duo Mode Collapsed functionality", () => {
