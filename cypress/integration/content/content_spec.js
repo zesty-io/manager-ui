@@ -7,7 +7,7 @@ describe("Content Specs", () => {
 
     const TIMESTAMP = Date.now();
 
-    //Force true: When multiple cypress test are running simultaneously, content lock modal will render blocking the head tag link.
+    //Force true: When multiple cypress test are running simultaneously, content lock modal will render blocking click events.
 
     describe("editing All Field Types content", () => {
       it("Text Field", () => {
