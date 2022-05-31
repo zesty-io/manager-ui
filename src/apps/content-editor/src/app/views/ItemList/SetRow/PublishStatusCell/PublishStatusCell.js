@@ -3,6 +3,9 @@ import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock, faEye, faCircle } from "@fortawesome/free-solid-svg-icons";
+
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import ClockIcon from "@mui/icons-material/";
 import Link from "@mui/material/Link";
 
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -64,13 +67,13 @@ export const PublishStatusCell = memo(function PublishStatusCell(props) {
         {props.item &&
         props.item.scheduling &&
         props.item.scheduling.isScheduled ? (
-          <FontAwesomeIcon icon={faClock} sx={{ color: "warning.main" }} />
+          <ClockIcon fontSize="small" sx={{ color: "warning.main" }} />
         ) : props.item &&
           props.item.publishing &&
           props.item.publishing.isPublished ? (
-          <FontAwesomeIcon icon={faEye} sx={{ color: "success.main" }} />
+          <VisibilityIcon fontSize="small" sx={{ color: "success.main" }} />
         ) : (
-          <FontAwesomeIcon icon={faEye} sx={{ color: "primary.main" }} />
+          <VisibilityIcon fontSize="small" sx={{ color: "primary.main" }} />
         )}
       </Link>
     );
