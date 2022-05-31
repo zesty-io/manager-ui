@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import { rest } from "lodash";
 // import { store } from "shell/store";
 // import { endSession } from "shell/store/auth";
 
@@ -49,6 +50,11 @@ export function request(url, opts = {}) {
   return fetch(url, opts)
     .then((res) => {
       // console.log("Request:", res);
+
+      //HTTP Code No Content 204
+      if (res.status === 204) {
+        return res;
+      }
 
       // // Bad Request
       // if (res.status === 400) {}

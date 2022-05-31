@@ -202,18 +202,22 @@ export function publishAll(releaseZUID) {
  * @return Promise
  */
 export function activate() {
-  return () => {
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/releases/activate`, {
       method: "POST",
-    }).catch((err) => {
-      console.error(err);
-      dispatch(
-        notify({
-          kind: "warn",
-          message: "Failed to activate releases",
-        })
-      );
-    });
+    })
+      .then((res) => {
+        return res;
+      })
+      .catch((err) => {
+        console.error(err);
+        dispatch(
+          notify({
+            kind: "warn",
+            message: "Failed to activate releases",
+          })
+        );
+      });
   };
 }
 

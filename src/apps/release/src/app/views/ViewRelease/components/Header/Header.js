@@ -11,6 +11,7 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import ContentSearch from "shell/components/ContentSearch";
 import { Select, Option } from "@zesty-io/core/Select";
 import { AppLink } from "@zesty-io/core/AppLink";
+import { Button } from "@zesty-io/core/Button";
 
 import { PublishAll } from "./components/PublishAll";
 import { DeleteRelease } from "./components/DeleteRelease";
@@ -39,7 +40,9 @@ export function Header({ plan }) {
   return (
     <header data-cy="ReleaseHeader" className={styles.Header}>
       <AppLink to="/release">
-        <FontAwesomeIcon icon={faArrowLeft} />
+        <Button className={styles.BackBtn}>
+          <FontAwesomeIcon icon={faArrowLeft} />
+        </Button>
       </AppLink>
       <PublishAll />
       <Select
@@ -58,7 +61,7 @@ export function Header({ plan }) {
         })}
       </Select>
       <ContentSearch
-        placeholder="Search for items to include in your release"
+        placeholder="Search by ZUID or Meta Title to include in your release "
         onSelect={onSelect}
         keepResultsOnSelect={true}
       />

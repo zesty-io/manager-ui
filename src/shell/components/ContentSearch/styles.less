@@ -18,7 +18,12 @@
   position: absolute;
   z-index: 110;
   max-height: 700px;
-  min-width: 850px;
+  min-width: max-content;
+  @-moz-document url-prefix() {
+    @media only screen and (min-width: 2000px) {
+      min-width: 850px;
+    }
+  }
   list-style: none;
   overflow: auto;
   box-shadow: 1px 1px 18px #0000007a;
@@ -66,16 +71,15 @@
       background-color: @white;
       display: flex;
       .SortBy {
-        flex: 2;
         margin-bottom: 16px;
         button {
           margin-right: 8px;
         }
       }
       .FilterBy {
-        flex: 1;
         display: flex;
         flex-direction: column;
+        flex: 1;
         input {
           width: auto;
         }

@@ -37,12 +37,13 @@ export const PublishAll = memo(function PublishAll() {
   return (
     <div>
       <Button
-        type="alt"
+        type="secondary"
+        title="Publish All"
         onClick={() => setOpen(true)}
         disabled={!canPublish || loading}
       >
         <FontAwesomeIcon icon={faCloudUploadAlt} />
-        &nbsp;Publish All
+        Publish All
       </Button>
 
       <Modal
@@ -58,22 +59,22 @@ export const PublishAll = memo(function PublishAll() {
           </Notice>
         </ModalContent>
         <ModalFooter className={styles.ModalFooter}>
+          <Button type="cancel" onClick={() => setOpen(false)}>
+            <FontAwesomeIcon icon={faBan} />
+            Cancel (ESC)
+          </Button>
           <Button type="save" disabled={loading} onClick={onPublishAll}>
             {loading ? (
               <>
                 <FontAwesomeIcon icon={faSpinner} spin />
-                Publishing
+                &nbsp;Publishing
               </>
             ) : (
               <>
                 <FontAwesomeIcon icon={faCheckCircle} />
-                Publish All
+                &nbsp;Publish All
               </>
             )}
-          </Button>
-          <Button type="cancel" onClick={() => setOpen(false)}>
-            <FontAwesomeIcon icon={faBan} />
-            Cancel (ESC)
           </Button>
         </ModalFooter>
       </Modal>

@@ -1,5 +1,6 @@
 import React, { memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import flatten from "lodash/flatten";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -17,7 +18,7 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { fetchReleases } from "shell/store/releases";
-import { createMember } from "shell/store/releaseMembers";
+import { createMember, fetchMembers } from "shell/store/releaseMembers";
 
 import styles from "./Release.less";
 export const Release = memo(function Release(props) {
@@ -28,6 +29,7 @@ export const Release = memo(function Release(props) {
   const [addingMember, setAddingMember] = useState(false);
   const [active, setActive] = useState(true);
   const [selectedRelease, setSelectedRelease] = useState("0");
+  const [releaseInfo, setReleaseInfo] = useState([]);
 
   const onAdd = () => {
     setAddingMember(true);
@@ -54,6 +56,27 @@ export const Release = memo(function Release(props) {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    const request = releases.map((release) => {
+      return dispatch(fetchMembers(release.ZUID));
+    });
+
+    Promise.all(request).then((res) => {
+      let members = res.map((x) =>
+        x.data.filter((zuid) => zuid.resourceZUID === props.item.meta.ZUID)
+      );
+
+      let result = flatten(members).map((x) => {
+        return {
+          ...releases.find((y) => y.ZUID === x.releaseZUID),
+          version: x.version,
+        };
+      });
+
+      setReleaseInfo(result);
+    });
+  }, [releases, addingMember]);
+
   return (
     <Card className={styles.Release}>
       <CardHeader>
@@ -61,10 +84,10 @@ export const Release = memo(function Release(props) {
           <FontAwesomeIcon icon={faRocket} /> Releases
         </AppLink>
       </CardHeader>
-      <CardContent>
+      <CardContent className={styles.CardContent}>
         <WithLoader condition={!loading}>
           {active ? (
-            <React.Fragment>
+            <section className={styles.ReleaseWrap}>
               <FieldTypeDropDown
                 name="release"
                 label="Queue item for release"
@@ -99,7 +122,7 @@ export const Release = memo(function Release(props) {
                 )}
                 Add
               </Button>
-            </React.Fragment>
+            </section>
           ) : (
             <AppLink to={`/release/activate`}>
               <FontAwesomeIcon icon={faPowerOff} />
@@ -107,6 +130,17 @@ export const Release = memo(function Release(props) {
             </AppLink>
           )}
         </WithLoader>
+
+        <ul className={styles.VersionRelease}>
+          {releaseInfo.map((item, i) => {
+            return (
+              <li key={i}>
+                <AppLink to={`/release/${item.ZUID}`}>{item.name}:</AppLink>
+                <span>&nbsp;Version{item.version}</span>
+              </li>
+            );
+          })}
+        </ul>
       </CardContent>
     </Card>
   );

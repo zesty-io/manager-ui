@@ -10,6 +10,7 @@ import {
   faCode,
   faTextHeight,
   faFileAlt,
+  faChartLine,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 
@@ -35,6 +36,12 @@ export default connect((state) => {
       children: props.instanceNav,
       path: "#",
       icon: faGlobe,
+    },
+    {
+      label: "Metrics",
+      children: null,
+      path: "/settings/metrics",
+      icon: faChartLine,
     },
   ];
   const treeGlobal = [
