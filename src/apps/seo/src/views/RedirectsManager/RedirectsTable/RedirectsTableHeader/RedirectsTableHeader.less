@@ -3,25 +3,25 @@
 
 .RedirectsTableHeader {
   display: grid;
-  grid-template-columns: minmax(200px, 1fr) auto auto minmax(200px, 1fr) 200px 200px;
+  grid-template-columns: minmax(200px, 1fr) 180px max-content minmax(200px, 1fr) 200px 200px;
+  //grid-template-columns: minmax(200px, 1fr) auto auto minmax(200px, 1fr) 200px 200px;
   z-index: 1;
   align-items: baseline;
   padding: 0 16px 16px 16px;
   background-color: @appBkgColor;
-
-  .InfoTip {
-    &:hover {
-      small {
-        bottom: -30px;
-        left: 19px;
-      }
-    }
+  @media only screen and (max-width: 1500px) {
+    //grid-template-columns: minmax(200px, 1fr) 180px max-content minmax(200px, 1fr) 170px 170px;
+    grid-template-columns: 200px 180px max-content 200px auto 170px;
   }
 
   .RedirectsTableHeaderCell {
     cursor: pointer;
     font-weight: 900;
     padding: 0 8px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     .column {
       border-bottom: 3px solid @zesty-field-blue;

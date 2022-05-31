@@ -1,6 +1,13 @@
 import { Fragment, useState, useEffect } from "react";
 import { connect } from "react-redux";
 
+import Button from "@mui/material/Button";
+
+import ReorderIcon from "@mui/icons-material/Reorder";
+import SaveIcon from "@mui/icons-material/Save";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowsAlt,
@@ -14,7 +21,7 @@ import { Draggable } from "./components/Draggable";
 
 import { Url } from "@zesty-io/core/Url";
 import { Notice } from "@zesty-io/core/Notice";
-import { Button } from "@zesty-io/core/Button";
+
 import {
   Modal,
   ModalContent,
@@ -99,21 +106,28 @@ export default connect((state, props) => {
       });
   };
 
+  const handleClose = () => {
+    setOpen(false);
+    setFiles(props.fileHeaders);
+  };
+
   return (
     <Fragment>
       <Button
+        variant="contained"
         onClick={() => setOpen(true)}
         title="Change combine and pre-process order"
+        startIcon={<ZoomOutMapIcon />}
       >
-        <FontAwesomeIcon icon={faArrowsAlt} />
-        <span>Order</span>
+        Order
       </Button>
 
       {open && (
         <Modal
           className={styles.OrderFilesModal}
+          type="global"
           open={open}
-          onClose={() => setOpen(false)}
+          onClose={handleClose}
         >
           <ModalHeader>
             <h2>Order {props.typePathPart}</h2>
@@ -165,11 +179,22 @@ export default connect((state, props) => {
             </Notice>
           </ModalContent>
           <ModalFooter>
-            <Button type="save" onClick={handleSaveSort} disabled={loading}>
-              <FontAwesomeIcon icon={faSave} /> Save Order
+            <Button
+              variant="contained"
+              data-cy="saveOrder"
+              color="success"
+              onClick={handleSaveSort}
+              disabled={loading}
+              startIcon={<SaveIcon />}
+            >
+              Save Order
             </Button>
-            <Button type="cancel" onClick={() => setOpen(false)}>
-              <FontAwesomeIcon icon={faBan} /> Cancel (ESC)
+            <Button
+              variant="contained"
+              onClick={handleClose}
+              startIcon={<DoDisturbAltIcon />}
+            >
+              Cancel (ESC)
             </Button>
           </ModalFooter>
         </Modal>

@@ -3,7 +3,22 @@
 .Fields {
   display: flex;
   flex-direction: column;
-  padding: 0;
+  padding: 32px 0 32px 32px;
+
+  @media only screen and (min-width: 2000px) {
+    padding: 32px 0 32px 48px;
+  }
+
+  //Hide Scrollbar
+  overflow-y: scroll;
+  scrollbar-width: none; /*  FireFox */
+  -ms-overflow-style: none; /*  Edge */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  //Scroll Calc (GlobalTopbar - Content Header - padding)
+  height: calc(100vh - 54px - 73px - 32px - 32px);
 
   .Field {
     padding: 12px 0;

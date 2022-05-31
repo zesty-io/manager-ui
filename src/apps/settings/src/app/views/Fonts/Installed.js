@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
-import { Button } from "@zesty-io/core/Button";
 import { Search } from "@zesty-io/core/Search";
 import { Notice } from "@zesty-io/core/Notice";
 import { notify } from "shell/store/notifications";
 
-import { updateSiteFont, deleteSiteFont } from "../../../store/settings";
+import { updateSiteFont, deleteSiteFont } from "shell/store/settings";
 
 import styles from "./Fonts.less";
 export default connect((state) => {
@@ -181,11 +183,14 @@ export default connect((state) => {
                   All their equipment and instruments are alive.
                 </p>
                 <Button
-                  type="warn"
+                  variant="contained"
+                  color="error"
                   onClick={() => toggleEnableFont(null, "0", font.font)}
-                  className={styles.ButtonRemoveFont}
+                  startIcon={<DeleteIcon />}
+                  sx={{
+                    alignSelf: "flex-start",
+                  }}
                 >
-                  <FontAwesomeIcon icon={faTrashAlt} />
                   Remove
                 </Button>
               </div>
@@ -206,14 +211,17 @@ export default connect((state) => {
                   All their equipment and instruments are alive.
                 </p>
                 <Button
-                  type="warn"
+                  variant="contained"
+                  color="error"
                   id="RemoveFont"
                   onClick={() =>
                     toggleEnableFont(variant.label, "0", font.font)
                   }
-                  className={styles.ButtonRemoveFont}
+                  startIcon={<DeleteIcon />}
+                  sx={{
+                    alignSelf: "flex-start",
+                  }}
                 >
-                  <FontAwesomeIcon icon={faTrashAlt} />
                   Remove {parseVariant(variant.label)}
                 </Button>
               </div>

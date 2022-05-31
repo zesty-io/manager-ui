@@ -2,13 +2,16 @@ import { Fragment, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 
+import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
+
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
 import { Select, Option } from "@zesty-io/core/Select";
 import { Input } from "@zesty-io/core/Input";
-import { Button } from "@zesty-io/core/Button";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExternalLinkSquareAlt,
@@ -226,10 +229,12 @@ export function LinkCreate() {
         </CardContent>
         <CardFooter>
           <Button
+            variant="contained"
+            color="success"
             id="CreateLinkButton"
             disabled={state.saving}
-            type="save"
             onClick={saveLink}
+            startIcon={<AddIcon />}
           >
             Create Link
           </Button>

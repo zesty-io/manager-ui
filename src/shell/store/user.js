@@ -1,6 +1,7 @@
 import idb from "utility/idb";
 import { request } from "utility/request";
 import { Sentry } from "utility/sentry";
+import { notify } from "shell/store/notifications";
 
 export function user(
   state = {

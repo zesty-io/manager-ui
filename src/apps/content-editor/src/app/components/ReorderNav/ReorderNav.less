@@ -2,6 +2,8 @@
 @import "~@zesty-io/core/typography.less";
 
 .ReorderNav {
+  overflow-y: auto;
+  max-height: 70vh;
   .ModalContent {
     h3 {
       margin-bottom: 16px;
@@ -20,9 +22,6 @@
   .ModalFooter {
     display: flex;
     align-items: center;
-    .ButtonGroup {
-      width: 100%;
-      justify-content: space-between;
-    }
+    justify-content: space-between;
   }
 }

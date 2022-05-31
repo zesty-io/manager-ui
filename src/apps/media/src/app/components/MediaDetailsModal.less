@@ -2,30 +2,21 @@
 @import "~@zesty-io/core/colors.less";
 
 .Modal {
-  max-width: 65%;
-  padding: 16px;
+  max-width: 1150px;
+  max-height: calc(calc(100% - 2% - 74px));
   margin: 1% auto 0;
 
-  @media only screen and (min-width: 2000px) {
-    margin: 5% auto 0;
-    padding: 32px;
-  }
-
   .ModalContent {
-    // working modal for small screens
-    @media only screen and (max-width: 1280px) {
-      display: flex;
-    }
-
     display: grid;
-    grid-template-columns: 350px 500px;
+    grid-template-columns: 600px 500px;
     gap: 16px;
-    justify-content: center;
     background-color: @white;
-    padding: 16px;
 
     .Picture {
-      margin-bottom: 8px;
+      height: 600px;
+      width: 600px;
+      overflow: auto;
+
       img {
         display: block;
         margin: auto;
@@ -34,20 +25,22 @@
       }
     }
 
-    .Field input,
-    .CopyButton {
-      margin-bottom: 16px;
+    .Meta {
+      padding: 16px;
     }
 
-    .Delete {
-      margin-top: 16px;
-    }
-
-    .CopyButton {
-      width: 100%;
+    .FieldsContainer {
+      label {
+        margin-bottom: 16px;
+        display: flex;
+      }
     }
 
     .DescriptionList {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+
       & > * {
         padding: 4px 0;
       }
@@ -59,6 +52,56 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+    }
+
+    .info {
+      list-style: none;
+      margin: 0;
+      li {
+        margin-bottom: 12px;
+      }
+      span {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 3px;
+      }
+    }
+
+    .editor {
+      margin: 32px 0;
+
+      h3 {
+        margin-bottom: 4px;
+      }
+
+      .ImageControls {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 8px;
+
+        .Select {
+          width: 130px;
+        }
+
+        label {
+          margin-right: 4px;
+        }
+
+        input {
+          width: 54px;
+        }
+      }
+
+      .OTFNotice {
+        margin: 8px 0;
+      }
+
+      .OTFLink {
+        word-break: break-all;
+        width: 100%;
+        margin-bottom: 8px;
       }
     }
   }

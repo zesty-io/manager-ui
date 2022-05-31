@@ -10,6 +10,7 @@ import {
   faCode,
   faTextHeight,
   faFileAlt,
+  faChartLine,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 

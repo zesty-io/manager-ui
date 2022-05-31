@@ -1,7 +1,6 @@
 .marvel-device {
   display: inline-block;
   position: relative;
-  margin-top: 3rem;
   -webkit-box-sizing: content-box !important;
   box-sizing: content-box !important;
 }

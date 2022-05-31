@@ -3,6 +3,9 @@ import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
 
+import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
+
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 
@@ -15,7 +18,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
-import { Button } from "@zesty-io/core/Button";
+
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
@@ -106,7 +109,15 @@ export default connect((state) => {
               : "dataset",
           };
         case "type":
-          return { ...state, type: action.payload };
+          return {
+            ...state,
+            url:
+              action.payload === "templateset" || action.payload === "pageset"
+                ? 1
+                : 0,
+            multiple: action.payload === "pageset" ? 1 : 0,
+            type: action.payload,
+          };
         default:
           return state;
       }
@@ -356,7 +367,8 @@ export default connect((state) => {
 
         <CardFooter>
           <Button
-            type="save"
+            variant="contained"
+            color="success"
             onClick={() => {
               const errors = [];
 
@@ -452,8 +464,8 @@ export default connect((state) => {
                   );
                 });
             }}
+            startIcon={<AddIcon />}
           >
-            <FontAwesomeIcon icon={faPlus} />
             Create Model
           </Button>
         </CardFooter>

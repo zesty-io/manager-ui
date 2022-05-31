@@ -1,16 +1,20 @@
 @import "~@zesty-io/core/colors.less";
 
 .Modal {
+  width: 450px;
   .Row {
     margin: 8px 0;
+
+    label,
+    input {
+      width: 100%;
+    }
   }
   .Notice {
     align-items: center;
   }
   .ModalFooter {
     display: flex;
-    .Cancel {
-      margin-left: 8px;
-    }
+    justify-content: space-between;
   }
 }

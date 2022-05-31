@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 import cx from "classnames";
 
-import styles from "./RedirectImportTableRow.less";
+import Button from "@mui/material/Button";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import AddIcon from "@mui/icons-material/Add";
+import TextField from "@mui/material/TextField";
 
-import { Button } from "@zesty-io/core/Button";
-import { Input } from "@zesty-io/core/Input";
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
 import { Select, Option } from "@zesty-io/core/Select";
 
 import { createRedirect } from "../../../../store/redirects";
 import { importTarget } from "../../../../store/imports";
 import { importQuery } from "../../../../store/imports";
+
+import styles from "./RedirectImportTableRow.less";
 
 function RedirectImportTableRow(props) {
   const [code, setCode] = useState(1); // Toggle defaults to 301
@@ -86,18 +86,30 @@ function RedirectImportTableRow(props) {
             })}
           </Select>
         ) : (
-          <Input onChange={handlePathTarget} defaultValue={props.target} />
+          <TextField
+            onChange={handlePathTarget}
+            defaultValue={props.target}
+            size="small"
+            variant="outlined"
+            color="primary"
+          />
         )}
-        <Input
+        <TextField
           onChange={handleQuery}
           placeholder="Redirect query string"
           defaultValue={props.query_string}
+          size="small"
+          variant="outlined"
+          color="primary"
         />
       </span>
 
       <span className={cx(styles.RowCell, styles.RedirectButton)}>
-        <Button className="save" onClick={handleAddRedirect}>
-          <FontAwesomeIcon icon={faPlus} />
+        <Button
+          variant="contained"
+          onClick={handleAddRedirect}
+          startIcon={<AddIcon />}
+        >
           Redirect
         </Button>
       </span>

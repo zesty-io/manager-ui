@@ -15,6 +15,7 @@ import { fetchInstances } from "shell/store/instances";
 import { fetchLangauges } from "shell/store/languages";
 import { fetchItemPublishings } from "shell/store/content";
 import { fetchFiles } from "../../../apps/code-editor/src/store/files";
+import { fetchSettings } from "shell/store/settings";
 
 import { Url } from "@zesty-io/core/Url";
 import { loadOpenNav } from "../../store/ui";
@@ -28,6 +29,7 @@ export default connect((state) => {
     products: state.products,
     languages: state.languages,
     files: state.files,
+    role: state.userRole.systemRole.name,
   };
 })(
   memo(function LoadInstance(props) {
@@ -57,6 +59,7 @@ export default connect((state) => {
       props.dispatch(detectPlatform());
       props.dispatch(fetchInstances());
       props.dispatch(fetchLangauges("enabled"));
+      props.dispatch(fetchSettings());
       // Used in Publish Plan and Content sections
       props.dispatch(fetchItemPublishings());
       // Used in Code Editor, useFilePath Hook
@@ -64,6 +67,45 @@ export default connect((state) => {
       props.dispatch(fetchFiles("stylesheets"));
       props.dispatch(fetchFiles("scripts"));
     }, []);
+
+    useEffect(() => {
+      if (
+        window.pendo &&
+        props.user?.email &&
+        props.instance?.ZUID &&
+        props.role
+      ) {
+        pendo.initialize({
+          visitor: {
+            id: props.user.ZUID,
+            email: props.user.email,
+            firstName: props.user.firstName,
+            lastName: props.user.lastName,
+            full_name: `${props.user.firstName} ${props.user.lastName}`,
+            role: props.role,
+
+            // You can add any additional visitor level key-values here,
+            // as long as it's not one of the above reserved names.
+            staff: props.user.staff,
+            creationDate: props.user.createdAt,
+          },
+
+          account: {
+            id: props.instance.ZUID,
+            name: props.instance.name,
+            creationDate: props.instance.createdAt,
+            // You can add any additional account level key-values here,
+            // as long as it's not one of the above reserved names.
+
+            ecoID: props.instance.ecoID,
+            ecoZUID: props.instance.ecoZUID,
+            randomHashID: props.instance.randomHashID,
+            domain: props.instance.domain,
+          },
+        });
+      }
+      //Check if pendo is running correctly open browser console and run pendo.validateInstall()
+    }, [props.user, props.instance, props.role]);
 
     return (
       <>

@@ -12,6 +12,9 @@ import { QuickView } from "./Widgets/QuickView";
 import { WidgetQuickShare } from "./Widgets/WidgetQuickShare";
 import { WidgetListed } from "./Widgets/WidgetListed";
 import { WidgetDeleteItem } from "./Widgets/WidgetDeleteItem";
+import { ContentLinks } from "./Widgets/ContentLinks";
+
+import { Release } from "./Widgets/Release";
 
 import styles from "./Actions.less";
 export function Actions(props) {
@@ -33,7 +36,7 @@ export function Actions(props) {
   const liveURL = domain ? `${domain}${path}` : "";
 
   return (
-    <aside className={styles.Actions}>
+    <Fragment>
       <QuickView
         fields={props.fields}
         itemZUID={props.itemZUID}
@@ -48,7 +51,9 @@ export function Actions(props) {
         liveURL={liveURL}
       />
 
-      <WorkflowRequest itemTitle={metaTitle} fields={props.fields} />
+      <ContentLinks item={props.item} />
+
+      {/* <Release item={props.item} /> */}
 
       <WidgetPublishHistory
         dispatch={props.dispatch}
@@ -62,10 +67,6 @@ export function Actions(props) {
         itemZUID={props.itemZUID}
       />
 
-      {props.set.type !== "dataset" && domain && (
-        <WidgetQuickShare url={liveURL} metaLinkText={metaLinkText} />
-      )}
-
       {canUpdate && (
         <WidgetListed
           dispatch={props.dispatch}
@@ -73,6 +74,12 @@ export function Actions(props) {
           listed={listed}
           sort={sort}
         />
+      )}
+
+      <WorkflowRequest itemTitle={metaTitle} fields={props.fields} />
+
+      {props.set.type !== "dataset" && domain && (
+        <WidgetQuickShare url={liveURL} metaLinkText={metaLinkText} />
       )}
 
       {canPublish && (
@@ -101,6 +108,6 @@ export function Actions(props) {
           modelType={type}
         />
       )}
-    </aside>
+    </Fragment>
   );
 }

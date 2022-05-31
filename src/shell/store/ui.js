@@ -8,16 +8,38 @@ import {
   faDatabase,
   faEdit,
   faFolder,
+  faFile,
+  faListAlt,
+  faExternalLinkSquareAlt,
+  faLink,
+  faHome,
 } from "@fortawesome/free-solid-svg-icons";
+
+const typeToIconMap = {
+  templateset: faFile,
+  pageset: faListAlt,
+  dataset: faDatabase,
+  external: faExternalLinkSquareAlt,
+  internal: faLink,
+  item: faFile,
+  homepage: faHome,
+  socialfeed: faDatabase,
+};
 
 const ZUID_REGEX = /[a-zA-Z0-9]{1,5}-[a-zA-Z0-9]{6,10}-[a-zA-Z0-9]{5,35}/;
 
-const uiSlice = createSlice({
+export const ui = createSlice({
   name: "ui",
   initialState: {
     loadedTabs: false,
     tabs: [],
     openNav: true,
+    contentNav: true,
+    contentNavHover: false,
+    contentActions: true,
+    contentActionsHover: false,
+    duoMode: false,
+    codeEditorPosition: null,
   },
   reducers: {
     loadTabsSuccess(state, action) {
@@ -31,13 +53,36 @@ const uiSlice = createSlice({
     loadedUI(state, action) {
       if (action.payload) {
         state.openNav = action.payload.openNav;
+        state.contentNav = action.payload.contentNav;
+        state.contentActions = action.payload.contentActions;
+        state.duoMode = action.payload.duoMode;
       }
     },
-    toggleNav(state) {
-      state.openNav = !state.openNav;
+    setGlobalNav(state, action) {
+      state.openNav = action.payload;
+    },
+    setContentNav(state, action) {
+      state.contentNav = action.payload;
+    },
+    setContentActions(state, action) {
+      state.contentActions = action.payload;
+    },
+    setContentActionsHover(state, action) {
+      state.contentActionsHover = action.payload;
+    },
+    setDuoMode(state, action) {
+      state.duoMode = action.payload;
+    },
+    setContentNavHover(state, action) {
+      state.contentNavHover = action.payload;
+    },
+    setCodeEditorPosition(state, action) {
+      state.codeEditorPosition = action.payload;
     },
   },
 });
+
+export const { actions, reducer } = ui;
 
 // Thunk helper functions
 function parsePath(path) {
@@ -126,14 +171,14 @@ function createTab(state, parsedPath) {
       tab.icon = faFolder;
       break;
     case "6":
+      tab.icon = faDatabase;
+
       if (state.models) {
         const model = state.models[zuid];
 
-        if (model) {
-          tab.name = model.label;
-        }
+        tab.name = model?.label;
+        tab.icon = typeToIconMap?.[model?.type] || faDatabase;
       }
-      tab.icon = faDatabase;
       break;
     case "7":
       if (state.content) {
@@ -185,17 +230,12 @@ function toCapitalCase(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export default uiSlice.reducer;
-
-export const { loadTabsSuccess, setTabs, loadedUI, toggleNav } =
-  uiSlice.actions;
-
 // Thunks
 
 export function loadTabs(instanceZUID) {
   return (dispatch) => {
     return idb.get(`${instanceZUID}:session:routes`).then((tabs = []) => {
-      return dispatch(loadTabsSuccess(tabs));
+      return dispatch(actions.loadTabsSuccess(tabs));
     });
   };
 }
@@ -218,7 +258,7 @@ export function openTab({ path, prevPath }) {
         newTabs.splice(activeTabIndex + 1, 0, newTab);
         // Maximum of 20 route records
         newTabs = newTabs.slice(0, 20);
-        dispatch(setTabs(newTabs));
+        dispatch(actions.setTabs(newTabs));
         idb.set(`${state.instance.ZUID}:session:routes`, newTabs);
       }
     }
@@ -250,7 +290,7 @@ export function closeTab(path) {
         }
       }
 
-      dispatch(setTabs(newTabs));
+      dispatch(actions.setTabs(newTabs));
       idb.set(`${state.instance.ZUID}:session:routes`, newTabs);
     }
   };
@@ -262,7 +302,7 @@ export function rebuildTabs() {
     const newTabs = state.ui.tabs.map((tab) =>
       createTab(state, parsePath(tab.pathname))
     );
-    dispatch(setTabs(newTabs));
+    dispatch(actions.setTabs(newTabs));
     idb.set(`${state.instance.ZUID}:session:routes`, newTabs);
   };
 }

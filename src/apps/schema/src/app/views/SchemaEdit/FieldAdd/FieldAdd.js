@@ -2,6 +2,11 @@ import { Fragment, useState } from "react";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
 
+import Button from "@mui/material/Button";
+
+import CircularProgress from "@mui/material/CircularProgress";
+import AddIcon from "@mui/icons-material/Add";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSpinner,
@@ -11,7 +16,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
-import { Button } from "@zesty-io/core/Button";
+
 import { Url } from "@zesty-io/core/Url";
 
 import { FieldSettings, FIELD_TYPES } from "../FieldSettings";
@@ -171,12 +176,14 @@ export function FieldAdd(props) {
         )}
       </CardContent>
       <CardFooter>
-        <Button type="save" disabled={!field.dirty || loading} onClick={create}>
-          {loading ? (
-            <FontAwesomeIcon icon={faSpinner} />
-          ) : (
-            <FontAwesomeIcon icon={faPlus} />
-          )}
+        <Button
+          variant="contained"
+          color="success"
+          data-cy="addField"
+          disabled={!field.dirty || loading}
+          onClick={create}
+          startIcon={loading ? <CircularProgress size="20px" /> : <AddIcon />}
+        >
           Add Field
         </Button>
       </CardFooter>

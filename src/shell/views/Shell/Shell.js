@@ -4,7 +4,7 @@ import { Sentry } from "utility/sentry";
 import cx from "classnames";
 
 import { useDispatch, useSelector } from "react-redux";
-import { toggleNav } from "shell/store/ui";
+import { actions } from "shell/store/ui";
 
 import AppError from "shell/components/AppError";
 import GlobalSidebar from "shell/components/global-sidebar";
@@ -13,9 +13,8 @@ import Missing from "shell/components/missing";
 
 import ContentApp from "apps/content-editor/src";
 import DamApp from "apps/media/src";
-import PublishApp from "apps/publish/src";
-import AuditTrailApp from "apps/audit-trail/src";
-import AnalyticsApp from "apps/analytics/src";
+import ReleaseApp from "apps/release/src";
+import ReportingApp from "apps/reports/src";
 import CodeApp from "apps/code-editor/src";
 import LeadsApp from "apps/leads/src";
 import SchemaApp from "apps/schema/src";
@@ -34,7 +33,7 @@ export default memo(function Shell() {
     <section className={cx(styles.Shell, openNav ? null : styles.NavClosed)}>
       <GlobalSidebar
         onClick={() => {
-          dispatch(toggleNav());
+          dispatch(actions.setGlobalNav(!openNav));
         }}
         openNav={openNav}
       />
@@ -43,7 +42,7 @@ export default memo(function Shell() {
         <div className={styles.SubApp} data-cy="SubApp">
           <Sentry.ErrorBoundary fallback={() => <AppError />}>
             <Switch>
-              <Route path="/publish" component={PublishApp} />
+              <Route path="/release" component={ReleaseApp} />
 
               <Route path="/media/:groupID/file/:fileID" component={DamApp} />
               <Route path="/media/:groupID" component={DamApp} />
@@ -61,20 +60,12 @@ export default memo(function Shell() {
                         component={ContentApp}
                       />
                     );
-                  case "audit-trail":
+                  case "reports":
                     return (
                       <Route
                         key={product}
-                        path="/audit-trail"
-                        component={AuditTrailApp}
-                      />
-                    );
-                  case "analytics":
-                    return (
-                      <Route
-                        key={product}
-                        path="/analytics"
-                        component={AnalyticsApp}
+                        path="/reports"
+                        component={ReportingApp}
                       />
                     );
                   case "code":
@@ -105,7 +96,6 @@ export default memo(function Shell() {
                         component={SettingsApp}
                       />
                     );
-
                   default:
                     null;
                 }

@@ -1,23 +1,19 @@
 import { memo, Fragment } from "react";
-import cx from "classnames";
+
 import { Switch, Route, useRouteMatch } from "react-router";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBolt,
-  faCode,
-  faDatabase,
-  faEdit,
-  faFileCode,
-  faHistory,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+import HistoryIcon from "@mui/icons-material/History";
+import EditIcon from "@mui/icons-material/Edit";
+import StorageIcon from "@mui/icons-material/Storage";
 
-import { Button } from "@zesty-io/core/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBolt, faFileCode } from "@fortawesome/free-solid-svg-icons";
+
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Url } from "@zesty-io/core/Url";
 import { Notice } from "@zesty-io/core/Notice";
-// import { Infotip } from "@zesty-io/core/Infotip";
+import { CopyButton } from "@zesty-io/core/CopyButton";
 
 import { DifferActions } from "./components/DifferActions";
 import { EditorActions } from "./components/EditorActions";
@@ -53,8 +49,8 @@ export const FileActions = memo(function FileActions(props) {
                     to={`/content/${props.contentModelZUID}`}
                     title="Edit Related Content"
                   >
-                    <Button>
-                      <FontAwesomeIcon icon={faEdit} />
+                    <Button variant="contained" size="small">
+                      <EditIcon fontSize="small" />
                     </Button>
                   </AppLink>
 
@@ -63,8 +59,8 @@ export const FileActions = memo(function FileActions(props) {
                     to={`/schema/${props.contentModelZUID}`}
                     title="Edit Related Model"
                   >
-                    <Button>
-                      <FontAwesomeIcon icon={faDatabase} />
+                    <Button variant="contained" size="small">
+                      <StorageIcon fontSize="small" />
                     </Button>
                   </AppLink>
                 </Fragment>
@@ -81,8 +77,8 @@ export const FileActions = memo(function FileActions(props) {
                 }`}
                 title="Diff Versions"
               >
-                <Button>
-                  <FontAwesomeIcon icon={faHistory} />
+                <Button variant="contained" size="small">
+                  <HistoryIcon fontSize="small" />
                 </Button>
               </AppLink>
             </div>
@@ -90,7 +86,8 @@ export const FileActions = memo(function FileActions(props) {
         </Switch>
 
         <div className={styles.FileName}>
-          <em className={styles.ZUID}>{props.fileZUID}</em>
+          {/* <em className={styles.ZUID}>{props.fileZUID}</em> */}
+          <CopyButton size="compact" value={props.fileZUID} />
           <span>{props.fileName}</span>
         </div>
       </div>

@@ -5,12 +5,31 @@
   //100 - Globaltopbar - (Header + Globaltopbar) && Prevents header from being hidden after create item error
   height: calc(100vh - 54px - 130px);
   padding: 32px;
-  overflow-y: auto;
+
+  //Hide Scrollbar
+  overflow-y: scroll;
+  overflow: auto;
+  scrollbar-width: none; /*  FireFox */
+  -ms-overflow-style: none; /*  Edge */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  .Editor {
+    /*  Hiding styles inherited from Fields Duo Mode item create view */
+    & > div {
+      padding: 0;
+      height: initial;
+    }
+  }
 }
 
 .Meta {
-  .Divider {
-    border-bottom-color: @zesty-field-blue;
-    margin: 32px 0 16px;
+  h2 {
+    padding-bottom: 8px;
+  }
+  article {
+    label {
+      margin-bottom: 8px;
+    }
   }
 }

@@ -1,39 +1,27 @@
 @import "~@zesty-io/core/colors.less";
 
 .Actions {
-  display: flex;
-  flex-wrap: wrap;
-
-  & > * {
-    margin: 0 0 0 8px !important;
+  .PublishText {
+    margin-left: 8px;
   }
-  & div:first-child {
-    margin-left: 0 !important;
-  }
-
-  .Publish {
-    .PublishButton {
-      border-radius: 3px 0 0 3px;
-      border-right: 1px solid #fff;
-    }
-    .ClockButton {
-      padding: 13px 16px;
-      border-radius: 0 3px 3px 0;
-
-      svg {
-        width: 20px;
-        height: 14px;
-      }
-    }
-    .Scheduled {
-      background-color: @zesty-orange;
-    }
-  }
-  .HideVersion {
+  .Hide {
     display: none;
 
-    @media (min-width: 1200px) {
+    @media screen and (min-width: 2000px) {
       display: block;
+    }
+  }
+  .SaveVersion {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: none;
+    @media screen and (min-width: 1440px) {
+      width: 120px;
+      display: block;
+    }
+    @media screen and (min-width: 1680px) {
+      width: 100%;
     }
   }
 }

@@ -32,9 +32,7 @@ describe("Content List", () => {
     cy.contains("changes saved").should("exist");
   });
   it("Opens the add item view", () => {
-    cy.get("#AddItemButton").click();
-    cy.contains("title").should("exist");
-    cy.contains("New Item").should("exist");
+    cy.get("[data-cy=AddItemButton]").click();
     cy.get("#CreateItemSaveButton").should("exist");
   });
 });

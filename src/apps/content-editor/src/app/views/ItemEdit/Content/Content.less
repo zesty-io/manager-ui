@@ -1,20 +1,67 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
 .Content {
   height: calc(100vh - 54px);
-  overflow: auto;
 
   .MainEditor {
-    display: grid;
-    grid-template-columns: minmax(400px, auto) minmax(250px, 15vw);
-    margin: 16px 32px;
-    grid-gap: 32px;
-
-    .Editor {
-      flex: 2;
-      padding: 0;
+    //Hide Scrollbar
+    scrollbar-width: none; /*  FireFox */
+    -ms-overflow-style: none; /*  Edge */
+    ::-webkit-scrollbar {
+      display: none;
     }
-    .Actions {
-      position: relative;
-      background: #f2f7fc;
+
+    display: grid;
+    grid-template-columns: 1fr 40px;
+    position: relative;
+    height: calc(100vh - 54px - 73px);
+    gap: 32px;
+
+    transition: grid-template-columns 350ms ease;
+
+    @media only screen and (min-width: 2000px) {
+      gap: 48px;
+    }
+
+    &.DuoModeOn {
+      grid-template-columns: 40fr 60fr 40px;
+      gap: 0;
+    }
+
+    &.ContentActionsOn {
+      grid-template-columns: 1fr 20vw;
+    }
+
+    &.DuoAndActionsOn {
+      grid-template-columns: 40fr 60fr 20vw;
+    }
+    .Editor {
+      overflow: auto;
+    }
+  }
+  .ActionsDrawerButton {
+    font-size: @svg-icon;
+    justify-content: center;
+    border-radius: 0;
+    padding: 13px 6px;
+    box-shadow: 2px 2px 5px fade(@zesty-dark-blue, 50%);
+
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 40px;
+    z-index: 10;
+
+    transition: width 350ms ease;
+
+    &.ActionsDrawerButtonHover,
+    &.ActionsDrawerOpen {
+      width: 20vw;
+    }
+
+    &:hover {
+      color: @zesty-orange;
     }
   }
 }

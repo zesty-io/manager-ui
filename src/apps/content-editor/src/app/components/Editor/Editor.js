@@ -1,10 +1,11 @@
 import React, { memo, useCallback, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import cx from "classnames";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 import { Field } from "./Field";
-import styles from "./Editor.less";
 
+import styles from "./Editor.less";
 export default memo(function Editor({
   active,
   fields,
@@ -14,6 +15,7 @@ export default memo(function Editor({
   onSave,
   itemZUID,
 }) {
+  const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
   const firstTextField = fields.find((field) => field.datatype === "text");
   const firstContentField = fields.find(

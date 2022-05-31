@@ -1,47 +1,33 @@
-import { PureComponent } from "react";
+import React from "react";
 import cx from "classnames";
 
-import { PreviewUrl } from "./PreviewUrl";
-import { LiveUrl } from "./LiveUrl";
+import { DuoModeToggle } from "./DuoModeToggle";
 import { LanguageSelector } from "./LanguageSelector";
-
 import ItemNavigation from "./ItemNavigation";
 
 import styles from "./Header.less";
-export class Header extends PureComponent {
-  render() {
-    return (
-      <header className={styles.Header}>
-        <div className={cx(styles.Split)}>
-          <div className={styles.Left}>
-            <ItemNavigation
-              modelZUID={this.props.modelZUID}
-              itemZUID={this.props.itemZUID}
-              item={this.props.item}
+export function Header(props) {
+  return (
+    <header className={styles.Header}>
+      <div className={cx(styles.Split)}>
+        <div className={styles.Left}>
+          <ItemNavigation
+            modelZUID={props.modelZUID}
+            itemZUID={props.itemZUID}
+            item={props.item}
+          />
+        </div>
+        <div className={styles.Right}>
+          <div className={styles.Actions}>
+            <DuoModeToggle item={props.item} />
+            <LanguageSelector
+              className={styles.I18N}
+              itemZUID={props.itemZUID}
             />
-          </div>
-          <div className={styles.Right}>
-            <div className={styles.Links}>
-              {this.props.item.web.path && <LiveUrl item={this.props.item} />}
-
-              {this.props.item.web.path && (
-                <PreviewUrl
-                  item={this.props.item}
-                  instance={this.props.instance}
-                />
-              )}
-            </div>
-
-            <div className={styles.Actions}>
-              <LanguageSelector
-                className={styles.I18N}
-                itemZUID={this.props.itemZUID}
-              />
-              {this.props.children}
-            </div>
+            {props.children}
           </div>
         </div>
-      </header>
-    );
-  }
+      </div>
+    </header>
+  );
 }

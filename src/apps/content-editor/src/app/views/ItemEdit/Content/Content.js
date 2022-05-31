@@ -1,11 +1,16 @@
+import { useSelector } from "react-redux";
+import cx from "classnames";
+
 import { Editor } from "../../../components/Editor";
 import { Header } from "../components/Header";
 import { ItemVersioning } from "../components/Header/ItemVersioning";
-
-import { Actions } from "./Actions";
+import { PreviewMode } from "../../../components/Editor/PreviewMode";
+import { ActionsDrawer } from "./ActionsDrawer";
 
 import styles from "./Content.less";
 export default function Content(props) {
+  const ui = useSelector((state) => state.ui);
+
   return (
     <main className={styles.Content}>
       <Header
@@ -27,7 +32,14 @@ export default function Content(props) {
         />
       </Header>
 
-      <div className={styles.MainEditor}>
+      <div
+        className={cx(
+          styles.MainEditor,
+          ui.contentActions ? styles.ContentActionsOn : "",
+          ui.duoMode ? styles.DuoModeOn : "",
+          ui.duoMode && ui.contentActions ? styles.DuoAndActionsOn : ""
+        )}
+      >
         <div className={styles.Editor}>
           <Editor
             // active={this.state.makeActive}
@@ -41,15 +53,15 @@ export default function Content(props) {
             onSave={props.onSave}
           />
         </div>
-        <div className={styles.Actions}>
-          <Actions
-            {...props}
-            site={{}}
-            set={{
-              type: props.model.type,
-            }}
+
+        {ui.duoMode && (
+          <PreviewMode
+            dirty={props.item.dirty}
+            version={props.item.meta.version}
           />
-        </div>
+        )}
+
+        <ActionsDrawer className={styles.Actions} {...props} />
       </div>
     </main>
   );

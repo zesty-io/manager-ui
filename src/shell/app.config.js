@@ -5,6 +5,7 @@ module.exports = {
     ENV: "production",
 
     API_ACCOUNTS: "https://accounts.api.zesty.io/v1",
+    API_METRICS: "https://metrics.api.zesty.io",
     API_INSTANCE: ".api.zesty.io/v1",
     API_INSTANCE_PROTOCOL: "https://",
 
@@ -46,6 +47,7 @@ module.exports = {
     ENV: "stage",
 
     API_ACCOUNTS: "https://accounts.api.stage.zesty.io/v1",
+    API_METRICS: "https://metrics.api.stage.zesty.io",
     API_INSTANCE: ".api.stage.zesty.io/v1",
     API_INSTANCE_PROTOCOL: "https://",
 
@@ -83,6 +85,7 @@ module.exports = {
     ENV: "development",
 
     API_ACCOUNTS: "https://accounts.api.dev.zesty.io/v1",
+    API_METRICS: "https://metrics.api.dev.zesty.io",
     API_INSTANCE: ".api.dev.zesty.io/v1",
     API_INSTANCE_PROTOCOL: "https://",
 

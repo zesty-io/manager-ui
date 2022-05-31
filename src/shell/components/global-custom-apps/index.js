@@ -20,7 +20,7 @@ export default memo(function GlobalCustomApps(props) {
         props.openNav ? styles.OpenNav : styles.Collapse
       )}
     >
-      <Link to="/apps">
+      {/* <Link to="/apps">
         <FontAwesomeIcon icon={faMicrochip} />
         <span className={styles.title}>Custom Apps</span>
       </Link>
@@ -40,7 +40,7 @@ export default memo(function GlobalCustomApps(props) {
             <span className={styles.title}>{app.name}</span>
           </Link>
         );
-      })}
+      })} */}
     </menu>
   );
 });

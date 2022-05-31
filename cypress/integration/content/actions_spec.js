@@ -7,28 +7,32 @@ describe("Actions in content editor", () => {
 
   const timestamp = Date.now();
 
-  it("not save when missing required Field", () => {
+  it("Not save when missing required Field", () => {
     // TODO: update field ZUID to be correct synced ZUID when prod syncs down
     cy.visit("/schema/6-556370-8sh47g");
-    cy.contains("required field 1").click();
+
+    cy.get("[data-cy=fieldLabel]").contains("required field 1").click();
     cy.contains("Reactivate").click();
+
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     cy.get("input[type=text]")
       .first()
       .type("{selectall}{backspace}test" + timestamp);
     cy.get("#SaveItemButton").click();
-    cy.contains("missing data in required field 1").should("exist");
+    cy.contains("You are missing data in required field 1", {
+      timeout: 5000,
+    }).should("exist");
   });
-  it("save when missing required deactivated field", () => {
+  it("Save when missing required deactivated field", () => {
     cy.visit("/schema/6-556370-8sh47g");
-    cy.contains("required field 1").click();
+    cy.contains("required field 1", { timeout: 5000 }).click();
     cy.contains("Deactivate").click();
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     cy.get("input[type=text]")
       .first()
       .type("{selectall}{backspace}test" + timestamp);
     cy.get("#SaveItemButton").click();
-    cy.contains("Saved a new test version").should("exist");
+    cy.contains("Saved a new test (en-US) version").should("exist");
   });
   it("Saves homepage item metadata", () => {
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
@@ -80,14 +84,14 @@ describe("Actions in content editor", () => {
       .first()
       .click();
     cy.get(".flatpickr-calendar.open .flatpickr-confirm").click();
-    cy.get("#SchedulePublishButton").click();
+    cy.get("[data-cy=SchedulePublishButton]").click();
     cy.contains("Scheduled version").should("exist");
     cy.get("#SchedulePublishClose").click();
   });
 
   it.skip("Unschedules a Publish for an item", () => {
     cy.get("#PublishScheduleButton").click();
-    cy.get("#UnschedulePublishButton").click();
+    cy.get("[data-cy=UnschedulePublishButton]").click();
     cy.get("#SchedulePublishClose").click();
   });
 

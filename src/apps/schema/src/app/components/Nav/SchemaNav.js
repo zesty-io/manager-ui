@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import cx from "classnames";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
+
 import { Nav } from "@zesty-io/core/Nav";
 import { Search } from "@zesty-io/core/Search";
-import { Button } from "@zesty-io/core/Button";
 
 import styles from "./SchemaNav.less";
 export default function SchemaNav(props) {
@@ -28,13 +28,15 @@ export default function SchemaNav(props) {
     <nav className={cx("SchemaNav", styles.SchemaNav)}>
       <div className={styles.Actions}>
         <Button
-          className={styles.CreateModel}
-          kind="secondary"
+          variant="contained"
+          color="secondary"
           onClick={() => history.push("/schema/new")}
-          type="save"
+          startIcon={<AddIcon />}
+          sx={{
+            justifyContent: "flex-start",
+          }}
         >
-          <FontAwesomeIcon icon={faPlus} />
-          &nbsp;Create Model
+          Create Model
         </Button>
 
         <Search

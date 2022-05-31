@@ -6,6 +6,9 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { theme } from "@zesty-io/material";
+
 import idb from "utility/idb";
 import observable from "@riotjs/observable";
 
@@ -13,15 +16,15 @@ import history from "utility/history";
 import { Sentry } from "utility/sentry";
 import { store, injectReducer } from "shell/store";
 import { navContent } from "../apps/content-editor/src/store/navContent";
-import { loadedPlan } from "shell/store/publishPlan";
 
 import AppError from "shell/components/AppError";
+
 import PrivateRoute from "./components/private-route";
 import LoadInstance from "./components/load-instance";
 import Shell from "./views/Shell";
 
 import { MonacoSetup } from "../apps/code-editor/src/app/components/Editor/components/MemoizedEditor/MonacoSetup";
-import { loadedUI } from "./store/ui";
+import { actions } from "shell/store/ui";
 
 // needed for Breadcrumbs in Shell
 injectReducer(store, "navContent", navContent);
@@ -41,17 +44,19 @@ MonacoSetup(store);
 
 const App = Sentry.withProfiler(() => (
   <StrictMode>
-    <Provider store={store}>
-      <Sentry.ErrorBoundary fallback={() => <AppError />}>
-        <Router history={history}>
-          <PrivateRoute>
-            <LoadInstance>
-              <Shell />
-            </LoadInstance>
-          </PrivateRoute>
-        </Router>
-      </Sentry.ErrorBoundary>
-    </Provider>
+    <Sentry.ErrorBoundary fallback={() => <AppError />}>
+      <ThemeProvider theme={theme}>
+        <Provider store={store}>
+          <Router history={history}>
+            <PrivateRoute>
+              <LoadInstance>
+                <Shell />
+              </LoadInstance>
+            </PrivateRoute>
+          </Router>
+        </Provider>
+      </ThemeProvider>
+    </Sentry.ErrorBoundary>
   </StrictMode>
 ));
 
@@ -63,22 +68,25 @@ function render() {
 try {
   idb
     .getMany([
+      `${instanceZUID}:languages`,
       `${instanceZUID}:user:selected_lang`,
       `${instanceZUID}:navContent`,
       `${instanceZUID}:models`,
       `${instanceZUID}:fields`,
       `${instanceZUID}:content`,
-      `${instanceZUID}:publishPlan`,
       `${instanceZUID}:ui`,
     ])
-    .then((results) => {
-      const [lang, nav, models, fields, content, publishPlan, ui] = results;
+    .then(([languages, selectedLang, nav, models, fields, content, ui]) => {
+      store.dispatch({
+        type: "LOADED_LOCAL_LANGUAGES",
+        payload: languages || [],
+      });
 
       store.dispatch({
         type: "LOADED_LOCAL_USER_LANG",
         payload: {
           // default to english
-          lang: lang || "en-US",
+          lang: selectedLang || "en-US",
         },
       });
 
@@ -104,9 +112,8 @@ try {
         type: "LOADED_LOCAL_ITEMS",
         data: content,
       });
-      store.dispatch(loadedUI(ui));
 
-      store.dispatch(loadedPlan(publishPlan));
+      store.dispatch(actions.loadedUI(ui));
     });
 } catch (err) {
   console.error("IndexedDB:get:error", err);

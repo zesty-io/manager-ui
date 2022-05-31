@@ -1,0 +1,27 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+@height: calc(
+  100vh - 207px
+); /* Scroll Calc (GlobalTopbar - Content Header - padding) */
+
+.DMContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 32px;
+  height: @height;
+
+  @media only screen and (min-width: 2000px) {
+    padding: 48px;
+  }
+
+  iframe {
+    border: 3px solid @bright-gray;
+    box-shadow: 0 7px 30px -10px rgb(150 170 180 / 50%);
+    border-radius: 8px;
+    width: 100%;
+    height: @height;
+  }
+}
