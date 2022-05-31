@@ -17,15 +17,33 @@ import {
   faEyeSlash,
   faSpinner,
   faTimes,
+  faFile,
+  faListAlt,
+  faExternalLinkSquareAlt,
+  faLink,
+  faHome,
 } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./PlanStep.less";
+
+const ICONS = {
+  templateset: faFile,
+  pageset: faListAlt,
+  dataset: faDatabase,
+  external: faExternalLinkSquareAlt,
+  internal: faLink,
+  item: faFile,
+  homepage: faHome,
+  socialfeed: faDatabase,
+};
+
 export function PlanStep(props) {
   const dispatch = useDispatch();
   const params = useParams();
 
   const instanceID = useSelector((state) => state.instance.randomHashID);
   const item = useSelector((state) => state.content[props.member.resourceZUID]);
+
   const versions = useSelector(
     (state) => state.contentVersions[props.member.resourceZUID]
   );
@@ -34,12 +52,21 @@ export function PlanStep(props) {
     state.languages.find((lang) => lang.ID === item.meta.langID)
   );
 
+  const modelType = useSelector(
+    (state) => state.models[item.meta.contentModelZUID]
+  );
+
   const [loading, setLoading] = useState(false);
 
   const options = versions
     ? versions.map((content) => {
         let html = (
           <p>
+            {content.meta.version === item?.publishing?.version ? (
+              <strong>Live </strong>
+            ) : (
+              ""
+            )}
             Version {content.meta.version}{" "}
             <small>
               {" "}
@@ -125,11 +152,18 @@ export function PlanStep(props) {
         <AppLink
           to={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
         >
-          {/* Use icon matched to items model type */}
-          <FontAwesomeIcon icon={faDatabase} />
-          {/* Use meta title. Show warning with link to edit if meta title is missing. */}
-          &nbsp;
-          {item.web.metaTitle ? item.web.metaTitle : "Missing Item Meta Title"}
+          <p>
+            {/* Use icon matched to items model type */}
+            <span className={styles.Icon}>
+              <FontAwesomeIcon icon={ICONS[modelType.type]} />
+            </span>
+
+            {/* Use meta title. Show warning with link to edit if meta title is missing. */}
+
+            {item.web.metaTitle
+              ? item.web.metaTitle
+              : "Missing Item Meta Title"}
+          </p>
         </AppLink>
       </td>
 
