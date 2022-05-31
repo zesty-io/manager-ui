@@ -2,10 +2,10 @@ import { memo } from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock, faEye, faCircle } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faCircle } from "@fortawesome/free-solid-svg-icons";
 
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import ClockIcon from "@mui/icons-material/";
+import ClockIcon from "@mui/icons-material/WatchLater";
 import Link from "@mui/material/Link";
 
 import { AppLink } from "@zesty-io/core/AppLink";
