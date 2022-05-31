@@ -42,7 +42,7 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Build
-        run: npm run build-dev
+        run: npm run build:dev
       - name: Deploy to Dev
         run: gcloud app deploy app.yaml --quiet --project zesty-dev
       - name: Post Successful Dev Deploy Notification To Slack
@@ -118,7 +118,7 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Build
-        run: npm run build-stage
+        run: npm run build:stage
       - name: Deploy to Staging
         run: gcloud app deploy app.yaml --quiet --project zesty-stage
       - name: Post Successful Stage Deploy Notification To Slack

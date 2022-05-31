@@ -1,10 +1,10 @@
 import { useState } from "react";
 import cx from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-import { Button } from "@zesty-io/core/Button";
-import { Input } from "@zesty-io/core/Input";
+import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
+import TextField from "@mui/material/TextField";
+
 import { ToggleButton } from "@zesty-io/core/ToggleButton";
 import { Select, Option } from "@zesty-io/core/Select";
 import { Search } from "@zesty-io/core/Search";
@@ -54,14 +54,17 @@ export function RedirectCreator(props) {
   return (
     <div className={styles.RedirectCreator}>
       <span className={styles.RedirectCreatorCell}>
-        <Input
-          className={styles.from}
+        <TextField
           name="redirectFrom"
           type="text"
           value={from}
           placeholder="URL path to redirect from"
           onChange={(evt) => setFrom(evt.target.value)}
           error={!!from.length && !from.startsWith("/")}
+          size="small"
+          variant="outlined"
+          color="primary"
+          fullWidth
         />
       </span>
       <span className={styles.RedirectCreatorCell}>
@@ -103,12 +106,12 @@ export function RedirectCreator(props) {
       </span>
       <span className={styles.RedirectCreatorCell}>
         <Button
-          className="save"
-          type="save"
+          variant="contained"
+          color="success"
           onClick={handleCreateRedirect}
           disabled={!from.length || !from.startsWith("/")}
+          startIcon={<AddIcon />}
         >
-          <FontAwesomeIcon icon={faPlus} />
           Create Redirect
         </Button>
       </span>

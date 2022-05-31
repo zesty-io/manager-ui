@@ -6,6 +6,9 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { theme } from "@zesty-io/material";
+
 import idb from "utility/idb";
 import observable from "@riotjs/observable";
 
@@ -41,17 +44,19 @@ MonacoSetup(store);
 
 const App = Sentry.withProfiler(() => (
   <StrictMode>
-    <Provider store={store}>
-      <Sentry.ErrorBoundary fallback={() => <AppError />}>
-        <Router history={history}>
-          <PrivateRoute>
-            <LoadInstance>
-              <Shell />
-            </LoadInstance>
-          </PrivateRoute>
-        </Router>
-      </Sentry.ErrorBoundary>
-    </Provider>
+    <Sentry.ErrorBoundary fallback={() => <AppError />}>
+      <ThemeProvider theme={theme}>
+        <Provider store={store}>
+          <Router history={history}>
+            <PrivateRoute>
+              <LoadInstance>
+                <Shell />
+              </LoadInstance>
+            </PrivateRoute>
+          </Router>
+        </Provider>
+      </ThemeProvider>
+    </Sentry.ErrorBoundary>
   </StrictMode>
 ));
 

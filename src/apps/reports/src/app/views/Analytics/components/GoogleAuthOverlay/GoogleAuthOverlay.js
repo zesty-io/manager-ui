@@ -2,7 +2,8 @@ import { Component, Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe, faKey, faPlug } from "@fortawesome/free-solid-svg-icons";
 
-import { Button } from "@zesty-io/core/Button";
+import Button from "@mui/material/Button";
+import PublicIcon from "@mui/icons-material/Public";
 
 import GaAuthenticate from "./GaAuthenticate";
 import styles from "./GoogleAuthOverlay.less";
@@ -93,12 +94,13 @@ export class GoogleAuthOverlay extends Component {
             <p>{this.state.descriptions.noDomain}</p>
             <div className={styles.buttonHolder}>
               <Button
-                kind="secondary"
+                variant="contained"
+                color="secondary"
                 onClick={() => {
                   window.location = `${CONFIG.URL_ACCOUNTS}/instances/${this.props.instance.ZUID}/launch`;
                 }}
+                startIcon={<PublicIcon />}
               >
-                <FontAwesomeIcon icon={faGlobe} />
                 Click here to Setup Your Domain
               </Button>
             </div>

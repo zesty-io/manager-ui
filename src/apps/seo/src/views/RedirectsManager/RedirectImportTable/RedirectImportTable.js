@@ -1,8 +1,10 @@
 import cx from "classnames";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "@zesty-io/core/Button";
+import Button from "@mui/material/Button";
+
+import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
+
 import { Notice } from "@zesty-io/core/Notice";
 
 import RedirectImportTableRow from "./RedirectImportTableRow";
@@ -41,13 +43,20 @@ function RedirectImportTable(props) {
           Import CSV does not allow for external and wildcard redirects
         </Notice>
         <div className={styles.RedirectButtons}>
-          <Button className={styles.addAll} onClick={handleAddAllRedirects}>
-            <FontAwesomeIcon icon={faPlus} />
+          <Button
+            variant="contained"
+            onClick={handleAddAllRedirects}
+            startIcon={<AddIcon />}
+            sx={{ mr: 2 }}
+          >
             Add All Redirects
           </Button>
 
-          <Button onClick={handleCancelImport}>
-            <FontAwesomeIcon icon={faTimes} />
+          <Button
+            variant="contained"
+            onClick={handleCancelImport}
+            startIcon={<CloseIcon />}
+          >
             Close Import
           </Button>
         </div>

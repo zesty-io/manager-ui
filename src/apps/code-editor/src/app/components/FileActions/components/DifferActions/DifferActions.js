@@ -1,18 +1,17 @@
 import { memo, useState, useEffect } from "react";
-import cx from "classnames";
+
 import moment from "moment-timezone";
 import { useHistory } from "react-router";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHistory,
-  faBan,
-  faSpinner,
-  faSave,
-  faArrowRight,
-} from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+import HistoryIcon from "@mui/icons-material/History";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+import CircularProgress from "@mui/material/CircularProgress";
+import SaveIcon from "@mui/icons-material/Save";
 
-import { Button } from "@zesty-io/core/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Select, Option } from "@zesty-io/core/Select";
 
@@ -181,30 +180,35 @@ export const DifferActions = memo(function DifferActions(props) {
 
       {props.synced ? (
         <>
-          <Button className={styles.Button} onClick={loadVersion} type="save">
-            <FontAwesomeIcon icon={faHistory} />
+          <Button
+            variant="contained"
+            color="success"
+            onClick={loadVersion}
+            startIcon={<HistoryIcon />}
+            sx={{ ml: 1, minWidth: "fit-content" }}
+          >
             <span className={styles.Hide}>Load Version&nbsp;</span>{" "}
             {selectedVersion}
           </Button>
           <AppLink to={`/code/file/${props.fileType}/${props.fileZUID}`}>
-            <Button className={styles.Button}>
-              <FontAwesomeIcon icon={faBan} /> Cancel
+            <Button
+              variant="contained"
+              startIcon={<DoDisturbAltIcon />}
+              sx={{ ml: 1 }}
+            >
+              Cancel
             </Button>
           </AppLink>
         </>
       ) : (
         <>
           <Button
-            className={styles.Button}
+            variant="contained"
             onClick={resolveSync}
-            type="alt"
             disabled={saving}
+            sx={{ ml: 1 }}
           >
-            {saving ? (
-              <FontAwesomeIcon spin icon={faSpinner} />
-            ) : (
-              <FontAwesomeIcon icon={faSave} />
-            )}
+            {saving ? <CircularProgress size="20px" /> : <SaveIcon />}
             Save Version {selectedVersion}
           </Button>
         </>

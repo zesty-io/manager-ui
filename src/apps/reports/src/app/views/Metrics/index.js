@@ -6,16 +6,19 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import TopReq from "./TopReq";
 
 import { Url } from "@zesty-io/core/Url";
-import { Button } from "@zesty-io/core/Button";
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
+
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { CopyButton } from "@zesty-io/core/CopyButton";
+
+import Button from "@mui/material/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
 
 import { request } from "utility/request";
 
 import styles from "./Metrics.less";
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 import { Pie, Bar } from "react-chartjs-2";
+import { Notice } from "@zesty-io/core";
 
 /*
   Returns a date range representing the last N days
@@ -36,9 +39,9 @@ const getEndpointUrls = ({ zuid, start, end }) => {
   const dateStart = start.toISOString().split("T")[0];
   const dateEnd = end.toISOString().split("T")[0];
 
-  const params = `dateStart=${dateStart}&dateEnd=${dateEnd}`;
-  const usageEndPoint = `${base}/${zuid}/usage?${params}`;
-  const requestsEndPoint = `${base}/${zuid}/requests?${params}`;
+  const dateParams = `dateStart=${dateStart}&dateEnd=${dateEnd}`;
+  const usageEndPoint = `${base}/${zuid}/usage?${dateParams}`;
+  const requestsEndPoint = `${base}/${zuid}/requests?${dateParams}`;
   return {
     usageEndPoint,
     requestsEndPoint,
@@ -92,22 +95,28 @@ export default function Metrics(props) {
   return (
     <>
       <section className={styles.MetricsHeader}>
-        <ButtonGroup className={styles.BtnGroup}>
+        <ButtonGroup variant="contained">
           <Button
+            title="Past Day"
             onClick={() => setTimePeriod(1)}
-            text="Past day"
             disabled={timePeriod === 1}
-          />
+          >
+            Past day
+          </Button>
           <Button
+            title="Past Day Week"
             onClick={() => setTimePeriod(7)}
-            text="Past 7 days"
             disabled={timePeriod === 7}
-          />
+          >
+            Past 7 days
+          </Button>
           <Button
+            title="Past 30 Days"
             onClick={() => setTimePeriod(30)}
-            text="Past 30 days"
             disabled={timePeriod === 30}
-          />
+          >
+            Past 30 days
+          </Button>
         </ButtonGroup>
 
         <h1 className={styles.subheadline}>Zesty.io Usage Report </h1>
@@ -117,7 +126,7 @@ export default function Metrics(props) {
         width="100%"
         height="calc(100vh - 54px)"
         condition={usageData && requestData}
-        message="Loading billing metrics..."
+        message="Loading usage data"
       >
         <Body {...bodyProps} />
       </WithLoader>
@@ -125,7 +134,38 @@ export default function Metrics(props) {
   );
 }
 
-const Body = ({
+const ErrorMessage = ({ status }) => {
+  const getMessage = (status) => {
+    switch (status) {
+      case 401:
+        return "You must log in to view this";
+      case 403:
+        return "You do not have permission to access metrics for this instance";
+      case 404:
+        return "This instance does not exist";
+      case 500:
+      case 502:
+      case 503:
+      case 504:
+        return "The metrics server has encountered an error and was not able to process your request";
+      default:
+        return "An unknown error has occured while trying to calculate the metrics for this instance";
+    }
+  };
+  return <Notice className={styles.ErrorMessage}>{getMessage(status)}</Notice>;
+};
+const Body = ({ requestData, usageData, ...rest }) => {
+  if (requestData && requestData.status != 200)
+    return <ErrorMessage status={requestData.status} />;
+  else if (usageData && usageData.status != 200)
+    return <ErrorMessage status={usageData.status} />;
+  else
+    return (
+      <Content requestData={requestData} usageData={usageData} {...rest} />
+    );
+};
+
+const Content = ({
   usageData,
   requestData,
   StartDisplay,
@@ -211,7 +251,13 @@ const Body = ({
 
   // Calculate number of requests for each type
   // This is a map of req code -> number of reqs
-  const reqs = { other: 0 };
+  const reqs = {
+    other: 0,
+    200: 0,
+    301: 0,
+    404: 0,
+    403: 0,
+  };
   for (let i = 0; i < requestData.ResponseCodes.length; i++) {
     const code = requestData.ResponseCodes[i].Code;
     const count = requestData.ResponseCodes[i].RequestCount;
@@ -403,7 +449,7 @@ const Body = ({
                 </thead>
                 <tbody>
                   {/* Top Request Pages 200 */}
-                  {requestData.TopRequestByFilePathAndResponseCode[0].TopPaths.map(
+                  {requestData.TopRequestByFilePathAndResponseCode[0].TopPaths?.map(
                     (req, i) => (
                       <TopReq
                         req={req}
@@ -468,7 +514,7 @@ const Body = ({
                 </thead>
                 <tbody>
                   {/* Top Request 404 */}
-                  {requestData.TopRequestByFilePathAndResponseCode[2].TopPaths.map(
+                  {requestData.TopRequestByFilePathAndResponseCode[2].TopPaths?.map(
                     (req, i) => (
                       <TopReq
                         req={req}
@@ -506,7 +552,7 @@ const Body = ({
                 </thead>
                 <tbody>
                   {/* Top Requested 301 */}
-                  {requestData.TopRequestByFilePathAndResponseCode[1].TopPaths.map(
+                  {requestData.TopRequestByFilePathAndResponseCode[1].TopPaths?.map(
                     (req, i) => (
                       <TopReq
                         req={req}
@@ -545,7 +591,7 @@ const Body = ({
                 </thead>
                 <tbody>
                   {/* Top Request 403 */}
-                  {requestData.TopRequestByFilePathAndResponseCode[3].TopPaths.map(
+                  {requestData.TopRequestByFilePathAndResponseCode[3].TopPaths?.map(
                     (req, i) => (
                       <TopReq
                         req={req}

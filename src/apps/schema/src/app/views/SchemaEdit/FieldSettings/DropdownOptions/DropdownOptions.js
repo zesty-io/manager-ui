@@ -1,12 +1,12 @@
 import { useState } from "react";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { Button } from "@zesty-io/core/Button";
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 
-import { updateField } from "shell/store/fields";
+import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { formatName } from "utility/formatName";
+import { updateField } from "shell/store/fields";
 
 import styles from "./DropdownOptions.less";
 export function DropdownOptions(props) {
@@ -87,23 +87,24 @@ export function DropdownOptions(props) {
             }}
           />
           <Button
-            type="warn"
+            variant="contained"
             onClick={() => {
               deleteOption(i);
             }}
           >
-            <FontAwesomeIcon icon={faTrash} />
+            <DeleteIcon fontSize="small" />
           </Button>
         </div>
       ))}
 
       <Button
-        type="save"
+        variant="contained"
+        color="success"
         onClick={() => {
           setOptions([...options, { key: "", value: "" }]);
         }}
+        startIcon={<AddIcon />}
       >
-        <FontAwesomeIcon icon={faPlus} />
         Add Option
       </Button>
     </div>

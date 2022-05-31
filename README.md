@@ -1,5 +1,5 @@
 <div style="text-align:center;">
-  <img title="Logo for Zesty.io" width="300px" height="72px" src="https://brand.zesty.io/zesty-io-logo-horizontal.png" />  
+  <img title="Logo for Zesty.io" width="300px" height="72px" src="https://brand.zesty.io/zesty-io-logo-horizontal.png" />
 </div>
 
 <br />
@@ -67,6 +67,9 @@ Functional UI tests are run with cypress.io
 
 To run the tests on your machine you will need to create a `cypress.env.json` file at the root of the repository, add the following JSON and replace the email/password with valid credentials.
 
+Terminal
+`npm run test:open`
+
 ```json
 {
   "email": "EMAIL",
@@ -77,3 +80,6 @@ To run the tests on your machine you will need to create a `cypress.env.json` fi
 ---
 
 **Notes**
+
+Connect to Zesty Material Design Systems
+`npm link @zesty-io/material`

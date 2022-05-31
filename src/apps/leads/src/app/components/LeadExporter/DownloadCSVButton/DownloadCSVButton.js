@@ -2,10 +2,10 @@ import { Component } from "react";
 import csvDownload from "json-to-csv-export";
 import * as moment from "moment";
 import { connect } from "react-redux";
-import { Button } from "@zesty-io/core/Button";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+
+import DownloadIcon from "@mui/icons-material/Download";
 
 import { DATE_PRESETS } from "../TableDateFilter/TableDateFilter.model";
 import * as FilterService from "../../../views/Leads/LeadFilter.service";
@@ -75,10 +75,11 @@ export default connect((state) => {
     render() {
       return (
         <Button
+          variant="contained"
           onClick={() => this.filterLeadsData()}
           title="Export CSV of lead data by selected filters"
+          startIcon={<DownloadIcon />}
         >
-          <FontAwesomeIcon icon={faDownload} />
           Export CSV
         </Button>
       );

@@ -3,7 +3,10 @@ import cx from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 import { usePermission } from "shell/hooks/use-permissions";
 
-import { Button } from "@zesty-io/core/Button";
+import Button from "@mui/material/Button";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import CircularProgress from "@mui/material/CircularProgress";
+
 import { CopyButton } from "@zesty-io/core/CopyButton";
 
 import { request } from "utility/request";
@@ -107,6 +110,7 @@ export default function GlobalInstance(props) {
         {canPurge && (
           <div>
             <Button
+              variant="contained"
               className={styles.Button}
               disabled={purge}
               onClick={() => {
@@ -127,12 +131,10 @@ export default function GlobalInstance(props) {
                     setPurge(false);
                   });
               }}
+              startIcon={
+                purge ? <CircularProgress size="20px" /> : <ErrorOutlineIcon />
+              }
             >
-              {purge ? (
-                <FontAwesomeIcon spin icon={faSpinner} />
-              ) : (
-                <FontAwesomeIcon icon={faExclamationCircle} />
-              )}
               Refresh Instance Cache
             </Button>
           </div>

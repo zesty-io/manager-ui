@@ -2,10 +2,9 @@ import { useState } from "react";
 
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner, faSave } from "@fortawesome/free-solid-svg-icons";
-
-import { Button } from "@zesty-io/core/Button";
+import Button from "@mui/material/Button";
+import SaveIcon from "@mui/icons-material/Save";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { saveFile } from "../../../../../../store/files";
 
@@ -29,12 +28,14 @@ export function Save(props) {
   const metaShortcut = useMetaKey("s", onSave);
 
   return (
-    <Button type="save" onClick={onSave} disabled={saving}>
-      {saving ? (
-        <FontAwesomeIcon spin icon={faSpinner} />
-      ) : (
-        <FontAwesomeIcon icon={faSave} />
-      )}
+    <Button
+      variant="contained"
+      color="success"
+      onClick={onSave}
+      disabled={saving}
+      startIcon={saving ? <CircularProgress size="20px" /> : <SaveIcon />}
+      sx={{ mx: 0.5 }}
+    >
       Save&nbsp;
       <span className={styles.HideSmall}>{metaShortcut}</span>
     </Button>

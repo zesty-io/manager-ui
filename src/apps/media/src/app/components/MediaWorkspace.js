@@ -4,10 +4,13 @@ import { createSelector } from "reselect";
 import { useDispatch, useSelector } from "react-redux";
 import { useDrop } from "react-dnd";
 import { NativeTypes } from "react-dnd-html5-backend";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 
-import { Button } from "@zesty-io/core/Button";
+import Button from "@mui/material/Button";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { uploadFile } from "shell/store/media";
@@ -136,8 +139,11 @@ export const MediaWorkspace = memo(function MediaWorkspace(props) {
               <div className={cx(styles.UploadMessage, styles.display)}>
                 <div>Drag and drop files here</div>
                 <div>or</div>
-                <Button onClick={chooseFile}>
-                  <FontAwesomeIcon icon={faUpload} />
+                <Button
+                  variant="contained"
+                  onClick={chooseFile}
+                  startIcon={<FileUploadIcon />}
+                >
                   Choose files to upload
                 </Button>
               </div>

@@ -8,7 +8,23 @@ import {
   faDatabase,
   faEdit,
   faFolder,
+  faFile,
+  faListAlt,
+  faExternalLinkSquareAlt,
+  faLink,
+  faHome,
 } from "@fortawesome/free-solid-svg-icons";
+
+const typeToIconMap = {
+  templateset: faFile,
+  pageset: faListAlt,
+  dataset: faDatabase,
+  external: faExternalLinkSquareAlt,
+  internal: faLink,
+  item: faFile,
+  homepage: faHome,
+  socialfeed: faDatabase,
+};
 
 const ZUID_REGEX = /[a-zA-Z0-9]{1,5}-[a-zA-Z0-9]{6,10}-[a-zA-Z0-9]{5,35}/;
 
@@ -155,14 +171,14 @@ function createTab(state, parsedPath) {
       tab.icon = faFolder;
       break;
     case "6":
+      tab.icon = faDatabase;
+
       if (state.models) {
         const model = state.models[zuid];
 
-        if (model) {
-          tab.name = model.label;
-        }
+        tab.name = model?.label;
+        tab.icon = typeToIconMap?.[model?.type] || faDatabase;
       }
-      tab.icon = faDatabase;
       break;
     case "7":
       if (state.content) {
