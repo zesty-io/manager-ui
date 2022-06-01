@@ -62,6 +62,7 @@ export default connect((state) => {
   }, [props.instance.length, props.match]);
 
   function setValue(value, name) {
+    if (value === null) return;
     setFieldValues({ ...fieldValues, [name]: value });
 
     if (dirtyFields.includes(name)) return;
@@ -114,11 +115,6 @@ export default connect((state) => {
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
-
-  const handleToggle = (val, field) => {
-    if (val === null) return;
-    setValue(val, field);
-  };
 
   let i = 0;
   return (
@@ -227,7 +223,7 @@ export default connect((state) => {
                       size="small"
                       value={fieldValues[field.key]}
                       exclusive
-                      onChange={(evt, val) => handleToggle(val, field.key)}
+                      onChange={(evt, val) => setValue(val, field.key)}
                     >
                       <ToggleButton value={"0"}>Off </ToggleButton>
                       <ToggleButton value={"1"}>On </ToggleButton>
@@ -257,7 +253,7 @@ export default connect((state) => {
                       size="small"
                       value={fieldValues[field.key]}
                       exclusive
-                      onChange={(evt, val) => handleToggle(val, field.key)}
+                      onChange={(evt, val) => setValue(val, field.key)}
                     >
                       <ToggleButton value={"0"}>Off</ToggleButton>
                       <ToggleButton value={"1"}>On </ToggleButton>
