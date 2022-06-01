@@ -67,13 +67,13 @@ export const PublishStatusCell = memo(function PublishStatusCell(props) {
         {props.item &&
         props.item.scheduling &&
         props.item.scheduling.isScheduled ? (
-          <ClockIcon fontSize="small" sx={{ color: "warning.main" }} />
+          <ClockIcon fontSize="small" color="warning" />
         ) : props.item &&
           props.item.publishing &&
           props.item.publishing.isPublished ? (
-          <VisibilityIcon fontSize="small" sx={{ color: "success.main" }} />
+          <VisibilityIcon fontSize="small" color="success" />
         ) : (
-          <VisibilityIcon fontSize="small" sx={{ color: "primary.main" }} />
+          <VisibilityIcon fontSize="small" color="primary" />
         )}
       </Link>
     );
