@@ -133,6 +133,15 @@ export default connect((state) => {
     }
   );
 
+  const handleToggle = (type, val) => {
+    if (val !== null) {
+      setType({
+        type: type,
+        payload: val,
+      });
+    }
+  };
+
   return (
     <section className={styles.SchemaCreate}>
       {/* {props.user.first_time && (
@@ -171,15 +180,16 @@ export default connect((state) => {
             </p>
 
             <div className={styles.questionnaire}>
-              <FormLabel sx={{ color: "primary.dark" }}>
+              <FormLabel>
                 <Stack
+                  spacing={1}
                   direction="row"
                   alignItems="center"
                   sx={{
                     my: 1,
                   }}
                 >
-                  Will this content be a public webpage and need a url?
+                  <p>Will this content be a public webpage and need a url?</p>
                 </Stack>
               </FormLabel>
               <ToggleButtonGroup
@@ -187,14 +197,15 @@ export default connect((state) => {
                 size="small"
                 value={url}
                 exclusive
-                onChange={(e, val) => {
-                  if (val !== null) {
-                    setType({
-                      type: "url",
-                      payload: val,
-                    });
-                  }
-                }}
+                // onChange={(e, val) => {
+                //   if (val !== null) {
+                //     setType({
+                //       type: "url",
+                //       payload: val,
+                //     });
+                //   }
+                // }}
+                onChange={(evt, val) => handleToggle("url", val)}
               >
                 <ToggleButton value={0}>No </ToggleButton>
                 <ToggleButton value={1}>Yes </ToggleButton>
@@ -202,15 +213,16 @@ export default connect((state) => {
             </div>
 
             <div className={styles.questionnaire}>
-              <FormLabel sx={{ color: "primary.dark" }}>
+              <FormLabel>
                 <Stack
+                  spacing={1}
                   direction="row"
                   alignItems="center"
                   sx={{
                     my: 1,
                   }}
                 >
-                  Will this content have multiple entries?
+                  <p>Will this content have multiple entries?</p>
                 </Stack>
               </FormLabel>
               <ToggleButtonGroup
@@ -385,8 +397,9 @@ export default connect((state) => {
             />
 
             <div className={styles.questionnaire}>
-              <FormLabel sx={{ color: "primary.dark" }}>
+              <FormLabel>
                 <Stack
+                  spacing={1}
                   direction="row"
                   alignItems="center"
                   sx={{
@@ -399,9 +412,9 @@ export default connect((state) => {
                     title={`Listed models have their content items available to programmatic
                 navigation calls.`}
                   >
-                    <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                    <InfoIcon fontSize="small" />
                   </Tooltip>
-                  Should this model be listed?
+                  <p>Should this model be listed?</p>
                 </Stack>
               </FormLabel>
               <ToggleButtonGroup
