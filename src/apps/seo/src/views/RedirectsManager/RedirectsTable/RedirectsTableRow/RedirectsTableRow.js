@@ -8,6 +8,8 @@ import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MuiLink from "@mui/material/Link";
 
+import { Url } from "@zesty-io/core/Url";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
@@ -82,14 +84,14 @@ export default function RedirectsTableRow(props) {
       {props.targetType === "page" ? (
         <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
           {findTarget ? (
-            <MuiLink
+            <Link
               className={styles.internalLink}
               to={`/content/${modelZuid}/${props.target}`}
             >
               <FontAwesomeIcon className={styles.icon} icon={faLink} />
               &nbsp;
               <code>{path}</code>
-            </MuiLink>
+            </Link>
           ) : (
             <code>
               <FontAwesomeIcon className={styles.icon} icon={faBan} />

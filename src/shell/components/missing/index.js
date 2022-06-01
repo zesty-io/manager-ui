@@ -10,7 +10,12 @@ export default connect()(function Welcome() {
       </h1>
       <h2 style={{ textAlign: "center", fontSize: "26px", marginTop: "16px" }}>
         If it seems like something is missing please let us know at{" "}
-        <Link title="Support" href="mailto:support@zesty.io">
+        <Link
+          title="Support"
+          href="mailto:support@zesty.io"
+          color="secondary"
+          underline="none"
+        >
           support@zesty.io
         </Link>
       </h2>

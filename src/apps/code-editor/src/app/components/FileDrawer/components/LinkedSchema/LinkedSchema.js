@@ -22,9 +22,8 @@ export default function LinkedSchema(props) {
       <CardContent>
         <p>
           Use the below Parsley syntax to reference this models fields. This
-          will dynamically link to the fields content.
+          will dynamically link to the fields content.&nbsp;
           <Link
-            className={styles.Link}
             href="https://zesty.org/services/web-engine/introduction-to-parsley"
             target="_blank"
             title="Learn More Parsley Syntax"

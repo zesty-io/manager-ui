@@ -116,9 +116,9 @@ export default connect((state) => {
             <Link
               underline="none"
               color="secondary"
-              className={styles.AccountLink}
               title="Zesty Account"
               href={`${CONFIG.URL_ACCOUNTS}/instances`}
+              sx={{ p: 2 }}
             >
               <FontAwesomeIcon icon={faUser} />
               &nbsp; Go to Accounts

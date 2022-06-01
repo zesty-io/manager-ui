@@ -234,6 +234,7 @@ export const FIELD_TYPES = [
           Markdown fields provide an editor that allows using{" "}
           <Link
             title="Learn more about Github Flavored Markdown"
+            color="secondary"
             target="_blank"
             href="https://github.github.com/gfm/"
           >

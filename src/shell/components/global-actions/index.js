@@ -40,6 +40,7 @@ export default memo(function GlobalActions(props) {
           href={`https://zesty.io`}
           title="Zesty.io"
           target="_blank"
+          // TODO: Fix these styles
           className={styles.GlobalAction}
         >
           <img

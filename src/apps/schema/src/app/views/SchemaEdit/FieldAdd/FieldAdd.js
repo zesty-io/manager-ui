@@ -136,6 +136,7 @@ export function FieldAdd(props) {
                 href="https://zesty.org/services/web-engine/interface/schema/fields"
                 target="_blank"
                 title="Learn more about fields and their types"
+                // TODO why doesn't this link show up?
               >
                 <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
                 &nbsp;Learn more about fields and their types.

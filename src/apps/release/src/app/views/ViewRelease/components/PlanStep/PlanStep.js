@@ -6,9 +6,10 @@ import moment from "moment-timezone";
 
 import { updateMember, deleteMember } from "shell/store/releaseMembers";
 
+import Link from "@mui/material/Link";
+
 import { Select, Option } from "@zesty-io/core/Select";
 import { AppLink } from "@zesty-io/core/AppLink";
-import { Url } from "@zesty-io/core/Url";
 import { Button } from "@zesty-io/core/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
