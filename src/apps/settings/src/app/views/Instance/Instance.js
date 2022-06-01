@@ -13,7 +13,8 @@ import { FieldLabel } from "@zesty-io/core/FieldLabel";
 import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { Select, Option } from "@zesty-io/core/Select";
-import { Divider } from "@zesty-io/core/Divider";
+
+import Divider from "@mui/material/Divider";
 
 import { Docs } from "@zesty-io/core/Docs";
 import { notify } from "shell/store/notifications";
@@ -144,11 +145,23 @@ export default connect((state) => {
           </div>
         </div>
       </div>
-      <Divider />
+      <Divider
+        sx={{
+          my: 1,
+          mx: 2,
+        }}
+      />
       <div className={styles.row}>
         {fields.map((field) => {
           {
-            i % 2 == 0 && <Divider />;
+            i % 2 == 0 && (
+              <Divider
+                sx={{
+                  my: 1,
+                  mx: 2,
+                }}
+              />
+            );
           }
           i++;
           switch (field.dataType) {

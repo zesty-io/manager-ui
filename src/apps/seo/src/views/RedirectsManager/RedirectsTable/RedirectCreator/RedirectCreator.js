@@ -70,6 +70,7 @@ export function RedirectCreator(props) {
           size="small"
           variant="outlined"
           color="primary"
+          fullWidth
         />
       </span>
       <span className={styles.RedirectCreatorCell}>
