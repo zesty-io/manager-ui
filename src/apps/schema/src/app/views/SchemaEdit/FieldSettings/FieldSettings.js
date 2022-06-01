@@ -38,6 +38,7 @@ import { ImageOptions } from "./ImageOptions";
 import { formatName } from "utility/formatName";
 
 import styles from "./FieldSettings.less";
+
 export default function FieldSettings(props) {
   const field = FIELD_TYPES.find(
     (field) => field.value === props.field.datatype
@@ -99,7 +100,7 @@ export default function FieldSettings(props) {
             }}
           />
 
-          <FormLabel sx={{ color: "primary.dark" }}>
+          <FormLabel>
             <Stack
               direction="row"
               alignItems="center"
@@ -115,17 +116,13 @@ export default function FieldSettings(props) {
             size="small"
             value={props.field.required}
             exclusive
-            onChange={(e, val) => {
-              if (val !== null) {
-                props.updateValue(val, "required");
-              }
-            }}
+            onChange={(e, val) => props.updateValue(val, "required")}
           >
             <ToggleButton value={false}>No </ToggleButton>
             <ToggleButton value={true}>Yes </ToggleButton>
           </ToggleButtonGroup>
 
-          <FormLabel sx={{ color: "primary.dark" }}>
+          <FormLabel>
             <Stack
               direction="row"
               alignItems="center"
@@ -141,11 +138,7 @@ export default function FieldSettings(props) {
             size="small"
             value={props.field.settings.list}
             exclusive
-            onChange={(e, val) => {
-              if (val !== null) {
-                props.updateFieldSetting(val, "list");
-              }
-            }}
+            onChange={(e, val) => props.updateFieldSetting(val, "list")}
           >
             <ToggleButton value={false}>No </ToggleButton>
             <ToggleButton value={true}>Yes </ToggleButton>

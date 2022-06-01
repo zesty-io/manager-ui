@@ -133,13 +133,17 @@ export default connect((state) => {
     }
   );
 
-  const handleToggle = (type, val) => {
-    if (val !== null) {
-      setType({
-        type: type,
-        payload: val,
-      });
-    }
+  const handleToggle = (type, value) => {
+    if (value === null) return;
+    setType({
+      type: type,
+      payload: value,
+    });
+  };
+
+  const handleListedToggle = (value) => {
+    if (value === null) return;
+    setListed(value);
   };
 
   return (
@@ -197,14 +201,6 @@ export default connect((state) => {
                 size="small"
                 value={url}
                 exclusive
-                // onChange={(e, val) => {
-                //   if (val !== null) {
-                //     setType({
-                //       type: "url",
-                //       payload: val,
-                //     });
-                //   }
-                // }}
                 onChange={(evt, val) => handleToggle("url", val)}
               >
                 <ToggleButton value={0}>No </ToggleButton>
@@ -230,14 +226,7 @@ export default connect((state) => {
                 size="small"
                 value={multiple}
                 exclusive
-                onChange={(e, val) => {
-                  if (val !== null) {
-                    setType({
-                      type: "multiple",
-                      payload: val,
-                    });
-                  }
-                }}
+                onChange={(evt, val) => handleToggle("multiple", val)}
               >
                 <ToggleButton value={0}>No </ToggleButton>
                 <ToggleButton value={1}>Yes </ToggleButton>
@@ -422,11 +411,7 @@ export default connect((state) => {
                 size="small"
                 value={listed}
                 exclusive
-                onChange={(e, val) => {
-                  if (val !== null) {
-                    setListed(val);
-                  }
-                }}
+                onChange={(evt, value) => handleListedToggle(value)}
               >
                 <ToggleButton value={false}>Off </ToggleButton>
                 <ToggleButton value={true}>On </ToggleButton>
