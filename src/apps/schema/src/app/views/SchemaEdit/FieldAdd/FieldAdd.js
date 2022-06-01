@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 
 import CircularProgress from "@mui/material/CircularProgress";
 import AddIcon from "@mui/icons-material/Add";
-import Link from "@mui/icons-material/Link";
+import Link from "@mui/material/Link";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -136,7 +136,6 @@ export function FieldAdd(props) {
                 href="https://zesty.org/services/web-engine/interface/schema/fields"
                 target="_blank"
                 title="Learn more about fields and their types"
-                // TODO why doesn't this link show up?
               >
                 <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
                 &nbsp;Learn more about fields and their types.
