@@ -24,11 +24,11 @@ export const FileList = memo(function FileList(props) {
   );
 
   const [stylesheetsShownFiles, setStylesheetsShownFiles] = useState(
-    props.navCode.stylesheetsTree.sort(byLabel)
+    props.navCode.stylesheetsTree.sort(byOrder)
   );
 
   const [scriptsShownFiles, setScriptsShownFiles] = useState(
-    props.navCode.scriptsTree.sort(byLabel)
+    props.navCode.scriptsTree.sort(byOrder)
   );
 
   let { pathname } = useLocation();
@@ -36,8 +36,8 @@ export const FileList = memo(function FileList(props) {
 
   useEffect(() => {
     setShownFiles(props.navCode.tree.sort(byLabel));
-    setStylesheetsShownFiles(props.navCode.stylesheetsTree.sort(byLabel));
-    setScriptsShownFiles(props.navCode.scriptsTree.sort(byLabel));
+    setStylesheetsShownFiles(props.navCode.stylesheetsTree.sort(byOrder));
+    setScriptsShownFiles(props.navCode.scriptsTree.sort(byOrder));
   }, [props.navCode]);
 
   const collapseNode = (node) => {
