@@ -440,11 +440,7 @@ export default function Field({
               size="small"
               value={value}
               exclusive
-              onChange={(e, val) => {
-                if (val !== null) {
-                  onChange(val, name);
-                }
-              }}
+              onChange={(e, val) => onChange(val, name)}
             >
               <ToggleButton value={0}>False </ToggleButton>
               <ToggleButton value={1}>True </ToggleButton>

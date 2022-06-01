@@ -16,6 +16,15 @@ import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import styles from "./WidgetListed.less";
 export const WidgetListed = memo(function WidgetListed(props) {
+  const toggleHandler = (value) => {
+    if (value === null) return;
+    props.dispatch({
+      type: "SET_ITEM_META",
+      itemZUID: props.itemZUID,
+      key: "listed",
+      value: value,
+    });
+  };
   return (
     <Card className={styles.WidgetListed}>
       <CardHeader>
@@ -48,16 +57,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
           size="small"
           value={props.listed}
           exclusive
-          onChange={(e, val) => {
-            if (val !== null) {
-              props.dispatch({
-                type: "SET_ITEM_META",
-                itemZUID: props.itemZUID,
-                key: "listed",
-                value: val,
-              });
-            }
-          }}
+          onChange={(evt, value) => toggleHandler(value)}
           sx={{ mb: 1 }}
         >
           <ToggleButton value={false}>No </ToggleButton>
