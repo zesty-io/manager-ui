@@ -2,6 +2,7 @@ import { memo, useCallback, useState } from "react";
 import cx from "classnames";
 
 import Button from "@mui/material/Button";
+
 import CheckIcon from "@mui/icons-material/Check";
 import EditIcon from "@mui/icons-material/Edit";
 import Observer from "@researchgate/react-intersection-observer";
@@ -100,7 +101,7 @@ export const MediaWorkspaceItem = memo(function MediaWorkspaceItem(props) {
             ></div>
           )}
           <Button
-            variant="outline"
+            variant="contained"
             onClick={showFileDetails}
             startIcon={<EditIcon />}
             fullWidth

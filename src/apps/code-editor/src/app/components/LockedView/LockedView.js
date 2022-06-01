@@ -5,6 +5,11 @@ import moment from "moment-timezone";
 
 import { checkLock, lock, unlock } from "shell/store/content";
 
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
+import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faLock,
@@ -19,7 +24,6 @@ import {
   ModalContent,
   ModalFooter,
 } from "@zesty-io/core/Modal";
-import { Button } from "@zesty-io/core/Button";
 
 import styles from "./LockedView.less";
 
@@ -123,16 +127,21 @@ export function LockedView(props) {
         </p>
       </ModalContent>
       <ModalFooter className={styles.ModalFooter}>
-        <Button type="cancel" onClick={onClose}>
-          <FontAwesomeIcon icon={faStepBackward} />
+        <Button
+          variant="contained"
+          onClick={onClose}
+          startIcon={<SkipPreviousIcon />}
+        >
           Go Back
         </Button>
-        <Button type="save" onClick={userUnlock}>
-          {loading ? (
-            <FontAwesomeIcon icon={faSpinner} spin />
-          ) : (
-            <FontAwesomeIcon icon={faUnlock} />
-          )}
+        <Button
+          variant="contained"
+          color="success"
+          onClick={userUnlock}
+          startIcon={
+            loading ? <CircularProgress size="20px" /> : <LockOpenIcon />
+          }
+        >
           Unlock
         </Button>
       </ModalFooter>
