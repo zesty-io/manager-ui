@@ -1,14 +1,13 @@
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import SaveIcon from "@mui/icons-material/Save";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHome,
-  faAngleRight,
-  faSpinner,
-  faSave,
-} from "@fortawesome/free-solid-svg-icons";
+import { faHome, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { Button } from "@zesty-io/core/Button";
+
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./Header.less";
@@ -30,16 +29,15 @@ export function Header(props) {
 
       <ButtonGroup className={styles.Actions}>
         <Button
-          type="save"
+          variant="contained"
+          color="success"
           id="CreateItemSaveButton"
           disabled={props.saving || !props.isDirty}
           onClick={props.onSave}
+          startIcon={
+            props.saving ? <CircularProgress size="20px" /> : <SaveIcon />
+          }
         >
-          {props.saving ? (
-            <FontAwesomeIcon icon={faSpinner} spin />
-          ) : (
-            <FontAwesomeIcon icon={faSave} />
-          )}
           Create Item&nbsp; {metaShortcut}
         </Button>
       </ButtonGroup>

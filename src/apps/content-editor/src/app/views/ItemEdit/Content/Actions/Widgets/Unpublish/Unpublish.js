@@ -1,8 +1,12 @@
 import { memo, Fragment, useState } from "react";
 
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import LinkOffIcon from "@mui/icons-material/LinkOff";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner, faUnlink } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "@zesty-io/core/Button";
+import { faUnlink } from "@fortawesome/free-solid-svg-icons";
+
 import {
   CollapsibleCard,
   CardContent,
@@ -45,15 +49,14 @@ export const Unpublish = memo(function Unpublish(props) {
       </CardContent>
       <CardFooter>
         <Button
+          variant="contained"
           id="UnpublishItemButton"
           onClick={handleUnpublish}
           disabled={loading || !isPublished}
+          startIcon={
+            loading ? <CircularProgress size="20px" /> : <LinkOffIcon />
+          }
         >
-          {loading ? (
-            <FontAwesomeIcon icon={faSpinner} spin />
-          ) : (
-            <FontAwesomeIcon icon={faUnlink} />
-          )}
           Unpublish
         </Button>
       </CardFooter>

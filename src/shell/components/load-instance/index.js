@@ -69,26 +69,38 @@ export default connect((state) => {
     }, []);
 
     useEffect(() => {
-      if (window.pendo && props.user && props.instance && props.role) {
-        // in your authentication promise handler or callback
+      if (
+        window.pendo &&
+        props.user?.email &&
+        props.instance?.ZUID &&
+        props.role
+      ) {
         pendo.initialize({
           visitor: {
-            id: props.user.ZUID, // Required if user is logged in
-            email: props.user.email, // Recommended if using Pendo Feedback, or NPS Email
+            id: props.user.ZUID,
+            email: props.user.email,
             firstName: props.user.firstName,
             lastName: props.user.lastName,
-            role: props.role, // Optional
+            full_name: `${props.user.firstName} ${props.user.lastName}`,
+            role: props.role,
+
             // You can add any additional visitor level key-values here,
             // as long as it's not one of the above reserved names.
-            staff: props.user.staff, // Zesty staff
+            staff: props.user.staff,
+            creationDate: props.user.createdAt,
           },
 
           account: {
-            id: props.instance.ZUID, // Required if using Pendo Feedback
-            name: props.instance.name, // Optional
-            creationDate: props.user.createdAt, // Optional
+            id: props.instance.ZUID,
+            name: props.instance.name,
+            creationDate: props.instance.createdAt,
             // You can add any additional account level key-values here,
             // as long as it's not one of the above reserved names.
+
+            ecoID: props.instance.ecoID,
+            ecoZUID: props.instance.ecoZUID,
+            randomHashID: props.instance.randomHashID,
+            domain: props.instance.domain,
           },
         });
       }

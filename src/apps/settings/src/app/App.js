@@ -9,7 +9,6 @@ import { Instance } from "./views/Instance";
 import { Styles } from "./views/Styles";
 import { Browse, Installed } from "./views/Fonts";
 import { Robots } from "./views/Robots";
-import { Metrics } from "./views/Metrics";
 
 import { Head } from "shell/components/Head";
 
@@ -66,7 +65,6 @@ export default connect((state) => ({
                 <Redirect from="/settings/fonts" to="/settings/fonts/browse" />
 
                 <Route path="/settings/robots" component={Robots} />
-                <Route path="/settings/metrics" component={Metrics} />
                 <Route
                   path="/settings/head"
                   render={() => (
