@@ -79,13 +79,14 @@ export default connect((state) => {
       setRobotOn((prevRobotOn) => ({
         ...prevRobotOn,
         ...robots_on,
-        // We require this to be a number to properly convert to a boolean for the FeildTypeBinary compnent
+        // We require this to be a number to properly convert to a boolean for the FeildTypeBinary component
         value: Number(robots_on.value),
       }));
     });
   }, []);
 
   const handleRobotsOn = (value) => {
+    if (value === null) return;
     setRobotOn((prevRobotOn) => ({
       ...prevRobotOn,
       value,
@@ -144,11 +145,6 @@ export default connect((state) => {
     );
   };
 
-  const handleToggle = (val) => {
-    if (val === null) return;
-    handleRobotsOn(val);
-  };
-
   return (
     <WithLoader condition={robotOn.ZUID} message="Finding robots.txt settings">
       <div className={styles.Robots}>
@@ -164,8 +160,9 @@ export default connect((state) => {
         />
 
         <div className={styles.Row}>
-          <FormLabel sx={{ color: "primary.dark" }}>
+          <FormLabel>
             <Stack
+              spacing={1}
               direction="row"
               alignItems="center"
               sx={{
@@ -173,9 +170,9 @@ export default connect((state) => {
               }}
             >
               <Tooltip title={robotOn.tips} arrow placement="top-start">
-                <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                <InfoIcon fontSize="small" />
               </Tooltip>
-              {robotOn.keyFriendly}
+              <p>{robotOn.keyFriendly}</p>
             </Stack>
           </FormLabel>
           <ToggleButtonGroup
@@ -183,7 +180,7 @@ export default connect((state) => {
             size="small"
             value={robotOn.value}
             exclusive
-            onChange={(evt, val) => handleToggle(val)}
+            onChange={(evt, val) => handleRobotsOn(val)}
           >
             <ToggleButton value={0}>No </ToggleButton>
             <ToggleButton value={1}>Yes </ToggleButton>

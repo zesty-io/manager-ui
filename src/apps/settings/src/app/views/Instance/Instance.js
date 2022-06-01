@@ -205,14 +205,21 @@ export default connect((state) => {
               } else if (field.key === "preferred_domain_prefix") {
                 return (
                   <div key={field.ZUID} className={styles.column}>
-                    <FormLabel sx={{ color: "red" }}>
-                      <Stack spacing={1} direction="row" alignItems="center">
+                    <FormLabel>
+                      <Stack
+                        spacing={1}
+                        direction="row"
+                        alignItems="center"
+                        sx={{
+                          my: 1,
+                        }}
+                      >
                         <Tooltip
                           title={`Activating the WWW setting requires DNS setup of both the apex domain and www sub-domain.`}
                         >
-                          <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                          <InfoIcon fontSize="small" />
                         </Tooltip>
-                        {field.keyFriendly}
+                        <p>{field.keyFriendly}</p>
                       </Stack>
                     </FormLabel>
                     <ToggleButtonGroup
@@ -230,12 +237,19 @@ export default connect((state) => {
               } else {
                 return (
                   <div key={field.ZUID} className={styles.column}>
-                    <FormLabel sx={{ color: "primary.dark" }}>
-                      <Stack spacing={1} direction="row" alignItems="center">
+                    <FormLabel>
+                      <Stack
+                        spacing={1}
+                        direction="row"
+                        alignItems="center"
+                        sx={{
+                          my: 1,
+                        }}
+                      >
                         <Tooltip title={field.tips}>
-                          <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                          <InfoIcon fontSize="small" />
                         </Tooltip>
-                        {field.keyFriendly}
+                        <p>{field.keyFriendly}</p>
                       </Stack>
                     </FormLabel>
                     <ToggleButtonGroup
