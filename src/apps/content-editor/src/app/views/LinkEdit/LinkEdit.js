@@ -2,8 +2,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSave, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+import SaveIcon from "@mui/icons-material/Save";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -11,7 +13,7 @@ import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
 import { Input } from "@zesty-io/core/Input";
-import { Button } from "@zesty-io/core/Button";
+
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
 import { closeTab } from "shell/store/ui";
@@ -215,15 +217,6 @@ export default function LinkEdit() {
     });
   }
 
-  function onDelete(yes) {
-    if (yes) {
-      deleteLink();
-    }
-
-    // always close yes or no
-    setShowConfirmation(false);
-  }
-
   function onChange(value, name) {
     setState({
       ...state,
@@ -308,27 +301,49 @@ export default function LinkEdit() {
             </label>
           </CardContent>
           <CardFooter className={styles.LinkEditActions}>
-            <Button type="save" disabled={state.saving} onClick={saveLink}>
-              <FontAwesomeIcon icon={faSave} />
+            <Button
+              variant="contained"
+              color="success"
+              disabled={state.saving}
+              onClick={saveLink}
+              startIcon={<SaveIcon />}
+            >
               Save Changes
             </Button>
             <Button
-              type="warn"
+              variant="contained"
+              color="error"
               disabled={state.saving}
               onClick={() => setShowConfirmation(true)}
+              startIcon={<DeleteIcon />}
             >
-              <FontAwesomeIcon icon={faTrashAlt} />
               Delete
             </Button>
           </CardFooter>
         </Card>
       </WithLoader>
+
       {showConfirmation && (
         <ConfirmDialog
           isOpen={showConfirmation}
           prompt="Are you sure you want to delete this link?"
-          callback={onDelete}
-        />
+        >
+          <Button
+            variant="contained"
+            onClick={() => setShowConfirmation(false)}
+            startIcon={<DoDisturbAltIcon />}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => deleteLink()}
+            startIcon={<DeleteIcon />}
+          >
+            Delete
+          </Button>
+        </ConfirmDialog>
       )}
     </section>
   );
