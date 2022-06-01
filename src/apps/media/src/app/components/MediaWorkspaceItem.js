@@ -101,7 +101,7 @@ export const MediaWorkspaceItem = memo(function MediaWorkspaceItem(props) {
             ></div>
           )}
           <Button
-            variant="contained"
+            variant="outline"
             onClick={showFileDetails}
             startIcon={<EditIcon />}
             fullWidth
