@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBook, faHashtag } from "@fortawesome/free-solid-svg-icons";
 
 import Link from "@mui/material/Link";
+import Box from "@mui/material/Box";
 
 import GlobalHelpMenu from "shell/components/GlobalHelpMenu";
 
@@ -36,26 +37,45 @@ export default memo(function GlobalActions(props) {
 
         <Link
           underline="none"
-          color="secondary"
+          color="primary.light"
           href={`https://zesty.io`}
           title="Zesty.io"
           target="_blank"
-          // TODO: Fix these styles
-          className={styles.GlobalAction}
+          sx={{
+            width: "100%",
+            textAlign: "center",
+            position: "relative",
+            textShadow: "none",
+            alignItems: "center",
+            p: openNav ? 0 : 1,
+            "&:hover": { color: "warning.main" },
+            "&:focus": { color: "warning.main" },
+            "&:active": { color: "warning.main" },
+          }}
         >
           <img
             src="https://brand.zesty.io/zesty-io-logo.svg"
             alt="Zesty.io"
             width="16px"
             height="16px"
+            style={{ verticalAlign: "middle" }}
           />
-          {openNav && <span className={styles.GlobalAction}>Zesty.io</span>}
+          {openNav && (
+            <Box
+              component="span"
+              sx={{
+                verticalAlign: "middle",
+                p: 1,
+              }}
+            >
+              Zesty.io
+            </Box>
+          )}
         </Link>
 
         <div className={styles.AppVersion}>
           <Link
             underline="none"
-            color="secondary"
             href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
             title="View source code commit"
             target="_blank"
