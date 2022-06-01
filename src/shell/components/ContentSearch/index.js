@@ -24,6 +24,7 @@ import {
   faEye,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "@mui/material/Link";
+import TextField from "@mui/material/TextField";
 
 import { Search } from "@zesty-io/core/Search";
 import { Loader } from "@zesty-io/core/Loader";
@@ -260,19 +261,31 @@ const List = connect((state) => {
         <div className={styles.SortBy}>
           <p className={styles.Title}>Sort By</p>
           <ButtonGroup>
-            <Button onClick={() => setSortType("default")}>
+            <Button title="Sort by" onClick={() => setSortType("default")}>
               <FontAwesomeIcon icon={faSort} /> Default
             </Button>
-            <Button onClick={() => setSortType("alpha")}>
+            <Button
+              title="Sort by meta title"
+              onClick={() => setSortType("alpha")}
+            >
               <FontAwesomeIcon icon={faSortAlphaDown} /> Title
             </Button>
-            <Button onClick={() => setSortType("edited")}>
+            <Button
+              title="Sort by most recently edited"
+              onClick={() => setSortType("edited")}
+            >
               <FontAwesomeIcon icon={faCalendar} /> Edited
             </Button>
-            <Button onClick={() => setSortType("created")}>
+            <Button
+              title="Sort by most recently created"
+              onClick={() => setSortType("created")}
+            >
               <FontAwesomeIcon icon={faCalendar} /> Created
             </Button>
-            <Button onClick={() => setSortType("user")}>
+            <Button
+              title="Sort by user created"
+              onClick={() => setSortType("user")}
+            >
               <FontAwesomeIcon icon={faUser} /> User
             </Button>
           </ButtonGroup>
@@ -280,7 +293,13 @@ const List = connect((state) => {
 
         <div className={styles.FilterBy}>
           <p className={styles.Title}>Filter By</p>
-          <Input onChange={(evt) => setFilterTerm(evt.target.value)} />
+          <TextField
+            onChange={(evt) => setFilterTerm(evt.target.value)}
+            size="small"
+            variant="outlined"
+            color="primary"
+            fullWidth
+          />
         </div>
       </li>
 

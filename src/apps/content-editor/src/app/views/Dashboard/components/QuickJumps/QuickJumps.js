@@ -29,7 +29,7 @@ export function QuickJumps(props) {
             href={props.docsLink}
             target="_blank"
             title={props.docsLink}
-            className={cx(styles.bodyText, styles.Docs)}
+            sx={{ mt: 1.5, color: "primary.main" }}
           >
             <FontAwesomeIcon icon={faExternalLinkAlt} />
             &nbsp;Documentation

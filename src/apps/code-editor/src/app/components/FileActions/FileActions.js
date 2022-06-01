@@ -30,10 +30,10 @@ export const FileActions = memo(function FileActions(props) {
           <Link
             underline="none"
             color="secondary"
-            className={styles.FileLink}
             href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.contentModelZUID}.json`}
             target="_blank"
             title="Preview JSON"
+            sx={{ m: 0, pr: 2, pl: 3.25, py: 0 }}
           >
             <FontAwesomeIcon icon={faBolt} />
           </Link>

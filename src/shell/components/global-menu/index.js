@@ -11,7 +11,6 @@ import {
   faAddressCard,
   faDatabase,
   faChartLine,
-  faHistory,
   faCog,
   faBullseye,
   faCode,
@@ -31,9 +30,8 @@ export default memo(function GlobalMenu() {
     schema: faDatabase,
     code: faCode,
     leads: faAddressCard,
-    analytics: faChartLine,
+    reports: faChartLine,
     seo: faBullseye,
-    "audit-trail": faHistory,
     settings: faCog,
     release: faRocket,
   };

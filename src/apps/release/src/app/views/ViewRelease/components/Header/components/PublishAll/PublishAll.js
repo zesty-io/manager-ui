@@ -67,7 +67,7 @@ export const PublishAll = memo(function PublishAll() {
             {loading ? (
               <>
                 <FontAwesomeIcon icon={faSpinner} spin />
-                Publishing
+                &nbsp;Publishing
               </>
             ) : (
               <>

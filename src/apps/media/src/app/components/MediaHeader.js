@@ -2,10 +2,11 @@ import { memo, useState } from "react";
 import { useSelector } from "react-redux";
 import cx from "classnames";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
 
-import { Button } from "@zesty-io/core/Button";
 import { MediaCreateGroupModal } from "./MediaCreateGroupModal";
 import { MediaEditGroupModal } from "./MediaEditGroupModal";
 
@@ -28,12 +29,14 @@ export const MediaHeader = memo(function MediaHeader(props) {
       {!props.searchTerm && (
         <div className={styles.Actions}>
           <Button
+            variant="contained"
+            color="secondary"
             title="Create Group"
             aria-label="Create Group"
             kind="secondary"
             onClick={() => setCreateGroupModal(true)}
+            startIcon={<AddIcon />}
           >
-            <FontAwesomeIcon icon={faPlus} />
             <span>Create Sub Group</span>
           </Button>
 
@@ -47,13 +50,13 @@ export const MediaHeader = memo(function MediaHeader(props) {
           )}
 
           <Button
-            type="cancel"
+            variant="contained"
             title="Edit"
             aria-label="Edit"
             onClick={() => setEditGroupModal(true)}
+            startIcon={<EditIcon />}
           >
-            <FontAwesomeIcon icon={faEdit} />
-            <span>Edit</span>
+            Edit
           </Button>
           {editGroupModal && (
             <MediaEditGroupModal
@@ -67,13 +70,14 @@ export const MediaHeader = memo(function MediaHeader(props) {
           {props.currentBin !== props.currentGroup &&
           userRole.name !== "Contributor" ? (
             <Button
+              variant="contained"
+              color="error"
               title="Delete Group"
-              type="warn"
               aria-label="Delete"
               onClick={props.showDeleteGroupModal}
+              startIcon={<DeleteIcon />}
             >
-              <FontAwesomeIcon icon={faTrash} />
-              <span>Delete</span>
+              Delete
             </Button>
           ) : null}
 

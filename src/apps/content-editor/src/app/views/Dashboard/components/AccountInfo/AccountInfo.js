@@ -49,7 +49,6 @@ export function AccountInfo(props) {
               <Link
                 underline="none"
                 color="secondary"
-                className={styles.Live}
                 href={domain}
                 target="_blank"
                 title="Open live link in standard browser window"

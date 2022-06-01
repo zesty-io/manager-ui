@@ -180,6 +180,7 @@ export function FieldAdd(props) {
         <Button
           variant="contained"
           color="success"
+          data-cy="addField"
           disabled={!field.dirty || loading}
           onClick={create}
           startIcon={loading ? <CircularProgress size="20px" /> : <AddIcon />}

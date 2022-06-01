@@ -2,7 +2,10 @@ import { memo } from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock, faEye, faCircle } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faCircle } from "@fortawesome/free-solid-svg-icons";
+
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import ClockIcon from "@mui/icons-material/WatchLater";
 import Link from "@mui/material/Link";
 
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -43,21 +46,34 @@ export const PublishStatusCell = memo(function PublishStatusCell(props) {
       <Link
         underline="none"
         color="secondary"
-        className={cx(styles.PublishStatusCell)}
         href={`${CONFIG.URL_PREVIEW_FULL}${props.item.web.path}`}
+        sx={{
+          alignItems: "center",
+          display: "flex",
+          justifyContent: "center",
+          // TODO why does this have to be 40px and not 5?
+          flexBasis: "40px",
+          flexGrow: 0,
+          flexShrink: 0,
+          m: 0,
+          borderBottom: "1px solid rgba(26, 32, 44, 0.12)",
+          "&:hover": {
+            backgroundColor: "#f7f7f7",
+          },
+        }}
         target="_blank"
         title="Opens item preview in a new tab"
       >
         {props.item &&
         props.item.scheduling &&
         props.item.scheduling.isScheduled ? (
-          <FontAwesomeIcon icon={faClock} className={styles.Scheduled} />
+          <ClockIcon fontSize="small" sx={{ color: "warning.main" }} />
         ) : props.item &&
           props.item.publishing &&
           props.item.publishing.isPublished ? (
-          <FontAwesomeIcon icon={faEye} className={styles.Published} />
+          <VisibilityIcon fontSize="small" sx={{ color: "success.main" }} />
         ) : (
-          <FontAwesomeIcon icon={faEye} className={styles.Unpublished} />
+          <VisibilityIcon fontSize="small" sx={{ color: "primary.main" }} />
         )}
       </Link>
     );

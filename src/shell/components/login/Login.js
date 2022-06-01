@@ -7,11 +7,11 @@ import Link from "@mui/material/Link";
 import CircularProgress from "@mui/material/CircularProgress";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import TextField from "@mui/material/TextField";
 
 import { Modal, ModalContent } from "@zesty-io/core/Modal";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { Input } from "@zesty-io/core/Input";
 import { Notice } from "@zesty-io/core/Notice";
 
 import { login, verifyTwoFactor, pollTwoFactor } from "shell/store/auth";
@@ -102,7 +102,16 @@ export default connect((state) => {
 
               <label>
                 <span>7 Digit Authy Token</span>
-                <Input name="token" type="text" autoComplete="off" />
+                <TextField
+                  name="token"
+                  type="text"
+                  autoComplete="off"
+                  size="small"
+                  variant="outlined"
+                  color="primary"
+                  sx={{ mb: 2 }}
+                  fullWidth
+                />
               </label>
 
               <Button
@@ -142,6 +151,7 @@ export default connect((state) => {
                 startIcon={
                   loading ? <CircularProgress size="20px" /> : <ExitToAppIcon />
                 }
+                sx={{ mt: 1 }}
               >
                 Resume Session
               </Button>

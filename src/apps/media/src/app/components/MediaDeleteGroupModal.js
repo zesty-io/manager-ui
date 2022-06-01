@@ -1,4 +1,9 @@
 import { useDispatch } from "react-redux";
+
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -12,7 +17,6 @@ import {
   ModalContent,
   ModalFooter,
 } from "@zesty-io/core/Modal";
-import { Button } from "@zesty-io/core/Button";
 
 import { deleteGroup } from "shell/store/media";
 import { closeTab } from "shell/store/ui";
@@ -37,20 +41,25 @@ export function MediaDeleteGroupModal(props) {
         </p>
       </ModalContent>
       <ModalFooter className={styles.Footer}>
-        <Button type="cancel" onClick={props.onClose}>
-          <FontAwesomeIcon icon={faBan} />
-          <span>Cancel</span>
+        <Button
+          variant="contained"
+          onClick={props.onClose}
+          startIcon={<DoDisturbAltIcon />}
+        >
+          Cancel
         </Button>
         <Button
+          variant="contained"
+          color="error"
           onClick={() => {
             dispatch(deleteGroup(props.currentGroup)).then(() => {
               props.onClose();
               dispatch(closeTab(`/media/${props.currentGroup.id}`));
             });
           }}
+          startIcon={<DeleteIcon />}
         >
-          <FontAwesomeIcon icon={faCheck} />
-          <span>Delete</span>
+          Delete
         </Button>
       </ModalFooter>
     </Modal>

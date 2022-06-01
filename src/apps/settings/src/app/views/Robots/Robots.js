@@ -21,7 +21,8 @@ import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 
 import styles from "./Robots.less";
-import { Divider } from "@zesty-io/core/Divider";
+
+import Divider from "@mui/material/Divider";
 
 export default connect((state) => {
   return {
@@ -144,7 +145,12 @@ export default connect((state) => {
           <FontAwesomeIcon icon={faFile} className={styles.titleIcon} />
           Robots.txt Editor
         </h1>
-        <Divider />
+        <Divider
+          sx={{
+            my: 1,
+            mx: 2,
+          }}
+        />
 
         <div className={styles.Row}>
           <FieldTypeBinary
