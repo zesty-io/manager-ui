@@ -14,14 +14,6 @@ import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { publishAll } from "shell/store/releases";
 import { usePermission } from "shell/hooks/use-permissions";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBan,
-  faCheckCircle,
-  faSpinner,
-  faCloudUploadAlt,
-} from "@fortawesome/free-solid-svg-icons";
-
 import styles from "./PublishAll.less";
 export const PublishAll = memo(function PublishAll() {
   const dispatch = useDispatch();

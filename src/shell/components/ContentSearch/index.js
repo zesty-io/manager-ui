@@ -262,43 +262,42 @@ const List = connect((state) => {
       <li className={styles.Actions}>
         <div className={styles.SortBy}>
           <p className={styles.Title}>Sort By</p>
-          <ButtonGroup>
-            <Button
-              variant="contained"
-              onClick={() => setSortType("default")}
-              startIcon={<SortIcon />}
-            >
-              Default
-            </Button>
-            <Button
-              variant="contained"
-              onClick={() => setSortType("alpha")}
-              startIcon={<SortByAlphaIcon />}
-            >
-              Title
-            </Button>
-            <Button
-              variant="contained"
-              onClick={() => setSortType("edited")}
-              startIcon={<CalendarMonthIcon />}
-            >
-              Edited
-            </Button>
-            <Button
-              variant="contained"
-              onClick={() => setSortType("created")}
-              startIcon={<PersonSearchIcon />}
-            >
-              Created
-            </Button>
-            <Button
-              variant="contained"
-              onClick={() => setSortType("user")}
-              startIcon={<PersonIcon />}
-            >
-              User
-            </Button>
-          </ButtonGroup>
+
+          <Button
+            variant="contained"
+            onClick={() => setSortType("default")}
+            startIcon={<SortIcon />}
+          >
+            Default
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => setSortType("alpha")}
+            startIcon={<SortByAlphaIcon />}
+          >
+            Title
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => setSortType("edited")}
+            startIcon={<CalendarMonthIcon />}
+          >
+            Edited
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => setSortType("created")}
+            startIcon={<PersonSearchIcon />}
+          >
+            Created
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => setSortType("user")}
+            startIcon={<PersonIcon />}
+          >
+            User
+          </Button>
         </div>
 
         <div className={styles.FilterBy}>

@@ -59,7 +59,7 @@ export function CreateRelease() {
           data-cy="release-name"
           label="Release Name"
           name="name"
-          maxLength={150}
+          maxLength={50}
           value={name}
           onChange={(val) => setName(val)}
           required
