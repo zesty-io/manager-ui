@@ -79,8 +79,7 @@ export default connect((state) => {
       setRobotOn((prevRobotOn) => ({
         ...prevRobotOn,
         ...robots_on,
-        // We require this to be a number to properly convert to a boolean for the FeildTypeBinary component
-        value: Number(robots_on.value),
+        value: robots_on.value,
       }));
     });
   }, []);
@@ -105,7 +104,7 @@ export default connect((state) => {
 
     const robotsOn = makeRequest({
       ...robotOn,
-      value: String(robotOn.value), // The API requires this as a string
+      value: robotOn.value, // The API requires this as a string
     });
     const robotsText = makeRequest(robotText);
 
@@ -182,8 +181,8 @@ export default connect((state) => {
             exclusive
             onChange={(evt, val) => handleRobotsOn(val)}
           >
-            <ToggleButton value={0}>No </ToggleButton>
-            <ToggleButton value={1}>Yes </ToggleButton>
+            <ToggleButton value={"0"}>No </ToggleButton>
+            <ToggleButton value={"1"}>Yes </ToggleButton>
           </ToggleButtonGroup>
         </div>
 
