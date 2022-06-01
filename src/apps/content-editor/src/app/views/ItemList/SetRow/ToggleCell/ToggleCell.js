@@ -38,6 +38,7 @@ export const ToggleCell = memo(function ToggleCell(props) {
               color="secondary"
               size="small"
               value={props.value}
+              exclusive
               onChange={(evt, val) => props.onChange(val, props.name)}
             >
               <ToggleButton value={options[0]}>False</ToggleButton>
