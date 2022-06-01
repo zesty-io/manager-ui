@@ -205,14 +205,8 @@ export default connect((state) => {
               } else if (field.key === "preferred_domain_prefix") {
                 return (
                   <div key={field.ZUID} className={styles.column}>
-                    <FormLabel sx={{ color: "primary.dark" }}>
-                      <Stack
-                        direction="row"
-                        alignItems="center"
-                        sx={{
-                          my: 1,
-                        }}
-                      >
+                    <FormLabel sx={{ color: "red" }}>
+                      <Stack spacing={1} direction="row" alignItems="center">
                         <Tooltip
                           title={`Activating the WWW setting requires DNS setup of both the apex domain and www sub-domain.`}
                         >
@@ -237,13 +231,7 @@ export default connect((state) => {
                 return (
                   <div key={field.ZUID} className={styles.column}>
                     <FormLabel sx={{ color: "primary.dark" }}>
-                      <Stack
-                        direction="row"
-                        alignItems="center"
-                        sx={{
-                          my: 1,
-                        }}
-                      >
+                      <Stack spacing={1} direction="row" alignItems="center">
                         <Tooltip title={field.tips}>
                           <InfoIcon fontSize="small" sx={{ mr: 1 }} />
                         </Tooltip>
