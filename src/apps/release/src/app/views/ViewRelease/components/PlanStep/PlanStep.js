@@ -6,17 +6,18 @@ import moment from "moment-timezone";
 
 import { updateMember, deleteMember } from "shell/store/releaseMembers";
 
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import CloseIcon from "@mui/icons-material/Close";
+
 import { Select, Option } from "@zesty-io/core/Select";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Url } from "@zesty-io/core/Url";
-import { Button } from "@zesty-io/core/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faDatabase,
   faEye,
   faEyeSlash,
-  faSpinner,
-  faTimes,
   faFile,
   faListAlt,
   faExternalLinkSquareAlt,
@@ -177,10 +178,15 @@ export function PlanStep(props) {
 
       <td data-cy="release-member-delete">
         {loading ? (
-          <FontAwesomeIcon icon={faSpinner} spin />
+          <CircularProgress size="20px" />
         ) : (
-          <Button onClick={remove}>
-            <FontAwesomeIcon title="Remove" icon={faTimes} />
+          <Button
+            variant="contained"
+            color="error"
+            size="small"
+            onClick={remove}
+          >
+            <CloseIcon fontSize="small" />
           </Button>
         )}
       </td>
