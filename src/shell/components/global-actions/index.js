@@ -30,7 +30,7 @@ export default memo(function GlobalActions(props) {
           className={styles.GlobalAction}
           title="Help"
         >
-          <FontAwesomeIcon icon={faBook} className={styles.GlobalActionIcon} />
+          <FontAwesomeIcon icon={faBook} />
           {openMenu && <GlobalHelpMenu />}
           {openNav && <span>Docs</span>}
         </span>

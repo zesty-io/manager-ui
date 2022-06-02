@@ -2,19 +2,15 @@ import { memo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory, useParams } from "react-router";
 
-import { Button } from "@zesty-io/core/Button";
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+
 import { Notice } from "@zesty-io/core/Notice";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 
 import { deleteRelease } from "shell/store/releases";
 import { usePermission } from "shell/hooks/use-permissions";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBan,
-  faCheckCircle,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./DeleteRelease.less";
 export const DeleteRelease = memo(function DeleteRelease() {
@@ -37,12 +33,13 @@ export const DeleteRelease = memo(function DeleteRelease() {
   return (
     <div>
       <Button
-        type="warn"
+        variant="contained"
+        color="error"
         onClick={() => setOpen(true)}
         disabled={!canPublish || loading}
+        startIcon={<DeleteIcon />}
       >
-        <FontAwesomeIcon icon={faTrash} />
-        &nbsp;Delete
+        Delete
       </Button>
 
       <Modal
@@ -55,13 +52,21 @@ export const DeleteRelease = memo(function DeleteRelease() {
           <Notice>Deleting a release is a permenant action.</Notice>
         </ModalContent>
         <ModalFooter className={styles.ModalFooter}>
-          <Button type="cancel" onClick={() => setOpen(false)}>
-            <FontAwesomeIcon icon={faBan} />
+          <Button
+            variant="contained"
+            onClick={() => setOpen(false)}
+            startIcon={<DoDisturbAltIcon />}
+          >
             Cancel (ESC)
           </Button>
-          <Button type="warn" disabled={loading} onClick={onDeleteRelease}>
-            <FontAwesomeIcon icon={faCheckCircle} />
-            &nbsp;Delete Release
+          <Button
+            variant="contained"
+            color="error"
+            disabled={loading}
+            onClick={onDeleteRelease}
+            startIcon={<DeleteIcon />}
+          >
+            Delete Release
           </Button>
         </ModalFooter>
       </Modal>

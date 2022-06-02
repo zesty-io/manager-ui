@@ -25,11 +25,11 @@ export function QuickJumps(props) {
 
           <Link
             underline="none"
-            color="secondary"
+            color="primary"
             href={props.docsLink}
             target="_blank"
             title={props.docsLink}
-            sx={{ mt: 1.5, color: "primary.main" }}
+            sx={{ mt: 1.5 }}
           >
             <FontAwesomeIcon icon={faExternalLinkAlt} />
             &nbsp;Documentation
