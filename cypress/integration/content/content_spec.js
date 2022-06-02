@@ -137,6 +137,11 @@ describe("Content Specs", () => {
           .focus()
           .clear()
           .type(`http://www.zesty.pw/${TIMESTAMP}`);
+        cy.get("#12-8ed554-nxmbw8")
+          .find("input")
+          .should((input) => {
+            expect(input).to.have.value(`http://www.zesty.pw/${TIMESTAMP}`);
+          });
       });
 
       it("Internal Link Field", () => {
@@ -167,12 +172,18 @@ describe("Content Specs", () => {
 
       // TODO: Need to confirm toggling of value
       it("Yes/No Field", () => {
-        cy.get("#12-575f7c-trw1w3").find("button").click({ force: true });
+        cy.get("#12-575f7c-trw1w3")
+          .find("button")
+          .contains("True")
+          .click({ force: true });
       });
 
       // TODO: Need to confirm toggling of value
       it("Yes/No Field: Custom Options", () => {
-        cy.get("#12-8178cc-z37vq1").find("button").click({ force: true });
+        cy.get("#12-8178cc-z37vq1")
+          .find("button")
+          .contains("True")
+          .click({ force: true });
       });
 
       it("Fontawesome Field", () => {
