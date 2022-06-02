@@ -315,6 +315,7 @@ export default connect((state, props) => {
 
   // Allow for item edits in list view
   function onChange(itemZUID, key, value) {
+    if (value === null || key === null || itemZUID === null) return;
     props.dispatch({
       type: "SET_ITEM_DATA",
       itemZUID,
