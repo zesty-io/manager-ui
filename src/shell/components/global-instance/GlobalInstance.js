@@ -7,15 +7,13 @@ import Button from "@mui/material/Button";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import CircularProgress from "@mui/material/CircularProgress";
 
-import { CopyButton } from "@zesty-io/core/CopyButton";
+import { CopyButton } from "@zesty-io/material";
 
 import { request } from "utility/request";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
   faExternalLinkAlt,
-  faExclamationCircle,
-  faSpinner,
   faEye,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -73,8 +71,7 @@ export default function GlobalInstance(props) {
 
       <main className={cx(styles.Instance, open ? null : styles.hide)}>
         <p className={cx(styles.bodyText, styles.zuid)}>
-          ZUID:{" "}
-          <CopyButton kind="outlined" size="compact" value={instance.ZUID} />
+          ZUID: <CopyButton size="small" value={instance.ZUID} />
         </p>
 
         <Select className={styles.Select} name="instance" value={instance.ZUID}>

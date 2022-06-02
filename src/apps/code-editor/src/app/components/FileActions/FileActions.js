@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import HistoryIcon from "@mui/icons-material/History";
 import EditIcon from "@mui/icons-material/Edit";
 import StorageIcon from "@mui/icons-material/Storage";
+import { CopyButton } from "@zesty-io/material";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBolt, faFileCode } from "@fortawesome/free-solid-svg-icons";
@@ -13,7 +14,6 @@ import { faBolt, faFileCode } from "@fortawesome/free-solid-svg-icons";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Url } from "@zesty-io/core/Url";
 import { Notice } from "@zesty-io/core/Notice";
-import { CopyButton } from "@zesty-io/core/CopyButton";
 
 import { DifferActions } from "./components/DifferActions";
 import { EditorActions } from "./components/EditorActions";
@@ -86,9 +86,8 @@ export const FileActions = memo(function FileActions(props) {
         </Switch>
 
         <div className={styles.FileName}>
-          {/* <em className={styles.ZUID}>{props.fileZUID}</em> */}
-          <CopyButton size="compact" value={props.fileZUID} />
-          <span>{props.fileName}</span>
+          <CopyButton variant="contained" size="small" value={props.fileZUID} />
+          {props.fileName}
         </div>
       </div>
 

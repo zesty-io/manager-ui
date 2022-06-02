@@ -6,20 +6,15 @@ import SyncIcon from "@mui/icons-material/Sync";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import MobileScreenShareIcon from "@mui/icons-material/MobileScreenShare";
 
+import { CopyButton } from "@zesty-io/material";
+
 import { Select, Option } from "@zesty-io/core/Select";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { Url } from "@zesty-io/core/Url";
-import { CopyButton } from "@zesty-io/core/CopyButton";
 import { Notice } from "@zesty-io/core/Notice";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faExternalLinkAlt,
-  faSync,
-  faEllipsisV,
-  faMobileAlt,
-  faEye,
-} from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt, faEye } from "@fortawesome/free-solid-svg-icons";
 import TextField from "@mui/material/TextField";
 
 import { Meta } from "./components/Meta";
@@ -157,10 +152,16 @@ export function Preview(props) {
 
             <div className={styles.Url}>
               <CopyButton
-                className={styles.PreviewCopy}
+                variant="contained"
                 value={`${domain}${route}`}
+                sx={{
+                  mr: 1,
+                  svg: {
+                    mr: 1,
+                  },
+                }}
               >
-                &nbsp;
+                URL
               </CopyButton>
               <Button
                 variant="contained"

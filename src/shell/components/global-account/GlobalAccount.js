@@ -6,7 +6,7 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 
-import { CopyButton } from "@zesty-io/core/CopyButton";
+import { CopyButton } from "@zesty-io/material";
 import { Url } from "@zesty-io/core/Url";
 import Link from "@mui/material/Link";
 
@@ -52,7 +52,7 @@ export default function GlobalAccount(props) {
 
         <li className={styles.zuid}>
           ZUID:&nbsp;
-          <CopyButton kind="outlined" size="compact" value={user.ZUID} />
+          <CopyButton size="small" value={user.ZUID} />
         </li>
 
         <li className={styles.role}>Instance: {userRole.name}</li>
