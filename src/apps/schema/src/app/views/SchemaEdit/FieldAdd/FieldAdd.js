@@ -9,8 +9,6 @@ import AddIcon from "@mui/icons-material/Add";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faSpinner,
-  faPlus,
   faExternalLinkSquareAlt,
   faHandPointUp,
 } from "@fortawesome/free-solid-svg-icons";
@@ -148,13 +146,14 @@ export function FieldAdd(props) {
             field={field}
             new={true}
             dispatch={props.dispatch}
-            updateValue={(val, name) =>
+            updateValue={(val, name) => {
+              if (val === null) return;
               setField({
                 ...field,
                 [name]: val,
                 dirty: true,
-              })
-            }
+              });
+            }}
             updateMultipleValues={(values) => {
               setField({
                 ...field,
@@ -162,7 +161,8 @@ export function FieldAdd(props) {
                 dirty: true,
               });
             }}
-            updateFieldSetting={(val, name) =>
+            updateFieldSetting={(val, name) => {
+              if (val === null) return;
               setField({
                 ...field,
                 settings: {
@@ -170,8 +170,8 @@ export function FieldAdd(props) {
                   [name]: val,
                 },
                 dirty: true,
-              })
-            }
+              });
+            }}
           />
         )}
       </CardContent>
