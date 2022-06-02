@@ -5,8 +5,14 @@ import { useDomain } from "shell/hooks/use-domain";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Tooltip from "@mui/material/Tooltip";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import FormLabel from "@mui/material/FormLabel";
 import CircularProgress from "@mui/material/CircularProgress";
 import SaveIcon from "@mui/icons-material/Save";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
@@ -15,7 +21,6 @@ import { Url } from "@zesty-io/core/Url";
 
 import { Notice } from "@zesty-io/core/Notice";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
-import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { notify } from "shell/store/notifications";
@@ -74,13 +79,13 @@ export default connect((state) => {
       setRobotOn((prevRobotOn) => ({
         ...prevRobotOn,
         ...robots_on,
-        // We require this to be a number to properly convert to a boolean for the FeildTypeBinary compnent
-        value: Number(robots_on.value),
+        value: robots_on.value,
       }));
     });
   }, []);
 
   const handleRobotsOn = (value) => {
+    if (value === null) return;
     setRobotOn((prevRobotOn) => ({
       ...prevRobotOn,
       value,
@@ -99,7 +104,7 @@ export default connect((state) => {
 
     const robotsOn = makeRequest({
       ...robotOn,
-      value: String(robotOn.value), // The API requires this as a string
+      value: robotOn.value, // The API requires this as a string
     });
     const robotsText = makeRequest(robotText);
 
@@ -154,15 +159,31 @@ export default connect((state) => {
         />
 
         <div className={styles.Row}>
-          <FieldTypeBinary
-            name="settings[general][robots_on]"
-            label={robotOn.keyFriendly}
-            tooltip={robotOn.tips}
-            value={Boolean(robotOn.value)}
-            offValue="No"
-            onValue="Yes"
-            onChange={handleRobotsOn}
-          />
+          <FormLabel>
+            <Stack
+              spacing={1}
+              direction="row"
+              alignItems="center"
+              sx={{
+                my: 1,
+              }}
+            >
+              <Tooltip title={robotOn.tips} arrow placement="top-start">
+                <InfoIcon fontSize="small" />
+              </Tooltip>
+              <p>{robotOn.keyFriendly}</p>
+            </Stack>
+          </FormLabel>
+          <ToggleButtonGroup
+            color="secondary"
+            size="small"
+            value={robotOn.value}
+            exclusive
+            onChange={(evt, val) => handleRobotsOn(val)}
+          >
+            <ToggleButton value={"0"}>No </ToggleButton>
+            <ToggleButton value={"1"}>Yes </ToggleButton>
+          </ToggleButtonGroup>
         </div>
 
         <div className={cx(styles.IframeWrapper, styles.Row)}>
