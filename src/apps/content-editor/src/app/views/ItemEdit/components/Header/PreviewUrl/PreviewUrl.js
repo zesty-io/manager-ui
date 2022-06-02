@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
-import { Url } from "@zesty-io/core/Url";
+import Link from "@mui/material/Link";
 
 export function PreviewUrl(props) {
   const instance = useSelector((state) => state.instance);
@@ -18,9 +18,15 @@ export function PreviewUrl(props) {
   }
 
   return (
-    <Url target="_blank" title={url} href={url}>
+    <Link
+      underline="none"
+      color="secondary"
+      target="_blank"
+      title={url}
+      href={url}
+    >
       <FontAwesomeIcon icon={faEye} />
       &nbsp;Preview {props.item.meta.version}
-    </Url>
+    </Link>
   );
 }

@@ -1,5 +1,4 @@
 import { Header } from "../components/Header";
-import { Url } from "@zesty-io/core/Url";
 import React, { useState, useEffect } from "react";
 
 import Button from "@mui/material/Button";
@@ -16,6 +15,7 @@ import {
   faNewspaper,
   faUnlockAlt,
 } from "@fortawesome/free-solid-svg-icons";
+import Link from "@mui/material/Link";
 import { faNpm } from "@fortawesome/free-brands-svg-icons";
 import { Docs } from "@zesty-io/core/Docs";
 import Divider from "@mui/material/Divider";
@@ -63,10 +63,15 @@ export function HeadlessOptions(props) {
       <div>
         <h5>Dev (latest version)</h5>
         <Divider />
-        <Url href={`${previewURL}${endPath}`} target="_blank">
+        <Link
+          underline="none"
+          color="secondary"
+          href={`${previewURL}${endPath}`}
+          target="_blank"
+        >
           {`${props.instance.randomHashID}${CONFIG.URL_PREVIEW}`}
           {endPath}
-        </Url>
+        </Link>
 
         <h5>Stage</h5>
         {props.instance.domains
@@ -74,10 +79,15 @@ export function HeadlessOptions(props) {
           .map((domain) => (
             <div key={`${domain.ZUID}${endPath}`}>
               <Divider />
-              <Url href={`https://${domain.domain}${endPath}`} target="_blank">
+              <Link
+                underline="none"
+                color="secondary"
+                href={`https://${domain.domain}${endPath}`}
+                target="_blank"
+              >
                 {domain.domain}
                 {endPath}
-              </Url>
+              </Link>
             </div>
           ))}
 
@@ -87,10 +97,15 @@ export function HeadlessOptions(props) {
           .map((domain) => (
             <div key={`${domain.ZUID}${endPath}`}>
               <Divider />
-              <Url href={`https://${domain.domain}${endPath}`} target="_blank">
+              <Link
+                underline="none"
+                color="secondary"
+                href={`https://${domain.domain}${endPath}`}
+                target="_blank"
+              >
                 {domain.domain}
                 {endPath}
-              </Url>
+              </Link>
             </div>
           ))}
       </div>
@@ -132,12 +147,14 @@ export function HeadlessOptions(props) {
                 Headless features allow you to integrate your content into
                 Headless Websites, Mobile Applications, or Customer
                 Applications. Learn more about{" "}
-                <Url
+                <Link
+                  underline="none"
+                  color="secondary"
                   href="https://zesty.org/services/web-engine/modes"
                   subject="WebEngine modes"
                 >
                   WebEngine Modes
-                </Url>
+                </Link>
               </p>
               <br />
               <br />
@@ -182,9 +199,14 @@ export function HeadlessOptions(props) {
                     <p>
                       {headlessResponse.routing.about} Access all routes from
                       the{" "}
-                      <Url href={headlessResponse.routing.map} target="_blank">
+                      <Link
+                        underline="none"
+                        color="secondary"
+                        href={headlessResponse.routing.map}
+                        target="_blank"
+                      >
                         toJSON Routing Map
-                      </Url>
+                      </Link>
                       .
                     </p>
                     {outputLinks(toJSONPath)}
@@ -209,9 +231,14 @@ export function HeadlessOptions(props) {
                 <CardContent>
                   <p>
                     {headlessResponse.instant.about} View the{" "}
-                    <Url href={headlessResponse.instant.map} target="_blank">
+                    <Link
+                      underline="none"
+                      color="secondary"
+                      href={headlessResponse.instant.map}
+                      target="_blank"
+                    >
                       Instant JSON Map
-                    </Url>
+                    </Link>
                   </p>
                   {outputLinks(instantItemPath)}
                 </CardContent>
@@ -236,17 +263,24 @@ export function HeadlessOptions(props) {
                 <CardContent>
                   <p>
                     {headlessResponse.gql.about} View the{" "}
-                    <Url href={headlessResponse.gql.map} target="_blank">
+                    <Link
+                      underline="none"
+                      color="secondary"
+                      href={headlessResponse.gql.map}
+                      target="_blank"
+                    >
                       GQL Map endpoint
-                    </Url>
+                    </Link>
                     . Note this item is only accessible by traversing through
                     the data array on the model's GQL endpoint.{" "}
-                    <Url
+                    <Link
+                      underline="none"
+                      color="secondary"
                       href="https://github.com/zesty-io/graphql-zesty"
                       target="_blank"
                     >
                       GraphQL Apollo Github Link
-                    </Url>
+                    </Link>
                     .
                   </p>
                   {outputLinks(gqlPath)}
@@ -283,14 +317,24 @@ export function HeadlessOptions(props) {
 
                   <h5>Rest Endpoint (needs authentication bearer)</h5>
                   <Divider />
-                  <Url href={restEndpoint} target="_blank">
+                  <Link
+                    href={restEndpoint}
+                    target="_blank"
+                    underline="none"
+                    color="secondary"
+                  >
                     {restEndpoint}
-                  </Url>
+                  </Link>
                   <h5>Full REST Documentation</h5>
                   <Divider />
-                  <Url href="https://instances-api.zesty.org/" target="_blank">
+                  <Link
+                    underline="none"
+                    color="secondary"
+                    href="https://instances-api.zesty.org/"
+                    target="_blank"
+                  >
                     instances-api.zesty.org
-                  </Url>
+                  </Link>
                   <h5 className={styles.cardHeader}>
                     <FontAwesomeIcon icon={faNpm} /> <span> Node SDK</span>{" "}
                     <Docs
@@ -299,12 +343,14 @@ export function HeadlessOptions(props) {
                     />
                   </h5>
                   <Divider />
-                  <Url
+                  <Link
+                    underline="none"
+                    color="secondary"
                     href="https://www.npmjs.com/package/@zesty-io/sdk"
                     target="_blank"
                   >
                     www.npmjs.com/package/@zesty-io/sdk
-                  </Url>
+                  </Link>
                 </CardContent>
               </Card>
               <Card className={styles.customCard}>
@@ -365,29 +411,40 @@ export function HeadlessOptions(props) {
                     <p>
                       Visual layout is accessible from rendered HTML or
                       structured JSON from the{" "}
-                      <Url href={`${previewURL}${toJSONPath}`} target="_blank">
+                      <Link
+                        href={`${previewURL}${toJSONPath}`}
+                        underline="none"
+                        color="secondary"
+                        target="_blank"
+                      >
                         {previewURL}
                         {toJSONPath}
-                      </Url>{" "}
+                      </Link>{" "}
                       endpoint via the object path [meta.layout.json] or
                       [meta.layout.html]. To use Visual Layout in your React
                       project, view the{" "}
-                      <Url
+                      <Link
+                        underline="none"
+                        color="secondary"
                         href="https://www.npmjs.com/package/@zesty-io/react-autolayout"
                         target="_blank"
                       >
                         <FontAwesomeIcon icon={faNpm} /> React Auto Layout
                         Package
-                      </Url>
+                      </Link>
                       .{" "}
                     </p>
 
                     <Divider />
                     <p>
                       Visual layout is controlled from the{" "}
-                      <Url href="https://parsley.zesty.io/pvl/demo.html">
+                      <Link
+                        href="https://parsley.zesty.io/pvl/demo.html"
+                        underline="none"
+                        color="secondary"
+                      >
                         Visual Layout Tool
-                      </Url>
+                      </Link>
                     </p>
                   </CardContent>
                 </Card>

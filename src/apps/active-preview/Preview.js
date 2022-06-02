@@ -8,7 +8,6 @@ import MobileScreenShareIcon from "@mui/icons-material/MobileScreenShare";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import { Url } from "@zesty-io/core/Url";
 import { CopyButton } from "@zesty-io/core/CopyButton";
 import { Notice } from "@zesty-io/core/Notice";
 
@@ -20,6 +19,7 @@ import {
   faMobileAlt,
   faEye,
 } from "@fortawesome/free-solid-svg-icons";
+import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 
 import { Meta } from "./components/Meta";
@@ -121,38 +121,41 @@ export function Preview(props) {
             />
             &nbsp;
             <figcaption>
-              <Url
-                className={styles.Link}
+              <Link
+                underline="none"
+                color="secondary"
                 href={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
                 target="_blank"
                 title="Open live link in standard browser window"
               >
                 ActivePreview
-              </Url>
+              </Link>
             </figcaption>
           </figure>
           <div className={styles.ActionInfo}>
             <div className={styles.Links}>
               {instance.domain && (
-                <Url
-                  className={styles.Link}
+                <Link
+                  underline="none"
+                  color="secondary"
                   href={`//${instance.domain}${route}`}
                   target="_blank"
                   title="Open live link in standard browser window"
                 >
                   <FontAwesomeIcon icon={faExternalLinkAlt} />
                   &nbsp;Live
-                </Url>
+                </Link>
               )}
-              <Url
-                className={styles.Link}
+              <Link
+                underline="none"
+                color="secondary"
                 href={`${domain}${route}`}
                 target="_blank"
                 title="Open preview link in standard browser window"
               >
                 <FontAwesomeIcon icon={faEye} />
                 &nbsp;Preview
-              </Url>
+              </Link>
             </div>
 
             <div className={styles.Url}>

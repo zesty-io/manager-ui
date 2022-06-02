@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
-import { Url } from "@zesty-io/core/Url";
+import Link from "@mui/material/Link";
 
 import { useSelector } from "react-redux";
 
@@ -18,7 +18,9 @@ export function InstantUrl(props) {
   return (
     <Fragment>
       {instantApiEnabled && (
-        <Url
+        <Link
+          underline="none"
+          color="secondary"
           target="_blank"
           title="Instant API"
           href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.item.meta.ZUID}.json`}
@@ -26,7 +28,7 @@ export function InstantUrl(props) {
           <FontAwesomeIcon icon={faBolt} />
           &nbsp;
           {`/-/instant/${props.item.meta.ZUID}.json`}
-        </Url>
+        </Link>
       )}
     </Fragment>
   );
