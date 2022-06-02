@@ -1,15 +1,16 @@
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDesktop, faWindowClose } from "@fortawesome/free-solid-svg-icons";
 
 import { actions } from "shell/store/ui";
-import { ToggleButton } from "@zesty-io/core/ToggleButton";
+
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import CloseIcon from "@mui/icons-material/Close";
+import DesktopWindowsIcon from "@mui/icons-material/DesktopWindows";
 
 import { PreviewUrl } from "../PreviewUrl";
 import { LiveUrl } from "../LiveUrl";
 
-import styles from "./DuoModeToggle.less";
 export function DuoModeToggle(props) {
   const dispatch = useDispatch();
 
@@ -52,23 +53,29 @@ export function DuoModeToggle(props) {
           </Fragment>
         )
       ) : (
-        <ToggleButton
+        <ToggleButtonGroup
           title="Duo Mode Toggle"
-          className={styles.ToggleButton}
-          name={props.name}
+          color="secondary"
           value={Number(ui.duoMode)}
-          offValue={<FontAwesomeIcon icon={faWindowClose} />}
-          onValue={<FontAwesomeIcon icon={faDesktop} />}
-          onChange={(val) => {
-            if (val == 1) {
+          exclusive
+          size="small"
+          onChange={(e, val) => {
+            if (val === 1) {
               dispatch(actions.setDuoMode(true));
               dispatch(actions.setContentActions(false));
-            } else {
+            } else if (val === 0) {
               dispatch(actions.setDuoMode(false));
               dispatch(actions.setContentActions(true));
             }
           }}
-        />
+        >
+          <ToggleButton value={0}>
+            <CloseIcon fontSize="small" />
+          </ToggleButton>
+          <ToggleButton value={1}>
+            <DesktopWindowsIcon fontSize="small" />
+          </ToggleButton>
+        </ToggleButtonGroup>
       )}
     </Fragment>
   );

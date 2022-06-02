@@ -10,9 +10,9 @@ import { CopyButton } from "@zesty-io/material";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBolt, faFileCode } from "@fortawesome/free-solid-svg-icons";
+import Link from "@mui/material/Link";
 
 import { AppLink } from "@zesty-io/core/AppLink";
-import { Url } from "@zesty-io/core/Url";
 import { Notice } from "@zesty-io/core/Notice";
 
 import { DifferActions } from "./components/DifferActions";
@@ -27,14 +27,16 @@ export const FileActions = memo(function FileActions(props) {
     <header className={styles.FileActions}>
       <div className={styles.FileMeta}>
         {props.contentModelZUID ? (
-          <Url
-            className={styles.FileLink}
+          <Link
+            underline="none"
+            color="secondary"
             href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.contentModelZUID}.json`}
             target="_blank"
             title="Preview JSON"
+            sx={{ m: 0, pr: 2, pl: 3.25, py: 0 }}
           >
             <FontAwesomeIcon icon={faBolt} />
-          </Url>
+          </Link>
         ) : (
           <FontAwesomeIcon className={styles.FileLink} icon={faFileCode} />
         )}

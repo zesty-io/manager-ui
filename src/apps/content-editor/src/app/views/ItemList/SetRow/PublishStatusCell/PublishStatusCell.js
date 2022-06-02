@@ -2,9 +2,12 @@ import { memo } from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock, faEye, faCircle } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faCircle } from "@fortawesome/free-solid-svg-icons";
 
-import { Url } from "@zesty-io/core/Url";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import ClockIcon from "@mui/icons-material/WatchLater";
+import Link from "@mui/material/Link";
+
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./PublishStatusCell.less";
@@ -40,24 +43,39 @@ export const PublishStatusCell = memo(function PublishStatusCell(props) {
     );
   } else {
     return (
-      <Url
-        className={cx(styles.PublishStatusCell)}
+      <Link
+        underline="none"
+        color="secondary"
         href={`${CONFIG.URL_PREVIEW_FULL}${props.item.web.path}`}
+        sx={{
+          alignItems: "center",
+          display: "flex",
+          justifyContent: "center",
+          // TODO why does this have to be 40px and not 5?
+          flexBasis: "40px",
+          flexGrow: 0,
+          flexShrink: 0,
+          m: 0,
+          borderBottom: "1px solid rgba(26, 32, 44, 0.12)",
+          "&:hover": {
+            backgroundColor: "#f7f7f7",
+          },
+        }}
         target="_blank"
         title="Opens item preview in a new tab"
       >
         {props.item &&
         props.item.scheduling &&
         props.item.scheduling.isScheduled ? (
-          <FontAwesomeIcon icon={faClock} className={styles.Scheduled} />
+          <ClockIcon fontSize="small" color="warning" />
         ) : props.item &&
           props.item.publishing &&
           props.item.publishing.isPublished ? (
-          <FontAwesomeIcon icon={faEye} className={styles.Published} />
+          <VisibilityIcon fontSize="small" color="success" />
         ) : (
-          <FontAwesomeIcon icon={faEye} className={styles.Unpublished} />
+          <VisibilityIcon fontSize="small" color="primary" />
         )}
-      </Url>
+      </Link>
     );
   }
 });

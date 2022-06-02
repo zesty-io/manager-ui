@@ -7,6 +7,15 @@ import zuid from "zuid";
 import { fetchFields } from "shell/store/fields";
 import { fetchItem, fetchItems, searchItems } from "shell/store/content";
 
+import Stack from "@mui/material/Stack";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import FormLabel from "@mui/material/FormLabel";
+import Tooltip from "@mui/material/Tooltip";
+import Box from "@mui/material/Box";
+
+import InfoIcon from "@mui/icons-material/InfoOutlined";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,
@@ -18,7 +27,6 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import { Modal } from "@zesty-io/core/Modal";
 import MediaApp from "../../../../../../media/src/app/MediaApp";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
 import { FieldTypeNumber } from "@zesty-io/core/FieldTypeNumber";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
@@ -402,20 +410,45 @@ export default function Field({
 
     case "yes_no":
       if (settings.options) {
-        const binaryFieldOpts = Object.values(settings.options);
-
         return (
-          <FieldTypeBinary
-            name={name}
-            label={FieldTypeLabel}
-            description={description}
-            tooltip={settings.tooltip}
-            required={required}
-            value={value}
-            onChange={onChange}
-            offValue={binaryFieldOpts[0]}
-            onValue={binaryFieldOpts[1]}
-          />
+          <>
+            <FormLabel sx={{ color: "primary.dark" }}>
+              <Stack
+                direction="row"
+                alignItems="center"
+                sx={{
+                  mb: 1,
+                }}
+              >
+                {settings.tooltip ? (
+                  <Tooltip
+                    placement="top-start"
+                    arrow
+                    title={settings.tooltip ? settings.tooltip : " "}
+                  >
+                    <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                  </Tooltip>
+                ) : (
+                  " "
+                )}
+
+                {FieldTypeLabel}
+              </Stack>
+            </FormLabel>
+            <ToggleButtonGroup
+              color="secondary"
+              size="small"
+              value={value}
+              exclusive
+              onChange={(e, val) => onChange(val, name)}
+            >
+              <ToggleButton value={0}>False </ToggleButton>
+              <ToggleButton value={1}>True </ToggleButton>
+            </ToggleButtonGroup>
+            <Box component="p" sx={{ mt: 1 }}>
+              {description}
+            </Box>
+          </>
         );
       } else {
         return (

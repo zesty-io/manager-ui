@@ -1,10 +1,10 @@
 import cx from "classnames";
 import moment from "moment";
 
-import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import { resolvePathPart } from "../../../../../store/files";
+import Link from "@mui/material/Link";
 
 import styles from "./GettingStarted.less";
 export function GettingStarted(props) {
@@ -25,17 +25,24 @@ export function GettingStarted(props) {
             <p className={styles.bodyText}>
               Parsley is the programming language of Zesty.io. It can be used to
               create the presentation layer of this instance. Use the{" "}
-              <Url href="https://parsley.zesty.io/" target="_blank">
+              <Link
+                underline="none"
+                color="secondary"
+                href="https://parsley.zesty.io/"
+                target="_blank"
+              >
                 <abbr title="Read–eval–print loop">REPL</abbr>
-              </Url>{" "}
+              </Link>{" "}
               as an introduction to Parsley or get started with the{" "}
-              <Url
+              <Link
+                underline="none"
+                color="secondary"
                 href="https://zesty.org/services/web-engine/introduction-to-parsley"
                 target="_blank"
                 title="Intro to Parsley"
               >
                 written documentation
-              </Url>
+              </Link>
               .
             </p>
           </div>
@@ -45,13 +52,15 @@ export function GettingStarted(props) {
             </h2>
             <p className={styles.bodyText}>
               Learn more about our{" "}
-              <Url
+              <Link
+                underline="none"
+                color="secondary"
                 href="https://zesty.org/services/web-engine/css-processing-flow"
                 target="_blank"
                 title="CSS & JS Processing Flow"
               >
                 preprocessing flows
-              </Url>
+              </Link>
               .
             </p>
           </div>

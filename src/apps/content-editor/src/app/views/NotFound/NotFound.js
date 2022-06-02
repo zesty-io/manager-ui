@@ -1,4 +1,4 @@
-import { Url } from "@zesty-io/core/Url";
+import Link from "@mui/material/Link";
 
 import styles from "./NotFound.less";
 export function NotFound(props) {
@@ -11,12 +11,14 @@ export function NotFound(props) {
           If an item is missing please contact support and provide the url;
         </p>
         <p className={styles.title}>
-          <Url
+          <Link
+            underline="none"
+            color="secondary"
             title={`Provide this URL: ${window.location.href} with your bug ticket`}
             href={window.location.href}
           >
             {window.location.href}
-          </Url>
+          </Link>
         </p>
       </main>
     </section>
