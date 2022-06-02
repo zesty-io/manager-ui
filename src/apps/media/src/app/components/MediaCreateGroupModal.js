@@ -32,7 +32,7 @@ export function MediaCreateGroupModal(props) {
       onClose={() => props.onClose()}
     >
       <ModalContent>
-        <form className={styles.SearchForm}>
+        <form className={styles.SearchForm} onSubmit={handleCreateGroup}>
           <input
             className={shared.Input}
             autoFocus
@@ -45,7 +45,7 @@ export function MediaCreateGroupModal(props) {
           <Button
             variant="contained"
             color="success"
-            onClick={handleCreateGroup}
+            type="submit"
             startIcon={<SaveIcon />}
           >
             Create

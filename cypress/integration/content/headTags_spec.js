@@ -5,6 +5,8 @@ describe("Head Tags", () => {
     cy.login();
     cy.goHome();
   });
+
+  //Force true: When multiple cypress test are running simultaneously, content lock modal will render blocking click events.
   it("creates and deletes new head tag", () => {
     cy.get("[data-cy=contentNavButton]").click();
     cy.get("#MainNavigation")
@@ -13,30 +15,39 @@ describe("Head Tags", () => {
 
     cy.get("[data-cy=contentNavButton]").click();
 
-    cy.get("[data-cy=head]").click();
+    cy.get("[data-cy=head]").click({ force: true });
 
-    cy.contains("Create Head Tag").click();
+    cy.contains("Create Head Tag").click({ force: true });
 
-    cy.get("[data-cy=tagCard]").last().find(".Select button").click();
+    cy.get("[data-cy=tagCard]")
+      .last()
+      .find(".Select button")
+      .click({ force: true });
 
-    cy.get("[data-cy=tagCard]").last().find('[data-value="script"]').click();
+    cy.get("[data-cy=tagCard]")
+      .last()
+      .find('[data-value="script"]')
+      .click({ force: true });
 
     cy.get("[data-cy=tagCard]")
       .last()
       .contains("Value")
       .find("input")
-      .clear()
+      .clear({ force: true })
       .type("Changing the value of content");
 
     cy.get("[data-cy=tagCard]")
       .last()
       .contains("Attribute")
       .find("input")
-      .clear()
+      .clear({ force: true })
       .type("newAttr");
 
     // Saves Head Tag
-    cy.get("[data-cy=tagCard]").last().find("#SaveItemButton").click();
+    cy.get("[data-cy=tagCard]")
+      .last()
+      .find("#SaveItemButton")
+      .click({ force: true });
     cy.contains("New head tag created");
 
     // Deletes Head Tag
@@ -44,7 +55,7 @@ describe("Head Tags", () => {
       .last()
       .contains("Delete Tag")
       .invoke("show")
-      .click();
+      .click({ force: true });
 
     // TODO: There is a bug in the application that automatically adds a new
     // draft head tag after saving first one

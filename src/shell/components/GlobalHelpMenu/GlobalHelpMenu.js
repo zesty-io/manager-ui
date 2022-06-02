@@ -2,10 +2,10 @@ import { useRef, useEffect } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComments, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+import EmailIcon from "@mui/icons-material/Email";
+import ContactSupportIcon from "@mui/icons-material/ContactSupport";
 
-import { Button } from "@zesty-io/core/Button";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { Url } from "@zesty-io/core/Url";
 
@@ -150,16 +150,23 @@ export default connect((state) => {
       <header>
         {props.instance.planID && (
           <Url target="_blank" href="mailto:support@zesty.io">
-            <Button className={styles.Button} kind="" title="Support">
-              <FontAwesomeIcon icon={faEnvelope} />
+            <Button
+              variant="contained"
+              title="Support"
+              startIcon={<EmailIcon />}
+            >
               support@zesty.io
             </Button>
           </Url>
         )}
 
         <Url target="_blank" href="https://chat.zesty.io">
-          <Button className={styles.Button} type="alt" title="Chat">
-            <FontAwesomeIcon icon={faComments} />
+          <Button
+            variant="contained"
+            color="warning"
+            title="Chat"
+            startIcon={<ContactSupportIcon />}
+          >
             chat.zesty.io
           </Button>
         </Url>

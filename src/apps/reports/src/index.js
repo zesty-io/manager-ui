@@ -1,7 +1,7 @@
 import { injectReducer, store } from "shell/store";
 import { logsInView } from "./store/logsInView";
-import AuditApp from "./views/app";
+import { ReportingApp } from "./app/ReportingApp";
 
 injectReducer(store, "logsInView", logsInView);
 
-export default AuditApp;
+export default ReportingApp;

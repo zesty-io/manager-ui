@@ -5,13 +5,12 @@ import { useHistory, useParams } from "react-router";
 import { createMember } from "shell/store/releaseMembers";
 import { fetchVersions } from "shell/store/contentVersions";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+import FastRewindIcon from "@mui/icons-material/FastRewind";
 
 import ContentSearch from "shell/components/ContentSearch";
 import { Select, Option } from "@zesty-io/core/Select";
 import { AppLink } from "@zesty-io/core/AppLink";
-import { Button } from "@zesty-io/core/Button";
 
 import { PublishAll } from "./components/PublishAll";
 import { DeleteRelease } from "./components/DeleteRelease";
@@ -40,8 +39,8 @@ export function Header({ plan }) {
   return (
     <header data-cy="ReleaseHeader" className={styles.Header}>
       <AppLink to="/release">
-        <Button className={styles.BackBtn}>
-          <FontAwesomeIcon icon={faArrowLeft} />
+        <Button variant="contained" className={styles.BackBtn}>
+          <FastRewindIcon fontSize="small" />
         </Button>
       </AppLink>
       <PublishAll />
