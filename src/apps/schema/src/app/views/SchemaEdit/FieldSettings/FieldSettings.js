@@ -21,10 +21,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import Link from "@mui/material/Link";
+import Stack from "@mui/material/Stack";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import FormLabel from "@mui/material/FormLabel";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
-import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 
 import { DropdownOptions } from "./DropdownOptions";
 import { ToggleOptions } from "./ToggleOptions";
@@ -34,6 +37,7 @@ import { ImageOptions } from "./ImageOptions";
 import { formatName } from "utility/formatName";
 
 import styles from "./FieldSettings.less";
+
 export default function FieldSettings(props) {
   const field = FIELD_TYPES.find(
     (field) => field.value === props.field.datatype
@@ -95,32 +99,49 @@ export default function FieldSettings(props) {
             }}
           />
 
-          <FieldTypeBinary
-            className={styles.Setting}
-            name="required"
-            label="Is this field required?"
-            offValue="No"
-            onValue="Yes"
-            value={Number(props.field.required)}
-            onChange={() =>
-              props.updateValue(!Boolean(props.field.required), "required")
-            }
-          />
+          <FormLabel>
+            <Stack
+              direction="row"
+              alignItems="center"
+              sx={{
+                my: 1,
+              }}
+            >
+              Is this field required?
+            </Stack>
+          </FormLabel>
+          <ToggleButtonGroup
+            color="secondary"
+            size="small"
+            value={props.field.required}
+            exclusive
+            onChange={(e, val) => props.updateValue(val, "required")}
+          >
+            <ToggleButton value={false}>No </ToggleButton>
+            <ToggleButton value={true}>Yes </ToggleButton>
+          </ToggleButtonGroup>
 
-          <FieldTypeBinary
-            className={styles.Setting}
-            name="list"
-            label="Show this value in the table listing view?"
-            offValue="No"
-            onValue="Yes"
-            value={Number(props.field.settings.list)}
-            onChange={() =>
-              props.updateFieldSetting(
-                !Boolean(props.field.settings.list),
-                "list"
-              )
-            }
-          />
+          <FormLabel>
+            <Stack
+              direction="row"
+              alignItems="center"
+              sx={{
+                my: 1,
+              }}
+            >
+              Show this value in the table listing view?
+            </Stack>
+          </FormLabel>
+          <ToggleButtonGroup
+            color="secondary"
+            size="small"
+            value={props.field.settings.list}
+            exclusive
+            onChange={(e, val) => props.updateFieldSetting(val, "list")}
+          >
+            <ToggleButton value={false}>No </ToggleButton>
+            <ToggleButton value={true}>Yes </ToggleButton>
+          </ToggleButtonGroup>
         </div>
         <div className={styles.Column}>
           <FieldTypeText
