@@ -10,6 +10,7 @@ describe("Content SEO & Meta", () => {
       "eq",
       "/content/6-a4d6e6f087-1jmlbx/7-b8da98dea8-1nwkc9/meta"
     );
+    // //Force true: When multiple cypress test are running simultaneously, content lock modal will render blocking click events.
     cy.get("[data-cy=meta]").click({ force: true });
     cy.get("header").find(".Select").first().click();
     cy.get('[data-value="es"]').click();
