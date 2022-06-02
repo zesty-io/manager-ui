@@ -8,8 +8,6 @@ import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MuiLink from "@mui/material/Link";
 
-import { Url } from "@zesty-io/core/Url";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,

@@ -30,7 +30,6 @@ import { Search } from "@zesty-io/core/Search";
 import { Loader } from "@zesty-io/core/Loader";
 import { Button } from "@zesty-io/core/Button";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { Input } from "@zesty-io/core/Input";
 
 import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
