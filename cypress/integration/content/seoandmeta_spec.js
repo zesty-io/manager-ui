@@ -17,7 +17,7 @@ describe("Content SEO & Meta", () => {
     cy.get("[data-cy=meta]").click({ force: true });
 
     // cy.get("[data-cy=itemParent]").contains("/es").should("exist");
-    cy.get("[data-cy=itemParent]").find(".Select").click();
+    cy.get("[data-cy=itemParent]").find(".Select").click({ force: true });
 
     cy.get(".Select li").then((list) => {
       expect(list.text()).contains("/es");
