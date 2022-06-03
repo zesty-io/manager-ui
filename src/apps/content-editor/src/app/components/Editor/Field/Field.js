@@ -410,6 +410,7 @@ export default function Field({
 
     case "yes_no":
       if (settings.options) {
+        const binaryFieldOpts = Object.values(settings.options);
         return (
           <>
             <FormLabel sx={{ color: "primary.dark" }}>
@@ -442,8 +443,12 @@ export default function Field({
               exclusive
               onChange={(e, val) => onChange(val, name)}
             >
-              <ToggleButton value={0}>No </ToggleButton>
-              <ToggleButton value={1}>Yes </ToggleButton>
+              <ToggleButton value={0}>
+                {binaryFieldOpts[0] || "No"}{" "}
+              </ToggleButton>
+              <ToggleButton value={1}>
+                {binaryFieldOpts[1] || "Yes"}{" "}
+              </ToggleButton>
             </ToggleButtonGroup>
             <Box component="p" sx={{ mt: 1 }}>
               {description}
