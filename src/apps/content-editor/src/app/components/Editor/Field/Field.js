@@ -442,8 +442,8 @@ export default function Field({
               exclusive
               onChange={(e, val) => onChange(val, name)}
             >
-              <ToggleButton value={0}>False </ToggleButton>
-              <ToggleButton value={1}>True </ToggleButton>
+              <ToggleButton value={0}>No </ToggleButton>
+              <ToggleButton value={1}>Yes </ToggleButton>
             </ToggleButtonGroup>
             <Box component="p" sx={{ mt: 1 }}>
               {description}
