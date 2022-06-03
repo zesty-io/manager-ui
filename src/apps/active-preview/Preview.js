@@ -160,9 +160,6 @@ export function Preview(props) {
                 value={`${domain}${route}`}
                 sx={{
                   mr: 1,
-                  svg: {
-                    mr: 1,
-                  },
                 }}
               >
                 URL
