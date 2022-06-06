@@ -15,7 +15,6 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
-import { Input } from "@zesty-io/core/Input";
 
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
