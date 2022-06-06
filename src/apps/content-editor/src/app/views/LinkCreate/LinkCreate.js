@@ -7,7 +7,7 @@ import AddIcon from "@mui/icons-material/Add";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
 import { Select, Option } from "@zesty-io/core/Select";
 import { Input } from "@zesty-io/core/Input";
@@ -191,11 +191,12 @@ export function LinkCreate() {
           )}
 
           <FieldTypeText
-            className={styles.Row}
+            sx={{ my: 2 }}
             label="Link title"
             name="metaTitle"
             value={state.metaTitle}
-            onChange={(value) => {
+            onChange={(evt) => {
+              const value = evt.target.value;
               setState({
                 ...state,
                 label: value,

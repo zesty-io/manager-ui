@@ -14,7 +14,7 @@ import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 
 import { Url } from "@zesty-io/core/Url";
@@ -104,7 +104,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
         <div className={styles.Meta}>
           <div className={styles.FieldsContainer}>
             <FieldTypeText
-              className={styles.Field}
+              sx={{ my: 2 }}
               name="filename"
               value={filename}
               label={
@@ -117,10 +117,12 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
               }
               placeholder={"Image Filename"}
               // Replaces all non-alphanumeric characters (excluding '.') with '-' to reflect the filename transformation done on the BE
-              onChange={(val) => setFilename(formatMediaFilename(val))}
+              onChange={(evt) =>
+                setFilename(formatMediaFilename(evt.target.value))
+              }
             />
             <FieldTypeText
-              className={styles.Field}
+              sx={{ my: 2 }}
               name="title"
               value={title}
               label={
@@ -135,7 +137,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
                   &nbsp;Alt Text
                 </label>
               }
-              onChange={(val) => setTitle(val)}
+              onChange={(evt) => setTitle(evt.target.value)}
             />
           </div>
 

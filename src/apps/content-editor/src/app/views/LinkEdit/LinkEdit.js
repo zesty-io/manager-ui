@@ -10,7 +10,7 @@ import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
 import { Input } from "@zesty-io/core/Input";
 
@@ -265,11 +265,12 @@ export default function LinkEdit() {
             )}
 
             <FieldTypeText
-              className={styles.Row}
+              sx={{ mt: 2 }}
               label="Link title"
               name="metaTitle"
               value={state.metaTitle}
-              onChange={(value) => {
+              onChange={(evt) => {
+                const value = evt.target.value;
                 setState({
                   ...state,
                   label: value,
