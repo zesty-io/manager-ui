@@ -3,6 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 
 import Button from "@mui/material/Button";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 import AddIcon from "@mui/icons-material/Add";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
@@ -204,28 +207,32 @@ export function LinkCreate() {
             }}
           />
 
-          <label className={styles.Checkboxes}>
-            <Input
-              type="checkbox"
-              name="targetBlank"
-              checked={state.targetBlank}
-              onClick={(evt) => {
-                onChange(evt.target.checked, "targetBlank");
-              }}
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  color="secondary"
+                  checked={state.targetBlank}
+                  onChange={(evt, val) =>
+                    setState({ ...state, targetBlank: val })
+                  }
+                />
+              }
+              label="target = _blank"
             />
-            target = _blank
-          </label>
-          <label className={styles.Checkboxes}>
-            <Input
-              type="checkbox"
-              name="relNoFollow"
-              checked={state.relNoFollow}
-              onClick={(evt) => {
-                onChange(evt.target.checked, "relNoFollow");
-              }}
+            <FormControlLabel
+              control={
+                <Checkbox
+                  color="secondary"
+                  checked={state.relNoFollow}
+                  onChange={(evt, val) =>
+                    setState({ ...state, relNoFollow: val })
+                  }
+                />
+              }
+              label="rel = nofollow"
             />
-            rel = nofollow
-          </label>
+          </FormGroup>
         </CardContent>
         <CardFooter>
           <Button
