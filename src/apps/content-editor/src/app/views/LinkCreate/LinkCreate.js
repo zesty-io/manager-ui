@@ -13,7 +13,6 @@ import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
 import { Select, Option } from "@zesty-io/core/Select";
-import { Input } from "@zesty-io/core/Input";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -161,7 +160,7 @@ export function LinkCreate() {
           </Select>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className={styles.CardContent}>
           <FieldTypeInternalLink
             className={styles.Row}
             name="parentZUID"
