@@ -174,7 +174,7 @@ describe("Content Specs", () => {
       it("Yes/No Field", () => {
         cy.get("#12-575f7c-trw1w3")
           .find("button")
-          .contains("True")
+          .contains("Yes")
           .click({ force: true });
       });
 
@@ -182,7 +182,7 @@ describe("Content Specs", () => {
       it("Yes/No Field: Custom Options", () => {
         cy.get("#12-8178cc-z37vq1")
           .find("button")
-          .contains("True")
+          .contains("Custom One")
           .click({ force: true });
       });
 
