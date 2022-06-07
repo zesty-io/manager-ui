@@ -8,8 +8,17 @@ import { PreviewMode } from "../../../components/Editor/PreviewMode";
 import { ActionsDrawer } from "./ActionsDrawer";
 
 import styles from "./Content.less";
+import { createSelector } from "reselect";
 export default function Content(props) {
-  const ui = useSelector((state) => state.ui);
+  // const ui = useSelector((state) => state.ui);
+  const contentActions = createSelector(
+    (state) => state.ui,
+    (ui) => ui.contentActions
+  );
+  const duoMode = createSelector(
+    (state) => state.ui,
+    (ui) => ui.duoMode
+  );
 
   return (
     <main className={styles.Content}>
@@ -35,9 +44,9 @@ export default function Content(props) {
       <div
         className={cx(
           styles.MainEditor,
-          ui.contentActions ? styles.ContentActionsOn : "",
-          ui.duoMode ? styles.DuoModeOn : "",
-          ui.duoMode && ui.contentActions ? styles.DuoAndActionsOn : ""
+          contentActions ? styles.ContentActionsOn : "",
+          duoMode ? styles.DuoModeOn : "",
+          duoMode && contentActions ? styles.DuoAndActionsOn : ""
         )}
       >
         <div className={styles.Editor}>
@@ -54,7 +63,7 @@ export default function Content(props) {
           />
         </div>
 
-        {ui.duoMode && (
+        {duoMode && (
           <PreviewMode
             dirty={props.item.dirty}
             version={props.item.meta.version}

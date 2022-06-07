@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import {
   Switch,
   Route,
@@ -61,10 +61,13 @@ const selectItemHeadTags = createSelector(
 export default function ItemEdit() {
   const dispatch = useDispatch();
   const history = useHistory();
-  const isMounted = useIsMounted();
+  // const isMounted = useIsMounted();
   const { modelZUID, itemZUID } = useParams();
   const item = useSelector((state) => state.content[itemZUID]);
-  const items = useSelector((state) => state.content);
+  // const items = useSelector((state) => state.content);
+
+  const items = {};
+
   const model = useSelector((state) => state.models[modelZUID]);
   const fields = useSelector((state) =>
     selectSortedModelFields(state, modelZUID)
@@ -100,23 +103,17 @@ export default function ItemEdit() {
     try {
       const lockResponse = await dispatch(checkLock(itemZUID));
       // If no one has a lock then give lock to current user
-      if (isMounted.current) {
-        if (!lockResponse.userZUID) {
-          dispatch(lock(itemZUID));
-          setLockState({ userZUID: user.ZUID });
-        } else {
-          setLockState(lockResponse);
-        }
+      if (!lockResponse.userZUID) {
+        dispatch(lock(itemZUID));
+        setLockState({ userZUID: user.ZUID });
+      } else {
+        setLockState(lockResponse);
       }
     } catch (err) {
       // If service is unavailable allow all users ownership
-      if (isMounted.current) {
-        setLockState({ userZUID: user.ZUID });
-      }
+      setLockState({ userZUID: user.ZUID });
     } finally {
-      if (isMounted.current) {
-        setCheckingLock(false);
-      }
+      setCheckingLock(false);
     }
   }
 
@@ -151,9 +148,7 @@ export default function ItemEdit() {
       console.error("ItemEdit:load:error", err);
       throw err;
     } finally {
-      if (isMounted.current) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
   }
 
@@ -171,54 +166,54 @@ export default function ItemEdit() {
     setLockState({ userZUID: user.ZUID });
   }
 
-  async function save() {
-    setSaving(true);
-    try {
-      const res = await dispatch(saveItem(itemZUID));
-      if (res.err === "MISSING_REQUIRED") {
+  const save = useCallback(() => {
+    return async function save() {
+      setSaving(true);
+      try {
+        const res = await dispatch(saveItem(itemZUID));
+        if (res.err === "MISSING_REQUIRED") {
+          dispatch(
+            notify({
+              message: `You are missing data in ${res.missingRequired.map(
+                (f) => f.label + " "
+              )}`,
+              kind: "error",
+            })
+          );
+          return;
+        }
+        if (res.status === 400) {
+          dispatch(
+            notify({
+              message: `Failed to save new version: ${res.error}`,
+              kind: "error",
+            })
+          );
+          return;
+        }
         dispatch(
           notify({
-            message: `You are missing data in ${res.missingRequired.map(
-              (f) => f.label + " "
-            )}`,
-            kind: "error",
+            message: `Saved a new ${
+              item && item.web.metaLinkText ? item.web.metaLinkText : ""
+            } (${
+              languages.find((lang) => lang.ID === item.meta.langID)?.code
+            }) version`,
+            kind: "save",
           })
         );
-        return;
-      }
-      if (res.status === 400) {
-        dispatch(
-          notify({
-            message: `Failed to save new version: ${res.error}`,
-            kind: "error",
-          })
-        );
-        return;
-      }
-      dispatch(
-        notify({
-          message: `Saved a new ${
-            item && item.web.metaLinkText ? item.web.metaLinkText : ""
-          } (${
-            languages.find((lang) => lang.ID === item.meta.langID)?.code
-          }) version`,
-          kind: "save",
-        })
-      );
-      // fetch new draft history
-      dispatch(fetchAuditTrailDrafting(itemZUID));
-    } catch (err) {
-      // we need to set the item to dirty again because the save failed
-      dispatch({
-        type: "MARK_ITEM_DIRTY",
-        itemZUID,
-      });
-    } finally {
-      if (isMounted.current) {
+        // fetch new draft history
+        dispatch(fetchAuditTrailDrafting(itemZUID));
+      } catch (err) {
+        // we need to set the item to dirty again because the save failed
+        dispatch({
+          type: "MARK_ITEM_DIRTY",
+          itemZUID,
+        });
+      } finally {
         setSaving(false);
       }
-    }
-  }
+    };
+  }, [itemZUID]);
 
   function discard() {
     dispatch({
@@ -269,7 +264,7 @@ export default function ItemEdit() {
 
           <section>
             <Switch>
-              <Route
+              {/* <Route
                 exact
                 path="/content/:modelZUID/:itemZUID/head"
                 render={({ match }) => {
@@ -290,7 +285,7 @@ export default function ItemEdit() {
                     />
                   );
                 }}
-              />
+              /> */}
               <Route
                 exact
                 path="/content/:modelZUID/:itemZUID/meta"
@@ -338,7 +333,7 @@ export default function ItemEdit() {
                     model={model}
                     itemZUID={itemZUID}
                     item={item}
-                    items={items}
+                    // items={items}
                     fields={fields}
                     user={user}
                     onSave={save}

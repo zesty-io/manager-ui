@@ -27,13 +27,24 @@ import { Select, Option } from "@zesty-io/core/Select";
 import ItemsFilter from "./ItemsFilter";
 import { collapseNavItem, hideNavItem } from "../../../store/navContent";
 
+import { createSelector } from "reselect";
+
 import styles from "./ContentNav.less";
 
 export function ContentNav(props) {
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
-  const ui = useSelector((state) => state.ui);
+  // const ui = useSelector((state) => state.ui);
+
+  const contentNav = createSelector(
+    (state) => state.ui,
+    (ui) => ui.contentNav
+  );
+  const contentNavHover = createSelector(
+    (state) => state.ui,
+    (ui) => ui.contentNavHover
+  );
 
   const [selected, setSelected] = useState(location.pathname);
   const [reorderOpen, setReorderOpen] = useState(false);
@@ -104,8 +115,8 @@ export function ContentNav(props) {
       onMouseLeave={handleMouseLeave}
       className={cx(
         styles.NavContainer,
-        ui.contentNavHover && !ui.contentNav ? styles.ContentNavHover : "",
-        ui.contentNav ? styles.ContentNavOpen : ""
+        contentNavHover && !contentNav ? styles.ContentNavHover : "",
+        contentNav ? styles.ContentNavOpen : ""
       )}
     >
       <div className={styles.Actions}>
@@ -149,10 +160,7 @@ export function ContentNav(props) {
         searchTerm={searchTerm}
       />
       <div
-        className={cx(
-          styles.NavWrap,
-          !ui.contentNav ? styles.NavWrapClosed : " "
-        )}
+        className={cx(styles.NavWrap, !contentNav ? styles.NavWrapClosed : " ")}
       >
         <div className={styles.NavTitle}>
           <h1>Content</h1>

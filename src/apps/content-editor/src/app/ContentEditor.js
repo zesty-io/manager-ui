@@ -21,6 +21,8 @@ import { LinkEdit } from "./views/LinkEdit";
 import { NotFound } from "./views/NotFound";
 import { CSVImport } from "./views/CSVImport";
 
+import { createSelector } from "@reduxjs/toolkit";
+
 // Vendor styles for codemirror, prosemirror and flatpickr
 import "@zesty-io/core/vendor.css";
 
@@ -28,7 +30,20 @@ import styles from "./ContentEditor.less";
 export default function ContentEditor() {
   const contentModels = useSelector((state) => state.models);
   const navContent = useSelector((state) => state.navContent);
-  const ui = useSelector((state) => state.ui);
+  // const ui = useSelector((state) => state.ui);
+  const contentNav = createSelector(
+    (state) => state.ui,
+    (ui) => ui.contentNav
+  );
+  const contentNavHover = createSelector(
+    (state) => state.ui,
+    (ui) => ui.contentNavHover
+  );
+  const openNav = createSelector(
+    (state) => state.ui,
+    (ui) => ui.openNav
+  );
+
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(true);
@@ -63,10 +78,8 @@ export default function ContentEditor() {
           <section
             className={cx(
               styles.ContentEditor,
-              ui.contentNav ? styles.ContentGridOpen : "",
-              ui.contentNavHover && !ui.contentNav
-                ? styles.ContentGridHover
-                : ""
+              contentNav ? styles.ContentGridOpen : "",
+              contentNavHover && !contentNav ? styles.ContentGridHover : ""
             )}
           >
             <ContentNav
@@ -79,7 +92,7 @@ export default function ContentEditor() {
             <div
               className={cx(
                 styles.Content,
-                ui.openNav ? styles.GlobalOpen : styles.GlobalClosed
+                openNav ? styles.GlobalOpen : styles.GlobalClosed
               )}
             >
               <div className={styles.ContentWrap}>
