@@ -39,8 +39,8 @@ import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
 import { FieldTypeEditor } from "@zesty-io/core/FieldTypeEditor";
 import { FieldTypeTinyMCE } from "@zesty-io/core/FieldTypeTinyMCE";
-import { FieldTypeOneToOne } from "@zesty-io/core/FieldTypeOneToOne";
 import { FieldTypeOneToMany } from "@zesty-io/core/FieldTypeOneToMany";
+import { FieldTypeOneToOne } from "@zesty-io/material";
 
 import styles from "./Field.less";
 import MediaStyles from "../../../../../../media/src/app/MediaAppModal.less";
@@ -153,6 +153,7 @@ function resolveRelatedOptions(
       return {
         filterValue: items[itemZUID].data[field.name],
         value: itemZUID,
+        inputLabel: items[itemZUID].data[field.name] || "",
         component: (
           <ResolvedOption
             modelZUID={modelZUID}
@@ -576,14 +577,21 @@ export default function Field({
       }, [allLanguages.length, relatedModelZUID, langID]);
 
       let oneToOneOptions = useMemo(() => {
-        return resolveRelatedOptions(
-          allFields,
-          allItems,
-          relatedFieldZUID,
-          relatedModelZUID,
-          langID,
-          value
-        );
+        return [
+          {
+            inputLabel: "- None -",
+            value: "0",
+            component: "- None -",
+          },
+          ...resolveRelatedOptions(
+            allFields,
+            allItems,
+            relatedFieldZUID,
+            relatedModelZUID,
+            langID,
+            value
+          ),
+        ];
       }, [
         Object.keys(allFields).length,
         Object.keys(allItems).length,
@@ -620,16 +628,48 @@ export default function Field({
 
       return (
         <FieldTypeOneToOne
-          className={styles.FieldTypeOneToOne}
           name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
+          label={
+            <Stack direction="row" alignItems="center">
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+
+              {FieldTypeLabel}
+            </Stack>
+          }
+          helperText={description}
           required={required}
-          value={value}
-          onChange={onChange}
+          value={
+            oneToOneOptions?.find((options) => options.value === value) || {
+              inputLabel: "- None -",
+              value: "0",
+              component: "- None -",
+            }
+          }
+          onChange={(_, option) => onChange(option.value, name)}
           options={oneToOneOptions}
           onOpen={onOneToOneOpen}
+          startAdornment={
+            value &&
+            value !== "0" && (
+              <AppLink to={`/content/${relatedModelZUID}/${value}`}>
+                <FontAwesomeIcon icon={faEdit} />
+              </AppLink>
+            )
+          }
+          endAdornment={
+            value &&
+            value !== "0" && <em>{getSelectedLang(allLanguages, langID)}</em>
+          }
         />
       );
 
