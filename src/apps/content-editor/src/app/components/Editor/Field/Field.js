@@ -627,10 +627,6 @@ export default function Field({
         });
       }
 
-      console.log("testing options", oneToOneOptions);
-
-      console.log("testing value", value);
-
       return (
         <FieldTypeOneToOne
           name={name}
