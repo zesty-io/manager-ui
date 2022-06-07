@@ -610,6 +610,7 @@ export default function Field({
         oneToOneOptions.unshift({
           filterValue: value,
           value: value,
+          inputLabel: `Selected item not found: ${value}`,
           component: (
             <span>
               <span onClick={(evt) => evt.stopPropagation()}>
@@ -625,6 +626,10 @@ export default function Field({
           ),
         });
       }
+
+      console.log("testing options", oneToOneOptions);
+
+      console.log("testing value", value);
 
       return (
         <FieldTypeOneToOne
