@@ -310,21 +310,21 @@ export default function LinkEdit() {
           <CardFooter className={styles.LinkEditActions}>
             <Button
               variant="contained"
-              color="success"
-              disabled={state.saving}
-              onClick={saveLink}
-              startIcon={<SaveIcon />}
-            >
-              Save Changes
-            </Button>
-            <Button
-              variant="contained"
               color="error"
               disabled={state.saving}
               onClick={() => setShowConfirmation(true)}
               startIcon={<DeleteIcon />}
             >
               Delete
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              disabled={state.saving}
+              onClick={saveLink}
+              startIcon={<SaveIcon />}
+            >
+              Save Changes
             </Button>
           </CardFooter>
         </Card>
