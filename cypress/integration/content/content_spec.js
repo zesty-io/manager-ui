@@ -182,7 +182,7 @@ describe("Content Specs", () => {
       it("Yes/No Field: Custom Options", () => {
         cy.get("#12-8178cc-z37vq1")
           .find("button")
-          .contains("Cypress Yes")
+          .contains("Custom One")
           .click({ force: true });
       });
 
