@@ -14,7 +14,7 @@ import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
 import { Input } from "@zesty-io/core/Input";
 
-import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
+import { ConfirmDialog } from "@zesty-io/material";
 
 import { closeTab } from "shell/store/ui";
 import { searchItems } from "shell/store/content";
@@ -325,8 +325,8 @@ export default function LinkEdit() {
 
       {showConfirmation && (
         <ConfirmDialog
-          isOpen={showConfirmation}
-          prompt="Are you sure you want to delete this link?"
+          open={showConfirmation}
+          title="Are you sure you want to delete this link?"
         >
           <Button
             variant="contained"
