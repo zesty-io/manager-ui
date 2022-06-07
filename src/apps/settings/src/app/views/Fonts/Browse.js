@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import AddIcon from "@mui/icons-material/Add";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 
 import { Search } from "@zesty-io/core/Search";
 import { Notice } from "@zesty-io/core/Notice";
@@ -343,11 +343,14 @@ export default connect((state) => {
           onKeyUp={(e) => onSearch(e.target.value)}
         />
         <FieldTypeText
+          sx={{
+            mt: "1.8em", // Follows nearby search field.
+          }}
+          fullWidth
           placeholder="Type something to preview"
-          className={styles.previewField}
           name="previewText"
           value={previewText}
-          onChange={(value) => setPreviewText(value)}
+          onChange={(evt) => setPreviewText(evt.target.value)}
         />
       </header>
       {renderFontsList()}

@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import SaveIcon from "@mui/icons-material/Save";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
@@ -89,6 +89,7 @@ export default connect((state) => {
   }
 
   function setValue(value, name) {
+    console.log("setValue", { value, name });
     setFieldValues({ ...fieldValues, [name]: value });
 
     if (dirtyFields.includes(name)) return;
@@ -292,11 +293,17 @@ export default connect((state) => {
       default:
         return (
           <FieldTypeText
+            sx={{
+              mt: 2.5, // for alignment with right-hand side
+            }}
             key={field.ZUID}
             label={field.name}
             name={field.referenceName}
             value={fieldValues[field.referenceName]}
-            onChange={setValue}
+            onChange={(evt) => {
+              console.log(evt);
+              setValue(evt.target.value, field.referenceName);
+            }}
             description={field.tips}
             maxLength={640}
           />

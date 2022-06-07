@@ -14,7 +14,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 import CircularProgress from "@mui/material/CircularProgress";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldLabel } from "@zesty-io/core/FieldLabel";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { Select, Option } from "@zesty-io/core/Select";
@@ -312,7 +312,9 @@ export default connect((state) => {
                     label={field.keyFriendly}
                     name={field.key}
                     value={fieldValues[field.key]}
-                    onChange={setValue}
+                    onChange={(evt) =>
+                      setValue(evt.target.value, evt.target.name)
+                    }
                     description={field.tips}
                     maxLength={640}
                   />

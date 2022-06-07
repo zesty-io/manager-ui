@@ -22,7 +22,7 @@ import SaveIcon from "@mui/icons-material/Save";
 
 import { Card, CardContent, CardFooter, CardHeader } from "@zesty-io/core/Card";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
 
 import styles from "./HeadTag.less";
@@ -171,10 +171,10 @@ export const HeadTag = (props) => {
                 name={`tag-${tag.ZUID}-${index}-attr`}
                 value={attr.key}
                 disabled={attr.key === "custom"}
-                onChange={(newKey) =>
+                onChange={(evt) =>
                   dispatch(
                     updateTagAttribute(tag.ZUID, index, {
-                      key: newKey,
+                      key: evt.target.value,
                       value: attr.value,
                     })
                   )
@@ -186,11 +186,11 @@ export const HeadTag = (props) => {
                 name={`tag-${tag.ZUID}-${index}-val`}
                 value={attr.value}
                 disabled={attr.key === "custom"}
-                onChange={(value) =>
+                onChange={(evt) =>
                   dispatch(
                     updateTagAttribute(tag.ZUID, index, {
                       key: attr.key,
-                      value: value,
+                      value: evt.target.value,
                     })
                   )
                 }

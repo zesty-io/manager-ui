@@ -25,7 +25,7 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import FormLabel from "@mui/material/FormLabel";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 
 import { Url } from "@zesty-io/core/Url";
@@ -76,7 +76,10 @@ export default function FieldSettings(props) {
               ? { value: props.field.label }
               : { defaultValue: props.field.label })}
             maxLength="200"
-            onChange={(val, key) => {
+            onChange={(evt) => {
+              console.log(evt);
+              const val = evt.target.value;
+              const key = evt.target.name;
               if (props.new && props.updateMultipleValues) {
                 props.updateMultipleValues({
                   [key]: val, // dynamic property key, name of field
