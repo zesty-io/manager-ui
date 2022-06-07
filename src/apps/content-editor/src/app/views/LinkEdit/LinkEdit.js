@@ -329,7 +329,7 @@ export default function LinkEdit() {
           title="Are you sure you want to delete this link?"
         >
           <Button
-            variant="contained"
+            variant="outlined"
             onClick={() => setShowConfirmation(false)}
             startIcon={<DoDisturbAltIcon />}
           >

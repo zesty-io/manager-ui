@@ -200,7 +200,7 @@ export function Footer(props) {
             code."
         >
           <Button
-            variant="contained"
+            variant="outlined"
             id="editCancelButton"
             onClick={() => setWarningIsOpen(false)}
             startIcon={<DoDisturbAltIcon />}

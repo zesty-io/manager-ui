@@ -65,7 +65,7 @@ function Footer(props) {
         title={`Are you sure you want to delete the model: ${props.model.label}?`}
       >
         <Button
-          variant="contained"
+          variant="outlined"
           id="deleteCancelButton"
           onClick={() => setIsOpen(false)}
           startIcon={<DoDisturbAltIcon />}

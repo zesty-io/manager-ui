@@ -66,7 +66,7 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
           ${props.metaTitle}`}
       >
         <Button
-          variant="contained"
+          variant="outlined"
           id="deleteCancelButton"
           onClick={() => setConfirmOpen(false)}
           startIcon={<DoDisturbAltIcon />}
