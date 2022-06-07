@@ -19,6 +19,8 @@ jobs:
         if: "github.ref != 'refs/heads/master'"
       - name: Checkout Repo
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
       - name: Auth with Gcloud
         uses: google-github-actions/auth@v0
         with:
