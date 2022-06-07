@@ -343,10 +343,6 @@ export default connect((state) => {
           onKeyUp={(e) => onSearch(e.target.value)}
         />
         <FieldTypeText
-          sx={{
-            mt: "1.8em", // Follows nearby search field.
-          }}
-          fullWidth
           placeholder="Type something to preview"
           name="previewText"
           value={previewText}

@@ -191,7 +191,6 @@ export function LinkCreate() {
           )}
 
           <FieldTypeText
-            sx={{ my: 2 }}
             label="Link title"
             name="metaTitle"
             value={state.metaTitle}

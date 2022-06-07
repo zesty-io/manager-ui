@@ -265,7 +265,6 @@ export default function LinkEdit() {
             )}
 
             <FieldTypeText
-              sx={{ mt: 2 }}
               label="Link title"
               name="metaTitle"
               value={state.metaTitle}

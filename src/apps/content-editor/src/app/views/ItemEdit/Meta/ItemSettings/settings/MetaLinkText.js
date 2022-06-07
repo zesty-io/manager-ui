@@ -12,7 +12,6 @@ export const MetaLinkText = memo(function MetaLinkText({
   return (
     <article className={styles.MetaLinkText} data-cy="metaLinkText">
       <FieldTypeText
-        sx={{ my: 2 }}
         name="metaLinkText"
         label={
           <label>

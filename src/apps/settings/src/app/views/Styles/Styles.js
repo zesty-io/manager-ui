@@ -293,9 +293,6 @@ export default connect((state) => {
       default:
         return (
           <FieldTypeText
-            sx={{
-              mt: 2.5, // for alignment with right-hand side
-            }}
             key={field.ZUID}
             label={field.name}
             name={field.referenceName}
