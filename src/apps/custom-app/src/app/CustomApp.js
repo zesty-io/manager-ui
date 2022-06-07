@@ -8,8 +8,9 @@ import { registerFrame } from "shell/store/apps";
 import { NotFound } from "shell/components/NotFound";
 
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
-import { Url } from "@zesty-io/core/Url";
 import { Search } from "@zesty-io/core/Search";
+
+import Link from "@mui/material/Link";
 
 import styles from "./CustomApp.less";
 export default function CustomApp() {
@@ -83,9 +84,13 @@ function InstallApp() {
           <CardContent>
             <ol className={styles.subheadline}>
               <li>
-                <Url href="https://github.com/zesty-io/app-custom-guide">
+                <Link
+                  color="secondary"
+                  underline="none"
+                  href="https://github.com/zesty-io/app-custom-guide"
+                >
                   Build an application
-                </Url>
+                </Link>
               </li>
               <li>Register an application</li>
               <li>Install an application</li>
