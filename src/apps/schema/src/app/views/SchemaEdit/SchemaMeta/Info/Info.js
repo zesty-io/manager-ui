@@ -15,7 +15,7 @@ import {
 import Link from "@mui/material/Link";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { AppLink } from "@zesty-io/core/AppLink";
-import { CopyButton } from "@zesty-io/core/CopyButton";
+import { CopyButton } from "@zesty-io/material";
 
 import styles from "./Info.less";
 
@@ -84,11 +84,7 @@ export default connect((state) => {
           </li>
           <li>
             <abbr title="Zesty Universal ID">ZUID</abbr>:&nbsp;
-            <CopyButton
-              kind="outlined"
-              size="compact"
-              value={props.model.ZUID}
-            />
+            <CopyButton size="small" value={props.model.ZUID} />
           </li>
           <li>
             Instant API:&nbsp;

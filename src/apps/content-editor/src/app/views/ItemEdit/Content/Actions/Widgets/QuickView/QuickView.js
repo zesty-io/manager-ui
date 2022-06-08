@@ -12,7 +12,7 @@ import {
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { AppLink } from "@zesty-io/core/AppLink";
-import { CopyButton } from "@zesty-io/core/CopyButton";
+import { CopyButton } from "@zesty-io/material";
 
 import { usePermission } from "shell/hooks/use-permissions";
 
@@ -58,11 +58,7 @@ export const QuickView = memo(function QuickView(props) {
           <ul>
             <li>
               <strong>ZUID:</strong>&nbsp;
-              <CopyButton
-                kind="outlined"
-                size="compact"
-                value={props.itemZUID}
-              />
+              <CopyButton size="small" value={props.itemZUID} />
             </li>
             <li>
               <strong>Language:</strong>&nbsp;
