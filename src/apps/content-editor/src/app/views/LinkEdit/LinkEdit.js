@@ -2,6 +2,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -12,7 +15,6 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
-import { Input } from "@zesty-io/core/Input";
 
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
@@ -277,39 +279,35 @@ export default function LinkEdit() {
                 });
               }}
             />
-            <label className={styles.Checkboxes}>
-              <Input
-                type="checkbox"
-                name="targetBlank"
-                checked={state.targetBlank}
-                onClick={(evt) => {
-                  onChange(evt.target.checked, "targetBlank");
-                }}
+
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    color="secondary"
+                    checked={state.targetBlank}
+                    onChange={(evt, val) =>
+                      setState({ ...state, targetBlank: val })
+                    }
+                  />
+                }
+                label="target = _blank"
               />
-              target = _blank
-            </label>
-            <label className={styles.Checkboxes}>
-              <Input
-                type="checkbox"
-                name="rel"
-                checked={state.relNoFollow}
-                onClick={(evt) => {
-                  onChange(evt.target.checked, "relNoFollow");
-                }}
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    color="secondary"
+                    checked={state.relNoFollow}
+                    onChange={(evt, val) =>
+                      setState({ ...state, relNoFollow: val })
+                    }
+                  />
+                }
+                label="rel = nofollow"
               />
-              rel = nofollow
-            </label>
+            </FormGroup>
           </CardContent>
           <CardFooter className={styles.LinkEditActions}>
-            <Button
-              variant="contained"
-              color="success"
-              disabled={state.saving}
-              onClick={saveLink}
-              startIcon={<SaveIcon />}
-            >
-              Save Changes
-            </Button>
             <Button
               variant="contained"
               color="error"
@@ -318,6 +316,15 @@ export default function LinkEdit() {
               startIcon={<DeleteIcon />}
             >
               Delete
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              disabled={state.saving}
+              onClick={saveLink}
+              startIcon={<SaveIcon />}
+            >
+              Save Changes
             </Button>
           </CardFooter>
         </Card>
