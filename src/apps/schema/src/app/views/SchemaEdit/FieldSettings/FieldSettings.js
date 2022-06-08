@@ -71,7 +71,9 @@ export default function FieldSettings(props) {
             className={styles.Setting}
             name="label"
             label="Field Label"
-            value={props.field.label}
+            {...(props.new
+              ? { value: props.field.name }
+              : { defaultValue: props.field.name })}
             maxLength="200"
             onChange={(evt) => {
               const val = evt.target.value;
@@ -91,7 +93,9 @@ export default function FieldSettings(props) {
             name="name"
             label="Field Name (Parsley Code Reference)"
             helperText="Can not contain spaces, uppercase or special characters."
-            value={props.field.name}
+            {...(props.new
+              ? { value: props.field.name }
+              : { defaultValue: props.field.name })}
             maxLength="50"
             onChange={(evt) => {
               props.updateValue(formatName(evt.target.value), "name");
