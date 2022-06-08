@@ -81,7 +81,7 @@ export function RedirectCreator(props) {
           exclusive
           onChange={(evt, val) => handleToggle(val)}
         >
-          <ToggleButton value={302}>302 David</ToggleButton>
+          <ToggleButton value={302}>302</ToggleButton>
           <ToggleButton value={301}>301</ToggleButton>
         </ToggleButtonGroup>
       </span>
