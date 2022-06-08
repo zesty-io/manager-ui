@@ -12,8 +12,8 @@ import {
   faCode,
   faEdit,
 } from "@fortawesome/free-solid-svg-icons";
+import Link from "@mui/material/Link";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
-import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { CopyButton } from "@zesty-io/core/CopyButton";
 
@@ -93,14 +93,16 @@ export default connect((state) => {
           <li>
             Instant API:&nbsp;
             {instantJSON && instantJSON.value === "1" ? (
-              <Url
+              <Link
+                underline="none"
+                color="secondary"
                 target="_blank"
                 title="Preview JSON"
                 href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.model.ZUID}.json`}
               >
                 <FontAwesomeIcon icon={faBolt} />
                 &nbsp;{`/-/instant/${props.model.ZUID}.json`}
-              </Url>
+              </Link>
             ) : (
               <AppLink to="/settings/instance/developer">
                 <FontAwesomeIcon icon={faCog} />

@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 
 import CircularProgress from "@mui/material/CircularProgress";
 import AddIcon from "@mui/icons-material/Add";
+import Link from "@mui/material/Link";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,8 +15,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
-
-import { Url } from "@zesty-io/core/Url";
 
 import { FieldSettings, FIELD_TYPES } from "../FieldSettings";
 
@@ -129,14 +128,16 @@ export function FieldAdd(props) {
               on what type of content to provide.
             </p>
             <p>
-              <Url
+              <Link
+                underline="none"
+                color="secondary"
                 href="https://zesty.org/services/web-engine/interface/schema/fields"
                 target="_blank"
                 title="Learn more about fields and their types"
               >
                 <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
                 &nbsp;Learn more about fields and their types.
-              </Url>
+              </Link>
             </p>
           </Fragment>
         )}

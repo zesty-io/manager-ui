@@ -12,12 +12,11 @@ import ToggleButton from "@mui/material/ToggleButton";
 import FormLabel from "@mui/material/FormLabel";
 import CircularProgress from "@mui/material/CircularProgress";
 import SaveIcon from "@mui/icons-material/Save";
+import Link from "@mui/material/Link";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
-
-import { Url } from "@zesty-io/core/Url";
 
 import { Notice } from "@zesty-io/core/Notice";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
@@ -188,9 +187,15 @@ export default connect((state) => {
 
         <div className={cx(styles.IframeWrapper, styles.Row)}>
           <h2>
-            <Url href={robotURL} target="_blank" title={robotURL}>
+            <Link
+              underline="none"
+              color="secondary"
+              href={robotURL}
+              target="_blank"
+              title={robotURL}
+            >
               {robotURL}
-            </Url>
+            </Link>
           </h2>
           <iframe className={styles.Iframe} src={iframeURL}></iframe>
         </div>
