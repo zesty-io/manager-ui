@@ -6,11 +6,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCheckCircle,
-  faCloudUploadAlt,
-  faSpinner,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { Notice } from "@zesty-io/core/Notice";
 
