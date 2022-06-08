@@ -315,7 +315,7 @@ export default connect((state) => {
                     onChange={(evt) =>
                       setValue(evt.target.value, evt.target.name)
                     }
-                    description={field.tips}
+                    helperText={field.tips}
                     maxLength={640}
                   />
                 </div>

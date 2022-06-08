@@ -245,7 +245,7 @@ export default function Field({
         <FieldTypeText
           name={name}
           label={FieldTypeLabel}
-          description={description}
+          helperText={description}
           tooltip={settings.tooltip}
           required={required}
           value={value}
@@ -258,7 +258,7 @@ export default function Field({
         <FieldTypeText
           name={name}
           label={FieldTypeLabel}
-          description={description}
+          helperText={description}
           tooltip={settings.tooltip}
           required={required}
           value={value}

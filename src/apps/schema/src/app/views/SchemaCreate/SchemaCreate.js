@@ -336,7 +336,7 @@ export default connect((state) => {
             <FieldTypeText
               name="label"
               label="Display Name"
-              description="This is what is shown to content editors"
+              helperText="This is what is shown to content editors"
               placeholder=""
               value={label}
               maxLength="100"
@@ -354,7 +354,7 @@ export default connect((state) => {
             <FieldTypeText
               name="name"
               label="Reference Name"
-              description="This is what is used to reference this model in Parsley"
+              helperText="This is what is used to reference this model in Parsley"
               placeholder=""
               value={name}
               maxLength="100"

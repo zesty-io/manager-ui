@@ -301,7 +301,7 @@ export default connect((state) => {
               console.log(evt);
               setValue(evt.target.value, field.referenceName);
             }}
-            description={field.tips}
+            helperText={field.tips}
             maxLength={640}
           />
         );
