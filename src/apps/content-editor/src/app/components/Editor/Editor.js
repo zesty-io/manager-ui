@@ -15,7 +15,6 @@ export default memo(function Editor({
   onSave,
   itemZUID,
 }) {
-  const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
   const firstTextField = fields.find((field) => field.datatype === "text");
   const firstContentField = fields.find(
