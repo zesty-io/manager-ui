@@ -67,14 +67,16 @@ export default function GlobalAccount(props) {
           </Link>
         </li>
         <li>
-          <Url
+          <Link
+            underline="none"
+            color="secondary"
             title={`${CONFIG.URL_ACCOUNTS}/logout`}
             href={`${CONFIG.URL_ACCOUNTS}/logout`}
             className={cx(styles.link, styles.logout)}
           >
             <FontAwesomeIcon icon={faSignOutAlt} />
             Logout
-          </Url>
+          </Link>
         </li>
       </menu>
     </section>

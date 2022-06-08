@@ -20,6 +20,7 @@ import {
   faCalendarAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
+import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
@@ -27,8 +28,6 @@ import FormLabel from "@mui/material/FormLabel";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
-
-import { Url } from "@zesty-io/core/Url";
 
 import { DropdownOptions } from "./DropdownOptions";
 import { ToggleOptions } from "./ToggleOptions";
@@ -254,13 +253,14 @@ export const FIELD_TYPES = [
       <Fragment>
         <p>
           Markdown fields provide an editor that allows using{" "}
-          <Url
+          <Link
             title="Learn more about Github Flavored Markdown"
+            color="secondary"
             target="_blank"
             href="https://github.github.com/gfm/"
           >
             Github Flavored Markdown
-          </Url>{" "}
+          </Link>{" "}
           syntax for styling and structuring of content. This field type is also
           able to be viewed as a WYSIWYG, Inline or HTML editor. Giving authors
           control over their experience.

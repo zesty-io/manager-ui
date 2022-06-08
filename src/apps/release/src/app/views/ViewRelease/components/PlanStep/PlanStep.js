@@ -6,13 +6,13 @@ import moment from "moment-timezone";
 
 import { updateMember, deleteMember } from "shell/store/releaseMembers";
 
+import Link from "@mui/material/Link";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { Select, Option } from "@zesty-io/core/Select";
 import { AppLink } from "@zesty-io/core/AppLink";
-import { Url } from "@zesty-io/core/Url";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faDatabase,
@@ -137,13 +137,15 @@ export function PlanStep(props) {
       <td>
         {/* Preview link should include specific selected version */}
         {item.web.path ? (
-          <Url
+          <Link
+            underline="none"
+            color="secondary"
             target="_blank"
             title={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${props.member.version}`}
             href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${props.member.version}`}
           >
             <FontAwesomeIcon icon={faEye} />
-          </Url>
+          </Link>
         ) : (
           <FontAwesomeIcon icon={faEyeSlash} />
         )}

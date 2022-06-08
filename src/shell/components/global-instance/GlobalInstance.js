@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { usePermission } from "shell/hooks/use-permissions";
 
 import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -18,7 +19,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Select, Option } from "@zesty-io/core/Select";
-import { Url } from "@zesty-io/core/Url";
 
 import { useDomain } from "shell/hooks/use-domain";
 import { notify } from "shell/store/notifications";
@@ -53,9 +53,15 @@ export default function GlobalInstance(props) {
     <section className={cx(styles.bodyText, styles.GlobalInstance)} ref={ref}>
       <menu className={styles.Actions}>
         {domain ? (
-          <Url href={domain} target="_blank" title="Open production domain">
+          <Link
+            underline="none"
+            color="secondary"
+            href={domain}
+            target="_blank"
+            title="Open production domain"
+          >
             <FontAwesomeIcon icon={faExternalLinkAlt} />
-          </Url>
+          </Link>
         ) : null}
 
         <button
@@ -86,14 +92,16 @@ export default function GlobalInstance(props) {
             />
           ))}
         </Select>
-        <Url
+        <Link
+          underline="none"
+          color="secondary"
           target="_blank"
           title={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}`}
           href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}`}
         >
           <FontAwesomeIcon icon={faEye} />
           &nbsp;View WebEngine Preview
-        </Url>
+        </Link>
         {instance.screenshotURL && (
           <img
             src={instance.screenshotURL}
@@ -139,7 +147,9 @@ export default function GlobalInstance(props) {
         <ul className={styles.Domains}>
           {instance.domains.map((domain) => (
             <li key={domain.domain}>
-              <Url
+              <Link
+                underline="none"
+                color="secondary"
                 title={`http://${domain.domain}`}
                 href={`http://${domain.domain}`}
                 target="_blank"
@@ -147,7 +157,7 @@ export default function GlobalInstance(props) {
                 <FontAwesomeIcon icon={faExternalLinkAlt} />
                 &nbsp;
                 {domain.domain}
-              </Url>
+              </Link>
             </li>
           ))}
         </ul>
