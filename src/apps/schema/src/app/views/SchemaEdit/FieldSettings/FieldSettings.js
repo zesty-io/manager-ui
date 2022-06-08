@@ -72,9 +72,7 @@ export default function FieldSettings(props) {
             className={styles.Setting}
             name="label"
             label="Field Label"
-            {...(props.new
-              ? { value: props.field.label }
-              : { defaultValue: props.field.label })}
+            value={props.field.label}
             maxLength="200"
             onChange={(evt) => {
               console.log(evt);
@@ -94,12 +92,10 @@ export default function FieldSettings(props) {
             className={styles.Setting}
             name="name"
             label="Field Name (Parsley Code Reference). Can not contain spaces, uppercase or special characters."
-            {...(props.new
-              ? { value: props.field.name }
-              : { defaultValue: props.field.name })}
+            value={props.field.name}
             maxLength="50"
-            onChange={(val, name) => {
-              props.updateValue(formatName(val), name);
+            onChange={(evt) => {
+              props.updateValue(formatName(evt.target.val), "name");
             }}
           />
 
@@ -153,8 +149,10 @@ export default function FieldSettings(props) {
             name="tooltip"
             maxLength="250"
             label="Tool tip displayed to content editors"
-            defaultValue={props.field.settings.tooltip}
-            onChange={props.updateFieldSetting}
+            value={props.field.settings.tooltip || ""}
+            onChange={(evt) =>
+              props.updateFieldSetting(evt.target.value, "tooltip")
+            }
           />
 
           <FieldTypeTextarea
