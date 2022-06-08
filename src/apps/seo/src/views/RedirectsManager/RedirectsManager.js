@@ -36,7 +36,11 @@ export default function RedirectManager(props) {
         redirectsTotal={Object.keys(props.redirects).length}
       />
 
-      <WithLoader condition={!loading} message="Loading Redirects">
+      <WithLoader
+        condition={!loading}
+        message="Loading Redirects"
+        height="calc(100vh - 172px)"
+      >
         {Object.keys(props.imports).length ? (
           <RedirectImportTable {...props} />
         ) : (
