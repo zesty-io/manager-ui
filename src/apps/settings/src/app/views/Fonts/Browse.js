@@ -2,9 +2,13 @@ import { useState, useEffect, useCallback } from "react";
 import { connect } from "react-redux";
 import debounce from "lodash/debounce";
 
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import AddIcon from "@mui/icons-material/Add";
+import Paper from "@mui/material/Paper";
 
 import { FieldTypeText } from "@zesty-io/material";
 
@@ -179,23 +183,26 @@ export default connect((state) => {
     }
   }
 
-  function selectFontVariant(font, e) {
+  function selectFontVariant(evt, val, font) {
     let newVariants;
-    if (e.target.checked) {
+    if (val) {
       if (Object.keys(variantsSelected).includes(font)) {
         newVariants = {
           ...variantsSelected,
-          [font]: [...variantsSelected[font], variantValidation(e.target.name)],
+          [font]: [
+            ...variantsSelected[font],
+            variantValidation(evt.target.name),
+          ],
         };
       } else {
         newVariants = {
           ...variantsSelected,
-          [font]: [variantValidation(e.target.name)],
+          [font]: [variantValidation(evt.target.name)],
         };
       }
     } else {
       const fontVariants = variantsSelected[font].filter(
-        (variant) => variant !== variantValidation(e.target.name)
+        (variant) => variant !== variantValidation(evt.target.name)
       );
 
       newVariants = {
@@ -221,13 +228,22 @@ export default connect((state) => {
                 <ul className={styles.FontVariants}>
                   {itemFont.variants.map((item, index) => (
                     <li key={`${itemFont.family}-${item}`}>
-                      <input
-                        type="checkbox"
-                        onChange={(e) => selectFontVariant(itemFont.family, e)}
-                        name={item}
-                        id={`${item}-${itemFont.family}-${index}`}
-                      />{" "}
-                      {item}
+                      <FormGroup>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              color="secondary"
+                              size="small"
+                              name={item}
+                              id={`${item}-${itemFont.family}-${index}`}
+                              onChange={(evt, val) =>
+                                selectFontVariant(evt, val, itemFont.family)
+                              }
+                            />
+                          }
+                          label={item}
+                        />
+                      </FormGroup>
                     </li>
                   ))}
                 </ul>

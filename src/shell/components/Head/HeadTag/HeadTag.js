@@ -148,6 +148,8 @@ export const HeadTag = (props) => {
           </Button>
         ) : (
           <Button
+            variant="contained"
+            color="error"
             title="Cancel"
             onClick={onCancel}
             type="error"
