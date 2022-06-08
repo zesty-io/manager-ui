@@ -14,6 +14,7 @@ import {
   faLink,
   faHome,
 } from "@fortawesome/free-solid-svg-icons";
+import { isEqual } from "lodash";
 
 const typeToIconMap = {
   templateset: faFile,
@@ -43,11 +44,13 @@ export const ui = createSlice({
   },
   reducers: {
     loadTabsSuccess(state, action) {
+      console.log("im in load tabs");
       const tabs = action.payload;
       state.tabs = tabs;
       state.loadedTabs = true;
     },
     setTabs(state, action) {
+      console.log("im in set tabs");
       state.tabs = action.payload;
     },
     loadedUI(state, action) {
@@ -241,6 +244,7 @@ export function loadTabs(instanceZUID) {
 }
 
 export function openTab({ path, prevPath }) {
+  console.log("im in open tabs");
   return (dispatch, getState) => {
     const state = getState();
     const parsedPath = parsePath(path);
@@ -266,6 +270,7 @@ export function openTab({ path, prevPath }) {
 }
 
 export function closeTab(path) {
+  console.log("im in close tabs");
   return (dispatch, getState) => {
     const state = getState();
     const removeTabIndex = state.ui.tabs.findIndex(
@@ -302,7 +307,14 @@ export function rebuildTabs() {
     const newTabs = state.ui.tabs.map((tab) =>
       createTab(state, parsePath(tab.pathname))
     );
-    dispatch(actions.setTabs(newTabs));
-    idb.set(`${state.instance.ZUID}:session:routes`, newTabs);
+    /* 
+      This function is called on every slice update so
+      we first determine if the tabs have changed before setting
+      a new set of tabs to the store
+    */
+    if (!isEqual(state.ui.tabs, newTabs)) {
+      dispatch(actions.setTabs(newTabs));
+      idb.set(`${state.instance.ZUID}:session:routes`, newTabs);
+    }
   };
 }
