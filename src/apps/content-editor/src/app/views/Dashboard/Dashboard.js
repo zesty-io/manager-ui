@@ -123,7 +123,7 @@ export default memo(function Dashboard() {
             image={faHistory}
             docsTitle={"Read Docs"}
             docsLink={"https://zesty.org/services/manager-ui/audit-trail"}
-            quickJump={"audit-trail"}
+            quickJump={"reports/audit-trail"}
           />
           <QuickJumps
             cardTitle={"Settings"}
