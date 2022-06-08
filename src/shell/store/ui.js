@@ -44,13 +44,11 @@ export const ui = createSlice({
   },
   reducers: {
     loadTabsSuccess(state, action) {
-      console.log("im in load tabs");
       const tabs = action.payload;
       state.tabs = tabs;
       state.loadedTabs = true;
     },
     setTabs(state, action) {
-      console.log("im in set tabs");
       state.tabs = action.payload;
     },
     loadedUI(state, action) {
@@ -244,7 +242,6 @@ export function loadTabs(instanceZUID) {
 }
 
 export function openTab({ path, prevPath }) {
-  console.log("im in open tabs");
   return (dispatch, getState) => {
     const state = getState();
     const parsedPath = parsePath(path);
@@ -270,7 +267,6 @@ export function openTab({ path, prevPath }) {
 }
 
 export function closeTab(path) {
-  console.log("im in close tabs");
   return (dispatch, getState) => {
     const state = getState();
     const removeTabIndex = state.ui.tabs.findIndex(
