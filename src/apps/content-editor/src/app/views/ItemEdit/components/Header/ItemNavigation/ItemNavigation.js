@@ -62,7 +62,15 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
         )}
         to={`/content/${modelZUID}/${itemZUID}/headless`}
       >
-        Headless <span className={styles.Hide}>Options</span>
+        Headless{" "}
+        <span
+          className={cx(
+            styles.Hide,
+            slug === "headless" ? styles.Selected : null
+          )}
+        >
+          Options
+        </span>
       </AppLink>
     </nav>
   );
