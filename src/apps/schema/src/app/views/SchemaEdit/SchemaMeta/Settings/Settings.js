@@ -14,7 +14,7 @@ import {
   CardContent,
   CardFooter,
 } from "@zesty-io/core/CollapsibleCard";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 
@@ -26,6 +26,7 @@ import styles from "./Settings.less";
 export default function Settings(props) {
   let history = useHistory();
   const update = (val, name) => {
+    console.log({ val, name });
     props.dispatch(updateModel(props.model.ZUID, name, val));
   };
 
@@ -36,14 +37,14 @@ export default function Settings(props) {
           name="label"
           label="Display label"
           value={props.model.label}
-          onChange={update}
+          onChange={(evt) => update(evt.target.value, "label")}
         />
 
         <FieldTypeText
           name="name"
           label="Parsley reference name (no spaces)"
           value={props.model.name}
-          onChange={update}
+          onChange={(evt) => update(evt.target.value, "name")}
         />
 
         <FieldTypeTextarea
