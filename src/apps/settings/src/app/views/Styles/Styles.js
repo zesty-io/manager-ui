@@ -89,7 +89,6 @@ export default connect((state) => {
   }
 
   function setValue(value, name) {
-    console.log("setValue", { value, name });
     setFieldValues({ ...fieldValues, [name]: value });
 
     if (dirtyFields.includes(name)) return;
@@ -298,7 +297,6 @@ export default connect((state) => {
             name={field.referenceName}
             value={fieldValues[field.referenceName]}
             onChange={(evt) => {
-              console.log(evt);
               setValue(evt.target.value, field.referenceName);
             }}
             helperText={field.tips}

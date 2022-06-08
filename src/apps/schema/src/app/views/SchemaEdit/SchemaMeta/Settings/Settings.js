@@ -26,7 +26,6 @@ import styles from "./Settings.less";
 export default function Settings(props) {
   let history = useHistory();
   const update = (val, name) => {
-    console.log({ val, name });
     props.dispatch(updateModel(props.model.ZUID, name, val));
   };
 

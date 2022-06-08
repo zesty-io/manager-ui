@@ -74,7 +74,6 @@ export default function FieldSettings(props) {
             value={props.field.label}
             maxLength="200"
             onChange={(evt) => {
-              console.log(evt);
               const val = evt.target.value;
               const key = evt.target.name;
               if (props.new && props.updateMultipleValues) {
