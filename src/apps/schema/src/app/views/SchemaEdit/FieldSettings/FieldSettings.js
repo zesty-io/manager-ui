@@ -91,11 +91,12 @@ export default function FieldSettings(props) {
           <FieldTypeText
             className={styles.Setting}
             name="name"
-            label="Field Name (Parsley Code Reference). Can not contain spaces, uppercase or special characters."
+            label="Field Name (Parsley Code Reference)"
+            helperText="Can not contain spaces, uppercase or special characters."
             value={props.field.name}
             maxLength="50"
             onChange={(evt) => {
-              props.updateValue(formatName(evt.target.val), "name");
+              props.updateValue(formatName(evt.target.value), "name");
             }}
           />
 
