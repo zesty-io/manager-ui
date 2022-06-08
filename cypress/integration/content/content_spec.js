@@ -286,19 +286,18 @@ describe("Content Specs", () => {
       });
 
       it("One to one Field", () => {
-        cy.get("#12-edee00-6zb866").find(".Select").click({ force: true });
-        //allow relationships to load
         cy.get("#12-edee00-6zb866")
-          .find(".Select")
-          .find('[data-value="7-480ab4-wg7x7j"]')
-          .last()
+          .find(".MuiAutocomplete-popupIndicator")
+          .click({ force: true });
+        //allow relationships to load
+        cy.get("[role=presentation]")
+          .find("[data-option-index=1]")
           .click({ force: true });
         // cy.get("#SaveItemButton").click({ force: true });
         // cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
         cy.get("#12-edee00-6zb866")
-          .find(".Select")
-          .find("span span")
-          .should("contain", "zesty.pw");
+          .find("input")
+          .should("have.value", "zesty.pw");
       });
       it("Saves Content updates", () => {
         cy.get("#SaveItemButton").click({ force: true });
