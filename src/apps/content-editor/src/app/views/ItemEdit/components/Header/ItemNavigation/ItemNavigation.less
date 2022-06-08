@@ -16,11 +16,16 @@
   .Selected {
     text-decoration: 2px underline @zesty-orange;
     text-underline-position: under;
-  }
-  .Hide {
-    display: none;
-    @media screen and (min-width: 2000px) {
-      display: inline-block;
+
+    span {
+      text-decoration: 2px underline @zesty-orange;
+      text-underline-position: under;
+    }
+    .Hide {
+      display: none;
+      @media screen and (min-width: 2000px) {
+        display: inline-block;
+      }
     }
   }
 }
