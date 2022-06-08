@@ -308,7 +308,9 @@ export function rebuildTabs() {
       we first determine if the tabs have changed before setting
       a new set of tabs to the store
     */
-    dispatch(actions.setTabs(newTabs));
-    idb.set(`${state.instance.ZUID}:session:routes`, newTabs);
+    if (!isEqual(state.ui.tabs, newTabs)) {
+      dispatch(actions.setTabs(newTabs));
+      idb.set(`${state.instance.ZUID}:session:routes`, newTabs);
+    }
   };
 }
