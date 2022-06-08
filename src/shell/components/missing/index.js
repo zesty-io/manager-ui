@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 
-import { Url } from "@zesty-io/core/Url";
+import Link from "@mui/material/Link";
 
 export default connect()(function Welcome() {
   return (
@@ -10,9 +10,14 @@ export default connect()(function Welcome() {
       </h1>
       <h2 style={{ textAlign: "center", fontSize: "26px", marginTop: "16px" }}>
         If it seems like something is missing please let us know at{" "}
-        <Url title="Support" href="mailto:support@zesty.io">
+        <Link
+          title="Support"
+          href="mailto:support@zesty.io"
+          color="secondary"
+          underline="none"
+        >
           support@zesty.io
-        </Url>
+        </Link>
       </h2>
     </section>
   );

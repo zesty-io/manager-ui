@@ -19,6 +19,7 @@ import {
   faListAlt,
   faEye,
 } from "@fortawesome/free-solid-svg-icons";
+import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 
 import Button from "@mui/material/Button";
@@ -32,7 +33,6 @@ import { Search } from "@zesty-io/core/Search";
 import { Loader } from "@zesty-io/core/Loader";
 
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { Url } from "@zesty-io/core/Url";
 
 import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
@@ -404,13 +404,15 @@ const ListOption = (props) => {
       {/* path */}
       {props.opt?.web?.path && (
         <p className={styles.bodyText}>
-          <Url
+          <Link
+            underline="none"
+            color="secondary"
             href={`${CONFIG.URL_PREVIEW_FULL}${props.opt.web.path}`}
             target="_blank"
           >
             <FontAwesomeIcon icon={faEye} />
             &nbsp;{props.opt.web.path}
-          </Url>
+          </Link>
         </p>
       )}
 

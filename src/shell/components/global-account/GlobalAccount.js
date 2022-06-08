@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { CopyButton } from "@zesty-io/core/CopyButton";
-import { Url } from "@zesty-io/core/Url";
 import Link from "@mui/material/Link";
 
 import styles from "./GlobalAccount.less";
@@ -67,14 +66,16 @@ export default function GlobalAccount(props) {
           </Link>
         </li>
         <li>
-          <Url
+          <Link
+            underline="none"
+            color="secondary"
             title={`${CONFIG.URL_ACCOUNTS}/logout`}
             href={`${CONFIG.URL_ACCOUNTS}/logout`}
             className={cx(styles.link, styles.logout)}
           >
             <FontAwesomeIcon icon={faSignOutAlt} />
             Logout
-          </Url>
+          </Link>
         </li>
       </menu>
     </section>
