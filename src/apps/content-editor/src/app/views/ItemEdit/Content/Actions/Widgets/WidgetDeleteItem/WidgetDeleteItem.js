@@ -12,7 +12,6 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
 import { deleteItem } from "shell/store/content";
@@ -25,7 +24,7 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
 
   return (
     <Fragment>
-      <Accordion>
+      <Accordion sx={{ m: "16px !important" }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"

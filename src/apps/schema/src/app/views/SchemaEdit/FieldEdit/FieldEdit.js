@@ -17,7 +17,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
+
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
@@ -37,7 +37,7 @@ export function FieldEdit(props) {
   const [originalFieldName, setOriginalFieldName] = useState(props.field.name);
 
   return (
-    <Accordion>
+    <Accordion sx={{ m: "16px !important" }}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1a-content"
@@ -45,7 +45,7 @@ export function FieldEdit(props) {
       >
         <Typography sx={{ display: "flex", alignItems: "center" }}>
           {" "}
-          {Header(props)}
+          <Header {...props} />
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
@@ -69,7 +69,7 @@ export function FieldEdit(props) {
   );
 }
 
-function Header(props) {
+export function Header(props) {
   let history = useHistory();
 
   return (

@@ -29,7 +29,7 @@ export const Unpublish = memo(function Unpublish(props) {
   };
 
   return (
-    <Accordion>
+    <Accordion sx={{ m: "16px !important" }}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1a-content"

@@ -123,7 +123,7 @@ ${
   }
 
   return (
-    <Accordion>
+    <Accordion sx={{ m: "16px !important" }}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1a-content"
