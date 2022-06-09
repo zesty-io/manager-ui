@@ -649,12 +649,9 @@ export default function Field({
           }
           helperText={description}
           required={required}
+          placeholder={"Select relationship..."}
           value={
-            oneToOneOptions?.find((options) => options.value === value) || {
-              inputLabel: "- None -",
-              value: "0",
-              component: "- None -",
-            }
+            oneToOneOptions?.find((options) => options.value === value) || null
           }
           onChange={(_, option) => onChange(option.value, name)}
           options={oneToOneOptions}
