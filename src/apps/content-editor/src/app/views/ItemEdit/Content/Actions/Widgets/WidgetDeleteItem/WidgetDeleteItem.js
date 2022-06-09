@@ -12,15 +12,6 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-
-// import {
-//   CollapsibleCard,
-//   Card,
-//   CardContent,
-//   CardFooter,
-// } from "@zesty-io/core/CollapsibleCard";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
@@ -40,32 +31,30 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography>Delete Content</Typography>
+          <Typography sx={{ display: "flex", alignItems: "center" }}>
+            {" "}
+            <DeleteIcon fontSize="small" /> Delete Content
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Card>
-            <CardContent>
-              <p>
-                Delete this content? Removing it from all locations throughout
-                your site and making it unavailable to API requests.
-              </p>
-            </CardContent>
-            <CardFooter>
-              <Button
-                variant="contained"
-                color="error"
-                type="warn"
-                id="DeleteItemButton"
-                onClick={() => setConfirmOpen(true)}
-                disabled={deleting}
-                startIcon={
-                  deleting ? <CircularProgress size="20px" /> : <DeleteIcon />
-                }
-              >
-                Delete
-              </Button>
-            </CardFooter>
-          </Card>
+          <Typography>
+            Delete this content? Removing it from all locations throughout your
+            site and making it unavailable to API requests.
+          </Typography>
+
+          <Button
+            variant="contained"
+            color="error"
+            type="warn"
+            id="DeleteItemButton"
+            onClick={() => setConfirmOpen(true)}
+            disabled={deleting}
+            startIcon={
+              deleting ? <CircularProgress size="20px" /> : <DeleteIcon />
+            }
+          >
+            Delete
+          </Button>
         </AccordionDetails>
       </Accordion>
 

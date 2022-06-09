@@ -9,6 +9,11 @@ import CircularProgress from "@mui/material/CircularProgress";
 import SaveIcon from "@mui/icons-material/Save";
 import PauseCircleIcon from "@mui/icons-material/PauseCircle";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
@@ -32,27 +37,35 @@ export function FieldEdit(props) {
   const [originalFieldName, setOriginalFieldName] = useState(props.field.name);
 
   return (
-    <CollapsibleCard
-      className={styles.Card}
-      header={Header(props)}
-      open={props.field.isOpen}
-    >
-      <FieldSettings
-        className={cx(props.field.deletedAt ? styles.Disabled : null)}
-        updateValue={(value, name) => {
-          props.dispatch(updateField(props.field.ZUID, name, value));
-        }}
-        updateFieldSetting={(value, name) => {
-          props.dispatch(updateFieldSetting(props.field.ZUID, name, value));
-        }}
-        field={props.field}
-      />
-      <Footer
-        {...props}
-        originalFieldName={originalFieldName}
-        setOriginalFieldName={setOriginalFieldName}
-      />
-    </CollapsibleCard>
+    <Accordion>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel1a-content"
+        id="panel1a-header"
+      >
+        <Typography sx={{ display: "flex", alignItems: "center" }}>
+          {" "}
+          {Header(props)}
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <FieldSettings
+          className={cx(props.field.deletedAt ? styles.Disabled : null)}
+          updateValue={(value, name) => {
+            props.dispatch(updateField(props.field.ZUID, name, value));
+          }}
+          updateFieldSetting={(value, name) => {
+            props.dispatch(updateFieldSetting(props.field.ZUID, name, value));
+          }}
+          field={props.field}
+        />
+        <Footer
+          {...props}
+          originalFieldName={originalFieldName}
+          setOriginalFieldName={setOriginalFieldName}
+        />
+      </AccordionDetails>
+    </Accordion>
   );
 }
 
