@@ -6,15 +6,22 @@ import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 import CircularProgress from "@mui/material/CircularProgress";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
-import {
-  CollapsibleCard,
-  CardContent,
-  CardFooter,
-} from "@zesty-io/core/CollapsibleCard";
+// import {
+//   CollapsibleCard,
+//   Card,
+//   CardContent,
+//   CardFooter,
+// } from "@zesty-io/core/CollapsibleCard";
+import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
 import { deleteItem } from "shell/store/content";
@@ -27,38 +34,41 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
 
   return (
     <Fragment>
-      <CollapsibleCard
-        id="WidgetDeleteItem"
-        className={cx("pageDetailWidget", "Delete")}
-        header={
-          <span>
-            <FontAwesomeIcon icon={faTrashAlt} />
-            &nbsp;Delete Content
-          </span>
-        }
-      >
-        <CardContent>
-          <p>
-            Delete this content? Removing it from all locations throughout your
-            site and making it unavailable to API requests.
-          </p>
-        </CardContent>
-        <CardFooter>
-          <Button
-            variant="contained"
-            color="error"
-            type="warn"
-            id="DeleteItemButton"
-            onClick={() => setConfirmOpen(true)}
-            disabled={deleting}
-            startIcon={
-              deleting ? <CircularProgress size="20px" /> : <DeleteIcon />
-            }
-          >
-            Delete
-          </Button>
-        </CardFooter>
-      </CollapsibleCard>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+        >
+          <Typography>Delete Content</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Card>
+            <CardContent>
+              <p>
+                Delete this content? Removing it from all locations throughout
+                your site and making it unavailable to API requests.
+              </p>
+            </CardContent>
+            <CardFooter>
+              <Button
+                variant="contained"
+                color="error"
+                type="warn"
+                id="DeleteItemButton"
+                onClick={() => setConfirmOpen(true)}
+                disabled={deleting}
+                startIcon={
+                  deleting ? <CircularProgress size="20px" /> : <DeleteIcon />
+                }
+              >
+                Delete
+              </Button>
+            </CardFooter>
+          </Card>
+        </AccordionDetails>
+      </Accordion>
+
       <ConfirmDialog
         isOpen={confirmOpen}
         prompt={`Are you sure you want to delete the item:
