@@ -29,9 +29,11 @@ describe("Head Tags", () => {
       .find('[data-value="script"]')
       .click({ force: true });
 
+    //cy.get("[data-cy=tagCard]:last-child")
     cy.get("[data-cy=tagCard]")
       .last()
       .contains("Value")
+      .parent()
       .find("input")
       .clear({ force: true })
       .type("Changing the value of content");
@@ -39,6 +41,7 @@ describe("Head Tags", () => {
     cy.get("[data-cy=tagCard]")
       .last()
       .contains("Attribute")
+      .parent()
       .find("input")
       .clear({ force: true })
       .type("newAttr");
