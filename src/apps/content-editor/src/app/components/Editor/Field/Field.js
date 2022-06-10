@@ -432,9 +432,7 @@ export default function Field({
               ) : (
                 " "
               )}
-              <FormLabel sx={{ color: "primary.dark" }}>
-                {FieldTypeLabel}
-              </FormLabel>
+              <FormLabel>{FieldTypeLabel}</FormLabel>
             </Stack>
             <ToggleButtonGroup
               color="secondary"
