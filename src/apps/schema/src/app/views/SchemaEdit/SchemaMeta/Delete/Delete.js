@@ -1,6 +1,7 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { useHistory } from "react-router-dom";
 
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
@@ -20,19 +21,16 @@ export default function Delete(props) {
   const history = useHistory();
 
   return (
-    <Fragment>
-      <Accordion sx={{ m: "16px !important" }}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1a-content"
-        >
+    <Box sx={{ m: 2 }}>
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography sx={{ display: "flex", alignItems: "center" }}>
             {" "}
             <DeleteIcon fontSize="small" /> Delete Model
           </Typography>
         </AccordionSummary>
         <AccordionDetails
-          sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
+          sx={{ display: "flex", flexDirection: "column", gap: 2 }}
         >
           <Typography>
             Deleting a model is a permanent action that can not be undone. By
@@ -90,6 +88,6 @@ export default function Delete(props) {
           Delete
         </Button>
       </ConfirmDialog>
-    </Fragment>
+    </Box>
   );
 }

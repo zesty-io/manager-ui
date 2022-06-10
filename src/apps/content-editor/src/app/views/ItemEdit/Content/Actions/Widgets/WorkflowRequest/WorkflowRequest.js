@@ -123,86 +123,87 @@ ${
   }
 
   return (
-    <Accordion sx={{ m: "16px !important" }}>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1a-content"
-      >
-        <Typography sx={{ display: "flex", alignItems: "center" }}>
-          {" "}
-          <EmailIcon fontSize="small" /> Workflow Request
-        </Typography>
-      </AccordionSummary>
-      <AccordionDetails
-        sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
-      >
-        <Box component="div">
-          <Typography component="h3" variant="h6">
-            Select team members
+    <Box sx={{ m: 2 }}>
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography sx={{ display: "flex", alignItems: "center" }}>
+            {" "}
+            <EmailIcon fontSize="small" /> Workflow Request
           </Typography>
-          <Box component="ul">
-            {users.map((user) => (
-              <Box component="li" key={user.ZUID} sx={{ listStyle: "none" }}>
-                <FormGroup>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        color="secondary"
-                        size="small"
-                        name={user.email}
-                        onChange={(evt, val) => handleSelectUser(evt, val)}
-                      />
-                    }
-                    label={`${user.firstName} ${user.lastName}`}
-                  />
-                </FormGroup>
-              </Box>
-            ))}
-          </Box>
-
-          <Typography component="h3" variant="h6" sx={{ my: 2 }}>
-            Select fields for review
-          </Typography>
-          <Box component="ul">
-            {fields.map((field) => (
-              <Box component="li" key={field.ZUID} sx={{ listStyle: "none" }}>
-                <FormGroup>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        color="secondary"
-                        size="small"
-                        name={field.name}
-                        onChange={(evt, val) => handleSelectField(evt, val)}
-                      />
-                    }
-                    label={field.label}
-                  />
-                </FormGroup>
-              </Box>
-            ))}
-          </Box>
-
-          <Textarea
-            className={styles.TextArea}
-            name="message"
-            placeholder="Workflow request message"
-            value={message}
-            onChange={(evt) => setMessage(evt.target.value)}
-          />
-        </Box>
-
-        <Button
-          variant="contained"
-          id="WorkflowRequestSendButton"
-          onClick={handleSend}
-          disabled={sending}
-          startIcon={sending ? <CircularProgress size="20px" /> : <SaveIcon />}
-          sx={{ alignSelf: "flex-start" }}
+        </AccordionSummary>
+        <AccordionDetails
+          sx={{ display: "flex", flexDirection: "column", gap: 2 }}
         >
-          Send Email
-        </Button>
-      </AccordionDetails>
-    </Accordion>
+          <Box component="div">
+            <Typography component="h3" variant="h6">
+              Select team members
+            </Typography>
+            <Box component="ul">
+              {users.map((user) => (
+                <Box component="li" key={user.ZUID} sx={{ listStyle: "none" }}>
+                  <FormGroup>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          color="secondary"
+                          size="small"
+                          name={user.email}
+                          onChange={(evt, val) => handleSelectUser(evt, val)}
+                        />
+                      }
+                      label={`${user.firstName} ${user.lastName}`}
+                    />
+                  </FormGroup>
+                </Box>
+              ))}
+            </Box>
+
+            <Typography component="h3" variant="h6" sx={{ my: 2 }}>
+              Select fields for review
+            </Typography>
+            <Box component="ul">
+              {fields.map((field) => (
+                <Box component="li" key={field.ZUID} sx={{ listStyle: "none" }}>
+                  <FormGroup>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          color="secondary"
+                          size="small"
+                          name={field.name}
+                          onChange={(evt, val) => handleSelectField(evt, val)}
+                        />
+                      }
+                      label={field.label}
+                    />
+                  </FormGroup>
+                </Box>
+              ))}
+            </Box>
+
+            <Textarea
+              className={styles.TextArea}
+              name="message"
+              placeholder="Workflow request message"
+              value={message}
+              onChange={(evt) => setMessage(evt.target.value)}
+            />
+          </Box>
+
+          <Button
+            variant="contained"
+            id="WorkflowRequestSendButton"
+            onClick={handleSend}
+            disabled={sending}
+            startIcon={
+              sending ? <CircularProgress size="20px" /> : <SaveIcon />
+            }
+            sx={{ alignSelf: "flex-start" }}
+          >
+            Send Email
+          </Button>
+        </AccordionDetails>
+      </Accordion>
+    </Box>
   );
 });

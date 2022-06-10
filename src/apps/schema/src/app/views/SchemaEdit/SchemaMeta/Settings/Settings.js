@@ -30,47 +30,46 @@ export default function Settings(props) {
   };
 
   return (
-    <Accordion sx={{ m: "16px !important" }}>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1a-content"
-      >
-        <Typography sx={{ display: "flex", alignItems: "center" }}>
-          {" "}
-          <SettingsIcon fontSize="small" /> Model Settings
-        </Typography>
-      </AccordionSummary>
-      <AccordionDetails
-        sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
-      >
-        <FieldTypeText
-          name="label"
-          label="Display label"
-          value={props.model.label}
-          onChange={update}
-        />
+    <Box sx={{ m: 2 }}>
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography sx={{ display: "flex", alignItems: "center" }}>
+            {" "}
+            <SettingsIcon fontSize="small" /> Model Settings
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails
+          sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+        >
+          <FieldTypeText
+            name="label"
+            label="Display label"
+            value={props.model.label}
+            onChange={update}
+          />
 
-        <FieldTypeText
-          name="name"
-          label="Parsley reference name (no spaces)"
-          value={props.model.name}
-          onChange={update}
-        />
+          <FieldTypeText
+            name="name"
+            label="Parsley reference name (no spaces)"
+            value={props.model.name}
+            onChange={update}
+          />
 
-        <FieldTypeTextarea
-          className={styles.FieldTypeTextarea}
-          name="description"
-          label="Description"
-          value={props.model.description}
-          maxLength={500}
-          onChange={update}
-        />
+          <FieldTypeTextarea
+            className={styles.FieldTypeTextarea}
+            name="description"
+            label="Description"
+            value={props.model.description}
+            maxLength={500}
+            onChange={update}
+          />
 
-        <Parent parentZUID={props.model.parentZUID} onChange={update} />
+          <Parent parentZUID={props.model.parentZUID} onChange={update} />
 
-        <Footer {...props} />
-      </AccordionDetails>
-    </Accordion>
+          <Footer {...props} />
+        </AccordionDetails>
+      </Accordion>
+    </Box>
   );
 }
 
@@ -110,7 +109,7 @@ function Footer(props) {
   return (
     <Box>
       <Button
-        variant="contained"
+        variant="outlined"
         onClick={duplicate}
         disabled={loading}
         startIcon={

@@ -3,6 +3,7 @@ import cx from "classnames";
 import { useHistory } from "react-router-dom";
 
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -23,19 +24,16 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
   const [deleting, setDeleting] = useState(false);
 
   return (
-    <Fragment>
-      <Accordion sx={{ m: "16px !important" }}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1a-content"
-        >
+    <Box sx={{ m: 2 }}>
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography sx={{ display: "flex", alignItems: "center" }}>
             {" "}
             <DeleteIcon fontSize="small" /> Delete Content
           </Typography>
         </AccordionSummary>
         <AccordionDetails
-          sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
+          sx={{ display: "flex", flexDirection: "column", gap: 2 }}
         >
           <Typography>
             Delete this content? Removing it from all locations throughout your
@@ -97,6 +95,6 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
           Delete
         </Button>
       </ConfirmDialog>
-    </Fragment>
+    </Box>
   );
 });

@@ -1,5 +1,6 @@
 import { memo, Fragment, useState } from "react";
 
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Accordion from "@mui/material/Accordion";
@@ -29,37 +30,36 @@ export const Unpublish = memo(function Unpublish(props) {
   };
 
   return (
-    <Accordion sx={{ m: "16px !important" }}>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1a-content"
-      >
-        <Typography sx={{ display: "flex", alignItems: "center" }}>
-          {" "}
-          <UnpublishedIcon fontSize="small" /> Unpublish
-        </Typography>
-      </AccordionSummary>
-      <AccordionDetails
-        sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
-      >
-        <Typography>
-          By unpublishing this content it will no longer be served if the URL is
-          requested. The URL will return a 404 not found response.
-        </Typography>
-
-        <Button
-          variant="contained"
-          id="UnpublishItemButton"
-          onClick={handleUnpublish}
-          disabled={loading || !isPublished}
-          startIcon={
-            loading ? <CircularProgress size="20px" /> : <LinkOffIcon />
-          }
-          sx={{ alignSelf: "flex-start" }}
+    <Box sx={{ m: 2 }}>
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography sx={{ display: "flex", alignItems: "center" }}>
+            {" "}
+            <UnpublishedIcon fontSize="small" /> Unpublish
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails
+          sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
         >
-          Unpublish
-        </Button>
-      </AccordionDetails>
-    </Accordion>
+          <Typography>
+            By unpublishing this content it will no longer be served if the URL
+            is requested. The URL will return a 404 not found response.
+          </Typography>
+
+          <Button
+            variant="contained"
+            id="UnpublishItemButton"
+            onClick={handleUnpublish}
+            disabled={loading || !isPublished}
+            startIcon={
+              loading ? <CircularProgress size="20px" /> : <LinkOffIcon />
+            }
+            sx={{ alignSelf: "flex-start" }}
+          >
+            Unpublish
+          </Button>
+        </AccordionDetails>
+      </Accordion>
+    </Box>
   );
 });
