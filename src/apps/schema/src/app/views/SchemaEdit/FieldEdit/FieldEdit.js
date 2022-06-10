@@ -41,7 +41,6 @@ export function FieldEdit(props) {
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1a-content"
         onClick={() => {
-          console.log("test");
           history.push(
             `/schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`
           );
@@ -76,11 +75,6 @@ export function FieldEdit(props) {
             variant="contained"
             draggable="true"
             onClick={(evt) => {
-              console.log(
-                "🚀 ~ file: FieldEdit.js ~ line 78 ~ FieldEdit ~ evt",
-                evt
-              );
-
               // Prevent the card toggle
               evt.preventDefault();
               evt.stopPropagation();
