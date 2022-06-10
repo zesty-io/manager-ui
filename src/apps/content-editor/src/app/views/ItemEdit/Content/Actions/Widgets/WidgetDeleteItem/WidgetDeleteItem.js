@@ -13,7 +13,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
+import { ConfirmDialog } from "@zesty-io/material";
 
 import { deleteItem } from "shell/store/content";
 import { closeTab } from "shell/store/ui";
@@ -58,12 +58,12 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
       </Accordion>
 
       <ConfirmDialog
-        isOpen={confirmOpen}
-        prompt={`Are you sure you want to delete the item:
+        open={confirmOpen}
+        title={`Are you sure you want to delete the item:
           ${props.metaTitle}`}
       >
         <Button
-          variant="contained"
+          variant="outlined"
           id="deleteCancelButton"
           onClick={() => setConfirmOpen(false)}
           startIcon={<DoDisturbAltIcon />}

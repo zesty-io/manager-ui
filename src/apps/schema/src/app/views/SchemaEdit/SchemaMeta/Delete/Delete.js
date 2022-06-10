@@ -11,7 +11,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
+import { ConfirmDialog } from "@zesty-io/material";
 
 import { notify } from "shell/store/notifications";
 import { deleteModel } from "shell/store/models";
@@ -49,11 +49,11 @@ export default function Delete(props) {
         </AccordionDetails>
       </Accordion>
       <ConfirmDialog
-        isOpen={isOpen}
-        prompt={`Are you sure you want to delete the model: ${props.model.label}?`}
+        open={isOpen}
+        title={`Are you sure you want to delete the model: ${props.model.label}?`}
       >
         <Button
-          variant="contained"
+          variant="outlined"
           id="deleteCancelButton"
           onClick={() => setIsOpen(false)}
           startIcon={<DoDisturbAltIcon />}
