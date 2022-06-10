@@ -127,19 +127,22 @@ ${
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1a-content"
-        id="panel1a-header"
       >
         <Typography sx={{ display: "flex", alignItems: "center" }}>
           {" "}
           <EmailIcon fontSize="small" /> Workflow Request
         </Typography>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
+      >
         <Box component="div">
-          <h3 className={styles.subheadline}>Select team members</h3>
-          <ul>
+          <Typography component="h3" variant="h6">
+            Select team members
+          </Typography>
+          <Box component="ul">
             {users.map((user) => (
-              <li className={styles.Checkboxes} key={user.ZUID}>
+              <Box component="li" key={user.ZUID} sx={{ listStyle: "none" }}>
                 <FormGroup>
                   <FormControlLabel
                     control={
@@ -153,14 +156,16 @@ ${
                     label={`${user.firstName} ${user.lastName}`}
                   />
                 </FormGroup>
-              </li>
+              </Box>
             ))}
-          </ul>
+          </Box>
 
-          <h3 className={styles.subheadline}>Select fields for review</h3>
-          <ul>
+          <Typography component="h3" variant="h6" sx={{ my: 2 }}>
+            Select fields for review
+          </Typography>
+          <Box component="ul">
             {fields.map((field) => (
-              <li className={styles.Checkboxes} key={field.ZUID}>
+              <Box component="li" key={field.ZUID} sx={{ listStyle: "none" }}>
                 <FormGroup>
                   <FormControlLabel
                     control={
@@ -174,9 +179,10 @@ ${
                     label={field.label}
                   />
                 </FormGroup>
-              </li>
+              </Box>
             ))}
-          </ul>
+          </Box>
+
           <Textarea
             className={styles.TextArea}
             name="message"
@@ -193,6 +199,7 @@ ${
           onClick={handleSend}
           disabled={sending}
           startIcon={sending ? <CircularProgress size="20px" /> : <SaveIcon />}
+          sx={{ alignSelf: "flex-start" }}
         >
           Send Email
         </Button>

@@ -15,8 +15,6 @@ import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 import { notify } from "shell/store/notifications";
 import { deleteModel } from "shell/store/models";
 
-import styles from "./Delete.less";
-
 export default function Delete(props) {
   const [isOpen, setIsOpen] = useState(false);
   const history = useHistory();
@@ -27,7 +25,6 @@ export default function Delete(props) {
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
-          id="panel1a-header"
         >
           <Typography sx={{ display: "flex", alignItems: "center" }}>
             {" "}

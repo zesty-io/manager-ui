@@ -33,14 +33,15 @@ export const Unpublish = memo(function Unpublish(props) {
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1a-content"
-        id="panel1a-header"
       >
         <Typography sx={{ display: "flex", alignItems: "center" }}>
           {" "}
           <UnpublishedIcon fontSize="small" /> Unpublish
         </Typography>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
+      >
         <Typography>
           By unpublishing this content it will no longer be served if the URL is
           requested. The URL will return a 404 not found response.
@@ -54,6 +55,7 @@ export const Unpublish = memo(function Unpublish(props) {
           startIcon={
             loading ? <CircularProgress size="20px" /> : <LinkOffIcon />
           }
+          sx={{ alignSelf: "flex-start" }}
         >
           Unpublish
         </Button>

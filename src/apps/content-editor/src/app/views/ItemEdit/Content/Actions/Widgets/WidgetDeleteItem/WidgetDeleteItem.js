@@ -28,14 +28,15 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
-          id="panel1a-header"
         >
           <Typography sx={{ display: "flex", alignItems: "center" }}>
             {" "}
             <DeleteIcon fontSize="small" /> Delete Content
           </Typography>
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails
+          sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
+        >
           <Typography>
             Delete this content? Removing it from all locations throughout your
             site and making it unavailable to API requests.
@@ -51,6 +52,7 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
             startIcon={
               deleting ? <CircularProgress size="20px" /> : <DeleteIcon />
             }
+            sx={{ alignSelf: "flex-start" }}
           >
             Delete
           </Button>

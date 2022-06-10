@@ -41,7 +41,6 @@ export function FieldEdit(props) {
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1a-content"
-        id="panel1a-header"
       >
         <Typography sx={{ display: "flex", alignItems: "center" }}>
           {" "}
