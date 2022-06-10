@@ -417,6 +417,7 @@ export default function Field({
             <Stack
               direction="row"
               alignItems="center"
+              spacing={1}
               sx={{
                 mb: 1,
               }}
@@ -427,7 +428,7 @@ export default function Field({
                   arrow
                   title={settings.tooltip ? settings.tooltip : " "}
                 >
-                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                  <InfoIcon fontSize="small" />
                 </Tooltip>
               ) : (
                 " "
