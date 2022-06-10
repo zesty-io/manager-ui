@@ -16,7 +16,8 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
 
 import { FieldSettings } from "../FieldSettings";
