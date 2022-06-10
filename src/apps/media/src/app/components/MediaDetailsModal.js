@@ -18,7 +18,9 @@ import Link from "@mui/material/Link";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { FieldTypeText } from "@zesty-io/material";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { CopyButton } from "@zesty-io/core/CopyButton";
+
+import { Url } from "@zesty-io/core/Url";
+import { CopyButton } from "@zesty-io/material";
 import { Input } from "@zesty-io/core/Input";
 import { Option, Select } from "@zesty-io/core/Select";
 
@@ -229,20 +231,17 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
               </>
             )}
             <CopyButton
-              className={styles.OTFLink}
-              kind="outlined"
               value={`${genImageURL()}`}
+              sx={{
+                justifyContent: "flex-start",
+              }}
             />
           </div>
 
           <ul className={styles.info}>
             <li>
               <span>ZUID:</span>
-              <CopyButton
-                kind="outlined"
-                size="compact"
-                value={props.file.id}
-              />
+              <CopyButton size="small" value={props.file.id} />
             </li>
             <li>
               <span>Created at:</span>
