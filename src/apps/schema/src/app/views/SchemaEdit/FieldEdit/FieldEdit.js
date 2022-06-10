@@ -35,13 +35,6 @@ export function FieldEdit(props) {
   const [originalFieldName, setOriginalFieldName] = useState(props.field.name);
   let history = useHistory();
 
-  function handleHistory() {
-    console.log;
-    // history.push(
-    //   `/schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`
-    // );
-  }
-
   return (
     <Accordion sx={{ m: "16px !important" }}>
       <AccordionSummary
