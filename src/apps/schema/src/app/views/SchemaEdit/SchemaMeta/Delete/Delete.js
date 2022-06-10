@@ -31,7 +31,9 @@ export default function Delete(props) {
             <DeleteIcon fontSize="small" /> Delete Model
           </Typography>
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails
+          sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
+        >
           <Typography>
             Deleting a model is a permanent action that can not be undone. By
             doing so all content items created from this model will be deleted
@@ -42,6 +44,7 @@ export default function Delete(props) {
             color="error"
             onClick={() => setIsOpen(true)}
             startIcon={<DeleteIcon />}
+            sx={{ alignSelf: "flex-start" }}
           >
             Delete Model
           </Button>

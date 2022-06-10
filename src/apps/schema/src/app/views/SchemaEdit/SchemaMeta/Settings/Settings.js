@@ -2,6 +2,7 @@ import { Fragment, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 
 import CircularProgress from "@mui/material/CircularProgress";
 import SaveIcon from "@mui/icons-material/Save";
@@ -39,7 +40,9 @@ export default function Settings(props) {
           <SettingsIcon fontSize="small" /> Model Settings
         </Typography>
       </AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
+      >
         <FieldTypeText
           name="label"
           label="Display label"
@@ -105,7 +108,7 @@ function Footer(props) {
   };
 
   return (
-    <Fragment>
+    <Box>
       <Button
         variant="contained"
         onClick={duplicate}
@@ -113,6 +116,7 @@ function Footer(props) {
         startIcon={
           loading ? <CircularProgress size="20px" /> : <FileCopyIcon />
         }
+        sx={{ alignSelf: "flex-start", mr: 2 }}
       >
         Duplicate Model
       </Button>
@@ -155,9 +159,10 @@ function Footer(props) {
             });
         }}
         startIcon={loading ? <CircularProgress size="20px" /> : <SaveIcon />}
+        sx={{ alignSelf: "flex-start" }}
       >
         Save Model
       </Button>
-    </Fragment>
+    </Box>
   );
 }

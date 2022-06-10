@@ -195,7 +195,6 @@ ${
         <Button
           variant="contained"
           id="WorkflowRequestSendButton"
-          className={styles.Button}
           onClick={handleSend}
           disabled={sending}
           startIcon={sending ? <CircularProgress size="20px" /> : <SaveIcon />}
