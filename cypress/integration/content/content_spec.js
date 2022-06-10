@@ -267,21 +267,26 @@ describe("Content Specs", () => {
           .should("have.value", "12");
       });
 
-      // Skipping failing test in preparation for CI.
-      it.skip("One to many Field", () => {
-        cy.get("#12-269a28-1bkm34").find(".Select").click();
-        cy.get('[data-value="7-480ab4-wg7x7j"]')
-          .last()
-          .click({ timeout: 3000 });
-        cy.get("#SaveItemButton").click();
-        cy.contains("Saved a new ", { timeout: 3000 }).should("exist");
-        // testing tag deletion
-        cy.get('[href="/content/6-675028-84dq4s/7-480ab4-wg7x7j"]').should(
+      it("One to many Field", () => {
+        // Adds new relationship
+        cy.get("#12-269a28-1bkm34")
+          .find(".MuiAutocomplete-popupIndicator")
+          .click({ force: true });
+        cy.get("[role=presentation]")
+          .find("[data-option-index=1]")
+          .click({ force: true });
+        cy.get('[href="/content/6-e3d0e0-965qp6/7-a8e5ffa4f6-3ptqs4"]').should(
           "exist"
         );
-        cy.get('#12-269a28-1bkm34 [data-icon="times-circle"]').first().click();
-        cy.contains("Select tags to associate them with your item.").should(
-          "exist"
+        // Removes new relationship
+        cy.get("#12-269a28-1bkm34")
+          .find(".MuiAutocomplete-popupIndicator")
+          .click({ force: true });
+        cy.get("[role=presentation]")
+          .find("[data-option-index=1]")
+          .click({ force: true });
+        cy.get('[href="/content/6-e3d0e0-965qp6/7-a8e5ffa4f6-3ptqs4"]').should(
+          "not.exist"
         );
       });
 
