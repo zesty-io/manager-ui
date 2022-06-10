@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import cx from "classnames";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -14,9 +15,6 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
@@ -35,17 +33,71 @@ import styles from "./FieldEdit.less";
 import { notify } from "shell/store/notifications";
 export function FieldEdit(props) {
   const [originalFieldName, setOriginalFieldName] = useState(props.field.name);
+  let history = useHistory();
+
+  function handleHistory() {
+    console.log;
+    // history.push(
+    //   `/schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`
+    // );
+  }
 
   return (
     <Accordion sx={{ m: "16px !important" }}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1a-content"
+        onClick={() => {
+          console.log("test");
+          history.push(
+            `/schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`
+          );
+        }}
       >
-        <Typography sx={{ display: "flex", alignItems: "center" }}>
-          {" "}
-          <Header {...props} />
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: "16px",
+            width: "100%",
+          }}
+        >
+          <Box component="h1" data-cy="fieldLabel">
+            <Box component="span" className={styles.Caret} sx={{ mr: 1 }}>
+              {props.type.icon ? (
+                props.type.icon
+              ) : (
+                <FontAwesomeIcon
+                  icon={faExclamationTriangle}
+                  title={`The ${props.field.datatype} field type is no longer supported`}
+                />
+              )}
+            </Box>
+            {props.field.label}
+          </Box>
+          <Box component="small" sx={{ marginLeft: "auto" }}>
+            {props.field.datatype}
+          </Box>
+
+          <Button
+            variant="contained"
+            draggable="true"
+            onClick={(evt) => {
+              console.log(
+                "🚀 ~ file: FieldEdit.js ~ line 78 ~ FieldEdit ~ evt",
+                evt
+              );
+
+              // Prevent the card toggle
+              evt.preventDefault();
+              evt.stopPropagation();
+            }}
+            onDragStart={props.onDragStart}
+            sx={{ cursor: "move" }}
+          >
+            <ZoomOutMapIcon fontSize="small" sx={{ mr: "0 !important" }} />
+          </Button>
+        </Box>
       </AccordionSummary>
       <AccordionDetails>
         <FieldSettings
@@ -65,49 +117,6 @@ export function FieldEdit(props) {
         />
       </AccordionDetails>
     </Accordion>
-  );
-}
-
-export function Header(props) {
-  let history = useHistory();
-
-  return (
-    <div
-      className={styles.Header}
-      onClick={() => {
-        history.push(
-          `/schema/${props.field.contentModelZUID}/field/${props.field.ZUID}`
-        );
-      }}
-    >
-      <span className={styles.Caret}>
-        {props.type.icon ? (
-          props.type.icon
-        ) : (
-          <FontAwesomeIcon
-            icon={faExclamationTriangle}
-            title={`The ${props.field.datatype} field type is no longer supported`}
-          />
-        )}
-      </span>
-      <h1 data-cy="fieldLabel" className={styles.Title}>
-        {props.field.label}
-      </h1>
-      <small className={styles.Type}>{props.field.datatype}</small>
-      <Button
-        variant="contained"
-        draggable="true"
-        onClick={(evt) => {
-          // Prevent the card toggle
-          evt.preventDefault();
-          evt.stopPropagation();
-        }}
-        onDragStart={props.onDragStart}
-        sx={{ cursor: "move" }}
-      >
-        <ZoomOutMapIcon fontSize="small" sx={{ mr: "0 !important" }} />
-      </Button>
-    </div>
   );
 }
 
