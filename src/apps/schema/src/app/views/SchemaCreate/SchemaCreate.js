@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
 
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
@@ -151,9 +152,9 @@ export default connect((state) => {
   };
 
   return (
-    <section className={styles.SchemaCreate}>
+    <Box sx={{ m: 2 }}>
       {/* {props.user.first_time && (
-        <Card className={styles.Card}>
+        <Card >
           <CardHeader>
             <h1 className={styles.display}>
               Welcome to your new instance. Lets get started by creating your
@@ -172,9 +173,9 @@ export default connect((state) => {
         </Card>
       )} */}
 
-      <Card className={styles.Card}>
+      <Card>
         <CardHeader title="You are creating a new content model"></CardHeader>
-        <CardContent className={styles.CardContent}>
+        <CardContent sx={{ display: "flex", flexWrap: "wrap" }}>
           <section className={cx(styles.Step, styles.SchemaType)}>
             <h2 className={styles.StepTitle}>1. Model Type</h2>
             <p className={styles.StepDesc}>
@@ -525,6 +526,6 @@ export default connect((state) => {
           </Button>
         </CardActions>
       </Card>
-    </section>
+    </Box>
   );
 });
