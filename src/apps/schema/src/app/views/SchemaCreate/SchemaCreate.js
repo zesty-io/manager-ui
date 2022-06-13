@@ -21,7 +21,11 @@ import {
   faFile,
   faListAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
@@ -169,11 +173,7 @@ export default connect((state) => {
       )} */}
 
       <Card className={styles.Card}>
-        <CardHeader>
-          <h1 className={styles.headline}>
-            You are creating a new content model
-          </h1>
-        </CardHeader>
+        <CardHeader title="You are creating a new content model"></CardHeader>
         <CardContent className={styles.CardContent}>
           <section className={cx(styles.Step, styles.SchemaType)}>
             <h2 className={styles.StepTitle}>1. Model Type</h2>
@@ -420,7 +420,7 @@ export default connect((state) => {
           </section>
         </CardContent>
 
-        <CardFooter>
+        <CardActions>
           <Button
             variant="contained"
             color="success"
@@ -523,7 +523,7 @@ export default connect((state) => {
           >
             Create Model
           </Button>
-        </CardFooter>
+        </CardActions>
       </Card>
     </section>
   );
