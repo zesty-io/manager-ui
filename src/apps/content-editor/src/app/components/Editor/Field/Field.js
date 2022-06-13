@@ -10,6 +10,7 @@ import { fetchItem, fetchItems, searchItems } from "shell/store/content";
 import Stack from "@mui/material/Stack";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
+import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
@@ -413,30 +414,28 @@ export default function Field({
       if (settings.options) {
         const binaryFieldOpts = Object.values(settings.options);
         return (
-          <>
-            <FormLabel sx={{ color: "primary.dark" }}>
-              <Stack
-                direction="row"
-                alignItems="center"
-                sx={{
-                  mb: 1,
-                }}
-              >
-                {settings.tooltip ? (
-                  <Tooltip
-                    placement="top-start"
-                    arrow
-                    title={settings.tooltip ? settings.tooltip : " "}
-                  >
-                    <InfoIcon fontSize="small" sx={{ mr: 1 }} />
-                  </Tooltip>
-                ) : (
-                  " "
-                )}
-
-                {FieldTypeLabel}
-              </Stack>
-            </FormLabel>
+          <FormControl required={required}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={1}
+              sx={{
+                mb: 1,
+              }}
+            >
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+              <FormLabel>{FieldTypeLabel}</FormLabel>
+            </Stack>
             <ToggleButtonGroup
               color="secondary"
               size="small"
@@ -454,7 +453,7 @@ export default function Field({
             <Box component="p" sx={{ mt: 1 }}>
               {description}
             </Box>
-          </>
+          </FormControl>
         );
       } else {
         return (

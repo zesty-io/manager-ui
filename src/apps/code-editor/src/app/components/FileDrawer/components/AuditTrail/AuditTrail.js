@@ -43,7 +43,7 @@ export default function AuditTrail(props) {
         </ul>
       </CardContent>
       <CardFooter>
-        <AppLink className={styles.MoreLogs} to={`/audit-trail`}>
+        <AppLink className={styles.MoreLogs} to={`/reports/audit-trail`}>
           <FontAwesomeIcon icon={faLink} /> View all logs
         </AppLink>
       </CardFooter>

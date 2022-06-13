@@ -6,7 +6,8 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import TopReq from "./TopReq";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import { CopyButton } from "@zesty-io/core/CopyButton";
+
+import { CopyButton } from "@zesty-io/material";
 
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
@@ -295,20 +296,20 @@ const Content = ({
             </h1>
             <aside>
               <p>
-                Instance ZUID:&nbsp;
+                Instance ZUID:
                 <CopyButton
-                  kind="outlined"
-                  size="compact"
+                  size="small"
                   value={usageData.Account.Zuid}
+                  sx={{ ml: 1 }}
                 />
               </p>
 
               <p>
                 CDN URL:&nbsp;
                 <CopyButton
-                  kind="outlined"
-                  size="compact"
+                  size="small"
                   value={usageData.Account.CdnURL}
+                  sx={{ ml: 1 }}
                 />
               </p>
             </aside>
