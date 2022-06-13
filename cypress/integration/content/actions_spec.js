@@ -9,7 +9,11 @@ describe("Actions in content editor", () => {
 
   it("Must not save when missing required Field", () => {
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
-    cy.get("input[name=text_field]").clear();
+    cy.get("#12-13d590-9v2nr2")
+      .should("exist")
+      .find("input")
+      .click({ force: true })
+      .clear();
     cy.get("#SaveItemButton").click();
     cy.contains("You are missing data").should("exist");
   });
@@ -19,7 +23,11 @@ describe("Actions in content editor", () => {
   it("Save when missing required deactivated field", () => {
     cy.visit("/content/6-0c960c-d1n0kx/7-c882ba84ce-c4smnp");
     // Need to make an edit to enable save button.
-    cy.get("input[name=title]").clear({ force: true }).type(timestamp);
+    cy.get("#12-849844-t8v5l6")
+      .should("exist")
+      .find("input")
+      .clear({ force: true })
+      .type(timestamp);
     cy.get("#SaveItemButton", { timeout: 5000 }).click({ force: true });
     cy.contains("Saved a new ").should("exist");
   });
@@ -108,7 +116,7 @@ describe("Actions in content editor", () => {
 
   it("Deletes an item", () => {
     cy.contains(timestamp).click();
-    cy.get("article.Delete").click();
+    cy.get('[data-cy="WidgetDeleteAccordion"]').click();
     cy.get("#DeleteItemButton").click();
     cy.get("#deleteConfirmButton").should("exist");
     cy.get("#deleteConfirmButton").click();
