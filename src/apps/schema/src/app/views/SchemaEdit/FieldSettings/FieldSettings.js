@@ -17,15 +17,17 @@ import {
   faMoneyBillAlt,
   faIdCard,
   faExclamationTriangle,
-  faImage,
-  faCalendarTimes,
   faCalendarAlt,
 } from "@fortawesome/free-solid-svg-icons";
+
+import Link from "@mui/material/Link";
+import Stack from "@mui/material/Stack";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import FormLabel from "@mui/material/FormLabel";
+
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
-import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
-
-import { Url } from "@zesty-io/core/Url";
 
 import { DropdownOptions } from "./DropdownOptions";
 import { ToggleOptions } from "./ToggleOptions";
@@ -35,6 +37,7 @@ import { ImageOptions } from "./ImageOptions";
 import { formatName } from "utility/formatName";
 
 import styles from "./FieldSettings.less";
+
 export default function FieldSettings(props) {
   const field = FIELD_TYPES.find(
     (field) => field.value === props.field.datatype
@@ -68,7 +71,9 @@ export default function FieldSettings(props) {
             className={styles.Setting}
             name="label"
             label="Field Label"
-            defaultValue={props.field.label}
+            {...(props.new
+              ? { value: props.field.label }
+              : { defaultValue: props.field.label })}
             maxLength="200"
             onChange={(val, key) => {
               if (props.new && props.updateMultipleValues) {
@@ -85,37 +90,58 @@ export default function FieldSettings(props) {
             className={styles.Setting}
             name="name"
             label="Field Name (Parsley Code Reference). Can not contain spaces, uppercase or special characters."
-            defaultValue={props.field.name}
+            {...(props.new
+              ? { value: props.field.name }
+              : { defaultValue: props.field.name })}
             maxLength="50"
-            onChange={(val, name) => props.updateValue(formatName(val), name)}
+            onChange={(val, name) => {
+              props.updateValue(formatName(val), name);
+            }}
           />
 
-          <FieldTypeBinary
-            className={styles.Setting}
-            name="required"
-            label="Is this field required?"
-            offValue="No"
-            onValue="Yes"
-            value={Number(props.field.required)}
-            onChange={() =>
-              props.updateValue(!Boolean(props.field.required), "required")
-            }
-          />
+          <FormLabel>
+            <Stack
+              direction="row"
+              alignItems="center"
+              sx={{
+                my: 1,
+              }}
+            >
+              Is this field required?
+            </Stack>
+          </FormLabel>
+          <ToggleButtonGroup
+            color="secondary"
+            size="small"
+            value={props.field.required}
+            exclusive
+            onChange={(e, val) => props.updateValue(val, "required")}
+          >
+            <ToggleButton value={false}>No </ToggleButton>
+            <ToggleButton value={true}>Yes </ToggleButton>
+          </ToggleButtonGroup>
 
-          <FieldTypeBinary
-            className={styles.Setting}
-            name="list"
-            label="Show this value in the table listing view?"
-            offValue="No"
-            onValue="Yes"
-            value={Number(props.field.settings.list)}
-            onChange={() =>
-              props.updateFieldSetting(
-                !Boolean(props.field.settings.list),
-                "list"
-              )
-            }
-          />
+          <FormLabel>
+            <Stack
+              direction="row"
+              alignItems="center"
+              sx={{
+                my: 1,
+              }}
+            >
+              Show this value in the table listing view?
+            </Stack>
+          </FormLabel>
+          <ToggleButtonGroup
+            color="secondary"
+            size="small"
+            value={props.field.settings.list}
+            exclusive
+            onChange={(e, val) => props.updateFieldSetting(val, "list")}
+          >
+            <ToggleButton value={false}>No </ToggleButton>
+            <ToggleButton value={true}>Yes </ToggleButton>
+          </ToggleButtonGroup>
         </div>
         <div className={styles.Column}>
           <FieldTypeText
@@ -227,13 +253,14 @@ export const FIELD_TYPES = [
       <Fragment>
         <p>
           Markdown fields provide an editor that allows using{" "}
-          <Url
+          <Link
             title="Learn more about Github Flavored Markdown"
+            color="secondary"
             target="_blank"
             href="https://github.github.com/gfm/"
           >
             Github Flavored Markdown
-          </Url>{" "}
+          </Link>{" "}
           syntax for styling and structuring of content. This field type is also
           able to be viewed as a WYSIWYG, Inline or HTML editor. Giving authors
           control over their experience.

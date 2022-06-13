@@ -1,9 +1,20 @@
-import { memo, useMemo, useCallback, useState } from "react";
+import { memo, useMemo, useCallback, useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment-timezone";
+import zuid from "zuid";
+
 import { fetchFields } from "shell/store/fields";
 import { fetchItem, fetchItems, searchItems } from "shell/store/content";
+
+import Stack from "@mui/material/Stack";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import FormLabel from "@mui/material/FormLabel";
+import Tooltip from "@mui/material/Tooltip";
+import Box from "@mui/material/Box";
+
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,7 +27,6 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import { Modal } from "@zesty-io/core/Modal";
 import MediaApp from "../../../../../../media/src/app/MediaApp";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
 import { FieldTypeNumber } from "@zesty-io/core/FieldTypeNumber";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
@@ -189,6 +199,18 @@ export default function Field({
   const value = item?.data?.[name];
   const version = item?.meta?.version;
 
+  useEffect(() => {
+    if (datatype !== "date" && datatype !== "datetime") {
+      if (value && typeof value === "string") {
+        value.split(",").forEach((z) => {
+          if (zuid.isValid(z) && !zuid.matches(z, zuid.prefix["MEDIA_FILE"])) {
+            dispatch(searchItems(z));
+          }
+        });
+      }
+    }
+  }, []);
+
   function renderMediaModal() {
     return ReactDOM.createPortal(
       <Modal
@@ -242,6 +264,7 @@ export default function Field({
           value={value}
           onChange={onChange}
           type="url"
+          maxLength={2000}
         />
       );
 
@@ -388,19 +411,49 @@ export default function Field({
     case "yes_no":
       if (settings.options) {
         const binaryFieldOpts = Object.values(settings.options);
-
         return (
-          <FieldTypeBinary
-            name={name}
-            label={FieldTypeLabel}
-            description={description}
-            tooltip={settings.tooltip}
-            required={required}
-            value={value}
-            onChange={onChange}
-            offValue={binaryFieldOpts[0]}
-            onValue={binaryFieldOpts[1]}
-          />
+          <>
+            <FormLabel sx={{ color: "primary.dark" }}>
+              <Stack
+                direction="row"
+                alignItems="center"
+                sx={{
+                  mb: 1,
+                }}
+              >
+                {settings.tooltip ? (
+                  <Tooltip
+                    placement="top-start"
+                    arrow
+                    title={settings.tooltip ? settings.tooltip : " "}
+                  >
+                    <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                  </Tooltip>
+                ) : (
+                  " "
+                )}
+
+                {FieldTypeLabel}
+              </Stack>
+            </FormLabel>
+            <ToggleButtonGroup
+              color="secondary"
+              size="small"
+              value={value}
+              exclusive
+              onChange={(e, val) => onChange(val, name)}
+            >
+              <ToggleButton value={0}>
+                {binaryFieldOpts[0] || "No"}{" "}
+              </ToggleButton>
+              <ToggleButton value={1}>
+                {binaryFieldOpts[1] || "Yes"}{" "}
+              </ToggleButton>
+            </ToggleButtonGroup>
+            <Box component="p" sx={{ mt: 1 }}>
+              {description}
+            </Box>
+          </>
         );
       } else {
         return (
@@ -448,7 +501,8 @@ export default function Field({
             (itemZUID) =>
               !itemZUID.includes("new") && // exclude new items
               allItems[itemZUID].meta.ZUID && // ensure the item has a zuid
-              allItems[itemZUID].web.pathPart // exclude items non-routeable items
+              allItems[itemZUID].web.pathPart && // exclude non-routeable items
+              allItems[itemZUID].meta.langID === langID // exclude non-relevant langs
           )
           .map((itemZUID) => {
             let item = allItems[itemZUID];
@@ -489,13 +543,8 @@ export default function Field({
         // insert placeholder
         internalLinkOptions.unshift({
           value: value,
-          text: `Related item: ${value}`,
+          text: `Selected item not found: ${value}`,
         });
-
-        // load related item from API
-        if (value && value != "0") {
-          dispatch(searchItems(value));
-        }
       }
 
       const onInternalLinkSearch = useCallback(
@@ -518,15 +567,6 @@ export default function Field({
       );
 
     case "one_to_one":
-      // If the initial value doesn't exist in local store load from API
-      if (value && (!allItems[value] || !allItems[value].meta)) {
-        if (relatedModelZUID && value) {
-          if (value != "0") {
-            dispatch(fetchItem(relatedModelZUID, value));
-          }
-        }
-      }
-
       const onOneToOneOpen = useCallback(() => {
         return dispatch(
           fetchItems(relatedModelZUID, {
@@ -558,7 +598,7 @@ export default function Field({
         value != "0" &&
         !oneToOneOptions.find((opt) => opt.value === value)
       ) {
-        //the related option is not in the array, we need ot insert it
+        //the related option is not in the array, we need to insert it
         oneToOneOptions.unshift({
           filterValue: value,
           value: value,
@@ -572,7 +612,7 @@ export default function Field({
                   <FontAwesomeIcon icon={faEdit} />
                 </AppLink>
               </span>
-              &nbsp;Selected item: {value}
+              &nbsp;Selected item not found: {value}
             </span>
           ),
         });
@@ -594,21 +634,6 @@ export default function Field({
       );
 
     case "one_to_many":
-      //TODO: we need to implement specific fetches for items
-      // when an endpoint is available for that purpose
-      // if (value) {
-      //   const resolved = resolveRelatedOptions(
-      //     allFields,
-      //     allItems,
-      //     relatedFieldZUID,
-      //     relatedModelZUID
-      //   );
-      //   if (value.split(",").length > resolved.length) {
-      //     dispatch(fetchFields(relatedModelZUID));
-      //     dispatch(fetchItems(relatedModelZUID));
-      //   }
-      // }
-
       const oneToManyOptions = useMemo(() => {
         return resolveRelatedOptions(
           allFields,

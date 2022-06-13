@@ -6,7 +6,10 @@
 
 # secrets
 *.env*
+*.enc
 
 /build
 *dist/
 *node_modules/
+
+.vscode

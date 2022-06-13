@@ -1,5 +1,55 @@
 @import "~@zesty-io/core/colors.less";
 
+.NavContainer {
+  overflow: hidden;
+  box-shadow: none;
+  height: calc(100vh - 54px);
+  display: flex;
+  flex-direction: column;
+
+  //Hide Scrollbar
+  scrollbar-width: none; /*  FireFox */
+  -ms-overflow-style: none; /*  Edge */
+  ::-webkit-scrollbar {
+    /*  Chrome / Safari */
+    display: none;
+  }
+
+  &.ContentNavHover,
+  &.ContentNavOpen {
+    background-color: @appBkgColor;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100vh - 54px);
+    &::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+      display: none;
+    }
+  }
+
+  &.ContentNavHover {
+    box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
+
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 10;
+    width: 20vw;
+
+    @media screen and (max-width: 1680px) {
+      width: 25vw;
+    }
+  }
+  &.ContentNavOpen {
+    width: 20vw;
+    @media only screen and (min-width: 2000px) {
+      width: 15vw;
+    }
+  }
+}
+
 .SearchModels {
   margin: 8px 8px 0;
   input {
@@ -22,12 +72,13 @@
 }
 
 .NavWrap {
-  // height: calc(100vh - 54px - 55px);
-  height: calc(100vh - 54px - 100px);
-  margin: 0;
-  overflow-y: auto;
-  background: transparent;
-  padding: 0;
+  white-space: normal;
+  position: relative;
+  padding-bottom: 50px;
+
+  &.NavWrapClosed {
+    white-space: nowrap;
+  }
 
   .NavTitle {
     padding: 8px 16px;
@@ -38,14 +89,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    &.NoResults {
-      color: @zesty-yellow;
-      word-break: break-word;
-    }
-  }
-  .ButtonClear {
-    margin: 8px;
   }
 
   .HiddenNav {
@@ -61,12 +104,20 @@
       }
     }
   }
-  .HiddenNavClosed {
+  .HiddenNavClosed,
+  .Hide {
     display: none;
   }
 }
+
 .Title {
   padding: 1rem;
   letter-spacing: 0.2rem;
   font-weight: bold;
+}
+
+.HideIcon {
+  [data-icon="search"] {
+    display: none;
+  }
 }

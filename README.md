@@ -1,5 +1,5 @@
 <div style="text-align:center;">
-  <img title="Logo for Zesty.io" width="300px" height="72px" src="https://brand.zesty.io/zesty-io-logo-horizontal.png" />  
+  <img title="Logo for Zesty.io" width="300px" height="72px" src="https://brand.zesty.io/zesty-io-logo-horizontal.png" />
 </div>
 
 <br />
@@ -52,20 +52,23 @@ _e.g. linux: `/etc/hosts`_
 windows: `c:\windows\system32\drivers\etc\hosts`
 
 ```
-127.0.0.1 <YOUR_UNIQUE_INSTANCE_ZUID>.manager.zesty.io
+127.0.0.1  YOUR_UNIQUE_INSTANCE_ZUID.manager.zesty.io
 ```
 
 ## Start the application
 
 1. Install dependencies: `npm install`
-2. Start webpack: `npm run serve:webpack -- --env.NODE_ENV=production`
-3. Load the app in your browser: `<YOUR_UNIQUE_INSTANCE_ZUID>.manager.zesty.io:8080`
+2. Start webpack: `npm run start`
+3. Load the app in your browser: `YOUR_UNIQUE_INSTANCE_ZUID.manager.zesty.io:8080`
 
 ## Tests
 
 Functional UI tests are run with cypress.io
 
 To run the tests on your machine you will need to create a `cypress.env.json` file at the root of the repository, add the following JSON and replace the email/password with valid credentials.
+
+Terminal
+`npm run test:open`
 
 ```json
 {
@@ -77,3 +80,17 @@ To run the tests on your machine you will need to create a `cypress.env.json` fi
 ---
 
 **Notes**
+
+Connect to Zesty Material Design Systems
+`npm link @zesty-io/material`
+
+## MUI Notes
+
+[MUI ToggleButtonGroup API](https://mui.com/material-ui/api/toggle-button-group/)
+
+ToggleButtonGroup
+We are adding `exclusive` prop to only allow one of the child values to be selected.
+
+OnChange value: of the selected buttons. When exclusive is true this is a single value; when false an array of selected values. If no value is selected and exclusive is true the value is `null`; when false an empty array.
+
+In some case when sending null this will break the togglebutton UI, thus the reasoning for adding toggleHandlers that checks `null` through the codebase.

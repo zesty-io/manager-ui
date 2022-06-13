@@ -2,13 +2,18 @@ import { Fragment, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 
+import Button from "@mui/material/Button";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import AddIcon from "@mui/icons-material/Add";
+
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
 import { Select, Option } from "@zesty-io/core/Select";
-import { Input } from "@zesty-io/core/Input";
-import { Button } from "@zesty-io/core/Button";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExternalLinkSquareAlt,
@@ -155,7 +160,7 @@ export function LinkCreate() {
           </Select>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className={styles.CardContent}>
           <FieldTypeInternalLink
             className={styles.Row}
             name="parentZUID"
@@ -201,35 +206,41 @@ export function LinkCreate() {
             }}
           />
 
-          <label className={styles.Checkboxes}>
-            <Input
-              type="checkbox"
-              name="targetBlank"
-              checked={state.targetBlank}
-              onClick={(evt) => {
-                onChange(evt.target.checked, "targetBlank");
-              }}
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  color="secondary"
+                  checked={state.targetBlank}
+                  onChange={(evt, val) =>
+                    setState({ ...state, targetBlank: val })
+                  }
+                />
+              }
+              label="target = _blank"
             />
-            target = _blank
-          </label>
-          <label className={styles.Checkboxes}>
-            <Input
-              type="checkbox"
-              name="relNoFollow"
-              checked={state.relNoFollow}
-              onClick={(evt) => {
-                onChange(evt.target.checked, "relNoFollow");
-              }}
+            <FormControlLabel
+              control={
+                <Checkbox
+                  color="secondary"
+                  checked={state.relNoFollow}
+                  onChange={(evt, val) =>
+                    setState({ ...state, relNoFollow: val })
+                  }
+                />
+              }
+              label="rel = nofollow"
             />
-            rel = nofollow
-          </label>
+          </FormGroup>
         </CardContent>
         <CardFooter>
           <Button
+            variant="contained"
+            color="success"
             id="CreateLinkButton"
             disabled={state.saving}
-            type="save"
             onClick={saveLink}
+            startIcon={<AddIcon />}
           >
             Create Link
           </Button>

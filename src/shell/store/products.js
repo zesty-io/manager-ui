@@ -1,5 +1,3 @@
-import { request } from "utility/request";
-
 export function products(state = ["content", "media"], action) {
   switch (action.type) {
     case "FETCH_PRODUCTS_SUCCESS":
@@ -28,9 +26,9 @@ export function fetchProducts() {
           "schema",
           "code",
           "leads",
-          "analytics",
           "seo",
-          "audit-trail",
+          "reports",
+          // "release",
           "settings",
         ];
         break;
@@ -41,16 +39,23 @@ export function fetchProducts() {
           "schema",
           "code",
           "leads",
-          "analytics",
           "seo",
+          "reports",
+          // "release",
           "settings",
         ];
         break;
-      case "31-71cfc74-s30":
-        data = ["content", "media", "leads", "analytics", "seo"];
-        break;
       case "31-71cfc74-p0bl1shr":
-        data = ["content", "media", "leads", "analytics"];
+        data = [
+          "content",
+          "media",
+          "leads",
+          "reports",
+          // "release"
+        ];
+        break;
+      case "31-71cfc74-s30":
+        data = ["content", "media", "leads", "seo", "reports"];
         break;
       case "31-71cfc74-c0ntr1b0t0r":
         data = ["content", "media"];
@@ -69,9 +74,9 @@ export function fetchProducts() {
         "schema",
         "code",
         "leads",
-        "analytics",
         "seo",
-        "audit-trail",
+        "reports",
+        // "release",
         "settings",
       ];
     }

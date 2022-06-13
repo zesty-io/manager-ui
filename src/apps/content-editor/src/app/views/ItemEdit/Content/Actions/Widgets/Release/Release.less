@@ -1,0 +1,37 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.Release {
+  .CardContent {
+    display: flex;
+    flex-direction: column;
+    .ReleaseWrap {
+      flex-wrap: wrap;
+      display: flex;
+      & > div {
+        flex: 1;
+        margin-right: 8px;
+        & > div > span {
+          // fit long content in dropdown selection
+          width: 150px;
+        }
+      }
+    }
+  }
+  .SelectRelease ul {
+    padding: 0;
+  }
+  .Add {
+    align-self: flex-end;
+    margin-top: 8px;
+  }
+  .VersionRelease {
+    margin: 8px 0;
+    padding: 0;
+
+    li {
+      margin-bottom: 4px;
+      list-style-type: none;
+    }
+  }
+}

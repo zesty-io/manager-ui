@@ -210,7 +210,7 @@ export default connect((state) => {
           <div
             className={cx(
               styles.WorkspaceContainer,
-              !props.groupID ? styles.WkspSidebarActive : ""
+              props.groupID ? styles.WkspSidebarLockedImage : ""
             )}
           >
             <MediaWorkspace

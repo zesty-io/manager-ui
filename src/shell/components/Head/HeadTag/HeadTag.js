@@ -13,15 +13,13 @@ import {
   updateTagType,
 } from "shell/store/headTags";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlus,
-  faSave,
-  faSpinner,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 
-import { Button } from "@zesty-io/core/Button";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
+
 import { Card, CardContent, CardFooter, CardHeader } from "@zesty-io/core/Card";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
@@ -127,24 +125,40 @@ export const HeadTag = (props) => {
           onChange={(value) => dispatch(updateTagSort(tag.ZUID, value))}
         />
         <Button
-          kind="primary"
+          title="Add Tag Attribute"
+          variant="contained"
           onClick={() => dispatch(addTagAttribute(tag.ZUID))}
+          startIcon={<AddIcon />}
         >
-          <FontAwesomeIcon icon={faPlus} /> Add attribute
+          Add attribute
         </Button>
         {tag.hasOwnProperty("createdAt") ? (
           <Button
-            className={styles.Delete}
+            variant="contained"
+            title="Delete Head Tag"
             onClick={onDelete}
-            type="warn"
-            id="DelteHeadtag"
+            color="error"
+            startIcon={<DeleteIcon />}
+            sx={{
+              display: "none",
+              marginLeft: "auto",
+            }}
           >
-            <FontAwesomeIcon className={styles.Del} icon={faTrash} />
             Delete Tag
           </Button>
         ) : (
-          <Button className={styles.Delete} onClick={onCancel} type="warn">
-            <FontAwesomeIcon className={styles.Del} icon={faTrash} />
+          <Button
+            variant="contained"
+            color="error"
+            title="Cancel"
+            onClick={onCancel}
+            type="error"
+            startIcon={<DeleteIcon />}
+            sx={{
+              display: "none",
+              marginLeft: "auto",
+            }}
+          >
             Cancel
           </Button>
         )}
@@ -185,11 +199,16 @@ export const HeadTag = (props) => {
               />
               {attr.key !== "custom" ? (
                 <Button
-                  className={styles.Del}
+                  variant="contained"
+                  color="error"
+                  title="Delete Tag Attribute"
                   onClick={() => dispatch(deleteTagAttribute(tag.ZUID, index))}
-                  type="warn"
+                  sx={{
+                    visibility: "hidden",
+                    height: "40px",
+                  }}
                 >
-                  <FontAwesomeIcon className={styles.Del} icon={faTrash} />
+                  <DeleteIcon fontSize="small" />
                 </Button>
               ) : (
                 <div style={{ width: "40px" }}></div>
@@ -200,16 +219,18 @@ export const HeadTag = (props) => {
       </CardContent>
       <CardFooter className={styles.CardFooter}>
         <Button
-          type="save"
+          title={
+            tag.hasOwnProperty("createdAt")
+              ? "Save head tag"
+              : "Create head tag"
+          }
+          color="success"
+          variant="contained"
           id="SaveItemButton"
           disabled={saving}
           onClick={tag.hasOwnProperty("createdAt") ? onSave : onCreate}
+          startIcon={saving ? <CircularProgress size="20px" /> : <SaveIcon />}
         >
-          {saving ? (
-            <FontAwesomeIcon spin icon={faSpinner} />
-          ) : (
-            <FontAwesomeIcon icon={faSave} />
-          )}
           {tag.hasOwnProperty("createdAt")
             ? "Save head tag"
             : "Create head tag"}

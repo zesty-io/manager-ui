@@ -2,15 +2,15 @@ import { memo, Fragment, useCallback, useState, useEffect } from "react";
 import { connect, useDispatch } from "react-redux";
 import debounce from "lodash/debounce";
 import { searchItems } from "shell/store/content";
+import { notify } from "shell/store/notifications";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { Input } from "@zesty-io/core/Input";
+import Tooltip from "@mui/material/Tooltip";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
+import TextField from "@mui/material/TextField";
 import { InputIcon } from "@zesty-io/core/InputIcon";
-import { Infotip } from "@zesty-io/core/Infotip";
 import { AppLink } from "@zesty-io/core/AppLink";
-
-import { notify } from "shell/store/notifications";
 
 import styles from "./ItemRoute.less";
 export const ItemRoute = connect((state) => {
@@ -38,41 +38,67 @@ export const ItemRoute = connect((state) => {
 
         return dispatch(searchItems(fullPath))
           .then((res) => {
-            // check list of partial matches for exact path match
-            const matches = res.data.filter((item) => {
-              /**
-               * Exclude currently viewed item zuid, as it's currently saved path would match.
-               * Check if other results have a matching path, if so then it is already taken and
-               * can not be used.
-               * Result paths come with leading and trailing slashes
-               */
-              return (
-                item.meta.ZUID !== props.ZUID &&
-                item.web.path === "/" + fullPath + "/"
-              );
-            });
+            if (res) {
+              if (res.data) {
+                if (Array.isArray(res.data) && res.data.length) {
+                  // check list of partial matches for exact path match
+                  const matches = res.data.filter((item) => {
+                    /**
+                     * Exclude currently viewed item zuid, as it's currently saved path would match.
+                     * Check if other results have a matching path, if so then it is already taken and
+                     * can not be used.
+                     * Result paths come with leading and trailing slashes
+                     */
+                    return (
+                      item.meta.ZUID !== props.ZUID &&
+                      item.web.path === "/" + fullPath + "/"
+                    );
+                  });
+                  if (matches.length) {
+                    props.dispatch(
+                      notify({
+                        kind: "warn",
+                        message: (
+                          <p>
+                            URL <strong>{matches[0].web.path}</strong> is
+                            unavailable. Used by&nbsp;
+                            <AppLink
+                              to={`/content/${matches[0].meta.contentModelZUID}/${matches[0].meta.ZUID}`}
+                            >
+                              {matches[0].web.metaLinkText ||
+                                matches[0].web.metaTitle}
+                            </AppLink>
+                          </p>
+                        ),
+                      })
+                    );
+                  }
 
-            if (matches.length) {
+                  setUnique(!matches.length);
+                } else {
+                  props.dispatch(
+                    notify({
+                      kind: "warn",
+                      message: `Path not found ${res.status}`,
+                    })
+                  );
+                }
+              } else {
+                props.dispatch(
+                  notify({
+                    kind: "warn",
+                    message: `API failed to return data ${res.status}`,
+                  })
+                );
+              }
+            } else {
               props.dispatch(
                 notify({
                   kind: "warn",
-                  message: (
-                    <p>
-                      URL <strong>{matches[0].web.path}</strong> is unavailable.
-                      Used by&nbsp;
-                      <AppLink
-                        to={`/content/${matches[0].meta.contentModelZUID}/${matches[0].meta.ZUID}`}
-                      >
-                        {matches[0].web.metaLinkText ||
-                          matches[0].web.metaTitle}
-                      </AppLink>
-                    </p>
-                  ),
+                  message: `API failed to return response ${res.status}`,
                 })
               );
             }
-
-            setUnique(!matches.length);
           })
           .finally(() => setLoading(false));
       }, 500),
@@ -111,7 +137,13 @@ export const ItemRoute = connect((state) => {
     return (
       <article className={styles.ItemRoute} data-cy="itemRoute">
         <label>
-          <Infotip title="Path parts must be unique within your instance, lowercased and can not contain non-alphnumeric characters. This ensures you create SEO friendly structured and crawlable URLs." />
+          <Tooltip
+            title="Path parts must be unique within your instance, lowercased and can not contain non-alphnumeric characters. This ensures you create SEO friendly structured and crawlable URLs."
+            arrow
+            placement="top-start"
+          >
+            <InfoIcon fontSize="small" />
+          </Tooltip>
           &nbsp;URL Path Part
         </label>
 
@@ -123,12 +155,15 @@ export const ItemRoute = connect((state) => {
             </h1>
           ) : (
             <Fragment>
-              <Input
-                type={"text"}
+              <TextField
+                type="text"
                 name="pathPart"
-                className={styles.Part}
                 value={pathPart}
                 onChange={onChange}
+                size="small"
+                variant="outlined"
+                color="primary"
+                fullWidth
               />
 
               {loading && (

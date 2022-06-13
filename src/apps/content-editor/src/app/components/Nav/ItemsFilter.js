@@ -1,16 +1,22 @@
 import { Search } from "@zesty-io/core/Search";
+import cx from "classnames";
+import { useSelector } from "react-redux";
 import styles from "./ContentNav.less";
 
 const ItemsFilter = (props) => {
+  const ui = useSelector((state) => state.ui);
   return (
     <Search
-      className={styles.SearchModels}
+      className={cx(
+        styles.SearchModels,
+        ui.contentNavHover ? "" : styles.HideIcon
+      )}
       name="itemsFilter"
       placeholder="Filter items by name, zuid or path"
       value={props.searchTerm}
       onChange={(term) => {
-        term = term.trim().toLowerCase();
         props.setSearchTerm(term);
+        term = term.trim().toLowerCase();
         if (term != "") {
           props.setFilteredItems(
             props.nav.raw.filter((f) => {

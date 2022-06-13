@@ -1,9 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faEye, faLink } from "@fortawesome/free-solid-svg-icons";
+import Link from "@mui/material/Link";
 import cx from "classnames";
 
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
-import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./LinkedContent.less";
@@ -39,14 +39,19 @@ export default function LinkedContent(props) {
                 </p>
 
                 <p>
-                  <Url
-                    className={styles.Link}
+                  <Link
+                    underline="none"
+                    color="secondary"
+                    sx={{
+                      alignItems: "baseline",
+                      display: "flex",
+                    }}
                     href={`${CONFIG.URL_PREVIEW_FULL}${item.web.path}`}
                     target="_blank"
                     title="Preview Item Webpage"
                   >
                     <FontAwesomeIcon icon={faEye} /> <em>{item.web.path}</em>
-                  </Url>
+                  </Link>
                 </p>
               </li>
             );

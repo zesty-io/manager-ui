@@ -1,9 +1,8 @@
 import { memo, useState } from "react";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCloudUploadAlt, faSpinner } from "@fortawesome/free-solid-svg-icons";
-
-import { Button } from "@zesty-io/core/Button";
+import Button from "@mui/material/Button";
+import UploadIcon from "@mui/icons-material/Upload";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { publishFile, fetchFiles } from "../../../../../../store/files";
 
@@ -14,7 +13,8 @@ export const Publish = memo(function Publish(props) {
 
   return (
     <Button
-      kind="secondary"
+      variant="contained"
+      color="secondary"
       disabled={publishing}
       onClick={() => {
         setPublishing(true);
@@ -28,13 +28,9 @@ export const Publish = memo(function Publish(props) {
             props.dispatch(fetchFiles("scripts"));
           });
       }}
+      startIcon={publishing ? <CircularProgress size="20px" /> : <UploadIcon />}
     >
-      {publishing ? (
-        <FontAwesomeIcon spin icon={faSpinner} />
-      ) : (
-        <FontAwesomeIcon icon={faCloudUploadAlt} />
-      )}
-      Publish{" "}
+      Publish
       <span className={styles.HideSmall}>&nbsp;Version {props.version}</span>
     </Button>
   );

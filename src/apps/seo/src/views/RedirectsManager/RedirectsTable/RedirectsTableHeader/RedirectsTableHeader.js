@@ -4,7 +4,9 @@ import {
   faSortAlphaDown,
   faSortAlphaUp,
 } from "@fortawesome/free-solid-svg-icons";
-import { Infotip } from "@zesty-io/core/Infotip";
+import Tooltip from "@mui/material/Tooltip";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
+
 import styles from "./RedirectsTableHeader.less";
 
 export default function RedirectsTableHeader(props) {
@@ -15,7 +17,10 @@ export default function RedirectsTableHeader(props) {
         data-value="from"
         onClick={props.handleSortBy}
       >
-        <Infotip className={styles.InfoTip}>File Path Only </Infotip>&nbsp;
+        <Tooltip title="File Path Only" arrow placement="top-start">
+          <InfoIcon fontSize="small" />
+        </Tooltip>
+        &nbsp;
         <span
           className={cx(
             styles.subheadline,
@@ -38,9 +43,17 @@ export default function RedirectsTableHeader(props) {
         data-value="type"
         onClick={props.handleSortBy}
       >
-        <Infotip className={styles.InfoTip}>
-          301: Moved Permanently <br /> 302: Temporarily Moved
-        </Infotip>
+        <Tooltip
+          title={
+            <>
+              301: Moved Permanently <br /> 302: Temporarily Moved
+            </>
+          }
+          arrow
+          placement="top-start"
+        >
+          <InfoIcon fontSize="small" />
+        </Tooltip>
         <span
           className={cx(
             styles.subheadline,
@@ -58,11 +71,19 @@ export default function RedirectsTableHeader(props) {
         </span>
       </span>
       <span className={cx(styles.RedirectsTableHeaderCell, styles.code)}>
-        <Infotip className={styles.InfoTip}>
-          Internal E.g. /about
-          <br /> External E.g. https://zesty.org/
-          <br /> Wildcard E.g. /blog/*/*/
-        </Infotip>
+        <Tooltip
+          title={
+            <>
+              Internal E.g. /about
+              <br /> External E.g. https://zesty.org/
+              <br /> Wildcard E.g. /blog/*/*/
+            </>
+          }
+          arrow
+          placement="top-start"
+        >
+          <InfoIcon fontSize="small" />
+        </Tooltip>
         <span className={cx(styles.subheadline, styles.column)}>
           &nbsp;Redirect Type
         </span>

@@ -1,0 +1,65 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.ReleaseTable {
+  width: 100%;
+  border-collapse: collapse;
+  tbody {
+    border: 1px solid @zesty-light-blue;
+    border-radius: 4px 4px 0 0;
+
+    // Structure
+    display: block;
+  }
+
+  thead {
+    tr {
+      border-left: 4px solid @appBkgColor;
+    }
+  }
+
+  thead,
+  tbody {
+    tr {
+      display: grid;
+      grid-template-columns: minmax(200px, 500px) 275px 100px 1fr;
+      column-gap: 16px;
+      padding: 12px;
+
+      th {
+        text-align: left;
+      }
+    }
+  }
+}
+
+.ReleaseStep {
+  align-items: center;
+  background-color: @white;
+  border-left: 4px solid @white;
+
+  &:nth-of-type(odd) {
+    background: lighten(@zesty-light-blue, 15%);
+    border-left: 4px solid lighten(@zesty-light-blue, 15%);
+  }
+
+  &:hover,
+  &:focus,
+  &:active,
+  &:nth-of-type(odd):hover,
+  &:nth-of-type(odd):focus,
+  &:nth-of-type(odd):active {
+    background-color: lighten(@zesty-field-blue, 10%);
+    border-left: 4px solid lighten(@zesty-field-blue, 10%);
+  }
+
+  td {
+    text-align: left;
+
+    &:nth-child(4) {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}

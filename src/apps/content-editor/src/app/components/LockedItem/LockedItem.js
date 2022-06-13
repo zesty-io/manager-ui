@@ -1,5 +1,8 @@
 import moment from "moment-timezone";
-import cx from "classnames";
+
+import Button from "@mui/material/Button";
+import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -8,68 +11,52 @@ import {
   faUnlock,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { Button } from "@zesty-io/core/Button";
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { Url } from "@zesty-io/core/Url";
-
-import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
+import {
+  Modal,
+  ModalHeader,
+  ModalContent,
+  ModalFooter,
+} from "@zesty-io/core/Modal";
 
 import styles from "./LockedItem.less";
-
-export const LockedItem = ({
-  timestamp,
-  userFirstName,
-  userLastName,
-  userEmail,
-  itemName,
-  handleUnlock,
-  goBack,
-  handleLockedItem,
-}) => {
+export function LockedItem(props) {
   return (
-    <div className={styles.ItemLocked}>
-      <ConfirmDialog className={styles.ConfirmDialog} isOpen={handleLockedItem}>
-        <FontAwesomeIcon className={styles.backgroundIcon} icon={faLock} />
-        <header className={cx(styles.headline, styles.Header)}>
-          Item Locked
-        </header>
-
-        <div className={cx(styles.ConfirmContent, styles.subheadline)}>
-          <p>
-            The item <strong className={styles.ItemName}>{itemName}</strong> is
-            being edited by&nbsp;
-            {userFirstName} {userLastName} since&nbsp;
-            {moment.unix(timestamp).format("MMMM Do YYYY, [at] h:mm a")}
-          </p>
-
-          <p>
-            You can contact {userFirstName} via&nbsp;
-            <Url title="Email" href={`mailto:${userEmail}`}>
-              {userEmail}
-            </Url>
-          </p>
-
-          <p>
-            To ignore this warning and possibly overwrite {userFirstName}'s
-            changes you may unlock this content
-          </p>
-        </div>
-
-        <footer className={styles.AlignRight}>
-          <ButtonGroup>
-            <Button
-              className={styles.ButtonBack}
-              type="cancel"
-              onClick={goBack}
-            >
-              <FontAwesomeIcon icon={faStepBackward} /> Go Back
-            </Button>
-            <Button type="save" onClick={handleUnlock}>
-              <FontAwesomeIcon icon={faUnlock} /> Unlock
-            </Button>
-          </ButtonGroup>
-        </footer>
-      </ConfirmDialog>
-    </div>
+    <Modal
+      className={styles.ItemLocked}
+      open={props.isLocked}
+      onClose={props.handleCancel}
+    >
+      <ModalHeader className={styles.ModalHeader}>
+        <h2 className={styles.headline}>
+          <FontAwesomeIcon icon={faLock} /> Item Locked
+        </h2>
+      </ModalHeader>
+      <ModalContent className={styles.ModalContent}>
+        <p className={styles.subheadline}>
+          {props.userFirstName} {props.userLastName} is viewing{" "}
+          <strong className={styles.ItemName}>{props.itemName}</strong> since{" "}
+          {moment.unix(props.timestamp).format("MMMM Do YYYY, [at] h:mm a")}.
+          Unlock this item to ignore this warning and possibly overwrite{" "}
+          {props.userFirstName}'s changes.
+        </p>
+      </ModalContent>
+      <ModalFooter className={styles.ModalFooter}>
+        <Button
+          variant="contained"
+          onClick={props.handleCancel}
+          startIcon={<SkipPreviousIcon />}
+        >
+          Go Back
+        </Button>
+        <Button
+          variant="contained"
+          color="success"
+          onClick={props.handleUnlock}
+          startIcon={<LockOpenIcon />}
+        >
+          Unlock
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
-};
+}

@@ -3,6 +3,15 @@ import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
 
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import FormLabel from "@mui/material/FormLabel";
+import Tooltip from "@mui/material/Tooltip";
+import AddIcon from "@mui/icons-material/Add";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
+
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 
@@ -11,11 +20,9 @@ import {
   faDatabase,
   faFile,
   faListAlt,
-  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
-import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
-import { Button } from "@zesty-io/core/Button";
+
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
@@ -106,7 +113,15 @@ export default connect((state) => {
               : "dataset",
           };
         case "type":
-          return { ...state, type: action.payload };
+          return {
+            ...state,
+            url:
+              action.payload === "templateset" || action.payload === "pageset"
+                ? 1
+                : 0,
+            multiple: action.payload === "pageset" ? 1 : 0,
+            type: action.payload,
+          };
         default:
           return state;
       }
@@ -117,6 +132,19 @@ export default connect((state) => {
       type: "dataset",
     }
   );
+
+  const handleToggle = (type, value) => {
+    if (value === null) return;
+    setType({
+      type: type,
+      payload: value,
+    });
+  };
+
+  const handleListedToggle = (value) => {
+    if (value === null) return;
+    setListed(value);
+  };
 
   return (
     <section className={styles.SchemaCreate}>
@@ -156,35 +184,53 @@ export default connect((state) => {
             </p>
 
             <div className={styles.questionnaire}>
-              <FieldTypeBinary
-                name="url"
-                label="Will this content be a public webpage and need a url?"
-                offValue={"No"}
-                onValue={"Yes"}
+              <FormLabel>
+                <Stack
+                  spacing={1}
+                  direction="row"
+                  alignItems="center"
+                  sx={{
+                    my: 1,
+                  }}
+                >
+                  <p>Will this content be a public webpage and need a url?</p>
+                </Stack>
+              </FormLabel>
+              <ToggleButtonGroup
+                color="secondary"
+                size="small"
                 value={url}
-                onChange={(val) =>
-                  setType({
-                    type: "url",
-                    payload: val,
-                  })
-                }
-              />
+                exclusive
+                onChange={(evt, val) => handleToggle("url", val)}
+              >
+                <ToggleButton value={0}>No </ToggleButton>
+                <ToggleButton value={1}>Yes </ToggleButton>
+              </ToggleButtonGroup>
             </div>
 
             <div className={styles.questionnaire}>
-              <FieldTypeBinary
-                name="multiple"
-                label="Will this content have multiple entries?"
-                offValue={"No"}
-                onValue={"Yes"}
+              <FormLabel>
+                <Stack
+                  spacing={1}
+                  direction="row"
+                  alignItems="center"
+                  sx={{
+                    my: 1,
+                  }}
+                >
+                  <p>Will this content have multiple entries?</p>
+                </Stack>
+              </FormLabel>
+              <ToggleButtonGroup
+                color="secondary"
+                size="small"
                 value={multiple}
-                onChange={(val) =>
-                  setType({
-                    type: "multiple",
-                    payload: val,
-                  })
-                }
-              />
+                exclusive
+                onChange={(evt, val) => handleToggle("multiple", val)}
+              >
+                <ToggleButton value={0}>No </ToggleButton>
+                <ToggleButton value={1}>Yes </ToggleButton>
+              </ToggleButtonGroup>
             </div>
 
             <FieldTypeDropDown
@@ -340,23 +386,44 @@ export default connect((state) => {
             />
 
             <div className={styles.questionnaire}>
-              <FieldTypeBinary
-                name="listed"
-                label="Should this model be listed?"
-                description="Listed models have their content items available to programatic
-                navigation calls."
-                offValue="No"
-                onValue="Yes"
-                value={Number(listed)}
-                onChange={() => setListed(!listed)}
-              />
+              <FormLabel>
+                <Stack
+                  spacing={1}
+                  direction="row"
+                  alignItems="center"
+                  sx={{
+                    my: 1,
+                  }}
+                >
+                  <Tooltip
+                    placement="top-start"
+                    arrow
+                    title={`Listed models have their content items available to programmatic
+                navigation calls.`}
+                  >
+                    <InfoIcon fontSize="small" />
+                  </Tooltip>
+                  <p>Should this model be listed?</p>
+                </Stack>
+              </FormLabel>
+              <ToggleButtonGroup
+                color="secondary"
+                size="small"
+                value={listed}
+                exclusive
+                onChange={(evt, value) => handleListedToggle(value)}
+              >
+                <ToggleButton value={false}>Off </ToggleButton>
+                <ToggleButton value={true}>On </ToggleButton>
+              </ToggleButtonGroup>
             </div>
           </section>
         </CardContent>
 
         <CardFooter>
           <Button
-            type="save"
+            variant="contained"
+            color="success"
             onClick={() => {
               const errors = [];
 
@@ -452,8 +519,8 @@ export default connect((state) => {
                   );
                 });
             }}
+            startIcon={<AddIcon />}
           >
-            <FontAwesomeIcon icon={faPlus} />
             Create Model
           </Button>
         </CardFooter>

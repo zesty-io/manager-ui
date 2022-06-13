@@ -2,17 +2,19 @@ import { Fragment, useState } from "react";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
 
+import Button from "@mui/material/Button";
+
+import CircularProgress from "@mui/material/CircularProgress";
+import AddIcon from "@mui/icons-material/Add";
+import Link from "@mui/material/Link";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faSpinner,
-  faPlus,
   faExternalLinkSquareAlt,
   faHandPointUp,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
-import { Button } from "@zesty-io/core/Button";
-import { Url } from "@zesty-io/core/Url";
 
 import { FieldSettings, FIELD_TYPES } from "../FieldSettings";
 
@@ -126,14 +128,16 @@ export function FieldAdd(props) {
               on what type of content to provide.
             </p>
             <p>
-              <Url
+              <Link
+                underline="none"
+                color="secondary"
                 href="https://zesty.org/services/web-engine/interface/schema/fields"
                 target="_blank"
                 title="Learn more about fields and their types"
               >
                 <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
                 &nbsp;Learn more about fields and their types.
-              </Url>
+              </Link>
             </p>
           </Fragment>
         )}
@@ -143,13 +147,14 @@ export function FieldAdd(props) {
             field={field}
             new={true}
             dispatch={props.dispatch}
-            updateValue={(val, name) =>
+            updateValue={(val, name) => {
+              if (val === null) return;
               setField({
                 ...field,
                 [name]: val,
                 dirty: true,
-              })
-            }
+              });
+            }}
             updateMultipleValues={(values) => {
               setField({
                 ...field,
@@ -157,7 +162,8 @@ export function FieldAdd(props) {
                 dirty: true,
               });
             }}
-            updateFieldSetting={(val, name) =>
+            updateFieldSetting={(val, name) => {
+              if (val === null) return;
               setField({
                 ...field,
                 settings: {
@@ -165,18 +171,20 @@ export function FieldAdd(props) {
                   [name]: val,
                 },
                 dirty: true,
-              })
-            }
+              });
+            }}
           />
         )}
       </CardContent>
       <CardFooter>
-        <Button type="save" disabled={!field.dirty || loading} onClick={create}>
-          {loading ? (
-            <FontAwesomeIcon icon={faSpinner} />
-          ) : (
-            <FontAwesomeIcon icon={faPlus} />
-          )}
+        <Button
+          variant="contained"
+          color="success"
+          data-cy="addField"
+          disabled={!field.dirty || loading}
+          onClick={create}
+          startIcon={loading ? <CircularProgress size="20px" /> : <AddIcon />}
+        >
           Add Field
         </Button>
       </CardFooter>

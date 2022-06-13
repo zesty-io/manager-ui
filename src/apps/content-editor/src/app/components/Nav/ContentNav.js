@@ -1,21 +1,27 @@
 import { Fragment, useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import cx from "classnames";
+import { ContentNavToggle } from "./components/ContentNavToggle";
+
+import { actions as uiActions } from "../../../../../../shell/store/ui";
+
+import Button from "@mui/material/Button";
+import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
+import HomeIcon from "@mui/icons-material/Home";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowsAlt,
-  faBan,
   faCaretDown,
   faCaretLeft,
   faEyeSlash,
-  faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import { ReorderNav } from "../ReorderNav";
 import { Nav } from "@zesty-io/core/Nav";
-import { Button } from "@zesty-io/core/Button";
+
+import { Notice } from "@zesty-io/core/Notice";
 import { Select, Option } from "@zesty-io/core/Select";
 
 import ItemsFilter from "./ItemsFilter";
@@ -27,6 +33,7 @@ export function ContentNav(props) {
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
+  const ui = useSelector((state) => state.ui);
 
   const [selected, setSelected] = useState(location.pathname);
   const [reorderOpen, setReorderOpen] = useState(false);
@@ -37,6 +44,27 @@ export function ContentNav(props) {
   const [filteredItems, setFilteredItems] = useState(
     props.nav.nav.sort(bySort)
   );
+
+  const [mouseEnterTimer, setMouseEnterTimer] = useState(null);
+  const [mouseLeaveTimer, setMouseLeaveTimer] = useState(null);
+
+  const handleMouseEnter = () => {
+    const enterTimer = setTimeout(() => {
+      dispatch(uiActions.setContentNavHover(true));
+    }, 500);
+
+    setMouseEnterTimer(enterTimer);
+  };
+
+  const handleMouseLeave = () => {
+    const leaveTimer = setTimeout(() => {
+      dispatch(uiActions.setContentNavHover(false));
+    }, 500);
+    setMouseLeaveTimer(leaveTimer);
+
+    clearTimeout(mouseEnterTimer);
+    clearTimeout(mouseLeaveTimer);
+  };
 
   useEffect(() => {
     setFilteredItems(props.nav.nav.sort(byLabel));
@@ -71,7 +99,15 @@ export function ContentNav(props) {
   };
 
   return (
-    <Fragment>
+    <div
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className={cx(
+        styles.NavContainer,
+        ui.contentNavHover && !ui.contentNav ? styles.ContentNavHover : "",
+        ui.contentNav ? styles.ContentNavOpen : ""
+      )}
+    >
       <div className={styles.Actions}>
         <Select
           name="createItemFromModel"
@@ -99,9 +135,9 @@ export function ContentNav(props) {
               />
             ))}
         </Select>
-        <Button id="ReorderNavButton" onClick={toggleModal}>
-          <FontAwesomeIcon
-            icon={faArrowsAlt}
+        <Button variant="contained" id="ReorderNavButton" onClick={toggleModal}>
+          <ZoomOutMapIcon
+            fontSize="small"
             title="Re-order content navigation"
           />
         </Button>
@@ -112,29 +148,36 @@ export function ContentNav(props) {
         setSearchTerm={setSearchTerm}
         searchTerm={searchTerm}
       />
-      <div className={styles.NavWrap}>
+      <div
+        className={cx(
+          styles.NavWrap,
+          !ui.contentNav ? styles.NavWrapClosed : " "
+        )}
+      >
         <div className={styles.NavTitle}>
           <h1>Content</h1>
 
           <Link to="/content">
-            {" "}
-            <Button kind="outlined" size="small">
-              <FontAwesomeIcon icon={faHome} title="Dashboard" />
+            <Button variant="outlined" size="small">
+              <HomeIcon title="Dashboard" fontSize="small" />
             </Button>
           </Link>
         </div>
         {searchTerm && filteredItems.length === 0 && (
           <>
-            <h1 className={cx(styles.NavTitle, styles.NoResults)}>
-              {" "}
-              No Search Results for "{searchTerm}"{" "}
-            </h1>
+            <Notice>No Search Results for "{searchTerm}"</Notice>
+
             <Button
-              className={styles.ButtonClear}
-              kind="secondary"
+              variant="contained"
+              color="secondary"
               onClick={() => setSearchTerm("")}
+              startIcon={<DoDisturbAltIcon title="Clear Search" />}
+              sx={{
+                mt: 1,
+                ml: 1,
+              }}
             >
-              <FontAwesomeIcon icon={faBan} title="Clear Search" /> clear filter
+              clear filter
             </Button>
           </>
         )}
@@ -199,7 +242,8 @@ export function ContentNav(props) {
       </div>
 
       <ReorderNav isOpen={reorderOpen} toggleOpen={toggleModal} />
-    </Fragment>
+      <ContentNavToggle />
+    </div>
   );
 }
 

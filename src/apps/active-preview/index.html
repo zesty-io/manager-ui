@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Active Preview</title>
+    <title>Zesty.io ActivePreview</title>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
@@ -27,15 +27,23 @@
       }
       html,
       body {
-        background-color: rgb(199, 212, 234);
-        color: #5b667d;
         font-family: "Mulish", Arial, sans-serif;
         font-size: 13.2px;
         height: 100%;
         width: 100%;
       }
+      @-moz-document url-prefix() {
+        /* Disable scrollbar Firefox */
+        html {
+          scrollbar-width: none;
+        }
+      }
+      body {
+        overflow: hidden;
+      }
 
       #appBoot {
+        background-color: #c3cddf;
         align-items: center;
         display: flex;
         justify-content: center;
@@ -49,10 +57,11 @@
         align-items: center;
       }
       #center h1 {
-        font-family: "Mulish", Arial, sans-serif;
-        font-size: 2em;
-        font-weight: 400;
-        text-shadow: 1px 1px 1px #d6e5ff;
+        font-family: "Mulish", Arial, Sans-Serif;
+        font-size: 32px;
+        font-weight: 200;
+        line-height: 48px;
+        letter-spacing: 0.32px;
       }
 
       .loader {
@@ -98,7 +107,7 @@
     <main id="root">
       <div id="appBoot">
         <div id="center">
-          <h1>Starting Active Preview</h1>
+          <h1>Starting ActivePreview</h1>
           <div class="loader">
             <span class="bar"></span>
             <span class="bar"></span>

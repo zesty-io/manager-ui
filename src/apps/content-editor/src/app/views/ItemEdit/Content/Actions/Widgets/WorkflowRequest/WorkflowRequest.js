@@ -1,10 +1,14 @@
 import { memo, useState } from "react";
+
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import SaveIcon from "@mui/icons-material/Save";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSave,
-  faSpinner,
-  faEnvelope,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -13,7 +17,7 @@ import {
   CardContent,
   CardFooter,
 } from "@zesty-io/core/CollapsibleCard";
-import { Button } from "@zesty-io/core/Button";
+
 import { Textarea } from "@zesty-io/core/Textarea";
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
@@ -30,20 +34,20 @@ export default memo(function WorkflowRequest({ itemTitle, fields }) {
   const [selectedFields, setSelectedFields] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
 
-  function handleSelectField(evt) {
-    const { name, checked } = evt.target;
+  function handleSelectField(evt, val) {
+    const { name } = evt.target;
     // push name to state
-    if (checked) {
+    if (val) {
       setSelectedFields([...selectedFields, name]);
     } else {
       setSelectedFields(selectedFields.filter((field) => field !== name));
     }
   }
 
-  function handleSelectUser(evt) {
-    const { name, checked } = evt.target;
-    // push email to state
-    if (checked) {
+  function handleSelectUser(evt, val) {
+    // push name to state
+    const { name } = evt.target;
+    if (val) {
       setSelectedMembers([...selectedMembers, name]);
     } else {
       setSelectedMembers(selectedMembers.filter((user) => user !== name));
@@ -134,10 +138,19 @@ ${
         <ul>
           {users.map((user) => (
             <li className={styles.Checkboxes} key={user.ZUID}>
-              <label onClick={handleSelectUser}>
-                <input type="checkbox" name={user.email} />
-                {user.firstName} {user.lastName}
-              </label>
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      color="secondary"
+                      size="small"
+                      name={user.email}
+                      onChange={(evt, val) => handleSelectUser(evt, val)}
+                    />
+                  }
+                  label={`${user.firstName} ${user.lastName}`}
+                />
+              </FormGroup>
             </li>
           ))}
         </ul>
@@ -146,10 +159,19 @@ ${
         <ul>
           {fields.map((field) => (
             <li className={styles.Checkboxes} key={field.ZUID}>
-              <label onClick={handleSelectField}>
-                <input type="checkbox" name={field.name} />
-                {field.label}
-              </label>
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      color="secondary"
+                      size="small"
+                      name={field.name}
+                      onChange={(evt, val) => handleSelectField(evt, val)}
+                    />
+                  }
+                  label={field.label}
+                />
+              </FormGroup>
             </li>
           ))}
         </ul>
@@ -163,16 +185,13 @@ ${
       </CardContent>
       <CardFooter>
         <Button
+          variant="contained"
           id="WorkflowRequestSendButton"
           className={styles.Button}
           onClick={handleSend}
           disabled={sending}
+          startIcon={sending ? <CircularProgress size="20px" /> : <SaveIcon />}
         >
-          {sending ? (
-            <FontAwesomeIcon icon={faSpinner} spin />
-          ) : (
-            <FontAwesomeIcon icon={faSave} />
-          )}
           Send Email
         </Button>
       </CardFooter>

@@ -7,28 +7,21 @@ describe("Actions in content editor", () => {
 
   const timestamp = Date.now();
 
-  it("not save when missing required Field", () => {
-    // TODO: update field ZUID to be correct synced ZUID when prod syncs down
-    cy.visit("/schema/6-556370-8sh47g");
-    cy.contains("required field 1").click();
-    cy.contains("Reactivate").click();
+  it("Must not save when missing required Field", () => {
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
-    cy.get("input[type=text]")
-      .first()
-      .type("{selectall}{backspace}test" + timestamp);
+    cy.get("input[name=text_field]").clear();
     cy.get("#SaveItemButton").click();
-    cy.contains("missing data in required field 1").should("exist");
+    cy.contains("You are missing data").should("exist");
   });
-  it("save when missing required deactivated field", () => {
-    cy.visit("/schema/6-556370-8sh47g");
-    cy.contains("required field 1").click();
-    cy.contains("Deactivate").click();
-    cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
-    cy.get("input[type=text]")
-      .first()
-      .type("{selectall}{backspace}test" + timestamp);
-    cy.get("#SaveItemButton").click();
-    cy.contains("Saved a new test version").should("exist");
+  /**
+   *  NOTE: this depends upon `toggle` field on the schema being marked as being required and deactivated. Because it's deactivated it doesn't render in the content editor and the expectation is the content item should save. there fore there is nothing to do and confirm that this item saves successfully. Adding this notes because nothing really happens inside this test but it's important this test remains.
+   * */
+  it("Save when missing required deactivated field", () => {
+    cy.visit("/content/6-0c960c-d1n0kx/7-c882ba84ce-c4smnp");
+    // Need to make an edit to enable save button.
+    cy.get("input[name=title]").clear({ force: true }).type(timestamp);
+    cy.get("#SaveItemButton", { timeout: 5000 }).click({ force: true });
+    cy.contains("Saved a new ").should("exist");
   });
   it("Saves homepage item metadata", () => {
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
@@ -80,14 +73,14 @@ describe("Actions in content editor", () => {
       .first()
       .click();
     cy.get(".flatpickr-calendar.open .flatpickr-confirm").click();
-    cy.get("#SchedulePublishButton").click();
+    cy.get("[data-cy=SchedulePublishButton]").click();
     cy.contains("Scheduled version").should("exist");
     cy.get("#SchedulePublishClose").click();
   });
 
   it.skip("Unschedules a Publish for an item", () => {
     cy.get("#PublishScheduleButton").click();
-    cy.get("#UnschedulePublishButton").click();
+    cy.get("[data-cy=UnschedulePublishButton]").click();
     cy.get("#SchedulePublishClose").click();
   });
 

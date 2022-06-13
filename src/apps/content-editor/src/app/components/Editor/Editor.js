@@ -1,10 +1,11 @@
 import React, { memo, useCallback, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import cx from "classnames";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Breadcrumbs } from "shell/components/global-tabs/components/Breadcrumbs";
 import { Field } from "./Field";
-import styles from "./Editor.less";
 
+import styles from "./Editor.less";
 export default memo(function Editor({
   active,
   fields,
@@ -42,6 +43,7 @@ export default memo(function Editor({
   };
 
   const onChange = useCallback((value, name) => {
+    if (value === null || name === null) return;
     if (!name) {
       throw new Error("Input is missing name attribute");
     }

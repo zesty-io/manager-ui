@@ -27,12 +27,16 @@ export const MediaImage = forwardRef(function MediaImage(props, ref) {
     case "gif":
     case "svg":
     case "webp":
-      const src = `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${props.file.id}/getimage/${props.params}`;
+      // If not given an exact src value build thumbnail link
+      const src = props.src
+        ? props.src
+        : `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${props.file.id}/getimage/${props.params}`;
       const options = {
         "data-src": props.lazy ? src : null,
         src: props.lazy ? "/images/FFFFFF-0.png" : src,
       };
-      return <img {...options} ref={ref} alt={props.file.title} />;
+      // IMPORTANT: DO NOT REMOVE LAZY. Unless you have a VERY good reason
+      return <img loading="lazy" {...options} ref={ref} src={src} />;
     case "html":
     case "js":
     case "less":

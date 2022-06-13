@@ -1,6 +1,14 @@
 import { Fragment, useState, useEffect } from "react";
 import { connect } from "react-redux";
 
+import Button from "@mui/material/Button";
+
+import ReorderIcon from "@mui/icons-material/Reorder";
+import SaveIcon from "@mui/icons-material/Save";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
+import Link from "@mui/material/Link";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowsAlt,
@@ -12,9 +20,8 @@ import {
 import { Dropzone } from "./components/Dropzone";
 import { Draggable } from "./components/Draggable";
 
-import { Url } from "@zesty-io/core/Url";
 import { Notice } from "@zesty-io/core/Notice";
-import { Button } from "@zesty-io/core/Button";
+
 import {
   Modal,
   ModalContent,
@@ -99,21 +106,28 @@ export default connect((state, props) => {
       });
   };
 
+  const handleClose = () => {
+    setOpen(false);
+    setFiles(props.fileHeaders);
+  };
+
   return (
     <Fragment>
       <Button
+        variant="contained"
         onClick={() => setOpen(true)}
         title="Change combine and pre-process order"
+        startIcon={<ZoomOutMapIcon />}
       >
-        <FontAwesomeIcon icon={faArrowsAlt} />
-        <span>Order</span>
+        Order
       </Button>
 
       {open && (
         <Modal
           className={styles.OrderFilesModal}
+          type="global"
           open={open}
-          onClose={() => setOpen(false)}
+          onClose={handleClose}
         >
           <ModalHeader>
             <h2>Order {props.typePathPart}</h2>
@@ -121,13 +135,13 @@ export default connect((state, props) => {
           <ModalContent>
             <p className={styles.Desc}>
               The displayed order is the order in which{" "}
-              <Url
+              <Link
                 href="https://zesty.org/services/web-engine/css-processing-flow"
                 target="_blank"
                 title="Learn More About Processing Flows"
               >
                 files are processed and concatentated together
-              </Url>{" "}
+              </Link>{" "}
               into the dynamically created{" "}
               {props.typePathPart === "stylesheets" ? (
                 <code>site.css</code>
@@ -165,11 +179,22 @@ export default connect((state, props) => {
             </Notice>
           </ModalContent>
           <ModalFooter>
-            <Button type="save" onClick={handleSaveSort} disabled={loading}>
-              <FontAwesomeIcon icon={faSave} /> Save Order
+            <Button
+              variant="contained"
+              data-cy="saveOrder"
+              color="success"
+              onClick={handleSaveSort}
+              disabled={loading}
+              startIcon={<SaveIcon />}
+            >
+              Save Order
             </Button>
-            <Button type="cancel" onClick={() => setOpen(false)}>
-              <FontAwesomeIcon icon={faBan} /> Cancel (ESC)
+            <Button
+              variant="contained"
+              onClick={handleClose}
+              startIcon={<DoDisturbAltIcon />}
+            >
+              Cancel (ESC)
             </Button>
           </ModalFooter>
         </Modal>

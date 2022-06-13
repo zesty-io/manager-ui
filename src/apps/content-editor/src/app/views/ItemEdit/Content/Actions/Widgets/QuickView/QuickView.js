@@ -1,4 +1,4 @@
-import { memo, Fragment, useState } from "react";
+import { memo, Fragment } from "react";
 import { useFilePath } from "shell/hooks/useFilePath";
 import moment from "moment-timezone";
 import cx from "classnames";
@@ -6,15 +6,13 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCodeBranch,
-  faBolt,
   faDatabase,
   faCode,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { Url } from "@zesty-io/core/Url";
 import { AppLink } from "@zesty-io/core/AppLink";
-import { CopyButton } from "@zesty-io/core/CopyButton";
+import { CopyButton } from "@zesty-io/material";
 
 import { usePermission } from "shell/hooks/use-permissions";
 
@@ -26,7 +24,6 @@ export const QuickView = memo(function QuickView(props) {
   const isScheduled = props.scheduling && props.scheduling.isScheduled;
 
   const codeAccess = usePermission("CODE");
-
   const codePath = useFilePath(props.modelZUID);
 
   return (
@@ -61,11 +58,7 @@ export const QuickView = memo(function QuickView(props) {
           <ul>
             <li>
               <strong>ZUID:</strong>&nbsp;
-              <CopyButton
-                kind="outlined"
-                size="compact"
-                value={props.itemZUID}
-              />
+              <CopyButton size="small" value={props.itemZUID} />
             </li>
             <li>
               <strong>Language:</strong>&nbsp;
@@ -75,19 +68,6 @@ export const QuickView = memo(function QuickView(props) {
                 )}
               </span>
             </li>
-            {codeAccess && (
-              <li>
-                <strong>API:</strong>&nbsp;
-                <Url
-                  target="_blank"
-                  title="Instant API"
-                  href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.itemZUID}.json`}
-                >
-                  <FontAwesomeIcon icon={faBolt} />
-                  &nbsp;{`/-/instant/${props.itemZUID}.json`}
-                </Url>
-              </li>
-            )}
             <li>Last edited {moment(props.updatedAt).fromNow()}</li>
             {props.publishing && props.publishing.version && (
               <li>Version {props.publishing.version} is published</li>
@@ -96,11 +76,10 @@ export const QuickView = memo(function QuickView(props) {
               <li>Version {props.scheduling.version} is scheduled</li>
             )}
             <li>Viewing version {props.version}</li>
+            <li>
+              Your timezone is <strong>{moment.tz.guess()}</strong>
+            </li>
           </ul>
-
-          <p className={styles.timezone}>
-            Your timezone is <strong>{moment.tz.guess()}</strong>
-          </p>
         </CardContent>
         <CardFooter className={SharedWidgetStyles.FooterSpacing}>
           {codeAccess && (

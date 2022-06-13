@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { connect } from "react-redux";
+
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCheckCircle,
-  faCloudUploadAlt,
-  faSpinner,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { Notice } from "@zesty-io/core/Notice";
-import { Button } from "@zesty-io/core/Button";
+
 import { CardContent, CardFooter } from "@zesty-io/core/Card";
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -95,12 +96,15 @@ export default connect((state) => {
         </Notice>
       </CardContent>
       <CardFooter>
-        <Button type="save" onClick={handlePublishAll} disabled={loading}>
-          {loading ? (
-            <FontAwesomeIcon icon={faSpinner} />
-          ) : (
-            <FontAwesomeIcon icon={faCheckCircle} />
-          )}{" "}
+        <Button
+          variant="contained"
+          color="success"
+          onClick={handlePublishAll}
+          disabled={loading}
+          startIcon={
+            loading ? <CircularProgress size="20px" /> : <CheckCircleIcon />
+          }
+        >
           Publish All Files
         </Button>
       </CardFooter>

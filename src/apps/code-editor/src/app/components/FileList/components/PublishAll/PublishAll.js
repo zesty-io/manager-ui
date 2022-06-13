@@ -1,15 +1,14 @@
 import { memo, Fragment, useState } from "react";
 import { connect } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBan,
-  faCheckCircle,
-  faCloudUploadAlt,
-  faSpinner,
-} from "@fortawesome/free-solid-svg-icons";
+
+import Button from "@mui/material/Button";
+import BackupIcon from "@mui/icons-material/Backup";
+import CircularProgress from "@mui/material/CircularProgress";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
 import { Notice } from "@zesty-io/core/Notice";
-import { Button } from "@zesty-io/core/Button";
+
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { AppLink } from "@zesty-io/core/AppLink";
 import {
@@ -82,12 +81,12 @@ export default connect((state) => {
     return (
       <Fragment>
         <Button
+          variant="contained"
           className={styles.PublishAllBtn}
           onClick={() => setOpen(true)}
           title="Publish All Files"
-        >
-          <FontAwesomeIcon icon={faCloudUploadAlt} />
-        </Button>
+          startIcon={<BackupIcon />}
+        ></Button>
         <Modal
           className={styles.PublishAll}
           // type="local"
@@ -119,17 +118,27 @@ export default connect((state) => {
           </ModalContent>
           <ModalFooter>
             <ButtonGroup className={styles.ModalActions}>
-              <Button type="save" onClick={handlePublishAll} disabled={loading}>
-                {loading ? (
-                  <FontAwesomeIcon spin icon={faSpinner} />
-                ) : (
-                  <FontAwesomeIcon icon={faCheckCircle} />
-                )}
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handlePublishAll}
+                disabled={loading}
+                startIcon={
+                  loading ? (
+                    <CircularProgress size="20px" />
+                  ) : (
+                    <CheckCircleIcon />
+                  )
+                }
+              >
                 Publish All Files
               </Button>
 
-              <Button type="cancel" onClick={() => setOpen(false)}>
-                <FontAwesomeIcon icon={faBan} />
+              <Button
+                variant="contianed"
+                onClick={() => setOpen(false)}
+                startIcon={<DoDisturbAltIcon />}
+              >
                 Cancel (ESC)
               </Button>
             </ButtonGroup>

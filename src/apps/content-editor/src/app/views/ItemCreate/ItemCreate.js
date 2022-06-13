@@ -5,8 +5,9 @@ import { useHistory, useParams } from "react-router-dom";
 import isEmpty from "lodash/isEmpty";
 import { createSelector } from "@reduxjs/toolkit";
 
+import Divider from "@mui/material/Divider";
+
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import { Divider } from "@zesty-io/core/Divider";
 import { Header } from "./Header";
 import { Editor } from "../../components/Editor";
 import { ItemSettings } from "../ItemEdit/Meta/ItemSettings";
@@ -44,13 +45,6 @@ export default function ItemCreate() {
   const [saving, setSaving] = useState(false);
   const [active, setActive] = useState();
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleSave);
-    return () => {
-      window.removeEventListener("keydown", handleSave);
-    };
-  }, []);
-
   // on mount and update modelZUID, load item fields
   useEffect(() => {
     loadItemFields(modelZUID);
@@ -62,17 +56,6 @@ export default function ItemCreate() {
       dispatch(generateItem(modelZUID));
     }
   }, [modelZUID, item]);
-
-  function handleSave(event) {
-    if (
-      ((platform.isMac && event.metaKey) ||
-        (!platform.isMac && event.ctrlKey)) &&
-      event.key == "s"
-    ) {
-      event.preventDefault();
-      save();
-    }
-  }
 
   async function loadItemFields(modelZUID) {
     setLoading(true);
@@ -175,7 +158,12 @@ export default function ItemCreate() {
             />
 
             <div className={styles.Meta}>
-              <Divider className={styles.Divider} />
+              <Divider
+                sx={{
+                  mt: 4,
+                  mb: 2,
+                }}
+              />
               <h2 className={styles.title}>Meta Settings</h2>
               {model && model.type === "dataset" ? (
                 <DataSettings item={item} dispatch={dispatch} />

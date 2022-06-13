@@ -4,21 +4,30 @@ import { connect } from "react-redux";
 import { useDomain } from "shell/hooks/use-domain";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFile, faSave, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Tooltip from "@mui/material/Tooltip";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import FormLabel from "@mui/material/FormLabel";
+import CircularProgress from "@mui/material/CircularProgress";
+import SaveIcon from "@mui/icons-material/Save";
+import Link from "@mui/material/Link";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
-import { Url } from "@zesty-io/core/Url";
-import { Button } from "@zesty-io/core/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFile } from "@fortawesome/free-solid-svg-icons";
+
 import { Notice } from "@zesty-io/core/Notice";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
-import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 
 import styles from "./Robots.less";
-import { Divider } from "@zesty-io/core/Divider";
+
+import Divider from "@mui/material/Divider";
 
 export default connect((state) => {
   return {
@@ -69,13 +78,13 @@ export default connect((state) => {
       setRobotOn((prevRobotOn) => ({
         ...prevRobotOn,
         ...robots_on,
-        // We require this to be a number to properly convert to a boolean for the FeildTypeBinary compnent
-        value: Number(robots_on.value),
+        value: robots_on.value,
       }));
     });
   }, []);
 
   const handleRobotsOn = (value) => {
+    if (value === null) return;
     setRobotOn((prevRobotOn) => ({
       ...prevRobotOn,
       value,
@@ -94,7 +103,7 @@ export default connect((state) => {
 
     const robotsOn = makeRequest({
       ...robotOn,
-      value: String(robotOn.value), // The API requires this as a string
+      value: robotOn.value, // The API requires this as a string
     });
     const robotsText = makeRequest(robotText);
 
@@ -141,25 +150,52 @@ export default connect((state) => {
           <FontAwesomeIcon icon={faFile} className={styles.titleIcon} />
           Robots.txt Editor
         </h1>
-        <Divider />
+        <Divider
+          sx={{
+            my: 1,
+            mx: 2,
+          }}
+        />
 
         <div className={styles.Row}>
-          <FieldTypeBinary
-            name="settings[general][robots_on]"
-            label={robotOn.keyFriendly}
-            tooltip={robotOn.tips}
-            value={Boolean(robotOn.value)}
-            offValue="No"
-            onValue="Yes"
-            onChange={handleRobotsOn}
-          />
+          <FormLabel>
+            <Stack
+              spacing={1}
+              direction="row"
+              alignItems="center"
+              sx={{
+                my: 1,
+              }}
+            >
+              <Tooltip title={robotOn.tips} arrow placement="top-start">
+                <InfoIcon fontSize="small" />
+              </Tooltip>
+              <p>{robotOn.keyFriendly}</p>
+            </Stack>
+          </FormLabel>
+          <ToggleButtonGroup
+            color="secondary"
+            size="small"
+            value={robotOn.value}
+            exclusive
+            onChange={(evt, val) => handleRobotsOn(val)}
+          >
+            <ToggleButton value={"0"}>No </ToggleButton>
+            <ToggleButton value={"1"}>Yes </ToggleButton>
+          </ToggleButtonGroup>
         </div>
 
         <div className={cx(styles.IframeWrapper, styles.Row)}>
           <h2>
-            <Url href={robotURL} target="_blank" title={robotURL}>
+            <Link
+              underline="none"
+              color="secondary"
+              href={robotURL}
+              target="_blank"
+              title={robotURL}
+            >
               {robotURL}
-            </Url>
+            </Link>
           </h2>
           <iframe className={styles.Iframe} src={iframeURL}></iframe>
         </div>
@@ -189,16 +225,13 @@ export default connect((state) => {
         </div>
 
         <Button
-          type="save"
-          className={styles.SaveBtn}
+          variant="contained"
+          color="success"
           onClick={handleSave}
           disabled={loading}
+          startIcon={loading ? <CircularProgress size="20px" /> : <SaveIcon />}
+          sx={{ alignSelf: "flex-start" }}
         >
-          {loading ? (
-            <FontAwesomeIcon spin icon={faSpinner} />
-          ) : (
-            <FontAwesomeIcon icon={faSave} />
-          )}
           Save {metaShortcut}
         </Button>
       </div>

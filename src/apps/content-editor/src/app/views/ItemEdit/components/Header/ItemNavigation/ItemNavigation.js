@@ -9,6 +9,7 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
   return (
     <nav className={styles.ItemNav}>
       <AppLink
+        title="Edit Content"
         data-cy="content"
         className={cx(
           styles.AppLink,
@@ -25,6 +26,7 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
         Edit Content
       </AppLink>
       <AppLink
+        title="SEO & Meta"
         data-cy="meta"
         className={cx(
           styles.AppLink,
@@ -37,6 +39,7 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
       </AppLink>
       {item.web.path && (
         <AppLink
+          title="Head Tags"
           data-cy="head"
           className={cx(
             styles.AppLink,
@@ -48,21 +51,9 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
           Head Tags
         </AppLink>
       )}
-      {item.web.path && (
-        <AppLink
-          data-cy="preview"
-          className={cx(
-            styles.AppLink,
-            styles.buttonText,
-            slug === "preview" ? styles.Selected : null
-          )}
-          to={`/content/${modelZUID}/${itemZUID}/preview`}
-        >
-          WebEngine Preview
-        </AppLink>
-      )}
 
       <AppLink
+        title="Headless Options"
         data-cy="headless"
         className={cx(
           styles.AppLink,
@@ -71,7 +62,7 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
         )}
         to={`/content/${modelZUID}/${itemZUID}/headless`}
       >
-        Headless Options
+        Headless <span className={styles.Hide}>Options</span>
       </AppLink>
     </nav>
   );

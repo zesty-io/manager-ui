@@ -1,27 +1,24 @@
 import React, { useState } from "react";
 import cx from "classnames";
 
-import styles from "./RedirectImportTableRow.less";
+import Button from "@mui/material/Button";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import AddIcon from "@mui/icons-material/Add";
+import TextField from "@mui/material/TextField";
 
-import { Button } from "@zesty-io/core/Button";
-import { Input } from "@zesty-io/core/Input";
-import { ToggleButton } from "@zesty-io/core/ToggleButton";
 import { Select, Option } from "@zesty-io/core/Select";
 
 import { createRedirect } from "../../../../store/redirects";
 import { importTarget } from "../../../../store/imports";
 import { importQuery } from "../../../../store/imports";
 
-function RedirectImportTableRow(props) {
-  const [code, setCode] = useState(1); // Toggle defaults to 301
-  const [type, setType] = useState("page");
+import styles from "./RedirectImportTableRow.less";
 
-  const handleCode = (val) => {
-    setCode(Number(val));
-  };
+function RedirectImportTableRow(props) {
+  const [code, setCode] = useState(301); // Toggle defaults to 301
+  const [type, setType] = useState("page");
 
   const handlePageTarget = (evt) => {
     const path = props.paths[evt.target.dataset.value];
@@ -44,9 +41,14 @@ function RedirectImportTableRow(props) {
         query_string: props.query_string,
         targetType: props.target_type,
         target: props.target_zuid || props.target,
-        code: code === 1 ? 301 : 302, // API expects a 301/302 value
+        code, // API expects a 301/302 value
       })
     );
+  };
+
+  const handleToggle = (val) => {
+    if (val === null) return;
+    setCode(val);
   };
 
   return (
@@ -54,14 +56,16 @@ function RedirectImportTableRow(props) {
       <span className={styles.RowCell}>{props.path}</span>
 
       <span className={styles.RedirectCreatorCell}>
-        <ToggleButton
-          className={styles.code}
-          name="redirectType"
+        <ToggleButtonGroup
+          color="secondary"
           value={code}
-          offValue="302"
-          onValue="301"
-          onChange={handleCode}
-        />
+          size="small"
+          exclusive
+          onChange={(evt, val) => handleToggle(val)}
+        >
+          <ToggleButton value={302}>302</ToggleButton>
+          <ToggleButton value={301}>301</ToggleButton>
+        </ToggleButtonGroup>
       </span>
 
       <span className={styles.RowCell}>
@@ -86,18 +90,30 @@ function RedirectImportTableRow(props) {
             })}
           </Select>
         ) : (
-          <Input onChange={handlePathTarget} defaultValue={props.target} />
+          <TextField
+            onChange={handlePathTarget}
+            defaultValue={props.target}
+            size="small"
+            variant="outlined"
+            color="primary"
+          />
         )}
-        <Input
+        <TextField
           onChange={handleQuery}
           placeholder="Redirect query string"
           defaultValue={props.query_string}
+          size="small"
+          variant="outlined"
+          color="primary"
         />
       </span>
 
       <span className={cx(styles.RowCell, styles.RedirectButton)}>
-        <Button className="save" onClick={handleAddRedirect}>
-          <FontAwesomeIcon icon={faPlus} />
+        <Button
+          variant="contained"
+          onClick={handleAddRedirect}
+          startIcon={<AddIcon />}
+        >
           Redirect
         </Button>
       </span>

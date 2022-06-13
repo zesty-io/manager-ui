@@ -3,6 +3,11 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { searchItems } from "shell/store/content";
 import cx from "classnames";
+
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import MuiLink from "@mui/material/Link";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
@@ -11,12 +16,8 @@ import {
   faFile,
   faFileAlt,
   faLink,
-  faTrashAlt,
   faBan,
 } from "@fortawesome/free-solid-svg-icons";
-
-import { Button } from "@zesty-io/core/Button";
-import { Url } from "@zesty-io/core/Url";
 
 import styles from "./RedirectsTableRow.less";
 export default function RedirectsTableRow(props) {
@@ -62,17 +63,17 @@ export default function RedirectsTableRow(props) {
       <span className={styles.RedirectsTableRowCell}>
         {props.targetType === "external" ? (
           <span>
-            <FontAwesomeIcon icon={faExternalLinkAlt} />
+            <FontAwesomeIcon icon={faExternalLinkAlt} className={styles.mr} />
             External&nbsp;
           </span>
         ) : props.targetType === "path" ? (
           <span>
-            <FontAwesomeIcon icon={faFile} />
+            <FontAwesomeIcon icon={faFile} className={styles.mr} />
             Wildcard&nbsp;
           </span>
         ) : (
           <span>
-            <FontAwesomeIcon icon={faFileAlt} />
+            <FontAwesomeIcon icon={faFileAlt} className={styles.mr} />
             Internal&nbsp;
           </span>
         )}
@@ -98,14 +99,20 @@ export default function RedirectsTableRow(props) {
         </span>
       ) : props.targetType === "external" ? (
         <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
-          <Url href={props.target} target="_blank" title="Redirect URL">
-            <FontAwesomeIcon icon={faExternalLinkAlt} />
+          <MuiLink
+            underline="none"
+            color="secondary"
+            href={props.target}
+            target="_blank"
+            title="Redirect URL"
+          >
+            <FontAwesomeIcon icon={faExternalLinkAlt} className={styles.mr} />
             &nbsp;<code>{props.target}</code>
-          </Url>
+          </MuiLink>
         </span>
       ) : (
         <span className={cx(styles.RedirectsTableRowCell, styles.to)}>
-          <FontAwesomeIcon icon={faAsterisk} />
+          <FontAwesomeIcon icon={faAsterisk} className={styles.mr} />
           <code>{props.target}</code>
         </span>
       )}
@@ -114,11 +121,16 @@ export default function RedirectsTableRow(props) {
 
       <span className={styles.RedirectsTableRowCell}>
         <Button
-          className={cx(styles.removeBtn, "button deleteButton")}
+          variant="contained"
+          color="error"
+          size="small"
           onClick={props.removeRedirect}
+          sx={{
+            marginLeft: "auto",
+            alignItems: "center",
+          }}
         >
-          <FontAwesomeIcon icon={faTrashAlt} />
-          Remove
+          <DeleteIcon fontSize="small" />
         </Button>
       </span>
     </div>

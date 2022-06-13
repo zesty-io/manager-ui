@@ -1,11 +1,13 @@
 import { memo, Fragment, useState, useEffect } from "react";
 import { connect } from "react-redux";
 import debounce from "lodash/debounce";
+import { notify } from "shell/store/notifications";
 
 import { Select, Option } from "@zesty-io/core/Select";
-import { Infotip } from "@zesty-io/core/Infotip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
+import Tooltip from "@mui/material/Tooltip";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { searchItems } from "shell/store/content";
 
@@ -26,7 +28,7 @@ export const ItemParent = connect((state) => {
       });
 
       const [parents, setParents] = useState(
-        parentOptions(props.path, props.content)
+        parentOptions(props.currentItemLangID, props.path, props.content)
       );
 
       const onSearch = debounce((term) => {
@@ -35,7 +37,7 @@ export const ItemParent = connect((state) => {
           props.dispatch(searchItems(term)).then((res) => {
             setLoading(false);
             setParents(
-              parentOptions(props.path, {
+              parentOptions(props.currentItemLangID, props.path, {
                 ...props.content,
                 ...res?.data,
               })
@@ -93,22 +95,48 @@ export const ItemParent = connect((state) => {
             setParent(item);
           } else {
             props.dispatch(searchItems(parentZUID)).then((res) => {
-              setParent(res.data[0]);
-
-              /**
-               * // HACK Because we pre-load all item publishings and store them in the same reducer as the `content`
-               * we can't use array length comparision to determine a new parent has been added. Also since updates to the item
-               * currently being edited cause a new `content` object to be created in it's reducer we can't use
-               * referential equality checks to determine re-rendering. This scenario causes either the parent to not be pre-selected
-               * or a performance issue. To work around this we maintain the `parents` state internal and add the new parent we load from the
-               * API to allow it to be pre-selected while avoiding re-renders on changes to this item.
-               */
-              setParents(
-                parentOptions(props.path, {
-                  ...props.content,
-                  [res.data[0].meta.ZUID]: res.data[0],
-                })
-              );
+              if (res) {
+                if (res.data) {
+                  if (Array.isArray(res.data) && res.data.length) {
+                    setParent(res.data[0]);
+                    /**
+                     * // HACK Because we pre-load all item publishings and store them in the same reducer as the `content`
+                     * we can't use array length comparision to determine a new parent has been added. Also since updates to the item
+                     * currently being edited cause a new `content` object to be created in it's reducer we can't use
+                     * referential equality checks to determine re-rendering. This scenario causes either the parent to not be pre-selected
+                     * or a performance issue. To work around this we maintain the `parents` state internal and add the new parent we load from the
+                     * API to allow it to be pre-selected while avoiding re-renders on changes to this item.
+                     */
+                    setParents(
+                      parentOptions(props.currentItemLangID, props.path, {
+                        ...props.content,
+                        [res.data[0].meta.ZUID]: res.data[0],
+                      })
+                    );
+                  } else {
+                    props.dispatch(
+                      notify({
+                        kind: "warn",
+                        message: `Parent item not found ${res.status}`,
+                      })
+                    );
+                  }
+                } else {
+                  props.dispatch(
+                    notify({
+                      kind: "warn",
+                      message: `API failed to return data ${res.status}`,
+                    })
+                  );
+                }
+              } else {
+                props.dispatch(
+                  notify({
+                    kind: "warn",
+                    message: `API failed to return response ${res.status}`,
+                  })
+                );
+              }
             });
           }
         }
@@ -117,8 +145,14 @@ export const ItemParent = connect((state) => {
       return (
         <article className={styles.ItemParent} data-cy="itemParent">
           <label>
-            <Infotip title="Set which page this one will be nested beneath. This effects both automatically generated navigation and the URL structure for this page." />
-            &nbsp; Select this Page's Parent
+            <Tooltip
+              title="Set which page this one will be nested beneath. This effects both automatically generated navigation and the URL structure for this page."
+              arrow
+              placement="top-start"
+            >
+              <InfoIcon fontSize="small" />
+            </Tooltip>
+            &nbsp;Select this Page's Parent
           </label>
 
           {/*
@@ -182,7 +216,7 @@ export const ItemParent = connect((state) => {
   )
 );
 
-function parentOptions(path, items) {
+function parentOptions(currentItemLangID, path, items) {
   return (
     Object.keys(items)
       // Filter items into list of zuids
@@ -194,7 +228,8 @@ function parentOptions(path, items) {
           items[itemZUID].web &&
           items[itemZUID].web.path && // must have a path
           items[itemZUID].web.path !== "/" && // Exclude homepage
-          items[itemZUID].web.path !== path // Exclude current item
+          items[itemZUID].web.path !== path && // Exclude current item
+          items[itemZUID].meta.langID === currentItemLangID // display only relevant language options
       )
       // De-dupe list of zuids & convert to item objects
       .reduce((acc, zuid) => {

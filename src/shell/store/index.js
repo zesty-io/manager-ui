@@ -27,9 +27,10 @@ import { notifications } from "./notifications";
 import { platform } from "./platform";
 import { headTags } from "./headTags";
 import media from "./media";
+import { ui } from "./ui";
 import { users } from "./users";
-import ui from "./ui";
-import publishPlan from "./publishPlan";
+import { releases } from "./releases";
+import { releaseMembers } from "./releaseMembers";
 import apps from "./apps";
 
 // Middleware is applied in order of array
@@ -82,6 +83,8 @@ function createReducer(asyncReducers) {
     auth,
     user,
     users: users.reducer,
+    releases: releases.reducer,
+    releaseMembers: releaseMembers.reducer,
     userRole,
     products,
     instance,
@@ -96,8 +99,7 @@ function createReducer(asyncReducers) {
     notifications,
     platform,
     headTags,
-    ui,
-    publishPlan,
+    ui: ui.reducer,
   };
 
   return combineReducers({

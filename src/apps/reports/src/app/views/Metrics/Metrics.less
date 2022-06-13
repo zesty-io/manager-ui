@@ -1,0 +1,143 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+.IsSuccess {
+  color: @zesty-green;
+}
+.IsDanger {
+  color: @zesty-red;
+}
+.IsWarning {
+  color: #d7b141;
+}
+.IsInfo {
+  color: @zesty-blue;
+}
+.IsOrange {
+  color: @zesty-orange;
+}
+
+.ErrorMessage {
+  margin: 16px;
+}
+
+.MetricsHeader {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 16px;
+  margin-top: 16px;
+}
+
+.BtnGroup {
+  button:not(:last-child) {
+    margin-right: 8px;
+  }
+}
+
+.CardContentHeader {
+  display: flex;
+  justify-content: space-between;
+
+  aside {
+    p:not(:last-child) {
+      padding-bottom: 8px;
+    }
+  }
+}
+
+.CardContentGraphs {
+  display: grid;
+  grid-template-columns: minmax(100px, 200px) repeat(
+      auto-fit,
+      minmax(320px, 1fr)
+    );
+  gap: 16px;
+  align-items: center;
+
+  @media only screen and (max-width: 1300px) {
+    grid-template-columns: auto;
+    grid-template-rows: 1fr 1fr 1fr;
+    justify-items: center;
+  }
+}
+.GraphTitles {
+  justify-self: center;
+}
+
+.CardContentBandwidth {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 16px;
+}
+
+.CardContentRequest {
+  display: grid;
+  grid-template-columns: repeat(5, auto);
+  gap: 16px;
+}
+
+.MetricsTable {
+  border-collapse: collapse;
+  text-align: left;
+  width: 100%;
+  .TableBody {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid @zesty-light-blue;
+    border-radius: 4px;
+    .noResults {
+      margin: 16px;
+    }
+  }
+  > thead {
+    font-size: 14px;
+  }
+}
+
+.MetricsTableRow {
+  background-color: @white;
+  align-items: center;
+
+  &:nth-of-type(odd) {
+    background: lighten(@zesty-light-blue, 15%);
+  }
+
+  &:hover,
+  &:focus,
+  &:active,
+  &:nth-of-type(odd):hover,
+  &:nth-of-type(odd):focus,
+  &:nth-of-type(odd):active {
+    background-color: lighten(@zesty-field-blue, 10%);
+  }
+
+  .MetricsTableRowCell {
+    padding: 16px;
+    a {
+      display: inline-block;
+      max-width: 500px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    svg {
+      margin-right: 8px;
+    }
+
+    .internalLink {
+      font-size: 1em;
+      color: @zesty-blue;
+    }
+    .removeBtn {
+      margin-left: auto;
+      align-items: center;
+    }
+  }
+}
+
+@media only screen and (min-width: 2000px) {
+  .TableContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}

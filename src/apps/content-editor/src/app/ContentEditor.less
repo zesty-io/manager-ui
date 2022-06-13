@@ -1,26 +1,60 @@
 @import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.SchemaRedirect {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: calc(100vh - 54px);
+  a {
+    font-size: 16px;
+  }
+}
 
 .ContentEditor {
   height: calc(100vh - 54px);
   display: grid;
-  grid-template-columns: minmax(200px, 350px) 1fr;
-
-  .Nav {
-    background: transparent;
-    overflow: hidden;
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
+  grid-template-columns: 60px 1fr;
+  position: relative;
 
   .Content {
     overflow: hidden;
-    box-shadow: 0 0 15px fade(@zesty-dark-blue, 50%);
+    box-shadow: -1px 1px 10px 2px fade(@zesty-dark-blue, 50%);
     z-index: 1;
 
     .ContentWrap {
       display: flex;
       flex-direction: column;
       height: 100%;
+    }
+  }
+
+  &.ContentGridHover,
+  &.ContentGridOpen {
+    grid-template-columns: 20vw auto;
+
+    @media only screen and (min-width: 2000px) {
+      grid-template-columns: 15vw auto;
+    }
+  }
+
+  &.ContentGridHover {
+    .Content {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100vh;
+
+      &.GlobalOpen {
+        // 100vw - GlobalSidebar - contentNavUNCollapsed
+        width: calc(100vw - 145px - 60px);
+      }
+
+      &.GlobalClosed {
+        // 100vw - GlobalSidebar - contentNavCollapsed
+        width: calc(100vw - 60px - 60px);
+      }
     }
   }
 }

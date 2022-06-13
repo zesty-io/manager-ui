@@ -3,7 +3,8 @@ import { useLocation } from "react-router-dom";
 import cx from "classnames";
 
 import { Nav } from "@zesty-io/core/Nav";
-import { Infotip } from "@zesty-io/core/Infotip";
+import Tooltip from "@mui/material/Tooltip";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { CreateFile } from "./components/CreateFile";
 import { OrderFiles } from "./components/OrderFiles";
@@ -22,25 +23,22 @@ export const FileList = memo(function FileList(props) {
     props.navCode.tree.sort(byLabel)
   );
 
+  const [stylesheetsShownFiles, setStylesheetsShownFiles] = useState(
+    props.navCode.stylesheetsTree.sort(byOrder)
+  );
+
+  const [scriptsShownFiles, setScriptsShownFiles] = useState(
+    props.navCode.scriptsTree.sort(byOrder)
+  );
+
   let { pathname } = useLocation();
   let hashPath = `/${pathname}`;
 
   useEffect(() => {
     setShownFiles(props.navCode.tree.sort(byLabel));
+    setStylesheetsShownFiles(props.navCode.stylesheetsTree.sort(byOrder));
+    setScriptsShownFiles(props.navCode.scriptsTree.sort(byOrder));
   }, [props.navCode]);
-
-  const views = shownFiles.filter((file) => {
-    let pathPart = resolvePathPart(file.type);
-    return pathPart !== "scripts" && pathPart !== "stylesheets";
-  });
-
-  const js = shownFiles
-    .filter((file) => resolvePathPart(file.type) === "scripts")
-    .sort(byOrder);
-
-  const css = shownFiles
-    .filter((file) => resolvePathPart(file.type) === "stylesheets")
-    .sort(byOrder);
 
   const collapseNode = (node) => {
     props.dispatch(collapseNavItem(node.path));
@@ -89,41 +87,50 @@ export const FileList = memo(function FileList(props) {
           <Nav
             name="views"
             selected={hashPath}
-            tree={views}
+            tree={shownFiles}
             actions={actions}
             collapseNode={collapseNode}
           />
 
           <header className={styles.Title}>
-            <Infotip>
-              Site.css is a dynamically created file from the instance
-              stylesheet files
-            </Infotip>
-            &nbsp;
-            <h1>site.css</h1>
+            <h1>
+              <Tooltip
+                title="Site.css is a dynamically created file from the instance
+                stylesheet files"
+                arrow
+                placement="top-start"
+              >
+                <InfoIcon fontSize="small" />
+              </Tooltip>
+              &nbsp;site.css
+            </h1>
             <OrderFiles type="text/css" />
           </header>
           <Nav
             name="css"
             selected={hashPath}
-            tree={css}
+            tree={stylesheetsShownFiles}
             actions={actions}
             collapseNode={collapseNode}
           />
 
           <header className={styles.Title}>
-            <Infotip>
-              Site.js is a dynamically created file from the instance JavaScript
-              files
-            </Infotip>
-            &nbsp;
-            <h1>site.js</h1>
+            <h1>
+              <Tooltip
+                title="Site.js is a dynamically created file from the instance JavaScript files"
+                arrow
+                placement="top-start"
+              >
+                <InfoIcon fontSize="small" color="asdf" />
+              </Tooltip>
+              &nbsp;site.js
+            </h1>
             <OrderFiles type="text/javascript" />
           </header>
           <Nav
             name="js"
             selected={hashPath}
-            tree={js}
+            tree={scriptsShownFiles}
             actions={actions}
             collapseNode={collapseNode}
           />
