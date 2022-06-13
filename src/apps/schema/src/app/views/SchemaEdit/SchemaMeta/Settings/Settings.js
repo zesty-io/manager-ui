@@ -15,7 +15,6 @@ import {
   CardFooter,
 } from "@zesty-io/core/CollapsibleCard";
 import { FieldTypeText } from "@zesty-io/material";
-import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 
 import { Parent } from "./Parent";
@@ -46,13 +45,15 @@ export default function Settings(props) {
           onChange={(evt) => update(evt.target.value, "name")}
         />
 
-        <FieldTypeTextarea
-          className={styles.FieldTypeTextarea}
+        <FieldTypeText
           name="description"
           label="Description"
           value={props.model.description}
           maxLength={500}
-          onChange={update}
+          onChange={(evt) => update(evt.target.value, "description")}
+          multiline
+          rows={6}
+          sx={{ minWidth: "auto" }}
         />
 
         {/* <label>

@@ -30,7 +30,6 @@ import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
 import { FieldTypeNumber } from "@zesty-io/core/FieldTypeNumber";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
-import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { FieldTypeCurrency } from "@zesty-io/core/FieldTypeCurrency";
 import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
@@ -285,16 +284,21 @@ export default function Field({
 
     case "textarea":
       return (
-        <FieldTypeTextarea
+        <FieldTypeText
           name={name}
           label={FieldTypeLabel}
-          description={description}
+          helperText={description}
           tooltip={settings.tooltip}
           required={required}
           value={value}
           version={version}
           datatype={datatype}
-          onChange={onChange}
+          multiline={true}
+          rows={6}
+          onChange={(evt) => {
+            console.log(evt);
+            onChange(evt.target.value, name);
+          }}
           maxLength="16000"
         />
       );
