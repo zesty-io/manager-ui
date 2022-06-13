@@ -3,10 +3,15 @@ import moment from "moment";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBolt, faCodeBranch } from "@fortawesome/free-solid-svg-icons";
+import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import Link from "@mui/material/Link";
 
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+
+import InfoIcon from "@mui/icons-material/Info";
+
 import { AppLink } from "@zesty-io/core/AppLink";
 import { CopyButton } from "@zesty-io/material";
 
@@ -41,12 +46,12 @@ export default function FileStatus(props) {
   const instance = useSelector((state) => state.instance);
 
   return (
-    <Card className={cx(styles.FileStatus, shared.DrawerStyles)}>
-      <CardHeader>
-        <h1>
-          <FontAwesomeIcon icon={faCodeBranch} /> File Information
-        </h1>
-      </CardHeader>
+    <Card className={cx(styles.FileStatus, shared.DrawerStyles)} sx={{ m: 2 }}>
+      <CardHeader
+        avatar={<InfoIcon fontSize="small" />}
+        title="File Information"
+      ></CardHeader>
+
       <CardContent>
         <ul>
           {props.file.contentModelZUID && (

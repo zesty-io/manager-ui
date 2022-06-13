@@ -3,7 +3,11 @@ import { faEdit, faEye, faLink } from "@fortawesome/free-solid-svg-icons";
 import Link from "@mui/material/Link";
 import cx from "classnames";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import EditIcon from "@mui/icons-material/Edit";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./LinkedContent.less";
@@ -11,12 +15,14 @@ import shared from "../../FileDrawer.less";
 
 export default function LinkedContent(props) {
   return (
-    <Card className={cx(styles.LinkedContent, shared.DrawerStyles)}>
-      <CardHeader>
-        <h1>
-          <FontAwesomeIcon icon={faEdit} /> Linked Content
-        </h1>
-      </CardHeader>
+    <Card
+      className={cx(styles.LinkedContent, shared.DrawerStyles)}
+      sx={{ m: 2 }}
+    >
+      <CardHeader
+        avatar={<EditIcon fontSize="small" />}
+        title="Linked Content"
+      ></CardHeader>
       <CardContent>
         <p>
           Shown are the three latest content entries from this views linked
@@ -58,7 +64,7 @@ export default function LinkedContent(props) {
           })}
         </ul>
       </CardContent>
-      <CardFooter>
+      <CardActions>
         <p>
           <AppLink
             className={styles.Link}
@@ -69,7 +75,7 @@ export default function LinkedContent(props) {
             Edit Linked Content
           </AppLink>
         </p>
-      </CardFooter>
+      </CardActions>
     </Card>
   );
 }

@@ -2,7 +2,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase, faLink } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import StorageIcon from "@mui/icons-material/Storage";
+
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import Link from "@mui/material/Link";
@@ -12,13 +17,14 @@ import shared from "../../FileDrawer.less";
 
 export default function LinkedSchema(props) {
   return (
-    <Card className={cx(styles.LinkedSchema, shared.DrawerStyles)}>
-      <CardHeader>
-        <h1>
-          <FontAwesomeIcon icon={faDatabase} /> {props.file.fileName}'s Related
-          Model Schema
-        </h1>
-      </CardHeader>
+    <Card
+      className={cx(styles.LinkedSchema, shared.DrawerStyles)}
+      sx={{ m: 2 }}
+    >
+      <CardHeader
+        avatar={<StorageIcon fontSize="small" />}
+        title={`${props.file.fileName}'s  Related Model Schema`}
+      ></CardHeader>
       <CardContent>
         <p>
           Use the below Parsley syntax to reference this models fields. This
@@ -45,7 +51,7 @@ export default function LinkedSchema(props) {
           ))}
         </ul>
       </CardContent>
-      <CardFooter>
+      <CardActions>
         <p>
           <AppLink
             className={styles.Link}
@@ -56,7 +62,7 @@ export default function LinkedSchema(props) {
             Edit Linked Schema
           </AppLink>
         </p>
-      </CardFooter>
+      </CardActions>
     </Card>
   );
 }
