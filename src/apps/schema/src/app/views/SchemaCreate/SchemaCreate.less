@@ -1,78 +1,82 @@
 @import "~@zesty-io/core/colors.less";
 @import "~@zesty-io/core/typography.less";
 
-.Step {
-  flex: 1;
-  margin: 24px 32px 24px 0;
-  min-width: 300px;
+@border-color: #dee6ff;
 
-  .StepTitle {
-    font-size: 18px;
-    font-weight: bold;
-    line-height: 28px;
-    letter-spacing: 0.8px;
-    margin-bottom: 8px;
-  }
+.SchemaCreate {
+  .Step {
+    flex: 1;
+    margin: 24px 32px 24px 0;
+    min-width: 300px;
 
-  .StepDesc {
-    margin-bottom: 32px;
-    font-size: 14px;
-    line-height: 20px;
-  }
-
-  label {
-    margin-bottom: 32px;
-  }
-
-  h3 {
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 36px;
-  }
-
-  em {
-    // font-style: italic;
-    font-weight: 100;
-  }
-
-  p {
-    font-size: 14px;
-    line-height: 28px;
-  }
-
-  .questionnaire {
-    margin-bottom: 32px;
-    label {
-      margin-bottom: 0;
-    }
-  }
-
-  .hidden {
-    display: none;
-  }
-
-  .error {
-    color: #e53c05;
-    font-size: 12px;
-    line-height: 16px;
-  }
-
-  .Types {
-    margin-top: 24px;
-
-    p {
+    .StepTitle {
+      font-size: 18px;
+      font-weight: bold;
+      line-height: 28px;
+      letter-spacing: 0.8px;
       margin-bottom: 8px;
     }
+
+    .StepDesc {
+      margin-bottom: 32px;
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    label {
+      margin-bottom: 32px;
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 36px;
+    }
+
+    em {
+      // font-style: italic;
+      font-weight: 100;
+    }
+
+    p {
+      font-size: 14px;
+      line-height: 28px;
+    }
+
+    .questionnaire {
+      margin-bottom: 32px;
+      label {
+        margin-bottom: 0;
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .error {
+      color: #e53c05;
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    .Types {
+      margin-top: 24px;
+
+      p {
+        margin-bottom: 8px;
+      }
+    }
   }
-}
-.FieldTypeDropDown {
-  svg {
-    width: 20px;
+  .FieldTypeDropDown {
+    svg {
+      width: 20px;
+    }
   }
-}
-.Step:last-child {
-  margin-right: 0px;
-}
-.FieldTypeTextarea {
-  min-width: auto;
+  .Step:last-child {
+    margin-right: 0px;
+  }
+  .FieldTypeTextarea {
+    min-width: auto;
+  }
 }

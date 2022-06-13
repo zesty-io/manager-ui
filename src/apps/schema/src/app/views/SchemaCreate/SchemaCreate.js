@@ -13,6 +13,11 @@ import Tooltip from "@mui/material/Tooltip";
 import AddIcon from "@mui/icons-material/Add";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 
@@ -22,11 +27,7 @@ import {
   faFile,
   faListAlt,
 } from "@fortawesome/free-solid-svg-icons";
-
-import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
+// import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
@@ -152,9 +153,9 @@ export default connect((state) => {
   };
 
   return (
-    <Box sx={{ m: 2 }}>
+    <Box className={styles.SchemaCreate} sx={{ m: 2 }}>
       {/* {props.user.first_time && (
-        <Card >
+        <Card className={styles.Card}>
           <CardHeader>
             <h1 className={styles.display}>
               Welcome to your new instance. Lets get started by creating your
@@ -173,7 +174,7 @@ export default connect((state) => {
         </Card>
       )} */}
 
-      <Card>
+      <Card className={styles.Card}>
         <CardHeader title="You are creating a new content model"></CardHeader>
         <CardContent sx={{ display: "flex", flexWrap: "wrap" }}>
           <section className={cx(styles.Step, styles.SchemaType)}>
