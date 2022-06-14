@@ -9,7 +9,13 @@ import {
   faCog,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "@mui/material/Link";
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+// import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import PublicIcon from "@mui/icons-material/Public";
+
 import styles from "./AccountInfo.less";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { useDomain } from "shell/hooks/use-domain";
@@ -32,12 +38,20 @@ export function AccountInfo(props) {
 
   return (
     <div className={styles.AccountInfo}>
-      <Card className={styles.Card}>
-        <CardHeader>
-          <FontAwesomeIcon icon={faGlobeAmericas} />
-          {props.instanceName}
-        </CardHeader>
-        <CardContent className={styles.CardContent}>
+      <Card sx={{ m: 2, flex: "1" }}>
+        <CardHeader
+          avatar={<PublicIcon fontSize="small" />}
+          title={props.instanceName}
+        ></CardHeader>
+        <CardContent
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "max-content max-content",
+            gap: 2,
+            alignItems: "center",
+            textAlign: "left",
+          }}
+        >
           {faviconURL ? (
             <img src={faviconURL} height="64px" width="64px" />
           ) : (
