@@ -5,11 +5,9 @@ import {
   faHome,
   faEye,
   faUser,
-  faGlobeAmericas,
   faCog,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "@mui/material/Link";
-// import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
 
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";

@@ -1,10 +1,10 @@
-import cx from "classnames";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import Link from "@mui/material/Link";
 
-import { Card, CardContent } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./QuickJumps.less";
@@ -12,7 +12,7 @@ import styles from "./QuickJumps.less";
 export function QuickJumps(props) {
   return (
     <div className={styles.QuickJumps}>
-      <Card className={styles.Card}>
+      <Card sx={{ m: 2, flex: "1" }}>
         <CardContent className={styles.CardContent}>
           <AppLink
             to={`/${props.quickJump}`}
