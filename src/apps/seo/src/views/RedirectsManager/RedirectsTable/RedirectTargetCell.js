@@ -45,7 +45,7 @@ export const RedirectTargetCell = (props) => {
           ) : loaded ? (
             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
               <FontAwesomeIcon icon={faBan} />
-              Redirect Target Not Found
+              Redirect Target has been deleted
             </Box>
           ) : (
             <span>Loading...</span>
