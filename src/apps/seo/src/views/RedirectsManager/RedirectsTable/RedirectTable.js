@@ -36,6 +36,17 @@ export default function RedirectTable(props) {
             Incoming Path
           </Box>
         ),
+        renderCell: ({ value }) => (
+          <Box
+            sx={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              direction: "rtl",
+            }}
+          >
+            {value}
+          </Box>
+        ),
       },
       {
         field: "code",
@@ -127,8 +138,9 @@ export default function RedirectTable(props) {
         getActions: ({ row }) => [
           <GridActionsCellItem
             icon={<DeleteIcon />}
-            color="error"
+            color="warning"
             label="Delete"
+            sx={{ "&:hover": { color: "error.main" } }}
             onClick={() => handleRemoveRedirect(row.ZUID)}
           />,
         ],
