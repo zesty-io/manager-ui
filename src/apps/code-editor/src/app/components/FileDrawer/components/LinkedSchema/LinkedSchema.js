@@ -13,17 +13,23 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import Link from "@mui/material/Link";
 
 import styles from "./LinkedSchema.less";
-import shared from "../../FileDrawer.less";
 
 export default function LinkedSchema(props) {
   return (
     <Card
-      className={cx(styles.LinkedSchema, shared.DrawerStyles)}
-      sx={{ m: 2 }}
+      className={cx(styles.LinkedSchema)}
+      sx={{
+        m: 2,
+        backgroundColor: "#292828", // overwrite material theme cardheader color for dark cards
+        color: "#b1b1b3 ",
+        display: "flex",
+        flexDirection: "column",
+      }}
     >
       <CardHeader
         avatar={<StorageIcon fontSize="small" />}
         title={`${props.file.fileName}'s  Related Model Schema`}
+        sx={{ backgroundColor: "#272728" }}
       ></CardHeader>
       <CardContent>
         <p>
@@ -51,7 +57,7 @@ export default function LinkedSchema(props) {
           ))}
         </ul>
       </CardContent>
-      <CardActions>
+      <CardActions sx={{ marginTop: "auto" }}>
         <p>
           <AppLink
             className={styles.Link}

@@ -16,7 +16,6 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import { CopyButton } from "@zesty-io/material";
 
 import styles from "./FileStatus.less";
-import shared from "../../FileDrawer.less";
 
 const FileType = (props) => {
   if (
@@ -46,10 +45,19 @@ export default function FileStatus(props) {
   const instance = useSelector((state) => state.instance);
 
   return (
-    <Card className={cx(styles.FileStatus, shared.DrawerStyles)} sx={{ m: 2 }}>
+    <Card
+      className={cx(styles.FileStatus)}
+      sx={{
+        m: 2,
+        backgroundColor: "#292828", // overwrite material theme cardheader color for dark cards
+        color: "#b1b1b3 ",
+        width: "400px",
+      }}
+    >
       <CardHeader
         avatar={<InfoIcon fontSize="small" />}
         title="File Information"
+        sx={{ backgroundColor: "#272728" }}
       ></CardHeader>
 
       <CardContent>

@@ -11,17 +11,23 @@ import EditIcon from "@mui/icons-material/Edit";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./LinkedContent.less";
-import shared from "../../FileDrawer.less";
 
 export default function LinkedContent(props) {
   return (
     <Card
-      className={cx(styles.LinkedContent, shared.DrawerStyles)}
-      sx={{ m: 2 }}
+      className={styles.LinkedContent}
+      sx={{
+        m: 2,
+        backgroundColor: "#292828", // overwrite material theme cardheader color for dark cards
+        color: "#b1b1b3 ",
+        display: "flex",
+        flexDirection: "column",
+      }}
     >
       <CardHeader
         avatar={<EditIcon fontSize="small" />}
         title="Linked Content"
+        sx={{ backgroundColor: "#272728" }}
       ></CardHeader>
       <CardContent>
         <p>
@@ -64,7 +70,7 @@ export default function LinkedContent(props) {
           })}
         </ul>
       </CardContent>
-      <CardActions>
+      <CardActions sx={{ marginTop: "auto" }}>
         <p>
           <AppLink
             className={styles.Link}
