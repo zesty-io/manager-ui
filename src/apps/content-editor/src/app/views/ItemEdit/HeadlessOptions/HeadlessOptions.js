@@ -1,25 +1,21 @@
 import { Header } from "../components/Header";
 import React, { useState, useEffect } from "react";
 
-import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CodeIcon from "@mui/icons-material/Code";
 import SettingsIcon from "@mui/icons-material/Settings";
 import IntegrationInstructionsIcon from "@mui/icons-material/IntegrationInstructions";
+import BoltIcon from "@mui/icons-material/Bolt";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
+import NewspaperIcon from "@mui/icons-material/Newspaper";
 
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCode,
-  faFileCode,
-  faBolt,
-  faProjectDiagram,
-  faNewspaper,
-  faUnlockAlt,
-} from "@fortawesome/free-solid-svg-icons";
+
 import Link from "@mui/material/Link";
 import { faNpm } from "@fortawesome/free-brands-svg-icons";
 import { Docs } from "@zesty-io/core/Docs";
@@ -220,7 +216,7 @@ export function HeadlessOptions(props) {
               )}
               <Card className={styles.customCard} sx={{ m: 2 }}>
                 <CardHeader
-                  avatar={<FontAwesomeIcon icon={faBolt} />}
+                  avatar={<BoltIcon fontSize="small" />}
                   title="Instant JSON API"
                   action={
                     <Docs
@@ -250,7 +246,7 @@ export function HeadlessOptions(props) {
               </Card>
               <Card className={styles.customCard} sx={{ m: 2 }}>
                 <CardHeader
-                  avatar={<FontAwesomeIcon icon={faProjectDiagram} />}
+                  avatar={<AccountTreeIcon fontSize="small" />}
                   title="GraphQL API"
                   action={
                     <Docs
@@ -295,7 +291,7 @@ export function HeadlessOptions(props) {
             <div className={styles.HeadlessOptions}>
               <Card className={styles.customCard} sx={{ m: 2 }}>
                 <CardHeader
-                  avatar={<FontAwesomeIcon icon={faUnlockAlt} />}
+                  avatar={<LockOpenIcon fontSize="small" />}
                   title="Instances Rest API"
                   action={
                     <Docs
@@ -360,7 +356,7 @@ export function HeadlessOptions(props) {
               </Card>
               <Card className={styles.customCard} sx={{ m: 2 }}>
                 <CardHeader
-                  avatar={<FontAwesomeIcon icon={faCode} />}
+                  avatar={<IntegrationInstructionsIcon fontSize="small" />}
                   title="Custom Endpoints"
                   action={
                     <Docs
@@ -400,7 +396,7 @@ export function HeadlessOptions(props) {
               {props.item.web.path && (
                 <Card className={styles.customCard} sx={{ m: 2 }}>
                   <CardHeader
-                    avatar={<FontAwesomeIcon icon={faNewspaper} />}
+                    avatar={<NewspaperIcon fontSize="small" />}
                     title="VisualLayout"
                     action={<Docs subject="Visual Layout" />}
                   ></CardHeader>
