@@ -10,8 +10,6 @@ import {
   faCode,
 } from "@fortawesome/free-solid-svg-icons";
 
-// import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
-
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
@@ -38,7 +36,7 @@ export const QuickView = memo(function QuickView(props) {
     <Fragment>
       <Card className={styles.QuickView} sx={{ m: 2 }}>
         <CardHeader
-          avatar={<FontAwesomeIcon icon={faCodeBranch} />}
+          avatar={<AccountTreeIcon fontSize="small" />}
           title={
             <section className={styles.StatusHeader}>
               <div>&nbsp;Item Status</div>
