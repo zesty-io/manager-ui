@@ -10,9 +10,11 @@ import { ItemParent } from "./settings/ItemParent";
 import { CanonicalTag } from "./settings/CanonicalTag";
 import { SitemapPriority } from "./settings/SitemapPriority";
 import { useDomain } from "shell/hooks/use-domain";
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import SearchIcon from "@mui/icons-material/Search";
 
 import styles from "./ItemSettings.less";
 
@@ -84,15 +86,11 @@ export const ItemSettings = memo(
           )}
         </main>
         <aside className={styles.MetaSide}>
-          <Card>
-            <CardHeader>
-              <section>
-                <div>
-                  <FontAwesomeIcon icon={faSearch} />
-                  &nbsp;Example Search Engine Listing
-                </div>
-              </section>
-            </CardHeader>
+          <Card sx={{ m: 2 }}>
+            <CardHeader
+              avatar={<SearchIcon fontSize="small" />}
+              title="Example Search Engine Listing"
+            ></CardHeader>
             <CardContent>
               <div className={styles.SearchResult}>
                 <h6 className={styles.GoogleTitle}>{web.metaTitle}</h6>

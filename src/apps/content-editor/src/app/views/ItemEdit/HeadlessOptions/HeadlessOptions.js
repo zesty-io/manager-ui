@@ -5,7 +5,12 @@ import Button from "@mui/material/Button";
 import CodeIcon from "@mui/icons-material/Code";
 import SettingsIcon from "@mui/icons-material/Settings";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+// import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCode,
@@ -124,17 +129,23 @@ export function HeadlessOptions(props) {
 
       <div className={styles.HeadlessOptionsWrapper}>
         {!headlessResponse && (
-          <Card className={styles.customCard}>
-            <CardHeader className={styles.cardHeader}>
-              <h2>
-                <FontAwesomeIcon icon={faFileCode} />
-                Change your WebEngine Mode to Access Headless Features
-              </h2>
-              <Docs
-                subject="Zesty.io Modes"
-                url="https://zesty.org/services/web-engine/modes"
-              />
-            </CardHeader>
+          <Card className={styles.customCard} sx={{ m: 2 }}>
+            <CardHeader
+              title={
+                <>
+                  {" "}
+                  <h2>
+                    <FontAwesomeIcon icon={faFileCode} />
+                    Change your WebEngine Mode to Access Headless Features
+                  </h2>
+                  <Docs
+                    subject="Zesty.io Modes"
+                    url="https://zesty.org/services/web-engine/modes"
+                  />
+                </>
+              }
+              className={styles.cardHeader}
+            ></CardHeader>
             <div className={styles.useTags}>
               <span className={styles.smallTags}>Build Headlessly</span>{" "}
               <span className={styles.smallTags}>
@@ -180,17 +191,23 @@ export function HeadlessOptions(props) {
           <div>
             <div className={styles.HeadlessOptions}>
               {props.item.web.path && (
-                <Card className={styles.customCard}>
-                  <CardHeader className={styles.cardHeader}>
-                    <h2>
-                      <FontAwesomeIcon icon={faFileCode} />
-                      URL to JSON
-                    </h2>
-                    <Docs
-                      subject="Routing toJSON"
-                      url={headlessResponse.routing.documentation}
-                    />
-                  </CardHeader>
+                <Card className={styles.customCard} sx={{ m: 2 }}>
+                  <CardHeader
+                    title={
+                      <>
+                        {" "}
+                        <h2>
+                          <FontAwesomeIcon icon={faFileCode} />
+                          URL to JSON
+                        </h2>
+                        <Docs
+                          subject="Routing toJSON"
+                          url={headlessResponse.routing.documentation}
+                        />
+                      </>
+                    }
+                    className={styles.cardHeader}
+                  ></CardHeader>
                   <div className={styles.useTags}>
                     <span className={styles.smallTags}>Headless SSR</span>{" "}
                     <span className={styles.smallTags}>Headless Websites</span>
