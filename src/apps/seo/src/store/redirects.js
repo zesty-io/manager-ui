@@ -41,6 +41,7 @@ export function fetchRedirects() {
 
     return request(`${CONFIG.API_INSTANCE}/web/redirects`)
       .then((json) => {
+        console.log(json);
         dispatch({
           type: "REDIRECTS_FETCH_SUCCESS",
           redirects: json.data.reduce((acc, redirect) => {

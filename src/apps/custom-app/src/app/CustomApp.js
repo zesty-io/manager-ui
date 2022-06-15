@@ -27,7 +27,7 @@ function LoadApp(props) {
   const dispatch = useDispatch();
   const frame = useRef();
   const app = useSelector((state) =>
-    state.apps.installed.find((app) => app.zuid === props.match.params.zuid)
+    state.apps.installed.find((app) => app.ZUID === props.match.params.zuid)
   );
 
   const instance = useSelector((state) => state.instance);
