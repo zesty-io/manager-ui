@@ -1,6 +1,5 @@
-import { memo, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+import { memo, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import ExternalLink from "@mui/material/Link";
@@ -12,18 +11,17 @@ import { faFileAlt, faMicrochip } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./styles.less";
 export default memo(function GlobalCustomApps(props) {
-  // TODO
-  const apps = useSelector((state) => state.apps);
+  const installedApps = useSelector((state) => state.apps.installed);
   const instanceZUID = useSelector((state) => state.instance.ZUID);
   const dispatch = useDispatch();
   const location = useLocation();
   const slug = location.pathname.split("/")[1];
-  //const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // TODO add stuff to indexdb / localstorage
   useEffect(() => {
-    //setLoading(true)
-    dispatch(fetchInstalledApps()).then((...data) => console.log(data));
+    setLoading(true);
+    dispatch(fetchInstalledApps());
+    setLoading(false);
   }, []);
 
   return (
@@ -47,7 +45,7 @@ export default memo(function GlobalCustomApps(props) {
       </ExternalLink>
       */}
 
-      {apps.installed.map((app) => {
+      {installedApps.map((app) => {
         return (
           <Link
             key={app.ZUID}

@@ -7,26 +7,11 @@ const slice = createSlice({
   error: false,
   initialState: {
     frames: {},
-    installed: [
-      /*
-      {
-        zuid: "80-d8abaff6ef-wxs830",
-        name: "test-name",
-        label: "test app",
-        public: true,
-        approved: true,
-        url: `https://zesty-io.github.io/app-content-composer/`,
-      },
-      */
-    ],
-    registered: [
-      // TODO load all public and available private apps
-    ],
+    installed: [],
   },
   reducers: {
     registerFrame(state, action) {
       // state.frames.push(action.payload);
-
       state.frames[action.payload.zuid] = action.payload.frame;
     },
     fetchAppsSuccess(state, action) {
@@ -51,22 +36,15 @@ export function fetchInstalledApps() {
     const { ZUID } = instance;
     return request(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}/app-installs`)
       .then((res) => {
-        console.log(res);
         if (res.status === 200) {
           // TODO revisit this (needs batching?)
-          let { data } = res;
-          //data = [{ appZUID: '80-c0f7cbe6ba-6llvfj'}, ...data]
-          console.log({ data });
-
+          const { data } = res;
           Promise.all(
-            data.map(({ appZUID, ZUID, instanceZUID }) => {
-              // This returns just the related ZUIDs, does not provide name/desc/url
-              //return request(`${CONFIG.API_ACCOUNTS}/instances/${instanceZUID}/app-installs/${ZUID}`)
+            data.map(({ appZUID }) => {
               return request(`${CONFIG.API_ACCOUNTS}/apps/${appZUID}`);
             })
           )
             .then((responses) => {
-              console.log({ responses });
               const failureResponses = responses.filter(
                 (res) => res.status !== 200
               );
@@ -84,11 +62,15 @@ export function fetchInstalledApps() {
               );
               const appsInfo = successfulResponses.map((res) => res.data);
               dispatch(actions.fetchAppsSuccess(appsInfo));
-              console.log(appsInfo);
               return appsInfo;
             })
             .catch((err) => {
-              console.log(err);
+              dispatch(
+                notify({
+                  kind: "warn",
+                  message: `App loading failure: ${err}`,
+                })
+              );
             });
         } else {
           dispatch(actions.fetchAppsError());
@@ -101,7 +83,6 @@ export function fetchInstalledApps() {
         }
       })
       .catch((err) => {
-        console.log(err);
         dispatch(actions.fetchAppsError());
         dispatch(
           notify({
