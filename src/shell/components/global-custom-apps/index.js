@@ -14,6 +14,7 @@ import styles from "./styles.less";
 export default memo(function GlobalCustomApps(props) {
   // TODO
   const apps = useSelector((state) => state.apps);
+  const instanceZUID = useSelector((state) => state.instance.ZUID);
   const dispatch = useDispatch();
   const location = useLocation();
   const slug = location.pathname.split("/")[1];
@@ -32,8 +33,11 @@ export default memo(function GlobalCustomApps(props) {
         props.openNav ? styles.OpenNav : styles.Collapse
       )}
     >
+      {/* Hidden for soft launch
+
       <ExternalLink
-        href={`${CONFIG.URL_MARKETPLACE}`}
+        href={`${CONFIG.URL_MARKETPLACE}?instanceZUID=${instanceZUID}`}
+        key="marketplace"
         rel="noopener noreferrer"
         target="_blank"
         className={cx(styles.control)}
@@ -41,6 +45,7 @@ export default memo(function GlobalCustomApps(props) {
         <FontAwesomeIcon icon={faMicrochip} />
         <span className={styles.title}>Custom Apps</span>
       </ExternalLink>
+      */}
 
       {apps.installed.map((app) => {
         return (
