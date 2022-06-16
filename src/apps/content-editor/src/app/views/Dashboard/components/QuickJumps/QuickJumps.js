@@ -13,7 +13,13 @@ export function QuickJumps(props) {
   return (
     <div className={styles.QuickJumps}>
       <Card sx={{ m: 2, flex: "1" }}>
-        <CardContent className={styles.CardContent}>
+        <CardContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
           <AppLink
             to={`/${props.quickJump}`}
             title={props.quickJump}

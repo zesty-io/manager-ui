@@ -18,9 +18,10 @@ export const ContentLinks = memo(function ContentLinks(props) {
   return (
     <Fragment>
       <Card className={styles.ContentLinks} sx={{ m: 2 }}>
-        <CardHeader avatar={<LinkIcon fontSize="small" />} title="Links">
-          &nbsp;Links
-        </CardHeader>
+        <CardHeader
+          avatar={<LinkIcon fontSize="small" />}
+          title="Links"
+        ></CardHeader>
         <CardContent className={styles.Content}>
           <ul>
             {props.item?.web?.path && (

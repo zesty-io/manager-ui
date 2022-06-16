@@ -4,11 +4,7 @@ import moment from "moment-timezone";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCodeBranch,
-  faDatabase,
-  faCode,
-} from "@fortawesome/free-solid-svg-icons";
+import { faDatabase, faCode } from "@fortawesome/free-solid-svg-icons";
 
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -87,9 +83,9 @@ export const QuickView = memo(function QuickView(props) {
             </li>
           </ul>
         </CardContent>
-        <CardActions className={SharedWidgetStyles.FooterSpacing}>
+        <CardActions sx={{ gap: 1 }}>
           {codeAccess && (
-            <ButtonGroup>
+            <>
               <AppLink to={`/schema/${props.modelZUID}`}>
                 <FontAwesomeIcon icon={faDatabase} />
                 &nbsp;Edit Schema
@@ -98,7 +94,7 @@ export const QuickView = memo(function QuickView(props) {
                 <FontAwesomeIcon icon={faCode} />
                 &nbsp;Edit Code
               </AppLink>
-            </ButtonGroup>
+            </>
           )}
         </CardActions>
       </Card>
