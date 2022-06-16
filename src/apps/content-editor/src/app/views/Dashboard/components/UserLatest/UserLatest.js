@@ -10,7 +10,7 @@ import { faChevronRight, faClock } from "@fortawesome/free-solid-svg-icons";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
-import AccessAlarmsIcon from "@mui/icons-material/AccessAlarms";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -137,10 +137,10 @@ export function UserLatest(props) {
       }}
     >
       <CardHeader
-        avatar={<AccessAlarmsIcon fontSize="small" />}
+        avatar={<AccessTimeIcon fontSize="small" />}
         title={props.cardTitle}
       ></CardHeader>
-      <CardContent className={styles.CardContent}>
+      <CardContent sx={{ p: 0 }}>
         <WithLoader condition={!loading} message={`Loading ${props.cardTitle}`}>
           {!latest.length && props.action === "2" && (
             <h3 className={cx(styles.NoLogs, styles.display)}>
