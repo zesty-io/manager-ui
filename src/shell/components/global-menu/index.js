@@ -14,8 +14,6 @@ import {
   faCog,
   faBullseye,
   faCode,
-  faMicrochip,
-  faCaretRight,
   faRocket,
 } from "@fortawesome/free-solid-svg-icons";
 
