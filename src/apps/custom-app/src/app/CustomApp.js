@@ -56,10 +56,10 @@ function LoadApp(props) {
         );
       });
     }
-  }, [frame.current]);
+  }, [frame.current, app]);
 
   return app ? (
-    <iframe src={app.url} ref={frame}></iframe>
+    <iframe src={app.url} key={app.ZUID} ref={frame}></iframe>
   ) : (
     <NotFound
       message={`The app "${props.match.params.zuid}" is not installed.`}

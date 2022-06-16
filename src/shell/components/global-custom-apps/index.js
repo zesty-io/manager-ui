@@ -51,10 +51,10 @@ export default memo(function GlobalCustomApps(props) {
               slug === app.name ? styles.current : null
             )}
             to={`/app/${app.ZUID}`}
-            title={`${app.name}`}
+            title={`${app.label}`}
           >
             <FontAwesomeIcon icon={faFileAlt} />
-            <span className={styles.title}>{app.name}</span>
+            <span className={styles.title}>{app.label}</span>
           </Link>
         );
       })}
