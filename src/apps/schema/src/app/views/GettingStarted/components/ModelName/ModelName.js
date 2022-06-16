@@ -1,4 +1,4 @@
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 
 import styles from "./ModelName.less";
 export function ModelName(props) {
@@ -23,7 +23,7 @@ export function ModelName(props) {
           placeholder="The name that will be displayed throughout Zesty"
           tooltip="The name that will be displayed throughout Zesty"
           value={props.label}
-          onChange={(value, name) => props.setModel(name, value)}
+          onChange={(evt) => props.setModel("label", evt.target.value)}
         />
         <FieldTypeText
           className={styles.TextField}
@@ -32,7 +32,7 @@ export function ModelName(props) {
           placeholder="The name used by code to reference this content model"
           tooltip="The name used by code to reference this content model"
           value={props.name}
-          onChange={(value, name) => props.setModel(name, value)}
+          onChange={(evt) => props.setModel("name", evt.target.value)}
         />
       </div>
     </div>

@@ -10,7 +10,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import AddIcon from "@mui/icons-material/Add";
 import Paper from "@mui/material/Paper";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 
 import { Search } from "@zesty-io/core/Search";
 import { Notice } from "@zesty-io/core/Notice";
@@ -360,10 +360,9 @@ export default connect((state) => {
         />
         <FieldTypeText
           placeholder="Type something to preview"
-          className={styles.previewField}
           name="previewText"
           value={previewText}
-          onChange={(value) => setPreviewText(value)}
+          onChange={(evt) => setPreviewText(evt.target.value)}
         />
       </header>
       {renderFontsList()}

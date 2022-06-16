@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 
 import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
@@ -25,7 +25,7 @@ export const MetaTitle = memo(function MetaTitle({ meta_title, onChange }) {
         }
         value={meta_title}
         placeholder="This is the title search engines should use in their results"
-        onChange={onChange}
+        onChange={(evt) => onChange(evt.target.value, "metaTitle")}
       />
     </article>
   );
