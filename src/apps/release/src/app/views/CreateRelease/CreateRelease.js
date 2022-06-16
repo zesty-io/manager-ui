@@ -7,7 +7,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import AddIcon from "@mui/icons-material/Add";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 
 import { createRelease, fetchReleases } from "shell/store/releases";
@@ -61,7 +61,7 @@ export function CreateRelease() {
           name="name"
           maxLength={50}
           value={name}
-          onChange={(val) => setName(val)}
+          onChange={(evt) => setName(evt.target.value)}
           required
           error={error}
         />

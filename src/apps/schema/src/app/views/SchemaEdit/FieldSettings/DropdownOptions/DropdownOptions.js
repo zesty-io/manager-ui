@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { formatName } from "utility/formatName";
 import { updateField } from "shell/store/fields";
 
@@ -73,18 +73,16 @@ export function DropdownOptions(props) {
             label="Option Label"
             name="value"
             value={option.value}
-            onChange={(val, name) => {
-              updateOption(option, i, name, val);
-            }}
+            onChange={(evt) =>
+              updateOption(option, i, "value", evt.target.value)
+            }
           />
 
           <FieldTypeText
             label="Option Value"
             name="key"
             value={option.key}
-            onChange={(val, name) => {
-              updateOption(option, i, name, val);
-            }}
+            onChange={(evt) => updateOption(option, i, "key", evt.target.value)}
           />
           <Button
             variant="contained"

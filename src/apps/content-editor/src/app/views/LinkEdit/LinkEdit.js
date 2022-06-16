@@ -17,7 +17,7 @@ import CardActions from "@mui/material/CardActions";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
 
 import { ConfirmDialog } from "@zesty-io/material";
@@ -280,11 +280,11 @@ export default function LinkEdit() {
             )}
 
             <FieldTypeText
-              className={styles.Row}
               label="Link title"
               name="metaTitle"
               value={state.metaTitle}
-              onChange={(value) => {
+              onChange={(evt) => {
+                const value = evt.target.value;
                 setState({
                   ...state,
                   label: value,

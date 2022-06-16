@@ -16,7 +16,7 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
 import { Select, Option } from "@zesty-io/core/Select";
 
@@ -198,11 +198,11 @@ export function LinkCreate() {
           )}
 
           <FieldTypeText
-            className={styles.Row}
             label="Link title"
             name="metaTitle"
             value={state.metaTitle}
-            onChange={(value) => {
+            onChange={(evt) => {
+              const value = evt.target.value;
               setState({
                 ...state,
                 label: value,

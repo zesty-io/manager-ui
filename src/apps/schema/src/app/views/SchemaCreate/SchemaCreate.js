@@ -29,7 +29,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 // import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
@@ -338,28 +338,31 @@ export default connect((state) => {
             <FieldTypeText
               name="label"
               label="Display Name"
-              description="This is what is shown to content editors"
+              helperText="This is what is shown to content editors"
               placeholder=""
               value={label}
               maxLength="100"
-              onChange={(value) => {
+              onChange={(evt) => {
+                const value = evt.target.value;
                 setLabel(value);
                 // When changing the label update the reference name as well
                 setName(formatName(value));
                 setPathPart(formatPathPart(value));
               }}
               error={errors["label"]}
+              sx={{ mb: 4 }}
             />
 
             <FieldTypeText
               name="name"
               label="Reference Name"
-              description="This is what is used to reference this model in Parsley"
+              helperText="This is what is used to reference this model in Parsley"
               placeholder=""
               value={name}
               maxLength="100"
-              onChange={(value) => setName(formatName(value))}
+              onChange={(evt) => setName(formatName(evt.target.value))}
               error={errors["name"]}
+              sx={{ mb: 4 }}
             />
 
             <FieldTypeTextarea

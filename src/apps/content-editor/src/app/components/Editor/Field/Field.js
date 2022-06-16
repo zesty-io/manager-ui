@@ -27,7 +27,7 @@ import {
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Modal } from "@zesty-io/core/Modal";
 import MediaApp from "../../../../../../media/src/app/MediaApp";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
 import { FieldTypeNumber } from "@zesty-io/core/FieldTypeNumber";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
@@ -247,11 +247,11 @@ export default function Field({
         <FieldTypeText
           name={name}
           label={FieldTypeLabel}
-          description={description}
+          helperText={description}
           tooltip={settings.tooltip}
           required={required}
           value={value}
-          onChange={onChange}
+          onChange={(evt) => onChange(evt.target.value, name)}
         />
       );
 
@@ -260,11 +260,11 @@ export default function Field({
         <FieldTypeText
           name={name}
           label={FieldTypeLabel}
-          description={description}
+          helperText={description}
           tooltip={settings.tooltip}
           required={required}
           value={value}
-          onChange={onChange}
+          onChange={(evt) => onChange(evt.target.value, name)}
           type="url"
           maxLength={2000}
         />

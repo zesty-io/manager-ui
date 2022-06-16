@@ -11,7 +11,7 @@ import TextField from "@mui/material/TextField";
 
 import { Modal, ModalContent } from "@zesty-io/core/Modal";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { Notice } from "@zesty-io/core/Notice";
 
 import { login, verifyTwoFactor, pollTwoFactor } from "shell/store/auth";
