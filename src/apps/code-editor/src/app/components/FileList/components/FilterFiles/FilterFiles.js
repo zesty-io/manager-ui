@@ -1,14 +1,17 @@
-import { Search } from "@zesty-io/core/Search";
+import TextField from "@mui/material/TextField";
 
-import styles from "./FilterFiles.less";
 export function FilterFiles(props) {
   return (
-    <Search
-      name="filterFiles"
-      placeholder="Filter file list by name, zuid or code"
-      className={styles.FilterFiles}
-      onChange={(term) => {
-        term = term.trim().toLowerCase();
+    <TextField
+      id="filled-search"
+      label="Filter file list by name, zuid or code"
+      type="search"
+      variant="outlined"
+      fullWidth
+      onChange={(evt) => {
+        let term = evt.target.value.trim().toLowerCase();
+
+        if (term === null) return;
         if (term) {
           props.setShownFiles(
             props.nav.raw.filter((f) => {
@@ -25,6 +28,7 @@ export function FilterFiles(props) {
           props.setShownFiles(props.nav.tree);
         }
       }}
+      sx={{ mt: 1 }}
     />
   );
 }
