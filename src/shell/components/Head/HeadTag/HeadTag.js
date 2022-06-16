@@ -233,10 +233,7 @@ export const HeadTag = (props) => {
           );
         })}
       </CardContent>
-      <CardActions
-        className={styles.CardFooter}
-        sx={{ display: "flex", justifyContent: "flex-end" }}
-      >
+      <CardActions sx={{ display: "flex", justifyContent: "flex-end" }}>
         <Button
           title={
             tag.hasOwnProperty("createdAt")
