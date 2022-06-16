@@ -2,7 +2,11 @@
 @import "~@zesty-io/core/typography.less";
 
 .helpModules {
-  display: flex;
+  display: grid;
+  grid-auto-rows: 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
 }
 
 .helpMenu {
@@ -14,7 +18,7 @@
   z-index: 100;
   background-color: @appBkgColor;
   box-shadow: 1px 1px 19px #171b26;
-  border-radius: 0 4px 4px 0;
+  border-radius: 4px 4px 4px 0;
   color: @zesty-grey;
 
   //triangle pointing to question icon

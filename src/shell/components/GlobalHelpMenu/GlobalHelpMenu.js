@@ -8,7 +8,12 @@ import ContactSupportIcon from "@mui/icons-material/ContactSupport";
 
 import Link from "@mui/material/Link";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+// import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import Tooltip from "@mui/material/Tooltip";
 
 import styles from "./styles.less";
 
@@ -147,7 +152,7 @@ export default connect((state) => {
   const section = location.pathname.split("/")[1];
   const links = section ? linkMap[section] : defaultLinks;
   return (
-    <section className={styles.helpMenu}>
+    <div className={styles.helpMenu}>
       <header>
         {props.instance.planID && (
           <Link
@@ -184,18 +189,20 @@ export default connect((state) => {
       </header>
 
       <div className={styles.helpModules}>
-        <Card className={cx(styles.helpModule, styles.primary)}>
-          <CardHeader className={styles.subheadline}>
-            <Link
-              underline="none"
-              color="secondary"
-              target="_blank"
-              href="https://zesty.org/"
-            >
-              zesty.org
-            </Link>
-          </CardHeader>
-          <CardContent>
+        <Card>
+          <CardHeader
+            title={
+              <Link
+                underline="none"
+                color="secondary"
+                target="_blank"
+                href="https://zesty.org/"
+              >
+                zesty.org
+              </Link>
+            }
+          ></CardHeader>
+          <CardContent sx={{ ml: 2 }}>
             <ul className={styles.helpBox}>
               {links.map((link) => (
                 <li key={link.name} className={styles.bodyText}>
@@ -214,9 +221,9 @@ export default connect((state) => {
           </CardContent>
         </Card>
 
-        <Card className={styles.helpModule}>
-          <CardHeader className={styles.subheadline}>APIs</CardHeader>
-          <CardContent>
+        <Card>
+          <CardHeader title="APIs"> </CardHeader>
+          <CardContent sx={{ ml: 2 }}>
             <ul className={styles.helpBox}>
               <li className={styles.bodyText}>
                 <Link
@@ -256,8 +263,8 @@ export default connect((state) => {
         </Card>
 
         <Card className={styles.helpModule}>
-          <CardHeader className={styles.subheadline}>github</CardHeader>
-          <CardContent>
+          <CardHeader title="github"></CardHeader>
+          <CardContent sx={{ ml: 2 }}>
             <ul className={styles.helpBox}>
               <li className={styles.bodyText}>
                 <Link
@@ -296,6 +303,6 @@ export default connect((state) => {
           </CardContent>
         </Card>
       </div>
-    </section>
+    </div>
   );
 });

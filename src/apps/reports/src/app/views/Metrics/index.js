@@ -290,7 +290,10 @@ const Content = ({
         <Card sx={{ m: 2 }}>
           <CardHeader title={usageData.Account.Name}></CardHeader>
 
-          <CardContent className={styles.CardContentHeader}>
+          <CardContent
+            className={styles.CardContentHeader}
+            sx={{ display: "flex", justifyContent: "space-between" }}
+          >
             <h1 className={styles.headline}>
               {`Usage Report for ${timePeriod} ${
                 timePeriod > 1 ? "days" : "day"
