@@ -1,24 +1,36 @@
 import moment from "moment";
-import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHistory, faLink } from "@fortawesome/free-solid-svg-icons";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import HistoryIcon from "@mui/icons-material/History";
+
 import { Notice } from "@zesty-io/core/Notice";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./AuditTrail.less";
-import shared from "../../FileDrawer.less";
 
 export default function AuditTrail(props) {
   return (
-    <Card className={cx(styles.AuditTrail, shared.DrawerStyles)}>
-      <CardHeader>
-        <h1>
-          <FontAwesomeIcon icon={faHistory} /> AuditTrail™
-        </h1>
-      </CardHeader>
+    <Card
+      className={styles.AuditTrail}
+      sx={{
+        m: 2,
+        backgroundColor: "#292828", // overwrite material theme cardheader color for dark cards
+        color: "#b1b1b3 ",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <CardHeader
+        avatar={<HistoryIcon fontSize="small" />}
+        title="AuditTrail™"
+        sx={{ backgroundColor: "#272728" }}
+      ></CardHeader>
 
       <CardContent>
         {props.logs.length === 0 && (
@@ -42,11 +54,11 @@ export default function AuditTrail(props) {
           ))}
         </ul>
       </CardContent>
-      <CardFooter>
+      <CardActions sx={{ marginTop: "auto" }}>
         <AppLink className={styles.MoreLogs} to={`/reports/audit-trail`}>
           <FontAwesomeIcon icon={faLink} /> View all logs
         </AppLink>
-      </CardFooter>
+      </CardActions>
     </Card>
   );
 }
