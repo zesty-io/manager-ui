@@ -1,8 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 
 const slice = createSlice({
   name: "apps",
+  error: false,
   initialState: {
     frames: {},
     installed: [
@@ -30,6 +32,10 @@ const slice = createSlice({
     fetchAppsSuccess(state, action) {
       state.installed = action.payload;
     },
+    fetchAppsError(state) {
+      state.error = true;
+      state.installed = [];
+    },
   },
 });
 
@@ -43,30 +49,66 @@ export function fetchInstalledApps() {
     const state = getState();
     const { instance } = state;
     const { ZUID } = instance;
-    return request(
-      `${CONFIG.API_ACCOUNTS}/instances/${ZUID}/app-installs`
-    ).then((res) => {
-      console.log(res);
-      if (res.status === 200) {
-        // TODO revisit this (needs batching?)
-        const { data } = res;
-        Promise.all(
-          data.map(({ appZUID }) => {
-            // Why doesn't this work?
-            //return request(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}/app-installs/${appZUID}`)
-            return request(`${CONFIG.API_ACCOUNTS}/apps/${appZUID}`);
+    return request(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}/app-installs`)
+      .then((res) => {
+        console.log(res);
+        if (res.status === 200) {
+          // TODO revisit this (needs batching?)
+          let { data } = res;
+          //data = [{ appZUID: '80-c0f7cbe6ba-6llvfj'}, ...data]
+          console.log({ data });
+
+          Promise.all(
+            data.map(({ appZUID, ZUID, instanceZUID }) => {
+              // This returns just the related ZUIDs, does not provide name/desc/url
+              //return request(`${CONFIG.API_ACCOUNTS}/instances/${instanceZUID}/app-installs/${ZUID}`)
+              return request(`${CONFIG.API_ACCOUNTS}/apps/${appZUID}`);
+            })
+          )
+            .then((responses) => {
+              console.log({ responses });
+              const failureResponses = responses.filter(
+                (res) => res.status !== 200
+              );
+              failureResponses.forEach((res) =>
+                dispatch(
+                  notify({
+                    kind: "warn",
+                    message: `App loading failure: ${res.message}`,
+                  })
+                )
+              );
+
+              const successfulResponses = responses.filter(
+                (res) => res.status === 200
+              );
+              const appsInfo = successfulResponses.map((res) => res.data);
+              dispatch(actions.fetchAppsSuccess(appsInfo));
+              console.log(appsInfo);
+              return appsInfo;
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
+          dispatch(actions.fetchAppsError());
+          dispatch(
+            notify({
+              kind: "warn",
+              message: `App loading failure: ${res.error}`,
+            })
+          );
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(actions.fetchAppsError());
+        dispatch(
+          notify({
+            kind: "warn",
+            message: `App loading failure: ${err}`,
           })
-        )
-          .then((data) => data.map((res) => res.data))
-          .then((data) => {
-            //console.log(data)
-            dispatch(actions.fetchAppsSuccess(data));
-            return data;
-          });
-      } else {
-        return [];
-        // TODO
-      }
-    });
+        );
+      });
   };
 }
