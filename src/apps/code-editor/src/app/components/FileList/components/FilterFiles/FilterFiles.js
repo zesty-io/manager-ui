@@ -1,13 +1,22 @@
 import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 
 export function FilterFiles(props) {
   return (
     <TextField
       id="filled-search"
-      label="Filter file list by name, zuid or code"
+      placeholder="Filter file list by name, zuid or code"
       type="search"
       variant="outlined"
       fullWidth
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <SearchIcon fontSize="small" />
+          </InputAdornment>
+        ),
+      }}
       onChange={(evt) => {
         let term = evt.target.value.trim().toLowerCase();
 
