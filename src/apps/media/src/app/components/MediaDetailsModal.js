@@ -4,6 +4,7 @@ import cx from "classnames";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
@@ -15,7 +16,7 @@ import InfoIcon from "@mui/icons-material/InfoOutlined";
 import Link from "@mui/material/Link";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 
 import { Url } from "@zesty-io/core/Url";
@@ -105,29 +106,29 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
           </figure>
         </div>
         <div className={styles.Meta}>
-          <div className={styles.FieldsContainer}>
+          <div>
             <FieldTypeText
-              className={styles.Field}
               name="filename"
               value={filename}
               label={
-                <label>
+                <Box component="span" sx={{ display: "flex" }}>
                   <Tooltip title="URL Filename " arrow placement="top-start">
                     <InfoIcon fontSize="small" />
                   </Tooltip>
                   &nbsp;URL Filename
-                </label>
+                </Box>
               }
               placeholder={"Image Filename"}
               // Replaces all non-alphanumeric characters (excluding '.') with '-' to reflect the filename transformation done on the BE
-              onChange={(val) => setFilename(formatMediaFilename(val))}
+              onChange={(evt) =>
+                setFilename(formatMediaFilename(evt.target.value))
+              }
             />
             <FieldTypeText
-              className={styles.Field}
               name="title"
               value={title}
               label={
-                <label>
+                <Box component="span" sx={{ display: "flex" }}>
                   <Tooltip
                     title="Use for alt text with Parsley's .getImageTitle() | Image alt text is used to describe your image textually so that search engines and screen readers can understand what that image is. It’s important to note that using alt text correctly can enhance your SEO strategy"
                     arrow
@@ -136,9 +137,9 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
                     <InfoIcon fontSize="small" />
                   </Tooltip>
                   &nbsp;Alt Text
-                </label>
+                </Box>
               }
-              onChange={(val) => setTitle(val)}
+              onChange={(evt) => setTitle(evt.target.value)}
             />
           </div>
 

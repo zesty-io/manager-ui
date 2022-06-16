@@ -14,7 +14,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
+import { ConfirmDialog } from "@zesty-io/material";
 
 import { FieldSettings } from "../FieldSettings";
 
@@ -192,16 +192,15 @@ export function Footer(props) {
           Save {metaShortcut}
         </Button>
         <ConfirmDialog
-          isOpen={warningIsOpen}
-          title="Test"
-          prompt="Changing the reference name could break JSON endpoints or
+          open={warningIsOpen}
+          title="Changing the reference name could break JSON endpoints or
             Parsley Views that expect the name as it was. You can change the
             Field Label without needing to change the reference_name. Only
             proceed if you are confident it will not affect your production
             code."
         >
           <Button
-            variant="contained"
+            variant="outlined"
             id="editCancelButton"
             onClick={() => setWarningIsOpen(false)}
             startIcon={<DoDisturbAltIcon />}

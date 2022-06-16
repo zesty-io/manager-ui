@@ -12,7 +12,7 @@ import {
   CardContent,
   CardFooter,
 } from "@zesty-io/core/CollapsibleCard";
-import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
+import { ConfirmDialog } from "@zesty-io/material";
 
 import { notify } from "shell/store/notifications";
 import { deleteModel } from "shell/store/models";
@@ -61,11 +61,11 @@ function Footer(props) {
       </CardFooter>
 
       <ConfirmDialog
-        isOpen={isOpen}
-        prompt={`Are you sure you want to delete the model: ${props.model.label}?`}
+        open={isOpen}
+        title={`Are you sure you want to delete the model: ${props.model.label}?`}
       >
         <Button
-          variant="contained"
+          variant="outlined"
           id="deleteCancelButton"
           onClick={() => setIsOpen(false)}
           startIcon={<DoDisturbAltIcon />}
