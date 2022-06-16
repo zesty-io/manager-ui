@@ -13,7 +13,11 @@ import {
   faExternalLinkSquareAlt,
   faHandPointUp,
 } from "@fortawesome/free-solid-svg-icons";
-import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
+
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
 import { FieldSettings, FIELD_TYPES } from "../FieldSettings";
@@ -101,7 +105,7 @@ export function FieldAdd(props) {
   };
 
   return (
-    <Card className={cx("FieldAdd", styles.FieldAdd)}>
+    <Card className={cx("FieldAdd", styles.FieldAdd)} sx={{ m: 2 }}>
       <CardContent>
         <FieldTypeDropDown
           className={styles.Type}
@@ -176,7 +180,7 @@ export function FieldAdd(props) {
           />
         )}
       </CardContent>
-      <CardFooter>
+      <CardActions>
         <Button
           variant="contained"
           color="success"
@@ -187,7 +191,7 @@ export function FieldAdd(props) {
         >
           Add Field
         </Button>
-      </CardFooter>
+      </CardActions>
     </Card>
   );
 }

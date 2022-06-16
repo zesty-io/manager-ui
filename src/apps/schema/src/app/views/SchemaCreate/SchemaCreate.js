@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
 
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
@@ -11,6 +12,11 @@ import FormLabel from "@mui/material/FormLabel";
 import Tooltip from "@mui/material/Tooltip";
 import AddIcon from "@mui/icons-material/Add";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
+
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
@@ -21,7 +27,7 @@ import {
   faFile,
   faListAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+// import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 
 import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
@@ -147,7 +153,7 @@ export default connect((state) => {
   };
 
   return (
-    <section className={styles.SchemaCreate}>
+    <Box className={styles.SchemaCreate} sx={{ m: 2 }}>
       {/* {props.user.first_time && (
         <Card className={styles.Card}>
           <CardHeader>
@@ -169,12 +175,8 @@ export default connect((state) => {
       )} */}
 
       <Card className={styles.Card}>
-        <CardHeader>
-          <h1 className={styles.headline}>
-            You are creating a new content model
-          </h1>
-        </CardHeader>
-        <CardContent className={styles.CardContent}>
+        <CardHeader title="You are creating a new content model"></CardHeader>
+        <CardContent sx={{ display: "flex", flexWrap: "wrap" }}>
           <section className={cx(styles.Step, styles.SchemaType)}>
             <h2 className={styles.StepTitle}>1. Model Type</h2>
             <p className={styles.StepDesc}>
@@ -420,7 +422,7 @@ export default connect((state) => {
           </section>
         </CardContent>
 
-        <CardFooter>
+        <CardActions>
           <Button
             variant="contained"
             color="success"
@@ -523,8 +525,8 @@ export default connect((state) => {
           >
             Create Model
           </Button>
-        </CardFooter>
+        </CardActions>
       </Card>
-    </section>
+    </Box>
   );
 });
