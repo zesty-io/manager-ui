@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import moment from "moment";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
 import styles from "./ChartDashboard.less";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar } from "@fortawesome/free-solid-svg-icons";
+
 export function ChartDashboard(props) {
   const [categories, setCategories] = useState([]);
   const [data, setData] = useState([]);
@@ -53,11 +56,11 @@ export function ChartDashboard(props) {
 
   return (
     <div className={styles.ChartDashboard}>
-      <Card>
-        <CardHeader>
-          <FontAwesomeIcon icon={faCalendar} />
-          30 days of team actions
-        </CardHeader>
+      <Card sx={{ m: 2 }}>
+        <CardHeader
+          avatar={<CalendarMonthIcon fontSize="small" />}
+          title="30 days of team actions"
+        ></CardHeader>
         <CardContent>
           <Bar
             data={{
@@ -101,10 +104,10 @@ export function ChartDashboard(props) {
             }}
           />
         </CardContent>
-        <CardFooter>
+        <CardActions>
           There were <strong>{total} actions</strong> in the past{" "}
           <strong>30 days</strong>
-        </CardFooter>
+        </CardActions>
       </Card>
     </div>
   );

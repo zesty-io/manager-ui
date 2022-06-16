@@ -5,24 +5,24 @@ import Button from "@mui/material/Button";
 import SyncIcon from "@mui/icons-material/Sync";
 import CircularProgress from "@mui/material/CircularProgress";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSync } from "@fortawesome/free-solid-svg-icons";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
 
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
-import SharedWidgetStyles from "../SharedWidget.less";
 
 export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
   const [loading, setLoading] = useState(false);
 
   return (
-    <Card id="WidgetDeleteItem" className="pageDetailWidget">
-      <CardHeader>
-        <FontAwesomeIcon icon={faSync} />
-        &nbsp;CDN
-      </CardHeader>
+    <Card id="WidgetDeleteItem" className="pageDetailWidget" sx={{ m: 2 }}>
+      <CardHeader
+        avatar={<SyncIcon fontSize="small" />}
+        title="CDN"
+      ></CardHeader>
       <CardContent className="setting-field">
         <p>
           Force the CDN to refresh the cache for this item. CDN caching can take
@@ -30,7 +30,7 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
           across the entire global network.
         </p>
       </CardContent>
-      <CardFooter className={SharedWidgetStyles.FooterSpacing}>
+      <CardActions>
         {loading ? (
           <Button
             variant="contained"
@@ -74,7 +74,7 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
             Refresh Cached Item
           </Button>
         )}
-      </CardFooter>
+      </CardActions>
     </Card>
   );
 });

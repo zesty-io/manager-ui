@@ -4,7 +4,11 @@ import moment from "moment-timezone";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCheck } from "@fortawesome/free-solid-svg-icons";
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import PersonIcon from "@mui/icons-material/Person";
 
 import { fetchAuditTrailDrafting } from "shell/store/logs";
 import cx from "classnames";
@@ -29,14 +33,17 @@ export default connect((state, props) => {
   }, []);
 
   return (
-    <Card id="WidgetDraftHistory" className="pageDetailWidget">
-      <CardHeader>
-        <span className="audit-title">
-          <FontAwesomeIcon icon={faUserCheck} />
-          &nbsp;Drafting History&nbsp;
-        </span>
-        <small>Audit Trail&trade;</small>
-      </CardHeader>
+    <Card id="WidgetDraftHistory" className="pageDetailWidget" sx={{ m: 2 }}>
+      <CardHeader
+        avatar={<PersonIcon fontSize="small" />}
+        title={
+          <>
+            {" "}
+            <span className="audit-title">Drafting History</span>
+            <small>&nbsp;Audit Trail&trade;</small>
+          </>
+        }
+      ></CardHeader>
       <CardContent
         className={cx(
           "setting-field audit-trail-content",
