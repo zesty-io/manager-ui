@@ -1,5 +1,5 @@
-import { memo, useState, Fragment } from "react";
-import cx from "classnames";
+import { memo, useState } from "react";
+
 import { useHistory } from "react-router-dom";
 
 import Button from "@mui/material/Button";
@@ -10,6 +10,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionActions from "@mui/material/AccordionActions";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
@@ -39,7 +40,8 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
             Delete this content? Removing it from all locations throughout your
             site and making it unavailable to API requests.
           </Typography>
-
+        </AccordionDetails>
+        <AccordionActions>
           <Button
             variant="contained"
             color="error"
@@ -50,11 +52,10 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
             startIcon={
               deleting ? <CircularProgress size="20px" /> : <DeleteIcon />
             }
-            sx={{ alignSelf: "flex-start" }}
           >
             Delete
           </Button>
-        </AccordionDetails>
+        </AccordionActions>
       </Accordion>
 
       <ConfirmDialog

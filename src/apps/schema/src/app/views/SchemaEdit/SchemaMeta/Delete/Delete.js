@@ -8,6 +8,7 @@ import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionActions from "@mui/material/AccordionActions";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
@@ -37,6 +38,8 @@ export default function Delete(props) {
             doing so all content items created from this model will be deleted
             along with it. Ensure you want to do this action.
           </Typography>
+        </AccordionDetails>
+        <AccordionActions>
           <Button
             variant="contained"
             color="error"
@@ -46,7 +49,7 @@ export default function Delete(props) {
           >
             Delete Model
           </Button>
-        </AccordionDetails>
+        </AccordionActions>
       </Accordion>
       <ConfirmDialog
         open={isOpen}

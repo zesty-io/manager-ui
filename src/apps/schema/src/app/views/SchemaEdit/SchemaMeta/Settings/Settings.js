@@ -14,6 +14,7 @@ import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionActions from "@mui/material/AccordionActions";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -65,9 +66,10 @@ export default function Settings(props) {
           />
 
           <Parent parentZUID={props.model.parentZUID} onChange={update} />
-
-          <Footer {...props} />
         </AccordionDetails>
+        <AccordionActions>
+          <Footer {...props} />
+        </AccordionActions>
       </Accordion>
     </Box>
   );
@@ -115,7 +117,7 @@ function Footer(props) {
         startIcon={
           loading ? <CircularProgress size="20px" /> : <FileCopyIcon />
         }
-        sx={{ alignSelf: "flex-start", mr: 2 }}
+        sx={{ mr: 2 }}
       >
         Duplicate Model
       </Button>

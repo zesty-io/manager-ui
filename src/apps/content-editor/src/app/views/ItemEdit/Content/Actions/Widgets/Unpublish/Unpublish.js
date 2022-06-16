@@ -1,4 +1,4 @@
-import { memo, Fragment, useState } from "react";
+import { memo, useState } from "react";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -6,6 +6,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionActions from "@mui/material/AccordionActions";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import LinkOffIcon from "@mui/icons-material/LinkOff";
@@ -45,7 +46,8 @@ export const Unpublish = memo(function Unpublish(props) {
             By unpublishing this content it will no longer be served if the URL
             is requested. The URL will return a 404 not found response.
           </Typography>
-
+        </AccordionDetails>
+        <AccordionActions>
           <Button
             variant="contained"
             id="UnpublishItemButton"
@@ -54,11 +56,10 @@ export const Unpublish = memo(function Unpublish(props) {
             startIcon={
               loading ? <CircularProgress size="20px" /> : <LinkOffIcon />
             }
-            sx={{ alignSelf: "flex-start" }}
           >
             Unpublish
           </Button>
-        </AccordionDetails>
+        </AccordionActions>
       </Accordion>
     </Box>
   );

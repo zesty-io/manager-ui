@@ -9,6 +9,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionActions from "@mui/material/AccordionActions";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import EmailIcon from "@mui/icons-material/Email";
@@ -189,7 +190,8 @@ ${
               onChange={(evt) => setMessage(evt.target.value)}
             />
           </Box>
-
+        </AccordionDetails>
+        <AccordionActions>
           <Button
             variant="contained"
             id="WorkflowRequestSendButton"
@@ -198,11 +200,10 @@ ${
             startIcon={
               sending ? <CircularProgress size="20px" /> : <SaveIcon />
             }
-            sx={{ alignSelf: "flex-start" }}
           >
             Send Email
           </Button>
-        </AccordionDetails>
+        </AccordionActions>
       </Accordion>
     </Box>
   );
