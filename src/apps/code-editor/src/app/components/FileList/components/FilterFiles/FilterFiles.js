@@ -5,7 +5,7 @@ import SearchIcon from "@mui/icons-material/Search";
 export function FilterFiles(props) {
   return (
     <TextField
-      id="filled-search"
+      name="filterFiles"
       placeholder="Filter file list by name, zuid or code"
       type="search"
       variant="outlined"

@@ -28,7 +28,7 @@ export function LeadExporter() {
       </div>
       <div className={cx(styles.filter, styles.SearchEnd)}>
         <TextField
-          id="filled-search"
+          name="text-filter"
           placeholder="Filter file list by name, zuid or code"
           type="search"
           variant="outlined"
