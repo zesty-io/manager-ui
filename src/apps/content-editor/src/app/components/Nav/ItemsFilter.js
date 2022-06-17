@@ -1,23 +1,28 @@
-import { Search } from "@zesty-io/core/Search";
-import cx from "classnames";
-import { useSelector } from "react-redux";
-import styles from "./ContentNav.less";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 
 const ItemsFilter = (props) => {
-  const ui = useSelector((state) => state.ui);
   return (
-    <Search
-      className={cx(
-        styles.SearchModels,
-        ui.contentNavHover ? "" : styles.HideIcon
-      )}
+    <TextField
       name="itemsFilter"
       placeholder="Filter items by name, zuid or path"
-      value={props.searchTerm}
-      onChange={(term) => {
-        props.setSearchTerm(term);
-        term = term.trim().toLowerCase();
-        if (term != "") {
+      type="search"
+      variant="outlined"
+      fullWidth
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <SearchIcon fontSize="small" />
+          </InputAdornment>
+        ),
+      }}
+      onChange={(evt) => {
+        let term = evt.target.value.trim().toLowerCase();
+
+        if (term === null) return;
+        if (term) {
+          props.setSearchTerm(term);
           props.setFilteredItems(
             props.nav.raw.filter((f) => {
               return (
@@ -32,6 +37,7 @@ const ItemsFilter = (props) => {
           props.setFilteredItems(props.nav.nav);
         }
       }}
+      sx={{ boxSizing: "border-box", p: 1 }}
     />
   );
 };
