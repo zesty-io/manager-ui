@@ -234,10 +234,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
               value={`${genImageURL()}`}
               sx={{
                 justifyContent: "flex-start",
-                width: "100%",
-                textOverflow: "ellipsis",
-                overflow: "hidden",
-                whiteSpace: "nowrap",
+                wordBreak: "break-all",
               }}
             />
           </div>
