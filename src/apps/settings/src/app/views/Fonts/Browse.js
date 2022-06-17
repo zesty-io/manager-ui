@@ -9,6 +9,9 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import AddIcon from "@mui/icons-material/Add";
 import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 
 import { FieldTypeText } from "@zesty-io/material";
 
@@ -352,11 +355,27 @@ export default connect((state) => {
   return (
     <div className={styles.PageContainer}>
       <header className={styles.SearchContainer}>
-        <Search
-          className={styles.search}
+        <TextField
+          id="filled-search"
           placeholder="Search font"
-          // onSubmit={onSearch}
-          onKeyUp={(e) => onSearch(e.target.value)}
+          type="search"
+          variant="outlined"
+          fullWidth
+          size="small"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" />
+              </InputAdornment>
+            ),
+          }}
+          onChange={(evt) => {
+            let term = evt.target.value;
+
+            if (term === null) return;
+            onSearch(term);
+          }}
+          sx={{ width: "initial" }}
         />
         <FieldTypeText
           placeholder="Type something to preview"

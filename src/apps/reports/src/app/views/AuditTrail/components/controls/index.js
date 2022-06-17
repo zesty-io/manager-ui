@@ -6,8 +6,6 @@ import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 
-import { Search } from "@zesty-io/core/Search";
-
 import styles from "./styles.less";
 export default memo(function AuditControls(props) {
   return (

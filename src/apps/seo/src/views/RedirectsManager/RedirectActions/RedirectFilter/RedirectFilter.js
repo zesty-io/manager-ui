@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import { Search } from "@zesty-io/core/Search";
-
-import styles from "./RedirectFilter.less";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 
 export function RedirectFilter(props) {
   const [filter, setFilter] = useState("");
@@ -16,11 +16,23 @@ export function RedirectFilter(props) {
   };
 
   return (
-    <Search
-      className={styles.filter}
-      onChange={handleFilter}
+    <TextField
       placeholder="Filter your redirects by url"
-      value={filter}
+      type="search"
+      variant="outlined"
+      size="small"
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <SearchIcon fontSize="small" />
+          </InputAdornment>
+        ),
+      }}
+      onChange={(evt) => {
+        let term = evt.target.value.trim().toLowerCase();
+        if (term === null) return;
+        handleFilter(term);
+      }}
     />
   );
 }
