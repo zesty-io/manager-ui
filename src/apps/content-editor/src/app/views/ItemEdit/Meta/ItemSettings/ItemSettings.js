@@ -101,8 +101,8 @@ export const ItemSettings = memo(
             <CardContent>
               <div className={styles.SearchResult}>
                 <h6 className={styles.GoogleTitle}>
-                  {web.metaTitle}{" "}
-                  {showSiteNameInMetaTitle ? `| ${data.title}` : ""}
+                  {web.metaTitle}
+                  {showSiteNameInMetaTitle ? ` | ${data.title}` : ""}
                 </h6>
                 <div className={styles.GoogleLink}>
                   {domain ? (
