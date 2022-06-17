@@ -1,4 +1,5 @@
 import { memo, Fragment, useCallback } from "react";
+import { useSelector } from "react-redux";
 
 import { MetaTitle } from "./settings/MetaTitle";
 import MetaDescription from "./settings/MetaDescription";
@@ -20,6 +21,12 @@ import styles from "./ItemSettings.less";
 
 export const ItemSettings = memo(
   function ItemSettings(props) {
+    const showSiteNameInMetaTitle = useSelector(
+      (state) =>
+        state.settings.instance.find(
+          (setting) => setting.key === "show_in_title"
+        )?.value
+    );
     const domain = useDomain();
     let { data, meta, web } = props.item;
 
@@ -41,6 +48,8 @@ export const ItemSettings = memo(
       },
       [meta.ZUID]
     );
+
+    console.log("testing", data, meta, web);
 
     return (
       <section className={styles.Meta}>
@@ -93,7 +102,10 @@ export const ItemSettings = memo(
             ></CardHeader>
             <CardContent>
               <div className={styles.SearchResult}>
-                <h6 className={styles.GoogleTitle}>{web.metaTitle}</h6>
+                <h6 className={styles.GoogleTitle}>
+                  {web.metaTitle}{" "}
+                  {showSiteNameInMetaTitle ? `| ${data.title}` : ""}
+                </h6>
                 <div className={styles.GoogleLink}>
                   {domain ? (
                     <a
