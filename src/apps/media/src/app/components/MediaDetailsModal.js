@@ -234,6 +234,10 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
               value={`${genImageURL()}`}
               sx={{
                 justifyContent: "flex-start",
+                width: "100%",
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
               }}
             />
           </div>
@@ -241,7 +245,11 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
           <ul className={styles.info}>
             <li>
               <span>ZUID:</span>
-              <CopyButton size="small" value={props.file.id} />
+              <CopyButton
+                size="small"
+                value={props.file.id}
+                sx={{ width: "fit-content" }}
+              />
             </li>
             <li>
               <span>Created at:</span>
