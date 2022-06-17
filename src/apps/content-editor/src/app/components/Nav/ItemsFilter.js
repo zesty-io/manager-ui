@@ -10,6 +10,7 @@ const ItemsFilter = (props) => {
       type="search"
       variant="outlined"
       fullWidth
+      size="small"
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">

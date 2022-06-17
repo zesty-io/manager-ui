@@ -10,6 +10,9 @@ import SaveIcon from "@mui/icons-material/Save";
 import StorageIcon from "@mui/icons-material/Storage";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import AddIcon from "@mui/icons-material/Add";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faBolt } from "@fortawesome/free-solid-svg-icons";
@@ -35,13 +38,24 @@ export class SetActions extends Component {
       return (
         <header className={styles.Actions}>
           <div className={styles.Left}>
-            <Search
-              className={cx(styles.Action, styles.Filter)}
+            <TextField
               name="filter"
-              value={this.props.filterTerm}
               placeholder="Filter Items"
-              onSubmit={this.props.onFilter}
-              onChange={this.props.onFilter}
+              type="search"
+              variant="outlined"
+              size="small"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={(evt) => {
+                let term = evt.target.value;
+                if (term === null) return;
+                this.props.onFilter(term);
+              }}
             />
 
             <LanguageSelector
