@@ -49,8 +49,6 @@ export const ItemSettings = memo(
       [meta.ZUID]
     );
 
-    console.log("testing", data, meta, web);
-
     return (
       <section className={styles.Meta}>
         <main className={styles.MetaMain}>
