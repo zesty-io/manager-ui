@@ -241,7 +241,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
 
           <ul className={styles.info}>
             <li>
-              <span>ZUID:</span>
+              <p>ZUID:</p>
               <CopyButton
                 size="small"
                 value={props.file.id}
@@ -249,7 +249,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
               />
             </li>
             <li>
-              <span>Created at:</span>
+              <p>Created at:</p>
               {props.file.updated_at}
             </li>
             <li>
