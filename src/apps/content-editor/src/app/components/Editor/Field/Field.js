@@ -7,13 +7,13 @@ import zuid from "zuid";
 import { fetchFields } from "shell/store/fields";
 import { fetchItem, fetchItems, searchItems } from "shell/store/content";
 
-import Stack from "@mui/material/Stack";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
+import { Select, MenuItem, FormHelperText } from "@mui/material";
 
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
@@ -34,7 +34,6 @@ import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { FieldTypeCurrency } from "@zesty-io/core/FieldTypeCurrency";
 import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
@@ -415,27 +414,24 @@ export default function Field({
         const binaryFieldOpts = Object.values(settings.options);
         return (
           <FormControl required={required}>
-            <Stack
-              direction="row"
-              alignItems="center"
-              spacing={1}
-              sx={{
-                mb: 1,
-              }}
-            >
-              {settings.tooltip ? (
-                <Tooltip
-                  placement="top-start"
-                  arrow
-                  title={settings.tooltip ? settings.tooltip : " "}
-                >
-                  <InfoIcon fontSize="small" />
-                </Tooltip>
-              ) : (
-                " "
-              )}
-              <FormLabel>{FieldTypeLabel}</FormLabel>
-            </Stack>
+            <FormLabel>
+              <Box
+                sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}
+              >
+                {settings.tooltip ? (
+                  <Tooltip
+                    placement="top-start"
+                    arrow
+                    title={settings.tooltip ? settings.tooltip : " "}
+                  >
+                    <InfoIcon fontSize="small" />
+                  </Tooltip>
+                ) : (
+                  " "
+                )}
+                {FieldTypeLabel}
+              </Box>
+            </FormLabel>
             <ToggleButtonGroup
               color="secondary"
               size="small"
@@ -481,16 +477,39 @@ export default function Field({
       }, [settings.options]);
 
       return (
-        <FieldTypeDropDown
-          description={description}
-          tooltip={settings.tooltip}
-          name={name}
-          label={FieldTypeLabel}
-          required={required}
-          value={value}
-          onChange={onChange}
-          options={dropdownOptions}
-        />
+        <FormControl fullWidth required={required} size="small">
+          <FormLabel>
+            <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+              {FieldTypeLabel}
+            </Box>
+          </FormLabel>
+          <Select
+            name={name}
+            variant="outlined"
+            displayEmpty
+            value={value || ""}
+            onChange={(e) => onChange(e.target.value, name)}
+          >
+            <MenuItem value="">- None -</MenuItem>
+            {dropdownOptions.map((dropdownOption, idx) => (
+              <MenuItem key={idx} value={dropdownOption.value}>
+                {dropdownOption.text}
+              </MenuItem>
+            ))}
+          </Select>
+          <FormHelperText>{description}</FormHelperText>
+        </FormControl>
       );
 
     case "internal_link":

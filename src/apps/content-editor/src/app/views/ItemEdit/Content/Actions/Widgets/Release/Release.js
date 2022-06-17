@@ -93,6 +93,7 @@ export const Release = memo(function Release(props) {
         <WithLoader condition={!loading}>
           {active ? (
             <section className={styles.ReleaseWrap}>
+              {/* TODO: Replace with Autocomplete (virtualized?) */}
               <FieldTypeDropDown
                 name="release"
                 label="Queue item for release"

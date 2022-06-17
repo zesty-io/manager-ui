@@ -48,6 +48,7 @@ export default connect((state) => {
       </div>
 
       <div className={styles.Option}>
+        {/* TODO: Autocomplete (virtualized?) */}
         <FieldTypeDropDown
           name="group_id"
           label="Lock field to media folder"

@@ -12,6 +12,7 @@ import FormLabel from "@mui/material/FormLabel";
 import Tooltip from "@mui/material/Tooltip";
 import AddIcon from "@mui/icons-material/Add";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
+import { FormControl, Select, MenuItem } from "@mui/material";
 
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -31,7 +32,6 @@ import {
 
 import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
 import { fetchParents } from "../../../store/parents";
 import { createModel } from "shell/store/models";
@@ -235,20 +235,30 @@ export default connect((state) => {
               </ToggleButtonGroup>
             </div>
 
-            <FieldTypeDropDown
-              className={styles.FieldTypeDropDown}
-              name="type"
-              label="Selected Model Type"
-              value={type}
-              onChange={(val) =>
-                setType({
-                  type: "type",
-                  payload: val,
-                })
-              }
-              options={SCHEMA_TYPES}
-              error={errors["type"]}
-            />
+            <FormControl fullWidth size="small">
+              <FormLabel sx={{ mb: "0 !important" }}>
+                Selected Model Type
+              </FormLabel>
+              <Select
+                name="type"
+                variant="outlined"
+                displayEmpty
+                value={type}
+                onChange={(e) => {
+                  setType({
+                    type: "type",
+                    payload: e.target.value,
+                  });
+                }}
+              >
+                <MenuItem value="">- None -</MenuItem>
+                {SCHEMA_TYPES.map((schemaType, idx) => (
+                  <MenuItem key={idx} value={schemaType.value}>
+                    {schemaType.component}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             <main className={cx(styles.Types)}>
               <div
@@ -383,12 +393,28 @@ export default connect((state) => {
               navigation and default routing for this model's items.
             </p>
 
-            <FieldTypeDropDown
-              name="parent"
-              label="Select this model's parent"
-              onChange={(value) => setParent(value)}
-              options={props.parents}
-            />
+            {/* TODO: Swap with Autocomplete (virtualized?) */}
+            <FormControl fullWidth size="small">
+              <FormLabel sx={{ mb: "0 !important" }}>
+                Select this model's parent
+              </FormLabel>
+              <Select
+                name="parent"
+                variant="outlined"
+                displayEmpty
+                value={parent}
+                onChange={(e) => {
+                  setParent(e.target.value);
+                }}
+              >
+                <MenuItem value="">- None -</MenuItem>
+                {props.parents.map((parent, idx) => (
+                  <MenuItem key={idx} value={parent.value}>
+                    {parent.text}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             <div className={styles.questionnaire}>
               <FormLabel>

@@ -44,6 +44,7 @@ export default connect((state) => {
     render() {
       return (
         <div>
+          {/* TODO: Replace with Autocomplete (virtualized?) */}
           <FieldTypeDropDown
             defaultOptText="All"
             defaultOptValue={FORM_GROUP_PRESETS.ALL}

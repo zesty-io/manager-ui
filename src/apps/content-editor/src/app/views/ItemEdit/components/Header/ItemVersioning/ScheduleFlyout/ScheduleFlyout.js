@@ -191,6 +191,7 @@ export default class ScheduleFlyout extends Component {
             <>
               <ModalContent>
                 <div className={styles.Row}>
+                  {/* TODO: Replace with Autocomplete */}
                   <FieldTypeDropDown
                     label="Timezone where this will be published"
                     name="selectedTimezone"

@@ -18,7 +18,8 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
+import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
+import { FormControl, Select, MenuItem } from "@mui/material";
 
 import { FieldSettings, FIELD_TYPES } from "../FieldSettings";
 
@@ -107,15 +108,23 @@ export function FieldAdd(props) {
   return (
     <Card className={cx("FieldAdd", styles.FieldAdd)} sx={{ m: 2 }}>
       <CardContent>
-        <FieldTypeDropDown
-          className={styles.Type}
-          name="type"
-          options={FIELD_TYPES}
-          defaultOptText="— Select a Field Type —"
-          onChange={(val) => {
-            setField({ ...field, datatype: val });
-          }}
-        />
+        <FormControl fullWidth size="small">
+          <Select
+            name="type"
+            variant="outlined"
+            value={field.datatype}
+            onChange={(e) => {
+              setField({ ...field, datatype: e.target.value });
+            }}
+          >
+            <MenuItem value="0">- Select a Field Type -</MenuItem>
+            {FIELD_TYPES.map((fieldType, idx) => (
+              <MenuItem key={idx} value={fieldType.value}>
+                {fieldType.component}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
         {/* <div className={styles.description}>{fieldType.description}</div> */}
 

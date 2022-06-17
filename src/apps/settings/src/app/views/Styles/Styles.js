@@ -7,10 +7,16 @@ import SaveIcon from "@mui/icons-material/Save";
 
 import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { Select, Option } from "@zesty-io/core/Select";
 import { Modal } from "@zesty-io/core/Modal";
+import {
+  FormControl,
+  FormLabel,
+  Select as MuiSelect,
+  MenuItem,
+  FormHelperText,
+} from "@mui/material";
 
 import MediaApp from "../../../../../media/src/app/MediaApp";
 import { notify } from "shell/store/notifications";
@@ -188,18 +194,25 @@ export default connect((state) => {
         );
       case "dropdown":
         return (
-          <FieldTypeDropDown
-            key={field.ZUID}
-            name={field.referenceName}
-            label={field.name}
-            value={fieldValues[field.referenceName]}
-            onChange={setValue}
-            description={field.description}
-            options={Object.keys(field.options).map((option) => ({
-              value: option,
-              text: field.options[option],
-            }))}
-          />
+          <FormControl fullWidth size="small">
+            <FormLabel>{field.name}</FormLabel>
+            <MuiSelect
+              key={field.ZUID}
+              name={field.referenceName}
+              variant="outlined"
+              displayEmpty
+              value={fieldValues[field.referenceName]}
+              onChange={(e) => setValue(e.target.value, field.name)}
+            >
+              <MenuItem value="">- None -</MenuItem>
+              {Object.keys(field.options).map((option, idx) => (
+                <MenuItem key={idx} value={option}>
+                  {field.options[option]}
+                </MenuItem>
+              ))}
+            </MuiSelect>
+            <FormHelperText>{field.description}</FormHelperText>
+          </FormControl>
         );
       case "font_picker":
         return (

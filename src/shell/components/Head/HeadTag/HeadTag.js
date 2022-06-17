@@ -21,9 +21,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 
 import { Card, CardContent, CardFooter, CardHeader } from "@zesty-io/core/Card";
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
+
+import { FormControl, FormLabel, Select, MenuItem } from "@mui/material";
 
 import styles from "./HeadTag.less";
 export const HeadTag = (props) => {
@@ -105,18 +106,21 @@ export const HeadTag = (props) => {
   return (
     <Card data-cy="tagCard" className={styles.HeadTag}>
       <CardHeader className={styles.CardHeader}>
-        <FieldTypeDropDown
-          className={styles.DropDown}
-          name={tag.ZUID}
-          label="Tag"
-          onChange={(value) => dispatch(updateTagType(tag.ZUID, value))}
-          value={tag.type}
-          options={[
-            { text: "Script", value: "script" },
-            { text: "Meta", value: "meta" },
-            { text: "Link", value: "link" },
-          ]}
-        />
+        <FormControl size="small" sx={{ width: "210px" }}>
+          <FormLabel>Tag</FormLabel>
+          <Select
+            name={tag.ZUID}
+            variant="outlined"
+            displayEmpty
+            value={tag.type}
+            onChange={(e) => dispatch(updateTagType(tag.ZUID, e.target.value))}
+          >
+            <MenuItem value="">- None -</MenuItem>
+            <MenuItem value="script">Script</MenuItem>
+            <MenuItem value="meta">Meta</MenuItem>
+            <MenuItem value="link">Link</MenuItem>
+          </Select>
+        </FormControl>
         <FieldTypeSort
           value={tag.sort}
           name={tag.ZUID}

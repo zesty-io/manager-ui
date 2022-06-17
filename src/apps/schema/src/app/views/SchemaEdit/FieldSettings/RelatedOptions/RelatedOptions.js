@@ -52,6 +52,7 @@ export default connect((state) => {
 
       <div className={styles.Option}>
         <div className={styles.Values}>
+          {/* TODO: Autocomplete (virtualized?) */}
           <FieldTypeDropDown
             name="relatedModelZUID"
             label="Related model"
@@ -71,6 +72,7 @@ export default connect((state) => {
             })}
           />
 
+          {/* TODO: Autocomplete (virtualized?) */}
           <FieldTypeDropDown
             name="relatedFieldZUID"
             label="Model field to display"
