@@ -4,7 +4,9 @@ import debounce from "lodash/debounce";
 import { Search } from "@zesty-io/core/Search";
 
 import Button from "@mui/material/Button";
-
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -141,12 +143,26 @@ export const MediaSidebar = memo(function MediaSidebar(props) {
           style={{ display: "none" }}
         />
 
-        <Search
-          type="search"
-          className={cx(styles.Search, styles.SearchForm)}
+        <TextField
           placeholder="Search your files"
-          onChange={debouncedSearch}
-        ></Search>
+          type="search"
+          variant="outlined"
+          size="small"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" />
+              </InputAdornment>
+            ),
+          }}
+          onChange={(evt) => {
+            let term = evt.target.value;
+
+            if (term === null) return;
+            debouncedSearch(term);
+          }}
+          sx={{ mt: 1 }}
+        />
       </div>
       <MediaNav
         className={styles.MediaNav}
