@@ -15,7 +15,6 @@ import SearchIcon from "@mui/icons-material/Search";
 
 import { FieldTypeText } from "@zesty-io/material";
 
-import { Search } from "@zesty-io/core/Search";
 import { Notice } from "@zesty-io/core/Notice";
 import { notify } from "shell/store/notifications";
 
