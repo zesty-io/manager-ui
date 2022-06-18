@@ -1,16 +1,7 @@
-import cx from "classnames";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCopy,
-  faDatabase,
-  faFile,
-  faPlus,
-  faSave,
-  faTimes,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCopy, faDatabase, faFile } from "@fortawesome/free-solid-svg-icons";
 
-import { Card } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
 
 import styles from "./ModelType.less";
 export function ModelType(props) {
@@ -25,10 +16,21 @@ export function ModelType(props) {
       <main className={styles.Cards}>
         <Card
           onClick={() => props.setModelType("pageset")}
-          className={cx(
-            styles.Option,
-            props.modelType === "pageset" ? styles.Selected : null
-          )}
+          sx={{
+            width: "280px",
+            height: "300px",
+            p: 2,
+            textAlign: "center",
+            boxSizing: "border-box",
+            cursor: "pointer",
+            border: "2px solid",
+            "&:hover": {
+              borderColor: "secondary.main",
+            },
+            ...(props.modelType === "pageset" && {
+              borderColor: "secondary.main",
+            }),
+          }}
         >
           <FontAwesomeIcon className={styles.icon} icon={faFile} />
           <h2 className={styles.headline}>Single page</h2>
@@ -38,10 +40,21 @@ export function ModelType(props) {
         </Card>
         <Card
           onClick={() => props.setModelType("templateset")}
-          className={cx(
-            styles.Option,
-            props.modelType === "templateset" ? styles.Selected : null
-          )}
+          sx={{
+            width: "280px",
+            height: "300px",
+            p: 2,
+            textAlign: "center",
+            boxSizing: "border-box",
+            cursor: "pointer",
+            border: "2px solid",
+            "&:hover": {
+              borderColor: "secondary.main",
+            },
+            ...(props.modelType === "templateset" && {
+              borderColor: "secondary.main",
+            }),
+          }}
         >
           <FontAwesomeIcon className={styles.icon} icon={faCopy} />
           <h2 className={styles.headline}>Multi-page set</h2>
@@ -51,10 +64,21 @@ export function ModelType(props) {
         </Card>
         <Card
           onClick={() => props.setModelType("dataset")}
-          className={cx(
-            styles.Option,
-            props.modelType === "dataset" ? styles.Selected : null
-          )}
+          sx={{
+            width: "280px",
+            height: "300px",
+            p: 2,
+            textAlign: "center",
+            boxSizing: "border-box",
+            cursor: "pointer",
+            border: "2px solid",
+            "&:hover": {
+              borderColor: "secondary.main",
+            },
+            ...(props.modelType === "dataset" && {
+              borderColor: "secondary.main",
+            }),
+          }}
         >
           <FontAwesomeIcon className={styles.icon} icon={faDatabase} />
           <h2 className={styles.headline}>Headless set</h2>

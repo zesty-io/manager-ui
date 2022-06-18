@@ -10,6 +10,7 @@ import { fetchItem, fetchItems, searchItems } from "shell/store/content";
 import Stack from "@mui/material/Stack";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
+import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
@@ -38,8 +39,8 @@ import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
 import { FieldTypeEditor } from "@zesty-io/core/FieldTypeEditor";
 import { FieldTypeTinyMCE } from "@zesty-io/core/FieldTypeTinyMCE";
-import { FieldTypeOneToOne } from "@zesty-io/core/FieldTypeOneToOne";
 import { FieldTypeOneToMany } from "@zesty-io/core/FieldTypeOneToMany";
+import { FieldTypeOneToOne } from "@zesty-io/material";
 
 import styles from "./Field.less";
 import MediaStyles from "../../../../../../media/src/app/MediaAppModal.less";
@@ -152,6 +153,7 @@ function resolveRelatedOptions(
       return {
         filterValue: items[itemZUID].data[field.name],
         value: itemZUID,
+        inputLabel: items[itemZUID].data[field.name] || "",
         component: (
           <ResolvedOption
             modelZUID={modelZUID}
@@ -416,30 +418,28 @@ export default function Field({
       if (settings.options) {
         const binaryFieldOpts = Object.values(settings.options);
         return (
-          <>
-            <FormLabel sx={{ color: "primary.dark" }}>
-              <Stack
-                direction="row"
-                alignItems="center"
-                sx={{
-                  mb: 1,
-                }}
-              >
-                {settings.tooltip ? (
-                  <Tooltip
-                    placement="top-start"
-                    arrow
-                    title={settings.tooltip ? settings.tooltip : " "}
-                  >
-                    <InfoIcon fontSize="small" sx={{ mr: 1 }} />
-                  </Tooltip>
-                ) : (
-                  " "
-                )}
-
-                {FieldTypeLabel}
-              </Stack>
-            </FormLabel>
+          <FormControl required={required}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={1}
+              sx={{
+                mb: 1,
+              }}
+            >
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+              <FormLabel>{FieldTypeLabel}</FormLabel>
+            </Stack>
             <ToggleButtonGroup
               color="secondary"
               size="small"
@@ -457,7 +457,7 @@ export default function Field({
             <Box component="p" sx={{ mt: 1 }}>
               {description}
             </Box>
-          </>
+          </FormControl>
         );
       } else {
         return (
@@ -580,14 +580,21 @@ export default function Field({
       }, [allLanguages.length, relatedModelZUID, langID]);
 
       let oneToOneOptions = useMemo(() => {
-        return resolveRelatedOptions(
-          allFields,
-          allItems,
-          relatedFieldZUID,
-          relatedModelZUID,
-          langID,
-          value
-        );
+        return [
+          {
+            inputLabel: "- None -",
+            value: "0",
+            component: "- None -",
+          },
+          ...resolveRelatedOptions(
+            allFields,
+            allItems,
+            relatedFieldZUID,
+            relatedModelZUID,
+            langID,
+            value
+          ),
+        ];
       }, [
         Object.keys(allFields).length,
         Object.keys(allItems).length,
@@ -606,6 +613,7 @@ export default function Field({
         oneToOneOptions.unshift({
           filterValue: value,
           value: value,
+          inputLabel: `Selected item not found: ${value}`,
           component: (
             <span>
               <span onClick={(evt) => evt.stopPropagation()}>
@@ -624,16 +632,45 @@ export default function Field({
 
       return (
         <FieldTypeOneToOne
-          className={styles.FieldTypeOneToOne}
           name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
+          label={
+            <Stack direction="row" alignItems="center">
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+
+              {FieldTypeLabel}
+            </Stack>
+          }
+          helperText={description}
           required={required}
-          value={value}
-          onChange={onChange}
+          placeholder={"Select relationship..."}
+          value={
+            oneToOneOptions?.find((options) => options.value === value) || null
+          }
+          onChange={(_, option) => onChange(option.value, name)}
           options={oneToOneOptions}
           onOpen={onOneToOneOpen}
+          startAdornment={
+            value &&
+            value !== "0" && (
+              <AppLink to={`/content/${relatedModelZUID}/${value}`}>
+                <FontAwesomeIcon icon={faEdit} />
+              </AppLink>
+            )
+          }
+          endAdornment={
+            value &&
+            value !== "0" && <em>{getSelectedLang(allLanguages, langID)}</em>
+          }
         />
       );
 

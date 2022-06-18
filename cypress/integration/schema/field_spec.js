@@ -10,7 +10,8 @@ describe("Fields", () => {
     const fieldLabel = `Text Field: ${timestamp}`;
     const fieldName = `text_field_${timestamp}`;
 
-    cy.get(".FieldAdd .Select").click();
+    // High timeout to handle initial api load time
+    cy.get(".FieldAdd .Select", { timeout: 10000 }).click();
 
     cy.get(".FieldAdd .selections .options li[data-value='text']").click();
 

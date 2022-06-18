@@ -13,9 +13,13 @@ import {
   faCog,
   faDatabase,
   faHistory,
-  faClock,
 } from "@fortawesome/free-solid-svg-icons";
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 import { AccountInfo } from "./components/AccountInfo";
@@ -158,19 +162,19 @@ export default memo(function Dashboard() {
           const model = modelsByZuid[contentModelZUID];
 
           return (
-            <Card className={styles.Card} key={i}>
-              <CardHeader>
-                <h4 className={styles.columns}>
-                  <div className={styles.column}>
-                    <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
+            <Card key={i} sx={{ m: 2 }}>
+              <CardHeader
+                avatar={<AccessTimeIcon fontSize="small" />}
+                title={
+                  <>
                     Recent{" "}
                     <AppLink to={`/content/${contentModelZUID}`}>
                       {model && model.label}
                     </AppLink>{" "}
                     Edits
-                  </div>
-                </h4>
-              </CardHeader>
+                  </>
+                }
+              ></CardHeader>
               <CardContent>
                 <ul>
                   {items.map((item, i) => {
@@ -201,7 +205,7 @@ export default memo(function Dashboard() {
 function DashboardCardFooter(props) {
   const history = useHistory();
   return (
-    <CardFooter>
+    <CardActions>
       <Button
         variant="contained"
         color="secondary"
@@ -210,6 +214,6 @@ function DashboardCardFooter(props) {
       >
         Create {props.model && props.model.label}
       </Button>
-    </CardFooter>
+    </CardActions>
   );
 }

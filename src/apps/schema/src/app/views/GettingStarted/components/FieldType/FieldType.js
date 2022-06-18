@@ -1,5 +1,3 @@
-import cx from "classnames";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAlignLeft,
@@ -7,7 +5,7 @@ import {
   faFont,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { Card } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
 
 import styles from "./FieldType.less";
 export function FieldType(props) {
@@ -21,20 +19,44 @@ export function FieldType(props) {
 
       <div className={styles.Cards}>
         <Card
-          className={cx(styles.Option, {
-            [styles.Selected]: props.fieldType === "text",
-          })}
           onClick={() => props.setFieldType("text")}
+          sx={{
+            width: "250px",
+            height: "300px",
+            p: 2,
+            textAlign: "center",
+            boxSizing: "border-box",
+            cursor: "pointer",
+            border: "2px solid",
+            "&:hover": {
+              borderColor: "secondary.main",
+            },
+            ...(props.fieldType === "text" && {
+              borderColor: "secondary.main",
+            }),
+          }}
         >
           <FontAwesomeIcon className={styles.icon} icon={faFont} />
           <h2 className={styles.OptionTitle}>Text</h2>
           <p className={styles.OptionDescription}>Simple one-line input.</p>
         </Card>
         <Card
-          className={cx(styles.Option, {
-            [styles.Selected]: props.fieldType === "textarea",
-          })}
           onClick={(e) => props.setFieldType("textarea")}
+          sx={{
+            width: "250px",
+            height: "300px",
+            p: 2,
+            textAlign: "center",
+            boxSizing: "border-box",
+            cursor: "pointer",
+            border: "2px solid",
+            "&:hover": {
+              borderColor: "secondary.main",
+            },
+            ...(props.fieldType === "textarea" && {
+              borderColor: "secondary.main",
+            }),
+          }}
         >
           <FontAwesomeIcon className={styles.icon} icon={faAlignLeft} />
           <h2 className={styles.OptionTitle}>Rich text</h2>
@@ -43,10 +65,22 @@ export function FieldType(props) {
           </p>
         </Card>
         <Card
-          className={cx(styles.Option, {
-            [styles.Selected]: props.fieldType === "images",
-          })}
           onClick={() => props.setFieldType("images")}
+          sx={{
+            width: "250px",
+            height: "300px",
+            p: 2,
+            textAlign: "center",
+            boxSizing: "border-box",
+            cursor: "pointer",
+            border: "2px solid",
+            "&:hover": {
+              borderColor: "secondary.main",
+            },
+            ...(props.fieldType === "images" && {
+              borderColor: "secondary.main",
+            }),
+          }}
         >
           <FontAwesomeIcon className={styles.icon} icon={faFileImage} />
           <h2 className={styles.OptionTitle}>Media</h2>

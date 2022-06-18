@@ -4,17 +4,18 @@ import React, { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import CodeIcon from "@mui/icons-material/Code";
 import SettingsIcon from "@mui/icons-material/Settings";
+import IntegrationInstructionsIcon from "@mui/icons-material/IntegrationInstructions";
+import BoltIcon from "@mui/icons-material/Bolt";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
+import NewspaperIcon from "@mui/icons-material/Newspaper";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCode,
-  faFileCode,
-  faBolt,
-  faProjectDiagram,
-  faNewspaper,
-  faUnlockAlt,
-} from "@fortawesome/free-solid-svg-icons";
+
 import Link from "@mui/material/Link";
 import { faNpm } from "@fortawesome/free-brands-svg-icons";
 import { Docs } from "@zesty-io/core/Docs";
@@ -62,7 +63,7 @@ export function HeadlessOptions(props) {
     return (
       <div>
         <h5>Dev (latest version)</h5>
-        <Divider />
+        <Divider sx={{ my: 1 }} />
         <Link
           underline="none"
           color="secondary"
@@ -78,7 +79,7 @@ export function HeadlessOptions(props) {
           .filter((domain) => domain.branch == "dev")
           .map((domain) => (
             <div key={`${domain.ZUID}${endPath}`}>
-              <Divider />
+              <Divider sx={{ my: 1 }} />
               <Link
                 underline="none"
                 color="secondary"
@@ -96,7 +97,7 @@ export function HeadlessOptions(props) {
           .filter((domain) => domain.branch == "live")
           .map((domain) => (
             <div key={`${domain.ZUID}${endPath}`}>
-              <Divider />
+              <Divider sx={{ my: 1 }} />
               <Link
                 underline="none"
                 color="secondary"
@@ -124,17 +125,17 @@ export function HeadlessOptions(props) {
 
       <div className={styles.HeadlessOptionsWrapper}>
         {!headlessResponse && (
-          <Card className={styles.customCard}>
-            <CardHeader className={styles.cardHeader}>
-              <h2>
-                <FontAwesomeIcon icon={faFileCode} />
-                Change your WebEngine Mode to Access Headless Features
-              </h2>
-              <Docs
-                subject="Zesty.io Modes"
-                url="https://zesty.org/services/web-engine/modes"
-              />
-            </CardHeader>
+          <Card className={styles.customCard} sx={{ m: 2 }}>
+            <CardHeader
+              avatar={<IntegrationInstructionsIcon fontSize="small" />}
+              title="Change your WebEngine Mode to Access Headless Features"
+              action={
+                <Docs
+                  subject="Zesty.io Modes"
+                  url="https://zesty.org/services/web-engine/modes"
+                />
+              }
+            ></CardHeader>
             <div className={styles.useTags}>
               <span className={styles.smallTags}>Build Headlessly</span>{" "}
               <span className={styles.smallTags}>
@@ -163,7 +164,7 @@ export function HeadlessOptions(props) {
                 button below, change your WebEngine Mode to Hybrid, and hit
                 save.
               </p>
-              <Divider />
+              <Divider sx={{ my: 1 }} />
               <AppLink to={`/settings/instance/general`} title="Edit Settings">
                 <Button
                   variant="contained"
@@ -180,17 +181,17 @@ export function HeadlessOptions(props) {
           <div>
             <div className={styles.HeadlessOptions}>
               {props.item.web.path && (
-                <Card className={styles.customCard}>
-                  <CardHeader className={styles.cardHeader}>
-                    <h2>
-                      <FontAwesomeIcon icon={faFileCode} />
-                      URL to JSON
-                    </h2>
-                    <Docs
-                      subject="Routing toJSON"
-                      url={headlessResponse.routing.documentation}
-                    />
-                  </CardHeader>
+                <Card sx={{ m: 2 }}>
+                  <CardHeader
+                    avatar={<IntegrationInstructionsIcon fontSize="small" />}
+                    title="URL to JSON"
+                    action={
+                      <Docs
+                        subject="Routing toJSON"
+                        url={headlessResponse.routing.documentation}
+                      />
+                    }
+                  ></CardHeader>
                   <div className={styles.useTags}>
                     <span className={styles.smallTags}>Headless SSR</span>{" "}
                     <span className={styles.smallTags}>Headless Websites</span>
@@ -213,17 +214,17 @@ export function HeadlessOptions(props) {
                   </CardContent>
                 </Card>
               )}
-              <Card className={styles.customCard}>
-                <CardHeader className={styles.cardHeader}>
-                  <h2>
-                    <FontAwesomeIcon icon={faBolt} />
-                    Instant JSON API
-                  </h2>
-                  <Docs
-                    subject="Instant API"
-                    url={headlessResponse.instant.documentation}
-                  />
-                </CardHeader>
+              <Card className={styles.customCard} sx={{ m: 2 }}>
+                <CardHeader
+                  avatar={<BoltIcon fontSize="small" />}
+                  title="Instant JSON API"
+                  action={
+                    <Docs
+                      subject="Instant API"
+                      url={headlessResponse.instant.documentation}
+                    />
+                  }
+                ></CardHeader>
                 <div className={styles.useTags}>
                   <span className={styles.smallTags}>Mobile Applications</span>{" "}
                   <span className={styles.smallTags}>Headless Applets</span>
@@ -243,17 +244,17 @@ export function HeadlessOptions(props) {
                   {outputLinks(instantItemPath)}
                 </CardContent>
               </Card>
-              <Card className={styles.customCard}>
-                <CardHeader className={styles.cardHeader}>
-                  <h2>
-                    <FontAwesomeIcon icon={faProjectDiagram} />
-                    GraphQL API
-                  </h2>
-                  <Docs
-                    subject="GraphQL API"
-                    url={headlessResponse.gql.documentation}
-                  />
-                </CardHeader>
+              <Card className={styles.customCard} sx={{ m: 2 }}>
+                <CardHeader
+                  avatar={<AccountTreeIcon fontSize="small" />}
+                  title="GraphQL API"
+                  action={
+                    <Docs
+                      subject="GraphQL API"
+                      url={headlessResponse.gql.documentation}
+                    />
+                  }
+                ></CardHeader>
                 <div className={styles.useTags}>
                   <span className={styles.smallTags}>
                     GraphQL Implementations
@@ -288,17 +289,17 @@ export function HeadlessOptions(props) {
               </Card>
             </div>
             <div className={styles.HeadlessOptions}>
-              <Card className={styles.customCard}>
-                <CardHeader className={styles.cardHeader}>
-                  <h2>
-                    <FontAwesomeIcon icon={faUnlockAlt} />
-                    Instances Rest API
-                  </h2>
-                  <Docs
-                    subject="Instances Rest API"
-                    url="https://instances-api.zesty.org/"
-                  />
-                </CardHeader>
+              <Card className={styles.customCard} sx={{ m: 2 }}>
+                <CardHeader
+                  avatar={<LockOpenIcon fontSize="small" />}
+                  title="Instances Rest API"
+                  action={
+                    <Docs
+                      subject="Instances Rest API"
+                      url="https://instances-api.zesty.org/"
+                    />
+                  }
+                ></CardHeader>
                 <div className={styles.useTags}>
                   <span className={styles.smallTags}>Automation</span>
                   <span className={styles.smallTags}>
@@ -316,7 +317,7 @@ export function HeadlessOptions(props) {
                   </p>
 
                   <h5>Rest Endpoint (needs authentication bearer)</h5>
-                  <Divider />
+                  <Divider sx={{ my: 1 }} />
                   <Link
                     href={restEndpoint}
                     target="_blank"
@@ -326,7 +327,7 @@ export function HeadlessOptions(props) {
                     {restEndpoint}
                   </Link>
                   <h5>Full REST Documentation</h5>
-                  <Divider />
+                  <Divider sx={{ my: 1 }} />
                   <Link
                     underline="none"
                     color="secondary"
@@ -335,14 +336,14 @@ export function HeadlessOptions(props) {
                   >
                     instances-api.zesty.org
                   </Link>
-                  <h5 className={styles.cardHeader}>
+                  <h5>
                     <FontAwesomeIcon icon={faNpm} /> <span> Node SDK</span>{" "}
                     <Docs
                       subject="Node SDK"
                       url="https://zesty.org/tools/node-sdk"
                     />
                   </h5>
-                  <Divider />
+                  <Divider sx={{ my: 1 }} />
                   <Link
                     underline="none"
                     color="secondary"
@@ -353,17 +354,17 @@ export function HeadlessOptions(props) {
                   </Link>
                 </CardContent>
               </Card>
-              <Card className={styles.customCard}>
-                <CardHeader className={styles.cardHeader}>
-                  <h2>
-                    <FontAwesomeIcon icon={faCode} />
-                    Custom Endpoints
-                  </h2>
-                  <Docs
-                    subject="Custom Parsley Endpoints"
-                    url={headlessResponse.custom.documentation}
-                  />
-                </CardHeader>
+              <Card className={styles.customCard} sx={{ m: 2 }}>
+                <CardHeader
+                  avatar={<IntegrationInstructionsIcon fontSize="small" />}
+                  title="Custom Endpoints"
+                  action={
+                    <Docs
+                      subject="Custom Parsley Endpoints"
+                      url={headlessResponse.custom.documentation}
+                    />
+                  }
+                ></CardHeader>
                 <div className={styles.useTags}>
                   <span className={styles.smallTags}>Search</span>
                   <span className={styles.smallTags}>
@@ -373,14 +374,14 @@ export function HeadlessOptions(props) {
                 <CardContent>
                   <p>{headlessResponse.custom.about}</p>
 
-                  <Divider />
+                  <Divider sx={{ my: 1 }} />
                   <p>
                     Custom endpoints can be created from the Code Editor. Open
                     the code editor, click the create button, select "Custom
                     Endpoint" from the dropdown, make the filename a full path
                     like /my/custom/endpoint.json
                   </p>
-                  <Divider />
+                  <Divider sx={{ my: 1 }} />
                   <AppLink to={`/code`} title="Edit Code">
                     <Button
                       variant="contained"
@@ -393,14 +394,12 @@ export function HeadlessOptions(props) {
                 </CardContent>
               </Card>
               {props.item.web.path && (
-                <Card className={styles.customCard}>
-                  <CardHeader className={styles.cardHeader}>
-                    <h2>
-                      <FontAwesomeIcon icon={faNewspaper} />
-                      VisualLayout
-                    </h2>
-                    <Docs subject="Visual Layout" />
-                  </CardHeader>
+                <Card className={styles.customCard} sx={{ m: 2 }}>
+                  <CardHeader
+                    avatar={<NewspaperIcon fontSize="small" />}
+                    title="VisualLayout"
+                    action={<Docs subject="Visual Layout" />}
+                  ></CardHeader>
                   <div className={styles.useTags}>
                     <span className={styles.smallTags}>Automation Design</span>
                     <span className={styles.smallTags}>
@@ -435,7 +434,7 @@ export function HeadlessOptions(props) {
                       .{" "}
                     </p>
 
-                    <Divider />
+                    <Divider sx={{ my: 1 }} />
                     <p>
                       Visual layout is controlled from the{" "}
                       <Link
