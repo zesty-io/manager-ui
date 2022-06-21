@@ -1,5 +1,6 @@
 import { memo, Fragment, useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { MetaTitle } from "./settings/MetaTitle";
 import MetaDescription from "./settings/MetaDescription";
@@ -11,7 +12,6 @@ import { ItemParent } from "./settings/ItemParent";
 import { CanonicalTag } from "./settings/CanonicalTag";
 import { SitemapPriority } from "./settings/SitemapPriority";
 import { useDomain } from "shell/hooks/use-domain";
-import { useDispatch } from "react-redux";
 
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
