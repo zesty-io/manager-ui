@@ -2,22 +2,6 @@
 @import "~@zesty-io/core/typography.less";
 
 .Card {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  box-shadow: 0 7px 30px -10px rgba(150, 170, 180, 0.5);
-
-  // Checkbox Selected
-  &.selected {
-    box-shadow: 0px 0px 6px @zesty-light-blue;
-    //CheckBox
-    .CardContent .Check {
-      background: @zesty-blue;
-      opacity: 1;
-      color: @white;
-    }
-  }
   // Grid Image
   img {
     width: 100%;
@@ -40,57 +24,38 @@
     }
   }
 
-  .CardContent {
-    position: relative;
-    &.CardContentTop {
-      padding: 8px;
-      display: flex;
-      align-items: center;
+  //Loading Shimmer
+  .Load {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+  }
+
+  .Loading {
+    animation: shimmer 3s infinite linear;
+    background: linear-gradient(
+      0.35turn,
+      #eff1f3 25%,
+      #e2e2e2 45%,
+      #eff1f3 65%
+    );
+    background-size: 1000px 100%;
+
+    // Perf: Hack to trigger hardware acceleration for animation performance
+    transform: translate3d(0, 0, 0);
+  }
+
+  @keyframes shimmer {
+    100% {
+      background-position: -1000px 0;
     }
-
-    //Loading Shimmer
-    .Load {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
-    }
-
-    .Loading {
-      animation: shimmer 3s infinite linear;
-      background: linear-gradient(
-        0.35turn,
-        #eff1f3 25%,
-        #e2e2e2 45%,
-        #eff1f3 65%
-      );
-      background-size: 1000px 100%;
-
-      // Perf: Hack to trigger hardware accleration for animation performance
-      transform: translate3d(0, 0, 0);
-    }
-
-    @keyframes shimmer {
-      100% {
-        background-position: -1000px 0;
-      }
-      0% {
-        background-position: 1000px 0;
-      }
-    }
-
-    // Checkbox Show
-    &:hover {
-      .Check {
-        opacity: 1;
-      }
+    0% {
+      background-position: 1000px 0;
     }
   }
-  .CardFooter {
-    position: relative;
-    padding: 0;
-  }
+
   .ProgressBar {
     position: absolute;
     height: 100%;
