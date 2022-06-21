@@ -4,12 +4,12 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { Loader } from "@zesty-io/core/Loader";
-import { Tag } from "@zesty-io/core/Tag";
+import Chip from "@mui/material/Chip";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./OneToManyCell.less";
 export class OneToManyCell extends PureComponent {
-  onRemove = (itemZUID) => {
+  onDelete = (itemZUID) => {
     this.props.onRemove(
       this.props.value
         .split(",")
@@ -64,14 +64,16 @@ export class OneToManyCell extends PureComponent {
                 relatedItems
                   .filter((item) => item)
                   .map((item, i) => (
-                    <Tag
-                      key={i}
+                    <Chip
                       value={item.meta.ZUID}
-                      link={`//${CONFIG.URL_MANAGER}/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
-                      onRemove={this.onRemove}
-                    >
-                      {item.data[relatedField.name]}
-                    </Tag>
+                      variant="contained"
+                      key={i}
+                      label={item.data[relatedField.name]}
+                      onDelete={() => this.onDelete(item.meta.ZUID)}
+                      sx={{
+                        alignSelf: "center",
+                      }}
+                    ></Chip>
                   ))}
             </span>
           );
