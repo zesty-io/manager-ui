@@ -89,7 +89,7 @@ Pull Cypress Screenshots
 
 ---
 
-## Conect Manager-ui to Material Design System
+## Connect Manager-ui to Material Design System
 
 Connect to Zesty Material Design Systems
 `npm link @zesty-io/material`
