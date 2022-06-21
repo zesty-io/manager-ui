@@ -61,7 +61,11 @@ windows: `c:\windows\system32\drivers\etc\hosts`
 2. Start webpack: `npm run start`
 3. Load the app in your browser: `YOUR_UNIQUE_INSTANCE_ZUID.manager.zesty.io:8080`
 
-## Tests
+## Run local Stage
+
+`npm run start:stage`
+
+## Cypress Testing
 
 Functional UI tests are run with cypress.io
 
@@ -74,9 +78,32 @@ To run the tests on your machine you will need to create a `cypress.env.json` fi
 }
 ```
 
+Run Cypress
+
+New terminal `npm start`
+
+Open a second terminal `npm run start:test`
+
+Pull Cypress Screenshots
+`npm run ci:pull:screenshots`
+
 ---
 
-**Notes**
+## Conect Manager-ui to Material Design System
 
 Connect to Zesty Material Design Systems
 `npm link @zesty-io/material`
+
+In Material codebase make your edits
+`npm run build` => `npm pack`
+A .tgz file will be created copy the file path and install to Manager-Ui
+
+```
+EX:  npm i ~/Code/material/zesty-io-material-0.0.3.tgz
+```
+
+Shortcut to see edits without having to build material app again
+
+```
+Go into node_modules/@zesty-io/material/es/theme/index.js make a change and hot reload will show new edit locally.
+```
