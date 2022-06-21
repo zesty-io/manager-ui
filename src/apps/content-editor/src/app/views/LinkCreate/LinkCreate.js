@@ -1,24 +1,24 @@
-import { Fragment, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import AddIcon from "@mui/icons-material/Add";
+import LinkIcon from "@mui/icons-material/Link";
+import IosShareIcon from "@mui/icons-material/IosShare";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
 import { Select, Option } from "@zesty-io/core/Select";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faExternalLinkSquareAlt,
-  faLink,
-} from "@fortawesome/free-solid-svg-icons";
 
 import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
@@ -129,38 +129,43 @@ export function LinkCreate() {
 
   return (
     <section className={styles.Editor}>
-      <Card className={styles.LinkCreate}>
-        <CardHeader className={styles.EditorHeader}>
-          <Select
-            label="Select link type"
-            name="type"
-            value={state.type}
-            onSelect={onChange}
-          >
-            <Option
-              className={styles.Icon}
-              value="internal"
-              component={
-                <Fragment>
-                  <FontAwesomeIcon icon={faLink} />
-                  &nbsp;Internal Link
-                </Fragment>
-              }
-            />
-            <Option
-              className={styles.Icon}
-              value="external"
-              component={
-                <Fragment>
-                  <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
-                  &nbsp;External Link
-                </Fragment>
-              }
-            />
-          </Select>
-        </CardHeader>
+      <Card sx={{ m: 2, width: "800px" }}>
+        <CardHeader
+          title={
+            <>
+              {" "}
+              <Select
+                label="Select link type"
+                name="type"
+                value={state.type}
+                onSelect={onChange}
+              >
+                <Option
+                  value="internal"
+                  component={
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <LinkIcon fontSize="small" />
+                      &nbsp;Internal Link
+                    </Box>
+                  }
+                />
+                <Option
+                  value="external"
+                  component={
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <IosShareIcon fontSize="small" />
+                      &nbsp;External Link
+                    </Box>
+                  }
+                />
+              </Select>
+            </>
+          }
+        ></CardHeader>
 
-        <CardContent className={styles.CardContent}>
+        <CardContent
+          sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}
+        >
           <FieldTypeInternalLink
             className={styles.Row}
             name="parentZUID"
@@ -193,11 +198,11 @@ export function LinkCreate() {
           )}
 
           <FieldTypeText
-            className={styles.Row}
             label="Link title"
             name="metaTitle"
             value={state.metaTitle}
-            onChange={(value) => {
+            onChange={(evt) => {
+              const value = evt.target.value;
               setState({
                 ...state,
                 label: value,
@@ -233,7 +238,7 @@ export function LinkCreate() {
             />
           </FormGroup>
         </CardContent>
-        <CardFooter>
+        <CardActions>
           <Button
             variant="contained"
             color="success"
@@ -244,7 +249,7 @@ export function LinkCreate() {
           >
             Create Link
           </Button>
-        </CardFooter>
+        </CardActions>
       </Card>
     </section>
   );

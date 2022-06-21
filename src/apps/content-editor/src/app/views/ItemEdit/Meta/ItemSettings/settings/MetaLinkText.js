@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
@@ -29,7 +29,7 @@ export const MetaLinkText = memo(function MetaLinkText({
         }
         value={meta_link_text}
         placeholder={"This text is used in application navigation"}
-        onChange={onChange}
+        onChange={(evt) => onChange(evt.target.value, "metaLinkText")}
       />
     </article>
   );

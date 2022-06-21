@@ -3,15 +3,19 @@ import moment from "moment";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBolt, faCodeBranch } from "@fortawesome/free-solid-svg-icons";
+import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import Link from "@mui/material/Link";
 
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+
+import InfoIcon from "@mui/icons-material/Info";
+
 import { AppLink } from "@zesty-io/core/AppLink";
-import { CopyButton } from "@zesty-io/core/CopyButton";
+import { CopyButton } from "@zesty-io/material";
 
 import styles from "./FileStatus.less";
-import shared from "../../FileDrawer.less";
 
 const FileType = (props) => {
   if (
@@ -41,12 +45,21 @@ export default function FileStatus(props) {
   const instance = useSelector((state) => state.instance);
 
   return (
-    <Card className={cx(styles.FileStatus, shared.DrawerStyles)}>
-      <CardHeader>
-        <h1>
-          <FontAwesomeIcon icon={faCodeBranch} /> File Information
-        </h1>
-      </CardHeader>
+    <Card
+      className={cx(styles.FileStatus)}
+      sx={{
+        m: 2,
+        backgroundColor: "#292828", // overwrite material theme cardheader color for dark cards
+        color: "#b1b1b3 ",
+        width: "400px",
+      }}
+    >
+      <CardHeader
+        avatar={<InfoIcon fontSize="small" />}
+        title="File Information"
+        sx={{ backgroundColor: "#272728" }}
+      ></CardHeader>
+
       <CardContent>
         <ul>
           {props.file.contentModelZUID && (
@@ -139,7 +152,11 @@ export default function FileStatus(props) {
           <li>
             File ZUID:&nbsp;
             <em>
-              <CopyButton size="compact" value={props.file.ZUID} />
+              <CopyButton
+                variant="contained"
+                size="small"
+                value={props.file.ZUID}
+              />
             </em>
           </li>
           <li>

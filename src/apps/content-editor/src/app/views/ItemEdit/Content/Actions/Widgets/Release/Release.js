@@ -13,7 +13,11 @@ import {
   faPowerOff,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -80,12 +84,11 @@ export const Release = memo(function Release(props) {
   }, [releases, addingMember]);
 
   return (
-    <Card className={styles.Release}>
-      <CardHeader>
-        <AppLink to="/release">
-          <FontAwesomeIcon icon={faRocket} /> Releases
-        </AppLink>
-      </CardHeader>
+    <Card className={styles.Release} sx={{ m: 2 }}>
+      <CardHeader
+        avatar={<RocketLaunchIcon fontSize="small" />}
+        title={<AppLink to="/release">Releases</AppLink>}
+      ></CardHeader>
       <CardContent className={styles.CardContent}>
         <WithLoader condition={!loading}>
           {active ? (

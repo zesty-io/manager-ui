@@ -1,14 +1,14 @@
 import { memo } from "react";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCode } from "@fortawesome/free-solid-svg-icons";
-
 import Stack from "@mui/material/Stack";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import FormLabel from "@mui/material/FormLabel";
 
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CodeIcon from "@mui/icons-material/Code";
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
 
 import Tooltip from "@mui/material/Tooltip";
@@ -26,13 +26,11 @@ export const WidgetListed = memo(function WidgetListed(props) {
     });
   };
   return (
-    <Card className={styles.WidgetListed}>
-      <CardHeader>
-        <span>
-          <FontAwesomeIcon icon={faCode} />
-          &nbsp;Parsley Behaviors
-        </span>
-      </CardHeader>
+    <Card className={styles.WidgetListed} sx={{ m: 2 }}>
+      <CardHeader
+        avatar={<CodeIcon fontSize="small" />}
+        title="Parsley Behaviors"
+      ></CardHeader>
       <CardContent>
         <FormLabel sx={{ color: "primary.dark" }}>
           <Stack

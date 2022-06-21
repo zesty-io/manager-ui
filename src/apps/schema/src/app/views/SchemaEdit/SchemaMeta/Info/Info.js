@@ -3,7 +3,6 @@ import { useFilePath } from "shell/hooks/useFilePath";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faInfoCircle,
   faTimesCircle,
   faCheckCircle,
   faBolt,
@@ -13,9 +12,15 @@ import {
   faEdit,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "@mui/material/Link";
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import InfoIcon from "@mui/icons-material/Info";
+
 import { AppLink } from "@zesty-io/core/AppLink";
-import { CopyButton } from "@zesty-io/core/CopyButton";
+import { CopyButton } from "@zesty-io/material";
 
 import styles from "./Info.less";
 
@@ -31,11 +36,11 @@ export default connect((state) => {
   const codePath = useFilePath(props.model.ZUID);
 
   return (
-    <Card className={styles.ModelInfo}>
-      <CardHeader>
-        <FontAwesomeIcon icon={faInfoCircle} />
-        &nbsp;Model Info
-      </CardHeader>
+    <Card className={styles.ModelInfo} sx={{ m: 2 }}>
+      <CardHeader
+        avatar={<InfoIcon fontSize="small" />}
+        title="Model Info"
+      ></CardHeader>
       <CardContent>
         <ul className={styles.StaticInfo}>
           <li>
@@ -84,11 +89,7 @@ export default connect((state) => {
           </li>
           <li>
             <abbr title="Zesty Universal ID">ZUID</abbr>:&nbsp;
-            <CopyButton
-              kind="outlined"
-              size="compact"
-              value={props.model.ZUID}
-            />
+            <CopyButton size="small" value={props.model.ZUID} />
           </li>
           <li>
             Instant API:&nbsp;
@@ -112,7 +113,7 @@ export default connect((state) => {
           </li>
         </ul>
       </CardContent>
-      <CardFooter>
+      <CardActions>
         <ul className={styles.LinkList}>
           {props.model.type !== "templateset" && (
             <li>
@@ -136,7 +137,7 @@ export default connect((state) => {
             </AppLink>
           </li>
         </ul>
-      </CardFooter>
+      </CardActions>
     </Card>
   );
 });
