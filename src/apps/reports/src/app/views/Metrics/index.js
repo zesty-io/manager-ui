@@ -16,7 +16,11 @@ import Link from "@mui/material/Link";
 import { request } from "utility/request";
 
 import styles from "./Metrics.less";
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+
 import { Pie, Bar } from "react-chartjs-2";
 import { Notice } from "@zesty-io/core";
 
@@ -283,12 +287,13 @@ const Content = ({
   return (
     <>
       <header>
-        <Card>
-          <CardHeader>
-            <h1 className={styles.title}>{usageData.Account.Name}</h1>
-          </CardHeader>
+        <Card sx={{ m: 2 }}>
+          <CardHeader title={usageData.Account.Name}></CardHeader>
 
-          <CardContent className={styles.CardContentHeader}>
+          <CardContent
+            className={styles.CardContentHeader}
+            sx={{ display: "flex", justifyContent: "space-between" }}
+          >
             <h1 className={styles.headline}>
               {`Usage Report for ${timePeriod} ${
                 timePeriod > 1 ? "days" : "day"
@@ -318,12 +323,8 @@ const Content = ({
       </header>
       {/* Total Usage Breakdown */}
       <figure>
-        <Card>
-          <CardHeader>
-            <h2>
-              <strong>Total Usage Breakdown</strong>
-            </h2>
-          </CardHeader>
+        <Card sx={{ m: 2 }}>
+          <CardHeader title="Total Usage Breakdown"></CardHeader>
           <CardContent className={styles.CardContentGraphs}>
             <div className={styles.GraphTitles}>
               <p>Total Bandwidth</p>
@@ -349,12 +350,8 @@ const Content = ({
 
       {/* Bandwidth Breakdown */}
       <section>
-        <Card>
-          <CardHeader>
-            <h2>
-              <strong>Bandwidth Breakdown</strong>
-            </h2>
-          </CardHeader>
+        <Card sx={{ m: 2 }}>
+          <CardHeader title="Bandwidth Breakdown"></CardHeader>
           <CardContent className={styles.CardContentBandwidth}>
             <div>
               <p>Total Bandwidth</p>
@@ -394,10 +391,8 @@ const Content = ({
       </section>
 
       <section>
-        <Card>
-          <CardHeader>
-            <h2>Platform Request Breakdown (Total)</h2>
-          </CardHeader>
+        <Card sx={{ m: 2 }}>
+          <CardHeader title="Platform Request Breakdown (Total)"></CardHeader>
           <CardContent className={styles.CardContentRequest}>
             <div>
               <p>Successful Page Loads (200)</p>
@@ -438,10 +433,11 @@ const Content = ({
       </section>
       <main className={styles.TableContainer}>
         <section>
-          <Card>
-            <CardHeader>
-              <h2 className={cx(styles.IsSuccess)}>Top Requested Pages</h2>
-            </CardHeader>
+          <Card sx={{ m: 2 }}>
+            <CardHeader
+              title="Top Requested Pages"
+              sx={{ color: "success.main" }}
+            ></CardHeader>
             <CardContent>
               <table className={cx(styles.MetricsTable)}>
                 <thead>
@@ -475,10 +471,11 @@ const Content = ({
           </Card>
         </section>
         <section>
-          <Card>
-            <CardHeader>
-              <h2 className={cx(styles.IsInfo)}>Top Requested Media</h2>
-            </CardHeader>
+          <Card sx={{ m: 2 }}>
+            <CardHeader
+              title="Top Requested Media"
+              sx={{ color: "secondary.main" }}
+            ></CardHeader>
             <CardContent>
               <table className={cx(styles.MetricsTable)}>
                 <thead>
@@ -503,10 +500,11 @@ const Content = ({
         </section>
 
         <section>
-          <Card>
-            <CardHeader>
-              <h2 className={cx(styles.IsOrange)}>Top File Not Found (404)</h2>
-            </CardHeader>
+          <Card sx={{ m: 2 }}>
+            <CardHeader
+              title="Top File Not Found (404)"
+              sx={{ color: "warning.main" }}
+            ></CardHeader>
             <CardContent>
               <table className={cx(styles.MetricsTable)}>
                 <thead>
@@ -539,12 +537,11 @@ const Content = ({
           </Card>
         </section>
         <section>
-          <Card>
-            <CardHeader>
-              <h2 className={cx(styles.IsWarning)}>
-                <strong>Top 301 Redirects</strong>
-              </h2>
-            </CardHeader>
+          <Card sx={{ m: 2 }}>
+            <CardHeader
+              title="Top 301 Redirects"
+              sx={{ color: "warning.main" }}
+            ></CardHeader>
             <CardContent>
               <table className={cx(styles.MetricsTable)}>
                 <thead>
@@ -578,12 +575,11 @@ const Content = ({
           </Card>
         </section>
         <section>
-          <Card>
-            <CardHeader>
-              <h2 className={cx(styles.IsDanger)}>
-                Top Malicous / Deflected Requests
-              </h2>
-            </CardHeader>
+          <Card sx={{ m: 2 }}>
+            <CardHeader
+              title="Top Malicous / Deflected Requests"
+              sx={{ color: "error.main" }}
+            ></CardHeader>
             <CardContent>
               <table className={cx(styles.MetricsTable)}>
                 <thead>
@@ -618,10 +614,8 @@ const Content = ({
         </section>
 
         <section>
-          <Card>
-            <CardHeader>
-              <h2>All Response Codes</h2>
-            </CardHeader>
+          <Card sx={{ m: 2 }}>
+            <CardHeader title="All Response Codes"></CardHeader>
             <CardContent>
               <table className={cx(styles.MetricsTable)}>
                 <thead>

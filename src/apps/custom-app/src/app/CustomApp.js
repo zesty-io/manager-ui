@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, Switch } from "react-router";
 
-import { registerFrame } from "shell/store/apps";
 import { NotFound } from "shell/components/NotFound";
 
 import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
@@ -17,7 +16,7 @@ export default function CustomApp() {
   return (
     <main className={cx(styles.CustomApp)}>
       <Switch>
-        <Route path="/apps" render={InstallApp} />
+        {/*<Route path="/apps" render={InstallApp} />*/}
         <Route path="/app/:zuid" component={LoadApp} />
       </Switch>
     </main>
@@ -28,7 +27,7 @@ function LoadApp(props) {
   const dispatch = useDispatch();
   const frame = useRef();
   const app = useSelector((state) =>
-    state.apps.installed.find((app) => app.zuid === props.match.params.zuid)
+    state.apps.installed.find((app) => app.ZUID === props.match.params.zuid)
   );
 
   const instance = useSelector((state) => state.instance);
@@ -57,10 +56,10 @@ function LoadApp(props) {
         );
       });
     }
-  }, [frame.current]);
+  }, [frame.current, app]);
 
   return app ? (
-    <iframe src={app.url} ref={frame}></iframe>
+    <iframe src={app.url} key={app.ZUID} ref={frame}></iframe>
   ) : (
     <NotFound
       message={`The app "${props.match.params.zuid}" is not installed.`}

@@ -95,10 +95,7 @@ describe("Actions in content editor", () => {
   it("Creates a new item", () => {
     cy.visit("/content/6-a1a600-k0b6f0/new");
 
-    cy.contains("Lead in Title", { timeout: 5000 })
-      .find("input")
-      .click()
-      .type(timestamp);
+    cy.get("input[name=title]").click().type(timestamp);
     cy.get("#CreateItemSaveButton").click();
 
     cy.contains("Created new ", { timeout: 5000 }).should("exist");

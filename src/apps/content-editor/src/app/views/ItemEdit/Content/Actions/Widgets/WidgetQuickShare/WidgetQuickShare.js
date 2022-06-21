@@ -1,9 +1,13 @@
 import { memo } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
+
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import ShareIcon from "@mui/icons-material/Share";
 
 import styles from "./WidgetQuickShare.less";
 import {
@@ -25,13 +29,11 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
   };
 
   return (
-    <Card id="WidgetQuickShare" className={styles.pageDetailWidget}>
-      <CardHeader>
-        <span>
-          <FontAwesomeIcon icon={faShareAlt} />
-          &nbsp;Quick Share Options
-        </span>
-      </CardHeader>
+    <Card id="WidgetQuickShare" sx={{ m: 2 }}>
+      <CardHeader
+        avatar={<ShareIcon fontSize="small" />}
+        title="Quick Share Options"
+      ></CardHeader>
       <CardContent className="setting-field">
         <ButtonGroup className={styles.ShareLinks}>
           <span

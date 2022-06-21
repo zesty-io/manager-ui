@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import moment from "moment";
-import cx from "classnames";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar } from "@fortawesome/free-solid-svg-icons";
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
 import styles from "./InstanceActivity.less";
 
@@ -30,11 +30,11 @@ export function InstanceActivity(props) {
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <FontAwesomeIcon icon={faCalendar} />
-          30 days of your actions
-        </CardHeader>
+      <Card sx={{ m: 2 }}>
+        <CardHeader
+          avatar={<CalendarMonthIcon fontSize="small" />}
+          title="30 days of your actions"
+        ></CardHeader>
         <CardContent>
           <div className={styles.WrapperActivity}>
             <div className={styles.Stats}>
