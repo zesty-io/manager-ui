@@ -105,7 +105,10 @@ export function FieldAdd(props) {
   };
 
   return (
-    <Card className={cx("FieldAdd", styles.FieldAdd)} sx={{ m: 2 }}>
+    <Card
+      className={cx("FieldAdd", styles.FieldAdd)}
+      sx={{ m: 2, overflow: "visible" }}
+    >
       <CardContent>
         <FieldTypeDropDown
           className={styles.Type}
