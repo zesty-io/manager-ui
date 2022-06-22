@@ -14,6 +14,7 @@ import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
 
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
@@ -40,8 +41,7 @@ import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
 import { FieldTypeEditor } from "@zesty-io/core/FieldTypeEditor";
 import { FieldTypeTinyMCE } from "@zesty-io/core/FieldTypeTinyMCE";
-import { FieldTypeOneToMany } from "@zesty-io/core/FieldTypeOneToMany";
-import { FieldTypeOneToOne } from "@zesty-io/material";
+import { FieldTypeOneToOne, FieldTypeOneToMany } from "@zesty-io/material";
 
 import styles from "./Field.less";
 import MediaStyles from "../../../../../../media/src/app/MediaAppModal.less";
@@ -703,17 +703,50 @@ export default function Field({
 
       return (
         <FieldTypeOneToMany
-          className={styles.FieldTypeOneToMany}
           name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
+          label={
+            <Stack direction="row" alignItems="center">
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+
+              {FieldTypeLabel}
+            </Stack>
+          }
+          helperText={description}
           required={required}
-          value={value}
-          onChange={onChange}
-          relatedModelZUID={relatedModelZUID}
+          placeholder={"Select relationships..."}
+          value={
+            (value &&
+              value
+                ?.split(",")
+                ?.map((value) =>
+                  oneToManyOptions?.find((options) => options.value === value)
+                )) ||
+            []
+          }
+          onChange={(_, options) =>
+            onChange(options.map((option) => option.value).join(","), name)
+          }
           options={oneToManyOptions}
           onOpen={onOneToManyOpen}
+          renderTags={(tags, getTagProps) =>
+            tags.map((tag, index) => (
+              <Chip
+                size="small"
+                label={tag.component}
+                {...getTagProps({ index })}
+              />
+            ))
+          }
         />
       );
 
