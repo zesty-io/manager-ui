@@ -1,5 +1,6 @@
-import { memo, Fragment, useCallback } from "react";
+import { memo, Fragment, useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { MetaTitle } from "./settings/MetaTitle";
 import MetaDescription from "./settings/MetaDescription";
@@ -18,6 +19,7 @@ import CardContent from "@mui/material/CardContent";
 import SearchIcon from "@mui/icons-material/Search";
 
 import styles from "./ItemSettings.less";
+import { fetchGlobalItem } from "../../../../../../../../shell/store/content";
 
 export const ItemSettings = memo(
   function ItemSettings(props) {
@@ -27,12 +29,15 @@ export const ItemSettings = memo(
           (setting) => setting.key === "show_in_title"
         )?.value
     );
+    const dispatch = useDispatch();
     const domain = useDomain();
     let { data, meta, web } = props.item;
 
     data = data || {};
     meta = meta || {};
     web = web || {};
+
+    const siteName = useMemo(() => dispatch(fetchGlobalItem())?.site_name, []);
 
     const onChange = useCallback(
       (value, name) => {
@@ -102,7 +107,7 @@ export const ItemSettings = memo(
               <div className={styles.SearchResult}>
                 <h6 className={styles.GoogleTitle}>
                   {web.metaTitle}
-                  {showSiteNameInMetaTitle ? ` | ${data.title}` : ""}
+                  {showSiteNameInMetaTitle ? ` | ${siteName}` : ""}
                 </h6>
                 <div className={styles.GoogleLink}>
                   {domain ? (
