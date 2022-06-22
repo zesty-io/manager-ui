@@ -38,7 +38,7 @@ describe("Actions in content editor", () => {
     cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
   });
 
-  // TODO: get publishing working in Dev environment
+  // TODO: Get publishing working in Dev environment
   it.skip("Publishes an item", () => {
     cy.get("#PublishButton").click();
     cy.contains("Published version", { timeout: 5000 }).should("exist");
