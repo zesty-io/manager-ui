@@ -8,7 +8,7 @@ describe("Actions in content editor", () => {
   const timestamp = Date.now();
 
   it("Must not save when missing required Field", () => {
-    cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
+    cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
     // Provide large timeout for API calls
     cy.get("input[name=text_field]", { timeout: 60000 }).clear();
     cy.get("#SaveItemButton").click();
@@ -28,7 +28,7 @@ describe("Actions in content editor", () => {
     cy.contains("Saved a new ").should("exist");
   });
   it("Saves homepage item metadata", () => {
-    cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
+    cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
     // go to Meta Tab
     // Provide large timeout for API calls
     cy.get("[data-cy=meta]", { timeout: 60000 }).click();
