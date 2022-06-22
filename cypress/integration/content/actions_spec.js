@@ -12,7 +12,7 @@ describe("Actions in content editor", () => {
     // Provide large timeout for API calls
     // cy.get("input[name=text_field]", { timeout: 60000 }).clear();
     cy.get("input", { timeout: 10000 }).first().clear();
-    cy.get("#SaveItemButton").click();
+    cy.get("#SaveItemButton").click({ force: true });
     cy.contains("You are missing data").should("exist");
   });
   /**
@@ -22,8 +22,8 @@ describe("Actions in content editor", () => {
     cy.visit("/content/6-0c960c-d1n0kx/7-c882ba84ce-c4smnp");
     // Need to make an edit to enable save button.
     // Provide large timeout for API calls
-    cy.get("input[name=title]", { timeout: 60000 })
-      .clear({ force: true }, { timeout: 60000 })
+    cy.get("input[name=title]", { timeout: 10000 })
+      .clear({ force: true }, { timeout: 10000 })
       .type(timestamp);
     cy.get("#SaveItemButton", { timeout: 5000 }).click({ force: true });
     cy.contains("Saved a new ").should("exist");
@@ -32,7 +32,7 @@ describe("Actions in content editor", () => {
     cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
     // go to Meta Tab
     // Provide large timeout for API calls
-    cy.get("[data-cy=meta]", { timeout: 60000 }).click();
+    cy.get("[data-cy=meta]", { timeout: 10000 }).click({ force: true });
     cy.get("textarea")
       .first()
       .type("{selectall}{backspace}This is an item meta description");
@@ -40,7 +40,7 @@ describe("Actions in content editor", () => {
     cy.get("textarea")
       .first()
       .should("have.value", "This is an item meta description");
-    cy.get("#SaveItemButton").click();
+    cy.get("#SaveItemButton").click({ force: true });
     cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
   });
 
@@ -93,7 +93,7 @@ describe("Actions in content editor", () => {
   it("Creates a new item", () => {
     cy.visit("/content/6-a1a600-k0b6f0/new");
 
-    cy.get("input[name=title]", { timeout: 60000 }).click().type(timestamp);
+    cy.get("input[name=title]", { timeout: 10000 }).click().type(timestamp);
     cy.get("#CreateItemSaveButton").click();
 
     cy.contains("Created new ", { timeout: 5000 }).should("exist");
@@ -106,12 +106,12 @@ describe("Actions in content editor", () => {
 
   it("Displays a new item in the list", () => {
     cy.visit("/content/6-a1a600-k0b6f0");
-    cy.contains(timestamp, { timeout: 60000 }).should("exist");
+    cy.contains(timestamp, { timeout: 10000 }).should("exist");
   });
 
   it("Deletes an item", () => {
     cy.contains(timestamp).click();
-    cy.get("article.Delete", { timeout: 60000 }).click();
+    cy.get("article.Delete", { timeout: 10000 }).click();
     cy.get("#DeleteItemButton").click();
     cy.get("#deleteConfirmButton").should("exist");
     cy.get("#deleteConfirmButton").click();
