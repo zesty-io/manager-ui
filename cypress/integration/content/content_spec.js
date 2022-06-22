@@ -2,7 +2,6 @@ describe("Content Specs", () => {
   describe("Content Specs", () => {
     before(() => {
       cy.login();
-      cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
     });
 
     const TIMESTAMP = Date.now();
@@ -267,22 +266,22 @@ describe("Content Specs", () => {
           .should("have.value", "12");
       });
 
-      it("One to many Field", () => {
-        // Adds new relationship
-        cy.get("#12-269a28-1bkm34")
-          .find(".MuiAutocomplete-popupIndicator")
-          .click({ force: true });
-        cy.get("[role=presentation]")
-          .find("[data-option-index=1]")
-          .click({ force: true });
-        // Removes new relationship
-        cy.get("#12-269a28-1bkm34")
-          .find(".MuiAutocomplete-popupIndicator")
-          .click({ force: true });
-        cy.get("[role=presentation]")
-          .find("[data-option-index=1]")
-          .click({ force: true });
-      });
+      // it("One to many Field", () => {
+      //   // Adds new relationship
+      //   cy.get("#12-269a28-1bkm34")
+      //     .find(".MuiAutocomplete-popupIndicator")
+      //     .click({ force: true });
+      //   cy.get("[role=presentation]")
+      //     .find("[data-option-index=1]")
+      //     .click({ force: true });
+      //   // Removes new relationship
+      //   cy.get("#12-269a28-1bkm34")
+      //     .find(".MuiAutocomplete-popupIndicator")
+      //     .click({ force: true });
+      //   cy.get("[role=presentation]")
+      //     .find("[data-option-index=1]")
+      //     .click({ force: true });
+      // });
 
       it("One to one Field", () => {
         cy.get("#12-edee00-6zb866")
@@ -322,7 +321,7 @@ describe("Content Specs", () => {
     // });
 
     it("Check Actions Collapsed functionality", () => {
-      cy.get("[data-cy=ActionsContent]", { timeout: 25000 }).then((content) => {
+      cy.get("[data-cy=ActionsContent]").then((content) => {
         if (content.is(":visible")) {
           cy.get("[data-cy=ActionsContent]").should("be.visible");
         } else {
@@ -337,15 +336,11 @@ describe("Content Specs", () => {
 
           cy.visit("/code");
           cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
-          cy.get("[data-cy=ActionsContent]", { timeout: 25000 }).should(
-            "be.visible"
-          );
+          cy.get("[data-cy=ActionsContent]").should("be.visible");
         } else {
           cy.visit("/code");
           cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
-          cy.get("[data-cy=ActionsContent]", { timeout: 25000 }).should(
-            "not.be.visible"
-          );
+          cy.get("[data-cy=ActionsContent]").should("not.be.visible");
         }
       });
     });

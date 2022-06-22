@@ -14,7 +14,7 @@ import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
+// import Chip from "@mui/material/Chip";
 
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
@@ -42,7 +42,7 @@ import { FieldTypeEditor } from "@zesty-io/core/FieldTypeEditor";
 import { FieldTypeTinyMCE } from "@zesty-io/core/FieldTypeTinyMCE";
 import {
   FieldTypeOneToOne,
-  FieldTypeOneToMany,
+  // FieldTypeOneToMany,
   FieldTypeText,
 } from "@zesty-io/material";
 
@@ -673,85 +673,85 @@ export default function Field({
         />
       );
 
-    case "one_to_many":
-      const oneToManyOptions = useMemo(() => {
-        return resolveRelatedOptions(
-          allFields,
-          allItems,
-          relatedFieldZUID,
-          relatedModelZUID,
-          langID,
-          value
-        );
-      }, [
-        Object.keys(allFields).length,
-        Object.keys(allItems).length,
-        relatedModelZUID,
-        relatedFieldZUID,
-        langID,
-        value,
-      ]);
+    // case "one_to_many":
+    //   const oneToManyOptions = useMemo(() => {
+    //     return resolveRelatedOptions(
+    //       allFields,
+    //       allItems,
+    //       relatedFieldZUID,
+    //       relatedModelZUID,
+    //       langID,
+    //       value
+    //     );
+    //   }, [
+    //     Object.keys(allFields).length,
+    //     Object.keys(allItems).length,
+    //     relatedModelZUID,
+    //     relatedFieldZUID,
+    //     langID,
+    //     value,
+    //   ]);
 
-      // Delay loading options until user opens dropdown
-      const onOneToManyOpen = useCallback(() => {
-        return Promise.all([
-          dispatch(fetchFields(relatedModelZUID)),
-          dispatch(
-            fetchItems(relatedModelZUID, {
-              lang: getSelectedLang(allLanguages, langID),
-            })
-          ),
-        ]);
-      }, [allLanguages.length, relatedModelZUID, langID]);
+    //   // Delay loading options until user opens dropdown
+    //   const onOneToManyOpen = useCallback(() => {
+    //     return Promise.all([
+    //       dispatch(fetchFields(relatedModelZUID)),
+    //       dispatch(
+    //         fetchItems(relatedModelZUID, {
+    //           lang: getSelectedLang(allLanguages, langID),
+    //         })
+    //       ),
+    //     ]);
+    //   }, [allLanguages.length, relatedModelZUID, langID]);
 
-      return (
-        <FieldTypeOneToMany
-          name={name}
-          label={
-            <Stack direction="row" alignItems="center">
-              {settings.tooltip ? (
-                <Tooltip
-                  placement="top-start"
-                  arrow
-                  title={settings.tooltip ? settings.tooltip : " "}
-                >
-                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
-                </Tooltip>
-              ) : (
-                " "
-              )}
+    //   return (
+    //     <FieldTypeOneToMany
+    //       name={name}
+    //       label={
+    //         <Stack direction="row" alignItems="center">
+    //           {settings.tooltip ? (
+    //             <Tooltip
+    //               placement="top-start"
+    //               arrow
+    //               title={settings.tooltip ? settings.tooltip : " "}
+    //             >
+    //               <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+    //             </Tooltip>
+    //           ) : (
+    //             " "
+    //           )}
 
-              {FieldTypeLabel}
-            </Stack>
-          }
-          helperText={description}
-          required={required}
-          placeholder={"Select relationships..."}
-          value={
-            (value &&
-              value
-                ?.split(",")
-                ?.map((value) =>
-                  oneToManyOptions?.find((options) => options.value === value)
-                )) ||
-            []
-          }
-          onChange={(_, options) =>
-            onChange(options.map((option) => option.value).join(","), name)
-          }
-          options={oneToManyOptions}
-          onOpen={onOneToManyOpen}
-          renderTags={(tags, getTagProps) =>
-            tags.map((tag, index) => (
-              <Chip
-                size="small"
-                label={tag.component}
-                {...getTagProps({ index })}
-              />
-            ))
-          }
-        />
-      );
+    //           {FieldTypeLabel}
+    //         </Stack>
+    //       }
+    //       helperText={description}
+    //       required={required}
+    //       placeholder={"Select relationships..."}
+    //       value={
+    //         (value &&
+    //           value
+    //             ?.split(",")
+    //             ?.map((value) =>
+    //               oneToManyOptions?.find((options) => options.value === value)
+    //             )) ||
+    //         []
+    //       }
+    //       onChange={(_, options) =>
+    //         onChange(options.map((option) => option.value).join(","), name)
+    //       }
+    //       options={oneToManyOptions}
+    //       onOpen={onOneToManyOpen}
+    //       renderTags={(tags, getTagProps) =>
+    //         tags.map((tag, index) => (
+    //           <Chip
+    //             size="small"
+    //             label={tag.component}
+    //             {...getTagProps({ index })}
+    //           />
+    //         ))
+    //       }
+    //     />
+    //   );
 
     case "color":
       return (

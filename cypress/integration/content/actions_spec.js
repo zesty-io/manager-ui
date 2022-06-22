@@ -2,17 +2,15 @@ describe("Actions in content editor", () => {
   before(() => {
     //initial login to set the cookie
     cy.login();
-    // cy.visit("/");
+    cy.visit("/");
   });
 
   const timestamp = Date.now();
 
   it("Must not save when missing required Field", () => {
-    cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
-    // Provide large timeout for API calls
-    // cy.get("input[name=text_field]", { timeout: 60000 }).clear();
-    cy.get("input", { timeout: 10000 }).first().clear({ force: true });
-    cy.get("#SaveItemButton", { timeout: 10000 }).click({ force: true });
+    cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
+    cy.get("input[name=text_field]", { timeout: 5000 }).clear({ force: true });
+    cy.get("#SaveItemButton").click({ force: true });
     cy.contains("You are missing data").should("exist");
   });
   /**
@@ -22,17 +20,12 @@ describe("Actions in content editor", () => {
     cy.visit("/content/6-0c960c-d1n0kx/7-c882ba84ce-c4smnp");
     // Need to make an edit to enable save button.
     // Provide large timeout for API calls
-    cy.get("input[name=title]", { timeout: 10000 })
-      .clear({ force: true }, { timeout: 10000 })
-      .type(timestamp);
-    cy.get("#SaveItemButton", { timeout: 5000 }).click({ force: true });
-    cy.contains("Saved a new ").should("exist");
+    cy.get("input[name=title]").clear({ force: true }).type(timestamp);
   });
   it("Saves homepage item metadata", () => {
-    cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+    cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     // go to Meta Tab
-    // Provide large timeout for API calls
-    cy.get("[data-cy=meta]", { timeout: 10000 }).click({ force: true });
+    cy.get("[data-cy=meta]", { timeout: 5000 }).click({ force: true });
     cy.get("textarea")
       .first()
       .type("{selectall}{backspace}This is an item meta description", {
@@ -95,7 +88,7 @@ describe("Actions in content editor", () => {
   it("Creates a new item", () => {
     cy.visit("/content/6-a1a600-k0b6f0/new");
 
-    cy.get("input[name=title]", { timeout: 10000 }).click().type(timestamp);
+    cy.get("input[name=title]", { timeout: 5000 }).click().type(timestamp);
     cy.get("#CreateItemSaveButton").click();
 
     cy.contains("Created new ", { timeout: 5000 }).should("exist");
@@ -108,7 +101,7 @@ describe("Actions in content editor", () => {
 
   it("Displays a new item in the list", () => {
     cy.visit("/content/6-a1a600-k0b6f0");
-    cy.contains(timestamp, { timeout: 10000 }).should("exist");
+    cy.contains(timestamp, { timeout: 5000 }).should("exist");
   });
 
   it("Deletes an item", () => {
