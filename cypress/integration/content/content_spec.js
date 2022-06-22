@@ -275,9 +275,6 @@ describe("Content Specs", () => {
         cy.get("[role=presentation]")
           .find("[data-option-index=1]")
           .click({ force: true });
-        cy.get('[href="/content/6-e3d0e0-965qp6/7-a8e5ffa4f6-3ptqs4"]').should(
-          "exist"
-        );
         // Removes new relationship
         cy.get("#12-269a28-1bkm34")
           .find(".MuiAutocomplete-popupIndicator")
@@ -285,9 +282,6 @@ describe("Content Specs", () => {
         cy.get("[role=presentation]")
           .find("[data-option-index=1]")
           .click({ force: true });
-        cy.get('[href="/content/6-e3d0e0-965qp6/7-a8e5ffa4f6-3ptqs4"]').should(
-          "not.exist"
-        );
       });
 
       it("One to one Field", () => {
