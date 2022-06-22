@@ -45,7 +45,6 @@ import { FieldTypeOneToOne, FieldTypeOneToMany } from "@zesty-io/material";
 
 import styles from "./Field.less";
 import MediaStyles from "../../../../../../media/src/app/MediaAppModal.less";
-import { min } from "lodash";
 
 const FieldLabel = memo((props) => {
   return (
