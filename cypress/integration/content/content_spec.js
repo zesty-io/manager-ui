@@ -322,7 +322,7 @@ describe("Content Specs", () => {
     // });
 
     it("Check Actions Collapsed functionality", () => {
-      cy.get("[data-cy=ActionsContent]", { timeout: 5000 }).then((content) => {
+      cy.get("[data-cy=ActionsContent]", { timeout: 25000 }).then((content) => {
         if (content.is(":visible")) {
           cy.get("[data-cy=ActionsContent]").should("be.visible");
         } else {
@@ -337,11 +337,15 @@ describe("Content Specs", () => {
 
           cy.visit("/code");
           cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
-          cy.get("[data-cy=ActionsContent]").should("be.visible");
+          cy.get("[data-cy=ActionsContent]", { timeout: 25000 }).should(
+            "be.visible"
+          );
         } else {
           cy.visit("/code");
           cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
-          cy.get("[data-cy=ActionsContent]").should("not.be.visible");
+          cy.get("[data-cy=ActionsContent]", { timeout: 25000 }).should(
+            "not.be.visible"
+          );
         }
       });
     });

@@ -9,7 +9,8 @@ describe("Actions in content editor", () => {
 
   it("Must not save when missing required Field", () => {
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
-    cy.get("input[name=text_field]").clear();
+    // Provide large timeout for API calls
+    cy.get("input[name=text_field]", { timeout: 25000 }).clear();
     cy.get("#SaveItemButton").click();
     cy.contains("You are missing data").should("exist");
   });
@@ -19,14 +20,18 @@ describe("Actions in content editor", () => {
   it("Save when missing required deactivated field", () => {
     cy.visit("/content/6-0c960c-d1n0kx/7-c882ba84ce-c4smnp");
     // Need to make an edit to enable save button.
-    cy.get("input[name=title]").clear({ force: true }).type(timestamp);
+    // Provide large timeout for API calls
+    cy.get("input[name=title]", { timeout: 25000 })
+      .clear({ force: true }, { timeout: 25000 })
+      .type(timestamp);
     cy.get("#SaveItemButton", { timeout: 5000 }).click({ force: true });
     cy.contains("Saved a new ").should("exist");
   });
   it("Saves homepage item metadata", () => {
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     // go to Meta Tab
-    cy.get("[data-cy=meta]").click();
+    // Provide large timeout for API calls
+    cy.get("[data-cy=meta]", { timeout: 25000 }).click();
     cy.get("textarea")
       .first()
       .type("{selectall}{backspace}This is an item meta description");
@@ -87,7 +92,7 @@ describe("Actions in content editor", () => {
   it("Creates a new item", () => {
     cy.visit("/content/6-a1a600-k0b6f0/new");
 
-    cy.get("input[name=title]").click().type(timestamp);
+    cy.get("input[name=title]", { timeout: 25000 }).click().type(timestamp);
     cy.get("#CreateItemSaveButton").click();
 
     cy.contains("Created new ", { timeout: 5000 }).should("exist");
@@ -100,12 +105,12 @@ describe("Actions in content editor", () => {
 
   it("Displays a new item in the list", () => {
     cy.visit("/content/6-a1a600-k0b6f0");
-    cy.contains(timestamp, { timeout: 5000 }).should("exist");
+    cy.contains(timestamp, { timeout: 25000 }).should("exist");
   });
 
   it("Deletes an item", () => {
     cy.contains(timestamp).click();
-    cy.get("article.Delete").click();
+    cy.get("article.Delete", { timeout: 25000 }).click();
     cy.get("#DeleteItemButton").click();
     cy.get("#deleteConfirmButton").should("exist");
     cy.get("#deleteConfirmButton").click();
