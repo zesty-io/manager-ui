@@ -1,18 +1,18 @@
 import { Component } from "react";
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChartLine } from "@fortawesome/free-solid-svg-icons";
+
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import AddchartIcon from "@mui/icons-material/Addchart";
 
 export class ContentVelocity extends Component {
   render() {
     return (
-      <Card>
-        <CardHeader>
-          <h2>
-            <FontAwesomeIcon icon={faChartLine} />
-            Content Velocity
-          </h2>
-        </CardHeader>
+      <Card sx={{ m: 2 }}>
+        <CardHeader
+          avatar={<AddchartIcon fontSize="small" />}
+          title="Content Velocity"
+        ></CardHeader>
         <CardContent>
           <table>
             <tr>

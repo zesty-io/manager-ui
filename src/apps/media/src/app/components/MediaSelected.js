@@ -5,11 +5,13 @@ import Button from "@mui/material/Button";
 import UploadIcon from "@mui/icons-material/Upload";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import CheckIcon from "@mui/icons-material/Check";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
 
 import cx from "classnames";
 import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
-import { Card, CardContent } from "@zesty-io/core/Card";
+
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
 
 import { MediaImage } from "./MediaImage";
 
@@ -71,15 +73,10 @@ export function MediaSelected(props) {
                   return (
                     <Card
                       key={file.id}
-                      className={cx(styles.Card, styles.CardTop)}
                       onClick={() => props.toggleSelected(file)}
+                      sx={{ m: 1, width: "100px", flexShrink: "0" }}
                     >
-                      <CardContent
-                        className={cx(
-                          styles.CardContent,
-                          styles.CardContentTop
-                        )}
-                      >
+                      <CardContent sx={{ position: "relative", p: 1 }}>
                         <figure
                           className={cx(shared.Checkered, styles.Checkered)}
                         >
@@ -89,22 +86,18 @@ export function MediaSelected(props) {
                             params={"?w=200&h=200&type=fit"}
                           />
                         </figure>
-                        <Button
-                          variant="contained"
-                          size="small"
-                          aria-label="Checked"
+
+                        <CheckBoxIcon
+                          fontSize="small"
                           sx={{
                             position: "absolute",
                             top: "0",
                             left: "0",
                             cursor: "pointer",
-                            backgroundColor: "secondary.main",
-
+                            color: "secondary.main",
                             minWidth: "auto",
                           }}
-                        >
-                          <CheckIcon fontSize="small" />
-                        </Button>
+                        />
                       </CardContent>
                     </Card>
                   );
