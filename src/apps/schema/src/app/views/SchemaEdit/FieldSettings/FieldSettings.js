@@ -71,8 +71,8 @@ export default function FieldSettings(props) {
             name="label"
             label="Field Label"
             {...(props.new
-              ? { value: props.field.name }
-              : { defaultValue: props.field.name })}
+              ? { value: props.field.label }
+              : { defaultValue: props.field.label })}
             maxLength="200"
             onChange={(evt) => {
               const val = evt.target.value;
