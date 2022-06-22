@@ -33,6 +33,8 @@ module.exports = {
     URL_PREVIEW: "-dev.webengine.zesty.io",
     URL_PREVIEW_PROTOCOL: "https://",
     URL_ACCOUNTS: "https://accounts.zesty.io",
+    URL_MARKETPLACE:
+      "https://kfg6bckb-dev.webengine.zesty.io/marketplace/apps/",
 
     COOKIE_NAME: "APP_SID",
     COOKIE_DOMAIN: ".zesty.io",
@@ -71,6 +73,8 @@ module.exports = {
     URL_PREVIEW: "-dev.preview.stage.zesty.io",
     URL_PREVIEW_PROTOCOL: "https://",
     URL_ACCOUNTS: "https://accounts.stage.zesty.io",
+    URL_MARKETPLACE:
+      "https://kfg6bckb-dev.webengine.zesty.io/marketplace/apps/",
 
     COOKIE_NAME: "STAGE_APP_SID",
     COOKIE_DOMAIN: ".zesty.io",
@@ -113,6 +117,8 @@ module.exports = {
     URL_PREVIEW: "-dev.preview.dev.zesty.io",
     URL_PREVIEW_PROTOCOL: "https://",
     URL_ACCOUNTS: "https://accounts.dev.zesty.io:9001",
+    URL_MARKETPLACE:
+      "https://kfg6bckb-dev.webengine.zesty.io/marketplace/apps/",
 
     COOKIE_NAME: "DEV_APP_SID",
     COOKIE_DOMAIN: ".zesty.io",

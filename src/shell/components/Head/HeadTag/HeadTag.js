@@ -13,6 +13,7 @@ import {
   updateTagType,
 } from "shell/store/headTags";
 
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -20,7 +21,12 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 
-import { Card, CardContent, CardFooter, CardHeader } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+
+import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
 
@@ -104,69 +110,81 @@ export const HeadTag = (props) => {
 
   let { tag, dispatch } = props;
   return (
-    <Card data-cy="tagCard" className={styles.HeadTag}>
-      <CardHeader className={styles.CardHeader}>
-        <FormControl size="small" sx={{ width: "210px" }}>
-          <FormLabel>Tag</FormLabel>
-          <Select
-            name={tag.ZUID}
-            variant="outlined"
-            displayEmpty
-            value={tag.type}
-            onChange={(e) => dispatch(updateTagType(tag.ZUID, e.target.value))}
-          >
-            <MenuItem value="">- None -</MenuItem>
-            <MenuItem value="script">Script</MenuItem>
-            <MenuItem value="meta">Meta</MenuItem>
-            <MenuItem value="link">Link</MenuItem>
-          </Select>
-        </FormControl>
-        <FieldTypeSort
-          value={tag.sort}
-          name={tag.ZUID}
-          label="Sort"
-          className={styles.Sort}
-          onChange={(value) => dispatch(updateTagSort(tag.ZUID, value))}
-        />
-        <Button
-          title="Add Tag Attribute"
-          variant="contained"
-          onClick={() => dispatch(addTagAttribute(tag.ZUID))}
-          startIcon={<AddIcon />}
-        >
-          Add attribute
-        </Button>
-        {tag.hasOwnProperty("createdAt") ? (
-          <Button
-            variant="contained"
-            title="Delete Head Tag"
-            onClick={onDelete}
-            color="error"
-            startIcon={<DeleteIcon />}
+    <Card data-cy="tagCard" className={styles.HeadTag} sx={{ m: 2 }}>
+      <CardHeader
+        title={
+          <Box
             sx={{
-              display: "none",
-              marginLeft: "auto",
+              alignItems: "flex-end",
+              display: "flex",
+              gap: "8px",
             }}
           >
-            Delete Tag
-          </Button>
-        ) : (
-          <Button
-            variant="contained"
-            color="error"
-            title="Cancel"
-            onClick={onCancel}
-            type="error"
-            startIcon={<DeleteIcon />}
-            sx={{
-              display: "none",
-              marginLeft: "auto",
-            }}
-          >
-            Cancel
-          </Button>
-        )}
-      </CardHeader>
+            <FormControl size="small" sx={{ width: "210px" }}>
+              <FormLabel>Tag</FormLabel>
+              <Select
+                name={tag.ZUID}
+                variant="outlined"
+                displayEmpty
+                value={tag.type}
+                onChange={(e) =>
+                  dispatch(updateTagType(tag.ZUID, e.target.value))
+                }
+              >
+                <MenuItem value="">- None -</MenuItem>
+                <MenuItem value="script">Script</MenuItem>
+                <MenuItem value="meta">Meta</MenuItem>
+                <MenuItem value="link">Link</MenuItem>
+              </Select>
+            </FormControl>
+            <FieldTypeSort
+              value={tag.sort}
+              name={tag.ZUID}
+              label="Sort"
+              className={styles.Sort}
+              onChange={(value) => dispatch(updateTagSort(tag.ZUID, value))}
+            />
+            <Button
+              title="Add Tag Attribute"
+              variant="contained"
+              onClick={() => dispatch(addTagAttribute(tag.ZUID))}
+              startIcon={<AddIcon />}
+            >
+              Add attribute
+            </Button>
+            {tag.hasOwnProperty("createdAt") ? (
+              <Button
+                variant="contained"
+                title="Delete Head Tag"
+                onClick={onDelete}
+                color="error"
+                startIcon={<DeleteIcon />}
+                sx={{
+                  display: "none",
+                  marginLeft: "auto",
+                }}
+              >
+                Delete Tag
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color="error"
+                title="Cancel"
+                onClick={onCancel}
+                type="error"
+                startIcon={<DeleteIcon />}
+                sx={{
+                  display: "none",
+                  marginLeft: "auto",
+                }}
+              >
+                Cancel
+              </Button>
+            )}
+          </Box>
+        }
+      ></CardHeader>
       <CardContent>
         {tag.attributes.map((attr, index) => {
           return (
@@ -221,7 +239,7 @@ export const HeadTag = (props) => {
           );
         })}
       </CardContent>
-      <CardFooter className={styles.CardFooter}>
+      <CardActions sx={{ display: "flex", justifyContent: "flex-end" }}>
         <Button
           title={
             tag.hasOwnProperty("createdAt")
@@ -239,7 +257,7 @@ export const HeadTag = (props) => {
             ? "Save head tag"
             : "Create head tag"}
         </Button>
-      </CardFooter>
+      </CardActions>
     </Card>
   );
 };
