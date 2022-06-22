@@ -19,7 +19,6 @@ import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { FieldTypeText } from "@zesty-io/material";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 
-import { Url } from "@zesty-io/core/Url";
 import { CopyButton } from "@zesty-io/material";
 import { Input } from "@zesty-io/core/Input";
 import { Option, Select } from "@zesty-io/core/Select";
@@ -245,7 +244,7 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
               <CopyButton
                 size="small"
                 value={props.file.id}
-                sx={{ width: "fit-content" }}
+                sx={{ alignSelf: "flex-start" }}
               />
             </li>
             <li>
