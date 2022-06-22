@@ -9,7 +9,7 @@ describe("Actions in content editor", () => {
 
   it("Must not save when missing required Field", () => {
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
-    cy.get("input[name=text_field]", { timeout: 5000 }).clear();
+    cy.get("input[name=text_field]", { timeout: 5000 }).clear({ force: true });
     cy.get("#SaveItemButton").click({ force: true });
     cy.contains("You are missing data").should("exist");
   });
@@ -29,7 +29,9 @@ describe("Actions in content editor", () => {
     cy.get("[data-cy=meta]", { timeout: 5000 }).click({ force: true });
     cy.get("textarea")
       .first()
-      .type("{selectall}{backspace}This is an item meta description");
+      .type("{selectall}{backspace}This is an item meta description", {
+        force: true,
+      });
 
     cy.get("textarea")
       .first()
