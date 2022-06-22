@@ -12,7 +12,7 @@ describe("Actions in content editor", () => {
     // Provide large timeout for API calls
     // cy.get("input[name=text_field]", { timeout: 60000 }).clear();
     cy.get("input", { timeout: 10000 }).first().clear();
-    cy.get("#SaveItemButton").click({ force: true });
+    cy.get("#SaveItemButton", { timeout: 10000 }).click({ force: true });
     cy.contains("You are missing data").should("exist");
   });
   /**
