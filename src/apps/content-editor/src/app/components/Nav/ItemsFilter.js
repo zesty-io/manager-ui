@@ -11,7 +11,7 @@ const ItemsFilter = (props) => {
       variant="outlined"
       fullWidth
       size="small"
-      // value={props.searchTerm}
+      value={props.searchTerm}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
@@ -21,9 +21,8 @@ const ItemsFilter = (props) => {
       }}
       onChange={(evt) => {
         const term = evt.target.value.trim().toLowerCase();
-
+        props.setSearchTerm(term);
         if (term) {
-          props.setSearchTerm(term);
           props.setFilteredItems(
             props.nav.raw.filter((f) => {
               return (
