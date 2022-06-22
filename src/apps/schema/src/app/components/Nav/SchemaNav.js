@@ -57,9 +57,8 @@ export default function SchemaNav(props) {
             ),
           }}
           onChange={(evt) => {
-            let term = evt.target.value.trim().toLowerCase();
+            const term = evt.target.value.trim().toLowerCase();
 
-            if (term === null) return;
             if (term) {
               setNav(
                 props.nav.filter(

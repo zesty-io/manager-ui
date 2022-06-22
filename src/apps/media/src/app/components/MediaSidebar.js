@@ -156,9 +156,7 @@ export const MediaSidebar = memo(function MediaSidebar(props) {
             ),
           }}
           onChange={(evt) => {
-            let term = evt.target.value;
-
-            if (term === null) return;
+            const term = evt.target.value;
             debouncedSearch(term);
           }}
           sx={{ mt: 1 }}

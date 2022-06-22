@@ -29,7 +29,7 @@ export function LeadExporter() {
       <div className={cx(styles.filter, styles.SearchEnd)}>
         <TextField
           name="text-filter"
-          placeholder="Filter file list by name, zuid or code"
+          placeholder="Search across all of your leads"
           type="search"
           variant="outlined"
           fullWidth
@@ -42,8 +42,8 @@ export function LeadExporter() {
             ),
           }}
           onChange={(evt) => {
-            let term = evt.target.value;
-            if (term === null) return;
+            const term = evt.target.value;
+
             dispatch(setFilterText(term));
           }}
         />

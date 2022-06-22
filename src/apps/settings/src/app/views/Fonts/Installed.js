@@ -259,8 +259,7 @@ export default connect((state) => {
             ),
           }}
           onChange={(evt) => {
-            let term = evt.target.value;
-            if (term === null) return;
+            const term = evt.target.value;
             onSearch(term);
           }}
         />

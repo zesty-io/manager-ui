@@ -19,9 +19,8 @@ export function FilterFiles(props) {
         ),
       }}
       onChange={(evt) => {
-        let term = evt.target.value.trim().toLowerCase();
+        const term = evt.target.value.trim().toLowerCase();
 
-        if (term === null) return;
         if (term) {
           props.setShownFiles(
             props.nav.raw.filter((f) => {

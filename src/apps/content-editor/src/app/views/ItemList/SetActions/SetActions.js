@@ -17,7 +17,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faBolt } from "@fortawesome/free-solid-svg-icons";
 
-import { Search } from "@zesty-io/core/Search";
 import { Select, Option } from "@zesty-io/core/Select";
 import { AppLink } from "@zesty-io/core/AppLink";
 
@@ -44,6 +43,7 @@ export class SetActions extends Component {
               type="search"
               variant="outlined"
               size="small"
+              value={this.props.filterTerm}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -52,8 +52,7 @@ export class SetActions extends Component {
                 ),
               }}
               onChange={(evt) => {
-                let term = evt.target.value;
-                if (term === null) return;
+                const term = evt.target.value;
                 this.props.onFilter(term);
               }}
             />

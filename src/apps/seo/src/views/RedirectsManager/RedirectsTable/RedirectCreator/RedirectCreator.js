@@ -119,8 +119,7 @@ export function RedirectCreator(props) {
               ),
             }}
             onChange={(evt) => {
-              let term = evt.target.value;
-              if (term === null) return;
+              const term = evt.target.value;
               determineTerm(term);
             }}
           />

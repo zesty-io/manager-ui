@@ -369,9 +369,8 @@ export default connect((state) => {
             ),
           }}
           onChange={(evt) => {
-            let term = evt.target.value;
+            const term = evt.target.value;
 
-            if (term === null) return;
             onSearch(term);
           }}
           sx={{ width: "initial" }}

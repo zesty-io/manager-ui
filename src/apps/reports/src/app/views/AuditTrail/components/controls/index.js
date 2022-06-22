@@ -63,8 +63,7 @@ export default memo(function AuditControls(props) {
           ),
         }}
         onChange={(evt) => {
-          let term = evt.target.value.trim().toLowerCase();
-          if (term === null) return;
+          const term = evt.target.value.trim().toLowerCase();
           props.setSearch(term);
         }}
         sx={{ maxWidth: "400px", marginLeft: "auto" }}
