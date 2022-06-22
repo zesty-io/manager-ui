@@ -21,6 +21,7 @@ export function RedirectFilter(props) {
       type="search"
       variant="outlined"
       size="small"
+      value={filter}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">

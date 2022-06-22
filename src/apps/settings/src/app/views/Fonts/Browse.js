@@ -370,10 +370,8 @@ export default connect((state) => {
           }}
           onChange={(evt) => {
             const term = evt.target.value;
-
             onSearch(term);
           }}
-          sx={{ width: "initial" }}
         />
         <FieldTypeText
           placeholder="Type something to preview"
