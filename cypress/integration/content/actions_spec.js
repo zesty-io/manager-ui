@@ -2,7 +2,7 @@ describe("Actions in content editor", () => {
   before(() => {
     //initial login to set the cookie
     cy.login();
-    cy.visit("/");
+    // cy.visit("/");
   });
 
   const timestamp = Date.now();
