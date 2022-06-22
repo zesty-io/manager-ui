@@ -11,7 +11,7 @@ describe("Actions in content editor", () => {
     cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
     // Provide large timeout for API calls
     // cy.get("input[name=text_field]", { timeout: 60000 }).clear();
-    cy.get("input", { timeout: 10000 }).first().clear();
+    cy.get("input", { timeout: 10000 }).first().clear({ force: true });
     cy.get("#SaveItemButton", { timeout: 10000 }).click({ force: true });
     cy.contains("You are missing data").should("exist");
   });
@@ -35,7 +35,9 @@ describe("Actions in content editor", () => {
     cy.get("[data-cy=meta]", { timeout: 10000 }).click({ force: true });
     cy.get("textarea")
       .first()
-      .type("{selectall}{backspace}This is an item meta description");
+      .type("{selectall}{backspace}This is an item meta description", {
+        force: true,
+      });
 
     cy.get("textarea")
       .first()
