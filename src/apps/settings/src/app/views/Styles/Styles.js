@@ -182,10 +182,10 @@ export default connect((state) => {
             value={fieldValues[field.referenceName]}
             name={field.referenceName}
             helperText={field.description}
-            required={required}
+            required={field.required}
             onChange={(evt) => {
               console.log(evt);
-              onChange(evt.target.value, field.referenceName);
+              setValue(evt.target.value, field.referenceName);
             }}
             label={field.name}
           />
