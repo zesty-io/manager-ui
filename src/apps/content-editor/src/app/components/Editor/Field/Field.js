@@ -28,7 +28,7 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import { Modal } from "@zesty-io/core/Modal";
 import MediaApp from "../../../../../../media/src/app/MediaApp";
 import { FieldTypeText } from "@zesty-io/material";
-import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
+import { FieldTypeColor } from "@zesty-io/material";
 import { FieldTypeNumber } from "@zesty-io/core/FieldTypeNumber";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
@@ -719,15 +719,35 @@ export default function Field({
 
     case "color":
       return (
-        <FieldTypeColor
-          name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
-          required={required}
-          value={value}
-          onChange={onChange}
-        />
+        <Box sx={{ width: "300px" }}>
+          <FieldTypeColor
+            name={name}
+            label={
+              <Stack direction="row" alignItems="center">
+                {settings.tooltip ? (
+                  <Tooltip
+                    placement="top-start"
+                    arrow
+                    title={settings.tooltip ? settings.tooltip : " "}
+                  >
+                    <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                  </Tooltip>
+                ) : (
+                  " "
+                )}
+
+                {FieldTypeLabel}
+              </Stack>
+            }
+            helperText={description}
+            required={required}
+            value={value || "#FFFFFF"}
+            onChange={(evt) => {
+              console.log(evt);
+              onChange(evt.target.value, name);
+            }}
+          />
+        </Box>
       );
 
     case "number":
