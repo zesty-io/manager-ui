@@ -2,6 +2,7 @@ describe("Content Specs", () => {
   describe("Content Specs", () => {
     before(() => {
       cy.login();
+      cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
     });
 
     const TIMESTAMP = Date.now();

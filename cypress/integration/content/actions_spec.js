@@ -9,7 +9,7 @@ describe("Actions in content editor", () => {
 
   it("Must not save when missing required Field", () => {
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
-    cy.get("input[name=text_field]", { timeout: 10000 }).clear({ force: true });
+    cy.get("input[name=text_field]", { timeout: 15000 }).clear({ force: true });
     cy.get("#SaveItemButton").click({ force: true });
     cy.contains("You are missing data").should("exist");
   });
