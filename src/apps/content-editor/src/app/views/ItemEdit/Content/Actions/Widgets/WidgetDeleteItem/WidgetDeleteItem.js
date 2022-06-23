@@ -1,20 +1,19 @@
-import { memo, useState, Fragment } from "react";
-import cx from "classnames";
+import { memo, useState } from "react";
+
 import { useHistory } from "react-router-dom";
 
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 import CircularProgress from "@mui/material/CircularProgress";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionActions from "@mui/material/AccordionActions";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-
-import {
-  CollapsibleCard,
-  CardContent,
-  CardFooter,
-} from "@zesty-io/core/CollapsibleCard";
 import { ConfirmDialog } from "@zesty-io/material";
 
 import { deleteItem } from "shell/store/content";
@@ -26,24 +25,23 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
   const [deleting, setDeleting] = useState(false);
 
   return (
-    <Fragment>
-      <CollapsibleCard
-        id="WidgetDeleteItem"
-        className={cx("pageDetailWidget", "Delete")}
-        header={
-          <span>
-            <FontAwesomeIcon icon={faTrashAlt} />
-            &nbsp;Delete Content
-          </span>
-        }
-      >
-        <CardContent>
-          <p>
+    <Box sx={{ m: 2 }} data-cy="WidgetDeleteAccordion">
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography sx={{ display: "flex", alignItems: "center" }}>
+            {" "}
+            <DeleteIcon fontSize="small" /> Delete Content
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails
+          sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+        >
+          <Typography>
             Delete this content? Removing it from all locations throughout your
             site and making it unavailable to API requests.
-          </p>
-        </CardContent>
-        <CardFooter>
+          </Typography>
+        </AccordionDetails>
+        <AccordionActions>
           <Button
             variant="contained"
             color="error"
@@ -57,8 +55,8 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
           >
             Delete
           </Button>
-        </CardFooter>
-      </CollapsibleCard>
+        </AccordionActions>
+      </Accordion>
 
       <ConfirmDialog
         open={confirmOpen}
@@ -98,6 +96,6 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
           Delete
         </Button>
       </ConfirmDialog>
-    </Fragment>
+    </Box>
   );
 });
