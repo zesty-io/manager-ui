@@ -9,12 +9,8 @@ describe("Actions in content editor", () => {
 
   it("Must not save when missing required Field", () => {
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
-    cy.get("#12-13d590-9v2nr2")
-      .should("exist")
-      .find("input")
-      .click({ force: true })
-      .clear();
-    cy.get("#SaveItemButton").click();
+    cy.get("input[name=text_field]", { timeout: 15000 }).clear({ force: true });
+    cy.get("#SaveItemButton").click({ force: true });
     cy.contains("You are missing data").should("exist");
   });
   /**
@@ -23,9 +19,8 @@ describe("Actions in content editor", () => {
   it("Save when missing required deactivated field", () => {
     cy.visit("/content/6-0c960c-d1n0kx/7-c882ba84ce-c4smnp");
     // Need to make an edit to enable save button.
-    cy.get("#12-849844-t8v5l6")
-      .should("exist")
-      .find("input")
+    // Provide large timeout for API calls
+    cy.get("input[name=title]", { timeout: 10000 })
       .clear({ force: true })
       .type(timestamp);
     cy.get("#SaveItemButton", { timeout: 5000 }).click({ force: true });
@@ -34,15 +29,17 @@ describe("Actions in content editor", () => {
   it("Saves homepage item metadata", () => {
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
     // go to Meta Tab
-    cy.get("[data-cy=meta]").click();
+    cy.get("[data-cy=meta]", { timeout: 5000 }).click({ force: true });
     cy.get("textarea")
       .first()
-      .type("{selectall}{backspace}This is an item meta description");
+      .type("{selectall}{backspace}This is an item meta description", {
+        force: true,
+      });
 
     cy.get("textarea")
       .first()
       .should("have.value", "This is an item meta description");
-    cy.get("#SaveItemButton").click();
+    cy.get("#SaveItemButton").click({ force: true });
     cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
   });
 
@@ -95,7 +92,7 @@ describe("Actions in content editor", () => {
   it("Creates a new item", () => {
     cy.visit("/content/6-a1a600-k0b6f0/new");
 
-    cy.get("input[name=title]").click().type(timestamp);
+    cy.get("input[name=title]", { timeout: 5000 }).click().type(timestamp);
     cy.get("#CreateItemSaveButton").click();
 
     cy.contains("Created new ", { timeout: 5000 }).should("exist");
