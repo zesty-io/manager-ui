@@ -267,22 +267,22 @@ describe("Content Specs", () => {
           .should("have.value", "12");
       });
 
-      // it("One to many Field", () => {
-      //   // Adds new relationship
-      //   cy.get("#12-269a28-1bkm34")
-      //     .find(".MuiAutocomplete-popupIndicator")
-      //     .click({ force: true });
-      //   cy.get("[role=presentation]")
-      //     .find("[data-option-index=1]")
-      //     .click({ force: true });
-      //   // Removes new relationship
-      //   cy.get("#12-269a28-1bkm34")
-      //     .find(".MuiAutocomplete-popupIndicator")
-      //     .click({ force: true });
-      //   cy.get("[role=presentation]")
-      //     .find("[data-option-index=1]")
-      //     .click({ force: true });
-      // });
+      it("One to many Field", () => {
+        // Adds new relationship
+        cy.get("#12-269a28-1bkm34")
+          .find(".MuiAutocomplete-popupIndicator")
+          .click({ force: true });
+        cy.get("[role=presentation]")
+          .find("[data-option-index=1]")
+          .click({ force: true });
+        // Removes new relationship
+        cy.get("#12-269a28-1bkm34")
+          .find(".MuiAutocomplete-popupIndicator")
+          .click({ force: true });
+        cy.get("[role=presentation]")
+          .find("[data-option-index=1]")
+          .click({ force: true });
+      });
 
       it("One to one Field", () => {
         cy.get("#12-edee00-6zb866")
