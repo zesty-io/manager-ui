@@ -21,10 +21,10 @@ describe("Head Tags", () => {
 
     cy.get("[data-cy=tagCard]")
       .last()
-      .find(".Select button")
+      .find(".MuiSelect-select")
       .click({ force: true });
 
-    cy.get("[data-cy=tagCard]")
+    cy.get("[role=presentation]")
       .last()
       .find('[data-value="script"]')
       .click({ force: true });

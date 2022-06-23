@@ -114,20 +114,23 @@ describe("Content Specs", () => {
       it("Dropdown Field", () => {
         cy.get("#12-f3152c-kjz88l")
           .should("exist")
-          .find(".Select")
-          .click({ force: true })
+          .find(".MuiSelect-select")
+          .click({ force: true });
+
+        cy.get("[role=presentation]")
           .find('[data-value="custom_option_one"]')
           .click({ force: true });
 
-        cy.contains("#12-f3152c-kjz88l .Select", "Custom Option One");
+        cy.contains("#12-f3152c-kjz88l .MuiSelect-select", "Custom Option One");
 
         cy.get("#12-f3152c-kjz88l")
-          .find(".Select")
-          .click({ force: true })
+          .find(".MuiSelect-select")
+          .click({ force: true });
+        cy.get("[role=presentation]")
           .find('[data-value="custom_option_two"]')
           .click({ force: true });
 
-        cy.contains("#12-f3152c-kjz88l .Select", "Custom Option Two");
+        cy.contains("#12-f3152c-kjz88l .MuiSelect-select", "Custom Option Two");
       });
 
       it("Url Field", () => {
@@ -323,7 +326,7 @@ describe("Content Specs", () => {
     // });
 
     it("Check Actions Collapsed functionality", () => {
-      cy.get("[data-cy=ActionsContent]", { timeout: 5000 }).then((content) => {
+      cy.get("[data-cy=ActionsContent]", { timeout: 10000 }).then((content) => {
         if (content.is(":visible")) {
           cy.get("[data-cy=ActionsContent]").should("be.visible");
         } else {

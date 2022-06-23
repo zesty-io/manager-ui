@@ -26,7 +26,6 @@ import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
 

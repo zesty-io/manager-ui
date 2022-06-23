@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { connect } from "react-redux";
 
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
+import { FormControl, FormLabel, Box } from "@mui/material";
+import { VirtualizedAutocomplete } from "@zesty-io/material";
 
 import { fetchFields } from "shell/store/fields";
 
@@ -17,76 +18,79 @@ export default connect((state) => {
   };
 })(function RelatedOptions(props) {
   const [loading, setLoading] = useState(false);
-  const [selectedModel, setSelectedModel] = useState(
-    props.field.relatedModelZUID
-  );
-  const [selectedField, setSelectedField] = useState(
-    props.field.relatedFieldZUID
-  );
+  const [selectedModel, setSelectedModel] = useState(null);
+
+  const modelOptions = useMemo(() => {
+    return props.models.map((m) => {
+      return {
+        value: m.ZUID,
+        inputLabel: m.label,
+        component: m.label,
+      };
+    });
+  }, [props.models]);
 
   const fieldOptions = useMemo(() => {
     return props.fields
-      .filter((f) => f.contentModelZUID === selectedModel)
+      .filter((f) => f.contentModelZUID === props.field.relatedModelZUID)
       .map((f) => {
         return {
           value: f.ZUID,
-          text: f.label,
+          inputLabel: f.label,
+          component: f.label,
         };
       });
-  }, [props.fields]);
+  }, [props.fields, props.field.relatedModelZUID]);
 
   // Load related model fields
   useEffect(() => {
-    if (selectedModel) {
+    if (selectedModel?.value) {
       setLoading(true);
       props
-        .dispatch(fetchFields(selectedModel))
+        .dispatch(fetchFields(selectedModel.value))
         .then(() => setLoading(false))
         .catch(() => setLoading(false));
     }
   }, [selectedModel]);
 
   return (
-    <div className={styles.FieldSettings}>
-      {/* <h2 className={styles.Title}>Related Field Settings</h2> */}
-
-      <div className={styles.Option}>
-        <div className={styles.Values}>
-          {/* TODO: Autocomplete (virtualized?) */}
-          <FieldTypeDropDown
-            name="relatedModelZUID"
-            label="Related model"
-            value={selectedModel}
-            onChange={(val, name) => {
-              setSelectedModel(val);
-              // when changing the model reset the selected field
-              setSelectedField("0");
-
-              props.updateValue(val, name);
-            }}
-            options={props.models.map((m) => {
-              return {
-                value: m.ZUID,
-                text: m.label,
-              };
-            })}
-          />
-
-          {/* TODO: Autocomplete (virtualized?) */}
-          <FieldTypeDropDown
-            name="relatedFieldZUID"
-            label="Model field to display"
-            value={selectedField}
-            onChange={(val, name) => {
-              setSelectedField(val);
-              props.updateValue(val, name);
-            }}
-            options={fieldOptions}
-            disabled={!fieldOptions.length}
-            loading={loading}
-          />
-        </div>
-      </div>
-    </div>
+    <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+      <FormControl fullWidth>
+        <FormLabel>Related model</FormLabel>
+        <VirtualizedAutocomplete
+          name="relatedModelZUID"
+          value={
+            modelOptions?.find(
+              (model) => model.value === props.field.relatedModelZUID
+            ) || null
+          }
+          onChange={(_, option) => {
+            setSelectedModel(option);
+            // when changing the model reset the selected field
+            props.updateValue("0", "relatedFieldZUID");
+            props.updateValue(option?.value || "0", "relatedModelZUID");
+          }}
+          placeholder="Select related model..."
+          options={modelOptions}
+        />
+      </FormControl>
+      <FormControl fullWidth>
+        <FormLabel>Model field to display</FormLabel>
+        <VirtualizedAutocomplete
+          name="relatedFieldZUID"
+          value={
+            fieldOptions?.find(
+              (field) => field.value === props.field.relatedFieldZUID
+            ) || null
+          }
+          onChange={(_, option) => {
+            props.updateValue(option?.value || "0", "relatedFieldZUID");
+          }}
+          placeholder="Select field to display..."
+          options={fieldOptions}
+          loading={loading}
+        />
+      </FormControl>
+    </Box>
   );
 });

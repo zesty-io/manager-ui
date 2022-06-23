@@ -18,7 +18,6 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 
-import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
 import { FormControl, Select, MenuItem } from "@mui/material";
 
 import { FieldSettings, FIELD_TYPES } from "../FieldSettings";

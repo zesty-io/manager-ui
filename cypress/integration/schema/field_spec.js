@@ -11,9 +11,10 @@ describe("Fields", () => {
     const fieldName = `text_field_${timestamp}`;
 
     // High timeout to handle initial api load time
-    cy.get(".FieldAdd .Select", { timeout: 10000 }).click();
+    cy.get(".FieldAdd .MuiSelect-select", { timeout: 10000 }).click();
 
-    cy.get(".FieldAdd .selections .options li[data-value='text']").click();
+    // cy.get(".FieldAdd .selections .options li[data-value='text']").click();
+    cy.get("[role=presentation] li[data-value='text']").click();
 
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
     cy.get('.FieldAdd input[name="name"]').type(fieldName);
@@ -59,8 +60,8 @@ describe("Fields", () => {
     const fieldLabel = `TextArea Field: ${timestamp}`;
     const fieldName = `textarea_field_${timestamp}`;
 
-    cy.get(".FieldAdd .Select").click();
-    cy.get(".FieldAdd .selections .options li[data-value='textarea']").click();
+    cy.get(".FieldAdd .MuiSelect-select").click();
+    cy.get("[role=presentation] li[data-value='textarea']").click();
 
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
     cy.get('.FieldAdd input[name="name"]').type(fieldName);
@@ -76,10 +77,8 @@ describe("Fields", () => {
     const fieldLabel = `wysiwyg field: ${timestamp}`;
     const fieldName = `wysiwyg_field_${timestamp}`;
 
-    cy.get(".FieldAdd .Select").click();
-    cy.get(
-      ".FieldAdd .selections .options li[data-value='wysiwyg_basic']"
-    ).click();
+    cy.get(".FieldAdd .MuiSelect-select").click();
+    cy.get("[role=presentation] li[data-value='wysiwyg_basic']").click();
 
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
     cy.get('.FieldAdd input[name="name"]').type(fieldName);

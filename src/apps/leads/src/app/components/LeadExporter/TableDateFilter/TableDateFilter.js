@@ -15,7 +15,7 @@ import {
 import styles from "./TableDateFilter.less";
 
 const datePresets = [
-  // Skipping "All" since it's the default
+  { value: DATE_PRESETS.ALL, text: "ALL" },
   { value: DATE_PRESETS.THIRTY, text: "30 Days" },
   { value: DATE_PRESETS.SIXTY, text: "60 Days" },
   { value: DATE_PRESETS.NINETY, text: "90 Days" },
@@ -113,20 +113,17 @@ export default connect((state) => {
     render() {
       return (
         <div>
-          {/* TODO: TEST */}
           <FormControl fullWidth size="small">
-            <FormLabel>Date Range</FormLabel>
+            <FormLabel sx={{ color: "#c3cddf" }}>Date Range</FormLabel>
             <Select
               name="form-group-filter"
               variant="outlined"
-              displayEmpty
-              value={DATE_PRESETS.ALL}
+              defaultValue={DATE_PRESETS.ALL}
               onChange={(e) => this.onDateRangeChange(e.target.value)}
             >
-              <MenuItem value="">All</MenuItem>
               {datePresets.map((datePreset, idx) => (
                 <MenuItem key={idx} value={datePreset.value}>
-                  {datePresets.text}
+                  {datePreset.text}
                 </MenuItem>
               ))}
             </Select>

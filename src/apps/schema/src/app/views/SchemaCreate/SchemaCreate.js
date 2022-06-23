@@ -28,9 +28,8 @@ import {
   faFile,
   faListAlt,
 } from "@fortawesome/free-solid-svg-icons";
-// import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 
-import { FieldTypeText } from "@zesty-io/material";
+import { FieldTypeText, VirtualizedAutocomplete } from "@zesty-io/material";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 
 import { fetchParents } from "../../../store/parents";
@@ -88,7 +87,7 @@ export default connect((state) => {
   const [label, setLabel] = useState("");
   const [description, setDescription] = useState("");
   const [listed, setListed] = useState(true);
-  const [parent, setParent] = useState("");
+  const [parent, setParent] = useState(null);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -393,27 +392,27 @@ export default connect((state) => {
               navigation and default routing for this model's items.
             </p>
 
-            {/* TODO: Swap with Autocomplete (virtualized?) */}
-            <FormControl fullWidth size="small">
+            <FormControl fullWidth>
               <FormLabel sx={{ mb: "0 !important" }}>
                 Select this model's parent
               </FormLabel>
-              <Select
+
+              <VirtualizedAutocomplete
                 name="parent"
-                variant="outlined"
                 displayEmpty
                 value={parent}
-                onChange={(e) => {
-                  setParent(e.target.value);
+                onChange={(_, option) => {
+                  setParent(option);
                 }}
-              >
-                <MenuItem value="">- None -</MenuItem>
-                {props.parents.map((parent, idx) => (
-                  <MenuItem key={idx} value={parent.value}>
-                    {parent.text}
-                  </MenuItem>
-                ))}
-              </Select>
+                placeholder="Select this model's parent..."
+                options={props.parents.map((parent) => {
+                  return {
+                    inputLabel: parent.text,
+                    value: parent.value,
+                    component: parent.text,
+                  };
+                })}
+              />
             </FormControl>
 
             <div className={styles.questionnaire}>
@@ -479,7 +478,7 @@ export default connect((state) => {
               props
                 .dispatch(
                   createModel({
-                    parentZUID: parent,
+                    parentZUID: parent?.value || "",
                     name,
                     label,
                     description,
@@ -511,7 +510,7 @@ export default connect((state) => {
                                 metaLinkText: label,
                                 metaTitle: label,
                                 pathPart: pathPart,
-                                parentZUID: parent,
+                                parentZUID: parent?.value || "",
                               },
                               meta: {
                                 contentModelZUID: res.data.ZUID,
