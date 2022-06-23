@@ -1,7 +1,10 @@
 import { useDispatch } from "react-redux";
 import cx from "classnames";
 
-import { Search } from "@zesty-io/core/Search";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
+
 import { DownloadCSVButton } from "./DownloadCSVButton";
 import { FormGroupSelector } from "./FormGroupSelector";
 import { TableDateFilter } from "./TableDateFilter";
@@ -24,15 +27,24 @@ export function LeadExporter() {
         <DownloadCSVButton />
       </div>
       <div className={cx(styles.filter, styles.SearchEnd)}>
-        <Search
-          className={styles.Search}
+        <TextField
           name="text-filter"
           placeholder="Search across all of your leads"
-          onChange={(value) => {
-            dispatch(setFilterText(value));
+          type="search"
+          variant="outlined"
+          fullWidth
+          size="small"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" />
+              </InputAdornment>
+            ),
           }}
-          onSubmit={(value) => {
-            dispatch(setFilterText(value));
+          onChange={(evt) => {
+            const term = evt.target.value;
+
+            dispatch(setFilterText(term));
           }}
         />
       </div>

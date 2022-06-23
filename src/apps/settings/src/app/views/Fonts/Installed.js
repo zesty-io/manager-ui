@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
 import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import { Search } from "@zesty-io/core/Search";
 import { Notice } from "@zesty-io/core/Notice";
 import { notify } from "shell/store/notifications";
 
@@ -244,10 +246,22 @@ export default connect((state) => {
         className={styles.SearchContainer}
         style={{ justifyContent: "space-between" }}
       >
-        <Search
-          className={styles.search}
+        <TextField
           placeholder="Search font"
-          onKeyUp={(e) => onSearch(e.target.value)}
+          type="search"
+          variant="outlined"
+          size="small"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" />
+              </InputAdornment>
+            ),
+          }}
+          onChange={(evt) => {
+            const term = evt.target.value;
+            onSearch(term);
+          }}
         />
       </header>
       {renderFontsList()}

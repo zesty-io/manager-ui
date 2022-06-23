@@ -24,7 +24,7 @@ export default connect(function (state) {
     instance: state.instance,
     instanceName: state.instance.name,
     profileID: state.settings.instance.find(
-      (setting) => settings.key === "google_profile_id"
+      (instance) => instance.key === "google_profile_id"
     )?.value,
     contentModels: Object.keys(state.models).reduce((acc, modelZUID) => {
       if (

@@ -1,14 +1,26 @@
-import { Search } from "@zesty-io/core/Search";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 
-import styles from "./FilterFiles.less";
 export function FilterFiles(props) {
   return (
-    <Search
+    <TextField
       name="filterFiles"
       placeholder="Filter file list by name, zuid or code"
-      className={styles.FilterFiles}
-      onChange={(term) => {
-        term = term.trim().toLowerCase();
+      type="search"
+      variant="outlined"
+      fullWidth
+      size="small"
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <SearchIcon fontSize="small" />
+          </InputAdornment>
+        ),
+      }}
+      onChange={(evt) => {
+        const term = evt.target.value.trim().toLowerCase();
+
         if (term) {
           props.setShownFiles(
             props.nav.raw.filter((f) => {
@@ -25,6 +37,7 @@ export function FilterFiles(props) {
           props.setShownFiles(props.nav.tree);
         }
       }}
+      sx={{ mt: 1 }}
     />
   );
 }
