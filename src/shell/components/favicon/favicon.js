@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
+import Button from "@mui/material/Button";
+import SaveIcon from "@mui/icons-material/Save";
+import CircularProgress from "@mui/material/CircularProgress";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCog,
@@ -18,7 +23,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@zesty-io/core/Modal";
-import { Button } from "@zesty-io/core/Button";
+
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -268,26 +273,25 @@ export default connect((state) => {
             Manage Instance Head Tags
           </AppLink>
         </ModalContent>
-        <ModalFooter>
-          <ButtonGroup className={styles.Actions}>
-            <Button
-              data-cy="faviconSave"
-              type="save"
-              className={styles.Button}
-              onClick={handleSave}
-            >
-              {loading ? (
-                <FontAwesomeIcon icon={faSpinner} spin />
-              ) : (
-                <FontAwesomeIcon icon={faFileImage} />
-              )}
-              Save Favicon
-            </Button>
-            <Button type="cancel" onClick={handleClose}>
-              <FontAwesomeIcon icon={faBan} />
-              Cancel (ESC)
-            </Button>
-          </ButtonGroup>
+        <ModalFooter className={styles.Actions}>
+          <Button
+            variant="contained"
+            onClick={handleClose}
+            startIcon={<DoDisturbAltIcon />}
+          >
+            Cancel (ESC)
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            data-cy="faviconSave"
+            onClick={handleSave}
+            startIcon={
+              loading ? <CircularProgress size="20px" /> : <SaveIcon />
+            }
+          >
+            Save Favicon
+          </Button>
         </ModalFooter>
       </Modal>
     </div>

@@ -1,0 +1,65 @@
+@import "~@zesty-io/core/colors.less";
+
+.CustomApps {
+  border-top: 1px solid #212636;
+  border-bottom: 1px solid #212636;
+  display: grid;
+  grid-gap: 12px;
+  padding: 8px 0;
+
+  a {
+    text-align: center;
+    color: @zesty-field-blue;
+    text-decoration: none;
+    letter-spacing: 1px;
+    padding: 8px;
+    border-left: 2px solid @globalMenuBkgColor;
+    display: flex;
+    align-items: center;
+
+    .title {
+      display: inline-block;
+    }
+  }
+
+  &.OpenNav {
+    a {
+      text-align: left;
+    }
+    svg {
+      margin-right: 8px;
+    }
+  }
+
+  &.Collapse {
+    a {
+      text-align: center;
+      justify-content: center;
+      .title {
+        display: none;
+      }
+    }
+  }
+
+  .current {
+    border-left: 2px solid @zesty-orange;
+  }
+
+  .control,
+  .build,
+  .optimize,
+  .settings {
+    &:hover {
+      color: @zesty-green;
+    }
+  }
+  .control,
+  .build,
+  .optimize,
+  .settings {
+    &:active,
+    &:focus {
+      color: @zesty-orange;
+    }
+  }
+}

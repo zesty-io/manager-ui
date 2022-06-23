@@ -7,7 +7,11 @@ import zuid from "zuid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight, faClock } from "@fortawesome/free-solid-svg-icons";
 
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+
 import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -123,12 +127,20 @@ export function UserLatest(props) {
   }, [props.user, Object.keys(props.logs).length]);
 
   return (
-    <Card className={styles.UserLatestEdits}>
-      <CardHeader>
-        <FontAwesomeIcon icon={faClock} />
-        {props.cardTitle}
-      </CardHeader>
-      <CardContent className={styles.CardContent}>
+    <Card
+      className={styles.UserLatestEdits}
+      sx={{
+        m: 2,
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "275px",
+      }}
+    >
+      <CardHeader
+        avatar={<AccessTimeIcon fontSize="small" />}
+        title={props.cardTitle}
+      ></CardHeader>
+      <CardContent sx={{ p: 0 }}>
         <WithLoader condition={!loading} message={`Loading ${props.cardTitle}`}>
           {!latest.length && props.action === "2" && (
             <h3 className={cx(styles.NoLogs, styles.display)}>

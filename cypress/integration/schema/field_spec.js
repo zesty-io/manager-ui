@@ -10,13 +10,14 @@ describe("Fields", () => {
     const fieldLabel = `Text Field: ${timestamp}`;
     const fieldName = `text_field_${timestamp}`;
 
-    cy.get(".FieldAdd .Select").click();
+    // High timeout to handle initial api load time
+    cy.get(".FieldAdd .Select", { timeout: 10000 }).click();
 
     cy.get(".FieldAdd .selections .options li[data-value='text']").click();
 
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
     cy.get('.FieldAdd input[name="name"]').type(fieldName);
-    cy.get('.FieldAdd footer button[type="save"]').click();
+    cy.get("[data-cy=addField]").click();
 
     // Find the newly created field
     cy.contains(".Fields article header h1", fieldLabel, {
@@ -42,7 +43,7 @@ describe("Fields", () => {
           .clear()
           .type(newFieldLabel);
 
-        cy.get('.Fields article footer button[type="save"]').last().click();
+        cy.get("[data-cy=fieldSave]").last().should("not.be.disabled").click();
 
         cy.get('.Fields article input[name="label"]')
           .last()
@@ -51,9 +52,7 @@ describe("Fields", () => {
   });
 
   it("Deactivate", () => {
-    cy.get(".Fields article footer button.deactivate").last().click({
-      timeout: 10000,
-    });
+    cy.get("[data-cy=deactivated]").eq(0).click();
   });
 
   it("Create:textarea", () => {
@@ -65,7 +64,7 @@ describe("Fields", () => {
 
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
     cy.get('.FieldAdd input[name="name"]').type(fieldName);
-    cy.get('.FieldAdd footer button[type="save"]').click();
+    cy.get("[data-cy=addField]").last().click();
 
     // Find the newly created field
     cy.contains(".Fields article header h1", fieldLabel, {
@@ -84,7 +83,7 @@ describe("Fields", () => {
 
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
     cy.get('.FieldAdd input[name="name"]').type(fieldName);
-    cy.get('.FieldAdd footer button[type="save"]').click();
+    cy.get("[data-cy=addField]").click();
 
     // Find the newly created field
     cy.contains(".Fields article header h1", fieldLabel, {

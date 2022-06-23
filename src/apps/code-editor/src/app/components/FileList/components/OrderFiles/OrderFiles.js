@@ -7,6 +7,7 @@ import ReorderIcon from "@mui/icons-material/Reorder";
 import SaveIcon from "@mui/icons-material/Save";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
+import Link from "@mui/material/Link";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -19,7 +20,6 @@ import {
 import { Dropzone } from "./components/Dropzone";
 import { Draggable } from "./components/Draggable";
 
-import { Url } from "@zesty-io/core/Url";
 import { Notice } from "@zesty-io/core/Notice";
 
 import {
@@ -135,13 +135,13 @@ export default connect((state, props) => {
           <ModalContent>
             <p className={styles.Desc}>
               The displayed order is the order in which{" "}
-              <Url
+              <Link
                 href="https://zesty.org/services/web-engine/css-processing-flow"
                 target="_blank"
                 title="Learn More About Processing Flows"
               >
                 files are processed and concatentated together
-              </Url>{" "}
+              </Link>{" "}
               into the dynamically created{" "}
               {props.typePathPart === "stylesheets" ? (
                 <code>site.css</code>

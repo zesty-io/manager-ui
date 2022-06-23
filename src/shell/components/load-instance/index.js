@@ -5,6 +5,8 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 
+import Link from "@mui/material/Link";
+
 import { fetchInstance, fetchDomains } from "shell/store/instance";
 import { fetchUser } from "shell/store/user";
 import { fetchUserRole } from "shell/store/userRole";
@@ -17,7 +19,6 @@ import { fetchItemPublishings } from "shell/store/content";
 import { fetchFiles } from "../../../apps/code-editor/src/store/files";
 import { fetchSettings } from "shell/store/settings";
 
-import { Url } from "@zesty-io/core/Url";
 import { loadOpenNav } from "../../store/ui";
 
 import styles from "./LoadInstance.less";
@@ -69,26 +70,38 @@ export default connect((state) => {
     }, []);
 
     useEffect(() => {
-      if (window.pendo && props.user && props.instance && props.role) {
-        // in your authentication promise handler or callback
+      if (
+        window.pendo &&
+        props.user?.email &&
+        props.instance?.ZUID &&
+        props.role
+      ) {
         pendo.initialize({
           visitor: {
-            id: props.user.ZUID, // Required if user is logged in
-            email: props.user.email, // Recommended if using Pendo Feedback, or NPS Email
+            id: props.user.ZUID,
+            email: props.user.email,
             firstName: props.user.firstName,
             lastName: props.user.lastName,
-            role: props.role, // Optional
+            full_name: `${props.user.firstName} ${props.user.lastName}`,
+            role: props.role,
+
             // You can add any additional visitor level key-values here,
             // as long as it's not one of the above reserved names.
-            staff: props.user.staff, // Zesty staff
+            staff: props.user.staff,
+            creationDate: props.user.createdAt,
           },
 
           account: {
-            id: props.instance.ZUID, // Required if using Pendo Feedback
-            name: props.instance.name, // Optional
-            creationDate: props.user.createdAt, // Optional
+            id: props.instance.ZUID,
+            name: props.instance.name,
+            creationDate: props.instance.createdAt,
             // You can add any additional account level key-values here,
             // as long as it's not one of the above reserved names.
+
+            ecoID: props.instance.ecoID,
+            ecoZUID: props.instance.ecoZUID,
+            randomHashID: props.instance.randomHashID,
+            domain: props.instance.domain,
           },
         });
       }
@@ -100,14 +113,16 @@ export default connect((state) => {
         {error ? (
           <div className={styles.ErrorMessage}>
             <h1>{error}</h1>
-            <Url
-              className={styles.AccountLink}
+            <Link
+              underline="none"
+              color="secondary"
               title="Zesty Account"
               href={`${CONFIG.URL_ACCOUNTS}/instances`}
+              sx={{ p: 2 }}
             >
               <FontAwesomeIcon icon={faUser} />
               &nbsp; Go to Accounts
-            </Url>
+            </Link>
           </div>
         ) : (
           <WithLoader

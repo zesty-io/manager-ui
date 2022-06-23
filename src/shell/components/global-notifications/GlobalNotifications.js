@@ -107,7 +107,7 @@ export default connect((state) => {
           <DrawerContent className={styles.DrawerContent}>
             <header>
               <h1 className={styles.display}>My Notifications</h1>
-              <AppLink to="/audit-trail">View All Logs</AppLink>
+              <AppLink to="/reports/audit-trail">View All Logs</AppLink>
             </header>
 
             {!props.notifications.length && (

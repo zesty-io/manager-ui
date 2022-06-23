@@ -1,6 +1,10 @@
 import { Fragment, useState } from "react";
 import { useHistory } from "react-router-dom";
 
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faBan } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -8,8 +12,7 @@ import {
   CardContent,
   CardFooter,
 } from "@zesty-io/core/CollapsibleCard";
-import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
-import { Button } from "@zesty-io/core/Button";
+import { ConfirmDialog } from "@zesty-io/material";
 
 import { notify } from "shell/store/notifications";
 import { deleteModel } from "shell/store/models";
@@ -47,19 +50,32 @@ function Footer(props) {
   return (
     <Fragment>
       <CardFooter>
-        <Button type="warn" onClick={() => setIsOpen(true)}>
-          <FontAwesomeIcon icon={faTrash} />
+        <Button
+          variant="contained"
+          color="error"
+          onClick={() => setIsOpen(true)}
+          startIcon={<DeleteIcon />}
+        >
           Delete Model
         </Button>
       </CardFooter>
 
       <ConfirmDialog
-        isOpen={isOpen}
-        prompt={`Are you sure you want to delete the model: ${props.model.label}?`}
+        open={isOpen}
+        title={`Are you sure you want to delete the model: ${props.model.label}?`}
       >
         <Button
+          variant="outlined"
+          id="deleteCancelButton"
+          onClick={() => setIsOpen(false)}
+          startIcon={<DoDisturbAltIcon />}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          color="error"
           id="deleteConfirmButton"
-          type="warn"
           onClick={() => {
             props
               .dispatch(deleteModel(props.model.ZUID))
@@ -79,17 +95,9 @@ function Footer(props) {
                 );
               });
           }}
+          startIcon={<DeleteIcon />}
         >
-          <FontAwesomeIcon icon={faTrash} />
           Delete
-        </Button>
-        <Button
-          id="deleteCancelButton"
-          type="cancel"
-          onClick={() => setIsOpen(false)}
-        >
-          <FontAwesomeIcon icon={faBan} />
-          Cancel
         </Button>
       </ConfirmDialog>
     </Fragment>

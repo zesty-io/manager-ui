@@ -3,16 +3,16 @@ import { connect } from "react-redux";
 import cx from "classnames";
 
 import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
 import CircularProgress from "@mui/material/CircularProgress";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import TextField from "@mui/material/TextField";
 
 import { Modal, ModalContent } from "@zesty-io/core/Modal";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { Input } from "@zesty-io/core/Input";
+import { FieldTypeText } from "@zesty-io/material";
 import { Notice } from "@zesty-io/core/Notice";
-import { Url } from "@zesty-io/core/Url";
 
 import { login, verifyTwoFactor, pollTwoFactor } from "shell/store/auth";
 import { notify } from "shell/store/notifications";
@@ -87,20 +87,31 @@ export default connect((state) => {
 
               <p className={cx(styles.bodyText, styles.message)}>
                 Your account has{" "}
-                <Url
+                <Link
+                  underline="none"
+                  color="secondary"
                   title="Authy Two Factor Authentication"
                   href="https://authy.com/what-is-2fa/"
                   target="_blank"
                 >
                   Authy Two Factor Authentication
-                </Url>{" "}
+                </Link>{" "}
                 enabled which requires entering a one time token in order to
                 complete your login.
               </p>
 
               <label>
                 <span>7 Digit Authy Token</span>
-                <Input name="token" type="text" autoComplete="off" />
+                <TextField
+                  name="token"
+                  type="text"
+                  autoComplete="off"
+                  size="small"
+                  variant="outlined"
+                  color="primary"
+                  sx={{ mb: 2 }}
+                  fullWidth
+                />
               </label>
 
               <Button
@@ -138,8 +149,9 @@ export default connect((state) => {
                 type="submit"
                 variant="contained"
                 startIcon={
-                  loading ? <CircularProgress size="1rem" /> : <ExitToAppIcon />
+                  loading ? <CircularProgress size="20px" /> : <ExitToAppIcon />
                 }
+                sx={{ mt: 1 }}
               >
                 Resume Session
               </Button>

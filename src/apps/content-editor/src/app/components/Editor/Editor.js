@@ -15,7 +15,6 @@ export default memo(function Editor({
   onSave,
   itemZUID,
 }) {
-  const ui = useSelector((state) => state.ui);
   const dispatch = useDispatch();
   const firstTextField = fields.find((field) => field.datatype === "text");
   const firstContentField = fields.find(
@@ -44,6 +43,7 @@ export default memo(function Editor({
   };
 
   const onChange = useCallback((value, name) => {
+    if (value === null || name === null) return;
     if (!name) {
       throw new Error("Input is missing name attribute");
     }

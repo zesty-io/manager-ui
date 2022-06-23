@@ -70,7 +70,11 @@ export const Delete = memo(function Delete(props) {
                 });
             }}
             startIcon={
-              deleting ? <CircularProgress size="1rem" /> : <DeleteIcon />
+              deleting ? (
+                <CircularProgress CircularProgress size="20px" />
+              ) : (
+                <DeleteIcon />
+              )
             }
           >
             Delete File

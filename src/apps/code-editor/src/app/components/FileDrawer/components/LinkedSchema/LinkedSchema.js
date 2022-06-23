@@ -2,34 +2,46 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase, faLink } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import StorageIcon from "@mui/icons-material/Storage";
+
 import { AppLink } from "@zesty-io/core/AppLink";
-import { Url } from "@zesty-io/core/Url";
+
+import Link from "@mui/material/Link";
 
 import styles from "./LinkedSchema.less";
-import shared from "../../FileDrawer.less";
 
 export default function LinkedSchema(props) {
   return (
-    <Card className={cx(styles.LinkedSchema, shared.DrawerStyles)}>
-      <CardHeader>
-        <h1>
-          <FontAwesomeIcon icon={faDatabase} /> {props.file.fileName}'s Related
-          Model Schema
-        </h1>
-      </CardHeader>
+    <Card
+      className={cx(styles.LinkedSchema)}
+      sx={{
+        m: 2,
+        backgroundColor: "#292828", // overwrite material theme cardheader color for dark cards
+        color: "#b1b1b3 ",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <CardHeader
+        avatar={<StorageIcon fontSize="small" />}
+        title={`${props.file.fileName}'s  Related Model Schema`}
+        sx={{ backgroundColor: "#272728" }}
+      ></CardHeader>
       <CardContent>
         <p>
           Use the below Parsley syntax to reference this models fields. This
-          will dynamically link to the fields content.
-          <Url
-            className={styles.Link}
+          will dynamically link to the fields content.&nbsp;
+          <Link
             href="https://zesty.org/services/web-engine/introduction-to-parsley"
             target="_blank"
             title="Learn More Parsley Syntax"
           >
             Learn More Parsley Syntax
-          </Url>
+          </Link>
         </p>
 
         <ul>
@@ -45,7 +57,7 @@ export default function LinkedSchema(props) {
           ))}
         </ul>
       </CardContent>
-      <CardFooter>
+      <CardActions sx={{ marginTop: "auto" }}>
         <p>
           <AppLink
             className={styles.Link}
@@ -56,7 +68,7 @@ export default function LinkedSchema(props) {
             Edit Linked Schema
           </AppLink>
         </p>
-      </CardFooter>
+      </CardActions>
     </Card>
   );
 }

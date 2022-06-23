@@ -24,11 +24,11 @@ export const FileList = memo(function FileList(props) {
   );
 
   const [stylesheetsShownFiles, setStylesheetsShownFiles] = useState(
-    props.navCode.stylesheetsTree.sort(byLabel)
+    props.navCode.stylesheetsTree.sort(byOrder)
   );
 
   const [scriptsShownFiles, setScriptsShownFiles] = useState(
-    props.navCode.scriptsTree.sort(byLabel)
+    props.navCode.scriptsTree.sort(byOrder)
   );
 
   let { pathname } = useLocation();
@@ -36,8 +36,8 @@ export const FileList = memo(function FileList(props) {
 
   useEffect(() => {
     setShownFiles(props.navCode.tree.sort(byLabel));
-    setStylesheetsShownFiles(props.navCode.stylesheetsTree.sort(byLabel));
-    setScriptsShownFiles(props.navCode.scriptsTree.sort(byLabel));
+    setStylesheetsShownFiles(props.navCode.stylesheetsTree.sort(byOrder));
+    setScriptsShownFiles(props.navCode.scriptsTree.sort(byOrder));
   }, [props.navCode]);
 
   const collapseNode = (node) => {
@@ -93,17 +93,17 @@ export const FileList = memo(function FileList(props) {
           />
 
           <header className={styles.Title}>
-            {/* TODO: Make this visible on the background */}
-            <Tooltip
-              title="Site.css is a dynamically created file from the instance
-              stylesheet files"
-              arrow
-              placement="top-start"
-            >
-              <InfoIcon fontSize="small" />
-            </Tooltip>
-            &nbsp;
-            <h1>site.css</h1>
+            <h1>
+              <Tooltip
+                title="Site.css is a dynamically created file from the instance
+                stylesheet files"
+                arrow
+                placement="top-start"
+              >
+                <InfoIcon fontSize="small" />
+              </Tooltip>
+              &nbsp;site.css
+            </h1>
             <OrderFiles type="text/css" />
           </header>
           <Nav
@@ -115,16 +115,16 @@ export const FileList = memo(function FileList(props) {
           />
 
           <header className={styles.Title}>
-            {/* TODO: Make this visible on the background */}
-            <Tooltip
-              title="Site.js is a dynamically created file from the instance JavaScript files"
-              arrow
-              placement="top-start"
-            >
-              <InfoIcon fontSize="small" />
-            </Tooltip>
-            &nbsp;
-            <h1>site.js</h1>
+            <h1>
+              <Tooltip
+                title="Site.js is a dynamically created file from the instance JavaScript files"
+                arrow
+                placement="top-start"
+              >
+                <InfoIcon fontSize="small" color="asdf" />
+              </Tooltip>
+              &nbsp;site.js
+            </h1>
             <OrderFiles type="text/javascript" />
           </header>
           <Nav

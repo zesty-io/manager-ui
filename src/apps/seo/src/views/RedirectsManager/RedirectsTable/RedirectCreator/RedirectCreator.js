@@ -2,10 +2,11 @@ import { useState } from "react";
 import cx from "classnames";
 
 import Button from "@mui/material/Button";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
 import AddIcon from "@mui/icons-material/Add";
+import TextField from "@mui/material/TextField";
 
-import { Input } from "@zesty-io/core/Input";
-import { ToggleButton } from "@zesty-io/core/ToggleButton";
 import { Select, Option } from "@zesty-io/core/Select";
 import { Search } from "@zesty-io/core/Search";
 
@@ -21,7 +22,7 @@ import styles from "./RedirectCreator.less";
 export function RedirectCreator(props) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-  const [code, setCode] = useState(1); // Toggle defaults to 301
+  const [code, setCode] = useState(301); // Toggle defaults to 301
   const [type, setType] = useState("page");
   const [contentSearchValue, setContentSearchValue] = useState("");
 
@@ -41,7 +42,7 @@ export function RedirectCreator(props) {
           path: from,
           targetType: type,
           target: to,
-          code: code === 1 ? 301 : 302, // API expects a 301/302 value
+          code, // API expects a 301/302 value
         })
       )
       .then(() => {
@@ -51,28 +52,38 @@ export function RedirectCreator(props) {
       });
   };
 
+  const handleToggle = (val) => {
+    if (val === null) return;
+    setCode(val);
+  };
+
   return (
     <div className={styles.RedirectCreator}>
       <span className={styles.RedirectCreatorCell}>
-        <Input
-          className={styles.from}
+        <TextField
           name="redirectFrom"
           type="text"
           value={from}
           placeholder="URL path to redirect from"
           onChange={(evt) => setFrom(evt.target.value)}
           error={!!from.length && !from.startsWith("/")}
+          size="small"
+          variant="outlined"
+          color="primary"
+          fullWidth
         />
       </span>
       <span className={styles.RedirectCreatorCell}>
-        <ToggleButton
-          className={styles.code}
-          name="redirectType"
+        <ToggleButtonGroup
+          color="secondary"
           value={code}
-          offValue="302"
-          onValue="301"
-          onChange={(val) => setCode(Number(val))}
-        />
+          size="small"
+          exclusive
+          onChange={(evt, val) => handleToggle(val)}
+        >
+          <ToggleButton value={302}>302</ToggleButton>
+          <ToggleButton value={301}>301</ToggleButton>
+        </ToggleButtonGroup>
       </span>
       <span className={styles.RedirectCreatorCell}>
         <Select name={"selectType"} onSelect={setType} value={type}>
@@ -101,6 +112,14 @@ export function RedirectCreator(props) {
           />
         )}
       </span>
+
+      <span className={styles.RedirectCreatorCell}>
+        <RedirectsImport
+          onChange={(evt) => {
+            props.dispatch(CSVImporter(evt));
+          }}
+        />
+      </span>
       <span className={styles.RedirectCreatorCell}>
         <Button
           variant="contained"
@@ -111,13 +130,6 @@ export function RedirectCreator(props) {
         >
           Create Redirect
         </Button>
-      </span>
-      <span className={styles.RedirectCreatorCell}>
-        <RedirectsImport
-          onChange={(evt) => {
-            props.dispatch(CSVImporter(evt));
-          }}
-        />
       </span>
     </div>
   );

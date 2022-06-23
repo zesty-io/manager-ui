@@ -2,7 +2,11 @@
 @import "~@zesty-io/core/typography.less";
 
 .helpModules {
-  display: flex;
+  display: grid;
+  grid-auto-rows: 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
 }
 
 .helpMenu {
@@ -14,7 +18,7 @@
   z-index: 100;
   background-color: @appBkgColor;
   box-shadow: 1px 1px 19px #171b26;
-  border-radius: 0 4px 4px 0;
+  border-radius: 4px 4px 4px 0;
   color: @zesty-grey;
 
   //triangle pointing to question icon
@@ -36,20 +40,6 @@
 
   header {
     display: flex;
-  }
-}
-
-.helpModule {
-  flex: 1;
-  box-shadow: 0 1px 2px #171b26;
-
-  &.primary {
-    flex: 2;
-    margin-left: 0;
-  }
-
-  .helpBox {
-    text-align: left;
-    margin-left: 8px;
+    gap: 8px;
   }
 }

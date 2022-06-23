@@ -3,24 +3,25 @@ import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faLink,
-  faSave,
-  faTrash,
-  faBan,
-} from "@fortawesome/free-solid-svg-icons";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
 import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
+import Link from "@mui/material/Link";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { Button } from "@zesty-io/core/Button";
+
 import { Url } from "@zesty-io/core/Url";
-import { CopyButton } from "@zesty-io/core/CopyButton";
+import { CopyButton } from "@zesty-io/material";
 import { Input } from "@zesty-io/core/Input";
-import { Notice } from "@zesty-io/core/Notice";
 import { Option, Select } from "@zesty-io/core/Select";
 
 import { MediaImage } from "./MediaImage";
@@ -93,39 +94,41 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
           <figure
             className={cx(styles.Picture, shared.Checkered, shared.Cmodal)}
           >
-            <Url
+            <Link
+              underline="none"
+              color="secondary"
               target="_blank"
               title="Select to download original image in new page"
               href={`${genImageURL()}`}
             >
               <MediaImage src={`${genImageURL()}`} file={props.file} />
-            </Url>
+            </Link>
           </figure>
         </div>
         <div className={styles.Meta}>
-          <div className={styles.FieldsContainer}>
+          <div>
             <FieldTypeText
-              className={styles.Field}
               name="filename"
               value={filename}
               label={
-                <label>
+                <Box component="span" sx={{ display: "flex" }}>
                   <Tooltip title="URL Filename " arrow placement="top-start">
                     <InfoIcon fontSize="small" />
                   </Tooltip>
                   &nbsp;URL Filename
-                </label>
+                </Box>
               }
               placeholder={"Image Filename"}
               // Replaces all non-alphanumeric characters (excluding '.') with '-' to reflect the filename transformation done on the BE
-              onChange={(val) => setFilename(formatMediaFilename(val))}
+              onChange={(evt) =>
+                setFilename(formatMediaFilename(evt.target.value))
+              }
             />
             <FieldTypeText
-              className={styles.Field}
               name="title"
               value={title}
               label={
-                <label>
+                <Box component="span" sx={{ display: "flex" }}>
                   <Tooltip
                     title="Use for alt text with Parsley's .getImageTitle() | Image alt text is used to describe your image textually so that search engines and screen readers can understand what that image is. It’s important to note that using alt text correctly can enhance your SEO strategy"
                     arrow
@@ -134,9 +137,9 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
                     <InfoIcon fontSize="small" />
                   </Tooltip>
                   &nbsp;Alt Text
-                </label>
+                </Box>
               }
-              onChange={(val) => setTitle(val)}
+              onChange={(evt) => setTitle(evt.target.value)}
             />
           </div>
 
@@ -144,12 +147,14 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             {imageTypes.includes(props.file.filename.split(".").pop()) && (
               <>
                 <h3>
-                  <Url
+                  <Link
+                    underline="none"
+                    color="secondary"
                     target="_blank"
                     href="https://zesty.org/services/media-storage-micro-dam/on-the-fly-media-optimization-and-dynamic-image-manipulation"
                   >
                     On-The-Fly Image Editor
-                  </Url>
+                  </Link>
                 </h3>
                 <div className={styles.ImageControls}>
                   <div>
@@ -226,20 +231,17 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
               </>
             )}
             <CopyButton
-              className={styles.OTFLink}
-              kind="outlined"
               value={`${genImageURL()}`}
+              sx={{
+                justifyContent: "flex-start",
+              }}
             />
           </div>
 
           <ul className={styles.info}>
             <li>
               <span>ZUID:</span>
-              <CopyButton
-                kind="outlined"
-                size="compact"
-                value={props.file.id}
-              />
+              <CopyButton size="small" value={props.file.id} />
             </li>
             <li>
               <span>Created at:</span>
@@ -247,33 +249,49 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
             </li>
             <li>
               {" "}
-              <Url target="_blank" title="Original Image" href={props.file.url}>
+              <Link
+                underline="none"
+                color="secondary"
+                target="_blank"
+                title="Original Image"
+                href={props.file.url}
+              >
                 <FontAwesomeIcon icon={faLink} />
                 &nbsp;View Original File
-              </Url>
+              </Link>
             </li>
           </ul>
         </div>
       </ModalContent>
       <ModalFooter className={shared.ModalFooter}>
-        <Button type="cancel" onClick={props.onClose}>
-          <FontAwesomeIcon icon={faBan} />
-          <span>Cancel</span>
-        </Button>
+        {
+          /* Hide for Contributor */
+          userRole.name !== "Contributor" ? (
+            <Button
+              variant="contained"
+              color="error"
+              onClick={props.showDeleteFileModal}
+              startIcon={<DeleteIcon />}
+            >
+              Delete
+            </Button>
+          ) : null
+        }
 
         <ButtonGroup className={styles.ButtonGroup}>
-          {
-            /* Hide for Contributor */
-            userRole.name !== "Contributor" ? (
-              <Button type="warn" onClick={props.showDeleteFileModal}>
-                <FontAwesomeIcon icon={faTrash} />
-                <span>Delete</span>
-              </Button>
-            ) : null
-          }
-
-          <Button type="save" onClick={saveFile}>
-            <FontAwesomeIcon icon={faSave} />
+          <Button
+            variant="contained"
+            onClick={props.onClose}
+            startIcon={<DoDisturbAltIcon />}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={saveFile}
+            startIcon={<SaveIcon />}
+          >
             Save {metaShortcut}
           </Button>
         </ButtonGroup>

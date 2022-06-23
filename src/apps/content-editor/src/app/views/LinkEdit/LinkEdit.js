@@ -2,17 +2,25 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSave, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Button from "@mui/material/Button";
+import SaveIcon from "@mui/icons-material/Save";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
-import { Input } from "@zesty-io/core/Input";
-import { Button } from "@zesty-io/core/Button";
-import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
+
+import { ConfirmDialog } from "@zesty-io/material";
 
 import { closeTab } from "shell/store/ui";
 import { searchItems } from "shell/store/content";
@@ -215,15 +223,6 @@ export default function LinkEdit() {
     });
   }
 
-  function onDelete(yes) {
-    if (yes) {
-      deleteLink();
-    }
-
-    // always close yes or no
-    setShowConfirmation(false);
-  }
-
   function onChange(value, name) {
     setState({
       ...state,
@@ -234,12 +233,21 @@ export default function LinkEdit() {
   return (
     <section className={styles.Editor}>
       <WithLoader condition={!state.loading} message="Loading Link">
-        <Card className={styles.LinkEdit}>
-          <CardHeader className={styles.EditorHeader}>
-            {state.type === "internal" && <h2>Internal Link</h2>}
-            {state.type === "external" && <h2>External Link</h2>}
-          </CardHeader>
-          <CardContent className={styles.CardContent}>
+        <Card className={styles.LinkEdit} sx={{ m: 2, width: "800px" }}>
+          <CardHeader
+            title={
+              <>
+                {" "}
+                {state.type === "internal" && <h5>Internal Link</h5>}
+                {state.type === "external" && <h5>External Link</h5>}
+              </>
+            }
+            className={styles.EditorHeader}
+          ></CardHeader>
+          <CardContent
+            className={styles.CardContent}
+            sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}
+          >
             <FieldTypeInternalLink
               className={styles.Row}
               name="parentZUID"
@@ -272,11 +280,11 @@ export default function LinkEdit() {
             )}
 
             <FieldTypeText
-              className={styles.Row}
               label="Link title"
               name="metaTitle"
               value={state.metaTitle}
-              onChange={(value) => {
+              onChange={(evt) => {
+                const value = evt.target.value;
                 setState({
                   ...state,
                   label: value,
@@ -284,51 +292,78 @@ export default function LinkEdit() {
                 });
               }}
             />
-            <label className={styles.Checkboxes}>
-              <Input
-                type="checkbox"
-                name="targetBlank"
-                checked={state.targetBlank}
-                onClick={(evt) => {
-                  onChange(evt.target.checked, "targetBlank");
-                }}
+
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    color="secondary"
+                    checked={state.targetBlank}
+                    onChange={(evt, val) =>
+                      setState({ ...state, targetBlank: val })
+                    }
+                  />
+                }
+                label="target = _blank"
               />
-              target = _blank
-            </label>
-            <label className={styles.Checkboxes}>
-              <Input
-                type="checkbox"
-                name="rel"
-                checked={state.relNoFollow}
-                onClick={(evt) => {
-                  onChange(evt.target.checked, "relNoFollow");
-                }}
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    color="secondary"
+                    checked={state.relNoFollow}
+                    onChange={(evt, val) =>
+                      setState({ ...state, relNoFollow: val })
+                    }
+                  />
+                }
+                label="rel = nofollow"
               />
-              rel = nofollow
-            </label>
+            </FormGroup>
           </CardContent>
-          <CardFooter className={styles.LinkEditActions}>
-            <Button type="save" disabled={state.saving} onClick={saveLink}>
-              <FontAwesomeIcon icon={faSave} />
-              Save Changes
-            </Button>
+          <CardActions sx={{ justifyContent: "flex-end" }}>
             <Button
-              type="warn"
+              variant="outlined"
+              color="error"
               disabled={state.saving}
               onClick={() => setShowConfirmation(true)}
+              startIcon={<DeleteIcon />}
             >
-              <FontAwesomeIcon icon={faTrashAlt} />
               Delete
             </Button>
-          </CardFooter>
+            <Button
+              variant="contained"
+              color="success"
+              disabled={state.saving}
+              onClick={saveLink}
+              startIcon={<SaveIcon />}
+            >
+              Save Changes
+            </Button>
+          </CardActions>
         </Card>
       </WithLoader>
+
       {showConfirmation && (
         <ConfirmDialog
-          isOpen={showConfirmation}
-          prompt="Are you sure you want to delete this link?"
-          callback={onDelete}
-        />
+          open={showConfirmation}
+          title="Are you sure you want to delete this link?"
+        >
+          <Button
+            variant="outlined"
+            onClick={() => setShowConfirmation(false)}
+            startIcon={<DoDisturbAltIcon />}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => deleteLink()}
+            startIcon={<DeleteIcon />}
+          >
+            Delete
+          </Button>
+        </ConfirmDialog>
       )}
     </section>
   );

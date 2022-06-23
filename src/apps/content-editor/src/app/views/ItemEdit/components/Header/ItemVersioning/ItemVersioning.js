@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useMetaKey } from "shell/hooks/useMetaKey";
+import { actions } from "shell/store/ui";
+import cx from "classnames";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSave,
-  faSpinner,
-  faCalendar,
-  faCheckCircle,
-  faCloudUploadAlt,
-} from "@fortawesome/free-solid-svg-icons";
-import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { Button } from "@zesty-io/core/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import CircularProgress from "@mui/material/CircularProgress";
+import SaveIcon from "@mui/icons-material/Save";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import BackupIcon from "@mui/icons-material/Backup";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import { ScheduleFlyout } from "./ScheduleFlyout";
 import { VersionSelector } from "./VersionSelector";
@@ -22,6 +24,10 @@ import { useDomain } from "shell/hooks/use-domain";
 
 import styles from "./ItemVersioning.less";
 export function ItemVersioning(props) {
+  const dispatch = useDispatch();
+
+  const collapseNavs = useMediaQuery("(max-width:1400px)");
+
   const canPublish = usePermission("PUBLISH");
   const domain = useDomain();
 
@@ -30,6 +36,16 @@ export function ItemVersioning(props) {
   const [cached, setCached] = useState(false);
 
   const metaShortcut = useMetaKey("s", props.onSave);
+
+  useEffect(() => {
+    if (collapseNavs) {
+      dispatch(actions.setGlobalNav(false));
+      dispatch(actions.setContentNav(false));
+    } else {
+      dispatch(actions.setGlobalNav(true));
+      dispatch(actions.setContentNav(true));
+    }
+  }, [collapseNavs, actions, dispatch]);
 
   const checkCache = () => {
     if (props?.props?.item?.web?.path) {
@@ -110,72 +126,75 @@ export function ItemVersioning(props) {
   useEffect(() => checkCache(), []);
 
   return (
-    <ButtonGroup className={styles.Actions}>
+    <Stack direction="row" spacing={1} className={styles.Actions}>
       <VersionSelector modelZUID={props.modelZUID} itemZUID={props.itemZUID} />
 
       {canPublish && (
-        <ButtonGroup className={styles.Publish}>
-          <Button
-            title="Publish"
-            className={styles.PublishButton}
-            id="PublishButton"
-            kind="secondary"
-            disabled={publishingDisabled || false}
-            onClick={handlePublish}
-          >
-            {publishing ? (
-              <FontAwesomeIcon icon={faSpinner} spin />
-            ) : cached ? (
-              <FontAwesomeIcon icon={faCheckCircle} title="CDN in sync" />
-            ) : (
-              <FontAwesomeIcon
-                icon={faCloudUploadAlt}
-                title="CDN out of sync"
-              />
-            )}
-            <span className={styles.Hide}>Publish</span>
-            <span className={styles.Hide}>&nbsp;Version&nbsp;</span>
-            <span className={styles.Hide}>&nbsp;{props.item.meta.version}</span>
-          </Button>
-          <Button
-            title="Publish Schedule"
-            id="PublishScheduleButton"
-            className={`${styles.ClockButton} ${
-              props.item.scheduling && props.item.scheduling.isScheduled
-                ? styles.Scheduled
-                : ""
-            }
-              `}
-            kind={open ? "tertiary" : "secondary"}
-            disabled={schedulingDisabled || false}
-            onClick={toggleScheduleModal}
-          >
-            <FontAwesomeIcon icon={faCalendar} />
-          </Button>
+        <Stack direction="row" spacing={1} className={styles.Publish}>
+          <ButtonGroup variant="contained">
+            <Button
+              variant="contained"
+              color="secondary"
+              title="Publish"
+              id="PublishButton"
+              disabled={publishingDisabled || false}
+              onClick={handlePublish}
+            >
+              {publishing ? (
+                <CircularProgress size="20px" />
+              ) : cached ? (
+                <CheckCircleIcon fontSize="small" title="CDN in sync" />
+              ) : (
+                <BackupIcon fontSize="small" title="CDN out of sync" />
+              )}
+
+              <span className={cx(styles.Hide, styles.PublishText)}>
+                Publish Version &nbsp;{props.item.meta.version}
+              </span>
+            </Button>
+            <Button
+              variant="contained"
+              color={open ? "primary" : "secondary"}
+              title="Publish Schedule"
+              id="PublishScheduleButton"
+              disabled={schedulingDisabled || false}
+              onClick={toggleScheduleModal}
+              sx={{
+                ...(props.item.scheduling &&
+                  props.item.scheduling.isScheduled && {
+                    backgroundColor: "warning.main",
+                  }),
+              }}
+            >
+              <CalendarMonthIcon fontSize="small" />
+            </Button>
+          </ButtonGroup>
           <ScheduleFlyout
             isOpen={open}
             item={props.item}
             dispatch={props.dispatch}
             toggleOpen={toggleScheduleModal}
           />
-        </ButtonGroup>
+        </Stack>
       )}
 
       <Button
+        variant="contained"
+        color="success"
         title="Save Version"
-        className={styles.Save}
-        type="save"
         disabled={props.saving || !props.item.dirty}
         onClick={props.onSave}
         id="SaveItemButton"
       >
         {props.saving ? (
-          <FontAwesomeIcon icon={faSpinner} spin />
+          <CircularProgress size="20px" />
         ) : (
-          <FontAwesomeIcon icon={faSave} />
+          <SaveIcon fontSize="small" />
         )}
-        <span className={styles.Test}>&nbsp;Save Version {metaShortcut}</span>
+        <span className={styles.SaveVersion}>
+          &nbsp;Save Version {metaShortcut}
+        </span>
       </Button>
-    </ButtonGroup>
+    </Stack>
   );
 }

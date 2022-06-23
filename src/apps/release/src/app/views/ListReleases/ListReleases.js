@@ -1,13 +1,12 @@
 import { useSelector } from "react-redux";
-import cx from "classnames";
+
+import Button from "@mui/material/Button";
+
+import AddIcon from "@mui/icons-material/Add";
 
 import { AppLink } from "@zesty-io/core/AppLink";
-import { Button } from "@zesty-io/core/Button";
 
 import { Release } from "./Release";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./ListReleases.less";
 export function ListReleases() {
@@ -17,8 +16,13 @@ export function ListReleases() {
     <>
       <section className={styles.ReleaseHeader}>
         <AppLink className={styles.Create} to={`/release/create`}>
-          <Button data-cy="release-createBtn" size="large">
-            <FontAwesomeIcon icon={faPlus} /> Create Release
+          <Button
+            variant="contained"
+            data-cy="release-createBtn"
+            size="large"
+            startIcon={<AddIcon />}
+          >
+            Create Release
           </Button>
         </AppLink>
       </section>

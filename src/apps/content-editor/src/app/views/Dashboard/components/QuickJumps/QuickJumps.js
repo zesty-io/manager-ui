@@ -1,10 +1,10 @@
-import cx from "classnames";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import Link from "@mui/material/Link";
 
-import { Card, CardContent } from "@zesty-io/core/Card";
-import { Url } from "@zesty-io/core/Url";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./QuickJumps.less";
@@ -12,8 +12,14 @@ import styles from "./QuickJumps.less";
 export function QuickJumps(props) {
   return (
     <div className={styles.QuickJumps}>
-      <Card className={styles.Card}>
-        <CardContent className={styles.CardContent}>
+      <Card sx={{ m: 2, flex: "1" }}>
+        <CardContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
           <AppLink
             to={`/${props.quickJump}`}
             title={props.quickJump}
@@ -23,15 +29,17 @@ export function QuickJumps(props) {
             {props.cardTitle}
           </AppLink>
 
-          <Url
+          <Link
+            underline="none"
+            color="primary"
             href={props.docsLink}
             target="_blank"
             title={props.docsLink}
-            className={cx(styles.bodyText, styles.Docs)}
+            sx={{ mt: 1.5 }}
           >
             <FontAwesomeIcon icon={faExternalLinkAlt} />
             &nbsp;Documentation
-          </Url>
+          </Link>
         </CardContent>
       </Card>
     </div>

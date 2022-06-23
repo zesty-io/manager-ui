@@ -7,7 +7,8 @@ import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBook, faHashtag } from "@fortawesome/free-solid-svg-icons";
 
-import { Url } from "@zesty-io/core/Url";
+import Link from "@mui/material/Link";
+import Box from "@mui/material/Box";
 
 import GlobalHelpMenu from "shell/components/GlobalHelpMenu";
 
@@ -29,28 +30,52 @@ export default memo(function GlobalActions(props) {
           className={styles.GlobalAction}
           title="Help"
         >
-          <FontAwesomeIcon icon={faBook} className={styles.GlobalActionIcon} />
+          <FontAwesomeIcon icon={faBook} />
           {openMenu && <GlobalHelpMenu />}
           {openNav && <span>Docs</span>}
         </span>
 
-        <Url
+        <Link
+          underline="none"
+          color="primary.light"
           href={`https://zesty.io`}
           title="Zesty.io"
           target="_blank"
-          className={styles.GlobalAction}
+          sx={{
+            width: "100%",
+            textAlign: "center",
+            position: "relative",
+            textShadow: "none",
+            alignItems: "center",
+            p: openNav ? 0 : 1,
+            "&:hover": { color: "warning.main" },
+            "&:focus": { color: "warning.main" },
+            "&:active": { color: "warning.main" },
+          }}
         >
           <img
             src="https://brand.zesty.io/zesty-io-logo.svg"
             alt="Zesty.io"
             width="16px"
             height="16px"
+            style={{ verticalAlign: "middle" }}
           />
-          {openNav && <span className={styles.GlobalAction}>Zesty.io</span>}
-        </Url>
+          {openNav && (
+            <Box
+              component="span"
+              sx={{
+                verticalAlign: "middle",
+                p: 1,
+              }}
+            >
+              Zesty.io
+            </Box>
+          )}
+        </Link>
 
         <div className={styles.AppVersion}>
-          <Url
+          <Link
+            underline="none"
             href={`https://github.com/zesty-io/manager-ui/commit/${CONFIG?.build?.data?.gitCommit}`}
             title="View source code commit"
             target="_blank"
@@ -59,7 +84,7 @@ export default memo(function GlobalActions(props) {
             <span className={styles.VersionNumber}>
               {CONFIG?.build?.data?.gitCommit}
             </span>
-          </Url>
+          </Link>
         </div>
       </div>
     </div>

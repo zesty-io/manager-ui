@@ -1,22 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import cx from "classnames";
 
+import Button from "@mui/material/Button";
+import SyncIcon from "@mui/icons-material/Sync";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import MobileScreenShareIcon from "@mui/icons-material/MobileScreenShare";
+
+import { CopyButton } from "@zesty-io/material";
+
 import { Select, Option } from "@zesty-io/core/Select";
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import { Button } from "@zesty-io/core/Button";
-import { Input } from "@zesty-io/core/Input";
-import { Url } from "@zesty-io/core/Url";
-import { CopyButton } from "@zesty-io/core/CopyButton";
+
 import { Notice } from "@zesty-io/core/Notice";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faExternalLinkAlt,
-  faSync,
-  faEllipsisV,
-  faMobileAlt,
-  faEye,
-} from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt, faEye } from "@fortawesome/free-solid-svg-icons";
+import Link from "@mui/material/Link";
+import TextField from "@mui/material/TextField";
 
 import { Meta } from "./components/Meta";
 import { JSONPreview } from "./components/JSONPreview";
@@ -117,57 +117,73 @@ export function Preview(props) {
             />
             &nbsp;
             <figcaption>
-              <Url
-                className={styles.Link}
+              <Link
+                underline="none"
+                color="secondary"
                 href={`${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}/active-preview`}
                 target="_blank"
                 title="Open live link in standard browser window"
               >
                 ActivePreview
-              </Url>
+              </Link>
             </figcaption>
           </figure>
           <div className={styles.ActionInfo}>
             <div className={styles.Links}>
               {instance.domain && (
-                <Url
-                  className={styles.Link}
+                <Link
+                  underline="none"
+                  color="secondary"
                   href={`//${instance.domain}${route}`}
                   target="_blank"
                   title="Open live link in standard browser window"
                 >
                   <FontAwesomeIcon icon={faExternalLinkAlt} />
                   &nbsp;Live
-                </Url>
+                </Link>
               )}
-              <Url
-                className={styles.Link}
+              <Link
+                underline="none"
+                color="secondary"
                 href={`${domain}${route}`}
                 target="_blank"
                 title="Open preview link in standard browser window"
               >
                 <FontAwesomeIcon icon={faEye} />
                 &nbsp;Preview
-              </Url>
+              </Link>
             </div>
 
             <div className={styles.Url}>
               <CopyButton
-                className={styles.PreviewCopy}
+                variant="contained"
                 value={`${domain}${route}`}
+                sx={{
+                  mr: 1,
+                }}
               >
-                &nbsp;
+                URL
               </CopyButton>
               <Button
+                variant="contained"
                 onClick={() => setRefresh(Date.now())}
                 title="Reload current url in ActivePreview"
               >
-                <FontAwesomeIcon icon={faSync} />
+                <SyncIcon fontSize="small" />
               </Button>
-              <Input
+              <TextField
                 ref={input}
-                className={styles.Route}
                 value={`${domain}${route}`}
+                size="small"
+                variant="outlined"
+                color="primary"
+                sx={{
+                  "@media (max-width: 650px)": {
+                    display: "none",
+                  },
+                }}
+                InputProps={{ sx: { flex: 1 } }}
+                fullWidth
               />
             </div>
 
@@ -194,10 +210,14 @@ export function Preview(props) {
                     />
                   ))}
               </Select>
-              <Button onClick={() => setRotate(!rotate)} title="Rotate device">
-                <FontAwesomeIcon
-                  icon={faMobileAlt}
-                  style={{
+              <Button
+                variant="contained"
+                onClick={() => setRotate(!rotate)}
+                title="Rotate device"
+              >
+                <MobileScreenShareIcon
+                  fontSize="small"
+                  sx={{
                     transform: `rotate(${rotate ? "-90deg" : "0deg"})`,
                   }}
                 />
@@ -206,10 +226,11 @@ export function Preview(props) {
 
             <div className={styles.Menu}>
               <Button
+                variant="contained"
                 onClick={() => setOpen(!open)}
                 title="Additional menu options"
               >
-                <FontAwesomeIcon icon={faEllipsisV} />
+                <MoreVertIcon fontSize="small" />
               </Button>
               <Meta open={open} route={route} instanceZUID={ZUID} />
             </div>

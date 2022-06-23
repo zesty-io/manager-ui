@@ -2,20 +2,20 @@ import { memo, useState, Fragment } from "react";
 import cx from "classnames";
 import { useHistory } from "react-router-dom";
 
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+import CircularProgress from "@mui/material/CircularProgress";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBan,
-  faSpinner,
-  faTrash,
-  faTrashAlt,
-} from "@fortawesome/free-solid-svg-icons";
-import { Button } from "@zesty-io/core/Button";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+
 import {
   CollapsibleCard,
   CardContent,
   CardFooter,
 } from "@zesty-io/core/CollapsibleCard";
-import { ConfirmDialog } from "@zesty-io/core/ConfirmDialog";
+import { ConfirmDialog } from "@zesty-io/material";
 
 import { deleteItem } from "shell/store/content";
 import { closeTab } from "shell/store/ui";
@@ -45,28 +45,39 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
         </CardContent>
         <CardFooter>
           <Button
+            variant="contained"
+            color="error"
             type="warn"
             id="DeleteItemButton"
             onClick={() => setConfirmOpen(true)}
             disabled={deleting}
+            startIcon={
+              deleting ? <CircularProgress size="20px" /> : <DeleteIcon />
+            }
           >
-            {deleting ? (
-              <FontAwesomeIcon icon={faSpinner} spin />
-            ) : (
-              <FontAwesomeIcon icon={faTrashAlt} />
-            )}
             Delete
           </Button>
         </CardFooter>
       </CollapsibleCard>
+
       <ConfirmDialog
-        isOpen={confirmOpen}
-        prompt={`Are you sure you want to delete the item:
+        open={confirmOpen}
+        title={`Are you sure you want to delete the item:
           ${props.metaTitle}`}
       >
         <Button
+          variant="outlined"
+          id="deleteCancelButton"
+          onClick={() => setConfirmOpen(false)}
+          startIcon={<DoDisturbAltIcon />}
+        >
+          Cancel
+        </Button>
+
+        <Button
+          variant="contained"
+          color="error"
           id="deleteConfirmButton"
-          type="warn"
           onClick={() => {
             setConfirmOpen(false);
             setDeleting(true);
@@ -82,17 +93,9 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
                 }
               });
           }}
+          startIcon={<DeleteIcon />}
         >
-          <FontAwesomeIcon icon={faTrash} />
           Delete
-        </Button>
-        <Button
-          id="deleteCancelButton"
-          type="cancel"
-          onClick={() => setConfirmOpen(false)}
-        >
-          <FontAwesomeIcon icon={faBan} />
-          Cancel
         </Button>
       </ConfirmDialog>
     </Fragment>

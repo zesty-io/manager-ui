@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import SaveIcon from "@mui/icons-material/Save";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
@@ -296,8 +296,10 @@ export default connect((state) => {
             label={field.name}
             name={field.referenceName}
             value={fieldValues[field.referenceName]}
-            onChange={setValue}
-            description={field.tips}
+            onChange={(evt) => {
+              setValue(evt.target.value, field.referenceName);
+            }}
+            helperText={field.tips}
             maxLength={640}
           />
         );
@@ -318,7 +320,7 @@ export default connect((state) => {
         id="SaveSettings"
         onClick={saveSettings}
         disabled={saving || dirtyFields.length === 0}
-        startIcon={saving ? <CircularProgress size="1rem" /> : <SaveIcon />}
+        startIcon={saving ? <CircularProgress size="20px" /> : <SaveIcon />}
       >
         Save Settings
       </Button>

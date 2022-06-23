@@ -1,10 +1,15 @@
 import { memo, useCallback, useState } from "react";
 import cx from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCog } from "@fortawesome/free-solid-svg-icons";
-import Observer from "@researchgate/react-intersection-observer";
 
-import { Card, CardContent, CardFooter } from "@zesty-io/core/Card";
+import Button from "@mui/material/Button";
+
+import EditIcon from "@mui/icons-material/Edit";
+import Observer from "@researchgate/react-intersection-observer";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
 
 import { MediaImage } from "./MediaImage";
 import styles from "./MediaWorkspaceItem.less";
@@ -45,13 +50,33 @@ export const MediaWorkspaceItem = memo(function MediaWorkspaceItem(props) {
   return (
     <div style={{ width: "100%" }}>
       <Card
-        className={cx({
-          [styles.Card]: true,
-          [styles.selected]: props.selected,
-        })}
+        className={styles.Card}
         onClick={toggleSelected}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end",
+          ...(props.selected && {
+            boxShadow: "0px 0px 6px #c3cddf",
+          }),
+        }}
       >
-        <CardContent className={styles.CardContent}>
+        <CardContent
+          sx={{
+            position: "relative",
+            "&:hover": {
+              "& .CheckIcon": {
+                opacity: "1",
+              },
+            },
+
+            ...(props.selected && {
+              background: "secondary.main",
+              opacity: "1",
+              color: "theme.common.white",
+            }),
+          }}
+        >
           <figure className={cx(shared.Checkered, shared.Cgrid)}>
             <Observer onChange={handleIntersection}>
               <MediaImage
@@ -65,12 +90,30 @@ export const MediaWorkspaceItem = memo(function MediaWorkspaceItem(props) {
             ) : null}
           </figure>
           {props.modal ? (
-            <button className={styles.Check} aria-label="Checked">
-              <FontAwesomeIcon icon={faCheck} />
-            </button>
+            <CheckBoxIcon
+              className="CheckIcon"
+              sx={{
+                position: "absolute",
+                top: "0",
+                left: "0",
+                cursor: "pointer",
+                color: "primary.light",
+                margin: "1px",
+                opacity: "0",
+                minWidth: "auto",
+
+                ...(props.selected && {
+                  color: "secondary.main",
+                  opacity: "1",
+                }),
+              }}
+            />
           ) : null}
         </CardContent>
-        <CardFooter className={styles.CardFooter}>
+        <CardActions
+          className={styles.CardFooter}
+          sx={{ position: "relative" }}
+        >
           {props.file.loading && props.file.progress != null && (
             <div
               className={styles.ProgressBar}
@@ -79,13 +122,19 @@ export const MediaWorkspaceItem = memo(function MediaWorkspaceItem(props) {
               }}
             ></div>
           )}
-          <button className={styles.FooterButton} onClick={showFileDetails}>
-            <FontAwesomeIcon className={styles.Cog} icon={faCog} />
-            <h1 className={cx(styles.Preview, styles.caption)}>
-              {props.file.filename}
-            </h1>
-          </button>
-        </CardFooter>
+          <Button
+            variant="outline"
+            onClick={showFileDetails}
+            startIcon={<EditIcon />}
+            fullWidth
+            sx={{
+              borderRadius: "0",
+              cursor: "pointer",
+            }}
+          >
+            <span className={cx(styles.Preview)}>{props.file.filename}</span>
+          </Button>
+        </CardActions>
       </Card>
     </div>
   );

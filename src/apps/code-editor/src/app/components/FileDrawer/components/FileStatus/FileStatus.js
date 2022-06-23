@@ -3,15 +3,19 @@ import moment from "moment";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBolt, faCodeBranch } from "@fortawesome/free-solid-svg-icons";
+import { faBolt } from "@fortawesome/free-solid-svg-icons";
+import Link from "@mui/material/Link";
 
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
-import { Url } from "@zesty-io/core/Url";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+
+import InfoIcon from "@mui/icons-material/Info";
+
 import { AppLink } from "@zesty-io/core/AppLink";
-import { CopyButton } from "@zesty-io/core/CopyButton";
+import { CopyButton } from "@zesty-io/material";
 
 import styles from "./FileStatus.less";
-import shared from "../../FileDrawer.less";
 
 const FileType = (props) => {
   if (
@@ -41,12 +45,21 @@ export default function FileStatus(props) {
   const instance = useSelector((state) => state.instance);
 
   return (
-    <Card className={cx(styles.FileStatus, shared.DrawerStyles)}>
-      <CardHeader>
-        <h1>
-          <FontAwesomeIcon icon={faCodeBranch} /> File Information
-        </h1>
-      </CardHeader>
+    <Card
+      className={cx(styles.FileStatus)}
+      sx={{
+        m: 2,
+        backgroundColor: "#292828", // overwrite material theme cardheader color for dark cards
+        color: "#b1b1b3 ",
+        width: "400px",
+      }}
+    >
+      <CardHeader
+        avatar={<InfoIcon fontSize="small" />}
+        title="File Information"
+        sx={{ backgroundColor: "#272728" }}
+      ></CardHeader>
+
       <CardContent>
         <ul>
           {props.file.contentModelZUID && (
@@ -66,73 +79,84 @@ export default function FileStatus(props) {
             WebEngine Link:&nbsp;
             {!props.file.fileName.includes("/") &&
               props.file.type.includes("ajax-html") && (
-                <Url
-                  className={styles.FileLink}
+                <Link
+                  underline="none"
+                  color="secondary"
                   href={`${CONFIG.URL_PREVIEW_FULL}/-/ajax/${props.file.fileName}/`}
                   target="_blank"
                   title={`Preview ${props.file.fileName} Webpage`}
                 >
                   <em>/-/ajax/{props.file.fileName}/</em>
-                </Url>
+                </Link>
               )}
             {!props.file.fileName.includes("/") &&
               props.file.type.includes("ajax-json") && (
-                <Url
-                  className={styles.FileLink}
+                <Link
+                  underline="none"
+                  color="secondary"
                   href={`${CONFIG.URL_PREVIEW_FULL}/-/custom/${props.file.fileName}/`}
                   target="_blank"
                   title={`Preview ${props.file.fileName} Webpage`}
                 >
                   <em>/-/custom/{props.file.fileName}/</em>
-                </Url>
+                </Link>
               )}
             {props.file.ZUID.includes("10-") &&
               props.file.type.includes("javascript") && (
-                <Url
-                  className={styles.FileLink}
+                <Link
+                  underline="none"
+                  color="secondary"
                   href={`${CONFIG.URL_PREVIEW_FULL}/site.js`}
                   target="_blank"
                   title="Preview Javascript Webpage"
                 >
                   <em>Compiles to /site.js</em>
-                </Url>
+                </Link>
               )}
             {props.file.ZUID.includes("10-") &&
               !props.file.type.includes("javascript") && (
-                <Url
-                  className={styles.FileLink}
+                <Link
+                  underline="none"
+                  color="secondary"
                   href={`${CONFIG.URL_PREVIEW_FULL}/site.css`}
                   target="_blank"
                   title="Preview CSS Webpage"
                 >
                   <em>Compiles to /site.css</em>
-                </Url>
+                </Link>
               )}
             {props.file.contentModelZUID && props.items.length !== 0 && (
-              <Url
-                className={styles.FileLink}
+              <Link
+                underline="none"
+                color="secondary"
                 href={`${CONFIG.URL_PREVIEW_FULL}${props.items[0].web.path}`}
                 target="_blank"
                 title={`Preview ${props.items[0].web.path} Webpage `}
               >
                 <em>{props.items[0].web.path}</em>
-              </Url>
+              </Link>
             )}
-            {!props.file.contentModelZUID &&
-              props.file.fileName.includes("/") && (
-                <Url
-                  className={styles.FileLink}
-                  href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}/${props.file.fileName}`}
-                  target="_blank"
-                  title={`"WebEngine ${props.file.fileName} Link"`}
-                >{`${props.file.fileName}`}</Url>
-              )}
+            {!props.file.contentModelZUID && props.file.fileName.includes("/") && (
+              <Link
+                underline="none"
+                color="secondary"
+                href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}/${props.file.fileName}`}
+                target="_blank"
+                title={`"WebEngine ${props.file.fileName} Link"`}
+              >
+                {`${props.file.fileName}`}
+              </Link>
+            )}
           </li>
 
           <li>
             File ZUID:&nbsp;
             <em>
-              <CopyButton size="compact" value={props.file.ZUID} />
+              <CopyButton
+                variant="contained"
+                size="small"
+                value={props.file.ZUID}
+              />
             </em>
           </li>
           <li>
@@ -156,14 +180,15 @@ export default function FileStatus(props) {
 
           {props.file.contentModelZUID && (
             <li>
-              <Url
-                className={styles.FileLink}
+              <Link
+                underline="none"
+                color="secondary"
                 href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.file.contentModelZUID}.json`}
                 target="_blank"
                 title={`Preview ${props.file.contentModelZUID} JSON`}
               >
                 <FontAwesomeIcon icon={faBolt} /> Instant JSON API
-              </Url>
+              </Link>
             </li>
           )}
         </ul>

@@ -4,16 +4,22 @@ import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
 
+import Stack from "@mui/material/Stack";
+import Tooltip from "@mui/material/Tooltip";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import FormLabel from "@mui/material/FormLabel";
 import Button from "@mui/material/Button";
 import SaveIcon from "@mui/icons-material/Save";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
 import CircularProgress from "@mui/material/CircularProgress";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldLabel } from "@zesty-io/core/FieldLabel";
-import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { Select, Option } from "@zesty-io/core/Select";
-import { Divider } from "@zesty-io/core/Divider";
+
+import Divider from "@mui/material/Divider";
 
 import { Docs } from "@zesty-io/core/Docs";
 import { notify } from "shell/store/notifications";
@@ -56,6 +62,7 @@ export default connect((state) => {
   }, [props.instance.length, props.match]);
 
   function setValue(value, name) {
+    if (value === null) return;
     setFieldValues({ ...fieldValues, [name]: value });
 
     if (dirtyFields.includes(name)) return;
@@ -135,7 +142,7 @@ export default connect((state) => {
               onClick={saveFields}
               disabled={saving || dirtyFields.length === 0}
               startIcon={
-                saving ? <CircularProgress size="1rem" /> : <SaveIcon />
+                saving ? <CircularProgress size="20px" /> : <SaveIcon />
               }
               sx={{ alignSelf: "flex-end" }}
             >
@@ -144,11 +151,23 @@ export default connect((state) => {
           </div>
         </div>
       </div>
-      <Divider />
+      <Divider
+        sx={{
+          my: 1,
+          mx: 2,
+        }}
+      />
       <div className={styles.row}>
         {fields.map((field) => {
           {
-            i % 2 == 0 && <Divider />;
+            i % 2 == 0 && (
+              <Divider
+                sx={{
+                  my: 1,
+                  mx: 2,
+                }}
+              />
+            );
           }
           i++;
           switch (field.dataType) {
@@ -182,31 +201,63 @@ export default connect((state) => {
               } else if (field.key === "preferred_domain_prefix") {
                 return (
                   <div key={field.ZUID} className={styles.column}>
-                    <FieldTypeBinary
-                      key={field.ZUID}
-                      name={field.key}
+                    <FormLabel>
+                      <Stack
+                        spacing={1}
+                        direction="row"
+                        alignItems="center"
+                        sx={{
+                          my: 1,
+                        }}
+                      >
+                        <Tooltip
+                          title={`Activating the WWW setting requires DNS setup of both the apex domain and www sub-domain.`}
+                        >
+                          <InfoIcon fontSize="small" />
+                        </Tooltip>
+                        <p>{field.keyFriendly}</p>
+                      </Stack>
+                    </FormLabel>
+                    <ToggleButtonGroup
+                      color="secondary"
+                      size="small"
                       value={fieldValues[field.key]}
-                      label={field.keyFriendly}
-                      tooltip={`Activating the WWW setting requires DNS setup of both the apex domain and www sub-domain. ${field.tips}`}
-                      onValue="On"
-                      offValue="Off"
-                      onChange={setValue}
-                    />
+                      exclusive
+                      onChange={(evt, val) => setValue(val, field.key)}
+                    >
+                      <ToggleButton value={"0"}>Off </ToggleButton>
+                      <ToggleButton value={"1"}>On </ToggleButton>
+                    </ToggleButtonGroup>
                   </div>
                 );
               } else {
                 return (
                   <div key={field.ZUID} className={styles.column}>
-                    <FieldTypeBinary
-                      key={field.ZUID}
-                      name={field.key}
+                    <FormLabel>
+                      <Stack
+                        spacing={1}
+                        direction="row"
+                        alignItems="center"
+                        sx={{
+                          my: 1,
+                        }}
+                      >
+                        <Tooltip title={field.tips}>
+                          <InfoIcon fontSize="small" />
+                        </Tooltip>
+                        <p>{field.keyFriendly}</p>
+                      </Stack>
+                    </FormLabel>
+                    <ToggleButtonGroup
+                      color="secondary"
+                      size="small"
                       value={fieldValues[field.key]}
-                      label={field.keyFriendly}
-                      tooltip={field.tips}
-                      onValue="On"
-                      offValue="Off"
-                      onChange={setValue}
-                    />
+                      exclusive
+                      onChange={(evt, val) => setValue(val, field.key)}
+                    >
+                      <ToggleButton value={"0"}>Off</ToggleButton>
+                      <ToggleButton value={"1"}>On </ToggleButton>
+                    </ToggleButtonGroup>
                   </div>
                 );
               }
@@ -261,8 +312,10 @@ export default connect((state) => {
                     label={field.keyFriendly}
                     name={field.key}
                     value={fieldValues[field.key]}
-                    onChange={setValue}
-                    description={field.tips}
+                    onChange={(evt) =>
+                      setValue(evt.target.value, evt.target.name)
+                    }
+                    helperText={field.tips}
                     maxLength={640}
                   />
                 </div>

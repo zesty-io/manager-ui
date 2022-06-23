@@ -2,11 +2,16 @@ import { useState, useEffect, useCallback } from "react";
 import { connect } from "react-redux";
 import debounce from "lodash/debounce";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import AddIcon from "@mui/icons-material/Add";
+import Paper from "@mui/material/Paper";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { Button } from "@zesty-io/core/Button";
+import { FieldTypeText } from "@zesty-io/material";
+
 import { Search } from "@zesty-io/core/Search";
 import { Notice } from "@zesty-io/core/Notice";
 import { notify } from "shell/store/notifications";
@@ -178,23 +183,26 @@ export default connect((state) => {
     }
   }
 
-  function selectFontVariant(font, e) {
+  function selectFontVariant(evt, val, font) {
     let newVariants;
-    if (e.target.checked) {
+    if (val) {
       if (Object.keys(variantsSelected).includes(font)) {
         newVariants = {
           ...variantsSelected,
-          [font]: [...variantsSelected[font], variantValidation(e.target.name)],
+          [font]: [
+            ...variantsSelected[font],
+            variantValidation(evt.target.name),
+          ],
         };
       } else {
         newVariants = {
           ...variantsSelected,
-          [font]: [variantValidation(e.target.name)],
+          [font]: [variantValidation(evt.target.name)],
         };
       }
     } else {
       const fontVariants = variantsSelected[font].filter(
-        (variant) => variant !== variantValidation(e.target.name)
+        (variant) => variant !== variantValidation(evt.target.name)
       );
 
       newVariants = {
@@ -220,30 +228,38 @@ export default connect((state) => {
                 <ul className={styles.FontVariants}>
                   {itemFont.variants.map((item, index) => (
                     <li key={`${itemFont.family}-${item}`}>
-                      <input
-                        type="checkbox"
-                        onChange={(e) => selectFontVariant(itemFont.family, e)}
-                        name={item}
-                        id={`${item}-${itemFont.family}-${index}`}
-                      />{" "}
-                      {item}
+                      <FormGroup>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              color="secondary"
+                              size="small"
+                              name={item}
+                              id={`${item}-${itemFont.family}-${index}`}
+                              onChange={(evt, val) =>
+                                selectFontVariant(evt, val, itemFont.family)
+                              }
+                            />
+                          }
+                          label={item}
+                        />
+                      </FormGroup>
                     </li>
                   ))}
                 </ul>
               </div>
               <div>
                 <Button
-                  type="save"
+                  variant="contained"
+                  color="success"
                   id="InstallFont"
                   className={styles.SaveBtn}
                   onClick={() => onUpdateFont(itemFont.family)}
                   disabled={saving || !variantsSelected[itemFont.family]}
+                  startIcon={
+                    saving ? <CircularProgress size="20px" /> : <AddIcon />
+                  }
                 >
-                  {saving ? (
-                    <FontAwesomeIcon spin icon={faSpinner} />
-                  ) : (
-                    <FontAwesomeIcon icon={faPlus} />
-                  )}{" "}
                   Add
                 </Button>
               </div>
@@ -344,16 +360,16 @@ export default connect((state) => {
         />
         <FieldTypeText
           placeholder="Type something to preview"
-          className={styles.previewField}
           name="previewText"
           value={previewText}
-          onChange={(value) => setPreviewText(value)}
+          onChange={(evt) => setPreviewText(evt.target.value)}
         />
       </header>
       {renderFontsList()}
       <div className={styles.Pagination}>
         <Button
-          kind="secondary"
+          variant="contained"
+          color="secondary"
           onClick={() => changePage("prev")}
           disabled={!validateActionPage("prev")}
         >
@@ -363,7 +379,8 @@ export default connect((state) => {
           {`${pagination.current} / ${pagination.total}`}
         </div>
         <Button
-          kind="secondary"
+          variant="contained"
+          color="secondary"
           onClick={() => changePage("next")}
           disabled={!validateActionPage("next")}
         >

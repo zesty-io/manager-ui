@@ -23,6 +23,9 @@ export default connect(function (state) {
     instanceZUID: state.instance.ZUID,
     instance: state.instance,
     instanceName: state.instance.name,
+    profileID: state.settings.instance.find(
+      (instance) => instance.key === "google_profile_id"
+    )?.value,
     contentModels: Object.keys(state.models).reduce((acc, modelZUID) => {
       if (
         state.models[modelZUID] &&
@@ -40,12 +43,12 @@ export default connect(function (state) {
       favoriteModels: [],
       loading: true,
       webEngineOn: true, // in the future this will be a boolean pulled off the account, it will change the dash
-      gaAuthenticated: Boolean(this.props.instance.google_profile_id),
+      gaAuthenticated: Boolean(this.props.profileID),
       gaLegacyAuth: false, // we need response body from cloud function could change this
     };
 
     componentDidMount() {
-      // if (this.props.instance.google_profile_id) {
+      // if (this.props.profileID) {
       const start = moment().subtract(120, "days").format("YYYY-MM-DD");
 
       this.props
@@ -148,7 +151,7 @@ export default connect(function (state) {
                 <PageviewTraffic
                   setGALegacyStatus={this.setGALegacyStatus}
                   instanceZUID={this.props.instanceZUID}
-                  profileID={this.props.instance.google_profile_id}
+                  profileID={this.props.profileID}
                   data={shelldata.shellBarData()}
                   domainSet={domainSet}
                 />
@@ -158,14 +161,14 @@ export default connect(function (state) {
                 <InboundTraffic
                   setGALegacyStatus={this.setGALegacyStatus}
                   instanceZUID={this.props.instanceZUID}
-                  profileID={this.props.instance.google_profile_id}
+                  profileID={this.props.profileID}
                   data={shelldata.shellDoughnutData()}
                   domainSet={domainSet}
                 />
                 <SocialTraffic
                   setGALegacyStatus={this.setGALegacyStatus}
                   instanceZUID={this.props.instanceZUID}
-                  profileID={this.props.instance.google_profile_id}
+                  profileID={this.props.profileID}
                   data={shelldata.shellDoughnutData()}
                   domainSet={domainSet}
                 />
@@ -185,7 +188,7 @@ export default connect(function (state) {
               <div className={cx(styles.column, styles.recent)}>
                 <TopPerforming
                   instanceZUID={this.props.instanceZUID}
-                  profileID={this.props.instance.google_profile_id}
+                  profileID={this.props.profileID}
                 />
               </div>
             </div>

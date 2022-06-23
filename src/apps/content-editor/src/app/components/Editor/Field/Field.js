@@ -7,6 +7,16 @@ import zuid from "zuid";
 import { fetchFields } from "shell/store/fields";
 import { fetchItem, fetchItems, searchItems } from "shell/store/content";
 
+import Stack from "@mui/material/Stack";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
+import Tooltip from "@mui/material/Tooltip";
+import Box from "@mui/material/Box";
+
+import InfoIcon from "@mui/icons-material/InfoOutlined";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,
@@ -17,8 +27,7 @@ import {
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Modal } from "@zesty-io/core/Modal";
 import MediaApp from "../../../../../../media/src/app/MediaApp";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { FieldTypeBinary } from "@zesty-io/core/FieldTypeBinary";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
 import { FieldTypeNumber } from "@zesty-io/core/FieldTypeNumber";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
@@ -31,8 +40,8 @@ import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
 import { FieldTypeEditor } from "@zesty-io/core/FieldTypeEditor";
 import { FieldTypeTinyMCE } from "@zesty-io/core/FieldTypeTinyMCE";
-import { FieldTypeOneToOne } from "@zesty-io/core/FieldTypeOneToOne";
 import { FieldTypeOneToMany } from "@zesty-io/core/FieldTypeOneToMany";
+import { FieldTypeOneToOne } from "@zesty-io/material";
 
 import styles from "./Field.less";
 import MediaStyles from "../../../../../../media/src/app/MediaAppModal.less";
@@ -145,6 +154,7 @@ function resolveRelatedOptions(
       return {
         filterValue: items[itemZUID].data[field.name],
         value: itemZUID,
+        inputLabel: items[itemZUID].data[field.name] || "",
         component: (
           <ResolvedOption
             modelZUID={modelZUID}
@@ -237,11 +247,11 @@ export default function Field({
         <FieldTypeText
           name={name}
           label={FieldTypeLabel}
-          description={description}
+          helperText={description}
           tooltip={settings.tooltip}
           required={required}
           value={value}
-          onChange={onChange}
+          onChange={(evt) => onChange(evt.target.value, name)}
         />
       );
 
@@ -250,12 +260,13 @@ export default function Field({
         <FieldTypeText
           name={name}
           label={FieldTypeLabel}
-          description={description}
+          helperText={description}
           tooltip={settings.tooltip}
           required={required}
           value={value}
-          onChange={onChange}
+          onChange={(evt) => onChange(evt.target.value, name)}
           type="url"
+          maxLength={2000}
         />
       );
 
@@ -402,19 +413,47 @@ export default function Field({
     case "yes_no":
       if (settings.options) {
         const binaryFieldOpts = Object.values(settings.options);
-
         return (
-          <FieldTypeBinary
-            name={name}
-            label={FieldTypeLabel}
-            description={description}
-            tooltip={settings.tooltip}
-            required={required}
-            value={value}
-            onChange={onChange}
-            offValue={binaryFieldOpts[0]}
-            onValue={binaryFieldOpts[1]}
-          />
+          <FormControl required={required}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={1}
+              sx={{
+                mb: 1,
+              }}
+            >
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+              <FormLabel>{FieldTypeLabel}</FormLabel>
+            </Stack>
+            <ToggleButtonGroup
+              color="secondary"
+              size="small"
+              value={value}
+              exclusive
+              onChange={(e, val) => onChange(val, name)}
+            >
+              <ToggleButton value={0}>
+                {binaryFieldOpts[0] || "No"}{" "}
+              </ToggleButton>
+              <ToggleButton value={1}>
+                {binaryFieldOpts[1] || "Yes"}{" "}
+              </ToggleButton>
+            </ToggleButtonGroup>
+            <Box component="p" sx={{ mt: 1 }}>
+              {description}
+            </Box>
+          </FormControl>
         );
       } else {
         return (
@@ -537,14 +576,21 @@ export default function Field({
       }, [allLanguages.length, relatedModelZUID, langID]);
 
       let oneToOneOptions = useMemo(() => {
-        return resolveRelatedOptions(
-          allFields,
-          allItems,
-          relatedFieldZUID,
-          relatedModelZUID,
-          langID,
-          value
-        );
+        return [
+          {
+            inputLabel: "- None -",
+            value: "0",
+            component: "- None -",
+          },
+          ...resolveRelatedOptions(
+            allFields,
+            allItems,
+            relatedFieldZUID,
+            relatedModelZUID,
+            langID,
+            value
+          ),
+        ];
       }, [
         Object.keys(allFields).length,
         Object.keys(allItems).length,
@@ -563,6 +609,7 @@ export default function Field({
         oneToOneOptions.unshift({
           filterValue: value,
           value: value,
+          inputLabel: `Selected item not found: ${value}`,
           component: (
             <span>
               <span onClick={(evt) => evt.stopPropagation()}>
@@ -581,16 +628,45 @@ export default function Field({
 
       return (
         <FieldTypeOneToOne
-          className={styles.FieldTypeOneToOne}
           name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
+          label={
+            <Stack direction="row" alignItems="center">
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+
+              {FieldTypeLabel}
+            </Stack>
+          }
+          helperText={description}
           required={required}
-          value={value}
-          onChange={onChange}
+          placeholder={"Select relationship..."}
+          value={
+            oneToOneOptions?.find((options) => options.value === value) || null
+          }
+          onChange={(_, option) => onChange(option.value, name)}
           options={oneToOneOptions}
           onOpen={onOneToOneOpen}
+          startAdornment={
+            value &&
+            value !== "0" && (
+              <AppLink to={`/content/${relatedModelZUID}/${value}`}>
+                <FontAwesomeIcon icon={faEdit} />
+              </AppLink>
+            )
+          }
+          endAdornment={
+            value &&
+            value !== "0" && <em>{getSelectedLang(allLanguages, langID)}</em>
+          }
         />
       );
 

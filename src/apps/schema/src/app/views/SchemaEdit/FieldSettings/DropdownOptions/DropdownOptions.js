@@ -1,12 +1,12 @@
 import { useState } from "react";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { Button } from "@zesty-io/core/Button";
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 
-import { updateField } from "shell/store/fields";
+import { FieldTypeText } from "@zesty-io/material";
 import { formatName } from "utility/formatName";
+import { updateField } from "shell/store/fields";
 
 import styles from "./DropdownOptions.less";
 export function DropdownOptions(props) {
@@ -73,37 +73,38 @@ export function DropdownOptions(props) {
             label="Option Label"
             name="value"
             value={option.value}
-            onChange={(val, name) => {
-              updateOption(option, i, name, val);
-            }}
+            onChange={(evt) =>
+              updateOption(option, i, "value", evt.target.value)
+            }
           />
 
           <FieldTypeText
             label="Option Value"
             name="key"
             value={option.key}
-            onChange={(val, name) => {
-              updateOption(option, i, name, val);
-            }}
+            onChange={(evt) => updateOption(option, i, "key", evt.target.value)}
           />
           <Button
-            type="warn"
+            variant="contained"
+            size="small"
+            color="error"
             onClick={() => {
               deleteOption(i);
             }}
           >
-            <FontAwesomeIcon icon={faTrash} />
+            <DeleteIcon fontSize="small" />
           </Button>
         </div>
       ))}
 
       <Button
-        type="save"
+        variant="contained"
+        color="success"
         onClick={() => {
           setOptions([...options, { key: "", value: "" }]);
         }}
+        startIcon={<AddIcon />}
       >
-        <FontAwesomeIcon icon={faPlus} />
         Add Option
       </Button>
     </div>

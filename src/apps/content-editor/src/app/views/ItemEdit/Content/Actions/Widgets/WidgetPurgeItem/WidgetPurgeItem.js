@@ -1,23 +1,28 @@
 import { memo, useState } from "react";
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSync, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "@zesty-io/core/Button";
+import Button from "@mui/material/Button";
+
+import SyncIcon from "@mui/icons-material/Sync";
+import CircularProgress from "@mui/material/CircularProgress";
+
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
 
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
-import SharedWidgetStyles from "../SharedWidget.less";
 
 export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
   const [loading, setLoading] = useState(false);
 
   return (
-    <Card id="WidgetDeleteItem" className="pageDetailWidget">
-      <CardHeader>
-        <FontAwesomeIcon icon={faSync} />
-        &nbsp;CDN
-      </CardHeader>
+    <Card id="WidgetDeleteItem" className="pageDetailWidget" sx={{ m: 2 }}>
+      <CardHeader
+        avatar={<SyncIcon fontSize="small" />}
+        title="CDN"
+      ></CardHeader>
       <CardContent className="setting-field">
         <p>
           Force the CDN to refresh the cache for this item. CDN caching can take
@@ -25,15 +30,18 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
           across the entire global network.
         </p>
       </CardContent>
-      <CardFooter className={SharedWidgetStyles.FooterSpacing}>
+      <CardActions>
         {loading ? (
-          <Button className={SharedWidgetStyles.Button} disabled={loading}>
-            <FontAwesomeIcon icon={faSpinner} spin />
-            Refreshing Cached Item&hellip;
+          <Button
+            variant="contained"
+            disabled={loading}
+            startIcon={<CircularProgress size="20px" />}
+          >
+            Refreshing Cached Item
           </Button>
         ) : (
           <Button
-            className={SharedWidgetStyles.Button}
+            variant="contained"
             id="RefreshCache"
             onClick={() => {
               setLoading(true);
@@ -61,12 +69,12 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
                   );
                 });
             }}
+            startIcon={<SyncIcon />}
           >
-            <FontAwesomeIcon icon={faSync} />
             Refresh Cached Item
           </Button>
         )}
-      </CardFooter>
+      </CardActions>
     </Card>
   );
 });

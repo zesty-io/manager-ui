@@ -1,9 +1,4 @@
 describe("Content Specs", () => {
-  before(() => {
-    cy.login();
-    cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
-  });
-
   describe("Content Specs", () => {
     before(() => {
       cy.login();
@@ -12,12 +7,14 @@ describe("Content Specs", () => {
 
     const TIMESTAMP = Date.now();
 
+    //Force true: When multiple cypress test are running simultaneously, content lock modal will render blocking click events.
+
     describe("editing All Field Types content", () => {
       it("Text Field", () => {
         cy.get("#12-13d590-9v2nr2")
           .should("exist")
           .find("input")
-          .click()
+          .click({ force: true })
           .clear()
           .type(`${TIMESTAMP}`)
           .should("have.value", `${TIMESTAMP}`);
@@ -41,18 +38,21 @@ describe("Content Specs", () => {
         cy.get("#12-b5d7b4-n81s15")
           .should("exist")
           .find("textarea")
-          .click()
+          .click({ force: true })
           .clear()
           .type(`${TIMESTAMP}`)
           .should("have.value", `${TIMESTAMP}`);
       });
 
       it("Date Field", () => {
-        cy.get("#12-63ab04-0nkwcc").should("exist").find("input").click();
+        cy.get("#12-63ab04-0nkwcc")
+          .should("exist")
+          .find("input")
+          .click({ force: true });
 
         cy.get(
           '.flatpickr-calendar:not(.hasTime) [aria-label="March 5, 2019"]'
-        ).click();
+        ).click({ force: true });
 
         cy.get("#12-63ab04-0nkwcc")
           .find("input")
@@ -63,11 +63,11 @@ describe("Content Specs", () => {
         cy.get("#12-f3db44-c8kt0q")
           .should("exist")
           .find("input.form-control")
-          .click();
+          .click({ force: true });
 
         cy.get(
           '.flatpickr-calendar.hasTime [aria-label="March 5, 2019"]'
-        ).click();
+        ).click({ force: true });
 
         cy.get(".flatpickr-confirm").click();
 
@@ -91,17 +91,31 @@ describe("Content Specs", () => {
         cy.get("#12-fc9e18-wh9l82")
           .should("exist")
           .find(".ProseMirror")
-          .click()
+          .click({ force: true })
           .clear()
           .type(`${TIMESTAMP}`)
           .contains(`${TIMESTAMP}`);
+      });
+
+      it("Markdown Field", () => {
+        cy.get("#12-796b3c-8n93rc")
+          .should("exist")
+          .find("textarea")
+          .click({ force: true })
+          .clear()
+          .type(`${TIMESTAMP}`)
+          .should("have.value", `${TIMESTAMP}`);
+
+        cy.get("#12-796b3c-8n93rc")
+          .find("textarea")
+          .should("contain", TIMESTAMP);
       });
 
       it("Dropdown Field", () => {
         cy.get("#12-f3152c-kjz88l")
           .should("exist")
           .find(".Select")
-          .click()
+          .click({ force: true })
           .find('[data-value="custom_option_one"]')
           .click({ force: true });
 
@@ -109,7 +123,7 @@ describe("Content Specs", () => {
 
         cy.get("#12-f3152c-kjz88l")
           .find(".Select")
-          .click()
+          .click({ force: true })
           .find('[data-value="custom_option_two"]')
           .click({ force: true });
 
@@ -123,15 +137,20 @@ describe("Content Specs", () => {
           .focus()
           .clear()
           .type(`http://www.zesty.pw/${TIMESTAMP}`);
+        cy.get("#12-8ed554-nxmbw8")
+          .find("input")
+          .should((input) => {
+            expect(input).to.have.value(`http://www.zesty.pw/${TIMESTAMP}`);
+          });
       });
 
       it("Internal Link Field", () => {
         cy.get("#12-10741c-s5jkwg")
           .should("exist")
           .find(".Select")
-          .click()
+          .click({ force: true })
           .find('[data-value="7-bedfc8c9c4-fspprt"]')
-          .click();
+          .click({ force: true });
 
         cy.contains("#12-10741c-s5jkwg .Select", "/asdf/");
 
@@ -153,12 +172,18 @@ describe("Content Specs", () => {
 
       // TODO: Need to confirm toggling of value
       it("Yes/No Field", () => {
-        cy.get("#12-575f7c-trw1w3").find("button").click();
+        cy.get("#12-575f7c-trw1w3")
+          .find("button")
+          .contains("Yes")
+          .click({ force: true });
       });
 
       // TODO: Need to confirm toggling of value
       it("Yes/No Field: Custom Options", () => {
-        cy.get("#12-8178cc-z37vq1").find("button").click();
+        cy.get("#12-8178cc-z37vq1")
+          .find("button")
+          .contains("Custom One")
+          .click({ force: true });
       });
 
       it("Fontawesome Field", () => {
@@ -220,33 +245,26 @@ describe("Content Specs", () => {
         cy.get("#12-4e1914-kcqznz")
           .should("exist")
           .find("input[type='number']")
-          .clear()
+          .clear({ force: true })
           .type("{rightArrow}12");
 
-        cy.get("#12-4e1914-kcqznz").find("button").first().click();
+        cy.get("#12-4e1914-kcqznz")
+          .find("button")
+          .first()
+          .click({ force: true });
 
         cy.get("#12-4e1914-kcqznz")
           .find("input[type='number']")
           .should("have.value", "13");
 
-        cy.get("#12-4e1914-kcqznz").find("button").last().click();
+        cy.get("#12-4e1914-kcqznz")
+          .find("button")
+          .last()
+          .click({ force: true });
 
         cy.get("#12-4e1914-kcqznz")
           .find("input[type='number']")
           .should("have.value", "12");
-      });
-
-      it("Markdown Field", () => {
-        cy.get("#12-796b3c-8n93rc")
-          .find("textarea")
-          .click()
-          .clear()
-          .type(`## Editing in the markdown field type _${TIMESTAMP}_`);
-        cy.get("#SaveItemButton").click();
-        cy.contains("Saved a new ").should("exist");
-        cy.get("#12-796b3c-8n93rc")
-          .find("textarea")
-          .should("contain", TIMESTAMP);
       });
 
       // Skipping failing test in preparation for CI.
@@ -268,22 +286,21 @@ describe("Content Specs", () => {
       });
 
       it("One to one Field", () => {
-        cy.get("#12-edee00-6zb866").find(".Select").click();
-        //allow relationships to load
         cy.get("#12-edee00-6zb866")
-          .find(".Select")
-          .find('[data-value="7-480ab4-wg7x7j"]')
-          .last()
-          .click({ timeout: 3000 });
+          .find(".MuiAutocomplete-popupIndicator")
+          .click({ force: true });
+        //allow relationships to load
+        cy.get("[role=presentation]")
+          .find("[data-option-index=1]")
+          .click({ force: true });
         // cy.get("#SaveItemButton").click({ force: true });
         // cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
         cy.get("#12-edee00-6zb866")
-          .find(".Select")
-          .find("span span")
-          .should("contain", "zesty.pw");
+          .find("input")
+          .should("have.value", "zesty.pw");
       });
       it("Saves Content updates", () => {
-        cy.get("#SaveItemButton").click();
+        cy.get("#SaveItemButton").click({ force: true });
         cy.contains("Saved a new ", { timeout: 3000 }).should("exist");
       });
     });

@@ -1,15 +1,18 @@
 import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCheck,
-  faUpload,
-  faChevronDown,
-  faChevronUp,
-} from "@fortawesome/free-solid-svg-icons";
+
+import Button from "@mui/material/Button";
+
+import UploadIcon from "@mui/icons-material/Upload";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+
 import cx from "classnames";
 import { Drawer, DrawerHandle, DrawerContent } from "@zesty-io/core/Drawer";
-import { Card, CardContent } from "@zesty-io/core/Card";
-import { Button } from "@zesty-io/core/Button";
+
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+
 import { MediaImage } from "./MediaImage";
 
 import shared from "./MediaShared.less";
@@ -37,15 +40,20 @@ export function MediaSelected(props) {
               onClick={handleSetOpen}
             >
               <Button
+                variant="contained"
+                color="success"
                 data-cy="loadSelected"
-                className={styles.ButtonLoad}
-                type="save"
                 onClick={() => props.addImages(props.selected)}
+                startIcon={<UploadIcon />}
               >
-                <FontAwesomeIcon icon={faUpload} />
-                <span>Load Selected</span>
+                Load Selected
               </Button>
-              <Button title="View Selected Images">
+
+              <Button
+                variant="contained"
+                title="View Selected Images"
+                endIcon={open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              >
                 <span
                   className={
                     props.selected.length !== props.limitSelected
@@ -56,11 +64,6 @@ export function MediaSelected(props) {
                   {props.selected.length} / {props.limitSelected} Image
                   {props.limitSelected > 1 ? "s" : ""} Selected
                 </span>
-                {open ? (
-                  <FontAwesomeIcon icon={faChevronDown} />
-                ) : (
-                  <FontAwesomeIcon icon={faChevronUp} />
-                )}
               </Button>
             </DrawerHandle>
 
@@ -70,15 +73,10 @@ export function MediaSelected(props) {
                   return (
                     <Card
                       key={file.id}
-                      className={cx(styles.Card, styles.CardTop)}
                       onClick={() => props.toggleSelected(file)}
+                      sx={{ m: 1, width: "100px", flexShrink: "0" }}
                     >
-                      <CardContent
-                        className={cx(
-                          styles.CardContent,
-                          styles.CardContentTop
-                        )}
-                      >
+                      <CardContent sx={{ position: "relative", p: 1 }}>
                         <figure
                           className={cx(shared.Checkered, styles.Checkered)}
                         >
@@ -88,9 +86,18 @@ export function MediaSelected(props) {
                             params={"?w=200&h=200&type=fit"}
                           />
                         </figure>
-                        <button className={styles.Check} aria-label="Checked">
-                          <FontAwesomeIcon icon={faCheck} />
-                        </button>
+
+                        <CheckBoxIcon
+                          fontSize="small"
+                          sx={{
+                            position: "absolute",
+                            top: "0",
+                            left: "0",
+                            cursor: "pointer",
+                            color: "secondary.main",
+                            minWidth: "auto",
+                          }}
+                        />
                       </CardContent>
                     </Card>
                   );

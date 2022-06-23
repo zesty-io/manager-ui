@@ -2,10 +2,9 @@ import { Component } from "react";
 import { connect } from "react-redux";
 import { createBrowserHistory } from "history";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-import { Button } from "@zesty-io/core/Button";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 
 import { deleteLead } from "../../../store/leads";
@@ -238,12 +237,13 @@ export default connect((state) => {
                 (lead) => lead.zuid === this.state.currentLead.zuid
               ) ? (
                 <Button
-                  type="warn"
+                  variant="contained"
+                  color="error"
                   className={styles.btnDanger}
                   disabled={this.state.loading}
                   onClick={() => this.deleteLead(this.state.currentLead.zuid)}
+                  startIcon={<DeleteIcon />}
                 >
-                  <FontAwesomeIcon icon={faTrash} />
                   Delete
                 </Button>
               ) : (

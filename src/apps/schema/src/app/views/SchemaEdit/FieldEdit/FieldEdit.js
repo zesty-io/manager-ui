@@ -3,18 +3,18 @@ import { useHistory } from "react-router-dom";
 import cx from "classnames";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
+import Button from "@mui/material/Button";
+import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
+import CircularProgress from "@mui/material/CircularProgress";
+import SaveIcon from "@mui/icons-material/Save";
+import PauseCircleIcon from "@mui/icons-material/PauseCircle";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faExpandArrowsAlt,
-  faSpinner,
-  faSave,
-  faPlayCircle,
-  faPauseCircle,
-  faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { CollapsibleCard } from "@zesty-io/core/CollapsibleCard";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
-import { Button } from "@zesty-io/core/Button";
+import { ConfirmDialog } from "@zesty-io/material";
 
 import { FieldSettings } from "../FieldSettings";
 
@@ -29,6 +29,8 @@ import {
 import styles from "./FieldEdit.less";
 import { notify } from "shell/store/notifications";
 export function FieldEdit(props) {
+  const [originalFieldName, setOriginalFieldName] = useState(props.field.name);
+
   return (
     <CollapsibleCard
       className={styles.Card}
@@ -45,7 +47,11 @@ export function FieldEdit(props) {
         }}
         field={props.field}
       />
-      <Footer {...props} />
+      <Footer
+        {...props}
+        originalFieldName={originalFieldName}
+        setOriginalFieldName={setOriginalFieldName}
+      />
     </CollapsibleCard>
   );
 }
@@ -77,7 +83,7 @@ function Header(props) {
       </h1>
       <small className={styles.Type}>{props.field.datatype}</small>
       <Button
-        className={styles.DragHandle}
+        variant="contained"
         draggable="true"
         onClick={(evt) => {
           // Prevent the card toggle
@@ -85,8 +91,9 @@ function Header(props) {
           evt.stopPropagation();
         }}
         onDragStart={props.onDragStart}
+        sx={{ cursor: "move" }}
       >
-        <FontAwesomeIcon icon={faExpandArrowsAlt} />
+        <ZoomOutMapIcon fontSize="small" sx={{ mr: "0 !important" }} />
       </Button>
     </div>
   );
@@ -94,15 +101,19 @@ function Header(props) {
 
 export function Footer(props) {
   const [loading, setLoading] = useState(false);
+  const [warningIsOpen, setWarningIsOpen] = useState(false);
 
-  const onSave = () => {
+  //const [name, setName] = useState(props.field.name)
+
+  const save = () => {
     setLoading(true);
-    props
+    return props
       .dispatch(saveField(props.field.contentModelZUID, props.field.ZUID))
       .then((res) => {
         setLoading(false);
 
         if (res.status === 200) {
+          props.setOriginalFieldName(props.field.name);
           props.dispatch(
             notify({
               kind: "save",
@@ -118,25 +129,27 @@ export function Footer(props) {
           );
         }
       })
-      .catch(() => setLoading(false));
+      .catch(() => setLoading(false))
+      .finally(() => setWarningIsOpen(false));
   };
 
-  const metaShortcut = useMetaKey("s", onSave);
+  const warn = () => {
+    setWarningIsOpen(true);
+  };
+
+  const saveOrWarn = () => {
+    if (props.field.name === props.originalFieldName) save();
+    else warn();
+  };
+
+  const metaShortcut = useMetaKey("s", saveOrWarn);
 
   return (
     <footer className={styles.FieldFooter}>
       <ButtonGroup className={styles.FieldActions}>
-        <Button type="save" disabled={!props.field.dirty} onClick={onSave}>
-          {loading ? (
-            <FontAwesomeIcon icon={faSpinner} spin />
-          ) : (
-            <FontAwesomeIcon icon={faSave} />
-          )}
-          Save {metaShortcut}
-        </Button>
-
         {props.field.deletedAt ? (
           <Button
+            variant="contained"
             onClick={(evt) => {
               evt.preventDefault();
               setLoading(true);
@@ -144,18 +157,16 @@ export function Footer(props) {
                 activateField(props.field.contentModelZUID, props.field.ZUID)
               );
             }}
+            startIcon={
+              loading ? <CircularProgress size="20px" /> : <PauseCircleIcon />
+            }
           >
-            {loading ? (
-              <FontAwesomeIcon icon={faSpinner} spin />
-            ) : (
-              <FontAwesomeIcon icon={faPlayCircle} />
-            )}
             Reactivate
           </Button>
         ) : (
           <Button
-            className="deactivate"
-            type="cancel"
+            variant="contained"
+            data-cy="deactivated"
             onClick={(evt) => {
               evt.preventDefault();
               setLoading(true);
@@ -163,15 +174,51 @@ export function Footer(props) {
                 deactivateField(props.field.contentModelZUID, props.field.ZUID)
               );
             }}
+            startIcon={
+              loading ? <CircularProgress size="20px" /> : <PauseCircleIcon />
+            }
           >
-            {loading ? (
-              <FontAwesomeIcon icon={faSpinner} spin />
-            ) : (
-              <FontAwesomeIcon icon={faPauseCircle} />
-            )}
             Deactivate
           </Button>
         )}
+        <Button
+          variant="contained"
+          color="success"
+          data-cy="fieldSave"
+          disabled={!props.field.dirty}
+          onClick={saveOrWarn}
+          startIcon={loading ? <CircularProgress size="20px" /> : <SaveIcon />}
+        >
+          Save {metaShortcut}
+        </Button>
+        <ConfirmDialog
+          open={warningIsOpen}
+          title="Changing the reference name could break JSON endpoints or
+            Parsley Views that expect the name as it was. You can change the
+            Field Label without needing to change the reference_name. Only
+            proceed if you are confident it will not affect your production
+            code."
+        >
+          <Button
+            variant="outlined"
+            id="editCancelButton"
+            onClick={() => setWarningIsOpen(false)}
+            startIcon={<DoDisturbAltIcon />}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            id="editConfirmButton"
+            onClick={save}
+            startIcon={
+              loading ? <CircularProgress size="20px" /> : <SaveIcon />
+            }
+          >
+            Save Changes
+          </Button>
+        </ConfirmDialog>
       </ButtonGroup>
     </footer>
   );
