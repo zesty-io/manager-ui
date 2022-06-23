@@ -323,7 +323,9 @@ describe("Content Specs", () => {
     it("Check Actions Collapsed functionality", () => {
       cy.get("[data-cy=ActionsContent]").then((content) => {
         if (content.is(":visible")) {
-          cy.get("[data-cy=ActionsContent]").should("be.visible");
+          cy.get("[data-cy=ActionsContent]", { timeout: 5000 }).should(
+            "be.visible"
+          );
         } else {
           cy.get("[data-cy=ActionsContent]").should("not.be.visible");
         }
