@@ -731,8 +731,11 @@ export default function Field({
             (value &&
               value
                 ?.split(",")
-                ?.map((value) =>
-                  oneToManyOptions?.find((options) => options.value === value)
+                ?.map(
+                  (value) =>
+                    oneToManyOptions?.find(
+                      (options) => options.value === value
+                    ) || { value, inputLabel: value, component: value }
                 )) ||
             []
           }
