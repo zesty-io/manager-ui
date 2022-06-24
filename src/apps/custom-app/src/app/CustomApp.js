@@ -59,7 +59,12 @@ function LoadApp(props) {
   }, [frame.current, app]);
 
   return app ? (
-    <iframe src={app.url} key={app.ZUID} ref={frame}></iframe>
+    <iframe
+      src={app.url}
+      key={app.ZUID}
+      ref={frame}
+      allow="clipboard-write"
+    ></iframe>
   ) : (
     <NotFound
       message={`The app "${props.match.params.zuid}" is not installed.`}

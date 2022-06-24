@@ -19,7 +19,6 @@ import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { FieldTypeText } from "@zesty-io/material";
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 
-import { Url } from "@zesty-io/core/Url";
 import { CopyButton } from "@zesty-io/material";
 import { Input } from "@zesty-io/core/Input";
 import { Option, Select } from "@zesty-io/core/Select";
@@ -234,17 +233,22 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
               value={`${genImageURL()}`}
               sx={{
                 justifyContent: "flex-start",
+                wordBreak: "break-all",
               }}
             />
           </div>
 
           <ul className={styles.info}>
             <li>
-              <span>ZUID:</span>
-              <CopyButton size="small" value={props.file.id} />
+              <p>ZUID:</p>
+              <CopyButton
+                size="small"
+                value={props.file.id}
+                sx={{ alignSelf: "flex-start" }}
+              />
             </li>
             <li>
-              <span>Created at:</span>
+              <p>Created at:</p>
               {props.file.updated_at}
             </li>
             <li>
