@@ -781,10 +781,7 @@ export default function Field({
             helperText={description}
             required={required}
             value={value || "#FFFFFF"}
-            onChange={(evt) => {
-              console.log(evt);
-              onChange(evt.target.value, name);
-            }}
+            onChange={(evt) => onChange(evt.target.value, name)}
           />
         </Box>
       );
