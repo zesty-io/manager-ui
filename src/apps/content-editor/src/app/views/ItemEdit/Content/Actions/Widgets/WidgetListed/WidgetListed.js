@@ -9,7 +9,7 @@ import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import CodeIcon from "@mui/icons-material/Code";
-import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
+import { FieldTypeSort } from "@zesty-io/material";
 
 import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
@@ -63,6 +63,7 @@ export const WidgetListed = memo(function WidgetListed(props) {
         </ToggleButtonGroup>
 
         <FieldTypeSort
+          sx={{ maxWidth: "200px" }}
           name="sort"
           label={
             <span>
@@ -77,12 +78,12 @@ export const WidgetListed = memo(function WidgetListed(props) {
             </span>
           }
           value={props.sort}
-          onChange={(value, name) => {
+          onChange={(evt) => {
             props.dispatch({
               type: "SET_ITEM_META",
               itemZUID: props.itemZUID,
-              key: name,
-              value: value,
+              key: "sort",
+              value: evt.target.value,
             });
           }}
         />

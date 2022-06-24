@@ -37,7 +37,7 @@ import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
-import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
+import { FieldTypeSort } from "@zesty-io/material";
 import { FieldTypeEditor } from "@zesty-io/core/FieldTypeEditor";
 import { FieldTypeTinyMCE } from "@zesty-io/core/FieldTypeTinyMCE";
 import {
@@ -829,13 +829,32 @@ export default function Field({
     case "sort":
       return (
         <FieldTypeSort
+          sx={{ maxWidth: "200px" }}
           name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
+          label={
+            <Stack direction="row" alignItems="center">
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+
+              {FieldTypeLabel}
+            </Stack>
+          }
+          helperText={description}
           required={required}
-          value={value}
-          onChange={onChange}
+          value={value || 0}
+          onChange={(evt) => {
+            console.log(evt);
+            onChange(evt.target.value, name);
+          }}
         />
       );
 
