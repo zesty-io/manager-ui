@@ -2,8 +2,9 @@ import { memo } from "react";
 
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
-
-import { Search } from "@zesty-io/core/Search";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 
 import styles from "./styles.less";
 export default memo(function AuditControls(props) {
@@ -47,12 +48,25 @@ export default memo(function AuditControls(props) {
           Last Month
         </Button>
       </ButtonGroup>
-      <Search
-        className={styles.SearchLogs}
+
+      <TextField
         placeholder="Search AuditTrail Logs"
-        onChange={(value) => {
-          props.setSearch(value.trim().toLowerCase());
+        type="search"
+        variant="outlined"
+        fullWidth
+        size="small"
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon fontSize="small" />
+            </InputAdornment>
+          ),
         }}
+        onChange={(evt) => {
+          const term = evt.target.value.trim().toLowerCase();
+          props.setSearch(term);
+        }}
+        sx={{ maxWidth: "400px", marginLeft: "auto" }}
       />
     </header>
   );
