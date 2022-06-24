@@ -37,7 +37,14 @@ describe("Content Specs", () => {
       it("Textarea Field", () => {
         cy.get("#12-b5d7b4-n81s15")
           .should("exist")
-          .find("textarea")
+          /*
+            MUI *intentionally* renders 2 textareas to the DOM; one hidden and
+            one visible. The visible one is the one we are interested in.
+
+            https://github.com/mui/material-ui/pull/15436
+
+          */
+          .find("textarea:not([readonly]):not([hidden])")
           .click({ force: true })
           .clear()
           .type(`${TIMESTAMP}`)
