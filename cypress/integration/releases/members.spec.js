@@ -4,7 +4,9 @@
 describe("Release > members > CRUD", () => {
   before(() => {
     cy.login();
+    cy.intercept("/release/27-d0d8f7a0f8-1pp779").as("getRelease");
     cy.visit("/release/27-d0d8f7a0f8-1pp779");
+    cy.wait("@getRelease");
   });
 
   it("add member", () => {
