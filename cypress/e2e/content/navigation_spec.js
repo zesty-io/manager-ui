@@ -7,8 +7,6 @@ describe("Navigation through content editor", () => {
 
   it("Opens homepage item", () => {
     cy.get("#MainNavigation li a").contains("Homepage").click();
-    // cy.waitOn("/v1/content/models*", () => {
-    // });
     cy.get("#12-0c3934-8dz720").should("exist");
   });
 
@@ -59,13 +57,21 @@ describe("Navigation through content editor", () => {
             .should("be.visible");
 
           cy.visit("/code");
-          cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+
+          cy.waitOn("/v1/content/models*", () => {
+            cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+          });
+
           cy.get("[data-cy=contentNavButton]")
             .siblings("div")
             .should("be.visible");
         } else {
           cy.visit("/code");
-          cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+
+          cy.waitOn("/v1/content/models*", () => {
+            cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+          });
+
           cy.get("[data-cy=contentNavButton]")
             .siblings("div")
             .should("not.be.visible");

@@ -30,8 +30,6 @@ Cypress.on("uncaught:exception", (err, runnable) => {
 });
 
 beforeEach(() => {
-  cy.login();
-
   /**
    * NOTE: Zesty is a multitennant app with a lock feature
    * that presents a modal when USER X is viewing the same
@@ -43,4 +41,5 @@ beforeEach(() => {
    * lock modal from displaying.
    */
   cy.blockLock();
+  cy.login();
 });
