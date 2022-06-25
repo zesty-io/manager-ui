@@ -137,7 +137,7 @@ export const HeadTag = (props) => {
                 name={tag.ZUID}
                 label="Sort"
                 onChange={(evt) =>
-                  dispatch(updateTagSort(tag.ZUID, evt.target.value))
+                  dispatch(updateTagSort(tag.ZUID, parseInt(evt.target.value)))
                 }
               />
             </Box>
