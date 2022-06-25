@@ -22,12 +22,25 @@ Cypress.Cookies.defaults({
   preserve: Cypress.env("COOKIE_NAME"),
 });
 
-//Turn off fail on console errors
+// Turn off fail on console errors
 Cypress.on("uncaught:exception", (err, runnable) => {
   // returning false here prevents Cypress from
   // failing the test
   return false;
 });
 
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
+beforeEach(() => {
+  cy.login();
+
+  /**
+   * NOTE: Zesty is a multitennant app with a lock feature
+   * that presents a modal when USER X is viewing the same
+   * resource as USER Y. This modal can layover UI being tested
+   * causing the default Cypress behavior of failing on
+   * interaction with out of view elements. We solve this by
+   * including this statement which intercepts the /door/knock
+   * API request and stubs an empty response, preventing the
+   * lock modal from displaying.
+   */
+  cy.blockLock();
+});

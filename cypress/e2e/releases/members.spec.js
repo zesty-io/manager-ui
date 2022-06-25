@@ -4,18 +4,26 @@
 describe("Release > members > CRUD", () => {
   before(() => {
     cy.login();
+
+    cy.intercept("GET", "/v1/releases/27-d0d8f7a0f8-1pp779/members").as(
+      "loadMembers"
+    );
     cy.visit("/release/27-d0d8f7a0f8-1pp779");
+    cy.wait("@loadMembers");
   });
 
   it("add member", () => {
     cy.get("[data-cy=ReleaseHeader] [data-cy=ContentSearch] input").type(
       "homepage"
     );
+
+    cy.intercept("POST", "/v1/releases/27-d0d8f7a0f8-1pp779/members").as(
+      "addMember"
+    );
     cy.get(
-      "[data-cy=ReleaseHeader] [data-cy=ContentSearch] ul li:nth-child(2) p span"
-    )
-      .contains("Homepage")
-      .click();
+      "[data-cy=ReleaseHeader] [data-cy=ContentSearch] ul li:first-child"
+    ).click();
+    cy.wait("@addMember");
 
     cy.get("[data-cy=PlanTable] tbody tr:last-child")
       .contains(`Homepage`)
