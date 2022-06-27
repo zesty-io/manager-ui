@@ -1,8 +1,4 @@
 describe("Content List", () => {
-  before(() => {
-    //initial login to set the cookie
-    cy.login();
-  });
   it("Filters list items based on search term", () => {
     cy.visit("/content/6-0c960c-d1n0kx");
     cy.get("input[name='filter']").type("turkey");

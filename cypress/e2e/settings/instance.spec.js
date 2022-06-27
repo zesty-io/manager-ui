@@ -1,9 +1,9 @@
 describe("Instance", () => {
+  const SAVED_MESSAGE = "Settings Saved";
+
   before(() => {
-    cy.login();
     cy.visit("/settings");
   });
-  const SAVED_MESSAGE = "Settings Saved";
 
   it("General", () => {
     cy.get("[data-cy=SubApp] textarea").first().clear().type("example");

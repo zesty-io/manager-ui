@@ -1,10 +1,14 @@
 describe("Fields", () => {
-  before(() => {
-    cy.login();
-    cy.visit("/schema/6-852490-2mhz4v");
-  });
-
   const timestamp = Date.now();
+
+  before(() => {
+    cy.waitOn(
+      "/v1/content/models/6-852490-2mhz4v/fields?showDeleted=true",
+      () => {
+        cy.visit("/schema/6-852490-2mhz4v");
+      }
+    );
+  });
 
   it("Create:text", () => {
     const fieldLabel = `Text Field: ${timestamp}`;

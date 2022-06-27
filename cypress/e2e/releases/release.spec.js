@@ -1,8 +1,4 @@
 describe("Release", () => {
-  before(() => {
-    cy.login();
-  });
-
   it("create release", () => {
     cy.visit("/release/create");
     cy.intercept("/v1/releases").as("loadReleases");
