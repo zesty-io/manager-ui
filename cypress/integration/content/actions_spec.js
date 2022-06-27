@@ -9,9 +9,9 @@ describe("Actions in content editor", () => {
 
   it("Must not save when missing required Field", () => {
     cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
-    cy.get("input[name=text_field][type=text]", { timeout: 15000 }).clear({
-      force: true,
-    });
+    cy.get("input[name=text_field]", { timeout: 15000 })
+      .first()
+      .clear({ force: true });
     cy.get("#SaveItemButton").click({ force: true });
     cy.contains("You are missing data").should("exist");
   });
@@ -22,7 +22,8 @@ describe("Actions in content editor", () => {
     cy.visit("/content/6-0c960c-d1n0kx/7-c882ba84ce-c4smnp");
     // Need to make an edit to enable save button.
     // Provide large timeout for API calls
-    cy.get("input[name=title][type=text]", { timeout: 10000 })
+    cy.get("input[name=title]", { timeout: 10000 })
+      .first()
       .clear({ force: true })
       .type(timestamp);
     cy.get("#SaveItemButton", { timeout: 5000 }).click({ force: true });
