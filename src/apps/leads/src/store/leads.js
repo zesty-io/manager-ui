@@ -4,7 +4,7 @@ import { notify } from "shell/store/notifications";
 export function leads(state = [], action) {
   switch (action.type) {
     case "FETCH_LEADS_SUCCESS":
-      return [...state, ...action.payload];
+      return [...action.payload];
     case "DELETE_LEAD_SUCCESS":
       // Remove the deleted lead from the Store
       state = state.filter((lead) => lead.zuid !== action.payload);

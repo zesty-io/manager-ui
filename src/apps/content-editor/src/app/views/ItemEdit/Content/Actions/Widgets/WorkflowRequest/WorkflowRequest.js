@@ -6,17 +6,17 @@ import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import SaveIcon from "@mui/icons-material/Save";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionActions from "@mui/material/AccordionActions";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import EmailIcon from "@mui/icons-material/Email";
+import Box from "@mui/material/Box";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import useIsMounted from "ismounted";
 import { useDispatch, useSelector } from "react-redux";
-
-import {
-  CollapsibleCard,
-  CardContent,
-  CardFooter,
-} from "@zesty-io/core/CollapsibleCard";
 
 import { Textarea } from "@zesty-io/core/Textarea";
 import { request } from "utility/request";
@@ -124,77 +124,87 @@ ${
   }
 
   return (
-    <CollapsibleCard
-      className={styles.WorkflowRequest}
-      header={
-        <span>
-          <FontAwesomeIcon icon={faEnvelope} />
-          &nbsp;Workflow Request
-        </span>
-      }
-    >
-      <CardContent>
-        <h3 className={styles.subheadline}>Select team members</h3>
-        <ul>
-          {users.map((user) => (
-            <li className={styles.Checkboxes} key={user.ZUID}>
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      color="secondary"
-                      size="small"
-                      name={user.email}
-                      onChange={(evt, val) => handleSelectUser(evt, val)}
-                    />
-                  }
-                  label={`${user.firstName} ${user.lastName}`}
-                />
-              </FormGroup>
-            </li>
-          ))}
-        </ul>
-
-        <h3 className={styles.subheadline}>Select fields for review</h3>
-        <ul>
-          {fields.map((field) => (
-            <li className={styles.Checkboxes} key={field.ZUID}>
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      color="secondary"
-                      size="small"
-                      name={field.name}
-                      onChange={(evt, val) => handleSelectField(evt, val)}
-                    />
-                  }
-                  label={field.label}
-                />
-              </FormGroup>
-            </li>
-          ))}
-        </ul>
-        <Textarea
-          className={styles.TextArea}
-          name="message"
-          placeholder="Workflow request message"
-          value={message}
-          onChange={(evt) => setMessage(evt.target.value)}
-        />
-      </CardContent>
-      <CardFooter>
-        <Button
-          variant="contained"
-          id="WorkflowRequestSendButton"
-          className={styles.Button}
-          onClick={handleSend}
-          disabled={sending}
-          startIcon={sending ? <CircularProgress size="20px" /> : <SaveIcon />}
+    <Box sx={{ m: 2 }}>
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography sx={{ display: "flex", alignItems: "center" }}>
+            {" "}
+            <EmailIcon fontSize="small" /> Workflow Request
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails
+          sx={{ display: "flex", flexDirection: "column", gap: 2 }}
         >
-          Send Email
-        </Button>
-      </CardFooter>
-    </CollapsibleCard>
+          <Box component="div">
+            <Typography component="h3" variant="h6">
+              Select team members
+            </Typography>
+            <Box component="ul">
+              {users.map((user) => (
+                <Box component="li" key={user.ZUID} sx={{ listStyle: "none" }}>
+                  <FormGroup>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          color="secondary"
+                          size="small"
+                          name={user.email}
+                          onChange={(evt, val) => handleSelectUser(evt, val)}
+                        />
+                      }
+                      label={`${user.firstName} ${user.lastName}`}
+                    />
+                  </FormGroup>
+                </Box>
+              ))}
+            </Box>
+
+            <Typography component="h3" variant="h6" sx={{ my: 2 }}>
+              Select fields for review
+            </Typography>
+            <Box component="ul">
+              {fields.map((field) => (
+                <Box component="li" key={field.ZUID} sx={{ listStyle: "none" }}>
+                  <FormGroup>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          color="secondary"
+                          size="small"
+                          name={field.name}
+                          onChange={(evt, val) => handleSelectField(evt, val)}
+                        />
+                      }
+                      label={field.label}
+                    />
+                  </FormGroup>
+                </Box>
+              ))}
+            </Box>
+
+            <Textarea
+              className={styles.TextArea}
+              name="message"
+              placeholder="Workflow request message"
+              value={message}
+              onChange={(evt) => setMessage(evt.target.value)}
+            />
+          </Box>
+        </AccordionDetails>
+        <AccordionActions>
+          <Button
+            variant="contained"
+            id="WorkflowRequestSendButton"
+            onClick={handleSend}
+            disabled={sending}
+            startIcon={
+              sending ? <CircularProgress size="20px" /> : <SaveIcon />
+            }
+          >
+            Send Email
+          </Button>
+        </AccordionActions>
+      </Accordion>
+    </Box>
   );
 });

@@ -21,6 +21,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 
 import Button from "@mui/material/Button";
 import SortIcon from "@mui/icons-material/Sort";
@@ -29,7 +31,6 @@ import PersonIcon from "@mui/icons-material/Person";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 
-import { Search } from "@zesty-io/core/Search";
 import { Loader } from "@zesty-io/core/Loader";
 
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
@@ -153,15 +154,29 @@ export default forwardRef((props, providedRef) => {
       className={cx(styles.GlobalSearch, props.className)}
       ref={searchRef}
     >
-      <Search
-        className={styles.Search}
+      <TextField
         placeholder={props.placeholder}
+        type="search"
+        variant="outlined"
+        fullWidth
+        size="small"
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon fontSize="small" />
+            </InputAdornment>
+          ),
+        }}
         onKeyUp={handleKeyUp}
-        onChange={(val) => setTerm(val)}
         onFocus={handleFocus}
         ref={providedRef}
         value={term}
+        onChange={(evt) => {
+          let term = evt.target.value;
+          setTerm(term);
+        }}
       />
+
       {term && showResults && (
         <List
           term={term}
