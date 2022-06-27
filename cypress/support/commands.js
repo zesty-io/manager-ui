@@ -28,5 +28,7 @@ Cypress.Commands.add("blockLock", () => {
 Cypress.Commands.add("waitOn", (path, cb) => {
   cy.intercept(path).as("waitingOn");
   cb();
-  cy.wait("@waitingOn");
+  cy.wait("@waitingOn", {
+    timeout: 15000,
+  });
 });

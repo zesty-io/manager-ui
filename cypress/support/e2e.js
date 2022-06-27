@@ -29,6 +29,12 @@ Cypress.on("uncaught:exception", (err, runnable) => {
   return false;
 });
 
+// Before spec is ran
+before(() => {
+  cy.login();
+});
+
+// Before each test in spec
 beforeEach(() => {
   /**
    * NOTE: Zesty is a multitennant app with a lock feature
@@ -41,5 +47,4 @@ beforeEach(() => {
    * lock modal from displaying.
    */
   cy.blockLock();
-  cy.login();
 });

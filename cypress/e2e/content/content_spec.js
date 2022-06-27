@@ -1,58 +1,66 @@
 describe("Content Specs", () => {
   const TIMESTAMP = Date.now();
 
-  before(() => {
-    cy.waitOn("/v1/content/models*", () => {
-      cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+  describe("content drawer", () => {
+    before(() => {
+      cy.waitOn("/v1/content/models*", () => {
+        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+      });
+    });
+
+    it("Check Actions Collapsed functionality", () => {
+      cy.get("[data-cy=ActionsContent]").then((content) => {
+        if (content.is(":visible")) {
+          cy.get("[data-cy=ActionsContent]", { timeout: 5000 }).should(
+            "be.visible"
+          );
+        } else {
+          cy.get("[data-cy=ActionsContent]").should("not.be.visible");
+        }
+      });
+    });
+
+    it("Check Actions Collapse persist when clicking on other Applications", () => {
+      cy.get("[data-cy=ActionsContent]").then((content) => {
+        if (content.is(":visible")) {
+          cy.get("[data-cy=ActionsContent]").should("be.visible");
+
+          cy.visit("/code");
+          cy.waitOn("/v1/content/models*", () => {
+            cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+          });
+          cy.get("[data-cy=ActionsContent]").should("be.visible");
+        } else {
+          cy.visit("/code");
+          cy.waitOn("/v1/content/models*", () => {
+            cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+          });
+          cy.get("[data-cy=ActionsContent]").should("not.be.visible");
+        }
+      });
+    });
+
+    it("Check Duo Mode Collapsed functionality", () => {
+      cy.get("main header button span").then((el) => {
+        // el[1] === ON(desktop icon)
+        const classList = Array.from(el[1].classList);
+        if (classList.includes("Selected--3_F85")) {
+          console.log("Selected");
+          cy.get("[data-cy=DuoModeContainer] iframe").should("be.visible");
+        } else {
+          console.log("Not Selected");
+        }
+      });
     });
   });
 
-  it("Check Actions Collapsed functionality", () => {
-    cy.get("[data-cy=ActionsContent]").then((content) => {
-      if (content.is(":visible")) {
-        cy.get("[data-cy=ActionsContent]", { timeout: 5000 }).should(
-          "be.visible"
-        );
-      } else {
-        cy.get("[data-cy=ActionsContent]").should("not.be.visible");
-      }
+  describe("editing content", () => {
+    before(() => {
+      cy.waitOn("/v1/content/models*", () => {
+        cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+      });
     });
-  });
 
-  it("Check Actions Collapse persist when clicking on other Applications", () => {
-    cy.get("[data-cy=ActionsContent]").then((content) => {
-      if (content.is(":visible")) {
-        cy.get("[data-cy=ActionsContent]").should("be.visible");
-
-        cy.visit("/code");
-        cy.waitOn("/v1/content/models*", () => {
-          cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
-        });
-        cy.get("[data-cy=ActionsContent]").should("be.visible");
-      } else {
-        cy.visit("/code");
-        cy.waitOn("/v1/content/models*", () => {
-          cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
-        });
-        cy.get("[data-cy=ActionsContent]").should("not.be.visible");
-      }
-    });
-  });
-
-  it("Check Duo Mode Collapsed functionality", () => {
-    cy.get("main header button span").then((el) => {
-      // el[1] === ON(desktop icon)
-      const classList = Array.from(el[1].classList);
-      if (classList.includes("Selected--3_F85")) {
-        console.log("Selected");
-        cy.get("[data-cy=DuoModeContainer] iframe").should("be.visible");
-      } else {
-        console.log("Not Selected");
-      }
-    });
-  });
-
-  describe("editing All Field Types content", () => {
     it("Text Field", () => {
       cy.get("#12-13d590-9v2nr2 input")
         .clear()
