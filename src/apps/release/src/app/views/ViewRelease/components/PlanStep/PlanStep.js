@@ -53,7 +53,7 @@ export function PlanStep(props) {
     state.languages.find((lang) => lang.ID === item.meta.langID)
   );
 
-  const modelType = useSelector(
+  const model = useSelector(
     (state) => state.models[item.meta.contentModelZUID]
   );
 
@@ -158,7 +158,7 @@ export function PlanStep(props) {
           <p>
             {/* Use icon matched to items model type */}
             <span className={styles.Icon}>
-              <FontAwesomeIcon icon={ICONS[modelType.type]} />
+              <FontAwesomeIcon icon={ICONS[model?.type]} />
             </span>
 
             {/* Use meta title. Show warning with link to edit if meta title is missing. */}

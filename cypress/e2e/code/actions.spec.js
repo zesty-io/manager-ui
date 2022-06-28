@@ -25,9 +25,9 @@ describe("Code Editor", () => {
   });
 
   it("Compare files", () => {
-    cy.intercept("/v1/web/views/11-eb8dec-6nsjbf/versions/").as("loadVersions");
-    cy.visit("/code/file/views/11-eb8dec-6nsjbf/diff/local,29");
-    cy.wait("@loadVersions");
+    cy.waitOn("/v1/web/views/11-eb8dec-6nsjbf/versions/", () => {
+      cy.visit("/code/file/views/11-eb8dec-6nsjbf/diff/local,29");
+    });
 
     // FIXME: The UI is not reflecting the correct state of the URL, showing incorrect diff versions.
     cy.get(".react-monaco-editor-container .editor.modified").should("exist");

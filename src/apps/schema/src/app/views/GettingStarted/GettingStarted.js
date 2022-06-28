@@ -65,7 +65,7 @@ export default connect((state) => state)(function GettingStarted(props) {
           label: model.label,
           description: "",
           listed: true,
-          type: model.type,
+          type: model?.type,
         })
       )
       .then((res) => {
@@ -95,12 +95,12 @@ export default connect((state) => state)(function GettingStarted(props) {
   return (
     <Wizard defaultStep={step}>
       <WizardStep
-        locked={!model.type}
+        locked={!model?.type}
         labelButtonNext="Next Choose Model Name"
         style={{ width: "960px" }}
       >
         <ModelType
-          modelType={model.type}
+          modelType={model?.type}
           setModelType={(type) => setModel({ ...model, type })}
         />
       </WizardStep>
