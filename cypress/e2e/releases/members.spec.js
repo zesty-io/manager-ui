@@ -39,9 +39,8 @@ describe("Release > members > CRUD", () => {
       }
     );
 
-    cy.get("#root").type("{esc}");
-
-    cy.get('"#root').trigger("keypress", {
+    // closes search results dropdown
+    cy.get("#root").trigger("keypress", {
       eventConstructor: "KeyboardEvent",
       keyCode: 27,
     });
@@ -58,9 +57,7 @@ describe("Release > members > CRUD", () => {
     ).click();
     cy.get(
       "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .Select .options li:last-child"
-    ).click({
-      force: true,
-    });
+    ).click();
     cy.get(
       "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .Select span"
     ).contains("Version 1");
