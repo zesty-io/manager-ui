@@ -47,10 +47,11 @@ export function Header({ plan }) {
         name="release"
         value={params.zuid}
         onChange={(e) => history.push(`/release/${e.target.value}`)}
+        size="small"
       >
         {releases.map((release) => {
           return (
-            <MenuItem key={release.ZUID} value={release.ZUID} size="small">
+            <MenuItem key={release.ZUID} value={release.ZUID}>
               {release.name}
             </MenuItem>
           );

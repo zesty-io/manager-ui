@@ -22,18 +22,17 @@ describe("Release > members > CRUD", () => {
       .should("exist");
   });
 
-  it("update member", () => {
+  it.only("update member", () => {
     // set member to version 1
     cy.get(
-      "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .Select"
+      "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .MuiSelect-select",
+      { timeout: 10000 }
     ).click();
-    cy.get(
-      "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .Select .options li:last-child"
-    ).click({
+    cy.get("[role=presentation] li:last-child").click({
       force: true,
     });
     cy.get(
-      "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .Select span"
+      "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .MuiSelect-select span"
     ).contains("Version 1");
   });
 

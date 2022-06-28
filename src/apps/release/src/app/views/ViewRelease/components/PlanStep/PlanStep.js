@@ -71,7 +71,7 @@ export function PlanStep(props) {
             ) : (
               ""
             )}
-            Version {content.meta.version}{" "}
+            <span>Version {content.meta.version} </span>
             <small>
               {" "}
               [

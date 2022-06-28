@@ -73,7 +73,7 @@ describe("Settings Actions", () => {
     cy.contains(SAVED_MESSAGE).should("exist");
   });
 
-  it.only("Forms", () => {
+  it("Forms", () => {
     cy.get("[data-cy=SettingsNav]").contains("Forms").click();
     cy.get("[data-cy=SubApp] input[type=text]").first().clear().type("15px");
     cy.get("#SaveSettings").click();
