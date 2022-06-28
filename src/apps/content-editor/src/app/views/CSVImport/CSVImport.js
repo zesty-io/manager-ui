@@ -182,7 +182,7 @@ class CSVImport extends Component {
 
   handleCreateItems = () => {
     this.setState({ failure: [] });
-    if (!this.props.model.type === "dataset" && !this.state.webMaps.pathPart) {
+    if (!this.props.model?.type === "dataset" && !this.state.webMaps.pathPart) {
       return this.props.dispatch(
         notify({
           message: "You must select a column for Path Part",

@@ -101,7 +101,7 @@ export default function ActionsDrawer(props) {
           {...props}
           site={{}}
           set={{
-            type: props.model.type,
+            type: props.model?.type,
           }}
         />
       </div>
