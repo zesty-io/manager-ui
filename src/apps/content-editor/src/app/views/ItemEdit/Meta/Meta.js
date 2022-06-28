@@ -28,7 +28,7 @@ export function Meta(props) {
       </Header>
 
       <div className={styles.MetaWrap}>
-        {props.model && props.model.type === "dataset" ? (
+        {props.model && props.model?.type === "dataset" ? (
           <DataSettings item={props.item} dispatch={props.dispatch} />
         ) : (
           <ItemSettings
