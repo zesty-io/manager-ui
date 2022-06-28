@@ -3,7 +3,7 @@ import cx from "classnames";
 import { connect } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 
-import { Select, Option } from "@zesty-io/core/Select";
+import { Select, MenuItem } from "@mui/material";
 
 import { selectLang } from "shell/store/user";
 
@@ -30,7 +30,8 @@ export const LanguageSelector = connect((state, props) => {
   const location = useLocation();
   const history = useHistory();
 
-  const handleSelect = (val) => {
+  const handleSelect = (e) => {
+    const val = e.target.value;
     props.dispatch(selectLang(val));
 
     // If we are at a content item level then reload newly selected language item
@@ -49,10 +50,13 @@ export const LanguageSelector = connect((state, props) => {
           name="LanguageSelector"
           className={cx(styles.LanguageSelector, props.className)}
           value={props.selectedLang}
-          onSelect={handleSelect}
+          onChange={handleSelect}
+          size="small"
         >
           {props.languages.map((lang) => (
-            <Option key={lang.code} text={lang.code} value={lang.code} />
+            <MenuItem key={lang.code} value={lang.code}>
+              {lang.code}
+            </MenuItem>
           ))}
         </Select>
       ) : null}

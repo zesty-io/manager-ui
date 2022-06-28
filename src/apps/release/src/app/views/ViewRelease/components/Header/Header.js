@@ -5,11 +5,10 @@ import { useHistory, useParams } from "react-router";
 import { createMember } from "shell/store/releaseMembers";
 import { fetchVersions } from "shell/store/contentVersions";
 
-import Button from "@mui/material/Button";
+import { Button, Select, MenuItem } from "@mui/material";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
 
 import ContentSearch from "shell/components/ContentSearch";
-import { Select, Option } from "@zesty-io/core/Select";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import { PublishAll } from "./components/PublishAll";
@@ -47,15 +46,13 @@ export function Header({ plan }) {
       <Select
         name="release"
         value={params.zuid}
-        onSelect={(val) => history.push(`/release/${val}`)}
+        onChange={(e) => history.push(`/release/${e.target.value}`)}
       >
         {releases.map((release) => {
           return (
-            <Option
-              key={release.ZUID}
-              value={release.ZUID}
-              text={release.name}
-            />
+            <MenuItem key={release.ZUID} value={release.ZUID} size="small">
+              {release.name}
+            </MenuItem>
           );
         })}
       </Select>

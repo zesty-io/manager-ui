@@ -1,6 +1,6 @@
 import { Component } from "react";
-import { Select, Option } from "@zesty-io/core";
-import TextField from "@mui/material/TextField";
+
+import { Select, MenuItem, TextField } from "@mui/material";
 
 import styles from "./CsvSettings.less";
 export const CsvSettings = (props) => {
@@ -10,57 +10,101 @@ export const CsvSettings = (props) => {
         <label>Meta Description</label>
         <Select
           name={"metaDescription"}
-          onSelect={props.handleMap}
-          value="none"
+          onChange={(e) => props.handleMap(e.target.value, "metaDescription")}
+          defaultValue="none"
+          size="small"
+          fullWidth
         >
-          <Option text="none" value="none" />
+          <MenuItem value="none">none</MenuItem>
           {props.cols.map((col, index) => (
-            <Option key={index} text={col} value={col} />
+            <MenuItem key={index} value={col}>
+              {col}
+            </MenuItem>
           ))}
         </Select>
       </article>
       <article className={styles.Setting}>
         <label>Meta Keywords</label>
-        <Select name="metaKeywords" onSelect={props.handleMap} value="none">
-          <Option text="none" value="none" />
+        <Select
+          name="metaKeywords"
+          onChange={(e) => props.handleMap(e.target.value, "metaKeywords")}
+          defaultValue="none"
+          size="small"
+          fullWidth
+        >
+          <MenuItem value="none">none</MenuItem>
           {props.cols.map((col, index) => (
-            <Option key={index} text={col} value={col} />
+            <MenuItem key={index} value={col}>
+              {col}
+            </MenuItem>
           ))}
         </Select>
       </article>
       <article className={styles.Setting}>
         <label>Meta Link Text</label>
-        <Select name="metaLinkText" onSelect={props.handleMap} value="none">
-          <Option text="none" value="none" />
+        <Select
+          name="metaLinkText"
+          onChange={(e) => props.handleMap(e.target.value, "metaLinkText")}
+          defaultValue="none"
+          size="small"
+          fullWidth
+        >
+          <MenuItem value="none">none</MenuItem>
           {props.cols.map((col, index) => (
-            <Option key={index} text={col} value={col} />
+            <MenuItem key={index} value={col}>
+              {col}
+            </MenuItem>
           ))}
         </Select>
       </article>
       <article className={styles.Setting}>
         <label>Meta Title</label>
-        <Select name="metaTitle" onSelect={props.handleMap} value="none">
-          <Option text="none" value="none" />
+        <Select
+          name="metaTitle"
+          onChange={(e) => props.handleMap(e.target.value, "metaTitle")}
+          defaultValue="none"
+          size="small"
+          fullWidth
+        >
+          <MenuItem value="none">none</MenuItem>
           {props.cols.map((col, index) => (
-            <Option key={index} text={col} value={col} />
+            <MenuItem key={index} value={col}>
+              {col}
+            </MenuItem>
           ))}
         </Select>
       </article>
       <article className={styles.Setting}>
         <label>Parent ZUID</label>
-        <Select name="parentZUID" onSelect={props.handleMap} value="none">
-          <Option text="none" value="none" />
+        <Select
+          name="parentZUID"
+          onChange={(e) => props.handleMap(e.target.value, "parentZUID")}
+          defaultValue="none"
+          size="small"
+          fullWidth
+        >
+          <MenuItem value="none">none</MenuItem>
           {props.cols.map((col, index) => (
-            <Option key={index} text={col} value={col} />
+            <MenuItem key={index} value={col}>
+              {col}
+            </MenuItem>
           ))}
         </Select>
       </article>
       <article className={styles.Setting}>
         <label>Path Part</label>
-        <Select name="pathPart" onSelect={props.handleMap} value="none">
-          <Option text="none" value="none" />
+        <Select
+          name="pathPart"
+          onChange={(e) => props.handleMap(e.target.value, "pathPart")}
+          defaultValue="none"
+          size="small"
+          fullWidth
+        >
+          <MenuItem value="none">none</MenuItem>
           {props.cols.map((col, index) => (
-            <Option key={index} text={col} value={col} />
+            <MenuItem key={index} value={col}>
+              {col}
+            </MenuItem>
           ))}
         </Select>
       </article>
@@ -71,22 +115,23 @@ export const CsvSettings = (props) => {
         <label>Sitemap Priority</label>
         <Select
           name="sitemapPriority"
-          value="-1.0"
-          onSelect={props.handleMap}
-          value={-1.0}
+          onChange={(e) => props.handleMap(e.target.value, "sitemapPriority")}
+          defaultValue={-1.0}
+          size="small"
+          fullWidth
         >
-          <Option value={-1.0} text="Automatically Set Priority" />
-          <Option value={1.0} text="1.0" />
-          <Option value={0.9} text="0.9" />
-          <Option value={0.8} text="0.8" />
-          <Option value={0.7} text="0.7" />
-          <Option value={0.6} text="0.6" />
-          <Option value={0.5} text="0.5" />
-          <Option value={0.4} text="0.4" />
-          <Option value={0.3} text="0.3" />
-          <Option value={0.2} text="0.2" />
-          <Option value={0.1} text="0.1" />
-          <Option value={-2.0} text="Do Not Display in Sitemap" />
+          <MenuItem value={-1.0}>Automatically Set Priority</MenuItem>
+          <MenuItem value={1.0}>1.0</MenuItem>
+          <MenuItem value={0.9}>0.9</MenuItem>
+          <MenuItem value={0.8}>0.8</MenuItem>
+          <MenuItem value={0.7}>0.7</MenuItem>
+          <MenuItem value={0.6}>0.6</MenuItem>
+          <MenuItem value={0.5}>0.5</MenuItem>
+          <MenuItem value={0.4}>0.4</MenuItem>
+          <MenuItem value={0.3}>0.3</MenuItem>
+          <MenuItem value={0.2}>0.2</MenuItem>
+          <MenuItem value={0.1}>0.1</MenuItem>
+          <MenuItem value={-2.0}>Do Not Display in Sitemap</MenuItem>
         </Select>
       </article>
     </section>
@@ -157,18 +202,22 @@ class CanonicalTag extends Component {
           <div>
             <Select
               name="canonicalTagMode"
-              onSelect={(value, name) => {
+              size="small"
+              fullWidth
+              onChange={(e) => {
+                const value = e.target.value;
                 this.setState({ canonicalTagMode: value });
-                this.props.onChange(Number(value), name);
+                this.props.onChange(Number(value), "canonicalTagMode");
               }}
               value={
                 this.state.canonicalOptions[this.state.canonicalTagMode].value
               }
-              options={this.state.canonicalOptions}
             >
               {this.state.canonicalOptions.map((opt) => {
                 return (
-                  <Option key={opt.key} value={opt.value} text={opt.text} />
+                  <MenuItem key={opt.key} value={opt.value}>
+                    {opt.text}
+                  </MenuItem>
                 );
               })}
             </Select>

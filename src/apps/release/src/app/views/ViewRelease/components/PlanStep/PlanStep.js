@@ -6,12 +6,15 @@ import moment from "moment-timezone";
 
 import { updateMember, deleteMember } from "shell/store/releaseMembers";
 
-import Link from "@mui/material/Link";
-import Button from "@mui/material/Button";
-import CircularProgress from "@mui/material/CircularProgress";
+import {
+  Link,
+  Button,
+  CircularProgress,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { Select, Option } from "@zesty-io/core/Select";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -124,12 +127,16 @@ export function PlanStep(props) {
       <td data-cy="release-member-version">
         {/* Update preview link when version is changed */}
         <Select
-          onSelect={onUpdateVersion}
+          onSelect={(e) => onUpdateVersion(e.target.value)}
           name="version"
-          value={props.member.version}
+          defaultValue={props.member.version}
+          size="small"
+          fullWidth
         >
           {options.map((opt) => (
-            <Option key={opt.value} value={opt.value} text={opt.text} />
+            <MenuItem key={opt.value} value={opt.value}>
+              {opt.text}
+            </MenuItem>
           ))}
         </Select>
       </td>

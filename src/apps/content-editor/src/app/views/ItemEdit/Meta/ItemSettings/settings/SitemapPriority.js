@@ -1,8 +1,7 @@
 import { memo } from "react";
 
-import { Select, Option } from "@zesty-io/core/Select";
+import { Tooltip, Select, MenuItem } from "@mui/material";
 import { FieldLabel } from "@zesty-io/core/FieldLabel";
-import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import styles from "./SitemapPriority.less";
@@ -26,24 +25,26 @@ export const SitemapPriority = memo(function SitemapPriority(props) {
       />
       <Select
         name="sitemapPriority"
-        value={props.sitemapPriority || "-1.0"}
-        onSelect={(value, name) => {
+        defaultValue={props.sitemapPriority || "-1.0"}
+        size="small"
+        onSelect={(e) => {
           // this value is coerced here due to API restrictions
-          props.onChange(Number(value), name);
+          props.onChange(Number(e.target.value), "sitemapPriority");
         }}
+        fullWidth
       >
-        <Option value={-1.0} text="Automatically Set Priority" />
-        <Option value={1.0} text="1.0" />
-        <Option value={0.9} text="0.9" />
-        <Option value={0.8} text="0.8" />
-        <Option value={0.7} text="0.7" />
-        <Option value={0.6} text="0.6" />
-        <Option value={0.5} text="0.5" />
-        <Option value={0.4} text="0.4" />
-        <Option value={0.3} text="0.3" />
-        <Option value={0.2} text="0.2" />
-        <Option value={0.1} text="0.1" />
-        <Option value={-2.0} text="Do Not Display in Sitemap" />
+        <MenuItem value={-1.0}>Automatically Set Priority</MenuItem>
+        <MenuItem value={1.0}>1.0</MenuItem>
+        <MenuItem value={0.9}>0.9</MenuItem>
+        <MenuItem value={0.8}>0.8</MenuItem>
+        <MenuItem value={0.7}>0.7</MenuItem>
+        <MenuItem value={0.6}>0.6</MenuItem>
+        <MenuItem value={0.5}>0.5</MenuItem>
+        <MenuItem value={0.4}>0.4</MenuItem>
+        <MenuItem value={0.3}>0.3</MenuItem>
+        <MenuItem value={0.2}>0.2</MenuItem>
+        <MenuItem value={0.1}>0.1</MenuItem>
+        <MenuItem value={-2.0}>Do Not Display in Sitemap</MenuItem>
       </Select>
     </article>
   );

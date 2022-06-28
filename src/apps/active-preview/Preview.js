@@ -1,22 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import cx from "classnames";
 
-import Button from "@mui/material/Button";
+import { Button, Select, Link, TextField, MenuItem } from "@mui/material";
 import SyncIcon from "@mui/icons-material/Sync";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import MobileScreenShareIcon from "@mui/icons-material/MobileScreenShare";
 
 import { CopyButton } from "@zesty-io/material";
 
-import { Select, Option } from "@zesty-io/core/Select";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { Notice } from "@zesty-io/core/Notice";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt, faEye } from "@fortawesome/free-solid-svg-icons";
-import Link from "@mui/material/Link";
-import TextField from "@mui/material/TextField";
 
 import { Meta } from "./components/Meta";
 import { JSONPreview } from "./components/JSONPreview";
@@ -191,11 +188,11 @@ export function Preview(props) {
               <Select
                 className={styles.Select}
                 name="device"
-                value="fullscreen"
-                onSelect={(val) => setDevice(val)}
+                value={device}
+                onChange={(e) => setDevice(e.target.value)}
+                size="small"
               >
-                <Option value="fullscreen" text="Viewport" />
-
+                <MenuItem value="fullscreen">Viewport</MenuItem>
                 {/*
             Generate available options from templates,
             except the initial "No Template" template
@@ -203,11 +200,9 @@ export function Preview(props) {
                 {Object.keys(templates)
                   .slice(1)
                   .map((template, index) => (
-                    <Option
-                      key={index}
-                      value={template}
-                      html={templates[template].option}
-                    />
+                    <MenuItem key={index} value={template}>
+                      {templates[template].option}
+                    </MenuItem>
                   ))}
               </Select>
               <Button

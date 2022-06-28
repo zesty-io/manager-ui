@@ -1,14 +1,15 @@
 import { useState } from "react";
-
-import Button from "@mui/material/Button";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import ToggleButton from "@mui/material/ToggleButton";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
+import {
+  Button,
+  ToggleButtonGroup,
+  ToggleButton,
+  TextField,
+  InputAdornment,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
-
-import { Select, Option } from "@zesty-io/core/Select";
 
 import { createRedirect } from "../../../../store/redirects";
 import RedirectsImport from "../../../RedirectsManager/RedirectActions/RedirectsImport/RedirectsImport";
@@ -86,10 +87,22 @@ export function RedirectCreator(props) {
         </ToggleButtonGroup>
       </span>
       <span className={styles.RedirectCreatorCell}>
-        <Select name={"selectType"} onSelect={setType} value={type}>
-          <Option value="page" selected text="Internal" />
-          <Option value="external" text="External" />
-          <Option value="path" text="Wildcard" />
+        <Select
+          name={"selectType"}
+          onChange={(e) => setType(e.target.value)}
+          value={type}
+          size="small"
+          fullWidth
+        >
+          <MenuItem value="page" text="Internal">
+            Internal
+          </MenuItem>
+          <MenuItem value="external" text="External">
+            External
+          </MenuItem>
+          <MenuItem value="path" text="Wildcard">
+            Wildcard
+          </MenuItem>
         </Select>
       </span>
       <span className={styles.RedirectCreatorCell}>

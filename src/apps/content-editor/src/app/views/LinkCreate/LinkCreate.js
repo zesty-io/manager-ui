@@ -2,23 +2,27 @@ import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
+import {
+  Box,
+  Select,
+  MenuItem,
+  Button,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  Card,
+  CardHeader,
+  CardContent,
+  CardActions,
+} from "@mui/material";
+
 import AddIcon from "@mui/icons-material/Add";
 import LinkIcon from "@mui/icons-material/Link";
 import IosShareIcon from "@mui/icons-material/IosShare";
-import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
 
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
 import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
-import { Select, Option } from "@zesty-io/core/Select";
 
 import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
@@ -135,29 +139,23 @@ export function LinkCreate() {
             <>
               {" "}
               <Select
-                label="Select link type"
                 name="type"
                 value={state.type}
-                onSelect={onChange}
+                onChange={(e) => onChange(e.target.value, "type")}
+                fullWidth
               >
-                <Option
-                  value="internal"
-                  component={
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <LinkIcon fontSize="small" />
-                      &nbsp;Internal Link
-                    </Box>
-                  }
-                />
-                <Option
-                  value="external"
-                  component={
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <IosShareIcon fontSize="small" />
-                      &nbsp;External Link
-                    </Box>
-                  }
-                />
+                <MenuItem value="internal">
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <LinkIcon fontSize="small" />
+                    &nbsp;Internal Link
+                  </Box>
+                </MenuItem>
+                <MenuItem value="external">
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <IosShareIcon fontSize="small" />
+                    &nbsp;External Link
+                  </Box>
+                </MenuItem>
               </Select>
             </>
           }

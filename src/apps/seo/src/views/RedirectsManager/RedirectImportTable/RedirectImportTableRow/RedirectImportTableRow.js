@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import cx from "classnames";
 
-import Button from "@mui/material/Button";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import ToggleButton from "@mui/material/ToggleButton";
+import {
+  Button,
+  ToggleButton,
+  ToggleButtonGroup,
+  Select,
+  MenuItem,
+  TextField,
+} from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
-import TextField from "@mui/material/TextField";
-
-import { Select, Option } from "@zesty-io/core/Select";
 
 import { createRedirect } from "../../../../store/redirects";
 import { importTarget } from "../../../../store/imports";
@@ -70,21 +72,26 @@ function RedirectImportTableRow(props) {
 
       <span className={styles.RowCell}>
         {props.target_type === "page" ? (
-          <Select className={styles.selector} onSelect={handlePageTarget}>
+          <Select
+            className={styles.selector}
+            onChange={(e) => handlePageTarget(e.target.value)}
+            size="small"
+            fullWidth
+          >
             {Object.keys(props.paths).map((key) => {
               let path = props.paths[key];
 
               if (path.path_full !== props.target) {
                 return (
-                  <Option key={key} value={path.path_full}>
+                  <MenuItem key={key} value={path.path_full}>
                     {path.path_full}
-                  </Option>
+                  </MenuItem>
                 );
               } else {
                 return (
-                  <Option selected="true" key={key} value={path.path_full}>
+                  <MenuItem selected key={key} value={path.path_full}>
                     {path.path_full}
-                  </Option>
+                  </MenuItem>
                 );
               }
             })}

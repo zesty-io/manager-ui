@@ -3,10 +3,14 @@ import cx from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 import { usePermission } from "shell/hooks/use-permissions";
 
-import Button from "@mui/material/Button";
-import Link from "@mui/material/Link";
+import {
+  Button,
+  Link,
+  CircularProgress,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import CircularProgress from "@mui/material/CircularProgress";
 
 import { CopyButton } from "@zesty-io/material";
 
@@ -17,8 +21,6 @@ import {
   faExternalLinkAlt,
   faEye,
 } from "@fortawesome/free-solid-svg-icons";
-
-import { Select, Option } from "@zesty-io/core/Select";
 
 import { useDomain } from "shell/hooks/use-domain";
 import { notify } from "shell/store/notifications";
@@ -80,16 +82,22 @@ export default function GlobalInstance(props) {
           ZUID: <CopyButton size="small" value={instance.ZUID} />
         </p>
 
-        <Select className={styles.Select} name="instance" value={instance.ZUID}>
+        <Select
+          className={styles.Select}
+          name="instance"
+          value={instance.ZUID}
+          fullWidth
+        >
           {instances.map((instance) => (
-            <Option
+            <MenuItem
               key={instance.ZUID}
               value={instance.ZUID}
-              text={instance.name}
               onClick={() => {
                 window.location.href = `${CONFIG.URL_MANAGER_PROTOCOL}${instance.ZUID}${CONFIG.URL_MANAGER}`;
               }}
-            />
+            >
+              {instance.name}
+            </MenuItem>
           ))}
         </Select>
         <Link
