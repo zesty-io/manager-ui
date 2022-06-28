@@ -370,18 +370,18 @@ const ListOption = (props) => {
 
   let modelIcon;
   const model = props.models[props.opt.meta.contentModelZUID];
-  if (model && model.type) {
-    if (model.type === "dataset") {
+  if (model && model?.type) {
+    if (model?.type === "dataset") {
       modelIcon = (
         <FontAwesomeIcon className={styles.ModelIcon} icon={faDatabase} />
       );
     }
-    if (model.type === "templateset") {
+    if (model?.type === "templateset") {
       modelIcon = (
         <FontAwesomeIcon className={styles.ModelIcon} icon={faFile} />
       );
     }
-    if (model.type === "pageset") {
+    if (model?.type === "pageset") {
       modelIcon = (
         <FontAwesomeIcon className={styles.ModelIcon} icon={faListAlt} />
       );

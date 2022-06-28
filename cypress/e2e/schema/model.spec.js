@@ -1,12 +1,12 @@
 describe("Schema", () => {
-  before(() => {
-    cy.login();
-    cy.visit("/schema");
-    cy.get(".SchemaNav").should("exist");
-  });
-
   const timestamp = Date.now();
   const SCHEMA_NAME = `Test Schema: ${timestamp}`;
+
+  before(() => {
+    cy.waitOn("/v1/env/nav", () => {
+      cy.visit("/schema");
+    });
+  });
 
   it.skip("Create Model, Add Field, and Delete Model", () => {
     cy.get('input[name="label"]').type(SCHEMA_NAME);

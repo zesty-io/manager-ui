@@ -21,42 +21,45 @@ export const MemoizedEditor = memo(
     // use one model per filename and setModel when filename changes
     // this achieves a per-filename undo stack
     useEffect(() => {
-      const language = resolveMonacoLang(props.fileName);
-      const filenameURI = monaco.Uri.from({
-        scheme: "file",
-        path: `${props.fileName}`,
-        // attach contentModelZUID to monaco model for lookup within completion provider
-        query: `contentModelZUID=${props.contentModelZUID}&fileZUID=${props.fileZUID}`,
-      });
-      const model =
-        monaco.editor.getModel(filenameURI) ||
-        monaco.editor.createModel(props.code, language, filenameURI);
+      if (ref.current) {
+        const language = resolveMonacoLang(props.fileName);
+        const filenameURI = monaco.Uri.from({
+          scheme: "file",
+          path: `${props.fileName}`,
+          // attach contentModelZUID to monaco model for lookup within completion provider
+          query: `contentModelZUID=${props.contentModelZUID}&fileZUID=${props.fileZUID}`,
+        });
+        const model =
+          monaco.editor.getModel(filenameURI) ||
+          monaco.editor.createModel(props.code, language, filenameURI);
 
-      ref.current.editor.setModel(model);
+        ref.current.editor.setModel(model);
 
-      // Bring browser focus to the editor text
-      ref.current.editor.focus();
+        // Bring browser focus to the editor text
+        ref.current.editor.focus();
 
-      // Restore previous cursor position
-      if (codeEditorPosition?.[props.fileZUID]) {
-        ref.current.editor.setPosition(codeEditorPosition[props.fileZUID]);
+        // Restore previous cursor position
+        if (codeEditorPosition?.[props.fileZUID]) {
+          ref.current.editor.setPosition(codeEditorPosition[props.fileZUID]);
+        }
+
+        // Saves cursor position to the store on file change
+        return () => {
+          dispatch(
+            actions.setCodeEditorPosition({
+              ...codeEditorPosition,
+              [props.fileZUID]: ref.current.editor.getPosition(),
+            })
+          );
+        };
       }
-
-      // Saves cursor position to the store on file change
-      return () => {
-        dispatch(
-          actions.setCodeEditorPosition({
-            ...codeEditorPosition,
-            [props.fileZUID]: ref.current.editor.getPosition(),
-          })
-        );
-      };
     }, [props.fileName]);
 
     useEffect(() => {
-      if (!ref.current?.editor) return;
-      if (props.code !== ref.current.editor.getValue()) {
-        ref.current.editor.getModel().setValue(props.code);
+      if (ref.current) {
+        if (props.code !== ref.current.editor.getValue()) {
+          ref.current.editor.getModel().setValue(props.code);
+        }
       }
     }, [props.code]);
 

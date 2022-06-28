@@ -82,7 +82,10 @@ export default connect((state) => {
         </span>
 
         {props.notifications[0] && (
-          <div className={cx(styles.Toast, showToast ? null : styles.Hide)}>
+          <div
+            className={cx(styles.Toast, showToast ? null : styles.Hide)}
+            data-cy="toast"
+          >
             <FontAwesomeIcon
               className={cx(
                 props.notifications[0].kind
