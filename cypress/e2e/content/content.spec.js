@@ -168,6 +168,9 @@ describe("Content Specs", () => {
           pathname: "/v1/search/items",
           query: {
             q: "homepage",
+            order: "created",
+            dir: "DESC",
+            limit: "100",
           },
         },
         () => {
