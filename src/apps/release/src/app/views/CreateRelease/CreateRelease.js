@@ -8,7 +8,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import AddIcon from "@mui/icons-material/Add";
 
 import { FieldTypeText } from "@zesty-io/material";
-import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 
 import { createRelease, fetchReleases } from "shell/store/releases";
 
@@ -65,13 +64,16 @@ export function CreateRelease() {
           required
           error={error}
         />
-        <FieldTypeTextarea
+        <FieldTypeText
           data-cy="release-desc"
           label="Release Description"
           name="description"
+          // TODO should this even really be a text area if the maxlen is 150?
           maxLength={150}
           value={description}
-          onChange={(val) => setDescription(val)}
+          onChange={(evt) => setDescription(evt.target.value)}
+          multiline
+          rows={6}
         />
 
         <Button
