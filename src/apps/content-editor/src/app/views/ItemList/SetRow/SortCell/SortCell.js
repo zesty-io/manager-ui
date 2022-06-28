@@ -9,8 +9,10 @@ export const SortCell = memo(function SortCell(props) {
     <span className={cx(props.className, styles.SortCell)}>
       <FieldTypeSort
         name={props.name}
-        value={props.value}
-        onChange={(evt) => props.onChange(evt.target.value, props.name)}
+        value={props.value ? props.value.toString() : "0"}
+        onChange={(evt) =>
+          props.onChange(parseInt(evt.target.value), props.name)
+        }
       />
     </span>
   );

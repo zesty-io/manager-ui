@@ -133,7 +133,7 @@ export const HeadTag = (props) => {
             />
             <Box sx={{ maxWidth: "200px" }}>
               <FieldTypeSort
-                value={tag.sort}
+                value={tag.sort ? tag.sort.toString() : "0"}
                 name={tag.ZUID}
                 label="Sort"
                 onChange={(evt) =>

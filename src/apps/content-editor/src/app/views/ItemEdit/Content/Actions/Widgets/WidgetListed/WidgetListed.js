@@ -77,13 +77,13 @@ export const WidgetListed = memo(function WidgetListed(props) {
               &nbsp;Automated Navigation Order
             </span>
           }
-          value={props.sort}
+          value={props.sort ? props.sort.toString() : "0"}
           onChange={(evt) => {
             props.dispatch({
               type: "SET_ITEM_META",
               itemZUID: props.itemZUID,
               key: "sort",
-              value: evt.target.value,
+              value: parseInt(evt.target.value),
             });
           }}
         />

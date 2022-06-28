@@ -850,10 +850,9 @@ export default function Field({
           }
           helperText={description}
           required={required}
-          value={value || 0}
+          value={value ? value.toString() : "0"}
           onChange={(evt) => {
-            console.log(evt);
-            onChange(evt.target.value, name);
+            onChange(parseInt(evt.target.value), name);
           }}
         />
       );
