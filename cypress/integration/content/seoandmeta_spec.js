@@ -12,8 +12,13 @@ describe("Content SEO & Meta", () => {
     );
     // //Force true: When multiple cypress test are running simultaneously, content lock modal will render blocking click events.
     cy.get("[data-cy=meta]").click({ force: true });
-    cy.get("header").find(".Select").first().click();
-    cy.get('[data-value="es"]').click({ force: true });
+    cy.get("header")
+      .find(".MuiSelect-select", { timeout: 10000 })
+      .first()
+      .click();
+    cy.get("[role=presentation")
+      .find('[data-value="es"]')
+      .click({ force: true });
     cy.get("[data-cy=meta]").click({ force: true });
 
     // cy.get("[data-cy=itemParent]").contains("/es").should("exist");

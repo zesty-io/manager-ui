@@ -22,7 +22,7 @@ describe("Release > members > CRUD", () => {
       .should("exist");
   });
 
-  it.only("update member", () => {
+  it("update member", () => {
     // set member to version 1
     cy.get(
       "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .MuiSelect-select",
