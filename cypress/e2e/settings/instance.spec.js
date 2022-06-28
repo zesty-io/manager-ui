@@ -2,13 +2,16 @@ describe("Instance", () => {
   const SAVED_MESSAGE = "Settings Saved";
 
   before(() => {
-    cy.visit("/settings");
+    cy.waitOn("/v1/env/settings", () => {
+      cy.visit("/settings");
+    });
   });
 
   it("General", () => {
     cy.get("[data-cy=SubApp] textarea").first().clear().type("example");
 
     cy.get("#saveSettings").click();
+
     cy.contains(SAVED_MESSAGE).should("exist");
   });
 

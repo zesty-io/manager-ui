@@ -32,6 +32,12 @@ Cypress.on("uncaught:exception", (err, runnable) => {
 // Before spec is ran
 before(() => {
   cy.login();
+
+  // NOTE: we program the app to always select state from the store when available
+  // but often on an initial load that data is not present and deeply nested values will
+  // throw undefined errors. To ensure these are caught during testing we always drop
+  // indexdb before starting tests
+  indexedDB.deleteDatabase("zesty");
 });
 
 // Before each test in spec

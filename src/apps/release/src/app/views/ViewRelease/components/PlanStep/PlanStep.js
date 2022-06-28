@@ -50,11 +50,11 @@ export function PlanStep(props) {
   );
 
   const lang = useSelector((state) =>
-    state.languages.find((lang) => lang.ID === item.meta.langID)
+    state.languages.find((lang) => lang.ID === item?.meta.langID)
   );
 
   const model = useSelector(
-    (state) => state.models[item.meta.contentModelZUID]
+    (state) => state.models[item?.meta.contentModelZUID]
   );
 
   const [loading, setLoading] = useState(false);
@@ -119,7 +119,7 @@ export function PlanStep(props) {
         props.member.status === "error" ? styles.error : null
       )}
     >
-      <td>{lang.code}</td>
+      <td>{lang?.code}</td>
 
       <td data-cy="release-member-version">
         {/* Update preview link when version is changed */}
@@ -136,13 +136,13 @@ export function PlanStep(props) {
 
       <td>
         {/* Preview link should include specific selected version */}
-        {item.web.path ? (
+        {item?.web.path ? (
           <Link
             underline="none"
             color="secondary"
             target="_blank"
-            title={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${props.member.version}`}
-            href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item.web.path}?__version=${props.member.version}`}
+            title={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item?.web.path}?__version=${props.member.version}`}
+            href={`${CONFIG.URL_PREVIEW_PROTOCOL}${instanceID}${CONFIG.URL_PREVIEW}${item?.web.path}?__version=${props.member.version}`}
           >
             <FontAwesomeIcon icon={faEye} />
           </Link>
@@ -153,7 +153,7 @@ export function PlanStep(props) {
 
       <td>
         <AppLink
-          to={`/content/${item.meta.contentModelZUID}/${item.meta.ZUID}`}
+          to={`/content/${item?.meta.contentModelZUID}/${item?.meta.ZUID}`}
         >
           <p>
             {/* Use icon matched to items model type */}
@@ -163,17 +163,17 @@ export function PlanStep(props) {
 
             {/* Use meta title. Show warning with link to edit if meta title is missing. */}
 
-            {item.web.metaTitle
-              ? item.web.metaTitle
+            {item?.web.metaTitle
+              ? item?.web.metaTitle
               : "Missing Item Meta Title"}
           </p>
         </AppLink>
       </td>
 
       <td>
-        {item.publishing?.isPublished
-          ? `Version ${item.publishing.version} was published ${moment(
-              item.publishing.publishAt
+        {item?.publishing?.isPublished
+          ? `Version ${item?.publishing.version} was published ${moment(
+              item?.publishing.publishAt
             ).fromNow()}`
           : "Never published"}
       </td>
