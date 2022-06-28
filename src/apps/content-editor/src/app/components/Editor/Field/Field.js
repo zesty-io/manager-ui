@@ -15,6 +15,7 @@ import FormLabel from "@mui/material/FormLabel";
 import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
+import TextField from "@mui/material/TextField";
 
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
@@ -29,7 +30,6 @@ import { AppLink } from "@zesty-io/core/AppLink";
 import { Modal } from "@zesty-io/core/Modal";
 import MediaApp from "../../../../../../media/src/app/MediaApp";
 import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
-import { FieldTypeNumber } from "@zesty-io/core/FieldTypeNumber";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
 import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { FieldTypeCurrency } from "@zesty-io/core/FieldTypeCurrency";
@@ -770,16 +770,41 @@ export default function Field({
       );
 
     case "number":
+      /*
+      const { tooltip } = settings
+      const label = tooltip
+        ? <Tooltip><InfoIcon</Tooltip>FieldTypeLabel
+        */
       return (
-        <FieldTypeNumber
-          name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
-          required={required}
-          value={Number(value) ? Number(value) : 0}
-          onChange={onChange}
-        />
+        <FormControl fullWidth required={required}>
+          <FormLabel sx={{ display: "flex" }}>
+            <Stack direction="row" alignItems="center">
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+
+              {FieldTypeLabel}
+            </Stack>
+          </FormLabel>
+          <TextField
+            size="small"
+            variant="outlined"
+            type="number"
+            value={value ? value.toString() : "0"}
+            name={name}
+            required={required}
+            helperText={description}
+            onChange={(evt) => onChange(evt.target.value, name)}
+          />
+        </FormControl>
       );
 
     case "currency":
