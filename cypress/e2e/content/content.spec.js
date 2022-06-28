@@ -163,13 +163,21 @@ describe("Content Specs", () => {
     });
 
     it("Internal Link Field", () => {
-      cy.waitOn("/v1/search/items*", () => {
-        // filter select list and wait on api data
-        cy.get("#12-10741c-s5jkwg .Select")
-          .click()
-          .find("input")
-          .type("homepage");
-      });
+      cy.waitOn(
+        {
+          pathname: "/v1/search/items",
+          query: {
+            q: "homepage",
+          },
+        },
+        () => {
+          // filter select list and wait on api data
+          cy.get("#12-10741c-s5jkwg .Select")
+            .click()
+            .find("input")
+            .type("homepage");
+        }
+      );
 
       // select option
       cy.get("#12-10741c-s5jkwg .Select .options li:first-child").click();

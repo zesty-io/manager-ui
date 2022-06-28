@@ -86,6 +86,8 @@ describe("Release > members > CRUD", () => {
       }
     );
 
-    cy.get("[data-cy=PlanTable] tbody tr").should("have.length", 0);
+    cy.get("[data-cy=PlanTable] tbody tr")
+      .contains("Homepage")
+      .should("not.exist");
   });
 });

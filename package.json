@@ -33,7 +33,7 @@
     "start:stage": "npm run serve:webpack -- --node-env stage --mode=development",
     "task:clean": "rimraf build",
     "task:webpack": "cross-env NODE_OPTIONS='--max_old_space_size=4096' webpack --no-stats --config src/shell/webpack.config.js",
-    "test": "./node_modules/.bin/cypress run --headless --browser chrome --reporter min",
+    "test": "./node_modules/.bin/cypress run --headless --browser chrome --reporter list",
     "test:open": "./node_modules/.bin/cypress open"
   },
   "dependencies": {

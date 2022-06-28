@@ -1,12 +1,5 @@
 describe("Code Editor", () => {
-  before(() => {
-    cy.login();
-    cy.visit("/code");
-  });
-
   it.skip("Sort resources", () => {
-    cy.blockLock();
-
     // TODO reorder is not triggering rebalancing list. un-skip to see failure.
     // reorder list
     cy.contains("Order").eq(0).click();
@@ -32,11 +25,9 @@ describe("Code Editor", () => {
   });
 
   it("Compare files", () => {
-    cy.blockLock();
-
-    cy.intercept("/v1/web/views/11-eb8dec-6nsjbf").as("loadView");
+    cy.intercept("/v1/web/views/11-eb8dec-6nsjbf/versions/").as("loadVersions");
     cy.visit("/code/file/views/11-eb8dec-6nsjbf/diff/local,29");
-    cy.wait("@loadView");
+    cy.wait("@loadVersions");
 
     // FIXME: The UI is not reflecting the correct state of the URL, showing incorrect diff versions.
     cy.get(".react-monaco-editor-container .editor.modified").should("exist");
