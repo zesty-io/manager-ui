@@ -163,11 +163,13 @@ describe("Content Specs", () => {
     });
 
     it("Internal Link Field", () => {
-      // filter select list
-      cy.get("#12-10741c-s5jkwg .Select")
-        .click()
-        .find("input")
-        .type("homepage");
+      cy.waitOn("/v1/search/items*", () => {
+        // filter select list and wait on api data
+        cy.get("#12-10741c-s5jkwg .Select")
+          .click()
+          .find("input")
+          .type("homepage");
+      });
 
       // select option
       cy.get("#12-10741c-s5jkwg .Select .options li:first-child").click();

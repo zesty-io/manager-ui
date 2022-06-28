@@ -51,22 +51,41 @@ describe("Release > members > CRUD", () => {
   });
 
   it("update member", () => {
-    // set member to version 1
     cy.get(
       "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .Select"
     ).click();
-    cy.get(
-      "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .Select .options li:last-child"
-    ).click();
+
+    // set member to version 1
+    cy.waitOn(
+      {
+        method: "PUT",
+        pathname: "/v1/releases/27-d0d8f7a0f8-1pp779/members/*",
+      },
+      () => {
+        cy.get(
+          "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .Select .options li:last-child"
+        ).click();
+      }
+    );
+
     cy.get(
       "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .Select span"
     ).contains("Version 1");
   });
 
   it("delete member", () => {
-    cy.get(
-      "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-delete] button"
-    ).click();
+    cy.waitOn(
+      {
+        method: "DELETE",
+        pathname: "/v1/releases/27-d0d8f7a0f8-1pp779/members/*",
+      },
+      () => {
+        cy.get(
+          "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-delete] button"
+        ).click();
+      }
+    );
+
     cy.get("[data-cy=PlanTable] tbody tr").should("have.length", 0);
   });
 });
