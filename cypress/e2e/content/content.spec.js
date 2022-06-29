@@ -103,7 +103,7 @@ describe("Content Specs", () => {
       cy.get("#12-63ab04-0nkwcc input").should("have.value", "03/05/2019");
     });
 
-    it.only("Date & Time Field", () => {
+    it("Date & Time Field", () => {
       cy.get("#12-f3db44-c8kt0q .MuiButtonBase-root").click();
 
       cy.get("[role=dialog]").find('[aria-label="Mar 5, 2019"]').click();
