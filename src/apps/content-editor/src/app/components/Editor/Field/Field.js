@@ -792,11 +792,6 @@ export default function Field({
       );
 
     case "number":
-      /*
-      const { tooltip } = settings
-      const label = tooltip
-        ? <Tooltip><InfoIcon</Tooltip>FieldTypeLabel
-        */
       return (
         <FormControl fullWidth required={required}>
           <FormLabel sx={{ display: "flex" }}>
