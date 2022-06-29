@@ -62,7 +62,7 @@ export const QuickView = memo(function QuickView(props) {
               <strong>ZUID:</strong>&nbsp;
               <CopyButton size="small" value={props.itemZUID} />
             </li>
-            <li>
+            <li data-cy="ContentLanguage">
               <strong>Language:</strong>&nbsp;
               <span>
                 {Object.keys(props.siblings || {}).find(

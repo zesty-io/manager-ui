@@ -16,6 +16,13 @@ const dotenv = require("dotenv");
 const os = require("os");
 
 module.exports = (on, config) => {
+  on("task", {
+    log(message) {
+      console.log(message);
+      return null;
+    },
+  });
+
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
   if (os.userInfo().username === "runner") {

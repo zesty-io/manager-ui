@@ -50,12 +50,12 @@ export default connect((state) => {
             Reference Name: <strong>{props.model.name}</strong>
           </li>
           <li>
-            Type: <strong>{props.model.type}</strong>
+            Type: <strong>{props.model?.type}</strong>
             <ul className={styles.SubList}>
               <li>
                 Has item URLs:&nbsp;
                 <strong>
-                  {props.model.type === "dataset" ? (
+                  {props.model?.type === "dataset" ? (
                     <span className={styles.no}>
                       <FontAwesomeIcon icon={faTimesCircle} title="false" />
                     </span>
@@ -70,7 +70,7 @@ export default connect((state) => {
               <li>
                 Has multiple items:&nbsp;
                 <strong>
-                  {props.model.type === "templateset" ? (
+                  {props.model?.type === "templateset" ? (
                     <span className={styles.no}>
                       <FontAwesomeIcon icon={faTimesCircle} />
                     </span>
@@ -115,7 +115,7 @@ export default connect((state) => {
       </CardContent>
       <CardActions>
         <ul className={styles.LinkList}>
-          {props.model.type !== "templateset" && (
+          {props.model?.type !== "templateset" && (
             <li>
               <AppLink to={`/content/${props.model.ZUID}/new`}>
                 <FontAwesomeIcon icon={faPlus} />
