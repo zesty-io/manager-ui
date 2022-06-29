@@ -31,7 +31,6 @@ import MediaApp from "../../../../../../media/src/app/MediaApp";
 import { FieldTypeNumber } from "@zesty-io/core/FieldTypeNumber";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
 import { FieldTypeCurrency } from "@zesty-io/core/FieldTypeCurrency";
-import { FieldTypeDate, FieldTypeDateTime } from "@zesty-io/material";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
@@ -43,6 +42,8 @@ import {
   FieldTypeOneToOne,
   FieldTypeOneToMany,
   FieldTypeText,
+  FieldTypeDate,
+  FieldTypeDateTime,
 } from "@zesty-io/material";
 
 import styles from "./Field.less";
