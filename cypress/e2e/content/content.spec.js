@@ -96,7 +96,7 @@ describe("Content Specs", () => {
     });
 
     it("Date Field", () => {
-      cy.get("#12-63ab04-0nkwcc .MuiOutlinedInput-root")
+      cy.get("#12-63ab04-0nkwcc .MuiOutlinedInput-root .MuiInputAdornment-root")
         .find(".MuiButtonBase-root")
         .click();
 
@@ -106,7 +106,7 @@ describe("Content Specs", () => {
     });
 
     it("Date & Time Field", () => {
-      cy.get("#12-f3db44-c8kt0q .MuiOutlinedInput-root")
+      cy.get("#12-f3db44-c8kt0q .MuiOutlinedInput-root .MuiInputAdornment-root")
         .find(".MuiButtonBase-root")
         .click();
 
