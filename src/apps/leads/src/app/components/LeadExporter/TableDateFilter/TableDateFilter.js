@@ -2,7 +2,7 @@ import * as moment from "moment";
 import { Component } from "react";
 import { connect } from "react-redux";
 
-import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
+import { FieldTypeDate } from "@zesty-io/material";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
 import { DATE_PRESETS } from "./TableDateFilter.model";
@@ -130,7 +130,6 @@ export default connect((state) => {
               <FieldTypeDate
                 name="start-date"
                 label="Start Date"
-                type="date"
                 value={this.props.filter.startDate}
                 onChange={this.setStartDate}
               />
@@ -139,7 +138,6 @@ export default connect((state) => {
               <FieldTypeDate
                 name="end-date"
                 label="End Date"
-                type="date"
                 value={this.props.filter.endDate}
                 onChange={this.setEndDate}
               />
