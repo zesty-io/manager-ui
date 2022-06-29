@@ -96,7 +96,9 @@ describe("Content Specs", () => {
     });
 
     it("Date Field", () => {
-      cy.get("#12-63ab04-0nkwcc").find(".MuiButtonBase-root").click();
+      cy.get("#12-63ab04-0nkwcc .MuiOutlinedInput-root")
+        .find(".MuiButtonBase-root")
+        .click();
 
       cy.get("[role=dialog]").find('[aria-label="Mar 5, 2019"]').click();
 
@@ -104,7 +106,9 @@ describe("Content Specs", () => {
     });
 
     it("Date & Time Field", () => {
-      cy.get("#12-f3db44-c8kt0q").find(".MuiButtonBase-root").click();
+      cy.get("#12-f3db44-c8kt0q .MuiOutlinedInput-root")
+        .find(".MuiButtonBase-root")
+        .click();
 
       cy.get("[role=dialog]").find('[aria-label="Mar 5, 2019"]').click();
 
