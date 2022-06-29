@@ -96,7 +96,7 @@ describe("Content Specs", () => {
     });
 
     it("Date Field", () => {
-      cy.get("#12-63ab04-0nkwcc").find("button").click();
+      cy.get("#12-63ab04-0nkwcc button", { timeout: 15000 }).click();
 
       cy.get("[role=dialog]").find('[aria-label="Mar 5, 2019"]').click();
 
@@ -104,7 +104,7 @@ describe("Content Specs", () => {
     });
 
     it("Date & Time Field", () => {
-      cy.get("#12-f3db44-c8kt0q").find("button").click();
+      cy.get("#12-f3db44-c8kt0q button", { timeout: 15000 }).click();
 
       cy.get("[role=dialog]").find('[aria-label="Mar 5, 2019"]').click();
 
