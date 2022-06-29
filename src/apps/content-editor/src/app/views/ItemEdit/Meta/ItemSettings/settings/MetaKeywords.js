@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
+import { FieldTypeText } from "@zesty-io/material";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 import Tooltip from "@mui/material/Tooltip";
 
@@ -11,10 +11,10 @@ export const MetaKeywords = memo(function MetaKeywords({
 }) {
   return (
     <article className={styles.MetaKeywords} data-cy="metaKeywords">
-      <FieldTypeTextarea
+      <FieldTypeText
         name="metaKeywords"
         label={
-          <label>
+          <>
             <Tooltip
               title="Keywords are comma separated words or phrase that describe your page. In 2011 Google denounced keywords; keywords are only used against your page ranking. Use them with caution."
               arrow
@@ -23,12 +23,14 @@ export const MetaKeywords = memo(function MetaKeywords({
               <InfoIcon fontSize="small" />
             </Tooltip>
             &nbsp;Meta Keywords
-          </label>
+          </>
         }
-        value={meta_keywords}
+        value={meta_keywords || ""}
         placeholder="comma, separated, keywords"
         maxLength="500"
-        onChange={onChange}
+        rows={6}
+        multiline
+        onChange={(evt) => onChange(evt.target.value, "metaKeywords")}
       />
     </article>
   );

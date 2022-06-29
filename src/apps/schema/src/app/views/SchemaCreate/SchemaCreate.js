@@ -30,7 +30,6 @@ import {
 // import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 
 import { FieldTypeText } from "@zesty-io/material";
-import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
 import { fetchParents } from "../../../store/parents";
@@ -365,14 +364,16 @@ export default connect((state) => {
               sx={{ mb: 4 }}
             />
 
-            <FieldTypeTextarea
+            <FieldTypeText
               className={styles.FieldTypeTextarea}
               name="description"
               label="Description"
-              description="A description of this model is shown to content editors. It can be helpful to provide context and explain what this model is used for."
+              helperText="A description of this model is shown to content editors. It can be helpful to provide context and explain what this model is used for."
               value={description}
               maxLength={500}
-              onChange={(value) => setDescription(value)}
+              onChange={(evt) => setDescription(evt.target.value)}
+              multiline
+              rows={6}
             />
           </section>
 

@@ -19,7 +19,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
 
 import { Notice } from "@zesty-io/core/Notice";
-import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
+import { FieldTypeText } from "@zesty-io/material";
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
 import { notify } from "shell/store/notifications";
@@ -201,13 +201,31 @@ export default connect((state) => {
         </div>
 
         <div className={styles.Row}>
-          <FieldTypeTextarea
+          <FieldTypeText
             className={styles.CustomRules}
             name="settings[general][robots_text]"
-            label={robotText.keyFriendly}
-            tooltip={robotText.tips}
-            onChange={handleRobotsText}
-            defaultValue={robotText.value}
+            label={
+              <>
+                {robotText.tips && (
+                  <>
+                    <Tooltip title={robotText.tips} arrow placement="top-start">
+                      <InfoIcon fontSize="small" />
+                    </Tooltip>
+                    &nbsp;
+                  </>
+                )}
+                {robotText.keyFriendly}
+              </>
+            }
+            onChange={(evt) =>
+              handleRobotsText(
+                evt.target.value,
+                "settings[general][robots_text]"
+              )
+            }
+            value={robotText.value}
+            multiline
+            rows={6}
           />
         </div>
         <div className={styles.Row}>

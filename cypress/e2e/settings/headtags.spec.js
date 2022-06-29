@@ -1,6 +1,5 @@
 describe("Headtag: create a tag", () => {
   before(() => {
-    cy.login();
     cy.visit("/settings/head");
   });
 
