@@ -96,15 +96,15 @@ describe("Content Specs", () => {
     });
 
     it("Date Field", () => {
-      cy.get("#12-63ab04-0nkwcc button").click();
+      cy.get("#12-63ab04-0nkwcc .MuiButtonBase-root ").click();
 
       cy.get("[role=dialog]").find('[aria-label="Mar 5, 2019"]').click();
 
       cy.get("#12-63ab04-0nkwcc input").should("have.value", "03/05/2019");
     });
 
-    it("Date & Time Field", () => {
-      cy.get("#12-f3db44-c8kt0q button").click();
+    it.only("Date & Time Field", () => {
+      cy.get("#12-f3db44-c8kt0q .MuiInputAdornment-root").click();
 
       cy.get("[role=dialog]").find('[aria-label="Mar 5, 2019"]').click();
 
