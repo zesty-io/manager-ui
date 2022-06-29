@@ -1,16 +1,17 @@
 describe("Content List", () => {
   before(() => {
-    //initial login to set the cookie
-    cy.login();
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-0c960c-d1n0kx");
+    });
   });
+
   it("Filters list items based on search term", () => {
-    cy.visit("/content/6-0c960c-d1n0kx");
     cy.get("input[name='filter']").type("turkey");
-    cy.contains("Turkey Run").should("exist");
+    cy.get(".ItemList article").contains("Turkey Run");
+    cy.get("input[name='filter']").clear();
   });
 
   it("Sorts list items", () => {
-    cy.visit("/content/6-0c960c-d1n0kx");
     cy.get(".ItemList .SortBy").first().click();
     cy.get(".ItemList article")
       .first()
@@ -21,7 +22,10 @@ describe("Content List", () => {
   });
 
   it("Bulk Edits Toggle and Number Values", () => {
-    cy.visit("/content/6-e3d0e0-965qp6");
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-e3d0e0-965qp6");
+    });
+
     cy.get(".ItemList article").first().get(".SortCell button").first().click();
     cy.get(".ItemList article")
       .first()
@@ -31,6 +35,7 @@ describe("Content List", () => {
     cy.contains("Save All Changes").click();
     cy.contains("changes saved").should("exist");
   });
+
   it("Opens the add item view", () => {
     cy.get("[data-cy=AddItemButton]").click();
     cy.get("#CreateItemSaveButton").should("exist");

@@ -19,7 +19,16 @@ Cypress.Commands.add("login", () => {
     });
 });
 
-Cypress.Commands.add("goHome", () => {
-  cy.visit("/");
-  cy.get("#MainNavigation", { timeout: 10000 }).should("exist");
+Cypress.Commands.add("blockLock", () => {
+  cy.intercept("/door/knock*", (req) => {
+    req.reply({});
+  });
+});
+
+Cypress.Commands.add("waitOn", (path, cb) => {
+  cy.intercept(path).as("waitingOn");
+  cb();
+  cy.wait("@waitingOn", {
+    timeout: 15000,
+  });
 });
