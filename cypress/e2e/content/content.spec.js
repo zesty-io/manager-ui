@@ -104,7 +104,9 @@ describe("Content Specs", () => {
     });
 
     it.only("Date & Time Field", () => {
-      cy.get("#12-f3db44-c8kt0q .MuiButtonBase-root").click();
+      cy.get(
+        "#12-f3db44-c8kt0q .MuiFormControl-root .MuiOutlinedInput-root .MuiButtonBase-root"
+      ).click();
 
       cy.get("[role=dialog]").find('[aria-label="Mar 5, 2019"]').click();
 
