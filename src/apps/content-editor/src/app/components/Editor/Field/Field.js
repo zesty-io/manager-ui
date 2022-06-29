@@ -828,7 +828,7 @@ export default function Field({
         /**
          * Flatpickr emits a utc timestamp, offset from users local time.
          * Legacy behavior did not send utc but sent the value as is selected by the user
-         * this ensures that behavior is maintained
+         * this ensures that behavior is maintained.
          */
         onChange(moment(value).format("YYYY-MM-DD HH:mm:ss"), name, datatype);
       }, []);
@@ -860,18 +860,7 @@ export default function Field({
       );
 
     case "datetime":
-      /**
-       * Every time this parent compenent re-renders it creates a new function
-       * invalidating the FieldTypeData components referential prop check,
-       * causing it to re-render as well. This `onChange` handler doesn't need
-       * to change once created.
-       */
       const onDateTimeChange = useCallback((value, name, datatype) => {
-        /**
-         * Flatpickr emits a utc timestamp, offset from users local time.
-         * Legacy behavior did not send utc but sent the value as is selected by the user
-         * this ensures that behavior is maintained
-         */
         onChange(moment(value).format("YYYY-MM-DD HH:mm:ss"), name, datatype);
       }, []);
       return (
