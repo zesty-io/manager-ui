@@ -96,9 +96,9 @@ describe("Content Specs", () => {
     });
 
     it("Date Field", () => {
-      cy.get("#12-63ab04-0nkwcc .MuiOutlinedInput-root div").click({
-        force: true,
-      });
+      cy.get("#12-63ab04-0nkwcc .MuiOutlinedInput-root").debug();
+      // .find(".MuiButtonBase-root")
+      // .click();
 
       cy.get("[role=dialog]").find('[aria-label="Mar 5, 2019"]').click();
 
