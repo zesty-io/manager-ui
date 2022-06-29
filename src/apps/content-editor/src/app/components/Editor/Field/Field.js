@@ -31,7 +31,8 @@ import MediaApp from "../../../../../../media/src/app/MediaApp";
 import { FieldTypeNumber } from "@zesty-io/core/FieldTypeNumber";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
 import { FieldTypeCurrency } from "@zesty-io/core/FieldTypeCurrency";
-import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
+import { FieldTypeDate } from "@zesty-io/material";
+import { FieldTypeDateTime } from "@zesty-io/material";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
@@ -818,7 +819,6 @@ export default function Field({
       );
 
     case "date":
-    case "datetime":
       /**
        * Every time this parent compenent re-renders it creates a new function
        * invalidating the FieldTypeData components referential prop check,
@@ -833,17 +833,72 @@ export default function Field({
          */
         onChange(moment(value).format("YYYY-MM-DD HH:mm:ss"), name, datatype);
       }, []);
-
       return (
         <FieldTypeDate
           name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
-          datatype={datatype}
+          label={
+            <Stack direction="row" alignItems="center">
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+
+              {FieldTypeLabel}
+            </Stack>
+          }
+          helperText={description}
           required={required}
           value={value}
-          onChange={onDateChange}
+          onChange={(date) => onDateChange(date, name, datatype)}
+        />
+      );
+
+    case "datetime":
+      /**
+       * Every time this parent compenent re-renders it creates a new function
+       * invalidating the FieldTypeData components referential prop check,
+       * causing it to re-render as well. This `onChange` handler doesn't need
+       * to change once created.
+       */
+      const onDateTimeChange = useCallback((value, name, datatype) => {
+        /**
+         * Flatpickr emits a utc timestamp, offset from users local time.
+         * Legacy behavior did not send utc but sent the value as is selected by the user
+         * this ensures that behavior is maintained
+         */
+        onChange(moment(value).format("YYYY-MM-DD HH:mm:ss"), name, datatype);
+      }, []);
+      return (
+        <FieldTypeDateTime
+          name={name}
+          label={
+            <Stack direction="row" alignItems="center">
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+
+              {FieldTypeLabel}
+            </Stack>
+          }
+          helperText={description}
+          required={required}
+          value={value}
+          onChange={(date) => onDateTimeChange(date, name, datatype)}
         />
       );
 

@@ -96,28 +96,22 @@ describe("Content Specs", () => {
     });
 
     it("Date Field", () => {
-      cy.get("#12-63ab04-0nkwcc input").click();
+      cy.get("#12-63ab04-0nkwcc button").click();
 
-      cy.get(
-        '.flatpickr-calendar:not(.hasTime) [aria-label="March 5, 2019"]'
-      ).click();
+      cy.get("[role=dialog]").find('[aria-label="Mar 5, 2019"]').click();
 
-      cy.get("#12-63ab04-0nkwcc input").should("have.value", "2019-03-05");
+      cy.get("#12-63ab04-0nkwcc input").should("have.value", "03/05/2019");
     });
 
     it("Date & Time Field", () => {
-      cy.get("#12-f3db44-c8kt0q input.form-control").click();
+      cy.get("#12-f3db44-c8kt0q button").click();
 
-      cy.get(
-        '.flatpickr-calendar.hasTime [aria-label="March 5, 2019"]'
-      ).click();
+      cy.get("[role=dialog]").find('[aria-label="Mar 5, 2019"]').click();
 
-      cy.get(".flatpickr-confirm").click();
-
-      // TODO get aria-label and capture in variable
-      // cy.get("#12-f3db44-c8kt0q .flatpickr-input.form-control.input").click();
-
-      // TODO compare aria-label value with input value
+      cy.get("#12-f3db44-c8kt0q  input").should(
+        "have.value",
+        "03/05/2019 02:30 pm"
+      );
     });
 
     it("WYSIWYG Advanced Field", () => {
