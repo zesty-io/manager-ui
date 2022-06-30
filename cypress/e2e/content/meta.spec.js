@@ -1,13 +1,12 @@
 describe("Content Meta", () => {
   before(() => {
-    //initial login to set the cookie
-    cy.login();
-    cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19");
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-556370-8sh47g/7-b939a4-457q19/meta");
+    });
   });
+
   // skipping failing test in preparation for CI.
   it.skip("Modifies and saves Meta fields", () => {
-    cy.get("[data-cy=meta]").should("exist");
-    cy.get("[data-cy=meta]").click();
     cy.get("[data-cy=itemParent]").should("exist");
     cy.get("[data-cy=metaLinkText]").should("exist");
     cy.get("[data-cy=metaTitle]").should("exist");

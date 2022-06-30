@@ -27,7 +27,6 @@ import ToggleButton from "@mui/material/ToggleButton";
 import FormLabel from "@mui/material/FormLabel";
 
 import { FieldTypeText } from "@zesty-io/material";
-import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 
 import { DropdownOptions } from "./DropdownOptions";
 import { ToggleOptions } from "./ToggleOptions";
@@ -158,13 +157,17 @@ export default function FieldSettings(props) {
             }
           />
 
-          <FieldTypeTextarea
+          <FieldTypeText
             className={styles.Setting}
             name="description"
             label="Description displayed to content editors"
-            defaultValue={props.field.description}
+            defaultValue={props.field.description || ""}
             maxLength="250"
-            onChange={props.updateValue}
+            onChange={(evt) =>
+              props.updateValue(evt.target.value, "description")
+            }
+            multiline
+            rows={6}
           />
         </div>
       </div>

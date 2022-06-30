@@ -37,7 +37,7 @@ export default connect()(function SetRow(props) {
       style={{ ...props.style }}
     >
       <PublishStatusCell
-        type={props.model && props.model.type ? props.model.type : null}
+        type={props.model && props.model?.type ? props.model?.type : null}
         item={item}
         modelZUID={props.modelZUID}
         itemZUID={props.itemZUID}

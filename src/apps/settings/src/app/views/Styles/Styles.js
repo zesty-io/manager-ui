@@ -6,7 +6,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import SaveIcon from "@mui/icons-material/Save";
 
 import { FieldTypeText } from "@zesty-io/material";
-import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
+import { FieldTypeColor } from "@zesty-io/material";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { Select, Option } from "@zesty-io/core/Select";
 import { Modal } from "@zesty-io/core/Modal";
@@ -186,9 +186,9 @@ export default connect((state) => {
           <FieldTypeColor
             key={field.ZUID}
             value={fieldValues[field.referenceName]}
-            description={field.description}
             name={field.referenceName}
-            onChange={setValue}
+            helperText={field.description}
+            onChange={(evt) => setValue(evt.target.value, field.referenceName)}
             label={field.name}
           />
         );

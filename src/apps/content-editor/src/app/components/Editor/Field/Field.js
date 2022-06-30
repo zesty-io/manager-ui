@@ -27,10 +27,8 @@ import {
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Modal } from "@zesty-io/core/Modal";
 import MediaApp from "../../../../../../media/src/app/MediaApp";
-import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
 import { FieldTypeNumber } from "@zesty-io/core/FieldTypeNumber";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
-import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { FieldTypeCurrency } from "@zesty-io/core/FieldTypeCurrency";
 import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
@@ -39,6 +37,7 @@ import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
 import { FieldTypeEditor } from "@zesty-io/core/FieldTypeEditor";
 import { FieldTypeTinyMCE } from "@zesty-io/core/FieldTypeTinyMCE";
 import {
+  FieldTypeColor,
   FieldTypeOneToOne,
   FieldTypeOneToMany,
   FieldTypeText,
@@ -288,16 +287,21 @@ export default function Field({
 
     case "textarea":
       return (
-        <FieldTypeTextarea
+        <FieldTypeText
           name={name}
           label={FieldTypeLabel}
-          description={description}
+          helperText={description}
           tooltip={settings.tooltip}
           required={required}
           value={value}
           version={version}
           datatype={datatype}
-          onChange={onChange}
+          multiline={true}
+          rows={6}
+          onChange={(evt) => {
+            console.log(evt);
+            onChange(evt.target.value, name);
+          }}
           maxLength="16000"
         />
       );
@@ -776,15 +780,32 @@ export default function Field({
 
     case "color":
       return (
-        <FieldTypeColor
-          name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
-          required={required}
-          value={value}
-          onChange={onChange}
-        />
+        <Box sx={{ width: "300px" }}>
+          <FieldTypeColor
+            name={name}
+            label={
+              <Stack direction="row" alignItems="center">
+                {settings.tooltip ? (
+                  <Tooltip
+                    placement="top-start"
+                    arrow
+                    title={settings.tooltip ? settings.tooltip : " "}
+                  >
+                    <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                  </Tooltip>
+                ) : (
+                  " "
+                )}
+
+                {FieldTypeLabel}
+              </Stack>
+            }
+            helperText={description}
+            required={required}
+            value={value || "#FFFFFF"}
+            onChange={(evt) => onChange(evt.target.value, name)}
+          />
+        </Box>
       );
 
     case "number":
