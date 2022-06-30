@@ -17,9 +17,9 @@ describe("Release > members > CRUD", () => {
         },
       },
       () => {
-        cy.get("[data-cy=ReleaseHeader] [data-cy=ContentSearch] input").type(
-          "homepage"
-        );
+        cy.get("[data-cy=ReleaseHeader] [data-cy=ContentSearch] input", {
+          timeout: 15000,
+        }).type("homepage");
       }
     );
 
@@ -44,6 +44,7 @@ describe("Release > members > CRUD", () => {
       eventConstructor: "KeyboardEvent",
       keyCode: 27,
     });
+    cy.get("#root").click();
 
     cy.get("[data-cy=PlanTable] tbody tr:last-child")
       .contains(`Homepage`)
@@ -51,24 +52,25 @@ describe("Release > members > CRUD", () => {
   });
 
   it("update member", () => {
+    cy.wait(2000);
     cy.get(
       "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .MuiSelect-select"
     ).click();
 
     // set member to version 1
+    cy.get("[role=presentation] li:last-child").click();
+
     cy.waitOn(
       {
         method: "PUT",
         pathname: "/v1/releases/27-d0d8f7a0f8-1pp779/members/*",
       },
       () => {
-        cy.get("[role=presentation] li:last-child").click();
+        cy.get(
+          "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .MuiSelect-select span"
+        ).contains("Version 1");
       }
     );
-
-    cy.get(
-      "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .MuiSelect-select span"
-    ).contains("Version 1");
   });
 
   it("delete member", () => {
