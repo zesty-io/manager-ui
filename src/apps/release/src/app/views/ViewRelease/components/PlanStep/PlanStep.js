@@ -127,7 +127,7 @@ export function PlanStep(props) {
       <td data-cy="release-member-version">
         {/* Update preview link when version is changed */}
         <Select
-          onSelect={(e) => onUpdateVersion(e.target.value)}
+          onChange={(e) => onUpdateVersion(e.target.value)}
           name="version"
           defaultValue={props.member.version}
           size="small"
