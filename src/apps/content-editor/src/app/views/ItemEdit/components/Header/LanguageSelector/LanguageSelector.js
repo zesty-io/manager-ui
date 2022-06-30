@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
@@ -7,7 +7,6 @@ import { Select, MenuItem } from "@mui/material";
 
 import { selectLang } from "shell/store/user";
 
-import styles from "./LanguageSelector.less";
 export const LanguageSelector = connect((state, props) => {
   let siblings = {};
   let selectedLang = state.user.selected_lang || "en-US";
@@ -48,7 +47,7 @@ export const LanguageSelector = connect((state, props) => {
       {props.languages.length > 1 ? (
         <Select
           name="LanguageSelector"
-          className={cx(styles.LanguageSelector, props.className)}
+          className={cx("LanguageSelector", props.className)}
           value={props.selectedLang}
           onChange={handleSelect}
           size="small"

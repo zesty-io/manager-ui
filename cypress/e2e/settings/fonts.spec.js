@@ -1,6 +1,5 @@
 describe("Fonts", () => {
   before(() => {
-    cy.login();
     cy.visit("/settings");
   });
 
