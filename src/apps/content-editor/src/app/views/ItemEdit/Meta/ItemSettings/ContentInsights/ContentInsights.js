@@ -3,7 +3,11 @@ import React, { useState } from "react";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
 
-import { Card, CardHeader, CardContent } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import SavedSearchIcon from "@mui/icons-material/SavedSearch";
+
 import { faCheck, faSearchDollar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
@@ -278,15 +282,14 @@ export function ContentInsights(props) {
   });
 
   return (
-    <Card className={styles.ContentInsights}>
-      <CardHeader>
-        <section>
-          <div>
-            <FontAwesomeIcon icon={faSearchDollar} />
-            &nbsp;Content Insights
-          </div>
-        </section>
-      </CardHeader>
+    <Card
+      className={styles.ContentInsights}
+      sx={{ m: 2, backgroundColor: "theme.common.white" }}
+    >
+      <CardHeader
+        avatar={<SavedSearchIcon fontSize="small" />}
+        title="Content Insights"
+      ></CardHeader>
       <CardContent>
         <div className={styles.level}>
           <div>

@@ -4,8 +4,9 @@ import { createBrowserHistory } from "history";
 
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
+import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
-import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
+import { ConfirmDialog } from "@zesty-io/material";
 
 import { deleteLead } from "../../../store/leads";
 import * as FilterService from "../../views/Leads/LeadFilter.service";
@@ -83,7 +84,7 @@ export default connect((state) => {
       this.setState({ loading: true });
       this.props
         .dispatch(deleteLead(leadZuid))
-        .finally(() => this.setLoading({ loading: false }));
+        .finally(() => this.setState({ loading: false, modalIsOpen: false }));
     };
 
     /**
@@ -202,55 +203,73 @@ export default connect((state) => {
               })}
             </tbody>
           </table>
-          <Modal
+          <ConfirmDialog
             className={styles.LeadModal}
-            onClose={this.closeModalAndUpdateRoute}
             open={this.state.modalIsOpen}
+            sx={{ width: "100%" }}
+            title={
+              <div className={styles.ModalContent}>
+                {this.state.currentLead ? (
+                  <ul className={styles.LeadData}>
+                    <li>
+                      <strong>Date Created</strong>:{" "}
+                      {this.state.currentLead.dateCreated}
+                    </li>
+                    {this.state.currentLead &&
+                      this.state.currentLead.formData &&
+                      Object.keys(this.state.currentLead.formData).map(
+                        (key) => {
+                          return (
+                            <li key={key}>
+                              <span className={styles.Key}>{key}:</span>
+                              <span className={styles.Value}>
+                                {this.state.currentLead.formData[key]}
+                              </span>
+                            </li>
+                          );
+                        }
+                      )}
+                  </ul>
+                ) : (
+                  ""
+                )}
+              </div>
+            }
           >
-            <ModalContent className={styles.ModalContent}>
-              {this.state.currentLead ? (
-                <ul className={styles.LeadData}>
-                  <li>
-                    <strong>Date Created</strong>:{" "}
-                    {this.state.currentLead.dateCreated}
-                  </li>
-                  {this.state.currentLead &&
-                    this.state.currentLead.formData &&
-                    Object.keys(this.state.currentLead.formData).map((key) => {
-                      return (
-                        <li key={key}>
-                          <span className={styles.Key}>{key}:</span>
-                          <span className={styles.Value}>
-                            {this.state.currentLead.formData[key]}
-                          </span>
-                        </li>
-                      );
-                    })}
-                </ul>
-              ) : (
-                ""
-              )}
-            </ModalContent>
-            <ModalFooter>
+            <div>
               {this.state.currentLead &&
-              this.props.leads.find(
-                (lead) => lead.zuid === this.state.currentLead.zuid
-              ) ? (
-                <Button
-                  variant="contained"
-                  color="error"
-                  className={styles.btnDanger}
-                  disabled={this.state.loading}
-                  onClick={() => this.deleteLead(this.state.currentLead.zuid)}
-                  startIcon={<DeleteIcon />}
-                >
-                  Delete
-                </Button>
-              ) : (
-                <p>This lead has been deleted.</p>
-              )}
-            </ModalFooter>
-          </Modal>
+                this.props.leads.find(
+                  (lead) => lead.zuid === this.state.currentLead.zuid
+                ) && (
+                  <>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        this.setState({
+                          modalIsOpen: false,
+                        });
+                      }}
+                      startIcon={<DoDisturbAltIcon />}
+                      sx={{ mr: 1 }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      className={styles.btnDanger}
+                      disabled={this.state.loading}
+                      onClick={() =>
+                        this.deleteLead(this.state.currentLead.zuid)
+                      }
+                      startIcon={<DeleteIcon />}
+                    >
+                      Delete
+                    </Button>
+                  </>
+                )}
+            </div>
+          </ConfirmDialog>
         </div>
       );
     }

@@ -1,14 +1,14 @@
 import { useState } from "react";
-import cx from "classnames";
 
 import Button from "@mui/material/Button";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
-import AddIcon from "@mui/icons-material/Add";
 import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import AddIcon from "@mui/icons-material/Add";
+import SearchIcon from "@mui/icons-material/Search";
 
 import { Select, Option } from "@zesty-io/core/Select";
-import { Search } from "@zesty-io/core/Search";
 
 import { createRedirect } from "../../../../store/redirects";
 import RedirectsImport from "../../../RedirectsManager/RedirectActions/RedirectsImport/RedirectsImport";
@@ -104,11 +104,24 @@ export function RedirectCreator(props) {
             value={contentSearchValue}
           />
         ) : (
-          <Search
-            className={cx(styles.SearchBar, styles.InputSearch)}
-            onChange={determineTerm}
+          <TextField
             placeholder={type === "external" ? "Add URL" : "Add File Path"}
+            type="search"
+            variant="outlined"
+            size="small"
+            fullWidth
             defaultValue={to}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            }}
+            onChange={(evt) => {
+              const term = evt.target.value;
+              determineTerm(term);
+            }}
           />
         )}
       </span>

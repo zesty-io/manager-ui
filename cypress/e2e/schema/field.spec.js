@@ -1,27 +1,37 @@
 describe("Fields", () => {
-  before(() => {
-    cy.login();
-    cy.visit("/schema/6-852490-2mhz4v");
-  });
-
   const timestamp = Date.now();
+
+  before(() => {
+    cy.waitOn(
+      "/v1/content/models/6-852490-2mhz4v/fields?showDeleted=true",
+      () => {
+        cy.visit("/schema/6-852490-2mhz4v");
+      }
+    );
+  });
 
   it("Create:text", () => {
     const fieldLabel = `Text Field: ${timestamp}`;
     const fieldName = `text_field_${timestamp}`;
 
     cy.get(".FieldAdd .Select").click();
-
     cy.get(".FieldAdd .selections .options li[data-value='text']").click();
 
+    // NOTE: the name should be autoset by the label
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
-    cy.get('.FieldAdd input[name="name"]').type(fieldName);
-    cy.get("[data-cy=addField]").click();
 
-    // Find the newly created field
-    cy.contains(".Fields article header h1", fieldLabel, {
-      timeout: 10000,
-    }).should("exist");
+    cy.waitOn("/v1/content/models/6-852490-2mhz4v/fields", () => {
+      cy.get("[data-cy=addField]").click();
+    });
+
+    cy.get(".Fields .Dropzone .Draggable:last-child input[name=label]").should(
+      "have.value",
+      fieldLabel
+    );
+    cy.get(".Fields .Dropzone .Draggable:last-child input[name=name]").should(
+      "have.value",
+      fieldName
+    );
   });
 
   it("Edit", () => {

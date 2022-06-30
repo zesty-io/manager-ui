@@ -14,6 +14,7 @@ import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
 
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
@@ -27,11 +28,8 @@ import {
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Modal } from "@zesty-io/core/Modal";
 import MediaApp from "../../../../../../media/src/app/MediaApp";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
 import { FieldTypeNumber } from "@zesty-io/core/FieldTypeNumber";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
-import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { FieldTypeCurrency } from "@zesty-io/core/FieldTypeCurrency";
 import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
@@ -40,8 +38,12 @@ import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
 import { FieldTypeEditor } from "@zesty-io/core/FieldTypeEditor";
 import { FieldTypeTinyMCE } from "@zesty-io/core/FieldTypeTinyMCE";
-import { FieldTypeOneToOne } from "@zesty-io/core/FieldTypeOneToOne";
-import { FieldTypeOneToMany } from "@zesty-io/core/FieldTypeOneToMany";
+import {
+  FieldTypeColor,
+  FieldTypeOneToOne,
+  FieldTypeOneToMany,
+  FieldTypeText,
+} from "@zesty-io/material";
 
 import styles from "./Field.less";
 import MediaStyles from "../../../../../../media/src/app/MediaAppModal.less";
@@ -154,6 +156,7 @@ function resolveRelatedOptions(
       return {
         filterValue: items[itemZUID].data[field.name],
         value: itemZUID,
+        inputLabel: items[itemZUID].data[field.name] || "",
         component: (
           <ResolvedOption
             modelZUID={modelZUID}
@@ -246,11 +249,11 @@ export default function Field({
         <FieldTypeText
           name={name}
           label={FieldTypeLabel}
-          description={description}
+          helperText={description}
           tooltip={settings.tooltip}
           required={required}
           value={value}
-          onChange={onChange}
+          onChange={(evt) => onChange(evt.target.value, name)}
         />
       );
 
@@ -259,11 +262,11 @@ export default function Field({
         <FieldTypeText
           name={name}
           label={FieldTypeLabel}
-          description={description}
+          helperText={description}
           tooltip={settings.tooltip}
           required={required}
           value={value}
-          onChange={onChange}
+          onChange={(evt) => onChange(evt.target.value, name)}
           type="url"
           maxLength={2000}
         />
@@ -286,16 +289,21 @@ export default function Field({
 
     case "textarea":
       return (
-        <FieldTypeTextarea
+        <FieldTypeText
           name={name}
           label={FieldTypeLabel}
-          description={description}
+          helperText={description}
           tooltip={settings.tooltip}
           required={required}
           value={value}
           version={version}
           datatype={datatype}
-          onChange={onChange}
+          multiline={true}
+          rows={6}
+          onChange={(evt) => {
+            console.log(evt);
+            onChange(evt.target.value, name);
+          }}
           maxLength="16000"
         />
       );
@@ -575,14 +583,21 @@ export default function Field({
       }, [allLanguages.length, relatedModelZUID, langID]);
 
       let oneToOneOptions = useMemo(() => {
-        return resolveRelatedOptions(
-          allFields,
-          allItems,
-          relatedFieldZUID,
-          relatedModelZUID,
-          langID,
-          value
-        );
+        return [
+          {
+            inputLabel: "- None -",
+            value: "0",
+            component: "- None -",
+          },
+          ...resolveRelatedOptions(
+            allFields,
+            allItems,
+            relatedFieldZUID,
+            relatedModelZUID,
+            langID,
+            value
+          ),
+        ];
       }, [
         Object.keys(allFields).length,
         Object.keys(allItems).length,
@@ -601,6 +616,7 @@ export default function Field({
         oneToOneOptions.unshift({
           filterValue: value,
           value: value,
+          inputLabel: `Selected item not found: ${value}`,
           component: (
             <span>
               <span onClick={(evt) => evt.stopPropagation()}>
@@ -619,16 +635,45 @@ export default function Field({
 
       return (
         <FieldTypeOneToOne
-          className={styles.FieldTypeOneToOne}
           name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
+          label={
+            <Stack direction="row" alignItems="center">
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+
+              {FieldTypeLabel}
+            </Stack>
+          }
+          helperText={description}
           required={required}
-          value={value}
-          onChange={onChange}
+          placeholder={"Select relationship..."}
+          value={
+            oneToOneOptions?.find((options) => options.value === value) || null
+          }
+          onChange={(_, option) => onChange(option.value, name)}
           options={oneToOneOptions}
           onOpen={onOneToOneOpen}
+          startAdornment={
+            value &&
+            value !== "0" && (
+              <AppLink to={`/content/${relatedModelZUID}/${value}`}>
+                <FontAwesomeIcon icon={faEdit} />
+              </AppLink>
+            )
+          }
+          endAdornment={
+            value &&
+            value !== "0" && <em>{getSelectedLang(allLanguages, langID)}</em>
+          }
         />
       );
 
@@ -665,31 +710,84 @@ export default function Field({
 
       return (
         <FieldTypeOneToMany
-          className={styles.FieldTypeOneToMany}
           name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
+          label={
+            <Stack direction="row" alignItems="center">
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+
+              {FieldTypeLabel}
+            </Stack>
+          }
+          helperText={description}
           required={required}
-          value={value}
-          onChange={onChange}
-          relatedModelZUID={relatedModelZUID}
+          placeholder={"Select relationships..."}
+          value={
+            (value &&
+              value
+                ?.split(",")
+                ?.map(
+                  (value) =>
+                    oneToManyOptions?.find(
+                      (options) => options.value === value
+                    ) || { value, inputLabel: value, component: value }
+                )) ||
+            []
+          }
+          onChange={(_, options) =>
+            onChange(options.map((option) => option.value).join(","), name)
+          }
           options={oneToManyOptions}
           onOpen={onOneToManyOpen}
+          renderTags={(tags, getTagProps) =>
+            tags.map((tag, index) => (
+              <Chip
+                size="small"
+                label={tag.component}
+                {...getTagProps({ index })}
+              />
+            ))
+          }
         />
       );
 
     case "color":
       return (
-        <FieldTypeColor
-          name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
-          required={required}
-          value={value}
-          onChange={onChange}
-        />
+        <Box sx={{ width: "300px" }}>
+          <FieldTypeColor
+            name={name}
+            label={
+              <Stack direction="row" alignItems="center">
+                {settings.tooltip ? (
+                  <Tooltip
+                    placement="top-start"
+                    arrow
+                    title={settings.tooltip ? settings.tooltip : " "}
+                  >
+                    <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                  </Tooltip>
+                ) : (
+                  " "
+                )}
+
+                {FieldTypeLabel}
+              </Stack>
+            }
+            helperText={description}
+            required={required}
+            value={value || "#FFFFFF"}
+            onChange={(evt) => onChange(evt.target.value, name)}
+          />
+        </Box>
       );
 
     case "number":

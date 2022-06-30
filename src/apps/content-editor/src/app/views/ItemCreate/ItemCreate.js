@@ -165,7 +165,7 @@ export default function ItemCreate() {
                 }}
               />
               <h2 className={styles.title}>Meta Settings</h2>
-              {model && model.type === "dataset" ? (
+              {model && model?.type === "dataset" ? (
                 <DataSettings item={item} dispatch={dispatch} />
               ) : (
                 <ItemSettings
