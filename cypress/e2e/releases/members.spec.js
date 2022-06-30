@@ -17,9 +17,9 @@ describe("Release > members > CRUD", () => {
         },
       },
       () => {
-        cy.get("[data-cy=ReleaseHeader] [data-cy=ContentSearch] input", {
-          timeout: 15000,
-        }).type("homepage");
+        cy.get("[data-cy=ReleaseHeader] [data-cy=ContentSearch] input").type(
+          "homepage"
+        );
       }
     );
 
