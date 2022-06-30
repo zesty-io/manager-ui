@@ -52,7 +52,7 @@ describe("Release > members > CRUD", () => {
 
   it("update member", () => {
     cy.get(
-      "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .Select"
+      "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .MuiSelect-select"
     ).click();
 
     // set member to version 1
@@ -62,14 +62,12 @@ describe("Release > members > CRUD", () => {
         pathname: "/v1/releases/27-d0d8f7a0f8-1pp779/members/*",
       },
       () => {
-        cy.get(
-          "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .Select .options li:last-child"
-        ).click();
+        cy.get("[role=presentation] li:last-child").click();
       }
     );
 
     cy.get(
-      "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .Select span"
+      "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .MuiSelect-select span"
     ).contains("Version 1");
   });
 
