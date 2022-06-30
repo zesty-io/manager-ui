@@ -1,6 +1,4 @@
-import { useRef, useEffect } from "react";
-import cx from "classnames";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 
 import Button from "@mui/material/Button";
 import EmailIcon from "@mui/icons-material/Email";
@@ -8,9 +6,11 @@ import ContactSupportIcon from "@mui/icons-material/ContactSupport";
 
 import Link from "@mui/material/Link";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
 
-import styles from "./styles.less";
+import styles from "./GlobalHelpMenu.less";
 
 const defaultLinks = [
   {
@@ -139,17 +139,14 @@ const linkMap = {
   ],
 };
 
-export default connect((state) => {
-  return {
-    instance: state.instance,
-  };
-})(function GlobalHelpMenu(props) {
+export default function GlobalHelpMenu(props) {
+  const instancePlanID = useSelector((state) => state.instance.planID);
   const section = location.pathname.split("/")[1];
   const links = section ? linkMap[section] : defaultLinks;
   return (
-    <section className={styles.helpMenu}>
+    <div className={styles.helpMenu}>
       <header>
-        {props.instance.planID && (
+        {instancePlanID && (
           <Link
             underline="none"
             color="secondary"
@@ -184,18 +181,20 @@ export default connect((state) => {
       </header>
 
       <div className={styles.helpModules}>
-        <Card className={cx(styles.helpModule, styles.primary)}>
-          <CardHeader className={styles.subheadline}>
-            <Link
-              underline="none"
-              color="secondary"
-              target="_blank"
-              href="https://zesty.org/"
-            >
-              zesty.org
-            </Link>
-          </CardHeader>
-          <CardContent>
+        <Card>
+          <CardHeader
+            title={
+              <Link
+                underline="none"
+                color="secondary"
+                target="_blank"
+                href="https://zesty.org/"
+              >
+                zesty.org
+              </Link>
+            }
+          ></CardHeader>
+          <CardContent sx={{ ml: 2 }}>
             <ul className={styles.helpBox}>
               {links.map((link) => (
                 <li key={link.name} className={styles.bodyText}>
@@ -214,9 +213,9 @@ export default connect((state) => {
           </CardContent>
         </Card>
 
-        <Card className={styles.helpModule}>
-          <CardHeader className={styles.subheadline}>APIs</CardHeader>
-          <CardContent>
+        <Card>
+          <CardHeader title="APIs"> </CardHeader>
+          <CardContent sx={{ ml: 2 }}>
             <ul className={styles.helpBox}>
               <li className={styles.bodyText}>
                 <Link
@@ -255,9 +254,9 @@ export default connect((state) => {
           </CardContent>
         </Card>
 
-        <Card className={styles.helpModule}>
-          <CardHeader className={styles.subheadline}>github</CardHeader>
-          <CardContent>
+        <Card>
+          <CardHeader title="github"></CardHeader>
+          <CardContent sx={{ ml: 2 }}>
             <ul className={styles.helpBox}>
               <li className={styles.bodyText}>
                 <Link
@@ -296,6 +295,6 @@ export default connect((state) => {
           </CardContent>
         </Card>
       </div>
-    </section>
+    </div>
   );
-});
+}

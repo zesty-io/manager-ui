@@ -1,41 +1,60 @@
 describe("Actions in content editor", () => {
-  before(() => {
-    //initial login to set the cookie
-    cy.login();
-    cy.visit("/");
-  });
-
   const timestamp = Date.now();
 
   it("Must not save when missing required Field", () => {
-    cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
-    cy.get("input[name=text_field]").clear();
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
+    });
+
+    cy.get("#12-13d590-9v2nr2 input").clear().should("have.value", "");
     cy.get("#SaveItemButton").click();
-    cy.contains("You are missing data").should("exist");
+
+    cy.get("[data-cy=toast]").contains("You are missing data");
   });
+
   /**
    *  NOTE: this depends upon `toggle` field on the schema being marked as being required and deactivated. Because it's deactivated it doesn't render in the content editor and the expectation is the content item should save. there fore there is nothing to do and confirm that this item saves successfully. Adding this notes because nothing really happens inside this test but it's important this test remains.
    * */
   it("Save when missing required deactivated field", () => {
-    cy.visit("/content/6-0c960c-d1n0kx/7-c882ba84ce-c4smnp");
-    // Need to make an edit to enable save button.
-    cy.get("input[name=title]").clear({ force: true }).type(timestamp);
-    cy.get("#SaveItemButton", { timeout: 5000 }).click({ force: true });
-    cy.contains("Saved a new ").should("exist");
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-0c960c-d1n0kx/7-c882ba84ce-c4smnp");
+    });
+
+    // Test deactivated field is not in DOM
+    cy.get("#12-f8efe4e0f5-xj7pj6 input").should("not.exist");
+
+    // Make an edit to enable save button
+    cy.get("#12-849844-t8v5l6 input").clear().type(timestamp);
+
+    // save to api
+    cy.waitOn(
+      "/v1/content/models/6-0c960c-d1n0kx/items/7-c882ba84ce-c4smnp",
+      () => {
+        cy.get("#SaveItemButton").click();
+      }
+    );
+
+    cy.get("[data-cy=toast]").contains("Saved a new ");
   });
+
   it("Saves homepage item metadata", () => {
-    cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
-    // go to Meta Tab
-    cy.get("[data-cy=meta]").click();
-    cy.get("textarea")
-      .first()
-      .type("{selectall}{backspace}This is an item meta description");
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-a1a600-k0b6f0/7-a1be38-1b42ht/meta");
+    });
 
     cy.get("textarea")
       .first()
+      .type("{selectall}{backspace}This is an item meta description")
       .should("have.value", "This is an item meta description");
-    cy.get("#SaveItemButton").click();
-    cy.contains("Saved a new ", { timeout: 5000 }).should("exist");
+
+    cy.waitOn(
+      "/v1/content/models/6-a1a600-k0b6f0/items/7-a1be38-1b42ht",
+      () => {
+        cy.get("#SaveItemButton").click();
+      }
+    );
+
+    cy.get("[data-cy=toast]").contains("Saved a new ");
   });
 
   // TODO: get publishing working in Dev environment
@@ -85,12 +104,11 @@ describe("Actions in content editor", () => {
   });
 
   it("Creates a new item", () => {
-    cy.visit("/content/6-a1a600-k0b6f0/new");
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-a1a600-k0b6f0/new");
+    });
 
-    cy.contains("Lead in Title", { timeout: 5000 })
-      .find("input")
-      .click()
-      .type(timestamp);
+    cy.get("input[name=title]", { timeout: 5000 }).click().type(timestamp);
     cy.get("#CreateItemSaveButton").click();
 
     cy.contains("Created new ", { timeout: 5000 }).should("exist");
@@ -102,13 +120,16 @@ describe("Actions in content editor", () => {
   });
 
   it("Displays a new item in the list", () => {
-    cy.visit("/content/6-a1a600-k0b6f0");
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-a1a600-k0b6f0");
+    });
+
     cy.contains(timestamp, { timeout: 5000 }).should("exist");
   });
 
   it("Deletes an item", () => {
     cy.contains(timestamp).click();
-    cy.get("article.Delete").click();
+    cy.get('[data-cy="WidgetDeleteAccordion"]').click();
     cy.get("#DeleteItemButton").click();
     cy.get("#deleteConfirmButton").should("exist");
     cy.get("#deleteConfirmButton").click();

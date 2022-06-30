@@ -4,12 +4,14 @@ import moment from "moment-timezone";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCodeBranch,
-  faDatabase,
-  faCode,
-} from "@fortawesome/free-solid-svg-icons";
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import { faDatabase, faCode } from "@fortawesome/free-solid-svg-icons";
+
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
+
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { CopyButton } from "@zesty-io/material";
@@ -28,30 +30,30 @@ export const QuickView = memo(function QuickView(props) {
 
   return (
     <Fragment>
-      <Card className={styles.QuickView}>
-        <CardHeader>
-          <section className={styles.StatusHeader}>
-            <div>
-              <FontAwesomeIcon icon={faCodeBranch} />
-              &nbsp;Item Status
-            </div>
-            <div
-              className={
-                isPublished
-                  ? styles.Published
+      <Card className={styles.QuickView} sx={{ m: 2 }}>
+        <CardHeader
+          avatar={<AccountTreeIcon fontSize="small" />}
+          title={
+            <section className={styles.StatusHeader}>
+              <div>&nbsp;Item Status</div>
+              <div
+                className={
+                  isPublished
+                    ? styles.Published
+                    : isScheduled
+                    ? styles.Scheduled
+                    : styles.Unpublished
+                }
+              >
+                {isPublished
+                  ? "Published"
                   : isScheduled
-                  ? styles.Scheduled
-                  : styles.Unpublished
-              }
-            >
-              {isPublished
-                ? "Published"
-                : isScheduled
-                ? "Scheduled"
-                : "Unpublished"}
-            </div>
-          </section>
-        </CardHeader>
+                  ? "Scheduled"
+                  : "Unpublished"}
+              </div>
+            </section>
+          }
+        ></CardHeader>
         <CardContent
           className={cx(styles.Content, SharedWidgetStyles.CardListSpace)}
         >
@@ -60,7 +62,7 @@ export const QuickView = memo(function QuickView(props) {
               <strong>ZUID:</strong>&nbsp;
               <CopyButton size="small" value={props.itemZUID} />
             </li>
-            <li>
+            <li data-cy="ContentLanguage">
               <strong>Language:</strong>&nbsp;
               <span>
                 {Object.keys(props.siblings || {}).find(
@@ -81,9 +83,9 @@ export const QuickView = memo(function QuickView(props) {
             </li>
           </ul>
         </CardContent>
-        <CardFooter className={SharedWidgetStyles.FooterSpacing}>
+        <CardActions sx={{ gap: 1 }}>
           {codeAccess && (
-            <ButtonGroup>
+            <>
               <AppLink to={`/schema/${props.modelZUID}`}>
                 <FontAwesomeIcon icon={faDatabase} />
                 &nbsp;Edit Schema
@@ -92,9 +94,9 @@ export const QuickView = memo(function QuickView(props) {
                 <FontAwesomeIcon icon={faCode} />
                 &nbsp;Edit Code
               </AppLink>
-            </ButtonGroup>
+            </>
           )}
-        </CardFooter>
+        </CardActions>
       </Card>
     </Fragment>
   );

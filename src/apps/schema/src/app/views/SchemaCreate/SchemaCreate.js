@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 import cx from "classnames";
 
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
@@ -11,6 +12,11 @@ import FormLabel from "@mui/material/FormLabel";
 import Tooltip from "@mui/material/Tooltip";
 import AddIcon from "@mui/icons-material/Add";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
+
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
@@ -21,10 +27,9 @@ import {
   faFile,
   faListAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+// import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
-import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 
 import { fetchParents } from "../../../store/parents";
@@ -147,7 +152,7 @@ export default connect((state) => {
   };
 
   return (
-    <section className={styles.SchemaCreate}>
+    <Box className={styles.SchemaCreate} sx={{ m: 2 }}>
       {/* {props.user.first_time && (
         <Card className={styles.Card}>
           <CardHeader>
@@ -169,12 +174,8 @@ export default connect((state) => {
       )} */}
 
       <Card className={styles.Card}>
-        <CardHeader>
-          <h1 className={styles.headline}>
-            You are creating a new content model
-          </h1>
-        </CardHeader>
-        <CardContent className={styles.CardContent}>
+        <CardHeader title="You are creating a new content model"></CardHeader>
+        <CardContent sx={{ display: "flex", flexWrap: "wrap" }}>
           <section className={cx(styles.Step, styles.SchemaType)}>
             <h2 className={styles.StepTitle}>1. Model Type</h2>
             <p className={styles.StepDesc}>
@@ -336,38 +337,43 @@ export default connect((state) => {
             <FieldTypeText
               name="label"
               label="Display Name"
-              description="This is what is shown to content editors"
+              helperText="This is what is shown to content editors"
               placeholder=""
               value={label}
               maxLength="100"
-              onChange={(value) => {
+              onChange={(evt) => {
+                const value = evt.target.value;
                 setLabel(value);
                 // When changing the label update the reference name as well
                 setName(formatName(value));
                 setPathPart(formatPathPart(value));
               }}
               error={errors["label"]}
+              sx={{ mb: 4 }}
             />
 
             <FieldTypeText
               name="name"
               label="Reference Name"
-              description="This is what is used to reference this model in Parsley"
+              helperText="This is what is used to reference this model in Parsley"
               placeholder=""
               value={name}
               maxLength="100"
-              onChange={(value) => setName(formatName(value))}
+              onChange={(evt) => setName(formatName(evt.target.value))}
               error={errors["name"]}
+              sx={{ mb: 4 }}
             />
 
-            <FieldTypeTextarea
+            <FieldTypeText
               className={styles.FieldTypeTextarea}
               name="description"
               label="Description"
-              description="A description of this model is shown to content editors. It can be helpful to provide context and explain what this model is used for."
+              helperText="A description of this model is shown to content editors. It can be helpful to provide context and explain what this model is used for."
               value={description}
               maxLength={500}
-              onChange={(value) => setDescription(value)}
+              onChange={(evt) => setDescription(evt.target.value)}
+              multiline
+              rows={6}
             />
           </section>
 
@@ -420,7 +426,7 @@ export default connect((state) => {
           </section>
         </CardContent>
 
-        <CardFooter>
+        <CardActions>
           <Button
             variant="contained"
             color="success"
@@ -523,8 +529,8 @@ export default connect((state) => {
           >
             Create Model
           </Button>
-        </CardFooter>
+        </CardActions>
       </Card>
-    </section>
+    </Box>
   );
 });

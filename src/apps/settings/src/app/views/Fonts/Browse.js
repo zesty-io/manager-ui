@@ -8,11 +8,13 @@ import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import AddIcon from "@mui/icons-material/Add";
-import Paper from "@mui/material/Paper";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 
-import { Search } from "@zesty-io/core/Search";
+import { FieldTypeText } from "@zesty-io/material";
+
 import { Notice } from "@zesty-io/core/Notice";
 import { notify } from "shell/store/notifications";
 
@@ -352,18 +354,30 @@ export default connect((state) => {
   return (
     <div className={styles.PageContainer}>
       <header className={styles.SearchContainer}>
-        <Search
-          className={styles.search}
+        <TextField
+          id="filled-search"
           placeholder="Search font"
-          // onSubmit={onSearch}
-          onKeyUp={(e) => onSearch(e.target.value)}
+          type="search"
+          variant="outlined"
+          fullWidth
+          size="small"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" />
+              </InputAdornment>
+            ),
+          }}
+          onChange={(evt) => {
+            const term = evt.target.value;
+            onSearch(term);
+          }}
         />
         <FieldTypeText
           placeholder="Type something to preview"
-          className={styles.previewField}
           name="previewText"
           value={previewText}
-          onChange={(value) => setPreviewText(value)}
+          onChange={(evt) => setPreviewText(evt.target.value)}
         />
       </header>
       {renderFontsList()}

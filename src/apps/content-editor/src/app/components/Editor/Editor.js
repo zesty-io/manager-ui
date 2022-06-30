@@ -73,7 +73,7 @@ export default memo(function Editor({
         });
 
         // Datasets do not get path parts
-        if (model.type !== "dataset") {
+        if (model?.type !== "dataset") {
           dispatch({
             type: "SET_ITEM_WEB",
             itemZUID,

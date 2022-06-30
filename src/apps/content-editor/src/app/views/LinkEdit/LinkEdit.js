@@ -10,10 +10,14 @@ import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
 
 import { ConfirmDialog } from "@zesty-io/material";
@@ -229,12 +233,21 @@ export default function LinkEdit() {
   return (
     <section className={styles.Editor}>
       <WithLoader condition={!state.loading} message="Loading Link">
-        <Card className={styles.LinkEdit}>
-          <CardHeader className={styles.EditorHeader}>
-            {state.type === "internal" && <h2>Internal Link</h2>}
-            {state.type === "external" && <h2>External Link</h2>}
-          </CardHeader>
-          <CardContent className={styles.CardContent}>
+        <Card className={styles.LinkEdit} sx={{ m: 2, width: "800px" }}>
+          <CardHeader
+            title={
+              <>
+                {" "}
+                {state.type === "internal" && <h5>Internal Link</h5>}
+                {state.type === "external" && <h5>External Link</h5>}
+              </>
+            }
+            className={styles.EditorHeader}
+          ></CardHeader>
+          <CardContent
+            className={styles.CardContent}
+            sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}
+          >
             <FieldTypeInternalLink
               className={styles.Row}
               name="parentZUID"
@@ -267,11 +280,11 @@ export default function LinkEdit() {
             )}
 
             <FieldTypeText
-              className={styles.Row}
               label="Link title"
               name="metaTitle"
               value={state.metaTitle}
-              onChange={(value) => {
+              onChange={(evt) => {
+                const value = evt.target.value;
                 setState({
                   ...state,
                   label: value,
@@ -307,9 +320,9 @@ export default function LinkEdit() {
               />
             </FormGroup>
           </CardContent>
-          <CardFooter className={styles.LinkEditActions}>
+          <CardActions sx={{ justifyContent: "flex-end" }}>
             <Button
-              variant="contained"
+              variant="outlined"
               color="error"
               disabled={state.saving}
               onClick={() => setShowConfirmation(true)}
@@ -326,7 +339,7 @@ export default function LinkEdit() {
             >
               Save Changes
             </Button>
-          </CardFooter>
+          </CardActions>
         </Card>
       </WithLoader>
 

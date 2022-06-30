@@ -3,7 +3,6 @@ import { useFilePath } from "shell/hooks/useFilePath";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faInfoCircle,
   faTimesCircle,
   faCheckCircle,
   faBolt,
@@ -13,7 +12,13 @@ import {
   faEdit,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "@mui/material/Link";
-import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
+
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import InfoIcon from "@mui/icons-material/Info";
+
 import { AppLink } from "@zesty-io/core/AppLink";
 import { CopyButton } from "@zesty-io/material";
 
@@ -31,11 +36,11 @@ export default connect((state) => {
   const codePath = useFilePath(props.model.ZUID);
 
   return (
-    <Card className={styles.ModelInfo}>
-      <CardHeader>
-        <FontAwesomeIcon icon={faInfoCircle} />
-        &nbsp;Model Info
-      </CardHeader>
+    <Card className={styles.ModelInfo} sx={{ m: 2 }}>
+      <CardHeader
+        avatar={<InfoIcon fontSize="small" />}
+        title="Model Info"
+      ></CardHeader>
       <CardContent>
         <ul className={styles.StaticInfo}>
           <li>
@@ -45,12 +50,12 @@ export default connect((state) => {
             Reference Name: <strong>{props.model.name}</strong>
           </li>
           <li>
-            Type: <strong>{props.model.type}</strong>
+            Type: <strong>{props.model?.type}</strong>
             <ul className={styles.SubList}>
               <li>
                 Has item URLs:&nbsp;
                 <strong>
-                  {props.model.type === "dataset" ? (
+                  {props.model?.type === "dataset" ? (
                     <span className={styles.no}>
                       <FontAwesomeIcon icon={faTimesCircle} title="false" />
                     </span>
@@ -65,7 +70,7 @@ export default connect((state) => {
               <li>
                 Has multiple items:&nbsp;
                 <strong>
-                  {props.model.type === "templateset" ? (
+                  {props.model?.type === "templateset" ? (
                     <span className={styles.no}>
                       <FontAwesomeIcon icon={faTimesCircle} />
                     </span>
@@ -108,9 +113,9 @@ export default connect((state) => {
           </li>
         </ul>
       </CardContent>
-      <CardFooter>
+      <CardActions>
         <ul className={styles.LinkList}>
-          {props.model.type !== "templateset" && (
+          {props.model?.type !== "templateset" && (
             <li>
               <AppLink to={`/content/${props.model.ZUID}/new`}>
                 <FontAwesomeIcon icon={faPlus} />
@@ -132,7 +137,7 @@ export default connect((state) => {
             </AppLink>
           </li>
         </ul>
-      </CardFooter>
+      </CardActions>
     </Card>
   );
 });

@@ -11,7 +11,7 @@ import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Option } from "@zesty-io/core/Select";
 import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 
 import { notify } from "shell/store/notifications";
 import { createFile } from "../../../../../store/files";
@@ -163,7 +163,8 @@ export const CreateFile = memo(function CreateFile(props) {
             <FieldTypeText
               name="file_name"
               label="File Name"
-              onChange={(value) => setName(value)}
+              value={name}
+              onChange={(evt) => setName(evt.target.value)}
             />
           </ModalContent>
           <ModalFooter>

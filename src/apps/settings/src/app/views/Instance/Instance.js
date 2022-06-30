@@ -14,9 +14,8 @@ import SaveIcon from "@mui/icons-material/Save";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 import CircularProgress from "@mui/material/CircularProgress";
 
-import { FieldTypeText } from "@zesty-io/core/FieldTypeText";
+import { FieldTypeText } from "@zesty-io/material";
 import { FieldLabel } from "@zesty-io/core/FieldLabel";
-import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 import { Select, Option } from "@zesty-io/core/Select";
 
 import Divider from "@mui/material/Divider";
@@ -262,15 +261,30 @@ export default connect((state) => {
                 );
               }
             case "textarea":
+              const tooltip = field.tips && (
+                <>
+                  <Tooltip title={field.tips} arrow placement="top-start">
+                    <InfoIcon fontSize="small" />
+                  </Tooltip>
+                  &nbsp;
+                </>
+              );
+
               return (
                 <div key={field.ZUID} className={styles.column}>
-                  <FieldTypeTextarea
+                  <FieldTypeText
                     key={field.ZUID}
                     name={field.key}
                     value={fieldValues[field.key]}
-                    label={field.keyFriendly}
-                    tooltip={field.tips}
-                    onChange={setValue}
+                    label={
+                      <>
+                        {tooltip}
+                        {field.keyFriendly}
+                      </>
+                    }
+                    onChange={(evt) => setValue(evt.target.value, field.key)}
+                    multiline
+                    rows={6}
                   />
                 </div>
               );
@@ -312,8 +326,10 @@ export default connect((state) => {
                     label={field.keyFriendly}
                     name={field.key}
                     value={fieldValues[field.key]}
-                    onChange={setValue}
-                    description={field.tips}
+                    onChange={(evt) =>
+                      setValue(evt.target.value, evt.target.name)
+                    }
+                    helperText={field.tips}
                     maxLength={640}
                   />
                 </div>

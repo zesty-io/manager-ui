@@ -1,9 +1,9 @@
 describe("Settings Actions", () => {
+  const SAVED_MESSAGE = "Settings Saved";
+
   before(() => {
-    cy.login();
     cy.visit("/settings");
   });
-  const SAVED_MESSAGE = "Settings Saved";
 
   it("Body Colors & Spacing", () => {
     cy.get("[data-cy=SettingsNav]").contains("Body Colors & Spacing").click();

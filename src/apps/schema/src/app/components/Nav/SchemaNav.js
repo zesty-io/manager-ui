@@ -3,6 +3,9 @@ import { useHistory, useLocation } from "react-router-dom";
 import cx from "classnames";
 
 import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
 
 import { Nav } from "@zesty-io/core/Nav";
@@ -39,12 +42,23 @@ export default function SchemaNav(props) {
           Create Model
         </Button>
 
-        <Search
-          className={styles.Search}
+        <TextField
           name="filter_schema"
           placeholder="Filter model list"
-          onChange={(term) => {
-            term = term.trim().toLowerCase();
+          type="search"
+          variant="outlined"
+          fullWidth
+          size="small"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" />
+              </InputAdornment>
+            ),
+          }}
+          onChange={(evt) => {
+            const term = evt.target.value.trim().toLowerCase();
+
             if (term) {
               setNav(
                 props.nav.filter(
@@ -57,6 +71,7 @@ export default function SchemaNav(props) {
               setNav(props.nav);
             }
           }}
+          sx={{ mt: 1 }}
         />
       </div>
 
