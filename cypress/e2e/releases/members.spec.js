@@ -58,19 +58,18 @@ describe("Release > members > CRUD", () => {
     ).click();
 
     // set member to version 1
-    cy.get("[role=presentation] li:last-child").click();
-
     cy.waitOn(
       {
         method: "PUT",
         pathname: "/v1/releases/27-d0d8f7a0f8-1pp779/members/*",
       },
       () => {
-        cy.get(
-          "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .MuiSelect-select span"
-        ).contains("Version 1");
+        cy.get("[role=presentation] li:last-child").click();
       }
     );
+    cy.get(
+      "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .MuiSelect-select span"
+    ).contains("Version 1");
   });
 
   it("delete member", () => {
