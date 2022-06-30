@@ -23,8 +23,6 @@ import InfoIcon from "@mui/icons-material/InfoOutlined";
 import { FieldTypeText } from "@zesty-io/material";
 import { FieldLabel } from "@zesty-io/core/FieldLabel";
 
-import Divider from "@mui/material/Divider";
-
 import { Docs } from "@zesty-io/core/Docs";
 import { notify } from "shell/store/notifications";
 import { FieldDescription } from "@zesty-io/core/FieldDescription";
