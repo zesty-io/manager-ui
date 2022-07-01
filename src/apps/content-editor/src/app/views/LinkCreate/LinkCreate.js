@@ -16,8 +16,7 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
-import { FieldTypeText } from "@zesty-io/material";
-import { FieldTypeUrl } from "@zesty-io/material";
+import { FieldTypeText, FieldTypeUrl } from "@zesty-io/material";
 import { Select, Option } from "@zesty-io/core/Select";
 
 import { searchItems } from "shell/store/content";
