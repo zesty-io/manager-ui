@@ -29,7 +29,6 @@ import {
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Modal } from "@zesty-io/core/Modal";
 import MediaApp from "../../../../../../media/src/app/MediaApp";
-import { FieldTypeColor } from "@zesty-io/core/FieldTypeColor";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
 import { FieldTypeCurrency } from "@zesty-io/core/FieldTypeCurrency";
 import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
