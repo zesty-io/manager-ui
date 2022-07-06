@@ -16,8 +16,7 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
-import { FieldTypeText } from "@zesty-io/material";
-import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
+import { FieldTypeText, FieldTypeUrl } from "@zesty-io/material";
 import { Select, Option } from "@zesty-io/core/Select";
 
 import { searchItems } from "shell/store/content";
@@ -188,11 +187,10 @@ export function LinkCreate() {
             />
           ) : (
             <FieldTypeUrl
-              className={styles.Row}
               label="Provide an external URL to link to"
               name="target"
               value={state.target}
-              onChange={onChange}
+              onChange={(evt) => onChange(evt.target.value, "target")}
               maxLength={255}
             />
           )}
