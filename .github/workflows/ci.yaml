@@ -41,6 +41,8 @@ jobs:
         run: npm run ci:test:setup
       - name: Run Tests
         run: npm run ci
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: Upload Screenshots
         if: ${{ failure() }}
         run: ./ci/scripts/upload_debug_screenshots_to_gcp.sh

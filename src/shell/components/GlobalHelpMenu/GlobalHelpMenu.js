@@ -97,7 +97,7 @@ const linkMap = {
       url: "https://zesty.org/services/web-engine/forms-and-form-webhooks#capturing-form-data-to-an-instances-leads-feature",
     },
   ],
-  analytics: [
+  "reports/analytics": [
     {
       name: "Analytics Setup",
       url: "https://zesty.org/services/web-engine/analytics",
@@ -121,7 +121,7 @@ const linkMap = {
       url: "https://zesty.org/services/manager-ui/health/redirects",
     },
   ],
-  "audit-trail": [
+  "reports/audit-trail": [
     {
       name: "Audit Trail Overview",
       url: "https://zesty.org/services/manager-ui/audit-trail",
@@ -141,8 +141,11 @@ const linkMap = {
 
 export default function GlobalHelpMenu(props) {
   const instancePlanID = useSelector((state) => state.instance.planID);
-  const section = location.pathname.split("/")[1];
-  const links = section ? linkMap[section] : defaultLinks;
+  const mainApp = location.pathname.split("/")[1];
+  const subApp = location.pathname.split("/")[2];
+  const section = mainApp === "reports" ? `reports/${subApp}` : mainApp;
+
+  const links = linkMap[section] || defaultLinks;
   return (
     <div className={styles.helpMenu}>
       <header>

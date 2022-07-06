@@ -2,6 +2,7 @@
 
 const path = require("path");
 const process = require("process");
+const mkdirp = require("mkdirp");
 
 const webpack = require("webpack");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
@@ -10,7 +11,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 const MomentLocalesPlugin = require("moment-locales-webpack-plugin");
-const mkdirp = require("mkdirp");
+const SentryCliPlugin = require("@sentry/webpack-plugin");
 
 const release = require("../../etc/release");
 const CONFIG = require("./app.config");
@@ -75,6 +76,15 @@ module.exports = async (env) => {
       },
     },
     plugins: [
+      new SentryCliPlugin({
+        include: "./build",
+        ignoreFile: ".sentrycliignore",
+        ignore: ["node_modules", "webpack.config.js"],
+        configFile: "sentry.properties",
+        release: CONFIG[process.env.NODE_ENV].build.data.gitCommit,
+        project: "manager-ui",
+        org: "zestyio",
+      }),
       new NodePolyfillPlugin({
         excludeAliases: ["console"],
       }),
