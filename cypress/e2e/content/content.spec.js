@@ -161,7 +161,12 @@ describe("Content Specs", () => {
         .should("have.value", `http://www.zesty.pw/${TIMESTAMP}`);
     });
 
-    it("Internal Link Field", () => {
+    /**
+     * FIXME: currently skipping test as it is inconsistent on whether the API request
+     * results in options being shown in the dropdown. This field is going to be swapped
+     * for a MUI alternative so waiting on that update before reactivating test.
+     */
+    it.skip("Internal Link Field", () => {
       cy.waitOn(
         {
           pathname: "/v1/search/items",
