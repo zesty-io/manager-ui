@@ -216,7 +216,7 @@ describe("Content Specs", () => {
         .should("have.value", `fa fa-link`);
     });
 
-    it.only("Number Field", () => {
+    it("Number Field", () => {
       // NOTE: the timestamp is too large for the 'small int' column in the DB
       // limit is 4294967295
       cy.get("#12-9b96ec-tll2gn input[type=number]")
