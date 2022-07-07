@@ -27,7 +27,7 @@ export default function RedirectTable(props) {
       { field: "id", headerName: "Id", hide: true },
       {
         field: "path",
-        width: 160,
+        flex: 2,
         renderHeader: () => (
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
             <Tooltip title="File Path Only" arrow placement="top-start">
@@ -126,7 +126,7 @@ export default function RedirectTable(props) {
       {
         field: "target",
         headerName: "Redirect Target",
-        width: 500,
+        flex: 1,
         renderCell: ({ value, row }) => (
           <RedirectTargetCell target={value} targetType={row.targetType} />
         ),
@@ -179,16 +179,16 @@ export default function RedirectTable(props) {
           siteZuid={props.siteZuid}
           dispatch={props.dispatch}
         />
-        <div style={{ height: 600, width: "100%" }}>
-          <DataGridPremium
-            columns={columns}
-            rows={rows}
-            rowHeight={60}
-            initialState={{ pinnedColumns: { right: ["actions"] } }}
-            hideFooter
-          />
-        </div>
       </main>
+      <div style={{ height: "100%" }}>
+        <DataGridPremium
+          columns={columns}
+          rows={rows}
+          rowHeight={60}
+          initialState={{ pinnedColumns: { right: ["actions"] } }}
+          hideFooter
+        />
+      </div>
     </section>
   );
 }
