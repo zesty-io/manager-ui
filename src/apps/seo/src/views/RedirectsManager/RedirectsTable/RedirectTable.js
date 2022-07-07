@@ -126,7 +126,7 @@ export default function RedirectTable(props) {
       {
         field: "target",
         headerName: "Redirect Target",
-        flex: 1,
+        flex: 2,
         renderCell: ({ value, row }) => (
           <RedirectTargetCell target={value} targetType={row.targetType} />
         ),
