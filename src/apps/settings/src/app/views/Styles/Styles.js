@@ -207,7 +207,9 @@ export default connect((state) => {
               <Select
                 fullWidth
                 name={field.referenceName}
-                onChange={(e) => setValue(e.target.value, field.referenceName)}
+                onChange={(evt) =>
+                  setValue(evt.target.value, field.referenceName)
+                }
                 className={[styles.selectFont]}
                 // if default value is a font-family stack with ',' then show "Select"
                 defaultValue={

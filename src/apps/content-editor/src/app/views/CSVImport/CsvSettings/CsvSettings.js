@@ -10,7 +10,9 @@ export const CsvSettings = (props) => {
         <label>Meta Description</label>
         <Select
           name={"metaDescription"}
-          onChange={(e) => props.handleMap(e.target.value, "metaDescription")}
+          onChange={(evt) =>
+            props.handleMap(evt.target.value, "metaDescription")
+          }
           defaultValue="none"
           size="small"
           fullWidth
@@ -27,7 +29,7 @@ export const CsvSettings = (props) => {
         <label>Meta Keywords</label>
         <Select
           name="metaKeywords"
-          onChange={(e) => props.handleMap(e.target.value, "metaKeywords")}
+          onChange={(evt) => props.handleMap(evt.target.value, "metaKeywords")}
           defaultValue="none"
           size="small"
           fullWidth
@@ -44,7 +46,7 @@ export const CsvSettings = (props) => {
         <label>Meta Link Text</label>
         <Select
           name="metaLinkText"
-          onChange={(e) => props.handleMap(e.target.value, "metaLinkText")}
+          onChange={(evt) => props.handleMap(evt.target.value, "metaLinkText")}
           defaultValue="none"
           size="small"
           fullWidth
@@ -61,7 +63,7 @@ export const CsvSettings = (props) => {
         <label>Meta Title</label>
         <Select
           name="metaTitle"
-          onChange={(e) => props.handleMap(e.target.value, "metaTitle")}
+          onChange={(evt) => props.handleMap(evt.target.value, "metaTitle")}
           defaultValue="none"
           size="small"
           fullWidth
@@ -78,7 +80,7 @@ export const CsvSettings = (props) => {
         <label>Parent ZUID</label>
         <Select
           name="parentZUID"
-          onChange={(e) => props.handleMap(e.target.value, "parentZUID")}
+          onChange={(evt) => props.handleMap(evt.target.value, "parentZUID")}
           defaultValue="none"
           size="small"
           fullWidth
@@ -95,7 +97,7 @@ export const CsvSettings = (props) => {
         <label>Path Part</label>
         <Select
           name="pathPart"
-          onChange={(e) => props.handleMap(e.target.value, "pathPart")}
+          onChange={(evt) => props.handleMap(evt.target.value, "pathPart")}
           defaultValue="none"
           size="small"
           fullWidth
@@ -115,7 +117,9 @@ export const CsvSettings = (props) => {
         <label>Sitemap Priority</label>
         <Select
           name="sitemapPriority"
-          onChange={(e) => props.handleMap(e.target.value, "sitemapPriority")}
+          onChange={(evt) =>
+            props.handleMap(evt.target.value, "sitemapPriority")
+          }
           defaultValue={-1.0}
           size="small"
           fullWidth
@@ -204,8 +208,8 @@ class CanonicalTag extends Component {
               name="canonicalTagMode"
               size="small"
               fullWidth
-              onChange={(e) => {
-                const value = e.target.value;
+              onChange={(evt) => {
+                const value = evt.target.value;
                 this.setState({ canonicalTagMode: value });
                 this.props.onChange(Number(value), "canonicalTagMode");
               }}

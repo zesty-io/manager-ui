@@ -78,7 +78,7 @@ export const CanonicalTag = memo(function CanonicalTag(props) {
         <div className={styles.settings}>
           <Select
             name="canonicalTagMode"
-            onChange={(e) => handleMode(e.target.value, "canonicalTagMode")}
+            onChange={(evt) => handleMode(evt.target.value, "canonicalTagMode")}
             value={CANONICAL_OPTS[mode] && CANONICAL_OPTS[mode].value}
             size="small"
             fullWidth

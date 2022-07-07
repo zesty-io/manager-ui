@@ -64,7 +64,9 @@ export class SetActions extends Component {
               className={cx(styles.Action, styles.Select)}
               name="status"
               value={this.props.status}
-              onChange={(e) => this.props.onStatus(e.target.value, "status")}
+              onChange={(evt) =>
+                this.props.onStatus(evt.target.value, "status")
+              }
               size="small"
             >
               <MenuItem value="all">All Status</MenuItem>

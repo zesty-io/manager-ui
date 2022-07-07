@@ -184,7 +184,9 @@ export default connect((state) => {
                     <div className={styles.selectProtocol}>
                       <Select
                         name={field.key}
-                        onChange={(e) => setValue(e.target.value, field.key)}
+                        onChange={(evt) =>
+                          setValue(evt.target.value, field.key)
+                        }
                         value={fieldValues[field.key]}
                         size="small"
                       >
@@ -296,7 +298,7 @@ export default connect((state) => {
                   <div className={styles.selectProtocol}>
                     <Select
                       name={field.key}
-                      onChange={(e) => setValue(e.target.value, field.key)}
+                      onChange={(evt) => setValue(evt.target.value, field.key)}
                       value={fieldValues[field.key]}
                       size="small"
                     >

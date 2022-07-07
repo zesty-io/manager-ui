@@ -189,7 +189,7 @@ export function Preview(props) {
                 className={styles.Select}
                 name="device"
                 value={device}
-                onChange={(e) => setDevice(e.target.value)}
+                onChange={(evt) => setDevice(evt.target.value)}
                 size="small"
               >
                 <MenuItem value="fullscreen">Viewport</MenuItem>

@@ -46,7 +46,7 @@ export function Header({ plan }) {
       <Select
         name="release"
         value={params.zuid}
-        onChange={(e) => history.push(`/release/${e.target.value}`)}
+        onChange={(evt) => history.push(`/release/${evt.target.value}`)}
         size="small"
       >
         {releases.map((release) => {

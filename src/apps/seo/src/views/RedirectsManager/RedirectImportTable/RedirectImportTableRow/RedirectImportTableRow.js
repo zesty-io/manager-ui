@@ -74,7 +74,7 @@ function RedirectImportTableRow(props) {
         {props.target_type === "page" ? (
           <Select
             className={styles.selector}
-            onChange={(e) => handlePageTarget(e.target.value)}
+            onChange={(evt) => handlePageTarget(evt.target.value)}
             size="small"
             fullWidth
           >

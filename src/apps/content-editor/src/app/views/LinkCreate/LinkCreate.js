@@ -141,7 +141,7 @@ export function LinkCreate() {
               <Select
                 name="type"
                 value={state.type}
-                onChange={(e) => onChange(e.target.value, "type")}
+                onChange={(evt) => onChange(evt.target.value, "type")}
                 fullWidth
               >
                 <MenuItem value="internal">

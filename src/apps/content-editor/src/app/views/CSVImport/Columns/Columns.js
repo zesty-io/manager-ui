@@ -22,8 +22,8 @@ export default function Columns(props) {
               <span className={cx(styles.Cell)}>{col.toUpperCase()}</span>
               <Select
                 name={colName}
-                onChange={(e) => {
-                  props.handleMap(e.target.value, col);
+                onChange={(evt) => {
+                  props.handleMap(evt.target.value, col);
                 }}
                 defaultValue="none"
                 size="small"

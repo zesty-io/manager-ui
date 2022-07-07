@@ -151,11 +151,10 @@ export const DifferActions = memo(function DifferActions(props) {
         className={styles.VersionSelector}
         defaultValue="local"
         size="small"
-        onChange={(e) => {
+        onChange={(evt) => {
           const version = versions.find(
-            (version) => version.version == e.target.value
+            (version) => version.version == evt.target.value
           );
-          console.log("testing change", version);
           if (version) {
             props.setVersionCodeLeft(version.code);
           } else {
@@ -177,9 +176,9 @@ export const DifferActions = memo(function DifferActions(props) {
         className={styles.VersionSelector}
         value={selectedVersion}
         size="small"
-        onChange={(e) => {
+        onChange={(evt) => {
           const version = versions.find(
-            (version) => version.version == e.target.value
+            (version) => version.version == evt.target.value
           );
           if (version) {
             props.setVersionCodeRight(version.code);

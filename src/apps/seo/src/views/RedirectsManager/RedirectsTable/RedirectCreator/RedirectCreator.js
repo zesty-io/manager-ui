@@ -89,7 +89,7 @@ export function RedirectCreator(props) {
       <span className={styles.RedirectCreatorCell}>
         <Select
           name={"selectType"}
-          onChange={(e) => setType(e.target.value)}
+          onChange={(evt) => setType(evt.target.value)}
           value={type}
           size="small"
           fullWidth

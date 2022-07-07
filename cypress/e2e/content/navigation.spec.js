@@ -20,15 +20,11 @@ describe("Navigation through content editor", () => {
     cy.get("#MainNavigation").then((content) => {
       if (!content.is(":visible")) {
         cy.get("[data-cy=contentNavButton]").click();
-        cy.get(".CreateItemDropdown")
-          .find(".MuiSelect-select")
-          .click({ force: true }); // IF another user modal is up force click
+        cy.get(".CreateItemDropdown").find(".MuiSelect-select").click();
         cy.get("[role=presentation]").find('[data-value="link"]').click();
         cy.get("#CreateLinkButton").should("exist");
       } else {
-        cy.get(".CreateItemDropdown")
-          .find(".MuiSelect-select")
-          .click({ force: true }); // IF another user modal is up force click
+        cy.get(".CreateItemDropdown").find(".MuiSelect-select").click();
         cy.get("[role=presentation]").find('[data-value="link"]').click();
         cy.get('[data-value="link"]').click();
         cy.get("#CreateLinkButton").should("exist");
