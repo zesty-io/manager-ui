@@ -833,6 +833,7 @@ export default function Field({
          */
         onChange(moment(value).format("YYYY-MM-DD HH:mm:ss"), name, datatype);
       }, []);
+
       return (
         <FieldTypeDate
           name={name}
@@ -847,7 +848,7 @@ export default function Field({
                   <InfoIcon fontSize="small" sx={{ mr: 1 }} />
                 </Tooltip>
               ) : (
-                " "
+                ""
               )}
 
               {FieldTypeLabel}
@@ -855,7 +856,8 @@ export default function Field({
           }
           helperText={description}
           required={required}
-          value={value}
+          value={moment(value).format("YYYY-MM-DD HH:mm:ss")}
+          inputFormat="yyyy-MM-dd"
           onChange={(date) => onDateChange(date, name, datatype)}
         />
       );
@@ -878,7 +880,7 @@ export default function Field({
                   <InfoIcon fontSize="small" sx={{ mr: 1 }} />
                 </Tooltip>
               ) : (
-                " "
+                ""
               )}
 
               {FieldTypeLabel}
@@ -886,7 +888,8 @@ export default function Field({
           }
           helperText={description}
           required={required}
-          value={value}
+          value={moment(value).format("YYYY-MM-DD HH:mm:ss")}
+          inputFormat="yyyy-MM-dd HH:mm:ss.SSSSSS"
           onChange={(date) => onDateTimeChange(date, name, datatype)}
         />
       );

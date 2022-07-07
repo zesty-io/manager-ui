@@ -100,7 +100,7 @@ describe("Content Specs", () => {
 
       cy.get("[role=dialog]").find('[aria-label="Mar 5, 2019"]').click();
 
-      cy.get("#12-63ab04-0nkwcc input").should("have.value", "03/05/2019");
+      cy.get("#12-63ab04-0nkwcc input").should("have.value", "2019-03-05");
     });
 
     it("Date & Time Field", () => {
@@ -110,7 +110,7 @@ describe("Content Specs", () => {
 
       cy.get("#12-f3db44-c8kt0q  input").should(
         "have.value",
-        "03/05/2019 02:30 pm"
+        "2019-03-05 14:30:00.000000"
       );
     });
 

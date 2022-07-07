@@ -130,7 +130,9 @@ export default connect((state) => {
               <FieldTypeDate
                 name="start-date"
                 label="Start Date"
-                value={this.props.filter.startDate}
+                value={moment(this.props.filter.startDate).format(
+                  "YYYY-MM-DD HH:mm:ss"
+                )}
                 onChange={this.setStartDate}
               />
             </div>
@@ -138,7 +140,9 @@ export default connect((state) => {
               <FieldTypeDate
                 name="end-date"
                 label="End Date"
-                value={this.props.filter.endDate}
+                value={moment(this.props.filter.endDate).format(
+                  "YYYY-MM-DD HH:mm:ss"
+                )}
                 onChange={this.setEndDate}
               />
             </div>
