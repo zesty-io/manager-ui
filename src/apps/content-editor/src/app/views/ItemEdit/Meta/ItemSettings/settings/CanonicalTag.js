@@ -4,7 +4,7 @@ import { Select, Option } from "@zesty-io/core/Select";
 import Tooltip from "@mui/material/Tooltip";
 import TextField from "@mui/material/TextField";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
-import { FieldLabel } from "@zesty-io/core/FieldLabel";
+import FormLabel from "@mui/material/FormLabel";
 
 const CANONICAL_OPTS = [
   {
@@ -50,21 +50,18 @@ export const CanonicalTag = memo(function CanonicalTag(props) {
 
   return (
     <article className={styles.CanonicalTag} data-cy="canonicalTag">
-      <FieldLabel
-        name="canonicaltag"
-        label={
-          <label>
-            <Tooltip
-              title="Canonical tags help search engines understand authoritative links and can help prevent duplicate content issues. Zesty.io auto creates tags on demand based on your settings."
-              arrow
-              placement="top-start"
-            >
-              <InfoIcon fontSize="small" />
-            </Tooltip>
-            &nbsp;Canonical Tag
-          </label>
-        }
-      />
+      <FormLabel name="canonicaltag">
+        <label>
+          <Tooltip
+            title="Canonical tags help search engines understand authoritative links and can help prevent duplicate content issues. Zesty.io auto creates tags on demand based on your settings."
+            arrow
+            placement="top-start"
+          >
+            <InfoIcon fontSize="small" />
+          </Tooltip>
+          &nbsp;Canonical Tag
+        </label>
+      </FormLabel>
       {zestyStore.getState().instance.settings.seo["canonical-tags-enabled"] ===
       "1" ? (
         <small className={`desc notEnabled`}>

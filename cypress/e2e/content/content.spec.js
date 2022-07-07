@@ -264,7 +264,7 @@ describe("Content Specs", () => {
 
       cy.get("#12-4e1914-kcqznz input[type='number']").should(
         "have.value",
-        "13"
+        "11"
       );
 
       cy.get("#12-4e1914-kcqznz button").last().click();
