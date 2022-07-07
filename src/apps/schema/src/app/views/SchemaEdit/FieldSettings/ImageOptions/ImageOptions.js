@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 
-import { FieldTypeNumber } from "@zesty-io/core/FieldTypeNumber";
-import { FormControl, FormLabel } from "@mui/material";
+import { FormControl, FormLabel, TextField } from "@mui/material";
 import { VirtualizedAutocomplete } from "@zesty-io/material";
 
 import { fetchAllBins, fetchAllGroups } from "shell/store/media";
@@ -41,12 +40,19 @@ export default connect((state) => {
   return (
     <div className={styles.FieldSettings}>
       <div className={styles.Option}>
-        <FieldTypeNumber
-          name="limit"
-          label="Image Limit"
-          value={(props.field.settings && props.field.settings.limit) || 1}
-          onChange={props.updateFieldSetting}
-        />
+        <FormControl fullWidth>
+          <FormLabel>Image Limit</FormLabel>
+          <TextField
+            size="small"
+            variant="outlined"
+            type="number"
+            name="limit"
+            value={(props.field.settings && props.field.settings.limit) || "1"}
+            onChange={(evt) =>
+              props.updateFieldSetting(evt.target.value, "limit")
+            }
+          />
+        </FormControl>
       </div>
 
       <div className={styles.Option}>

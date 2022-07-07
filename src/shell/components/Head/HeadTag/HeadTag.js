@@ -27,7 +27,7 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 
 import { FieldTypeText } from "@zesty-io/material";
-import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
+import { FieldTypeSort } from "@zesty-io/material";
 
 import { FormControl, FormLabel, Select, MenuItem } from "@mui/material";
 
@@ -136,13 +136,16 @@ export const HeadTag = (props) => {
                 <MenuItem value="link">Link</MenuItem>
               </Select>
             </FormControl>
-            <FieldTypeSort
-              value={tag.sort}
-              name={tag.ZUID}
-              label="Sort"
-              className={styles.Sort}
-              onChange={(value) => dispatch(updateTagSort(tag.ZUID, value))}
-            />
+            <Box sx={{ maxWidth: "200px" }}>
+              <FieldTypeSort
+                value={tag.sort ? tag.sort.toString() : "0"}
+                name={tag.ZUID}
+                label="Sort"
+                onChange={(evt) =>
+                  dispatch(updateTagSort(tag.ZUID, parseInt(evt.target.value)))
+                }
+              />
+            </Box>
             <Button
               title="Add Tag Attribute"
               variant="contained"

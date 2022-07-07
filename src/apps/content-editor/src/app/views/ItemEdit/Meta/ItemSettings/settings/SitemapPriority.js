@@ -1,7 +1,7 @@
 import { memo } from "react";
 
 import { Select, Option } from "@zesty-io/core/Select";
-import { FieldLabel } from "@zesty-io/core/FieldLabel";
+import FormLabel from "@mui/material/FormLabel";
 import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
@@ -9,21 +9,18 @@ import styles from "./SitemapPriority.less";
 export const SitemapPriority = memo(function SitemapPriority(props) {
   return (
     <article className={styles.SitemapPriority} data-cy="sitemapPriority">
-      <FieldLabel
-        name="sitemapPriority"
-        label={
-          <label>
-            <Tooltip
-              title="Sitemap priority helps search engines understand how often they should crawl pages on your site."
-              arrow
-              placement="top-start"
-            >
-              <InfoIcon fontSize="small" />
-            </Tooltip>
-            &nbsp;Sitemap Priority
-          </label>
-        }
-      />
+      <FormLabel name="sitemapPriority">
+        <label>
+          <Tooltip
+            title="Sitemap priority helps search engines understand how often they should crawl pages on your site."
+            arrow
+            placement="top-start"
+          >
+            <InfoIcon fontSize="small" />
+          </Tooltip>
+          &nbsp;Sitemap Priority
+        </label>
+      </FormLabel>
       <Select
         name="sitemapPriority"
         value={props.sitemapPriority || "-1.0"}

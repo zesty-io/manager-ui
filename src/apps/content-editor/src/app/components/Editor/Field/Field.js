@@ -7,13 +7,20 @@ import zuid from "zuid";
 import { fetchFields } from "shell/store/fields";
 import { fetchItem, fetchItems, searchItems } from "shell/store/content";
 
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import ToggleButton from "@mui/material/ToggleButton";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-import Tooltip from "@mui/material/Tooltip";
-import Box from "@mui/material/Box";
-import { Select, MenuItem, FormHelperText, Stack, Chip } from "@mui/material";
+import {
+  ToggleButtonGroup,
+  ToggleButton,
+  FormControl,
+  FormLabel,
+  Tooltip,
+  Box,
+  Select,
+  MenuItem,
+  FormHelperText,
+  Stack,
+  Chip,
+  TextField,
+} from "@mui/material";
 
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
@@ -27,13 +34,12 @@ import {
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Modal } from "@zesty-io/core/Modal";
 import MediaApp from "../../../../../../media/src/app/MediaApp";
-import { FieldTypeNumber } from "@zesty-io/core/FieldTypeNumber";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
 import { FieldTypeCurrency } from "@zesty-io/core/FieldTypeCurrency";
 import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
-import { FieldTypeSort } from "@zesty-io/core/FieldTypeSort";
+import { FieldTypeSort } from "@zesty-io/material";
 import { FieldTypeEditor } from "@zesty-io/core/FieldTypeEditor";
 import { FieldTypeTinyMCE } from "@zesty-io/core/FieldTypeTinyMCE";
 import {
@@ -299,7 +305,6 @@ export default function Field({
           multiline={true}
           rows={6}
           onChange={(evt) => {
-            console.log(evt);
             onChange(evt.target.value, name);
           }}
           maxLength="16000"
@@ -810,15 +815,35 @@ export default function Field({
 
     case "number":
       return (
-        <FieldTypeNumber
-          name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
-          required={required}
-          value={Number(value) ? Number(value) : 0}
-          onChange={onChange}
-        />
+        <FormControl fullWidth required={required}>
+          <FormLabel sx={{ display: "flex" }}>
+            <Stack direction="row" alignItems="center">
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+
+              {FieldTypeLabel}
+            </Stack>
+          </FormLabel>
+          <TextField
+            size="small"
+            variant="outlined"
+            type="number"
+            value={value ? value.toString() : "0"}
+            name={name}
+            required={required}
+            helperText={description}
+            onChange={(evt) => onChange(evt.target.value, name)}
+          />
+        </FormControl>
       );
 
     case "currency":
@@ -868,13 +893,31 @@ export default function Field({
     case "sort":
       return (
         <FieldTypeSort
+          sx={{ maxWidth: "200px" }}
           name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
+          label={
+            <Stack direction="row" alignItems="center">
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                </Tooltip>
+              ) : (
+                " "
+              )}
+
+              {FieldTypeLabel}
+            </Stack>
+          }
+          helperText={description}
           required={required}
-          value={value}
-          onChange={onChange}
+          value={value ? value.toString() : "0"}
+          onChange={(evt) => {
+            onChange(parseInt(evt.target.value), name);
+          }}
         />
       );
 
