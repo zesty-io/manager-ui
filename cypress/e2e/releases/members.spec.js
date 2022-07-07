@@ -52,7 +52,6 @@ describe("Release > members > CRUD", () => {
   });
 
   it("update member", () => {
-    cy.wait(5000);
     cy.get(
       "[data-cy=PlanTable] tbody tr:last-child [data-cy=release-member-version] .MuiSelect-select"
     ).click();
