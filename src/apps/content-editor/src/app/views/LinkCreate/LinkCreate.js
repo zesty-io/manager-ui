@@ -21,8 +21,8 @@ import LinkIcon from "@mui/icons-material/Link";
 import IosShareIcon from "@mui/icons-material/IosShare";
 
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
-import { FieldTypeText } from "@zesty-io/material";
-import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
+
+import { FieldTypeText, FieldTypeUrl } from "@zesty-io/material";
 
 import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
@@ -186,11 +186,10 @@ export function LinkCreate() {
             />
           ) : (
             <FieldTypeUrl
-              className={styles.Row}
               label="Provide an external URL to link to"
               name="target"
               value={state.target}
-              onChange={onChange}
+              onChange={(evt) => onChange(evt.target.value, "target")}
               maxLength={255}
             />
           )}

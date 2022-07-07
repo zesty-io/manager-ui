@@ -21,7 +21,6 @@ import SaveIcon from "@mui/icons-material/Save";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import { FieldTypeText } from "@zesty-io/material";
-import { FieldLabel } from "@zesty-io/core/FieldLabel";
 
 import { Docs } from "@zesty-io/core/Docs";
 import { notify } from "shell/store/notifications";
@@ -178,7 +177,7 @@ export default connect((state) => {
                 return (
                   <div key={field.ZUID} className={styles.column}>
                     <div className={styles.labelRow}>
-                      <FieldLabel label={field.keyFriendly} />{" "}
+                      <FormLabel> {field.keyFriendly} </FormLabel>{" "}
                       <Docs subject={`${field.key}`} />
                     </div>
                     <div className={styles.selectProtocol}>
@@ -294,7 +293,7 @@ export default connect((state) => {
             case "dropdown":
               return (
                 <div key={field.ZUID} className={styles.column}>
-                  <FieldLabel label={field.keyFriendly} />
+                  <FormLabel>{field.keyFriendly}</FormLabel>
                   <div className={styles.selectProtocol}>
                     <Select
                       name={field.key}

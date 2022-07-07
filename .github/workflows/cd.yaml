@@ -43,6 +43,8 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build:dev
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: Deploy to Dev
         run: gcloud app deploy app.yaml --quiet --project zesty-dev
       - name: Post Successful Dev Deploy Notification To Slack
@@ -119,6 +121,8 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build:stage
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: Deploy to Staging
         run: gcloud app deploy app.yaml --quiet --project zesty-stage
       - name: Post Successful Stage Deploy Notification To Slack
