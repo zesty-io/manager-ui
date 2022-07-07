@@ -216,16 +216,12 @@ describe("Content Specs", () => {
         .should("have.value", `fa fa-link`);
     });
 
-    it.only("Number Field", () => {
+    it("Number Field", () => {
       // NOTE: the timestamp is too large for the 'small int' column in the DB
       // limit is 4294967295
       cy.get("#12-9b96ec-tll2gn input[type=number]")
         .focus()
-        /* 
-        input type='number 'cannot be empty so rather than whitespace, it'd have a value of 0
-        to solve for this {selectall} is used to overwrite value as opposed to clear()
-        */
-        .type("{selectall}")
+        .clear()
         .type("999")
         .should("have.value", "999");
     });
