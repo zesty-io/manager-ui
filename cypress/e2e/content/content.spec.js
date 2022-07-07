@@ -221,7 +221,11 @@ describe("Content Specs", () => {
       // limit is 4294967295
       cy.get("#12-9b96ec-tll2gn input[type=number]")
         .focus()
-        .clear()
+        /* 
+          input type='number 'cannot be empty so rather than whitespace, it'd have a value of 0
+          to solve for this {selectall} is used to overwrite value as opposed to clear()
+        */
+        .type("{selectall}")
         .type("999")
         .should("have.value", "999");
     });
@@ -264,7 +268,7 @@ describe("Content Specs", () => {
 
       cy.get("#12-4e1914-kcqznz input[type='number']").should(
         "have.value",
-        "13"
+        "11"
       );
 
       cy.get("#12-4e1914-kcqznz button").last().click();

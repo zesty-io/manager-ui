@@ -17,8 +17,7 @@ import CardActions from "@mui/material/CardActions";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
-import { FieldTypeText } from "@zesty-io/material";
-import { FieldTypeUrl } from "@zesty-io/core/FieldTypeUrl";
+import { FieldTypeText, FieldTypeUrl } from "@zesty-io/material";
 
 import { ConfirmDialog } from "@zesty-io/material";
 
@@ -270,11 +269,10 @@ export default function LinkEdit() {
               />
             ) : (
               <FieldTypeUrl
-                className={styles.Row}
                 label="Provide an external URL to link to"
                 name="target"
                 value={state.target}
-                onChange={onChange}
+                onChange={(evt) => onChange(evt.target.value, "target")}
                 maxLength={255}
               />
             )}
