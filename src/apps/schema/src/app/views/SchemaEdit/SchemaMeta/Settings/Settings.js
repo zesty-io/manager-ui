@@ -46,23 +46,25 @@ export default function Settings(props) {
             name="label"
             label="Display label"
             value={props.model.label}
-            onChange={update}
+            onChange={(evt) => update(evt.target.value, "label")}
           />
 
           <FieldTypeText
             name="name"
             label="Parsley reference name (no spaces)"
             value={props.model.name}
-            onChange={update}
+            onChange={(evt) => update(evt.target.value, "name")}
           />
 
-          <FieldTypeTextarea
+          <FieldTypeText
             className={styles.FieldTypeTextarea}
+            multiline
+            rows={6}
             name="description"
             label="Description"
             value={props.model.description}
             maxLength={500}
-            onChange={update}
+            onChange={(evt) => update(evt.target.value, "description")}
           />
 
           <Parent parentZUID={props.model.parentZUID} onChange={update} />
