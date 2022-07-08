@@ -9,7 +9,6 @@ import SaveIcon from "@mui/icons-material/Save";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 
 import { FieldTypeText } from "@zesty-io/material";
-import { FieldTypeTextarea } from "@zesty-io/core/FieldTypeTextarea";
 
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
