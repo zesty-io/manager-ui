@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
-
-import { Button, CircularProgress, Select, MenuItem } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 
-import { FieldTypeText } from "@zesty-io/material";
-import { FieldTypeColor } from "@zesty-io/material";
+import { FieldTypeColor, FieldTypeText } from "@zesty-io/material";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { Modal } from "@zesty-io/core/Modal";
 import {
+  Button,
+  CircularProgress,
   FormControl,
   FormLabel,
-  Select as MuiSelect,
+  Select,
   MenuItem,
   FormHelperText,
 } from "@mui/material";
@@ -194,7 +193,7 @@ export default connect((state) => {
         return (
           <FormControl fullWidth size="small">
             <FormLabel>{field.name}</FormLabel>
-            <MuiSelect
+            <Select
               key={field.ZUID}
               name={field.referenceName}
               variant="outlined"
@@ -208,7 +207,7 @@ export default connect((state) => {
                   {field.options[option]}
                 </MenuItem>
               ))}
-            </MuiSelect>
+            </Select>
             <FormHelperText>{field.description}</FormHelperText>
           </FormControl>
         );

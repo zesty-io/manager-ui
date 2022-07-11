@@ -119,7 +119,7 @@ export default connect((state) => {
               name="form-group-filter"
               variant="outlined"
               defaultValue={DATE_PRESETS.ALL}
-              onChange={(e) => this.onDateRangeChange(e.target.value)}
+              onChange={(evt) => this.onDateRangeChange(evt.target.value)}
             >
               {datePresets.map((datePreset, idx) => (
                 <MenuItem key={idx} value={datePreset.value}>

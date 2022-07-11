@@ -112,8 +112,8 @@ export function FieldAdd(props) {
             name="type"
             variant="outlined"
             value={field.datatype}
-            onChange={(e) => {
-              setField({ ...field, datatype: e.target.value });
+            onChange={(evt) => {
+              setField({ ...field, datatype: evt.target.value });
             }}
           >
             <MenuItem value="0">- Select a Field Type -</MenuItem>

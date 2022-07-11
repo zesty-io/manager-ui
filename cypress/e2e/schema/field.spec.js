@@ -65,12 +65,12 @@ describe("Fields", () => {
     cy.get("[data-cy=deactivated]").eq(0).click();
   });
 
-  it("Create:textarea", () => {
+  it.only("Create:textarea", () => {
     const fieldLabel = `TextArea Field: ${timestamp}`;
     const fieldName = `textarea_field_${timestamp}`;
 
     cy.get(".FieldAdd .MuiSelect-select").click();
-    cy.get("[role=presentation] li[data-value='textarea']").click();
+    cy.get(".MuiList-root li[data-value='textarea']").click();
 
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
     cy.get('.FieldAdd input[name="name"]').type(fieldName);

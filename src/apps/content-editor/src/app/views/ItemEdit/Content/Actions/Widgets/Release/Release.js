@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import flatten from "lodash/flatten";
 
@@ -119,7 +119,7 @@ export const Release = memo(function Release(props) {
                   name="release"
                   value={selectedRelease}
                   onChange={(_, option) => {
-                    delete option.component;
+                    // delete option.component;
                     setSelectedRelease(option);
                   }}
                   placeholder="Select release..."

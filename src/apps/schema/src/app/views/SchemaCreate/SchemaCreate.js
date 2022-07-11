@@ -242,10 +242,10 @@ export default connect((state) => {
                 variant="outlined"
                 displayEmpty
                 value={type}
-                onChange={(e) => {
+                onChange={(evt) => {
                   setType({
                     type: "type",
-                    payload: e.target.value,
+                    payload: evt.target.value,
                   });
                 }}
               >

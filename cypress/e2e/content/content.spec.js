@@ -145,10 +145,7 @@ describe("Content Specs", () => {
     });
 
     it("Dropdown Field", () => {
-      cy.get("#12-f3152c-kjz88l")
-        .should("exist")
-        .find(".MuiSelect-select")
-        .click();
+      cy.get("#12-f3152c-kjz88l").find(".MuiSelect-select").click();
 
       cy.get("[role=presentation]")
         .find('[data-value="custom_option_one"]')
