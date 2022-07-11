@@ -3,17 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import { useMetaKey } from "shell/hooks/useMetaKey";
 
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
+import { Box, Link, Tooltip, Button, Select, MenuItem } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
-import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
-import Link from "@mui/material/Link";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { FieldTypeText } from "@zesty-io/material";
@@ -21,7 +18,6 @@ import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 
 import { CopyButton } from "@zesty-io/material";
 import { Input } from "@zesty-io/core/Input";
-import { Option, Select } from "@zesty-io/core/Select";
 
 import { MediaImage } from "./MediaImage";
 import { editFile } from "shell/store/media";
@@ -162,17 +158,26 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
                       className={styles.Select}
                       name="optimize"
                       value={imageSettings.optimize}
-                      onSelect={(value) =>
+                      onChange={(e) =>
                         setImageSettings({
                           ...imageSettings,
-                          optimize: value,
+                          optimize: e.target.value,
                         })
                       }
+                      size="small"
                     >
-                      <Option key="none" value="none" text="— None —" />
-                      <Option key="high" value="high" text="High" />
-                      <Option key="medium" value="medium" text="Medium" />
-                      <Option key="low" value="low" text="Low" />
+                      <MenuItem key="none" value="none">
+                        — None —
+                      </MenuItem>
+                      <MenuItem key="high" value="high">
+                        High
+                      </MenuItem>
+                      <MenuItem key="medium" value="medium">
+                        Medium
+                      </MenuItem>
+                      <MenuItem key="low" value="low" text="Low">
+                        Low
+                      </MenuItem>
                     </Select>
                   </div>
                   <div>
@@ -181,17 +186,26 @@ export const MediaDetailsModal = memo(function MediaDetailsModal(props) {
                       className={styles.Select}
                       name="fit"
                       value={imageSettings.fit}
-                      onSelect={(value) =>
+                      onChange={(e) =>
                         setImageSettings({
                           ...imageSettings,
-                          fit: value,
+                          fit: e.target.value,
                         })
                       }
+                      size="small"
                     >
-                      <Option key="none" value="none" text="— None —" />
-                      <Option key="bounds" value="bounds" text="Bounds" />
-                      <Option key="cover" value="cover" text="Cover" />
-                      <Option key="crop" value="crop" text="Crop" />
+                      <MenuItem key="none" value="none">
+                        — None —
+                      </MenuItem>
+                      <MenuItem key="bounds" value="bounds">
+                        Bounds
+                      </MenuItem>
+                      <MenuItem key="cover" value="cover">
+                        Cover
+                      </MenuItem>
+                      <MenuItem key="crop" value="crop">
+                        Crop
+                      </MenuItem>
                     </Select>
                   </div>
                   <div>

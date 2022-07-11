@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 
-import Button from "@mui/material/Button";
-import CircularProgress from "@mui/material/CircularProgress";
+import { Button, CircularProgress, Select, MenuItem } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 
 import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeColor } from "@zesty-io/material";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
-import { Select, Option } from "@zesty-io/core/Select";
 import { Modal } from "@zesty-io/core/Modal";
 import {
   FormControl,
@@ -220,27 +218,32 @@ export default connect((state) => {
             <span style={{ fontSize: "1.5rem" }}>{field.keyFriendly}</span>
             <div className={styles.fontPicker}>
               <Select
+                fullWidth
                 name={field.referenceName}
-                onSelect={setValue}
+                onChange={(evt) =>
+                  setValue(evt.target.value, field.referenceName)
+                }
                 className={[styles.selectFont]}
                 // if default value is a font-family stack with ',' then show "Select"
-                value={
+                defaultValue={
                   field.value !== null && field.value.includes(",")
                     ? "inherit"
                     : field.value
                 }
+                size="small"
               >
-                <Option value="inherit" text="Select" />
+                <MenuItem value="inherit">Select</MenuItem>
                 {fonts.map((option, index) => (
-                  <Option
+                  <MenuItem
                     key={index}
                     value={
                       option.weight
                         ? `${option.family}:${option.weight}`
                         : option.family
                     }
-                    text={option.family}
-                  />
+                  >
+                    {option.family}
+                  </MenuItem>
                 ))}
               </Select>
               <div className={styles.Preview}>

@@ -1,8 +1,6 @@
 import { memo, useState } from "react";
 
-import { Select, Option } from "@zesty-io/core/Select";
-import Tooltip from "@mui/material/Tooltip";
-import TextField from "@mui/material/TextField";
+import { TextField, Tooltip, Select, MenuItem } from "@mui/material";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 import FormLabel from "@mui/material/FormLabel";
 
@@ -77,12 +75,15 @@ export const CanonicalTag = memo(function CanonicalTag(props) {
         <div className={styles.settings}>
           <Select
             name="canonicalTagMode"
-            onSelect={handleMode}
+            onChange={(evt) => handleMode(evt.target.value, "canonicalTagMode")}
             value={CANONICAL_OPTS[mode] && CANONICAL_OPTS[mode].value}
-            options={CANONICAL_OPTS}
+            size="small"
+            fullWidth
           >
             {CANONICAL_OPTS.map((opt) => (
-              <Option key={opt.value} value={opt.value} text={opt.text} />
+              <MenuItem key={opt.value} value={opt.value}>
+                {opt.text}
+              </MenuItem>
             ))}
           </Select>
 
