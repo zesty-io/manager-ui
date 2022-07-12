@@ -84,6 +84,7 @@ module.exports = async (env) => {
         release: CONFIG[process.env.NODE_ENV].build.data.gitCommit,
         project: "manager-ui",
         org: "zestyio",
+        dryRun: process.env.NODE_ENV !== "development" ? false : true,
       }),
       new NodePolyfillPlugin({
         excludeAliases: ["console"],
