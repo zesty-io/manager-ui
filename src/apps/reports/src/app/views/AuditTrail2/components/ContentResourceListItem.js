@@ -19,19 +19,19 @@ export const ContentResourceListItem = (props) => {
   );
   const modelData = useSelector((state) =>
     Object.values(state.models).find(
-      (item) => item.ZUID === contentData.meta.contentModelZUID
+      (item) => item.ZUID === contentData?.meta?.contentModelZUID
     )
   );
   const parentContentData = useSelector((state) =>
     Object.values(state.content).find(
-      (item) => item.meta.ZUID === contentData.web.parentZUID
+      (item) => item.meta.ZUID === contentData?.web?.parentZUID
     )
   );
 
   const secondaryText = useMemo(() => {
     const chips = [
       `Last action @ ${moment(props.updatedAt).format("hh:mm A")}`,
-      modelTypeName[modelData.type],
+      modelTypeName[modelData?.type],
     ];
     if (contentData?.web?.parentZUID && contentData?.web?.parentZUID !== "0") {
       chips.push(parentContentData?.web?.metaTitle);

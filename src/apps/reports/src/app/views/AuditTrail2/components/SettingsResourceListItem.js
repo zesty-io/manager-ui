@@ -1,30 +1,23 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDatabase } from "@fortawesome/free-solid-svg-icons";
+import { faCog } from "@fortawesome/free-solid-svg-icons";
 import { ListItem, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
 import { useSelector } from "react-redux";
 import moment from "moment";
 
-export const ModelResourceListItem = (props) => {
-  const modelData = useSelector((state) =>
-    Object.values(state.models).find(
-      // (item) => item.ZUID === props.uri.split('/')[4]
-      (item) => item.ZUID === props.affectedZUID
-    )
-  );
-
+export const SettingsResourceListItem = (props) => {
   return (
     <ListItem divider>
       <ListItemAvatar>
         <Avatar>
-          <FontAwesomeIcon icon={faDatabase} />
+          <FontAwesomeIcon icon={faCog} />
         </Avatar>
       </ListItemAvatar>
       <ListItemText
-        primary={modelData?.label}
+        primary={props.message}
         secondary={`Last action @ ${moment(props.updatedAt).format(
           "hh:mm A"
-        )} • Content Model`}
+        )} • Settings`}
       />
     </ListItem>
   );

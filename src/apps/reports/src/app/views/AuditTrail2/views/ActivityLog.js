@@ -1,4 +1,3 @@
-// import { instanceApi } from "../../../../../../shell/services/instance"
 import { useState } from "react";
 import { Typography, Box, Tabs, Tab } from "@mui/material";
 import { useLocation, useHistory } from "react-router-dom";
@@ -6,7 +5,9 @@ import { instanceApi } from "../../../../../../../shell/services/instance";
 import { ContentResourceListItem } from "../components/ContentResourceListItem";
 import { ModelResourceListItem } from "../components/ModelResourceListItem";
 import { FileResourceListItem } from "../components/FileResourceListItem";
+import { SettingsResourceListItem } from "../components/SettingsResourceListItem";
 import { uniqBy } from "lodash";
+import { ResourceList } from "../components/ResourceList";
 
 const tabPaths = ["resources", "users", "timeline", "insights"];
 
@@ -38,38 +39,7 @@ export const ActivityLog = () => {
   const getView = () => {
     switch (activeTab) {
       case 0:
-        return uniqueResources?.map((resource) => {
-          if (resource.affectedZUID.startsWith("7")) {
-            return (
-              <ContentResourceListItem
-                key={resource.ZUID}
-                affectedZUID={resource.affectedZUID}
-                updatedAt={resource.updatedAt}
-              />
-            );
-          } else if (resource.affectedZUID.startsWith("6")) {
-            return (
-              <ModelResourceListItem
-                key={resource.ZUID}
-                affectedZUID={resource.affectedZUID}
-                updatedAt={resource.updatedAt}
-              />
-            );
-          } else if (
-            resource.affectedZUID.startsWith("10") ||
-            resource.affectedZUID.startsWith("11")
-          ) {
-            return (
-              <FileResourceListItem
-                key={resource.ZUID}
-                affectedZUID={resource.affectedZUID}
-                updatedAt={resource.updatedAt}
-              />
-            );
-          } else {
-            return <div>under construction {resource.ZUID}</div>;
-          }
-        });
+        return <ResourceList />;
       case 1:
         return <div>USERS</div>;
       case 2:
@@ -99,7 +69,7 @@ export const ActivityLog = () => {
           <Tab label="INSIGHTS" />
         </Tabs>
       </Box>
-      <Box sx={{ overflowY: "scroll", height: "100%", px: 3 }}>{getView()}</Box>
+      {getView()}
     </>
   );
 };
