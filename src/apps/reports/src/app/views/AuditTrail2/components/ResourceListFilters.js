@@ -17,7 +17,7 @@ export const ResourceListFilters = () => {
     [location.search]
   );
 
-  const handleSortChange = (val, name) => {
+  const handleParamsChange = (val, name) => {
     if (val) {
       params.set(name, val);
     } else {
@@ -39,15 +39,23 @@ export const ResourceListFilters = () => {
     <Box sx={{ display: "flex", width: 540, gap: 1.5, mt: 3, mb: 1.5 }}>
       <FormControl fullWidth>
         <FormLabel>Sort By</FormLabel>
-        <Select value="" onChange={handleSortChange} size="small" displayEmpty>
+        <Select
+          value={params.get("sortBy") || ""}
+          onChange={(evt) => handleParamsChange(evt.target.value, "sortBy")}
+          size="small"
+          displayEmpty
+        >
           <MenuItem value="">Most Recent</MenuItem>
+          <MenuItem value="happenedAt">Oldest First</MenuItem>
         </Select>
       </FormControl>
       <FormControl fullWidth>
         <FormLabel>Resource Type</FormLabel>
         <Select
           value={params.get("resourceType") || ""}
-          onChange={(evt) => handleSortChange(evt.target.value, "resourceType")}
+          onChange={(evt) =>
+            handleParamsChange(evt.target.value, "resourceType")
+          }
           size="small"
           displayEmpty
         >
@@ -63,7 +71,7 @@ export const ResourceListFilters = () => {
         <Select
           value={params.get("actionByUserZUID") || ""}
           onChange={(evt) =>
-            handleSortChange(evt.target.value, "actionByUserZUID")
+            handleParamsChange(evt.target.value, "actionByUserZUID")
           }
           size="small"
           displayEmpty

@@ -31,9 +31,15 @@ export const ResourceList = () => {
 
   let filteredResources = [...uniqueResources];
   for (const [key, value] of params.entries()) {
-    filteredResources = filteredResources.filter(
-      (resource) => resource?.[key] === value
-    );
+    if (key === "sortBy") {
+      filteredResources = filteredResources.sort(
+        (a, b) => new Date(a[value]) - new Date(b[value])
+      );
+    } else {
+      filteredResources = filteredResources.filter(
+        (resource) => resource?.[key] === value
+      );
+    }
   }
 
   return (
