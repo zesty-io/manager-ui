@@ -7,7 +7,7 @@ import moment from "moment";
 
 export const SettingsResourceListItem = (props) => {
   return (
-    <ListItem divider>
+    <ListItem divider sx={{ py: 2.5 }}>
       <ListItemAvatar>
         <Avatar>
           <FontAwesomeIcon icon={faCog} />

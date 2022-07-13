@@ -14,7 +14,7 @@ export const ModelResourceListItem = (props) => {
   );
 
   return (
-    <ListItem divider>
+    <ListItem divider sx={{ py: 2.5 }}>
       <ListItemAvatar>
         <Avatar>
           <FontAwesomeIcon icon={faDatabase} />

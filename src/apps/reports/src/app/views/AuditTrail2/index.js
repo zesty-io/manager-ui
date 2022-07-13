@@ -37,18 +37,28 @@ export const AuditTrail = () => {
       grey: {
         400: "#98A2B3",
       },
+      deepPurple: {
+        400: "#4E5BA6",
+      },
+      pink: {
+        400: "#F670C7",
+      },
+      blue: {
+        400: "#36BFFA",
+      },
+      green: {
+        400: "#12B76A",
+      },
     },
   });
   return (
     <ThemeProvider theme={innerTheme}>
       <Box
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
           boxSizing: "border-box",
           color: "text.primary",
           backgroundColor: "background.paper",
+          height: "100%",
         }}
       >
         <Switch>
