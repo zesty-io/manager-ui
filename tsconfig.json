@@ -2,11 +2,10 @@
   "files": ["src/shell/store/notifications.ts"],
   "compilerOptions": {
     "noImplicitAny": false,
+    "allowJs": true,
     "module": "es6",
     "target": "esnext",
-    //"noEmit": true,
     "jsx": "react",
-    "allowJs": true,
     "moduleResolution": "node"
   }
 }

@@ -77,7 +77,6 @@ module.exports = async (env) => {
       extensions: [".ts", ".js"],
     },
     plugins: [
-      /*
       new SentryCliPlugin({
         include: "./build",
         ignoreFile: ".sentrycliignore",
@@ -87,7 +86,6 @@ module.exports = async (env) => {
         project: "manager-ui",
         org: "zestyio",
       }),
-      */
       new NodePolyfillPlugin({
         excludeAliases: ["console"],
       }),
@@ -200,7 +198,6 @@ module.exports = async (env) => {
     module: {
       rules: [
         {
-          //test: /\.tsx?$/,
           test: /\.ts?$/,
           use: "ts-loader",
           exclude: /node_modules/,
@@ -225,7 +222,6 @@ module.exports = async (env) => {
           use: ["style-loader", "css-loader"],
         },
         {
-          //test: /\.[tj]s$/,
           test: /\.js$/,
           exclude: /(node_modules)/,
           use: {
@@ -236,7 +232,6 @@ module.exports = async (env) => {
               presets: [
                 "@babel/preset-env",
                 ["@babel/preset-react", { runtime: "automatic" }],
-                //"@babel/preset-typescript",
               ],
               plugins: ["@babel/plugin-transform-runtime"],
             },
