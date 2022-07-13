@@ -12,7 +12,10 @@ export const instanceApi = createApi({
   }),
   endpoints: (builder) => ({
     getAudits: builder.query({
-      query: () => `env/audits`,
+      query: (options) => {
+        const params = new URLSearchParams(options).toString();
+        return `env/audits?${params}`;
+      },
       transformResponse: (response) => {
         // Adds additional resource type property to data set
         return response.data.map((resource) => ({

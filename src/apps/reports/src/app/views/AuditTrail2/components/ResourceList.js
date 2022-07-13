@@ -1,21 +1,28 @@
 import { useState, useMemo } from "react";
 import { Box, Select, MenuItem, FormControl, FormLabel } from "@mui/material";
 import { useLocation, useHistory } from "react-router-dom";
+import { uniqBy } from "lodash";
+import moment from "moment";
 import { instanceApi } from "../../../../../../../shell/services/instance";
 import { ContentResourceListItem } from "./ContentResourceListItem";
 import { ModelResourceListItem } from "./ModelResourceListItem";
 import { FileResourceListItem } from "./FileResourceListItem";
 import { SettingsResourceListItem } from "./SettingsResourceListItem";
-import { uniqBy } from "lodash";
 import { ResourceListFilters } from "./ResourceListFilters";
 
 export const ResourceList = () => {
-  const { data, isLoading } = instanceApi.useGetAuditsQuery();
   const location = useLocation();
   const params = useMemo(
     () => new URLSearchParams(location.search),
     [location.search]
   );
+
+  const { data, isLoading } = instanceApi.useGetAuditsQuery({
+    ...(params.get("from") && {
+      start_date: moment(params.get("from")).format("L"),
+    }),
+    ...(params.get("to") && { end_date: moment(params.get("to")).format("L") }),
+  });
 
   const uniqueResources = uniqBy(
     data?.map((resource) => {
@@ -30,8 +37,10 @@ export const ResourceList = () => {
   );
 
   let filteredResources = [...uniqueResources];
+
   for (const [key, value] of params.entries()) {
-    if (key === "sortBy") {
+    if (key === "from" || key === "to") {
+    } else if (key === "sortBy") {
       filteredResources = filteredResources.sort(
         (a, b) => new Date(a[value]) - new Date(b[value])
       );
@@ -42,6 +51,11 @@ export const ResourceList = () => {
     }
   }
 
+  const uniqueUserResources = useMemo(
+    () => uniqBy(data, "actionByUserZUID"),
+    [data]
+  );
+
   return (
     <Box
       sx={{
@@ -51,7 +65,7 @@ export const ResourceList = () => {
         height: "calc(100% - 129px)",
       }}
     >
-      <ResourceListFilters />
+      <ResourceListFilters users={uniqueUserResources} />
       <Box sx={{ overflowY: "scroll" }}>
         {filteredResources?.map((resource) => {
           if (resource.affectedZUID.startsWith("7")) {
