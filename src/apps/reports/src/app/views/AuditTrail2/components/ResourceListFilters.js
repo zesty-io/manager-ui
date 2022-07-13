@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Box, Select, MenuItem, FormControl, FormLabel } from "@mui/material";
 import { useLocation, useHistory } from "react-router-dom";
 import moment from "moment";
+import { uniqBy } from "lodash";
 import DateRangePicker from "./DateRangePicker";
 
 export const ResourceListFilters = (props) => {
@@ -10,6 +11,11 @@ export const ResourceListFilters = (props) => {
   const params = useMemo(
     () => new URLSearchParams(location.search),
     [location.search]
+  );
+
+  const uniqueUserResources = useMemo(
+    () => uniqBy(props.resources, "actionByUserZUID"),
+    [props.resources]
   );
 
   const handleParamsChange = (val, name) => {
@@ -70,9 +76,9 @@ export const ResourceListFilters = (props) => {
             displayEmpty
           >
             <MenuItem value="">All</MenuItem>
-            {props.users.map((resource, idx) => (
+            {uniqueUserResources.map((resource) => (
               <MenuItem
-                key={resource.id}
+                key={resource.actionByUserZUID}
                 value={resource.actionByUserZUID}
               >{`${resource.firstName} ${resource.lastName}`}</MenuItem>
             ))}

@@ -1,34 +1,15 @@
-import { useState } from "react";
+import React from "react";
 import { Typography, Box, Tabs, Tab } from "@mui/material";
 import { useLocation, useHistory } from "react-router-dom";
 import { instanceApi } from "../../../../../../../shell/services/instance";
-import { ContentResourceListItem } from "../components/ContentResourceListItem";
-import { ModelResourceListItem } from "../components/ModelResourceListItem";
-import { FileResourceListItem } from "../components/FileResourceListItem";
-import { SettingsResourceListItem } from "../components/SettingsResourceListItem";
 import { uniqBy } from "lodash";
-import { ResourceList } from "../components/ResourceList";
+import { Resources } from "./Resources";
 
 const tabPaths = ["resources", "users", "timeline", "insights"];
 
 export const ActivityLog = () => {
   const history = useHistory();
   const location = useLocation();
-  const { data, isLoading } = instanceApi.useGetAuditsQuery();
-
-  // const uniqueResources = [...new Set(data?.map(item => item.affectedZUID))]?.map(ZUID => data?.find(resource => resource.affectedZUID === ZUID))
-
-  let uniqueResources = uniqBy(
-    data?.map((resource) => {
-      // Format data set to treat any model field change as a model change
-      const clonedResource = { ...resource };
-      if (resource.affectedZUID.startsWith("12")) {
-        clonedResource.affectedZUID = resource.meta.uri.split("/")[4];
-      }
-      return clonedResource;
-    }),
-    "affectedZUID"
-  );
 
   const handleTabChange = (evt, newValue) => {
     history.push(`/reports/activity-log/${tabPaths[newValue]}`);
@@ -39,7 +20,7 @@ export const ActivityLog = () => {
   const getView = () => {
     switch (activeTab) {
       case 0:
-        return <ResourceList />;
+        return <Resources />;
       case 1:
         return <div>USERS</div>;
       case 2:
@@ -50,8 +31,6 @@ export const ActivityLog = () => {
         break;
     }
   };
-
-  if (isLoading) return <div>loading...</div>;
 
   return (
     <>

@@ -2,7 +2,6 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
 import { ListItem, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
-import { useSelector } from "react-redux";
 import moment from "moment";
 
 export const SettingsResourceListItem = (props) => {
