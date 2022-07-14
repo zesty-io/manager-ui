@@ -1,9 +1,11 @@
-import React, { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { ListItem, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
-import { useSelector } from "react-redux";
-import moment from "moment";
+import { useSelector, useDispatch } from "react-redux";
+import { searchItems } from "shell/store/content";
+import { fetchModel } from "shell/store/models";
 
 const modelTypeName = {
   templateset: "Single Page Model",
@@ -12,32 +14,46 @@ const modelTypeName = {
 };
 
 export const ContentResourceListItem = (props) => {
+  const dispatch = useDispatch();
+  const [contentError, setContentError] = useState(false);
+  const [modelError, setModelError] = useState(false);
+
   const contentData = useSelector((state) =>
     Object.values(state.content).find(
       (item) => item.meta.ZUID === props.affectedZUID
     )
   );
+
   const modelData = useSelector((state) =>
     Object.values(state.models).find(
       (item) => item.ZUID === contentData?.meta?.contentModelZUID
     )
   );
-  const parentContentData = useSelector((state) =>
-    Object.values(state.content).find(
-      (item) => item.meta.ZUID === contentData?.web?.parentZUID
-    )
-  );
+
+  useEffect(() => {
+    if (!contentData && !contentError) {
+      dispatch(searchItems(props.affectedZUID))
+        .then((res) => !res.data && setContentError(true))
+        .catch(() => setContentError(true));
+    }
+
+    if (!modelData && contentData && !modelError) {
+      dispatch(fetchModel(contentData.meta.contentModelZUID)).catch(() =>
+        setModelError(true)
+      );
+    }
+  }, [contentData, modelData, contentError, modelError]);
 
   const secondaryText = useMemo(() => {
     const chips = [
       `Last action @ ${moment(props.updatedAt).format("hh:mm A")}`,
       modelTypeName[modelData?.type],
     ];
-    if (contentData?.web?.parentZUID && contentData?.web?.parentZUID !== "0") {
-      chips.push(parentContentData?.web?.metaTitle);
+    if (contentData?.web?.metaTitle !== modelData?.label) {
+      chips.push(modelData?.label);
     }
     return chips.join(" • ");
-  }, []);
+  }, [contentData, modelData]);
 
   return (
     <ListItem divider sx={{ py: 2.5 }}>
@@ -47,7 +63,11 @@ export const ContentResourceListItem = (props) => {
         </Avatar>
       </ListItemAvatar>
       <ListItemText
-        primary={contentData?.web?.metaTitle}
+        primary={
+          contentError
+            ? `${props.affectedZUID} + (Deleted)`
+            : contentData?.web?.metaTitle
+        }
         secondary={secondaryText}
       />
     </ListItem>

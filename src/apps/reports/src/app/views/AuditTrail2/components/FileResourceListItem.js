@@ -24,7 +24,9 @@ export const FileResourceListItem = (props) => {
         </Avatar>
       </ListItemAvatar>
       <ListItemText
-        primary={fileData?.fileName}
+        primary={
+          !fileData ? `${props.affectedZUID} + (Deleted)` : fileData?.fileName
+        }
         secondary={`Last action @ ${moment(props.updatedAt).format(
           "hh:mm A"
         )} • ${fileTypeName?.[fileData?.type] || fileData?.type}`}
