@@ -1,6 +1,7 @@
 import React from "react";
 import { Box } from "@mui/material";
 import { uniqBy } from "lodash";
+import { FixedSizeList as List } from "react-window";
 import { ContentResourceListItem } from "./ContentResourceListItem";
 import { ModelResourceListItem } from "./ModelResourceListItem";
 import { FileResourceListItem } from "./FileResourceListItem";
@@ -20,44 +21,62 @@ export const ResourceList = (props) => {
     "affectedZUID"
   );
 
+  const Row = ({ index, data, style }) => {
+    const resource = data[index];
+    if (resource.resourceType === "content") {
+      return (
+        <div style={style}>
+          <ContentResourceListItem
+            key={resource.ZUID}
+            affectedZUID={resource.affectedZUID}
+            updatedAt={resource.updatedAt}
+          />
+        </div>
+      );
+    } else if (resource.resourceType === "schema") {
+      return (
+        <div style={style}>
+          <ModelResourceListItem
+            key={resource.ZUID}
+            affectedZUID={resource.affectedZUID}
+            updatedAt={resource.updatedAt}
+          />
+        </div>
+      );
+    } else if (resource.resourceType === "code") {
+      return (
+        <div style={style}>
+          <FileResourceListItem
+            key={resource.ZUID}
+            affectedZUID={resource.affectedZUID}
+            updatedAt={resource.updatedAt}
+          />
+        </div>
+      );
+    } else {
+      return (
+        <div style={style}>
+          <SettingsResourceListItem
+            key={resource.ZUID}
+            affectedZUID={resource.affectedZUID}
+            updatedAt={resource.updatedAt}
+            message={resource.meta.message}
+          />
+        </div>
+      );
+    }
+  };
+
   return (
-    <Box sx={{ overflowY: "scroll", flex: 1, height: "calc(100vh - 282px)" }}>
-      {uniqueResources?.map((resource) => {
-        if (resource.resourceType === "content") {
-          return (
-            <ContentResourceListItem
-              key={resource.ZUID}
-              affectedZUID={resource.affectedZUID}
-              updatedAt={resource.updatedAt}
-            />
-          );
-        } else if (resource.resourceType === "schema") {
-          return (
-            <ModelResourceListItem
-              key={resource.ZUID}
-              affectedZUID={resource.affectedZUID}
-              updatedAt={resource.updatedAt}
-            />
-          );
-        } else if (resource.resourceType === "code") {
-          return (
-            <FileResourceListItem
-              key={resource.ZUID}
-              affectedZUID={resource.affectedZUID}
-              updatedAt={resource.updatedAt}
-            />
-          );
-        } else {
-          return (
-            <SettingsResourceListItem
-              key={resource.ZUID}
-              affectedZUID={resource.affectedZUID}
-              updatedAt={resource.updatedAt}
-              message={resource.meta.message}
-            />
-          );
-        }
-      })}
-    </Box>
+    <List
+      // TODO: Listen to height changes and adjust
+      height={window.innerHeight - 282}
+      itemCount={uniqueResources.length}
+      itemSize={94}
+      width={"100%"}
+      itemData={uniqueResources}
+    >
+      {Row}
+    </List>
   );
 };
