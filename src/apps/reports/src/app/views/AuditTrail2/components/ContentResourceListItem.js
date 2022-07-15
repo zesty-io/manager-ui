@@ -6,6 +6,7 @@ import { ListItem, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { searchItems } from "shell/store/content";
 import { fetchModel } from "shell/store/models";
+import { useHistory } from "react-router";
 
 const modelTypeName = {
   templateset: "Single Page Model",
@@ -14,6 +15,7 @@ const modelTypeName = {
 };
 
 export const ContentResourceListItem = (props) => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const [contentError, setContentError] = useState(false);
   const [modelError, setModelError] = useState(false);
@@ -56,16 +58,33 @@ export const ContentResourceListItem = (props) => {
   }, [contentData, modelData]);
 
   return (
-    <ListItem divider sx={{ py: 2.5 }}>
+    <ListItem
+      divider={props.divider}
+      sx={{ py: 2.5, cursor: "pointer" }}
+      onClick={() => history.push(`resources/${props.affectedZUID}`)}
+    >
       <ListItemAvatar>
-        <Avatar>
+        <Avatar
+          sx={{
+            ...(props.size === "large" && {
+              height: 48,
+              width: 48,
+            }),
+          }}
+        >
           <FontAwesomeIcon icon={faEdit} />
         </Avatar>
       </ListItemAvatar>
       <ListItemText
+        primaryTypographyProps={{
+          ...(props.size === "large" && {
+            variant: "h5",
+            fontWeight: 600,
+          }),
+        }}
         primary={
           contentError
-            ? `${props.affectedZUID} + (Deleted)`
+            ? `${props.affectedZUID} (Deleted)`
             : contentData?.web?.metaTitle
         }
         secondary={secondaryText}

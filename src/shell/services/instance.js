@@ -18,10 +18,25 @@ export const instanceApi = createApi({
       },
       transformResponse: (response) => {
         // Adds additional resource type property to data set
-        return response.data.map((resource) => ({
-          ...resource,
-          resourceType: getResourceType(resource.affectedZUID),
-        }));
+        return response.data.map((resource) => {
+          const normalizedAffectedZuid = resource.affectedZUID.startsWith("12")
+            ? resource.meta.uri.split("/")[4]
+            : resource.action === 5
+            ? resource.meta.uri.split("/")[6]
+            : resource.affectedZUID;
+
+          // Sets new action number to differentiate between publish and scheduled publish
+          const normalizedAction =
+            resource.action === 4 && resource.meta.message.includes("scheduled")
+              ? 9
+              : resource.action;
+          return {
+            ...resource,
+            resourceType: getResourceType(normalizedAffectedZuid),
+            affectedZUID: normalizedAffectedZuid,
+            action: normalizedAction,
+          };
+        });
       },
     }),
   }),

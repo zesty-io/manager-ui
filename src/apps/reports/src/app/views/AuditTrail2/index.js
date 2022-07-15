@@ -19,6 +19,10 @@ export const AuditTrail = () => {
         fontWeight: 600,
         lineHeight: "34px",
       },
+      h5: {
+        fontSize: "20px",
+        lineHeight: "28px",
+      },
       body2: {
         fontSize: "12px",
       },
@@ -30,23 +34,38 @@ export const AuditTrail = () => {
         dark: "#EC4A0A",
         light: "#FD853A",
       },
+      success: {
+        main: "#12B76A",
+      },
+      warning: {
+        main: "#F79009",
+        light: "#FEF0C7",
+      },
       text: {
         primary: "#101828",
         secondary: "#475467",
       },
       grey: {
+        100: "#F2F4F7",
+        200: "#E4E7EC",
         400: "#98A2B3",
+        500: "#667085",
       },
       deepPurple: {
         400: "#4E5BA6",
+      },
+      deepOrange: {
+        100: "#FFEAD5",
       },
       pink: {
         400: "#F670C7",
       },
       blue: {
+        100: "#E0F2FE",
         400: "#36BFFA",
       },
       green: {
+        100: "#D1FADF",
         400: "#12B76A",
       },
     },

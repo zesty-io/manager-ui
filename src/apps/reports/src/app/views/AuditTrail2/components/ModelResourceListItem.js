@@ -5,8 +5,10 @@ import { faDatabase } from "@fortawesome/free-solid-svg-icons";
 import { ListItem, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchModel } from "shell/store/models";
+import { useHistory } from "react-router";
 
 export const ModelResourceListItem = (props) => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const [modelError, setModelError] = useState(false);
 
@@ -21,15 +23,32 @@ export const ModelResourceListItem = (props) => {
   }, [modelData, modelError]);
 
   return (
-    <ListItem divider sx={{ py: 2.5 }}>
+    <ListItem
+      divider={props.divider}
+      sx={{ py: 2.5, cursor: "pointer" }}
+      onClick={() => history.push(`resources/${props.affectedZUID}`)}
+    >
       <ListItemAvatar>
-        <Avatar>
+        <Avatar
+          sx={{
+            ...(props.size === "large" && {
+              height: 48,
+              width: 48,
+            }),
+          }}
+        >
           <FontAwesomeIcon icon={faDatabase} />
         </Avatar>
       </ListItemAvatar>
       <ListItemText
+        primaryTypographyProps={{
+          ...(props.size === "large" && {
+            variant: "h5",
+            fontWeight: 600,
+          }),
+        }}
         primary={
-          modelError ? `${props.affectedZUID} + (Deleted)` : modelData?.label
+          modelError ? `${props.affectedZUID} (Deleted)` : modelData?.label
         }
         secondary={`Last action @ ${moment(props.updatedAt).format(
           "hh:mm A"
