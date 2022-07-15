@@ -35,7 +35,7 @@ export const ContentResourceListItem = (props) => {
   useEffect(() => {
     if (!contentData && !contentError) {
       dispatch(searchItems(props.affectedZUID))
-        .then((res) => !res.data && setContentError(true))
+        .then((res) => !res.data.length && setContentError(true))
         .catch(() => setContentError(true));
     }
 
@@ -49,8 +49,10 @@ export const ContentResourceListItem = (props) => {
   const secondaryText = useMemo(() => {
     const chips = [
       `Last action @ ${moment(props.updatedAt).format("hh:mm A")}`,
-      modelTypeName[modelData?.type],
     ];
+    if (modelData) {
+      chips.push(modelTypeName[modelData?.type]);
+    }
     if (contentData?.web?.metaTitle !== modelData?.label) {
       chips.push(modelData?.label);
     }

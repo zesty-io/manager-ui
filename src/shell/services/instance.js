@@ -28,7 +28,7 @@ export const instanceApi = createApi({
           // Sets new action number to differentiate between publish and scheduled publish
           const normalizedAction =
             resource.action === 4 && resource.meta.message.includes("scheduled")
-              ? 9
+              ? 6
               : resource.action;
           return {
             ...resource,

@@ -41,7 +41,7 @@ export const ResourceListItem = (props) => {
         key={props.resource.ZUID}
         affectedZUID={props.resource.affectedZUID}
         updatedAt={props.resource.updatedAt}
-        message={props.resource.meta.message}
+        message={props.resource?.meta?.message}
         size={props.size}
         divider={props.divider}
       />

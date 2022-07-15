@@ -21,36 +21,51 @@ import {
   faFileDownload,
   faPencilAlt,
   faSave,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
+import { ResourceDetailsFilters } from "../components/ResourceDetailsFilters";
 
 const actionIconMap = {
   1: faPencilAlt,
   2: faSave,
+  3: faTrash,
   4: faEye,
   5: faEyeSlash,
-  9: faClock,
+  6: faClock,
 };
 
 const actionBackgroundColorMap = {
   1: "deepOrange.100",
   2: "blue.100",
-  5: "warning.light",
+  3: "error.light",
   4: "green.100",
-  9: "grey.100",
+  5: "warning.light",
+  6: "grey.100",
 };
 
 const actionIconColorMap = {
   1: "primary.main",
   2: "info.light",
+  3: "error.dark",
   4: "success.main",
   5: "warning.main",
-  9: "grey.500",
+  6: "grey.500",
 };
 
 export const ResourceDetails = () => {
   const location = useLocation();
   const history = useHistory();
-  const { data, isLoading } = instanceApi.useGetAuditsQuery();
+  const params = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+
+  const { data, isLoading } = instanceApi.useGetAuditsQuery({
+    ...(params.get("from") && {
+      start_date: moment(params.get("from")).format("L"),
+    }),
+    ...(params.get("to") && { end_date: moment(params.get("to")).format("L") }),
+  });
 
   const zuid = location.pathname.split("/").pop();
 
@@ -60,13 +75,22 @@ export const ResourceDetails = () => {
   const actions =
     data?.filter((resource) => resource.affectedZUID === zuid) || [];
 
-  if (isLoading) return <div>loading...</div>;
+  let filteredActions = actions ? [...actions] : [];
 
-  console.log("testing actions", actions);
+  for (const [key, value] of params.entries()) {
+    if (key === "from" || key === "to") {
+    } else {
+      filteredActions = filteredActions.filter(
+        (resource) => String(resource?.[key]) === value
+      );
+    }
+  }
+
+  if (isLoading) return <div>loading...</div>;
 
   const actionsWithHeaders = [];
 
-  actions.forEach((action) => {
+  filteredActions.forEach((action) => {
     const formattedDate = moment(action.updatedAt).format("L");
     if (!actionsWithHeaders.includes(formattedDate)) {
       actionsWithHeaders.push(formattedDate);
@@ -75,19 +99,19 @@ export const ResourceDetails = () => {
     actionsWithHeaders.push(action);
   });
 
-  console.log("testing actions with headers", actionsWithHeaders);
-
   const generateActionMessage = (action) => {
     switch (action.action) {
       case 1:
         return "Created";
       case 2:
-        return "Modified";
+        return "Saved";
+      case 3:
+        return "Deleted";
       case 4:
         return "Published";
       case 5:
         return "Unpublished";
-      case 9:
+      case 6:
         return `Scheduled to Publish on ${moment(action?.updatedAt).format(
           "MMMM DD [at] hh:mm A"
         )}`;
@@ -159,76 +183,82 @@ export const ResourceDetails = () => {
           </Button>
         </Box>
       </Box>
-      <Timeline>
-        {actionsWithHeaders.map((action, idx) => {
-          if (typeof action === "string") {
-            return (
-              <Typography sx={{ py: 2 }} variant="h5" fontWeight={600}>
-                {moment().isSame(action, "day")
-                  ? "Today"
-                  : moment().add(-1, "days").isSame(action, "day")
-                  ? "Yesterday"
-                  : action}
-              </Typography>
-            );
-          }
-          return (
-            <TimelineItem sx={{ "&::before": { flex: "unset" } }}>
-              <TimelineSeparator>
-                {/* <TimelineConnector
+      <Box sx={{ px: 3, mt: 2 }}>
+        <ResourceDetailsFilters actions={actions} />
+        <Box sx={{ overflowY: "scroll", height: "calc(100vh - 299px)" }}>
+          <Timeline sx={{ px: 0, py: 0 }}>
+            {actionsWithHeaders.map((action, idx) => {
+              if (typeof action === "string") {
+                return (
+                  <Typography sx={{ py: 2 }} variant="h5" fontWeight={600}>
+                    {moment().isSame(action, "day")
+                      ? "Today"
+                      : moment().add(-1, "days").isSame(action, "day")
+                      ? "Yesterday"
+                      : action}
+                  </Typography>
+                );
+              }
+              return (
+                <TimelineItem sx={{ "&::before": { flex: "unset" } }}>
+                  <TimelineSeparator>
+                    {/* <TimelineConnector
                   sx={{ height: 35, display: typeof actionsWithHeaders[idx - 1] !== 'string' ? "block" : "none" }}
                 /> */}
-                {typeof actionsWithHeaders[idx - 1] !== "string" && (
-                  <TimelineConnector
-                    sx={{ height: 35, backgroundColor: "grey.200" }}
-                  />
-                )}
-                <TimelineDot
-                  sx={{
-                    boxShadow: "none",
-                    height: 40,
-                    width: 40,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: actionBackgroundColorMap?.[action.action],
-                    color: actionIconColorMap?.[action.action],
-                  }}
-                >
-                  <FontAwesomeIcon
-                    icon={actionIconMap?.[action.action] || faFileDownload}
-                    style={{ fontSize: 16 }}
-                  />
-                </TimelineDot>
-              </TimelineSeparator>
-              <TimelineContent
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "flex-end",
-                }}
-              >
-                <Typography
-                  variant="caption"
-                  component="div"
-                  color="text.secondary"
-                >
-                  {moment(action.updatedAt).format("hh:mm A")}
-                </Typography>
-                <Typography variant="body1">
-                  {generateActionMessage(action)}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  component="div"
-                  color="text.secondary"
-                >
-                  {`By ${action.firstName} ${action.lastName}`}
-                </Typography>
-              </TimelineContent>
-            </TimelineItem>
-          );
-        })}
-      </Timeline>
+                    {typeof actionsWithHeaders[idx - 1] !== "string" && (
+                      <TimelineConnector
+                        sx={{ height: 35, backgroundColor: "grey.200" }}
+                      />
+                    )}
+                    <TimelineDot
+                      sx={{
+                        boxShadow: "none",
+                        height: 40,
+                        width: 40,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor:
+                          actionBackgroundColorMap?.[action.action],
+                        color: actionIconColorMap?.[action.action],
+                      }}
+                    >
+                      <FontAwesomeIcon
+                        icon={actionIconMap?.[action.action] || faFileDownload}
+                        style={{ fontSize: 16 }}
+                      />
+                    </TimelineDot>
+                  </TimelineSeparator>
+                  <TimelineContent
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      component="div"
+                      color="text.secondary"
+                    >
+                      {moment(action.updatedAt).format("hh:mm A")}
+                    </Typography>
+                    <Typography variant="body1">
+                      {generateActionMessage(action)}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      component="div"
+                      color="text.secondary"
+                    >
+                      {`By ${action.firstName} ${action.lastName}`}
+                    </Typography>
+                  </TimelineContent>
+                </TimelineItem>
+              );
+            })}
+          </Timeline>
+        </Box>
+      </Box>
     </Box>
   );
 };

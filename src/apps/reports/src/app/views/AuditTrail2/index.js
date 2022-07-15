@@ -41,6 +41,11 @@ export const AuditTrail = () => {
         main: "#F79009",
         light: "#FEF0C7",
       },
+      error: {
+        main: "#F04438",
+        light: "#FECDCA",
+        dark: "#B42318",
+      },
       text: {
         primary: "#101828",
         secondary: "#475467",
