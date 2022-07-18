@@ -1,36 +1,27 @@
-import React from "react";
+import { useCallback, useMemo } from "react";
 import { Typography, Box, Tabs, Tab } from "@mui/material";
 import { useLocation, useHistory } from "react-router-dom";
-import { instanceApi } from "../../../../../../../shell/services/instance";
-import { uniqBy } from "lodash";
 import { Resources } from "./Resources";
 
-const tabPaths = ["resources", "users", "timeline", "insights"];
+const views = {
+  resources: <Resources />,
+  users: <div>Users</div>,
+  timeline: <div>TIMELINE</div>,
+  insights: <div>INSIGHTS</div>,
+};
 
 export const ActivityLog = () => {
   const history = useHistory();
   const location = useLocation();
 
-  const handleTabChange = (evt, newValue) => {
-    history.push(`/reports/activity-log/${tabPaths[newValue]}`);
-  };
+  const handleTabChange = useCallback((evt, newValue) => {
+    history.push(`/reports/activity-log/${Object.keys(views)[newValue]}`);
+  }, []);
 
-  const activeTab = tabPaths.indexOf(location.pathname.split("/").pop());
-
-  const getView = () => {
-    switch (activeTab) {
-      case 0:
-        return <Resources />;
-      case 1:
-        return <div>USERS</div>;
-      case 2:
-        return <div>TIMELINE</div>;
-      case 3:
-        return <div>INSIGHTS</div>;
-      default:
-        break;
-    }
-  };
+  const activeView = useMemo(
+    () => views[location.pathname.split("/").pop()],
+    [location.pathname]
+  );
 
   return (
     <>
@@ -41,14 +32,17 @@ export const ActivityLog = () => {
         </Typography>
       </Box>
       <Box sx={{ borderBottom: 1, borderColor: "divider", px: 3 }}>
-        <Tabs value={activeTab} onChange={handleTabChange}>
+        <Tabs
+          value={Object.values(views).indexOf(activeView)}
+          onChange={handleTabChange}
+        >
           <Tab label="RESOURCES" />
           <Tab label="USERS" />
           <Tab label="TIMELINE" />
           <Tab label="INSIGHTS" />
         </Tabs>
       </Box>
-      {getView()}
+      {activeView}
     </>
   );
 };
