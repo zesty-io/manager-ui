@@ -1,35 +1,17 @@
 import { useMemo } from "react";
 import { Box, Select, MenuItem, FormControl, FormLabel } from "@mui/material";
-import { useLocation, useHistory } from "react-router-dom";
 import moment from "moment";
 import { uniqBy } from "lodash";
 import DateRangePicker from "./DateRangePicker";
+import { useParams } from "utility/useParams";
 
 export const ResourceListFilters = (props) => {
-  const history = useHistory();
-  const location = useLocation();
-  const params = useMemo(
-    () => new URLSearchParams(location.search),
-    [location.search]
-  );
+  const [params, setParams] = useParams();
 
   const uniqueUserResources = useMemo(
     () => uniqBy(props.resources, "actionByUserZUID"),
     [props.resources]
   );
-
-  const handleParamsChange = (val, name) => {
-    if (val) {
-      params.set(name, val);
-    } else {
-      params.delete(name);
-    }
-
-    history.push({
-      pathname: location.pathname,
-      search: params.toString(),
-    });
-  };
 
   return (
     <Box
@@ -40,7 +22,7 @@ export const ResourceListFilters = (props) => {
           <FormLabel>Sort By</FormLabel>
           <Select
             value={params.get("sortBy") || ""}
-            onChange={(evt) => handleParamsChange(evt.target.value, "sortBy")}
+            onChange={(evt) => setParams(evt.target.value, "sortBy")}
             size="small"
             displayEmpty
           >
@@ -52,9 +34,7 @@ export const ResourceListFilters = (props) => {
           <FormLabel>Resource Type</FormLabel>
           <Select
             value={params.get("resourceType") || ""}
-            onChange={(evt) =>
-              handleParamsChange(evt.target.value, "resourceType")
-            }
+            onChange={(evt) => setParams(evt.target.value, "resourceType")}
             size="small"
             displayEmpty
           >
@@ -69,9 +49,7 @@ export const ResourceListFilters = (props) => {
           <FormLabel>Users</FormLabel>
           <Select
             value={params.get("actionByUserZUID") || ""}
-            onChange={(evt) =>
-              handleParamsChange(evt.target.value, "actionByUserZUID")
-            }
+            onChange={(evt) => setParams(evt.target.value, "actionByUserZUID")}
             size="small"
             displayEmpty
           >
@@ -92,13 +70,13 @@ export const ResourceListFilters = (props) => {
           params.get("to") ? moment(params.get("to")) : null,
         ]}
         onChange={([from, to]) => {
-          handleParamsChange(
+          setParams(
             moment(from, "YYYY-MM-DD").isValid()
               ? moment(from).format("YYYY-MM-DD")
               : "",
             "from"
           );
-          handleParamsChange(
+          setParams(
             moment(to, "YYYY-MM-DD").isValid()
               ? moment(to).format("YYYY-MM-DD")
               : "",

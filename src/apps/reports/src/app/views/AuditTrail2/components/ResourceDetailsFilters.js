@@ -1,35 +1,16 @@
 import { useMemo } from "react";
 import { Box, Select, MenuItem, FormControl, FormLabel } from "@mui/material";
-import { useLocation, useHistory } from "react-router-dom";
 import moment from "moment";
 import { uniqBy } from "lodash";
 import DateRangePicker from "./DateRangePicker";
 
 export const ResourceDetailsFilters = (props) => {
-  const history = useHistory();
-  const location = useLocation();
-  const params = useMemo(
-    () => new URLSearchParams(location.search),
-    [location.search]
-  );
+  const [params, setParams] = useParams();
 
   const uniqueUserResources = useMemo(
     () => uniqBy(props.actions, "actionByUserZUID"),
     [props.actions]
   );
-
-  const handleParamsChange = (val, name) => {
-    if (val) {
-      params.set(name, val);
-    } else {
-      params.delete(name);
-    }
-
-    history.push({
-      pathname: location.pathname,
-      search: params.toString(),
-    });
-  };
 
   return (
     <Box
@@ -40,7 +21,7 @@ export const ResourceDetailsFilters = (props) => {
           <FormLabel>Action Type</FormLabel>
           <Select
             value={params.get("action") || ""}
-            onChange={(evt) => handleParamsChange(evt.target.value, "action")}
+            onChange={(evt) => setParams(evt.target.value, "action")}
             size="small"
             displayEmpty
           >
@@ -57,9 +38,7 @@ export const ResourceDetailsFilters = (props) => {
           <FormLabel>Users</FormLabel>
           <Select
             value={params.get("actionByUserZUID") || ""}
-            onChange={(evt) =>
-              handleParamsChange(evt.target.value, "actionByUserZUID")
-            }
+            onChange={(evt) => setParams(evt.target.value, "actionByUserZUID")}
             size="small"
             displayEmpty
           >
@@ -80,13 +59,13 @@ export const ResourceDetailsFilters = (props) => {
           params.get("to") ? moment(params.get("to")) : null,
         ]}
         onChange={([from, to]) => {
-          handleParamsChange(
+          setParams(
             moment(from, "YYYY-MM-DD").isValid()
               ? moment(from).format("YYYY-MM-DD")
               : "",
             "from"
           );
-          handleParamsChange(
+          setParams(
             moment(to, "YYYY-MM-DD").isValid()
               ? moment(to).format("YYYY-MM-DD")
               : "",

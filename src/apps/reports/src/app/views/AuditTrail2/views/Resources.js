@@ -47,7 +47,7 @@ export const Resources = () => {
       <ResourceListFilters resources={resources} />
       <Box sx={{ display: "flex", gap: "92px" }}>
         <ResourceList resources={filteredResources} />
-        <Box sx={{ p: 4, width: 298, boxSizing: "border-box" }}>
+        <Box sx={{ p: 4, minWidth: 298, boxSizing: "border-box" }}>
           <ActivityByResource resources={filteredResources} />
         </Box>
       </Box>
