@@ -4,15 +4,33 @@ import { faCog } from "@fortawesome/free-solid-svg-icons";
 import { ListItem, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
 import moment from "moment";
 import { useHistory } from "react-router";
+import { useParams } from "utility/useParams";
 
 export const SettingsResourceListItem = (props) => {
+  const [params] = useParams();
   const history = useHistory();
 
   return (
     <ListItem
       divider={props.divider}
-      sx={{ py: 2.5, cursor: "pointer" }}
-      onClick={() => history.push(`resources/${props.affectedZUID}`)}
+      sx={{ py: 2.5, cursor: props.clickable && "pointer" }}
+      onClick={
+        props.clickable
+          ? () =>
+              history.push({
+                pathname: `resources/${props.affectedZUID}`,
+                // Persist date selection
+                search: new URLSearchParams({
+                  ...(params.get("from") && {
+                    from: params.get("from"),
+                  }),
+                  ...(params.get("to") && {
+                    to: params.get("to"),
+                  }),
+                }).toString(),
+              })
+          : undefined
+      }
     >
       <ListItemAvatar>
         <Avatar

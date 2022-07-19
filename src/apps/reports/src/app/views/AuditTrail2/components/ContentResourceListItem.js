@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { searchItems } from "shell/store/content";
 import { fetchModel } from "shell/store/models";
 import { useHistory } from "react-router";
+import { useParams } from "utility/useParams";
 
 const modelTypeName = {
   templateset: "Single Page Model",
@@ -17,6 +18,7 @@ const modelTypeName = {
 export const ContentResourceListItem = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
+  const [params] = useParams();
   const [contentError, setContentError] = useState(false);
   const [modelError, setModelError] = useState(false);
 
@@ -62,8 +64,24 @@ export const ContentResourceListItem = (props) => {
   return (
     <ListItem
       divider={props.divider}
-      sx={{ py: 2.5, cursor: "pointer" }}
-      onClick={() => history.push(`resources/${props.affectedZUID}`)}
+      sx={{ py: 2.5, cursor: props.clickable && "pointer" }}
+      onClick={
+        props.clickable
+          ? () =>
+              history.push({
+                pathname: `resources/${props.affectedZUID}`,
+                // Persist date selection
+                search: new URLSearchParams({
+                  ...(params.get("from") && {
+                    from: params.get("from"),
+                  }),
+                  ...(params.get("to") && {
+                    to: params.get("to"),
+                  }),
+                }).toString(),
+              })
+          : undefined
+      }
     >
       <ListItemAvatar>
         <Avatar

@@ -1,6 +1,6 @@
-// import { instanceApi } from "../../../../../../shell/services/instance"
-import { useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Typography, Box, Button, Link, Breadcrumbs } from "@mui/material";
+import { useParams } from "utility/useParams";
 import Timeline from "@mui/lab/Timeline";
 import TimelineItem from "@mui/lab/TimelineItem";
 import TimelineSeparator from "@mui/lab/TimelineSeparator";
@@ -8,8 +8,7 @@ import TimelineConnector from "@mui/lab/TimelineConnector";
 import TimelineContent from "@mui/lab/TimelineContent";
 import TimelineDot from "@mui/lab/TimelineDot";
 import moment from "moment";
-import { useLocation, useHistory } from "react-router-dom";
-import { instanceApi } from "../../../../../../../shell/services/instance";
+import { instanceApi } from "shell/services/instance";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { ResourceListItem } from "../components/ResourceListItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,6 +23,8 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { ResourceDetailsFilters } from "../components/ResourceDetailsFilters";
+import { ActionsTimeline } from "../components/ActionsTimeline";
+import { useHistory } from "react-router";
 
 const actionIconMap = {
   1: faPencilAlt,
@@ -53,27 +54,48 @@ const actionIconColorMap = {
 };
 
 export const ResourceDetails = () => {
-  const location = useLocation();
   const history = useHistory();
-  const params = useMemo(
-    () => new URLSearchParams(location.search),
-    [location.search]
+  const [params, setParams] = useParams();
+  const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+    // If there are no date parameters set, sets date parameters to 1 week
+    if (!params.get("from") && !params.get("to")) {
+      setParams(moment().add(-7, "days").format("YYYY-MM-DD"), "from");
+      setParams(moment().format("YYYY-MM-DD"), "to");
+    }
+    /*
+      Initialized get sets to true after setting date params to then be utilized to determine 
+      if API call is ready to be executed
+    */
+    setInitialized(true);
+  }, []);
+
+  const {
+    data: resources,
+    isLoading,
+    isUninitialized,
+  } = instanceApi.useGetAuditsQuery(
+    {
+      ...(params.get("from") && {
+        start_date: moment(params.get("from")).format("L"),
+      }),
+      ...(params.get("to") && {
+        end_date: moment(params.get("to")).format("L"),
+      }),
+    },
+    { skip: !initialized }
   );
 
-  const { data, isLoading } = instanceApi.useGetAuditsQuery({
-    ...(params.get("from") && {
-      start_date: moment(params.get("from")).format("L"),
-    }),
-    ...(params.get("to") && { end_date: moment(params.get("to")).format("L") }),
-  });
+  const zuid = useMemo(
+    () => location.pathname.split("/").pop(),
+    [location.pathname]
+  );
 
-  const zuid = location.pathname.split("/").pop();
-
-  const resource =
-    data?.find((resource) => resource.affectedZUID === zuid) || {};
-
-  const actions =
-    data?.filter((resource) => resource.affectedZUID === zuid) || [];
+  const actions = useMemo(
+    () => resources?.filter((resource) => resource.affectedZUID === zuid) || [],
+    [zuid, resources]
+  );
 
   let filteredActions = actions ? [...actions] : [];
 
@@ -86,12 +108,12 @@ export const ResourceDetails = () => {
     }
   }
 
-  if (isLoading) return <div>loading...</div>;
+  if (isLoading || isUninitialized) return <div>loading...</div>;
 
   const actionsWithHeaders = [];
 
   filteredActions.forEach((action) => {
-    const formattedDate = moment(action.updatedAt).format("L");
+    const formattedDate = moment(action.happenedAt).format("L");
     if (!actionsWithHeaders.includes(formattedDate)) {
       actionsWithHeaders.push(formattedDate);
     }
@@ -99,26 +121,7 @@ export const ResourceDetails = () => {
     actionsWithHeaders.push(action);
   });
 
-  const generateActionMessage = (action) => {
-    switch (action.action) {
-      case 1:
-        return "Created";
-      case 2:
-        return "Saved";
-      case 3:
-        return "Deleted";
-      case 4:
-        return "Published";
-      case 5:
-        return "Unpublished";
-      case 6:
-        return `Scheduled to Publish on ${moment(action?.updatedAt).format(
-          "MMMM DD [at] hh:mm A"
-        )}`;
-      default:
-        return action.meta.message;
-    }
-  };
+  console.log("testing pass", resources, actions[0]);
 
   return (
     <Box sx={{ pt: 3 }}>
@@ -133,7 +136,18 @@ export const ResourceDetails = () => {
           href="#"
           onClick={(e) => {
             e.preventDefault();
-            history.push("/reports/activity-log");
+            history.push({
+              pathname: `/reports/activity-log/resources`,
+              // Persist date selection
+              search: new URLSearchParams({
+                ...(params.get("from") && {
+                  from: params.get("from"),
+                }),
+                ...(params.get("to") && {
+                  to: params.get("to"),
+                }),
+              }).toString(),
+            });
           }}
         >
           Activity Log
@@ -143,10 +157,6 @@ export const ResourceDetails = () => {
           variant="caption"
           color="text.secondary"
           href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            history.push("/reports/activity-log/resources");
-          }}
         >
           Resources
         </Link>
@@ -159,7 +169,7 @@ export const ResourceDetails = () => {
           borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
         }}
       >
-        <ResourceListItem resource={resource} size="large" />
+        <ResourceListItem resource={actions[0]} size="large" />
         <Box sx={{ display: "flex", gap: 1.5, px: 2, py: 2.5 }}>
           <Button
             sx={{ height: "max-content" }}
@@ -185,79 +195,7 @@ export const ResourceDetails = () => {
       </Box>
       <Box sx={{ px: 3, mt: 2 }}>
         <ResourceDetailsFilters actions={actions} />
-        <Box sx={{ overflowY: "scroll", height: "calc(100vh - 299px)" }}>
-          <Timeline sx={{ px: 0, py: 0 }}>
-            {actionsWithHeaders.map((action, idx) => {
-              if (typeof action === "string") {
-                return (
-                  <Typography sx={{ py: 2 }} variant="h5" fontWeight={600}>
-                    {moment().isSame(action, "day")
-                      ? "Today"
-                      : moment().add(-1, "days").isSame(action, "day")
-                      ? "Yesterday"
-                      : action}
-                  </Typography>
-                );
-              }
-              return (
-                <TimelineItem sx={{ "&::before": { flex: "unset" } }}>
-                  <TimelineSeparator>
-                    {/* <TimelineConnector
-                  sx={{ height: 35, display: typeof actionsWithHeaders[idx - 1] !== 'string' ? "block" : "none" }}
-                /> */}
-                    {typeof actionsWithHeaders[idx - 1] !== "string" && (
-                      <TimelineConnector
-                        sx={{ height: 35, backgroundColor: "grey.200" }}
-                      />
-                    )}
-                    <TimelineDot
-                      sx={{
-                        boxShadow: "none",
-                        height: 40,
-                        width: 40,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        backgroundColor:
-                          actionBackgroundColorMap?.[action.action],
-                        color: actionIconColorMap?.[action.action],
-                      }}
-                    >
-                      <FontAwesomeIcon
-                        icon={actionIconMap?.[action.action] || faFileDownload}
-                        style={{ fontSize: 16 }}
-                      />
-                    </TimelineDot>
-                  </TimelineSeparator>
-                  <TimelineContent
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "flex-end",
-                    }}
-                  >
-                    <Typography
-                      variant="caption"
-                      component="div"
-                      color="text.secondary"
-                    >
-                      {moment(action.updatedAt).format("hh:mm A")}
-                    </Typography>
-                    <Typography variant="body1">
-                      {generateActionMessage(action)}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      component="div"
-                      color="text.secondary"
-                    >
-                      {`By ${action.firstName} ${action.lastName}`}
-                    </Typography>
-                  </TimelineContent>
-                </TimelineItem>
-              );
-            })}
-          </Timeline>
-        </Box>
+        <ActionsTimeline actions={actionsWithHeaders} />
       </Box>
     </Box>
   );

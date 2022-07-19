@@ -31,14 +31,14 @@ export const ResourceList = (props) => {
     const resource = data[index];
     return (
       <div style={style}>
-        <ResourceListItem resource={resource} divider />
+        <ResourceListItem resource={resource} divider clickable />
       </div>
     );
   };
 
   return (
     <List
-      height={height - 282}
+      height={height - 290}
       itemCount={uniqueResources.length}
       itemSize={94}
       width={"100%"}

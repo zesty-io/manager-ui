@@ -71,7 +71,7 @@ export const ActivityLog = () => {
 
   return (
     <>
-      <Box sx={{ px: 3, pt: 3 }}>
+      <Box sx={{ px: 3, pt: 3, mb: 1 }}>
         <Typography variant="h4">Activity Log</Typography>
         <Typography variant="subtitle2" color="text.secondary">
           Your instance timeline by resources and users
