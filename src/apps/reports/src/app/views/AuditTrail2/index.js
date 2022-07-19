@@ -23,9 +23,6 @@ export const AuditTrail = () => {
         fontSize: "20px",
         lineHeight: "28px",
       },
-      body2: {
-        fontSize: "12px",
-      },
     },
     palette: {
       ...theme.palette,

@@ -102,6 +102,7 @@ export const ContentResourceListItem = (props) => {
             fontWeight: 600,
           }),
         }}
+        secondaryTypographyProps={{ variant: "caption" }}
         primary={
           contentError
             ? `${props.affectedZUID} (Deleted)`

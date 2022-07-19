@@ -74,6 +74,17 @@ export const ActionsTimeline = (props) => {
   const [params] = useParams();
   const { width, height } = useWindowSize();
 
+  const actionsWithHeaders = [];
+
+  props.actions.forEach((action) => {
+    const formattedDate = moment(action.happenedAt).format("L");
+    if (!actionsWithHeaders.includes(formattedDate)) {
+      actionsWithHeaders.push(formattedDate);
+    }
+
+    actionsWithHeaders.push(action);
+  });
+
   const Row = ({ index, data, style }) => {
     const action = data[index];
 
@@ -111,20 +122,14 @@ export const ActionsTimeline = (props) => {
                 style={{ fontSize: 16 }}
               />
             </TimelineDot>
-            {props.actions[index + 1] &&
-              typeof props.actions[index + 1] !== "string" && (
+            {actionsWithHeaders[index + 1] &&
+              typeof actionsWithHeaders[index + 1] !== "string" && (
                 <TimelineConnector
                   sx={{ height: 35, backgroundColor: "grey.200" }}
                 />
               )}
           </TimelineSeparator>
-          <TimelineContent
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-end",
-            }}
-          >
+          <TimelineContent>
             <Typography
               variant="caption"
               component="div"
@@ -151,10 +156,10 @@ export const ActionsTimeline = (props) => {
   return (
     <List
       height={height - 299}
-      itemCount={props.actions.length}
+      itemCount={actionsWithHeaders.length}
       itemSize={110}
       width={"100%"}
-      itemData={props.actions}
+      itemData={actionsWithHeaders}
     >
       {Row}
     </List>

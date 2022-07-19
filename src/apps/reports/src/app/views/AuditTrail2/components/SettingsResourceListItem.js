@@ -51,6 +51,7 @@ export const SettingsResourceListItem = (props) => {
             fontWeight: 600,
           }),
         }}
+        secondaryTypographyProps={{ variant: "caption" }}
         primary={props.message}
         secondary={`Last action @ ${moment(props.updatedAt).format(
           "hh:mm A"

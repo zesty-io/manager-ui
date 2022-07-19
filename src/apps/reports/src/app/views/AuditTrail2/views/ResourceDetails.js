@@ -1,57 +1,20 @@
 import { useState, useEffect, useMemo } from "react";
-import { Typography, Box, Button, Link, Breadcrumbs } from "@mui/material";
+import { Box, Button, Link, Breadcrumbs } from "@mui/material";
 import { useParams } from "utility/useParams";
-import Timeline from "@mui/lab/Timeline";
-import TimelineItem from "@mui/lab/TimelineItem";
-import TimelineSeparator from "@mui/lab/TimelineSeparator";
-import TimelineConnector from "@mui/lab/TimelineConnector";
-import TimelineContent from "@mui/lab/TimelineContent";
-import TimelineDot from "@mui/lab/TimelineDot";
 import moment from "moment";
 import { instanceApi } from "shell/services/instance";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { ResourceListItem } from "../components/ResourceListItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faClock,
   faExternalLinkAlt,
-  faEye,
-  faEyeSlash,
   faFileDownload,
-  faPencilAlt,
-  faSave,
-  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { ResourceDetailsFilters } from "../components/ResourceDetailsFilters";
 import { ActionsTimeline } from "../components/ActionsTimeline";
 import { useHistory } from "react-router";
-
-const actionIconMap = {
-  1: faPencilAlt,
-  2: faSave,
-  3: faTrash,
-  4: faEye,
-  5: faEyeSlash,
-  6: faClock,
-};
-
-const actionBackgroundColorMap = {
-  1: "deepOrange.100",
-  2: "blue.100",
-  3: "error.light",
-  4: "green.100",
-  5: "warning.light",
-  6: "grey.100",
-};
-
-const actionIconColorMap = {
-  1: "primary.main",
-  2: "info.light",
-  3: "error.dark",
-  4: "success.main",
-  5: "warning.main",
-  6: "grey.500",
-};
+import { ActionsByUsers } from "../components/ActionsByUsers";
+import instanceZUID from "utility/instanceZUID";
 
 export const ResourceDetails = () => {
   const history = useHistory();
@@ -110,19 +73,6 @@ export const ResourceDetails = () => {
 
   if (isLoading || isUninitialized) return <div>loading...</div>;
 
-  const actionsWithHeaders = [];
-
-  filteredActions.forEach((action) => {
-    const formattedDate = moment(action.happenedAt).format("L");
-    if (!actionsWithHeaders.includes(formattedDate)) {
-      actionsWithHeaders.push(formattedDate);
-    }
-
-    actionsWithHeaders.push(action);
-  });
-
-  console.log("testing pass", resources, actions[0]);
-
   return (
     <Box sx={{ pt: 3 }}>
       <Breadcrumbs
@@ -177,8 +127,14 @@ export const ResourceDetails = () => {
             variant="outlined"
             size="small"
             onClick={() => {
-              const path = new URL(resource.meta.url)?.pathname;
-              history.push(path);
+              if (actions[0].resourceType === "code") {
+                history.push(
+                  "/code/file/" +
+                    actions[0].meta.uri.split("/").slice(3).join("/")
+                );
+              } else {
+                history.push(new URL(actions[0].meta.url)?.pathname);
+              }
             }}
           >
             View
@@ -188,6 +144,13 @@ export const ResourceDetails = () => {
             startIcon={<FontAwesomeIcon icon={faFileDownload} />}
             variant="contained"
             size="small"
+            disableElevation
+            onClick={() => {
+              window.open(
+                `https://reports.zesty.io/audit-report.html?instanceZUID=${instanceZUID}&affectedZUID=${zuid}&download=true`,
+                "_blank"
+              );
+            }}
           >
             Export
           </Button>
@@ -195,7 +158,12 @@ export const ResourceDetails = () => {
       </Box>
       <Box sx={{ px: 3, mt: 2 }}>
         <ResourceDetailsFilters actions={actions} />
-        <ActionsTimeline actions={actionsWithHeaders} />
+        <Box sx={{ display: "flex", gap: "92px" }}>
+          <ActionsTimeline actions={filteredActions} />
+          <Box sx={{ minWidth: 260, py: 4 }}>
+            <ActionsByUsers actions={filteredActions} />
+          </Box>
+        </Box>
       </Box>
     </Box>
   );

@@ -65,6 +65,7 @@ export const ModelResourceListItem = (props) => {
             fontWeight: 600,
           }),
         }}
+        secondaryTypographyProps={{ variant: "caption" }}
         primary={
           modelError ? `${props.affectedZUID} (Deleted)` : modelData?.label
         }

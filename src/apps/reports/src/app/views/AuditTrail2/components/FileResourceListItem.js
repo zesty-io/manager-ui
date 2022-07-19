@@ -62,6 +62,7 @@ export const FileResourceListItem = (props) => {
             fontWeight: 600,
           }),
         }}
+        secondaryTypographyProps={{ variant: "caption" }}
         primary={
           !fileData ? `${props.affectedZUID} (Deleted)` : fileData?.fileName
         }
