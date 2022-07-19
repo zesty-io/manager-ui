@@ -2,17 +2,14 @@ import { useMemo } from "react";
 import { Box } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import moment from "moment";
-import { instanceApi } from "../../../../../../../shell/services/instance";
+import { instanceApi } from "shell/services/instance";
 import { ResourceListFilters } from "../components/ResourceListFilters";
 import { ResourceList } from "../components/ResourceList";
 import { ActivityByResource } from "../components/ActivityByResource";
+import { useParams } from "utility/useParams";
 
 export const Resources = () => {
-  const location = useLocation();
-  const params = useMemo(
-    () => new URLSearchParams(location.search),
-    [location.search]
-  );
+  const [params] = useParams();
 
   const { data: resources, isLoading } = instanceApi.useGetAuditsQuery({
     ...(params.get("from") && {
@@ -24,7 +21,7 @@ export const Resources = () => {
   let filteredResources = resources ? [...resources] : [];
 
   for (const [key, value] of params.entries()) {
-    if (key === "from" || key === "to") {
+    if (key === "from" || key === "to" || key === "sortBy") {
     } else if (key === "sortBy") {
       filteredResources = filteredResources.sort(
         (a, b) => new Date(a[value]) - new Date(b[value])
