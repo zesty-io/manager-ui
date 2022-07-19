@@ -15,6 +15,7 @@ import { ActionsTimeline } from "../components/ActionsTimeline";
 import { useHistory } from "react-router";
 import { ActionsByUsers } from "../components/ActionsByUsers";
 import instanceZUID from "utility/instanceZUID";
+import { getResourceType } from "../../../../../../../utility/getResourceType";
 
 export const ResourceDetails = () => {
   const history = useHistory();
@@ -119,7 +120,15 @@ export const ResourceDetails = () => {
           borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
         }}
       >
-        <ResourceListItem resource={actions[0]} size="large" />
+        <ResourceListItem
+          resource={
+            actions[0] || {
+              affectedZUID: zuid,
+              resourceType: getResourceType(zuid),
+            }
+          }
+          size="large"
+        />
         <Box sx={{ display: "flex", gap: 1.5, px: 2, py: 2.5 }}>
           <Button
             sx={{ height: "max-content" }}
@@ -127,13 +136,13 @@ export const ResourceDetails = () => {
             variant="outlined"
             size="small"
             onClick={() => {
-              if (actions[0].resourceType === "code") {
+              if (actions[0]?.resourceType === "code") {
                 history.push(
                   "/code/file/" +
-                    actions[0].meta.uri.split("/").slice(3).join("/")
+                    actions[0]?.meta?.uri.split("/").slice(3).join("/")
                 );
               } else {
-                history.push(new URL(actions[0].meta.url)?.pathname);
+                history.push(new URL(actions[0]?.meta?.url)?.pathname);
               }
             }}
           >
