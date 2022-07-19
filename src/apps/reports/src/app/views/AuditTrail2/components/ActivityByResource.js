@@ -1,11 +1,11 @@
-import React from "react";
+import { useMemo } from "react";
 import { Box, Typography, useTheme } from "@mui/material";
 import { Pie } from "react-chartjs-2";
 import { startCase } from "lodash";
 
 const resourceTypes = ["content", "schema", "code", "settings"];
 
-const resourceColorMap = {
+const resourceTypeColors = {
   content: "deepPurple",
   schema: "blue",
   code: "pink",
@@ -15,13 +15,21 @@ const resourceColorMap = {
 export const ActivityByResource = (props) => {
   const theme = useTheme();
 
-  const pieData = resourceTypes.map((type) =>
-    Math.ceil(
-      (props.resources.filter((resource) => resource.resourceType === type)
-        .length /
-        props.resources.length) *
-        100
-    )
+  const resourceTypePercentages = useMemo(
+    () =>
+      resourceTypes
+        .map((type) => ({
+          type,
+          percentage: Math.ceil(
+            (props.resources.filter(
+              (resource) => resource.resourceType === type
+            ).length /
+              props.resources.length) *
+              100
+          ),
+        }))
+        .sort((a, b) => b.percentage - a.percentage),
+    [props.resources]
   );
 
   return (
@@ -39,39 +47,35 @@ export const ActivityByResource = (props) => {
             },
           }}
           data={{
-            labels: ["Content", "Schema", "Code", "Settings"],
+            labels: resourceTypes,
             datasets: [
               {
-                data: pieData,
-                backgroundColor: Object.values(resourceColorMap).map(
-                  (color) => theme.palette[color][400]
+                data: resourceTypePercentages.map(
+                  (resource) => resource.percentage
+                ),
+                backgroundColor: resourceTypePercentages.map(
+                  (resource) =>
+                    theme.palette[resourceTypeColors[resource.type]][400]
                 ),
               },
             ],
           }}
         />
       </Box>
-      {resourceTypes.map((type) => (
+      {resourceTypePercentages.map((resource) => (
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <Box
             sx={{
               mr: 1,
               width: 12,
               height: 12,
-              backgroundColor: `${resourceColorMap[type]}.400`,
+              backgroundColor: `${resourceTypeColors[resource.type]}.400`,
               borderRadius: 100,
             }}
           ></Box>
-          <Typography variant="caption">{startCase(type)}</Typography>
+          <Typography variant="caption">{startCase(resource.type)}</Typography>
           <Typography variant="caption" sx={{ ml: "auto" }}>
-            {Math.ceil(
-              (props.resources.filter(
-                (resource) => resource.resourceType === type
-              ).length /
-                props.resources.length) *
-                100
-            )}
-            %
+            {resource.percentage}%
           </Typography>
         </Box>
       ))}
