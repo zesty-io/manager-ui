@@ -3,7 +3,6 @@ import cloneDeep from "lodash/cloneDeep";
 
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
-import { local } from "../app.config";
 
 export function content(state = {}, action) {
   const item = state[action.itemZUID];
@@ -51,9 +50,37 @@ export function content(state = {}, action) {
         },
       };
 
-    case "FETCH_ITEMS_SUCCESS":
-    case "SEARCH_ITEMS_SUCCESS":
     case "LOADED_LOCAL_ITEMS":
+      // Shape should match the store expectations
+      return action.data;
+
+    case "SEARCH_ITEMS_SUCCESS":
+      // need to handle this separetly as it is a subset of all model items
+      // and so can not rely on an implict behavior of a record not being present
+      // means it is deleted and should be attempted to be dropped from in-memory
+      if (action.data) {
+        const items = { ...state };
+
+        Object.values(action.data).forEach((rec) => {
+          if (items[rec.meta.ZUID]) {
+            if (!items[rec.meta.ZUID].dirty) {
+              items[rec.meta.ZUID] = {
+                ...items[rec.meta.ZUID],
+                ...rec,
+              };
+            }
+            // if dirty leave record as-is
+          } else {
+            items[rec.meta.ZUID] = rec;
+          }
+        });
+
+        return items;
+      } else {
+        return state;
+      }
+
+    case "FETCH_ITEMS_SUCCESS":
       if (action.data) {
         const incomingRecords = Object.values(action.data);
         const currentRecords = Object.values(state);
@@ -71,25 +98,37 @@ export function content(state = {}, action) {
           (rec) => rec.meta.contentModelZUID !== contentModelZUID
         );
 
+        const unsavedNewItems = currentRecords.filter((rec) =>
+          rec.meta.ZUID?.includes("new:")
+        );
+
         // If a user has a local record which is dirty keep the local record state
         // versus the incoming record state. This avoids loss of local work which
         // has not been persisted to the API
         const mergedDirtyRecords = validIncomingRecords.map((rec) => {
-          if (state[rec.meta.ZUID] && state[rec.meta.ZUID].dirty) {
-            return state[rec.meta.ZUID];
+          if (state[rec.meta.ZUID]) {
+            if (!state[rec.meta.ZUID].dirty) {
+              // merge current and incoming records in order
+              // to maintain derived publishing state
+              return { ...state[rec.meta.ZUID], ...rec };
+            } else {
+              // if dirty leave record as-is
+              return state[rec.meta.ZUID];
+            }
           } else {
-            return rec;
+            return { ...rec, dirty: false };
           }
         });
 
         // recombine and convert back to normalized data shape
-        return [...otherModelItems, ...mergedDirtyRecords].reduce(
-          (acc, item) => {
-            acc[item.meta.ZUID] = item;
-            return acc;
-          },
-          {}
-        );
+        return [
+          ...unsavedNewItems,
+          ...otherModelItems,
+          ...mergedDirtyRecords,
+        ].reduce((acc, item) => {
+          acc[item.meta.ZUID] = item;
+          return acc;
+        }, {});
       } else {
         return state;
       }
