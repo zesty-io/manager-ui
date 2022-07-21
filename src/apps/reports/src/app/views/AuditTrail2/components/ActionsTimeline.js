@@ -77,7 +77,7 @@ export const ActionsTimeline = (props) => {
   const actionsWithHeaders = [];
 
   props.actions.forEach((action) => {
-    const formattedDate = moment(action.happenedAt).format("L");
+    const formattedDate = moment(action.happenedAt).format("LL");
     if (!actionsWithHeaders.includes(formattedDate)) {
       actionsWithHeaders.push(formattedDate);
     }

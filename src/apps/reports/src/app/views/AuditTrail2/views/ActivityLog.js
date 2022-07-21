@@ -5,6 +5,7 @@ import { instanceApi } from "shell/services/instance";
 import { useParams } from "utility/useParams";
 import moment from "moment";
 import { Resources } from "./Resources";
+import { ActionsTimeline } from "../components/ActionsTimeline";
 
 const tabPaths = ["resources", "users", "timeline", "insights"];
 
@@ -17,8 +18,8 @@ export const ActivityLog = () => {
   useEffect(() => {
     // If there are no date parameters set, sets date parameters to 1 week
     if (!params.get("from") && !params.get("to")) {
-      setParams(moment().add(-7, "days").format("YYYY-MM-DD"), "from");
-      setParams(moment().format("YYYY-MM-DD"), "to");
+      setParams(moment().add(-6, "days").format("YYYY-MM-DD"), "from");
+      setParams(moment().add(1, "days").format("YYYY-MM-DD"), "to");
     }
     /*
       Initialized get sets to true after setting date params to then be utilized to determine 
@@ -59,9 +60,9 @@ export const ActivityLog = () => {
       case "users":
         return <div>USERS</div>;
       case "timeline":
-        return <div>USERS</div>;
+        return <ActionsTimeline actions={resources} />;
       case "insights":
-        return <div>USERS</div>;
+        return <div>Insights</div>;
       default:
         return null;
     }

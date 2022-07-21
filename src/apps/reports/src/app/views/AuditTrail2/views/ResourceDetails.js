@@ -6,10 +6,7 @@ import { instanceApi } from "shell/services/instance";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { ResourceListItem } from "../components/ResourceListItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faExternalLinkAlt,
-  faFileDownload,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEye, faFileDownload } from "@fortawesome/free-solid-svg-icons";
 import { ResourceDetailsFilters } from "../components/ResourceDetailsFilters";
 import { ActionsTimeline } from "../components/ActionsTimeline";
 import { useHistory } from "react-router";
@@ -25,8 +22,8 @@ export const ResourceDetails = () => {
   useEffect(() => {
     // If there are no date parameters set, sets date parameters to 1 week
     if (!params.get("from") && !params.get("to")) {
-      setParams(moment().add(-7, "days").format("YYYY-MM-DD"), "from");
-      setParams(moment().format("YYYY-MM-DD"), "to");
+      setParams(moment().add(-6, "days").format("YYYY-MM-DD"), "from");
+      setParams(moment().add(1, "days").format("YYYY-MM-DD"), "to");
     }
     /*
       Initialized get sets to true after setting date params to then be utilized to determine 
@@ -132,7 +129,7 @@ export const ResourceDetails = () => {
         <Box sx={{ display: "flex", gap: 1.5, px: 2, py: 2.5 }}>
           <Button
             sx={{ height: "max-content" }}
-            startIcon={<FontAwesomeIcon icon={faExternalLinkAlt} />}
+            startIcon={<FontAwesomeIcon icon={faEye} />}
             variant="outlined"
             size="small"
             onClick={() => {
@@ -167,9 +164,9 @@ export const ResourceDetails = () => {
       </Box>
       <Box sx={{ px: 3, mt: 2 }}>
         <ResourceDetailsFilters actions={actions} />
-        <Box sx={{ display: "flex", gap: "92px" }}>
+        <Box sx={{ display: "flex", gap: 17 }}>
           <ActionsTimeline actions={filteredActions} />
-          <Box sx={{ minWidth: 260, py: 4 }}>
+          <Box sx={{ minWidth: 298, py: 5 }}>
             <ActionsByUsers actions={filteredActions} />
           </Box>
         </Box>
