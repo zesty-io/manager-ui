@@ -9,6 +9,8 @@ import { Router } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 
+import "chart.js/auto";
+
 import idb from "utility/idb";
 import observable from "@riotjs/observable";
 

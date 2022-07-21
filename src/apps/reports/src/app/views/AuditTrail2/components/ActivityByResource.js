@@ -42,9 +42,7 @@ export const ActivityByResource = (props) => {
           width={"100%"}
           height={"100%"}
           options={{
-            legend: {
-              display: false,
-            },
+            plugins: { legend: { display: false } },
           }}
           data={{
             labels: resourceTypes,

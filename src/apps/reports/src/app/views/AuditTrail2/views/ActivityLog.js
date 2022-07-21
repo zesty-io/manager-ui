@@ -6,6 +6,8 @@ import { useParams } from "utility/useParams";
 import moment from "moment";
 import { Resources } from "./Resources";
 import { ActionsTimeline } from "../components/ActionsTimeline";
+import { UsersList } from "../components/UsersList";
+import { Users } from "./Users";
 
 const tabPaths = ["resources", "users", "timeline", "insights"];
 
@@ -58,7 +60,7 @@ export const ActivityLog = () => {
       case "resources":
         return <Resources resources={resources} />;
       case "users":
-        return <div>USERS</div>;
+        return <Users resources={resources} />;
       case "timeline":
         return <ActionsTimeline actions={resources} />;
       case "insights":
