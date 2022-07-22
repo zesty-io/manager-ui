@@ -2,20 +2,17 @@ import { useMemo } from "react";
 import { uniqBy } from "lodash";
 import { FixedSizeList as List } from "react-window";
 import { ResourceListItem } from "./ResourceListItem";
-import { useParams } from "utility/useParams";
+import { useParams } from "shell/hooks/useParams";
 import { useWindowSize } from "react-use";
 
 export const ResourceList = (props) => {
   const [params] = useParams();
   const { width, height } = useWindowSize();
 
-  const sortBy = useMemo(() => params.get("sortBy"), [params]);
-  const sortOrder = useMemo(
-    () => (params.get("sortBy")?.startsWith("+") ? "desc" : "asc"),
-    [params]
-  );
+  const sortBy = params.get("sortBy");
+  const sortOrder = sortBy?.startsWith("+") ? "desc" : "asc";
 
-  const uniqueResources = useMemo(
+  const sortedResources = useMemo(
     () =>
       uniqBy(props.resources, "affectedZUID").sort((a, b) => {
         if (sortOrder === "asc") {
@@ -39,10 +36,10 @@ export const ResourceList = (props) => {
   return (
     <List
       height={height - 290}
-      itemCount={uniqueResources.length}
+      itemCount={sortedResources.length}
       itemSize={94}
       width={"100%"}
-      itemData={uniqueResources}
+      itemData={sortedResources}
     >
       {Row}
     </List>

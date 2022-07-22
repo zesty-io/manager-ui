@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Box, Button, Link, Breadcrumbs } from "@mui/material";
-import { useParams } from "utility/useParams";
+import { useParams } from "shell/hooks/useParams";
 import moment from "moment";
 import { instanceApi } from "shell/services/instance";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";

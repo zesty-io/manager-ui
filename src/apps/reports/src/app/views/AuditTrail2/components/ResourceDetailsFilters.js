@@ -3,7 +3,7 @@ import { Box, Select, MenuItem, FormControl, FormLabel } from "@mui/material";
 import moment from "moment";
 import { uniqBy } from "lodash";
 import DateRangePicker from "./DateRangePicker";
-import { useParams } from "utility/useParams";
+import { useParams } from "shell/hooks/useParams";
 
 export const ResourceDetailsFilters = (props) => {
   const [params, setParams] = useParams();

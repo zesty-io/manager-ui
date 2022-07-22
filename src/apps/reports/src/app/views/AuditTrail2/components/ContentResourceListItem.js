@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { searchItems } from "shell/store/content";
 import { fetchModel } from "shell/store/models";
 import { useHistory } from "react-router";
-import { useParams } from "utility/useParams";
+import { useParams } from "shell/hooks/useParams";
 
 const modelTypeName = {
   templateset: "Single Page Model",

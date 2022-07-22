@@ -76,7 +76,7 @@ export const AuditTrail = () => {
     <ThemeProvider theme={innerTheme}>
       <Box
         sx={{
-          boxSizing: "border-box",
+          // boxSizing: "border-box",
           color: "text.primary",
           backgroundColor: "background.paper",
           height: "100%",

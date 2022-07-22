@@ -2,11 +2,10 @@ import { useCallback, useMemo, useEffect, useState } from "react";
 import { Typography, Box, Tabs, Tab } from "@mui/material";
 import { useLocation, useHistory } from "react-router-dom";
 import { instanceApi } from "shell/services/instance";
-import { useParams } from "utility/useParams";
+import { useParams } from "shell/hooks/useParams";
 import moment from "moment";
 import { Resources } from "./Resources";
 import { ActionsTimeline } from "../components/ActionsTimeline";
-import { UsersList } from "../components/UsersList";
 import { Users } from "./Users";
 
 const tabPaths = ["resources", "users", "timeline", "insights"];
@@ -31,7 +30,7 @@ export const ActivityLog = () => {
   }, []);
 
   const {
-    data: resources,
+    data: actions,
     isLoading,
     isUninitialized,
   } = instanceApi.useGetAuditsQuery(
@@ -58,11 +57,11 @@ export const ActivityLog = () => {
   const getView = () => {
     switch (activeView) {
       case "resources":
-        return <Resources resources={resources} />;
+        return <Resources actions={actions} />;
       case "users":
-        return <Users resources={resources} />;
+        return <Users resources={actions} />;
       case "timeline":
-        return <ActionsTimeline actions={resources} />;
+        return <ActionsTimeline actions={actions} />;
       case "insights":
         return <div>Insights</div>;
       default:

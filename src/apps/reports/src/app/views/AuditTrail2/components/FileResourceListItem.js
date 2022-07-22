@@ -5,7 +5,7 @@ import { ListItem, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import { useHistory } from "react-router";
-import { useParams } from "utility/useParams";
+import { useParams } from "shell/hooks/useParams";
 
 const fileTypeName = {
   templateset: "Single Page Model",

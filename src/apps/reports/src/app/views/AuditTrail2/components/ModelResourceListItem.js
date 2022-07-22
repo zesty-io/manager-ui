@@ -6,7 +6,7 @@ import { ListItem, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchModel } from "shell/store/models";
 import { useHistory } from "react-router";
-import { useParams } from "utility/useParams";
+import { useParams } from "shell/hooks/useParams";
 
 export const ModelResourceListItem = (props) => {
   const [params] = useParams();

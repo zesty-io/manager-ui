@@ -4,7 +4,7 @@ import { faCog } from "@fortawesome/free-solid-svg-icons";
 import { ListItem, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
 import moment from "moment";
 import { useHistory } from "react-router";
-import { useParams } from "utility/useParams";
+import { useParams } from "shell/hooks/useParams";
 
 export const SettingsResourceListItem = (props) => {
   const [params] = useParams();
