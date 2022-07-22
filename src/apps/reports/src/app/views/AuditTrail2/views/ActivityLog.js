@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useEffect, useState } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { Typography, Box, Tabs, Tab } from "@mui/material";
 import { useLocation, useHistory } from "react-router-dom";
 import { instanceApi } from "shell/services/instance";
@@ -11,6 +11,7 @@ import { ResourceList } from "../components/ResourceList";
 import { ActivityByResource } from "../components/ActivityByResource";
 import { UsersList } from "../components/UsersList";
 import { Top5Users } from "../components/Top5Users";
+import { isEmpty, omitBy } from "lodash";
 
 const tabPaths = ["resources", "users", "timeline", "insights"];
 
@@ -22,6 +23,7 @@ const filtersOnView = {
 export const ActivityLog = () => {
   const history = useHistory();
   const location = useLocation();
+  const activeView = location.pathname.split("/").pop();
   const [params, setParams] = useParams();
   const [initialized, setInitialized] = useState(false);
 
@@ -59,14 +61,15 @@ export const ActivityLog = () => {
     [actions, params]
   );
 
-  const handleTabChange = useCallback((evt, newValue) => {
-    history.push(`/reports/activity-log/${tabPaths[newValue]}`);
-  }, []);
-
-  const activeView = useMemo(
-    () => location.pathname.split("/").pop(),
-    [location.pathname]
-  );
+  const handleTabChange = (evt, newValue) => {
+    history.push({
+      pathname: `/reports/activity-log/${tabPaths[newValue]}`,
+      // Persist date selection
+      search: new URLSearchParams(
+        omitBy({ from: params.get("from"), to: params.get("to") }, isEmpty)
+      ).toString(),
+    });
+  };
 
   const getView = () => {
     switch (activeView) {
