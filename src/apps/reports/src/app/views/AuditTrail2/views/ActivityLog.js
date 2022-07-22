@@ -4,11 +4,20 @@ import { useLocation, useHistory } from "react-router-dom";
 import { instanceApi } from "shell/services/instance";
 import { useParams } from "shell/hooks/useParams";
 import moment from "moment";
-import { Resources } from "./Resources";
 import { ActionsTimeline } from "../components/ActionsTimeline";
-import { Users } from "./Users";
+import { filterByParams } from "utility/filterByParams";
+import { Filters } from "../components/Filters";
+import { ResourceList } from "../components/ResourceList";
+import { ActivityByResource } from "../components/ActivityByResource";
+import { UsersList } from "../components/UsersList";
+import { Top5Users } from "../components/Top5Users";
 
 const tabPaths = ["resources", "users", "timeline", "insights"];
+
+const filtersOnView = {
+  resources: ["happenedAt", "resourceType", "actionByUserZUID"],
+  users: ["happenedAt", "userRole"],
+};
 
 export const ActivityLog = () => {
   const history = useHistory();
@@ -45,6 +54,11 @@ export const ActivityLog = () => {
     { skip: !initialized }
   );
 
+  const filteredActions = useMemo(
+    () => (actions ? filterByParams(actions, params) : []),
+    [actions, params]
+  );
+
   const handleTabChange = useCallback((evt, newValue) => {
     history.push(`/reports/activity-log/${tabPaths[newValue]}`);
   }, []);
@@ -57,9 +71,27 @@ export const ActivityLog = () => {
   const getView = () => {
     switch (activeView) {
       case "resources":
-        return <Resources actions={actions} />;
+        return (
+          <Box sx={{ display: "flex", gap: 17 }}>
+            <ResourceList actions={filteredActions} />
+            <Box
+              sx={{ px: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}
+            >
+              <ActivityByResource actions={filteredActions} />
+            </Box>
+          </Box>
+        );
       case "users":
-        return <Users resources={actions} />;
+        return (
+          <Box sx={{ display: "flex", gap: 17 }}>
+            <UsersList actions={filteredActions} />
+            <Box
+              sx={{ px: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}
+            >
+              <Top5Users actions={filteredActions} />
+            </Box>
+          </Box>
+        );
       case "timeline":
         return <ActionsTimeline actions={actions} />;
       case "insights":
@@ -87,7 +119,10 @@ export const ActivityLog = () => {
           <Tab label="INSIGHTS" />
         </Tabs>
       </Box>
-      {getView()}
+      <Box sx={{ px: 3 }}>
+        <Filters actions={actions} filters={filtersOnView[activeView]} />
+        {getView()}
+      </Box>
     </>
   );
 };

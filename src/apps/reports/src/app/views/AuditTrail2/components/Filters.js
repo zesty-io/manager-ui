@@ -4,13 +4,21 @@ import moment from "moment";
 import { uniqBy } from "lodash";
 import DateRangePicker from "./DateRangePicker";
 import { useParams } from "shell/hooks/useParams";
+import { accountsApi } from "shell/services/accounts";
 
 export const Filters = (props) => {
   const [params, setParams] = useParams();
 
+  const { data: usersRoles, isLoading } = accountsApi.useGetUsersRolesQuery();
+
   const uniqueUserActions = useMemo(
     () => uniqBy(props.actions, "actionByUserZUID"),
     [props.actions]
+  );
+
+  const uniqueUsersRoles = useMemo(
+    () => uniqBy(usersRoles, "role.ZUID"),
+    [usersRoles]
   );
 
   const getFilter = (filter) => {
@@ -90,13 +98,40 @@ export const Filters = (props) => {
             </Select>
           </>
         );
+      case "userRole":
+        return (
+          <>
+            <FormLabel>User Role</FormLabel>
+            <Select
+              value={params.get("userRole") || ""}
+              onChange={(evt) => setParams(evt.target.value, "userRole")}
+              size="small"
+              displayEmpty
+            >
+              <MenuItem value="">All</MenuItem>
+              {uniqueUsersRoles.map((userRole) => (
+                <MenuItem key={userRole.role.ZUID} value={userRole.role.name}>
+                  {userRole.role.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </>
+        );
       default:
         break;
     }
   };
 
   return (
-    <Box sx={{ display: "flex", gap: 1, justifyContent: "space-between" }}>
+    <Box
+      sx={{
+        display: "flex",
+        gap: 1,
+        justifyContent: "space-between",
+        mt: 3,
+        mb: 1.5,
+      }}
+    >
       <Box sx={{ display: "flex", gap: 1.5 }}>
         {props.filters.map((filter) => (
           <FormControl sx={{ width: 172 }}>{getFilter(filter)}</FormControl>

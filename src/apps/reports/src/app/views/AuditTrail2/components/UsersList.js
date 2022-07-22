@@ -5,32 +5,52 @@ import {
   ListItem,
   ListItemText,
   ListItemAvatar,
-  ListItemIcon,
-  Typography,
 } from "@mui/material";
 import { uniqBy } from "lodash";
-import { useSelector } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import { accountsApi } from "shell/services/accounts";
 import { MD5 } from "utility/md5";
+import { useParams } from "shell/hooks/useParams";
 
 export const UsersList = (props) => {
-  const users = useSelector((state) => state.users);
+  const [params] = useParams();
+  const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
+  const sortBy = params.get("sortBy");
+  const sortOrder = sortBy?.startsWith("+") ? "desc" : "asc";
 
-  const { data: userRoles, isLoading } = accountsApi.useGetUsersRolesQuery();
+  // If userRole parameter exist use users data to filter
+  const uniqueUserActions = useMemo(
+    () =>
+      params.get("userRole")
+        ? uniqBy(props.actions, "actionByUserZUID").filter(
+            (action) =>
+              usersRoles?.find(
+                (userRole) => userRole.ZUID === action.actionByUserZUID
+              )?.role?.name === params.get("userRole")
+          )
+        : uniqBy(props.actions, "actionByUserZUID"),
+    [props.actions, usersRoles, params]
+  );
 
-  const uniqueUserResources = useMemo(
-    () => uniqBy(props.actions, "actionByUserZUID"),
-    [props.actions]
+  const sortedUserActions = useMemo(
+    () =>
+      uniqueUserActions.sort((a, b) => {
+        if (sortOrder === "asc") {
+          return new Date(a?.[sortBy]) - new Date(b?.[sortBy]);
+        } else {
+          return new Date(b?.[sortBy]) - new Date(a?.[sortBy]);
+        }
+      }),
+    [uniqueUserActions]
   );
 
   return (
-    <List sx={{ width: "100%" }}>
-      {uniqueUserResources.map((resource) => {
-        const user = users.find(
-          (user) => user.ZUID === resource.actionByUserZUID
+    <List
+      sx={{ overflowY: "scroll", width: "100%", height: "calc(100vh - 306px)" }}
+    >
+      {sortedUserActions.map((action) => {
+        const user = usersRoles?.find(
+          (userRole) => userRole.ZUID === action.actionByUserZUID
         );
         if (!user) return null;
         return (
@@ -46,14 +66,11 @@ export const UsersList = (props) => {
             <ListItemText
               primary={`${user?.firstName} ${user?.lastName}`}
               secondary={`
-                ${
-                  userRoles?.find((userRole) => user?.ID === userRole?.ID)?.role
-                    ?.name
-                } • ${
+                ${user?.role?.name} • ${
                 props.actions.filter(
-                  (action) => action.actionByUserZUID === user.ZUID
+                  (action) => action.actionByUserZUID === user?.ZUID
                 ).length
-              } actions • Last action @ ${moment(resource.updatedAt).format(
+              } actions • Last action @ ${moment(action.updatedAt).format(
                 "hh:mm A"
               )}
                   `}

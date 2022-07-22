@@ -21,21 +21,20 @@ export const ActivityByResource = (props) => {
         .map((type) => ({
           type,
           percentage: Math.ceil(
-            (props.resources.filter(
-              (resource) => resource.resourceType === type
-            ).length /
-              props.resources.length) *
+            (props.actions.filter((resource) => resource.resourceType === type)
+              .length /
+              props.actions.length) *
               100
           ),
         }))
         .sort((a, b) => b.percentage - a.percentage),
-    [props.resources]
+    [props.actions]
   );
 
   return (
     <>
       <Typography variant="overline">ACTIVITY BY RESOURCE</Typography>
-      <Typography variant="h4">{props.resources.length}</Typography>
+      <Typography variant="h4">{props.actions.length}</Typography>
       <Typography variant="subtitle2">Actions</Typography>
       <Box sx={{ width: 160, height: 160, mt: 3, mb: 4 }}>
         <Pie

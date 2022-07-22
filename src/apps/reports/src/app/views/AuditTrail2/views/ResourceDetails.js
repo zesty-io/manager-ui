@@ -7,7 +7,6 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { ResourceListItem } from "../components/ResourceListItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faFileDownload } from "@fortawesome/free-solid-svg-icons";
-import { ResourceDetailsFilters } from "../components/ResourceDetailsFilters";
 import { ActionsTimeline } from "../components/ActionsTimeline";
 import { useHistory } from "react-router";
 import { ActionsByUsers } from "../components/ActionsByUsers";
