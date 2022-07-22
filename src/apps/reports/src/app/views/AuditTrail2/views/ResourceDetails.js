@@ -13,6 +13,7 @@ import { useHistory } from "react-router";
 import { ActionsByUsers } from "../components/ActionsByUsers";
 import instanceZUID from "utility/instanceZUID";
 import { getResourceType } from "../../../../../../../utility/getResourceType";
+import { Filters } from "../components/Filters";
 
 export const ResourceDetails = () => {
   const history = useHistory();
@@ -162,8 +163,8 @@ export const ResourceDetails = () => {
           </Button>
         </Box>
       </Box>
-      <Box sx={{ px: 3, mt: 2 }}>
-        <ResourceDetailsFilters actions={actions} />
+      <Box sx={{ px: 3, mt: 3 }}>
+        <Filters actions={actions} filters={["action", "actionByUserZUID"]} />
         <Box sx={{ display: "flex", gap: 17 }}>
           <ActionsTimeline actions={filteredActions} />
           <Box sx={{ minWidth: 298, py: 5 }}>

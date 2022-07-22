@@ -1,6 +1,6 @@
 import React from "react";
 import { Box } from "@mui/material";
-import { ResourceListFilters } from "../components/ResourceListFilters";
+
 import { ResourceList } from "../components/ResourceList";
 import { ActivityByResource } from "../components/ActivityByResource";
 import { useParams } from "shell/hooks/useParams";

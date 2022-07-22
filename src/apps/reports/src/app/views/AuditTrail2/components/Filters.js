@@ -17,7 +17,7 @@ export const Filters = (props) => {
     switch (filter) {
       case "happenedAt":
         return (
-          <FormControl fullWidth>
+          <>
             <FormLabel>Sort By</FormLabel>
             <Select
               value={params.get("sortBy") || ""}
@@ -28,11 +28,11 @@ export const Filters = (props) => {
               <MenuItem value="">Most Recent</MenuItem>
               <MenuItem value="happenedAt">Oldest First</MenuItem>
             </Select>
-          </FormControl>
+          </>
         );
       case "resourceType":
         return (
-          <FormControl fullWidth>
+          <>
             <FormLabel>Resource Type</FormLabel>
             <Select
               value={params.get("resourceType") || ""}
@@ -46,11 +46,11 @@ export const Filters = (props) => {
               <MenuItem value="code">Code</MenuItem>
               <MenuItem value="settings">Settings</MenuItem>
             </Select>
-          </FormControl>
+          </>
         );
       case "actionByUserZUID":
         return (
-          <FormControl fullWidth>
+          <>
             <FormLabel>Users</FormLabel>
             <Select
               value={params.get("actionByUserZUID") || ""}
@@ -68,7 +68,27 @@ export const Filters = (props) => {
                 >{`${resource.firstName} ${resource.lastName}`}</MenuItem>
               ))}
             </Select>
-          </FormControl>
+          </>
+        );
+      case "action":
+        return (
+          <>
+            <FormLabel>Action Type</FormLabel>
+            <Select
+              value={params.get("action") || ""}
+              onChange={(evt) => setParams(evt.target.value, "action")}
+              size="small"
+              displayEmpty
+            >
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="1">Created</MenuItem>
+              <MenuItem value="2">Saved</MenuItem>
+              <MenuItem value="3">Deleted</MenuItem>
+              <MenuItem value="4">Published</MenuItem>
+              <MenuItem value="5">Unpublished</MenuItem>
+              <MenuItem value="6">Scheduled</MenuItem>
+            </Select>
+          </>
         );
       default:
         break;
@@ -76,11 +96,11 @@ export const Filters = (props) => {
   };
 
   return (
-    <Box
-      sx={{ display: "flex", mt: 3, mb: 1.5, justifyContent: "space-between" }}
-    >
-      <Box sx={{ display: "flex", width: 540, gap: 1.5 }}>
-        {props.filters.map((filter) => getFilter(filter))}
+    <Box sx={{ display: "flex", gap: 1, justifyContent: "space-between" }}>
+      <Box sx={{ display: "flex", gap: 1.5 }}>
+        {props.filters.map((filter) => (
+          <FormControl sx={{ width: 172 }}>{getFilter(filter)}</FormControl>
+        ))}
       </Box>
       <DateRangePicker
         inputFormat="MMM dd, yyyy"
