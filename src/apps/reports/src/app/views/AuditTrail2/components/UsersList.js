@@ -44,6 +44,8 @@ export const UsersList = (props) => {
     [uniqueUserActions]
   );
 
+  console.log("tesing", props.actions, uniqueUserActions, sortedUserActions);
+
   return (
     <List
       sx={{ overflowY: "scroll", width: "100%", height: "calc(100vh - 306px)" }}

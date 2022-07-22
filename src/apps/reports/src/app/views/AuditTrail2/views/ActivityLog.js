@@ -1,5 +1,14 @@
 import { useMemo, useEffect, useState } from "react";
-import { Typography, Box, Tabs, Tab } from "@mui/material";
+import {
+  Typography,
+  Box,
+  Tabs,
+  Tab,
+  Card,
+  CardHeader,
+  CardContent,
+  Stack,
+} from "@mui/material";
 import { useLocation, useHistory } from "react-router-dom";
 import { instanceApi } from "shell/services/instance";
 import { useParams } from "shell/hooks/useParams";
@@ -11,13 +20,15 @@ import { ResourceList } from "../components/ResourceList";
 import { ActivityByResource } from "../components/ActivityByResource";
 import { UsersList } from "../components/UsersList";
 import { Top5Users } from "../components/Top5Users";
-import { isEmpty, omitBy } from "lodash";
+import { isEmpty, omitBy, uniqBy } from "lodash";
 
 const tabPaths = ["resources", "users", "timeline", "insights"];
 
 const filtersOnView = {
   resources: ["happenedAt", "resourceType", "actionByUserZUID"],
   users: ["happenedAt", "userRole"],
+  timeline: ["action", "actionByUserZUID"],
+  insights: ["action", "actionByUserZUID"],
 };
 
 export const ActivityLog = () => {
@@ -96,9 +107,61 @@ export const ActivityLog = () => {
           </Box>
         );
       case "timeline":
-        return <ActionsTimeline actions={actions} />;
+        return (
+          <Box sx={{ display: "flex", gap: 17 }}>
+            <ActionsTimeline actions={filteredActions} />
+            <Box
+              sx={{ px: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}
+            >
+              <Top5Users actions={filteredActions} />
+            </Box>
+          </Box>
+        );
       case "insights":
-        return <div>Insights</div>;
+        const cards = [
+          {
+            title: filteredActions?.length,
+            content: "Actions",
+          },
+          {
+            title: uniqBy(filteredActions, "affectedZUID")?.length,
+            content: "Resources Impacted",
+          },
+          {
+            title: filteredActions?.filter((action) => action.action === 4)
+              ?.length,
+            content: "Publishes",
+          },
+        ];
+        return (
+          <Box>
+            <Stack direction="row" gap={1.5} sx={{ py: 3 }}>
+              {cards.map((card) => (
+                <Card>
+                  <CardHeader
+                    title={card.title}
+                    sx={{ width: 200, backgroundColor: "common.white" }}
+                  />
+                  <CardContent>{card.content}</CardContent>
+                </Card>
+              ))}
+            </Stack>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: 7.5,
+              }}
+            >
+              <Box sx={{ width: "100%" }}>
+                <ActivityByResource actions={filteredActions} />
+              </Box>
+              <Box sx={{ width: "100%" }}>
+                <Top5Users actions={filteredActions} />
+              </Box>
+            </Box>
+          </Box>
+        );
       default:
         return null;
     }

@@ -71,18 +71,19 @@ const generateActionMessage = (action) => {
 };
 
 export const ActionsTimeline = (props) => {
-  const [params] = useParams();
   const { width, height } = useWindowSize();
 
-  const actionsWithHeaders = [];
+  const actionsWithHeaders = useMemo(() => {
+    let arr = [];
+    props.actions.forEach((action) => {
+      const formattedDate = moment(action.happenedAt).format("LL");
+      if (!arr.includes(formattedDate)) {
+        arr.push(formattedDate);
+      }
 
-  props.actions.forEach((action) => {
-    const formattedDate = moment(action.happenedAt).format("LL");
-    if (!actionsWithHeaders.includes(formattedDate)) {
-      actionsWithHeaders.push(formattedDate);
-    }
-
-    actionsWithHeaders.push(action);
+      arr.push(action);
+    });
+    return arr;
   });
 
   const Row = ({ index, data, style }) => {
@@ -155,7 +156,7 @@ export const ActionsTimeline = (props) => {
 
   return (
     <List
-      height={height - 299}
+      height={height - 290}
       itemCount={actionsWithHeaders.length}
       itemSize={110}
       width={"100%"}
