@@ -1,4 +1,3 @@
-// @ts-check
 type Action = {
   type: "NEW_NOTIFICATION" | "REMOVE_NOTIFICATION";
   data: Data;
@@ -25,7 +24,7 @@ export function notifications(state = [], action: Action) {
 
 type Data = {
   kind: "warn" | "error";
-  HTML?: any;
+  HTML?: unknown;
   message?: string;
 };
 

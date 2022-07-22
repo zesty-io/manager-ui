@@ -77,6 +77,7 @@ module.exports = async (env) => {
       extensions: [".ts", ".js"],
     },
     plugins: [
+      /*
       new SentryCliPlugin({
         include: "./build",
         ignoreFile: ".sentrycliignore",
@@ -86,6 +87,7 @@ module.exports = async (env) => {
         project: "manager-ui",
         org: "zestyio",
       }),
+      */
       new NodePolyfillPlugin({
         excludeAliases: ["console"],
       }),
