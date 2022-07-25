@@ -9,18 +9,18 @@ import {
   Typography,
 } from "@mui/material";
 import { uniqBy } from "lodash";
-import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { accountsApi } from "shell/services/accounts";
+import { notify } from "shell/store/notifications";
 import { MD5 } from "utility/md5";
 
 export const ActionsByUsers = (props) => {
-  const users = useSelector((state) => state.users);
+  const dispatch = useDispatch();
+  const { data: usersRoles, isLoading } = accountsApi.useGetUsersRolesQuery();
 
-  const { data: userRoles, isLoading } = accountsApi.useGetUsersRolesQuery();
-
-  const uniqueUserResources = useMemo(
+  const uniqueUserActions = useMemo(
     () => uniqBy(props.actions, "actionByUserZUID"),
     [props.actions]
   );
@@ -31,13 +31,13 @@ export const ActionsByUsers = (props) => {
         ACTIONS BY
       </Typography>
       <List>
-        {uniqueUserResources.map((resource) => {
-          const user = users.find(
-            (user) => user.ZUID === resource.actionByUserZUID
+        {uniqueUserActions.map((action) => {
+          const user = usersRoles?.find(
+            (user) => user.ZUID === action.actionByUserZUID
           );
           if (!user) return null;
           return (
-            <ListItem divider>
+            <ListItem key={user.ZUID} divider>
               <ListItemAvatar>
                 <Avatar
                   alt={`${user?.firstName} ${user?.lastName} Avatar`}
@@ -49,14 +49,20 @@ export const ActionsByUsers = (props) => {
               <ListItemText
                 primaryTypographyProps={{ variant: "body2" }}
                 primary={`${user?.firstName} ${user?.lastName}`}
-                secondary={
-                  userRoles?.find((userRole) => user?.ID === userRole?.ID)?.role
-                    ?.name
-                }
+                secondary={user?.role?.name}
               />
               <ListItemIcon
                 sx={{ justifyContent: "flex-end", cursor: "pointer" }}
-                onClick={() => navigator?.clipboard?.writeText(user?.email)}
+                onClick={() =>
+                  navigator?.clipboard?.writeText(user?.email).then(() =>
+                    dispatch(
+                      notify({
+                        kind: "success",
+                        message: `User email copied to the clipboard`,
+                      })
+                    )
+                  )
+                }
               >
                 <FontAwesomeIcon icon={faEnvelope} style={{ fontSize: 20 }} />
               </ListItemIcon>

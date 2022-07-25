@@ -5,6 +5,7 @@ import { instanceApi } from "../../../../../../shell/services/instance";
 import { ActivityLog } from "./views/ActivityLog";
 import { ResourceDetails } from "./views/ResourceDetails";
 import { theme } from "@zesty-io/material";
+import { UserDetails } from "./views/UserDetails";
 
 export const AuditTrail = () => {
   // const {data} = instanceApi.useGetAuditsQuery();
@@ -17,11 +18,17 @@ export const AuditTrail = () => {
       h4: {
         fontSize: "24px",
         fontWeight: 600,
-        lineHeight: "34px",
+        lineHeight: "32px",
       },
       h5: {
         fontSize: "20px",
         lineHeight: "28px",
+      },
+      subtitle2: {
+        lineHeight: "22px",
+      },
+      caption: {
+        lineHeight: "20px",
       },
     },
     palette: {
@@ -78,8 +85,7 @@ export const AuditTrail = () => {
         sx={{
           // boxSizing: "border-box",
           color: "text.primary",
-          backgroundColor: "background.paper",
-          height: "100%",
+          backgroundColor: "common.white",
         }}
       >
         <Switch>
@@ -88,9 +94,12 @@ export const AuditTrail = () => {
             path="/reports/activity-log/resources/:id"
             component={ResourceDetails}
           />
+          <Route
+            exact
+            path="/reports/activity-log/users/:id"
+            component={UserDetails}
+          />
           <Route path="/reports/activity-log/:tab" component={ActivityLog} />
-          {/* <Route path="/reports/metrics" component={Metrics} />
-        <Route path="/reports/analytics" component={Analytics} /> */}
           <Redirect to="/reports/activity-log/resources" />
         </Switch>
       </Box>

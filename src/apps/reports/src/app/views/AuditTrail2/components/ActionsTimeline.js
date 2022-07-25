@@ -21,6 +21,7 @@ import {
   faSave,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
+import { ActionTimelineItem } from "./ActionTimelineItem";
 
 const actionIconMap = {
   1: faPencilAlt,
@@ -54,7 +55,7 @@ const generateActionMessage = (action) => {
     case 1:
       return "Created";
     case 2:
-      return "Saved";
+      return "Modified";
     case 3:
       return "Deleted";
     case 4:
@@ -104,8 +105,15 @@ export const ActionsTimeline = (props) => {
     }
 
     return (
-      <div style={style}>
-        <TimelineItem sx={{ "&::before": { flex: "unset" } }}>
+      <div style={style} key={action.ZUID}>
+        <ActionTimelineItem
+          action={action}
+          renderConnector={
+            actionsWithHeaders[index + 1] &&
+            typeof actionsWithHeaders[index + 1] !== "string"
+          }
+        />
+        {/* <TimelineItem sx={{ "&::before": { flex: "unset" } }}>
           <TimelineSeparator>
             <TimelineDot
               sx={{
@@ -149,14 +157,16 @@ export const ActionsTimeline = (props) => {
               {`By ${action.firstName} ${action.lastName}`}
             </Typography>
           </TimelineContent>
-        </TimelineItem>
+        </TimelineItem> */}
       </div>
     );
   };
 
+  console.log("testing", actionsWithHeaders);
+
   return (
     <List
-      height={height - 290}
+      height={height - 292}
       itemCount={actionsWithHeaders.length}
       itemSize={110}
       width={"100%"}

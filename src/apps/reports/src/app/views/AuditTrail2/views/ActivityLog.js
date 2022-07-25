@@ -134,7 +134,7 @@ export const ActivityLog = () => {
           },
         ];
         return (
-          <Box>
+          <Box sx={{ overflowY: "scroll", height: "calc(100vh - 292px)" }}>
             <Stack direction="row" gap={1.5} sx={{ py: 3 }}>
               {cards.map((card) => (
                 <Card>
@@ -172,7 +172,9 @@ export const ActivityLog = () => {
   return (
     <>
       <Box sx={{ px: 3, pt: 3, mb: 1 }}>
-        <Typography variant="h4">Activity Log</Typography>
+        <Typography variant="h4" sx={{ mb: 0.5 }}>
+          Activity Log
+        </Typography>
         <Typography variant="subtitle2" color="text.secondary">
           Your instance timeline by resources and users
         </Typography>
@@ -186,7 +188,7 @@ export const ActivityLog = () => {
         </Tabs>
       </Box>
       <Box sx={{ px: 3 }}>
-        <Filters actions={actions} filters={filtersOnView[activeView]} />
+        <Filters actions={actions} filters={filtersOnView[activeView] || []} />
         {getView()}
       </Box>
     </>

@@ -1,4 +1,3 @@
-import React from "react";
 import { ContentResourceListItem } from "./ContentResourceListItem";
 import { FileResourceListItem } from "./FileResourceListItem";
 import { ModelResourceListItem } from "./ModelResourceListItem";

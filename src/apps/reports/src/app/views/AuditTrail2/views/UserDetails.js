@@ -5,20 +5,24 @@ import moment from "moment";
 import { instanceApi } from "shell/services/instance";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { omitBy, isEmpty } from "lodash";
-import { ResourceListItem } from "../components/ResourceListItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faFileDownload } from "@fortawesome/free-solid-svg-icons";
-import { ActionsTimeline } from "../components/ActionsTimeline";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router";
-import { ActionsByUsers } from "../components/ActionsByUsers";
-import instanceZUID from "utility/instanceZUID";
-import { getResourceType } from "../../../../../../../utility/getResourceType";
 import { Filters } from "../components/Filters";
+import { ResourceList } from "../components/ResourceList";
+import { ActivityByResource } from "../components/ActivityByResource";
+import { UserListItem } from "../components/UserListItem";
+import { accountsApi } from "shell/services/accounts";
+import { filterByParams } from "utility/filterByParams";
+import { notify } from "shell/store/notifications";
+import { useDispatch } from "react-redux";
 
-export const ResourceDetails = () => {
+export const UserDetails = () => {
   const history = useHistory();
+  const dispatch = useDispatch();
   const [params, setParams] = useParams();
   const [initialized, setInitialized] = useState(false);
+  const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
 
   useEffect(() => {
     // If there are no date parameters set, sets date parameters to 1 week
@@ -33,12 +37,18 @@ export const ResourceDetails = () => {
     setInitialized(true);
   }, []);
 
+  const zuid = useMemo(
+    () => location.pathname.split("/").pop(),
+    [location.pathname]
+  );
+
   const {
-    data: actions,
+    data: actionsByZuid,
     isLoading,
     isUninitialized,
   } = instanceApi.useGetAuditsQuery(
     {
+      userZUID: zuid,
       ...(params.get("from") && {
         start_date: moment(params.get("from")).format("L"),
       }),
@@ -49,28 +59,21 @@ export const ResourceDetails = () => {
     { skip: !initialized }
   );
 
-  const zuid = useMemo(
-    () => location.pathname.split("/").pop(),
-    [location.pathname]
+  // let filteredActions = actionsByZuid ? [...actionsByZuid] : [];
+
+  // for (const [key, value] of params.entries()) {
+  //   if (key === "from" || key === "to") {
+  //   } else {
+  //     filteredActions = filteredActions.filter(
+  //       (action) => String(action?.[key]) === value
+  //     );
+  //   }
+  // }
+
+  const filteredActions = useMemo(
+    () => (actionsByZuid ? filterByParams(actionsByZuid, params) : []),
+    [actionsByZuid, params]
   );
-
-  const actionsByZuid = useMemo(
-    () => actions?.filter((action) => action.affectedZUID === zuid) || [],
-    [zuid, actions]
-  );
-
-  let filteredActions = actionsByZuid ? [...actionsByZuid] : [];
-
-  for (const [key, value] of params.entries()) {
-    if (key === "from" || key === "to") {
-    } else {
-      filteredActions = filteredActions.filter(
-        (action) => String(action?.[key]) === value
-      );
-    }
-  }
-
-  console.log("testing actions", actionsByZuid);
 
   if (isLoading || isUninitialized) return <div>loading...</div>;
 
@@ -109,7 +112,7 @@ export const ResourceDetails = () => {
           onClick={(e) => {
             e.preventDefault();
             history.push({
-              pathname: `/reports/activity-log/resources`,
+              pathname: `/reports/activity-log/users`,
               // Persist date selection
               search: new URLSearchParams(
                 omitBy(
@@ -120,7 +123,7 @@ export const ResourceDetails = () => {
             });
           }}
         >
-          Resources
+          Users
         </Link>
       </Breadcrumbs>
       <Box
@@ -131,62 +134,48 @@ export const ResourceDetails = () => {
           borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
         }}
       >
-        <Box sx={{ maxWidth: 640 }}>
-          <ResourceListItem
-            resource={
-              actionsByZuid[0] || {
-                affectedZUID: zuid,
-                resourceType: getResourceType(zuid),
-              }
-            }
-            size="large"
-          />
-        </Box>
-        <Box sx={{ display: "flex", gap: 1.5, px: 2, py: 2.5 }}>
+        <UserListItem
+          action={actionsByZuid[0]}
+          actions={actionsByZuid}
+          size="large"
+        />
+        <Box>
           <Button
             sx={{ height: "max-content" }}
-            startIcon={<FontAwesomeIcon icon={faEye} />}
-            variant="outlined"
-            size="small"
-            onClick={() => {
-              if (actionsByZuid[0]?.resourceType === "code") {
-                history.push(
-                  "/code/file/" +
-                    actionsByZuid[0]?.meta?.uri.split("/").slice(3).join("/")
-                );
-              } else {
-                history.push(new URL(actionsByZuid[0]?.meta?.url)?.pathname);
-              }
-            }}
-          >
-            View
-          </Button>
-          <Button
-            sx={{ height: "max-content" }}
-            startIcon={<FontAwesomeIcon icon={faFileDownload} />}
+            startIcon={<FontAwesomeIcon icon={faEnvelope} />}
             variant="contained"
             size="small"
-            disableElevation
-            onClick={() => {
-              window.open(
-                `https://reports.zesty.io/audit-report.html?instanceZUID=${instanceZUID}&affectedZUID=${zuid}&download=true`,
-                "_blank"
-              );
-            }}
+            onClick={() =>
+              navigator?.clipboard
+                ?.writeText(
+                  usersRoles?.find(
+                    (userRole) =>
+                      userRole.ZUID === actionsByZuid[0].actionByUserZUID
+                  )?.email
+                )
+                .then(() =>
+                  dispatch(
+                    notify({
+                      kind: "success",
+                      message: `User email copied to the clipboard`,
+                    })
+                  )
+                )
+            }
           >
-            Export
+            Message
           </Button>
         </Box>
       </Box>
       <Box sx={{ px: 3, mt: 3 }}>
         <Filters
           actions={actionsByZuid}
-          filters={["action", "actionByUserZUID"]}
+          filters={["happenedAt", "resourceType"]}
         />
         <Box sx={{ display: "flex", gap: 17 }}>
-          <ActionsTimeline actions={filteredActions} />
-          <Box sx={{ minWidth: 298, py: 5 }}>
-            <ActionsByUsers actions={filteredActions} />
+          <ResourceList actions={filteredActions} />
+          <Box sx={{ px: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}>
+            <ActivityByResource actions={filteredActions} />
           </Box>
         </Box>
       </Box>

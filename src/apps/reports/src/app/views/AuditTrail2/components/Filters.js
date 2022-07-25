@@ -90,7 +90,7 @@ export const Filters = (props) => {
             >
               <MenuItem value="">All</MenuItem>
               <MenuItem value="1">Created</MenuItem>
-              <MenuItem value="2">Saved</MenuItem>
+              <MenuItem value="2">Modified</MenuItem>
               <MenuItem value="3">Deleted</MenuItem>
               <MenuItem value="4">Published</MenuItem>
               <MenuItem value="5">Unpublished</MenuItem>
@@ -133,8 +133,10 @@ export const Filters = (props) => {
       }}
     >
       <Box sx={{ display: "flex", gap: 1.5 }}>
-        {props.filters.map((filter) => (
-          <FormControl sx={{ width: 172 }}>{getFilter(filter)}</FormControl>
+        {props.filters.map((filter, idx) => (
+          <FormControl key={idx} sx={{ width: 172 }}>
+            {getFilter(filter)}
+          </FormControl>
         ))}
       </Box>
       <DateRangePicker

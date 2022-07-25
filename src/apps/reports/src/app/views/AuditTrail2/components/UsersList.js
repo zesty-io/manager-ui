@@ -1,22 +1,16 @@
 import { useMemo } from "react";
-import {
-  Avatar,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemAvatar,
-} from "@mui/material";
+import { List } from "@mui/material";
 import { uniqBy } from "lodash";
-import moment from "moment";
 import { accountsApi } from "shell/services/accounts";
-import { MD5 } from "utility/md5";
 import { useParams } from "shell/hooks/useParams";
+import { UserListItem } from "./UserListItem";
 
 export const UsersList = (props) => {
   const [params] = useParams();
-  const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
   const sortBy = params.get("sortBy");
   const sortOrder = sortBy?.startsWith("+") ? "desc" : "asc";
+
+  const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
 
   // If userRole parameter exist use users data to filter
   const uniqueUserActions = useMemo(
@@ -44,40 +38,24 @@ export const UsersList = (props) => {
     [uniqueUserActions]
   );
 
-  console.log("tesing", props.actions, uniqueUserActions, sortedUserActions);
-
   return (
     <List
-      sx={{ overflowY: "scroll", width: "100%", height: "calc(100vh - 306px)" }}
+      sx={{
+        padding: 0,
+        overflowY: "scroll",
+        width: "100%",
+        height: "calc(100vh - 292px)",
+      }}
     >
       {sortedUserActions.map((action) => {
-        const user = usersRoles?.find(
-          (userRole) => userRole.ZUID === action.actionByUserZUID
-        );
-        if (!user) return null;
         return (
-          <ListItem divider sx={{ py: 2.5 }}>
-            <ListItemAvatar>
-              <Avatar
-                alt={`${user?.firstName} ${user?.lastName} Avatar`}
-                src={`https://www.gravatar.com/avatar/${MD5(
-                  user?.email
-                )}.jpg?s=40`}
-              ></Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={`${user?.firstName} ${user?.lastName}`}
-              secondary={`
-                ${user?.role?.name} • ${
-                props.actions.filter(
-                  (action) => action.actionByUserZUID === user?.ZUID
-                ).length
-              } actions • Last action @ ${moment(action.updatedAt).format(
-                "hh:mm A"
-              )}
-                  `}
-            />
-          </ListItem>
+          <UserListItem
+            key={action.actionByUserZUID}
+            action={action}
+            actions={props.actions}
+            clickable
+            divider
+          />
         );
       })}
     </List>

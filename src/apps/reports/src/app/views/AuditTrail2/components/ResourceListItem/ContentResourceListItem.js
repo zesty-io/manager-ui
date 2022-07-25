@@ -1,13 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import moment from "moment";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
-import { ListItem, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { searchItems } from "shell/store/content";
 import { fetchModel } from "shell/store/models";
-import { useHistory } from "react-router";
-import { useParams } from "shell/hooks/useParams";
+import { ListItem } from "./ListItem";
 
 const modelTypeName = {
   templateset: "Single Page Model",
@@ -16,9 +13,7 @@ const modelTypeName = {
 };
 
 export const ContentResourceListItem = (props) => {
-  const history = useHistory();
   const dispatch = useDispatch();
-  const [params] = useParams();
   const [contentError, setContentError] = useState(false);
   const [modelError, setModelError] = useState(false);
 
@@ -64,52 +59,18 @@ export const ContentResourceListItem = (props) => {
   return (
     <ListItem
       divider={props.divider}
-      sx={{ py: 2.5, cursor: props.clickable && "pointer" }}
-      onClick={
-        props.clickable
-          ? () =>
-              history.push({
-                pathname: `resources/${props.affectedZUID}`,
-                // Persist date selection
-                search: new URLSearchParams({
-                  ...(params.get("from") && {
-                    from: params.get("from"),
-                  }),
-                  ...(params.get("to") && {
-                    to: params.get("to"),
-                  }),
-                }).toString(),
-              })
-          : undefined
+      size={props.size}
+      clickable={props.clickable}
+      affectedZUID={props.affectedZUID}
+      icon={faEdit}
+      primary={
+        contentError
+          ? `${props.affectedZUID} (Deleted)`
+          : contentData?.web?.metaTitle
+          ? contentData?.web?.metaTitle
+          : "(No Meta Title)"
       }
-    >
-      <ListItemAvatar>
-        <Avatar
-          sx={{
-            ...(props.size === "large" && {
-              height: 48,
-              width: 48,
-            }),
-          }}
-        >
-          <FontAwesomeIcon icon={faEdit} />
-        </Avatar>
-      </ListItemAvatar>
-      <ListItemText
-        primaryTypographyProps={{
-          ...(props.size === "large" && {
-            variant: "h5",
-            fontWeight: 600,
-          }),
-        }}
-        secondaryTypographyProps={{ variant: "caption" }}
-        primary={
-          contentError
-            ? `${props.affectedZUID} (Deleted)`
-            : contentData?.web?.metaTitle
-        }
-        secondary={secondaryText}
-      />
-    </ListItem>
+      secondary={secondaryText}
+    />
   );
 };
