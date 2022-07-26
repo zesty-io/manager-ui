@@ -1,10 +1,10 @@
 type Action = {
   type: "NEW_NOTIFICATION" | "REMOVE_NOTIFICATION";
-  data: Data;
+  data: Notification;
   epoch: Date;
 };
 
-export function notifications(state = [], action: Action) {
+export function notifications(state: Notification[] = [], action: Action) {
   switch (action.type) {
     case "NEW_NOTIFICATION":
       return [action.data, ...state];
@@ -22,13 +22,18 @@ export function notifications(state = [], action: Action) {
   }
 }
 
-type Data = {
+type NotifyArgs = {
   kind: "warn" | "error";
   HTML?: unknown;
   message?: string;
 };
 
-export function notify(data: Data) {
+type Notification = NotifyArgs & {
+  epoch: Date;
+  active: boolean;
+};
+
+export function notify(data: NotifyArgs) {
   if (!data.message && !data.HTML) {
     throw new Error("Cannot trigger notification without a message");
   }
