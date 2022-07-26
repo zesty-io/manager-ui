@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Typography, useTheme, Skeleton } from "@mui/material";
 import { Bar } from "react-chartjs-2";
 import { uniqBy } from "lodash";
 import { useParams } from "shell/hooks/useParams";
@@ -45,34 +45,82 @@ export const Top5Users = (props) => {
 
   return (
     <>
-      <Typography variant="overline">TOP 5 ACTIVE USERS</Typography>
-      <Typography variant="h4">{filteredUserActions.length}</Typography>
-      <Typography variant="subtitle2">Actions</Typography>
+      <Typography variant="overline">
+        {props.showSkeletons ? (
+          <Skeleton
+            variant="reactangular"
+            width={159}
+            height={16}
+            sx={{ mb: 2.75 }}
+          />
+        ) : (
+          "TOP 5 ACTIVE USERS"
+        )}
+      </Typography>
+      <Typography variant="h4">
+        {props.showSkeletons ? (
+          <Skeleton
+            variant="reactangular"
+            width={44}
+            height={20}
+            sx={{ mb: 1.75 }}
+          />
+        ) : (
+          filteredUserActions.length
+        )}
+      </Typography>
+      <Typography variant="subtitle2">
+        {props.showSkeletons ? (
+          <Skeleton variant="reactangular" width={52} height={12} />
+        ) : (
+          "Actions"
+        )}
+      </Typography>
       <Box sx={{ width: 238, height: 184, mt: 3, mb: 4 }}>
-        <Bar
-          width={"100%"}
-          height={"100%"}
-          options={{
-            plugins: { legend: { display: false } },
-            indexAxis: "y",
-          }}
-          data={{
-            labels: top5Users.map((top5User) => {
-              const user = usersRoles.find(
-                (userRole) => userRole.ZUID === top5User.ZUID
-              );
-              return `${user.firstName} ${user.lastName.charAt(0)}.`;
-            }),
-            datasets: [
-              {
-                label: "",
-                data: top5Users.map((user) => user.count),
-                backgroundColor: theme.palette.primary.main,
-                barThickness: 24,
-              },
-            ],
-          }}
-        />
+        {props.showSkeletons ? (
+          Array(5)
+            .fill({})
+            .map((_, idx) => (
+              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                <Skeleton
+                  variant="reactangular"
+                  height={12}
+                  width={52}
+                  sx={{ mr: 1 }}
+                />
+                <Skeleton
+                  variant="reactangular"
+                  height={24}
+                  width={`${80 - 16 * idx}%`}
+                />
+              </Box>
+            ))
+        ) : (
+          <Bar
+            width={"100%"}
+            height={"100%"}
+            options={{
+              plugins: { legend: { display: false } },
+              indexAxis: "y",
+            }}
+            data={{
+              labels: top5Users.map((top5User) => {
+                const user = usersRoles.find(
+                  (userRole) => userRole.ZUID === top5User.ZUID
+                );
+                return `${user.firstName} ${user.lastName.charAt(0)}.`;
+              }),
+              datasets: [
+                {
+                  label: "",
+                  data: top5Users.map((user) => user.count),
+                  backgroundColor: theme.palette.primary.main,
+                  barThickness: 24,
+                },
+              ],
+            }}
+          />
+        )}
       </Box>
     </>
   );

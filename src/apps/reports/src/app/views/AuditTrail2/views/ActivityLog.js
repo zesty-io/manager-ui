@@ -101,11 +101,11 @@ export const ActivityLog = () => {
       case "users":
         return (
           <Box sx={{ display: "flex", gap: 17 }}>
-            <UsersList actions={filteredActions} />
+            <UsersList actions={filteredActions} showSkeletons={isLoading} />
             <Box
               sx={{ px: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}
             >
-              <Top5Users actions={filteredActions} />
+              <Top5Users actions={filteredActions} showSkeletons={isLoading} />
             </Box>
           </Box>
         );

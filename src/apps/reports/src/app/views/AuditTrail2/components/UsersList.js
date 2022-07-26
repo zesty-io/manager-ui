@@ -47,17 +47,23 @@ export const UsersList = (props) => {
         height: "calc(100vh - 292px)",
       }}
     >
-      {sortedUserActions.map((action) => {
-        return (
-          <UserListItem
-            key={action.actionByUserZUID}
-            action={action}
-            actions={props.actions}
-            clickable
-            divider
-          />
-        );
-      })}
+      {props.showSkeletons
+        ? Array(10)
+            .fill({})
+            .map((_, idx) => {
+              return <UserListItem key={idx} divider showSkeletons />;
+            })
+        : sortedUserActions.map((action) => {
+            return (
+              <UserListItem
+                key={action.actionByUserZUID}
+                action={action}
+                actions={props.actions}
+                clickable
+                divider
+              />
+            );
+          })}
     </List>
   );
 };

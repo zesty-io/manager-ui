@@ -1,7 +1,13 @@
 import moment from "moment";
 import { accountsApi } from "shell/services/accounts";
 import { MD5 } from "utility/md5";
-import { Avatar, ListItem, ListItemText, ListItemAvatar } from "@mui/material";
+import {
+  Avatar,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Skeleton,
+} from "@mui/material";
 import { useHistory } from "react-router";
 import { useParams } from "shell/hooks/useParams";
 import { isEmpty, omitBy } from "lodash";
@@ -12,10 +18,11 @@ export const UserListItem = (props) => {
   const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
 
   const user = usersRoles?.find(
-    (userRole) => userRole.ZUID === props.action.actionByUserZUID
+    (userRole) => userRole.ZUID === props.action?.actionByUserZUID
   );
 
-  if (!user) return null;
+  // If no user data exists then don't attempt to render the user
+  if (!user && !props.showSkeletons) return null;
 
   return (
     <ListItem
@@ -26,7 +33,7 @@ export const UserListItem = (props) => {
         props.clickable
           ? () =>
               history.push({
-                pathname: `users/${props.action.actionByUserZUID}`,
+                pathname: `users/${props.action?.actionByUserZUID}`,
                 // Persist date selection
                 search: new URLSearchParams(
                   omitBy(
@@ -39,10 +46,14 @@ export const UserListItem = (props) => {
       }
     >
       <ListItemAvatar>
-        <Avatar
-          alt={`${user?.firstName} ${user?.lastName} Avatar`}
-          src={`https://www.gravatar.com/avatar/${MD5(user?.email)}.jpg?s=40`}
-        ></Avatar>
+        {props.showSkeletons ? (
+          <Skeleton variant="circular" width={40} height={40} />
+        ) : (
+          <Avatar
+            alt={`${user?.firstName} ${user?.lastName} Avatar`}
+            src={`https://www.gravatar.com/avatar/${MD5(user?.email)}.jpg?s=40`}
+          ></Avatar>
+        )}
       </ListItemAvatar>
       <ListItemText
         primaryTypographyProps={{
@@ -60,16 +71,33 @@ export const UserListItem = (props) => {
           overflow: "hidden",
           textOverflow: "ellipsis",
         }}
-        primary={`${user?.firstName} ${user?.lastName}`}
-        secondary={`
+        primary={
+          props.showSkeletons ? (
+            <Skeleton
+              variant="rectangular"
+              height={16}
+              width={"50%"}
+              sx={{ mb: 2 }}
+            />
+          ) : (
+            `${user?.firstName} ${user?.lastName}`
+          )
+        }
+        secondary={
+          props.showSkeletons ? (
+            <Skeleton variant="rectangular" height={12} width={"75%"} />
+          ) : (
+            `
         ${user?.role?.name} • ${
-          props.actions.filter(
-            (action) => action.actionByUserZUID === user?.ZUID
-          ).length
-        } actions • Last action @ ${moment(props.action.updatedAt).format(
-          "hh:mm A"
-        )}
-          `}
+              props.actions?.filter(
+                (action) => action.actionByUserZUID === user?.ZUID
+              ).length
+            } actions • Last action @ ${moment(props.action?.updatedAt).format(
+              "hh:mm A"
+            )}
+          `
+          )
+        }
       />
     </ListItem>
   );

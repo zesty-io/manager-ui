@@ -59,17 +59,6 @@ export const UserDetails = () => {
     { skip: !initialized }
   );
 
-  // let filteredActions = actionsByZuid ? [...actionsByZuid] : [];
-
-  // for (const [key, value] of params.entries()) {
-  //   if (key === "from" || key === "to") {
-  //   } else {
-  //     filteredActions = filteredActions.filter(
-  //       (action) => String(action?.[key]) === value
-  //     );
-  //   }
-  // }
-
   const filteredActions = useMemo(
     () => (actionsByZuid ? filterByParams(actionsByZuid, params) : []),
     [actionsByZuid, params]

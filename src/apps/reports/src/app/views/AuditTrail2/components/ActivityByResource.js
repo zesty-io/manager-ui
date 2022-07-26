@@ -101,15 +101,17 @@ export const ActivityByResource = (props) => {
           {props.showSkeletons ? (
             <>
               <Skeleton
-                variant="reactangular"
+                variant="circular"
                 height={12}
-                width={52}
+                width={12}
                 sx={{ mr: 1 }}
               />
+              <Skeleton variant="reactangular" height={8} width={85} />
               <Skeleton
                 variant="reactangular"
-                height={24}
-                width={`${100 - 20 * (idx + 1)}%`}
+                height={8}
+                width={26}
+                sx={{ ml: "auto" }}
               />
             </>
           ) : (
