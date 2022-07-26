@@ -13,6 +13,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import { fetchAuditTrailPublish } from "shell/store/logs";
 import cx from "classnames";
 import SharedWidgetStyles from "../SharedWidget.less";
+import { useHistory } from "react-router";
+import { Link } from "@mui/material";
 
 export default connect((state) => {
   return {
@@ -22,6 +24,7 @@ export default connect((state) => {
 })(
   memo(function WidgetPublishHistory(props) {
     const [loading, setLoading] = useState(false);
+    const history = useHistory();
 
     useEffect(() => {
       setLoading(true);
@@ -46,7 +49,7 @@ export default connect((state) => {
             <>
               {" "}
               <span className="audit-title">Publish History </span>
-              <small>&nbsp;Audit Trail&trade;</small>
+              <small>&nbsp;Activity Log</small>
             </>
           }
         ></CardHeader>
@@ -59,20 +62,36 @@ export default connect((state) => {
           {loading ? (
             <p>Loading Logs</p>
           ) : (
-            <ul className="logs">
-              {Array.isArray(logs) && !logs.length && <p>Not published</p>}
+            <>
+              <ul className="logs">
+                {Array.isArray(logs) && !logs.length && <p>Not published</p>}
 
-              {Array.isArray(logs) &&
-                logs.map((log) => {
-                  const { firstName, lastName } = log;
-                  return (
-                    <li className="log" key={log.ZUID}>
-                      <strong>{`${firstName} ${lastName}`}</strong> published{" "}
-                      {moment(log.happenedAt).fromNow()}
-                    </li>
+                {Array.isArray(logs) &&
+                  logs.map((log) => {
+                    const { firstName, lastName } = log;
+                    return (
+                      <li className="log" key={log.ZUID}>
+                        <strong>{`${firstName} ${lastName}`}</strong> published{" "}
+                        {moment(log.happenedAt).fromNow()}
+                      </li>
+                    );
+                  })}
+              </ul>
+              {/* TODO: Replace this link with Zesty MUI AppLink */}
+              <Link
+                color="#FF5D03"
+                underline="hover"
+                href="#"
+                onClick={(evt) => {
+                  evt.preventDefault();
+                  history.push(
+                    `/reports/activity-log/resources/${props.itemZUID}`
                   );
-                })}
-            </ul>
+                }}
+              >
+                View logs
+              </Link>
+            </>
           )}
         </CardContent>
       </Card>

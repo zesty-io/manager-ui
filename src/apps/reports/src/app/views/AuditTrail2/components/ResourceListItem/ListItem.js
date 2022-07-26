@@ -96,7 +96,7 @@ export const ListItem = (props) => {
               sx={{ mb: 0.75 }}
             />
           ) : (
-            props.primary
+            props.secondary
           )
         }
       ></ListItemText>

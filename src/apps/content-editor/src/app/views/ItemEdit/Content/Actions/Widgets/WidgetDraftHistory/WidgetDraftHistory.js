@@ -1,18 +1,12 @@
 import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserCheck } from "@fortawesome/free-solid-svg-icons";
-
-import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import CardContent from "@mui/material/CardContent";
 import PersonIcon from "@mui/icons-material/Person";
-
+import { Card, CardHeader, CardContent, Link } from "@mui/material";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
 import cx from "classnames";
 import SharedWidgetStyles from "../SharedWidget.less";
+import { useHistory } from "react-router";
 
 export default connect((state, props) => {
   return {
@@ -23,6 +17,7 @@ export default connect((state, props) => {
         : [],
   };
 })(function WidgetDraftHistory(props) {
+  const history = useHistory();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -39,8 +34,8 @@ export default connect((state, props) => {
         title={
           <>
             {" "}
-            <span className="audit-title">Drafting History</span>
-            <small>&nbsp;Audit Trail&trade;</small>
+            <span className="audit-title">Draft History</span>
+            <small>&nbsp;Activity Log;</small>
           </>
         }
       ></CardHeader>
@@ -53,17 +48,33 @@ export default connect((state, props) => {
         {loading ? (
           <p>Loading Logs</p>
         ) : props.logs.length ? (
-          <ul className="logs">
-            {props.logs.map((log) => (
-              <li className="log" key={log.ZUID}>
-                <strong>
-                  {log.firstName} {log.lastName}
-                </strong>
-                &nbsp;
-                <span>saved {moment(log.happenedAt).fromNow()}</span>
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className="logs">
+              {props.logs.map((log) => (
+                <li className="log" key={log.ZUID}>
+                  <strong>
+                    {log.firstName} {log.lastName}
+                  </strong>
+                  &nbsp;
+                  <span>modified {moment(log.happenedAt).fromNow()}</span>
+                </li>
+              ))}
+            </ul>
+            {/* TODO: Replace this link with Zesty MUI AppLink */}
+            <Link
+              color="#FF5D03"
+              underline="hover"
+              href="#"
+              onClick={(evt) => {
+                evt.preventDefault();
+                history.push(
+                  `/reports/activity-log/resources/${props.itemZUID}`
+                );
+              }}
+            >
+              View logs
+            </Link>
+          </>
         ) : (
           <p className="noLogs">
             No Audit Trail&trade; edit logs for this content.

@@ -97,7 +97,7 @@ export const ActivityByResource = (props) => {
         </Box>
       )}
       {resourceTypePercentages.map((resource, idx) => (
-        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+        <Box key={idx} sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           {props.showSkeletons ? (
             <>
               <Skeleton

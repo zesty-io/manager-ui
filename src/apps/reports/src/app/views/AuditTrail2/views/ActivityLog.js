@@ -68,7 +68,7 @@ export const ActivityLog = () => {
   );
 
   const filteredActions = useMemo(
-    () => (actions ? filterByParams(actions, params) : []),
+    () => (actions?.length ? filterByParams(actions, params) : []),
     [actions, params]
   );
 

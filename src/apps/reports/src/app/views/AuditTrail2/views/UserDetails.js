@@ -60,7 +60,7 @@ export const UserDetails = () => {
   );
 
   const filteredActions = useMemo(
-    () => (actionsByZuid ? filterByParams(actionsByZuid, params) : []),
+    () => (actionsByZuid?.length ? filterByParams(actionsByZuid, params) : []),
     [actionsByZuid, params]
   );
 
