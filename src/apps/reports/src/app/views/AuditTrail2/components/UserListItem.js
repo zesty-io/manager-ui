@@ -19,8 +19,9 @@ export const UserListItem = (props) => {
 
   return (
     <ListItem
+      disableGutters
       divider={props.divider}
-      sx={{ py: 2.5, cursor: props.clickable && "pointer" }}
+      sx={{ py: 2, cursor: props.clickable && "pointer" }}
       onClick={
         props.clickable
           ? () =>
