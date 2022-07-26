@@ -57,7 +57,7 @@ export const ActivityByResource = (props) => {
           props.actions.length
         )}
       </Typography>
-      <Typography variant="subtitle2">
+      <Typography variant="subtitle2" color="text.secondary">
         {props.showSkeletons ? (
           <Skeleton variant="reactangular" width={52} height={12} />
         ) : (

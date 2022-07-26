@@ -14,7 +14,7 @@ export const instanceApi = createApi({
     getAudits: builder.query({
       query: (options) => {
         const params = new URLSearchParams(options).toString();
-        return `env/audits?${params}`;
+        return `env/audits?${params}&limit=100000`;
       },
       transformResponse: (response) => {
         // Adds additional resource type property to data set

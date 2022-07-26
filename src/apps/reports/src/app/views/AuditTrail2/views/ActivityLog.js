@@ -54,6 +54,7 @@ export const ActivityLog = () => {
   const {
     data: actions,
     isLoading,
+    isFetching,
     isUninitialized,
   } = instanceApi.useGetAuditsQuery(
     {
@@ -86,14 +87,14 @@ export const ActivityLog = () => {
     switch (activeView) {
       case "resources":
         return (
-          <Box sx={{ display: "flex", gap: 17 }}>
+          <Box sx={{ display: "flex" }}>
             <ResourceList actions={filteredActions} showSkeletons={isLoading} />
             <Box
               sx={{ px: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}
             >
               <ActivityByResource
                 actions={filteredActions}
-                showSkeletons={isLoading}
+                showSkeletons={isFetching}
               />
             </Box>
           </Box>
