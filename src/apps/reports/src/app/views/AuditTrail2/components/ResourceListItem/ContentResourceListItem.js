@@ -16,6 +16,7 @@ export const ContentResourceListItem = (props) => {
   const dispatch = useDispatch();
   const [contentError, setContentError] = useState(false);
   const [modelError, setModelError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const contentData = useSelector((state) =>
     Object.values(state.content).find(
@@ -31,15 +32,18 @@ export const ContentResourceListItem = (props) => {
 
   useEffect(() => {
     if (!contentData && !contentError) {
+      setIsLoading(true);
       dispatch(searchItems(props.affectedZUID))
         .then((res) => !res.data.length && setContentError(true))
-        .catch(() => setContentError(true));
+        .catch(() => setContentError(true))
+        .finally(() => setIsLoading(false));
     }
 
     if (!modelData && contentData && !modelError) {
-      dispatch(fetchModel(contentData.meta.contentModelZUID)).catch(() =>
-        setModelError(true)
-      );
+      setIsLoading(true);
+      dispatch(fetchModel(contentData.meta.contentModelZUID))
+        .catch(() => setModelError(true))
+        .finally(() => setIsLoading(false));
     }
   }, [contentData, modelData, contentError, modelError]);
 
@@ -71,6 +75,7 @@ export const ContentResourceListItem = (props) => {
           : "(No Meta Title)"
       }
       secondary={secondaryText}
+      showSkeletons={isLoading}
     />
   );
 };

@@ -113,56 +113,9 @@ export const ActionsTimeline = (props) => {
             typeof actionsWithHeaders[index + 1] !== "string"
           }
         />
-        {/* <TimelineItem sx={{ "&::before": { flex: "unset" } }}>
-          <TimelineSeparator>
-            <TimelineDot
-              sx={{
-                boxShadow: "none",
-                height: 40,
-                width: 40,
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: actionBackgroundColorMap?.[action.action],
-                color: actionIconColorMap?.[action.action],
-              }}
-            >
-              <FontAwesomeIcon
-                icon={actionIconMap?.[action.action] || faFileDownload}
-                style={{ fontSize: 16 }}
-              />
-            </TimelineDot>
-            {actionsWithHeaders[index + 1] &&
-              typeof actionsWithHeaders[index + 1] !== "string" && (
-                <TimelineConnector
-                  sx={{ height: 35, backgroundColor: "grey.200" }}
-                />
-              )}
-          </TimelineSeparator>
-          <TimelineContent>
-            <Typography
-              variant="caption"
-              component="div"
-              color="text.secondary"
-            >
-              {moment(action.happenedAt).format("hh:mm A")}
-            </Typography>
-            <Typography variant="body1">
-              {generateActionMessage(action)}
-            </Typography>
-            <Typography
-              variant="caption"
-              component="div"
-              color="text.secondary"
-            >
-              {`By ${action.firstName} ${action.lastName}`}
-            </Typography>
-          </TimelineContent>
-        </TimelineItem> */}
       </div>
     );
   };
-
-  console.log("testing", actionsWithHeaders);
 
   return (
     <List

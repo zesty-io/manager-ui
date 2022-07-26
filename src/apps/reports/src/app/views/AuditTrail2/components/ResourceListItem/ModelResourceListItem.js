@@ -7,6 +7,7 @@ import { ListItem } from "./ListItem";
 
 export const ModelResourceListItem = (props) => {
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
   const [modelError, setModelError] = useState(false);
 
   const modelData = useSelector((state) =>
@@ -15,7 +16,10 @@ export const ModelResourceListItem = (props) => {
 
   useEffect(() => {
     if (!modelData && !modelError) {
-      dispatch(fetchModel(props.affectedZUID)).catch(() => setModelError(true));
+      setIsLoading(true);
+      dispatch(fetchModel(props.affectedZUID))
+        .catch(() => setModelError(true))
+        .finally(() => setIsLoading(false));
     }
   }, [modelData, modelError]);
 
@@ -32,6 +36,7 @@ export const ModelResourceListItem = (props) => {
       secondary={`Last action @ ${moment(props.updatedAt).format(
         "hh:mm A"
       )} • Content Model`}
+      showSkeletons={isLoading}
     />
   );
 };

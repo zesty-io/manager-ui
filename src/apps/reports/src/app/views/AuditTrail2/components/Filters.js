@@ -1,5 +1,12 @@
 import { useMemo } from "react";
-import { Box, Select, MenuItem, FormControl, FormLabel } from "@mui/material";
+import {
+  Box,
+  Select,
+  MenuItem,
+  FormControl,
+  FormLabel,
+  Skeleton,
+} from "@mui/material";
 import moment from "moment";
 import { uniqBy } from "lodash";
 import DateRangePicker from "./DateRangePicker";
@@ -9,7 +16,7 @@ import { accountsApi } from "shell/services/accounts";
 export const Filters = (props) => {
   const [params, setParams] = useParams();
 
-  const { data: usersRoles, isLoading } = accountsApi.useGetUsersRolesQuery();
+  const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
 
   const uniqueUserActions = useMemo(
     () => uniqBy(props.actions, "actionByUserZUID"),
@@ -133,33 +140,41 @@ export const Filters = (props) => {
       }}
     >
       <Box sx={{ display: "flex", gap: 1.5 }}>
-        {props.filters.map((filter, idx) => (
-          <FormControl key={idx} sx={{ width: 172 }}>
-            {getFilter(filter)}
-          </FormControl>
-        ))}
+        {props.filters.map((filter, idx) =>
+          props.showSkeletons ? (
+            <Skeleton key={idx} variant="rectangular" width={172} height={56} />
+          ) : (
+            <FormControl key={idx} sx={{ width: 172 }}>
+              {getFilter(filter)}
+            </FormControl>
+          )
+        )}
       </Box>
-      <DateRangePicker
-        inputFormat="MMM dd, yyyy"
-        value={[
-          params.get("from") ? moment(params.get("from")) : null,
-          params.get("to") ? moment(params.get("to")) : null,
-        ]}
-        onChange={([from, to]) => {
-          setParams(
-            moment(from, "YYYY-MM-DD").isValid()
-              ? moment(from).format("YYYY-MM-DD")
-              : "",
-            "from"
-          );
-          setParams(
-            moment(to, "YYYY-MM-DD").isValid()
-              ? moment(to).format("YYYY-MM-DD")
-              : "",
-            "to"
-          );
-        }}
-      />
+      {props.showSkeletons ? (
+        <Skeleton variant="rectangular" width={250} height={56} />
+      ) : (
+        <DateRangePicker
+          inputFormat="MMM dd, yyyy"
+          value={[
+            params.get("from") ? moment(params.get("from")) : null,
+            params.get("to") ? moment(params.get("to")) : null,
+          ]}
+          onChange={([from, to]) => {
+            setParams(
+              moment(from, "YYYY-MM-DD").isValid()
+                ? moment(from).format("YYYY-MM-DD")
+                : "",
+              "from"
+            );
+            setParams(
+              moment(to, "YYYY-MM-DD").isValid()
+                ? moment(to).format("YYYY-MM-DD")
+                : "",
+              "to"
+            );
+          }}
+        />
+      )}
     </Box>
   );
 };

@@ -4,6 +4,8 @@ import { FixedSizeList as List } from "react-window";
 import { ResourceListItem } from "./ResourceListItem";
 import { useParams } from "shell/hooks/useParams";
 import { useWindowSize } from "react-use";
+import { Skeleton } from "@mui/material";
+import { ListItem } from "./ResourceListItem/ListItem";
 
 export const ResourceList = (props) => {
   const [params] = useParams();
@@ -24,6 +26,13 @@ export const ResourceList = (props) => {
   );
 
   const Row = ({ index, data, style }) => {
+    if (props.showSkeletons) {
+      return (
+        <div style={style}>
+          <ListItem showSkeletons divider />
+        </div>
+      );
+    }
     const resource = data[index];
     return (
       <div style={style}>
@@ -35,7 +44,7 @@ export const ResourceList = (props) => {
   return (
     <List
       height={height - 292}
-      itemCount={sortedResources.length}
+      itemCount={props.showSkeletons ? 10 : sortedResources.length}
       itemSize={94}
       width={"100%"}
       itemData={sortedResources}

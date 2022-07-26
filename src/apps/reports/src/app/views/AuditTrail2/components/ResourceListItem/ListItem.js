@@ -4,6 +4,7 @@ import {
   ListItemAvatar,
   Avatar,
   ListItemText,
+  Skeleton,
 } from "@mui/material";
 import { isEmpty, omitBy } from "lodash";
 import { useHistory, useLocation } from "react-router";
@@ -43,16 +44,20 @@ export const ListItem = (props) => {
       }
     >
       <ListItemAvatar>
-        <Avatar
-          sx={{
-            ...(props.size === "large" && {
-              height: 48,
-              width: 48,
-            }),
-          }}
-        >
-          <FontAwesomeIcon icon={props.icon} />
-        </Avatar>
+        {props.showSkeletons ? (
+          <Skeleton variant="circular" width={40} height={40} />
+        ) : (
+          <Avatar
+            sx={{
+              ...(props.size === "large" && {
+                height: 48,
+                width: 48,
+              }),
+            }}
+          >
+            <FontAwesomeIcon icon={props.icon} />
+          </Avatar>
+        )}
       </ListItemAvatar>
       <ListItemText
         primaryTypographyProps={{
@@ -70,9 +75,31 @@ export const ListItem = (props) => {
           overflow: "hidden",
           textOverflow: "ellipsis",
         }}
-        primary={props.primary}
-        secondary={props.secondary}
-      />
+        primary={
+          props.showSkeletons ? (
+            <Skeleton
+              variant="rectangular"
+              height={16}
+              width={"90%"}
+              sx={{ mb: 1 }}
+            />
+          ) : (
+            props.primary
+          )
+        }
+        secondary={
+          props.showSkeletons ? (
+            <Skeleton
+              variant="rectangular"
+              height={14}
+              width={"75%"}
+              sx={{ mb: 0.75 }}
+            />
+          ) : (
+            props.primary
+          )
+        }
+      ></ListItemText>
     </MuiListItem>
   );
 };

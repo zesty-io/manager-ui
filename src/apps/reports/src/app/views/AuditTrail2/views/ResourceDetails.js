@@ -70,9 +70,7 @@ export const ResourceDetails = () => {
     }
   }
 
-  console.log("testing actions", actionsByZuid);
-
-  if (isLoading || isUninitialized) return <div>loading...</div>;
+  // if (isLoading || isUninitialized) return <div>loading...</div>;
 
   return (
     <Box sx={{ pt: 1.75 }}>
@@ -182,6 +180,7 @@ export const ResourceDetails = () => {
         <Filters
           actions={actionsByZuid}
           filters={["action", "actionByUserZUID"]}
+          showSkeletons={isLoading}
         />
         <Box sx={{ display: "flex", gap: 17 }}>
           <ActionsTimeline actions={filteredActions} />

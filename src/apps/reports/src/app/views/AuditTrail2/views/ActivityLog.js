@@ -87,11 +87,14 @@ export const ActivityLog = () => {
       case "resources":
         return (
           <Box sx={{ display: "flex", gap: 17 }}>
-            <ResourceList actions={filteredActions} />
+            <ResourceList actions={filteredActions} showSkeletons={isLoading} />
             <Box
               sx={{ px: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}
             >
-              <ActivityByResource actions={filteredActions} />
+              <ActivityByResource
+                actions={filteredActions}
+                showSkeletons={isLoading}
+              />
             </Box>
           </Box>
         );
@@ -167,7 +170,7 @@ export const ActivityLog = () => {
     }
   };
 
-  if (isLoading || isUninitialized) return <div>loading...</div>;
+  // if (isLoading || isUninitialized) return <div>loading...</div>;
 
   return (
     <>
@@ -188,7 +191,11 @@ export const ActivityLog = () => {
         </Tabs>
       </Box>
       <Box sx={{ px: 3 }}>
-        <Filters actions={actions} filters={filtersOnView[activeView] || []} />
+        <Filters
+          actions={actions}
+          filters={filtersOnView[activeView] || []}
+          showSkeletons={isLoading}
+        />
         {getView()}
       </Box>
     </>
