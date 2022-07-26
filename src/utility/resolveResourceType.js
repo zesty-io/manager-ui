@@ -1,9 +1,9 @@
 export const resolveResourceType = (ZUID) => {
-  if (zuid.startsWith("7")) {
+  if (ZUID.startsWith("7")) {
     return "content";
-  } else if (zuid.startsWith("6")) {
+  } else if (ZUID.startsWith("6")) {
     return "schema";
-  } else if (zuid.startsWith("10") || zuid.startsWith("11")) {
+  } else if (ZUID.startsWith("10") || ZUID.startsWith("11")) {
     return "code";
   } else {
     return "settings";

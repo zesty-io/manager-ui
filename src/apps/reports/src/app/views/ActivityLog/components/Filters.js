@@ -153,27 +153,29 @@ export const Filters = (props) => {
       {props.showSkeletons ? (
         <Skeleton variant="rectangular" width={250} height={56} />
       ) : (
-        <DateRangePicker
-          inputFormat="MMM dd, yyyy"
-          value={[
-            params.get("from") ? moment(params.get("from")) : null,
-            params.get("to") ? moment(params.get("to")) : null,
-          ]}
-          onChange={([from, to]) => {
-            setParams(
-              moment(from, "YYYY-MM-DD").isValid()
-                ? moment(from).format("YYYY-MM-DD")
-                : "",
-              "from"
-            );
-            setParams(
-              moment(to, "YYYY-MM-DD").isValid()
-                ? moment(to).format("YYYY-MM-DD")
-                : "",
-              "to"
-            );
-          }}
-        />
+        <Box sx={{ maxWidth: 358 }}>
+          <DateRangePicker
+            inputFormat="MMM dd, yyyy"
+            value={[
+              params.get("from") ? moment(params.get("from")) : null,
+              params.get("to") ? moment(params.get("to")) : null,
+            ]}
+            onChange={([from, to]) => {
+              setParams(
+                moment(from, "YYYY-MM-DD").isValid()
+                  ? moment(from).format("YYYY-MM-DD")
+                  : "",
+                "from"
+              );
+              setParams(
+                moment(to, "YYYY-MM-DD").isValid()
+                  ? moment(to).format("YYYY-MM-DD")
+                  : "",
+                "to"
+              );
+            }}
+          />
+        </Box>
       )}
     </Box>
   );

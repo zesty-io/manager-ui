@@ -8,7 +8,7 @@ import { UserDetails } from "./views/UserDetails";
 
 export const ActivityLog = () => {
   // TODO: Move to Zesty material package
-  const innerTheme = createTheme({
+  let innerTheme = createTheme({
     ...theme,
     typography: {
       ...theme.typography,
@@ -26,6 +26,9 @@ export const ActivityLog = () => {
       },
       caption: {
         lineHeight: "20px",
+      },
+      overline: {
+        letterSpacing: "1px",
       },
     },
     palette: {
@@ -76,6 +79,17 @@ export const ActivityLog = () => {
       },
     },
   });
+  innerTheme = createTheme(innerTheme, {
+    components: {
+      MuiFormLabel: {
+        styleOverrides: {
+          root: {
+            ...innerTheme.typography.body2,
+          },
+        },
+      },
+    },
+  });
   return (
     <ThemeProvider theme={innerTheme}>
       <Box
@@ -96,7 +110,7 @@ export const ActivityLog = () => {
             path="/reports/activity-log/users/:id"
             component={UserDetails}
           />
-          <Route path="/reports/activity-log/:tab" component={ActivityLog} />
+          <Route path="/reports/activity-log/:tab" component={Home} />
           <Redirect to="/reports/activity-log/resources" />
         </Switch>
       </Box>

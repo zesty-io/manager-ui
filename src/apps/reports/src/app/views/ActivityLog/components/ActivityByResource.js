@@ -45,13 +45,13 @@ export const ActivityByResource = (props) => {
           "ACTIVITY BY RESOURCE"
         )}
       </Typography>
-      <Typography variant="h4">
+      <Typography variant="h4" sx={{ mb: 0.25 }}>
         {props.showSkeletons ? (
           <Skeleton
             variant="reactangular"
             width={44}
             height={20}
-            sx={{ mb: 1.75 }}
+            sx={{ mb: 1.5 }}
           />
         ) : (
           props.actions.length
@@ -125,10 +125,14 @@ export const ActivityByResource = (props) => {
                   borderRadius: 100,
                 }}
               ></Box>
-              <Typography variant="caption">
+              <Typography variant="caption" color="text.secondary">
                 {startCase(resource.type)}
               </Typography>
-              <Typography variant="caption" sx={{ ml: "auto" }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ ml: "auto" }}
+              >
                 {resource.percentage}%
               </Typography>
             </>

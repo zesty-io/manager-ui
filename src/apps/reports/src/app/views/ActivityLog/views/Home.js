@@ -171,8 +171,6 @@ export const Home = () => {
     }
   };
 
-  // if (isLoading || isUninitialized) return <div>loading...</div>;
-
   return (
     <>
       <Box sx={{ px: 3, pt: 3, mb: 1 }}>

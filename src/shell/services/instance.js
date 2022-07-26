@@ -28,11 +28,11 @@ export const instanceApi = createApi({
           const normalizedAction =
             action.action === 4 && action.meta.message.includes("scheduled")
               ? 6
-              : resource.action;
+              : action.action;
           return {
-            ...resource,
+            ...action,
             resourceType: resolveResourceType(normalizedAffectedZUID),
-            affectedZUID: normalizedAffectedZuid,
+            affectedZUID: normalizedAffectedZUID,
             action: normalizedAction,
           };
         });

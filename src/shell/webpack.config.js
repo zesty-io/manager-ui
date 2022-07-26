@@ -76,15 +76,15 @@ module.exports = async (env) => {
       },
     },
     plugins: [
-      new SentryCliPlugin({
-        include: "./build",
-        ignoreFile: ".sentrycliignore",
-        ignore: ["node_modules", "webpack.config.js"],
-        configFile: "sentry.properties",
-        release: CONFIG[process.env.NODE_ENV].build.data.gitCommit,
-        project: "manager-ui",
-        org: "zestyio",
-      }),
+      // new SentryCliPlugin({
+      //   include: "./build",
+      //   ignoreFile: ".sentrycliignore",
+      //   ignore: ["node_modules", "webpack.config.js"],
+      //   configFile: "sentry.properties",
+      //   release: CONFIG[process.env.NODE_ENV].build.data.gitCommit,
+      //   project: "manager-ui",
+      //   org: "zestyio",
+      // }),
       new NodePolyfillPlugin({
         excludeAliases: ["console"],
       }),

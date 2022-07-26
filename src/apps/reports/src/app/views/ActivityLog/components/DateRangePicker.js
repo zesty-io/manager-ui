@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TextField, FormLabel, FormControl } from "@mui/material";
+import { TextField, FormLabel, FormControl, Box } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers-pro";
 import { DateRangePicker as MuiDateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
@@ -10,21 +10,16 @@ export default function DateRangePicker(props) {
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <MuiDateRangePicker
         renderInput={(startProps, endProps) => (
-          <React.Fragment>
+          <Box sx={{ display: "flex", gap: 1.75 }}>
             <FormControl fullWidth>
               <FormLabel>From</FormLabel>
-              <TextField
-                {...startProps}
-                size="small"
-                sx={{ mr: 1.5 }}
-                label=""
-              />
+              <TextField {...startProps} size="small" label="" />
             </FormControl>
             <FormControl fullWidth>
               <FormLabel>To</FormLabel>
               <TextField {...endProps} size="small" label="" />
             </FormControl>
-          </React.Fragment>
+          </Box>
         )}
         {...props}
       />
