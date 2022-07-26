@@ -64,8 +64,6 @@ export const UserDetails = () => {
     [actionsByZuid, params]
   );
 
-  if (isLoading || isUninitialized) return <div>loading...</div>;
-
   return (
     <Box sx={{ pt: 1.75 }}>
       <Breadcrumbs
@@ -124,9 +122,10 @@ export const UserDetails = () => {
         }}
       >
         <UserListItem
-          action={actionsByZuid[0]}
+          action={actionsByZuid?.[0]}
           actions={actionsByZuid}
           size="large"
+          showSkeletons={isLoading}
         />
         <Box>
           <Button
@@ -160,11 +159,15 @@ export const UserDetails = () => {
         <Filters
           actions={actionsByZuid}
           filters={["happenedAt", "resourceType"]}
+          showSkeletons={isLoading}
         />
         <Box sx={{ display: "flex", gap: 17 }}>
-          <ResourceList actions={filteredActions} />
+          <ResourceList actions={filteredActions} showSkeletons={isLoading} />
           <Box sx={{ px: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}>
-            <ActivityByResource actions={filteredActions} />
+            <ActivityByResource
+              actions={filteredActions}
+              showSkeletons={isLoading}
+            />
           </Box>
         </Box>
       </Box>
