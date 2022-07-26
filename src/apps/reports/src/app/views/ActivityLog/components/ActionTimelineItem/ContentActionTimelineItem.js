@@ -29,7 +29,7 @@ export const ContentActionTimelineItem = (props) => {
           ? `${props.action.affectedZUID} (Deleted)`
           : contentData?.web?.metaTitle
           ? contentData?.web?.metaTitle
-          : "(No Meta Title)"
+          : `${props.action.affectedZUID} (Missing Meta Title)`
       }
       renderConnector={props.renderConnector}
     />

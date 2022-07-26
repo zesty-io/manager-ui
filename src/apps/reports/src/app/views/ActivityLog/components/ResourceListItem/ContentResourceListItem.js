@@ -72,7 +72,7 @@ export const ContentResourceListItem = (props) => {
           ? `${props.affectedZUID} (Deleted)`
           : contentData?.web?.metaTitle
           ? contentData?.web?.metaTitle
-          : "(No Meta Title)"
+          : `${props.affectedZUID} (Missing Meta Title)`
       }
       secondary={secondaryText}
       showSkeletons={isLoading}
