@@ -12,7 +12,7 @@ import { ActionsTimeline } from "../components/ActionsTimeline";
 import { useHistory } from "react-router";
 import { ActionsByUsers } from "../components/ActionsByUsers";
 import instanceZUID from "utility/instanceZUID";
-import { getResourceType } from "../../../../../../../utility/getResourceType";
+import { resolveResourceType } from "utility/resolveResourceType";
 import { Filters } from "../components/Filters";
 
 export const ResourceDetails = () => {
@@ -134,7 +134,7 @@ export const ResourceDetails = () => {
             resource={
               actionsByZuid[0] || {
                 affectedZUID: zuid,
-                resourceType: getResourceType(zuid),
+                resourceType: resolveResourceType(zuid),
               }
             }
             size="large"

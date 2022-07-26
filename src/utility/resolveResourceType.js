@@ -1,4 +1,4 @@
-export const getResourceType = (zuid) => {
+export const resolveResourceType = (ZUID) => {
   if (zuid.startsWith("7")) {
     return "content";
   } else if (zuid.startsWith("6")) {

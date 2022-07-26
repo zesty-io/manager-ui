@@ -18,7 +18,7 @@ import { MD5 } from "utility/md5";
 
 export const ActionsByUsers = (props) => {
   const dispatch = useDispatch();
-  const { data: usersRoles, isLoading } = accountsApi.useGetUsersRolesQuery();
+  const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
 
   const uniqueUserActions = useMemo(
     () => uniqBy(props.actions, "actionByUserZUID"),
@@ -31,7 +31,7 @@ export const ActionsByUsers = (props) => {
         ACTIONS BY
       </Typography>
       <List>
-        {uniqueUserActions.map((action) => {
+        {uniqueUserActions?.map((action) => {
           const user = usersRoles?.find(
             (user) => user.ZUID === action.actionByUserZUID
           );

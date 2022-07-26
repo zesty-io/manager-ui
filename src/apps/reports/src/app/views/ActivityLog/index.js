@@ -1,16 +1,13 @@
 import { Route, Switch, Redirect } from "react-router";
 import { Box } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { instanceApi } from "../../../../../../shell/services/instance";
-import { ActivityLog } from "./views/ActivityLog";
-import { ResourceDetails } from "./views/ResourceDetails";
 import { theme } from "@zesty-io/material";
+import { Home } from "./views/Home";
+import { ResourceDetails } from "./views/ResourceDetails";
 import { UserDetails } from "./views/UserDetails";
 
-export const AuditTrail = () => {
-  // const {data} = instanceApi.useGetAuditsQuery();
-
-  // console.log('testing data', data);
+export const ActivityLog = () => {
+  // TODO: Move to Zesty material package
   const innerTheme = createTheme({
     ...theme,
     typography: {
@@ -83,8 +80,8 @@ export const AuditTrail = () => {
     <ThemeProvider theme={innerTheme}>
       <Box
         sx={{
-          // boxSizing: "border-box",
           color: "text.primary",
+          // TODO: Remove once website root background color is updated
           backgroundColor: "common.white",
         }}
       >

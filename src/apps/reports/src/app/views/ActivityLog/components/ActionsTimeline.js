@@ -1,75 +1,9 @@
 import { useMemo } from "react";
-import { uniqBy } from "lodash";
 import { FixedSizeList as List } from "react-window";
 import moment from "moment";
-import Timeline from "@mui/lab/Timeline";
-import TimelineItem from "@mui/lab/TimelineItem";
-import TimelineSeparator from "@mui/lab/TimelineSeparator";
-import TimelineConnector from "@mui/lab/TimelineConnector";
-import TimelineContent from "@mui/lab/TimelineContent";
-import TimelineDot from "@mui/lab/TimelineDot";
-import { useParams } from "shell/hooks/useParams";
 import { useWindowSize } from "react-use";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Typography } from "@mui/material";
-import {
-  faClock,
-  faEye,
-  faEyeSlash,
-  faFileDownload,
-  faPencilAlt,
-  faSave,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
 import { ActionTimelineItem } from "./ActionTimelineItem";
-
-const actionIconMap = {
-  1: faPencilAlt,
-  2: faSave,
-  3: faTrash,
-  4: faEye,
-  5: faEyeSlash,
-  6: faClock,
-};
-
-const actionBackgroundColorMap = {
-  1: "deepOrange.100",
-  2: "blue.100",
-  3: "error.light",
-  4: "green.100",
-  5: "warning.light",
-  6: "grey.100",
-};
-
-const actionIconColorMap = {
-  1: "primary.main",
-  2: "info.light",
-  3: "error.dark",
-  4: "success.main",
-  5: "warning.main",
-  6: "grey.500",
-};
-
-const generateActionMessage = (action) => {
-  switch (action.action) {
-    case 1:
-      return "Created";
-    case 2:
-      return "Modified";
-    case 3:
-      return "Deleted";
-    case 4:
-      return "Published";
-    case 5:
-      return "Unpublished";
-    case 6:
-      return `Scheduled to Publish on ${moment(action?.happenedAt).format(
-        "MMMM DD [at] hh:mm A"
-      )}`;
-    default:
-      return action.meta.message;
-  }
-};
 
 export const ActionsTimeline = (props) => {
   const { width, height } = useWindowSize();

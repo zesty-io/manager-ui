@@ -10,7 +10,7 @@ export const Top5Users = (props) => {
   const [params] = useParams();
   const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
 
-  // If userRole parameter exist use users data to filter
+  // If userRole parameter is present use users data to filter
   const filteredUserActions = useMemo(
     () =>
       params.get("userRole")

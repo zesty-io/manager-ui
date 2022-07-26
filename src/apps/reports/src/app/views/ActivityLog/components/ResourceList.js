@@ -4,7 +4,6 @@ import { FixedSizeList as List } from "react-window";
 import { ResourceListItem } from "./ResourceListItem";
 import { useParams } from "shell/hooks/useParams";
 import { useWindowSize } from "react-use";
-import { Skeleton } from "@mui/material";
 import { ListItem } from "./ResourceListItem/ListItem";
 
 export const ResourceList = (props) => {

@@ -31,7 +31,7 @@ const filtersOnView = {
   insights: ["action", "actionByUserZUID"],
 };
 
-export const ActivityLog = () => {
+export const Home = () => {
   const history = useHistory();
   const location = useLocation();
   const activeView = location.pathname.split("/").pop();

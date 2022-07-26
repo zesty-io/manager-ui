@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import instanceZUID from "utility/instanceZUID";
 import { prepareHeaders } from "./util";
-import { getResourceType } from "../../utility/getResourceType";
+import { resolveResourceType } from "utility/resolveResourceType";
 
 // Define a service using a base URL and expected endpoints
 export const instanceApi = createApi({
@@ -17,22 +17,21 @@ export const instanceApi = createApi({
         return `env/audits?${params}&limit=100000`;
       },
       transformResponse: (response) => {
-        // Adds additional resource type property to data set
-        return response.data.map((resource) => {
-          const normalizedAffectedZuid = resource.affectedZUID.startsWith("12")
-            ? resource.meta.uri.split("/")[4]
-            : resource.action === 5
-            ? resource.meta.uri.split("/")[6]
-            : resource.affectedZUID;
+        return response.data.map((action) => {
+          const normalizedAffectedZUID = action.affectedZUID.startsWith("12")
+            ? action.meta.uri.split("/")[4]
+            : action.action === 5
+            ? action.meta.uri.split("/")[6]
+            : action.affectedZUID;
 
-          // Sets new action number to differentiate between publish and scheduled publish
+          // Sets action number to 6 for scheduled publishes in order differentiate publish types
           const normalizedAction =
-            resource.action === 4 && resource.meta.message.includes("scheduled")
+            action.action === 4 && action.meta.message.includes("scheduled")
               ? 6
               : resource.action;
           return {
             ...resource,
-            resourceType: getResourceType(normalizedAffectedZuid),
+            resourceType: resolveResourceType(normalizedAffectedZUID),
             affectedZUID: normalizedAffectedZuid,
             action: normalizedAction,
           };
