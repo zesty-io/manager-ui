@@ -97,6 +97,23 @@ export const ActivityLog = () => {
           },
         },
       },
+      MuiCardHeader: {
+        styleOverrides: {
+          root: {
+            padding: "16px 16px 0px",
+          },
+        },
+      },
+      MuiCardContent: {
+        styleOverrides: {
+          root: {
+            padding: "8px 16px 16px",
+            ":last-child": {
+              paddingBottom: "16px",
+            },
+          },
+        },
+      },
     },
   });
   return (

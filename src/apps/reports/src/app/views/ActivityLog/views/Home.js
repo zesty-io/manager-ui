@@ -146,7 +146,11 @@ export const Home = () => {
                     title={card.title}
                     sx={{ width: 200, backgroundColor: "common.white" }}
                   />
-                  <CardContent>{card.content}</CardContent>
+                  <CardContent>
+                    <Typography variant="body2" color="text.secondary">
+                      {card.content}
+                    </Typography>
+                  </CardContent>
                 </Card>
               ))}
             </Stack>
