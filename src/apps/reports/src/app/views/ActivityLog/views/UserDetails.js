@@ -22,12 +22,21 @@ export const UserDetails = () => {
   const dispatch = useDispatch();
   const [params, setParams] = useParams();
   const [initialized, setInitialized] = useState(false);
-  const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
+  const { data: usersRoles, isLoading: usersLoading } =
+    accountsApi.useGetUsersRolesQuery();
+
+  const zuid = useMemo(
+    () => location.pathname.split("/").pop(),
+    [location.pathname]
+  );
 
   useEffect(() => {
-    // If there are no date parameters set, sets date parameters to 1 week
-    if (!params.get("from") && !params.get("to")) {
-      setParams(moment().add(-6, "days").format("YYYY-MM-DD"), "from");
+    // If there are no date parameters set, sets date parameters from when the user was created
+    if (!params.get("from") && !params.get("to") && !usersLoading) {
+      const userCreatedDate = usersRoles?.find(
+        (userRole) => userRole.ZUID === zuid
+      )?.createdAt;
+      setParams(moment(userCreatedDate).format("YYYY-MM-DD"), "from");
       setParams(moment().add(1, "days").format("YYYY-MM-DD"), "to");
     }
     /*
@@ -35,12 +44,7 @@ export const UserDetails = () => {
       if API call is ready to be executed
     */
     setInitialized(true);
-  }, []);
-
-  const zuid = useMemo(
-    () => location.pathname.split("/").pop(),
-    [location.pathname]
-  );
+  }, [usersLoading]);
 
   const {
     data: actionsByZuid,
@@ -136,10 +140,7 @@ export const UserDetails = () => {
             onClick={() =>
               navigator?.clipboard
                 ?.writeText(
-                  usersRoles?.find(
-                    (userRole) =>
-                      userRole.ZUID === actionsByZuid[0].actionByUserZUID
-                  )?.email
+                  usersRoles?.find((userRole) => userRole.ZUID === zuid)?.email
                 )
                 .then(() =>
                   dispatch(
