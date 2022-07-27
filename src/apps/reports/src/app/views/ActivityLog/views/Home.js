@@ -98,8 +98,6 @@ export const Home = () => {
     [filteredActions, usersRoles, params]
   );
 
-  console.log("testing status", status);
-
   const handleTabChange = (evt, newValue) => {
     history.push({
       pathname: `/reports/activity-log/${tabPaths[newValue]}`,
