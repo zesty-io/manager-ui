@@ -14,6 +14,7 @@ import { useLocation, useHistory } from "react-router-dom";
 import { instanceApi } from "shell/services/instance";
 import { useParams } from "shell/hooks/useParams";
 import moment from "moment";
+import { accountsApi } from "shell/services/accounts";
 import { ActionsTimeline } from "../components/ActionsTimeline";
 import { filterByParams } from "utility/filterByParams";
 import { Filters } from "../components/Filters";
@@ -22,6 +23,7 @@ import { ActivityByResource } from "../components/ActivityByResource";
 import { UsersList } from "../components/UsersList";
 import { Top5Users } from "../components/Top5Users";
 import { isEmpty, omitBy, uniqBy } from "lodash";
+import { EmptyState } from "../components/EmptyState";
 
 const tabPaths = ["resources", "users", "timeline", "insights"];
 
@@ -38,12 +40,11 @@ export const Home = () => {
   const activeView = location.pathname.split("/").pop();
   const [params, setParams] = useParams();
   const [initialized, setInitialized] = useState(false);
+  const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
 
   useEffect(() => {
-    // If there are no date parameters set, sets date parameters to 1 week
     if (!params.get("from") && !params.get("to")) {
-      setParams(moment().add(-6, "days").format("YYYY-MM-DD"), "from");
-      setParams(moment().add(1, "days").format("YYYY-MM-DD"), "to");
+      setDefaultDateParams();
     }
     /*
       Initialized get sets to true after setting date params to then be utilized to determine 
@@ -69,9 +70,29 @@ export const Home = () => {
     { skip: !initialized }
   );
 
+  // Sets date parameters to 1 week
+  const setDefaultDateParams = () => {
+    setParams(moment().add(-6, "days").format("YYYY-MM-DD"), "from");
+    setParams(moment().add(1, "days").format("YYYY-MM-DD"), "to");
+  };
+
   const filteredActions = useMemo(
     () => (actions?.length ? filterByParams(actions, params) : []),
     [actions, params]
+  );
+
+  // If userRole parameter exist use users data to filter
+  const uniqueUserActions = useMemo(
+    () =>
+      params.get("userRole")
+        ? uniqBy(filteredActions, "actionByUserZUID").filter(
+            (action) =>
+              usersRoles?.find(
+                (userRole) => userRole.ZUID === action.actionByUserZUID
+              )?.role?.name === params.get("userRole")
+          )
+        : uniqBy(filteredActions, "actionByUserZUID"),
+    [filteredActions, usersRoles, params]
   );
 
   const handleTabChange = (evt, newValue) => {
@@ -87,8 +108,36 @@ export const Home = () => {
   const getView = () => {
     switch (activeView) {
       case "resources":
+        if (!isLoading && !filteredActions?.length) {
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              <EmptyState
+                title="No Resources Found"
+                onReset={() => {
+                  setParams("", "resourceType");
+                  setParams("", "actionByUserZUID");
+                  setDefaultDateParams();
+                }}
+              />
+            </Box>
+          );
+        }
         return (
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              height: "100%",
+            }}
+          >
             <ResourceList actions={filteredActions} showSkeletons={isLoading} />
             <Box
               sx={{ pl: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}
@@ -101,17 +150,75 @@ export const Home = () => {
           </Box>
         );
       case "users":
+        if (!isLoading && !uniqueUserActions?.length) {
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              <EmptyState
+                title="No Users Found"
+                onReset={() => {
+                  setParams("", "userRole");
+                  setDefaultDateParams();
+                }}
+              />
+            </Box>
+          );
+        }
         return (
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <UsersList actions={filteredActions} showSkeletons={isLoading} />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              height: "100%",
+            }}
+          >
+            <UsersList
+              uniqueUserActions={uniqueUserActions}
+              showSkeletons={isLoading}
+            />
             <Box sx={{ pl: 4, py: 2, minWidth: 298, boxSizing: "border-box" }}>
               <Top5Users actions={filteredActions} showSkeletons={isFetching} />
             </Box>
           </Box>
         );
       case "timeline":
+        if (!isLoading && !filteredActions?.length) {
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              <EmptyState
+                title="No Logs Found"
+                onReset={() => {
+                  setParams("", "action");
+                  setParams("", "actionByUserZUID");
+                  setDefaultDateParams();
+                }}
+              />
+            </Box>
+          );
+        }
         return (
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              height: "100%",
+            }}
+          >
             <ActionsTimeline
               actions={filteredActions}
               showSkeletons={isLoading}
@@ -124,6 +231,28 @@ export const Home = () => {
           </Box>
         );
       case "insights":
+        if (!isLoading && !filteredActions?.length) {
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              <EmptyState
+                title="No Insights Found"
+                onReset={() => {
+                  setParams("", "action");
+                  setParams("", "actionByUserZUID");
+                  setDefaultDateParams();
+                }}
+              />
+            </Box>
+          );
+        }
         const cards = [
           {
             title: filteredActions?.length,
@@ -140,7 +269,7 @@ export const Home = () => {
           },
         ];
         return (
-          <Box sx={{ overflowY: "scroll", height: "calc(100vh - 292px)" }}>
+          <Box>
             <Stack direction="row" gap={1.5} sx={{ py: 3 }}>
               {cards.map((card) => (
                 <Card>
@@ -215,8 +344,8 @@ export const Home = () => {
           filters={filtersOnView[activeView] || []}
           showSkeletons={isLoading}
         />
-        {getView()}
       </Box>
+      <Box sx={{ px: 3, height: "100%", overflow: "auto" }}>{getView()}</Box>
     </>
   );
 };

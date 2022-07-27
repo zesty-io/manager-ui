@@ -75,7 +75,7 @@ export const ActionsTimeline = (props) => {
 
   return (
     <List
-      height={height - 292}
+      height={height - 298}
       itemCount={props.showSkeletons ? 10 : actionsWithHeaders.length}
       itemSize={110}
       width={"100%"}

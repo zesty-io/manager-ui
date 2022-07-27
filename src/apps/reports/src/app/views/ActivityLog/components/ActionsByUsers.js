@@ -44,17 +44,38 @@ export const ActionsByUsers = (props) => {
           return (
             <ListItem key={user.ZUID} divider>
               <ListItemAvatar>
-                <Avatar
-                  alt={`${user?.firstName} ${user?.lastName} Avatar`}
-                  src={`https://www.gravatar.com/avatar/${MD5(
-                    user?.email
-                  )}.jpg?s=40`}
-                ></Avatar>
+                {props.showSkeletons ? (
+                  <Skeleton variant="circular" width={40} height={40} />
+                ) : (
+                  <Avatar
+                    alt={`${user?.firstName} ${user?.lastName} Avatar`}
+                    src={`https://www.gravatar.com/avatar/${MD5(
+                      user?.email
+                    )}.jpg?s=40`}
+                  ></Avatar>
+                )}
               </ListItemAvatar>
               <ListItemText
                 primaryTypographyProps={{ variant: "body2" }}
-                primary={`${user?.firstName} ${user?.lastName}`}
-                secondary={user?.role?.name}
+                primary={
+                  props.showSkeletons ? (
+                    <Skeleton
+                      variant="rectangular"
+                      height={16}
+                      width={160}
+                      sx={{ mb: 2 }}
+                    />
+                  ) : (
+                    `${user?.firstName} ${user?.lastName}`
+                  )
+                }
+                secondary={
+                  props.showSkeletons ? (
+                    <Skeleton variant="rectangular" height={12} width={224} />
+                  ) : (
+                    user?.role?.name
+                  )
+                }
               />
               <ListItemIcon
                 sx={{ justifyContent: "flex-end", cursor: "pointer" }}

@@ -130,6 +130,9 @@ export const ActivityLog = () => {
           color: "text.primary",
           // TODO: Remove once website root background color is updated
           backgroundColor: "common.white",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
           "*::-webkit-scrollbar": {
             display: "none",
           },

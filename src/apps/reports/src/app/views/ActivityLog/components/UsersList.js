@@ -1,7 +1,5 @@
 import { useMemo } from "react";
 import { List } from "@mui/material";
-import { uniqBy } from "lodash";
-import { accountsApi } from "shell/services/accounts";
 import { useParams } from "shell/hooks/useParams";
 import { UserListItem } from "./UserListItem";
 
@@ -10,32 +8,16 @@ export const UsersList = (props) => {
   const sortBy = params.get("sortBy");
   const sortOrder = sortBy?.startsWith("+") ? "desc" : "asc";
 
-  const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
-
-  // If userRole parameter exist use users data to filter
-  const uniqueUserActions = useMemo(
-    () =>
-      params.get("userRole")
-        ? uniqBy(props.actions, "actionByUserZUID").filter(
-            (action) =>
-              usersRoles?.find(
-                (userRole) => userRole.ZUID === action.actionByUserZUID
-              )?.role?.name === params.get("userRole")
-          )
-        : uniqBy(props.actions, "actionByUserZUID"),
-    [props.actions, usersRoles, params]
-  );
-
   const sortedUserActions = useMemo(
     () =>
-      uniqueUserActions.sort((a, b) => {
+      props.uniqueUserActions.sort((a, b) => {
         if (sortOrder === "asc") {
           return new Date(a?.[sortBy]) - new Date(b?.[sortBy]);
         } else {
           return new Date(b?.[sortBy]) - new Date(a?.[sortBy]);
         }
       }),
-    [uniqueUserActions]
+    [props.uniqueUserActions]
   );
 
   return (

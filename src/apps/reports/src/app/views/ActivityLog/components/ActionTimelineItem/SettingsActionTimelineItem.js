@@ -12,14 +12,16 @@ export const SettingsActionTimelineItem = (props) => {
   const itemName = useMemo(() => {
     switch (props.action?.affectedZUID?.split("-")?.[0]) {
       case "29":
-        return settingsData?.keyFriendly || props.message;
+        return (
+          settingsData?.keyFriendly ||
+          props.action?.meta?.message.split(" ").slice(1).join(" ")
+        );
       case "21":
         return "Head Tag";
       default:
-        // Remove verb from message to avoid duplication
-        return props.action?.meta?.message.split(" ").slice(1);
+        return props.action?.meta?.message.split(" ").slice(1).join(" ");
     }
-  }, [props.action?.affectedZUID, settingsData, props.action?.message]);
+  }, [props.action, settingsData]);
 
   return (
     <TimelineItem

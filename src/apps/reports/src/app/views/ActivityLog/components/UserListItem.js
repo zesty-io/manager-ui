@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import { useHistory } from "react-router";
 import { useParams } from "shell/hooks/useParams";
-import { isEmpty, omitBy } from "lodash";
 
 export const UserListItem = (props) => {
   const history = useHistory();
