@@ -24,6 +24,7 @@ import { UsersList } from "../components/UsersList";
 import { Top5Users } from "../components/Top5Users";
 import { isEmpty, omitBy, uniqBy } from "lodash";
 import { EmptyState } from "../components/EmptyState";
+import { ApiErrorState } from "../components/ApiErrorState";
 
 const tabPaths = ["resources", "users", "timeline", "insights"];
 
@@ -58,6 +59,8 @@ export const Home = () => {
     isLoading,
     isFetching,
     isUninitialized,
+    status,
+    refetch,
   } = instanceApi.useGetAuditsQuery(
     {
       ...(params.get("from") && {
@@ -94,6 +97,8 @@ export const Home = () => {
         : uniqBy(filteredActions, "actionByUserZUID"),
     [filteredActions, usersRoles, params]
   );
+
+  console.log("testing status", status);
 
   const handleTabChange = (evt, newValue) => {
     history.push({
@@ -345,7 +350,23 @@ export const Home = () => {
           showSkeletons={isLoading}
         />
       </Box>
-      <Box sx={{ px: 3, height: "100%", overflow: "auto" }}>{getView()}</Box>
+      <Box sx={{ px: 3, height: "100%", overflow: "auto" }}>
+        {status === "rejected" ? (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+            }}
+          >
+            <ApiErrorState onRetry={refetch} />
+          </Box>
+        ) : (
+          getView()
+        )}
+      </Box>
     </>
   );
 };
