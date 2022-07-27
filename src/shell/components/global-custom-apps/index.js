@@ -31,8 +31,6 @@ export default memo(function GlobalCustomApps(props) {
         props.openNav ? styles.OpenNav : styles.Collapse
       )}
     >
-      {/* Hidden for soft launch
-
       <ExternalLink
         href={`${CONFIG.URL_MARKETPLACE}?instanceZUID=${instanceZUID}`}
         key="marketplace"
@@ -43,7 +41,6 @@ export default memo(function GlobalCustomApps(props) {
         <FontAwesomeIcon icon={faMicrochip} />
         <span className={styles.title}>Custom Apps</span>
       </ExternalLink>
-      */}
 
       {installedApps.map((app) => {
         return (
