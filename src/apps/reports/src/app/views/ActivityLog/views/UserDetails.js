@@ -4,8 +4,6 @@ import { useParams } from "shell/hooks/useParams";
 import moment from "moment";
 import { instanceApi } from "shell/services/instance";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router";
 import { Filters } from "../components/Filters";
 import { ResourceList } from "../components/ResourceList";
@@ -15,6 +13,7 @@ import { accountsApi } from "shell/services/accounts";
 import { filterByParams } from "utility/filterByParams";
 import { notify } from "shell/store/notifications";
 import { useDispatch } from "react-redux";
+import EmailIcon from "@mui/icons-material/Email";
 
 export const UserDetails = () => {
   const history = useHistory();
@@ -48,6 +47,7 @@ export const UserDetails = () => {
   const {
     data: actionsByZuid,
     isLoading,
+    isFetching,
     isUninitialized,
   } = instanceApi.useGetAuditsQuery(
     {
@@ -68,9 +68,11 @@ export const UserDetails = () => {
   );
 
   return (
-    <Box sx={{ pt: 1.75 }}>
+    <Box sx={{ pt: 3 }}>
       <Breadcrumbs
-        separator={<ChevronRightIcon fontSize="small" />}
+        separator={
+          <ChevronRightIcon fontSize="small" sx={{ color: "action.active" }} />
+        }
         sx={{ px: 3 }}
       >
         <Link
@@ -106,7 +108,8 @@ export const UserDetails = () => {
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          px: 1,
+          alignItems: "center",
+          px: 3,
           borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
         }}
       >
@@ -118,8 +121,7 @@ export const UserDetails = () => {
         />
         <Box>
           <Button
-            sx={{ height: "max-content" }}
-            startIcon={<FontAwesomeIcon icon={faEnvelope} />}
+            startIcon={<EmailIcon />}
             variant="contained"
             size="small"
             onClick={() =>
@@ -147,12 +149,12 @@ export const UserDetails = () => {
           filters={["happenedAt", "resourceType"]}
           showSkeletons={isLoading}
         />
-        <Box sx={{ display: "flex", gap: 17 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <ResourceList actions={filteredActions} showSkeletons={isLoading} />
-          <Box sx={{ px: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}>
+          <Box sx={{ pl: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}>
             <ActivityByResource
               actions={filteredActions}
-              showSkeletons={isLoading}
+              showSkeletons={isFetching}
             />
           </Box>
         </Box>

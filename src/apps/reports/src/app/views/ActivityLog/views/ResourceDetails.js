@@ -102,7 +102,9 @@ export const ResourceDetails = () => {
   return (
     <Box sx={{ pt: 1.75 }}>
       <Breadcrumbs
-        separator={<ChevronRightIcon fontSize="small" />}
+        separator={
+          <ChevronRightIcon fontSize="small" sx={{ color: "action.active" }} />
+        }
         sx={{ px: 3 }}
       >
         <Link
@@ -138,7 +140,8 @@ export const ResourceDetails = () => {
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          px: 1,
+          alignItems: "center",
+          px: 3,
           borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
         }}
       >
@@ -153,7 +156,7 @@ export const ResourceDetails = () => {
             size="large"
           />
         </Box>
-        <Box sx={{ display: "flex", gap: 1.5, px: 2, py: 2.5 }}>
+        <Box sx={{ display: "flex", gap: 1.5 }}>
           <Button
             sx={{ height: "max-content" }}
             startIcon={<FontAwesomeIcon icon={faEye} />}
@@ -177,7 +180,6 @@ export const ResourceDetails = () => {
             startIcon={<FontAwesomeIcon icon={faFileDownload} />}
             variant="contained"
             size="small"
-            disableElevation
             onClick={() => {
               window.open(
                 `https://reports.zesty.io/audit-report.html?instanceZUID=${instanceZUID}&affectedZUID=${zuid}&download=true`,
@@ -195,7 +197,7 @@ export const ResourceDetails = () => {
           filters={["action", "actionByUserZUID"]}
           showSkeletons={isLoading}
         />
-        <Box sx={{ display: "flex", gap: 17 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <ActionsTimeline
             actions={filteredActions}
             showSkeletons={isLoading}

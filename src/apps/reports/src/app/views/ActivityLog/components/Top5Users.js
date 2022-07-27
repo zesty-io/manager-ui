@@ -112,6 +112,7 @@ export const Top5Users = (props) => {
                   clip: true,
                 },
               },
+              maintainAspectRatio: false,
               indexAxis: "y",
               scales: {
                 x: {

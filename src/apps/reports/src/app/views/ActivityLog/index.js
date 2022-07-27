@@ -114,6 +114,13 @@ export const ActivityLog = () => {
           },
         },
       },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            boxShadow: "none",
+          },
+        },
+      },
     },
   });
   return (
