@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Box, Typography, useTheme, Skeleton } from "@mui/material";
 import { Bar } from "react-chartjs-2";
 import { uniqBy } from "lodash";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import { useParams } from "shell/hooks/useParams";
 import { accountsApi } from "shell/services/accounts";
 
@@ -99,9 +100,29 @@ export const Top5Users = (props) => {
           <Bar
             width={"100%"}
             height={"100%"}
+            plugins={[ChartDataLabels]}
             options={{
-              plugins: { legend: { display: false } },
+              plugins: {
+                legend: { display: false },
+                datalabels: {
+                  color: "#fff",
+                  anchor: "end",
+                  align: "start",
+                  padding: 8,
+                },
+              },
               indexAxis: "y",
+              scales: {
+                x: {
+                  display: false,
+                },
+                y: {
+                  grid: {
+                    display: false,
+                    drawBorder: false,
+                  },
+                },
+              },
             }}
             data={{
               labels: top5Users.map((top5User) => {
