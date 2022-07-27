@@ -88,6 +88,15 @@ export const ActivityLog = () => {
           },
         },
       },
+      MuiTab: {
+        styleOverrides: {
+          root: {
+            borderBottom: 2,
+            borderColor: innerTheme.palette.divider,
+            borderStyle: "solid",
+          },
+        },
+      },
     },
   });
   return (

@@ -181,13 +181,15 @@ export const Home = () => {
           Your instance timeline by resources and users
         </Typography>
       </Box>
-      <Box sx={{ borderBottom: 1, borderColor: "divider", px: 3 }}>
+      <Box sx={{ display: "flex" }}>
+        <Box sx={{ borderBottom: 2, borderColor: "divider", width: 16 }}></Box>
         <Tabs value={tabPaths.indexOf(activeView)} onChange={handleTabChange}>
           <Tab label="RESOURCES" />
           <Tab label="USERS" />
           <Tab label="TIMELINE" />
           <Tab label="INSIGHTS" />
         </Tabs>
+        <Box sx={{ borderBottom: 2, borderColor: "divider", flex: 1 }}></Box>
       </Box>
       <Box sx={{ px: 3 }}>
         <Filters
