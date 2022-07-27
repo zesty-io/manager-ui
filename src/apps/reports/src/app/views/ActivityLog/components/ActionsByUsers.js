@@ -7,6 +7,7 @@ import {
   ListItemAvatar,
   ListItemIcon,
   Typography,
+  Skeleton,
 } from "@mui/material";
 import { uniqBy } from "lodash";
 import { useDispatch } from "react-redux";
@@ -28,7 +29,11 @@ export const ActionsByUsers = (props) => {
   return (
     <>
       <Typography variant="overline" sx={{ pl: 2 }}>
-        ACTIONS BY
+        {props.showSkeletons ? (
+          <Skeleton variant="rectangular" width={159} />
+        ) : (
+          "ACTIONS BY"
+        )}
       </Typography>
       <List>
         {uniqueUserActions?.map((action) => {

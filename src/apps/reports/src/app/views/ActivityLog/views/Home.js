@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardContent,
   Stack,
+  Skeleton,
 } from "@mui/material";
 import { useLocation, useHistory } from "react-router-dom";
 import { instanceApi } from "shell/services/instance";
@@ -103,9 +104,7 @@ export const Home = () => {
         return (
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <UsersList actions={filteredActions} showSkeletons={isLoading} />
-            <Box
-              sx={{ pl: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}
-            >
+            <Box sx={{ pl: 4, py: 2, minWidth: 298, boxSizing: "border-box" }}>
               <Top5Users actions={filteredActions} showSkeletons={isFetching} />
             </Box>
           </Box>
@@ -146,7 +145,13 @@ export const Home = () => {
               {cards.map((card) => (
                 <Card>
                   <CardHeader
-                    title={card.title}
+                    title={
+                      isFetching ? (
+                        <Skeleton variant="rectangular" height={28} />
+                      ) : (
+                        card.title
+                      )
+                    }
                     sx={{ width: 200, backgroundColor: "common.white" }}
                   />
                   <CardContent>
@@ -165,10 +170,16 @@ export const Home = () => {
               }}
             >
               <Box sx={{ width: "100%" }}>
-                <ActivityByResource actions={filteredActions} />
+                <ActivityByResource
+                  actions={filteredActions}
+                  showSkeletons={isFetching}
+                />
               </Box>
               <Box sx={{ width: "100%" }}>
-                <Top5Users actions={filteredActions} />
+                <Top5Users
+                  actions={filteredActions}
+                  showSkeletons={isFetching}
+                />
               </Box>
             </Box>
           </Box>

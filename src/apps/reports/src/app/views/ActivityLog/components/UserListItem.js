@@ -71,7 +71,7 @@ export const UserListItem = (props) => {
             <Skeleton
               variant="rectangular"
               height={16}
-              width={"50%"}
+              width={224}
               sx={{ mb: 2 }}
             />
           ) : (
@@ -80,7 +80,7 @@ export const UserListItem = (props) => {
         }
         secondary={
           props.showSkeletons ? (
-            <Skeleton variant="rectangular" height={12} width={"75%"} />
+            <Skeleton variant="rectangular" height={12} width={360} />
           ) : (
             `
         ${user?.role?.name} • ${

@@ -80,7 +80,7 @@ export const ListItem = (props) => {
             <Skeleton
               variant="rectangular"
               height={16}
-              width={"90%"}
+              width={555}
               sx={{ mb: 1 }}
             />
           ) : (
@@ -92,7 +92,7 @@ export const ListItem = (props) => {
             <Skeleton
               variant="rectangular"
               height={14}
-              width={"75%"}
+              width={425}
               sx={{ mb: 0.75 }}
             />
           ) : (
