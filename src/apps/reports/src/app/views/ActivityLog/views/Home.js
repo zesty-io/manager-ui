@@ -182,14 +182,14 @@ export const Home = () => {
         </Typography>
       </Box>
       <Box sx={{ display: "flex" }}>
-        <Box sx={{ borderBottom: 2, borderColor: "divider", width: 16 }}></Box>
+        <Box sx={{ borderBottom: 2, borderColor: "grey.100", width: 16 }}></Box>
         <Tabs value={tabPaths.indexOf(activeView)} onChange={handleTabChange}>
           <Tab label="RESOURCES" />
           <Tab label="USERS" />
           <Tab label="TIMELINE" />
           <Tab label="INSIGHTS" />
         </Tabs>
-        <Box sx={{ borderBottom: 2, borderColor: "divider", flex: 1 }}></Box>
+        <Box sx={{ borderBottom: 2, borderColor: "grey.100", flex: 1 }}></Box>
       </Box>
       <Box sx={{ px: 3 }}>
         <Filters

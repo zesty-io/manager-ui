@@ -92,7 +92,7 @@ export const ActivityLog = () => {
         styleOverrides: {
           root: {
             borderBottom: 2,
-            borderColor: innerTheme.palette.divider,
+            borderColor: innerTheme.palette.grey[100],
             borderStyle: "solid",
           },
         },
