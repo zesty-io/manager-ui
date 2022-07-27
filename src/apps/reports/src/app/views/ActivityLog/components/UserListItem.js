@@ -28,7 +28,7 @@ export const UserListItem = (props) => {
     <ListItem
       disableGutters
       divider={props.divider}
-      sx={{ py: 2, cursor: props.clickable && "pointer" }}
+      sx={{ py: 2, cursor: props.clickable && "pointer", maxWidth: 720 }}
       onClick={
         props.clickable
           ? () =>
@@ -66,7 +66,7 @@ export const UserListItem = (props) => {
           textOverflow: "ellipsis",
         }}
         secondaryTypographyProps={{
-          variant: "caption",
+          variant: "body2",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",

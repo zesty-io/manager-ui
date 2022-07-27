@@ -19,7 +19,7 @@ export const ListItem = (props) => {
     <MuiListItem
       disableGutters
       divider={props.divider}
-      sx={{ py: 2, cursor: props.clickable && "pointer" }}
+      sx={{ py: 2, cursor: props.clickable && "pointer", maxWidth: 720 }}
       onClick={
         props.clickable
           ? () =>

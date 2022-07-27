@@ -87,7 +87,7 @@ export const Home = () => {
     switch (activeView) {
       case "resources":
         return (
-          <Box sx={{ display: "flex" }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <ResourceList actions={filteredActions} showSkeletons={isLoading} />
             <Box
               sx={{ pl: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}
@@ -101,10 +101,10 @@ export const Home = () => {
         );
       case "users":
         return (
-          <Box sx={{ display: "flex", gap: 17 }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <UsersList actions={filteredActions} showSkeletons={isLoading} />
             <Box
-              sx={{ px: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}
+              sx={{ pl: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}
             >
               <Top5Users actions={filteredActions} showSkeletons={isLoading} />
             </Box>
