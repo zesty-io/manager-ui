@@ -5,22 +5,22 @@ import { useSelector } from "react-redux";
 import { ListItem } from "./ListItem";
 
 export const SettingsResourceListItem = (props) => {
-  const instanceSettings = useSelector((state) => state.settings.instance);
+  const settingsData = useSelector((state) =>
+    state.settings.instance.find(
+      (instanceSetting) => instanceSetting.ZUID === props.affectedZUID
+    )
+  );
 
   const primaryText = useMemo(() => {
     switch (props.affectedZUID?.split("-")?.[0]) {
       case "29":
-        return (
-          instanceSettings?.find(
-            (instanceSetting) => instanceSetting.ZUID === props.affectedZUID
-          )?.keyFriendly || props.message
-        );
+        return settingsData?.keyFriendly || props.message;
       case "21":
         return "Head Tag";
       default:
         return props.message;
     }
-  }, [props.affectedZUID, instanceSettings, props.message]);
+  }, [props.affectedZUID, settingsData, props.message]);
 
   return (
     <ListItem

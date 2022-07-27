@@ -4,7 +4,7 @@ import { useParams } from "shell/hooks/useParams";
 import moment from "moment";
 import { instanceApi } from "shell/services/instance";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { omitBy, isEmpty } from "lodash";
+import { useSelector } from "react-redux";
 import { ResourceListItem } from "../components/ResourceListItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faFileDownload } from "@fortawesome/free-solid-svg-icons";
@@ -20,10 +20,43 @@ export const ResourceDetails = () => {
   const [params, setParams] = useParams();
   const [initialized, setInitialized] = useState(false);
 
+  const zuid = useMemo(
+    () => location.pathname.split("/").pop(),
+    [location.pathname]
+  );
+
+  const contentData = useSelector((state) =>
+    Object.values(state.content).find((item) => item.meta.ZUID === zuid)
+  );
+  const modelData = useSelector((state) =>
+    Object.values(state.models).find((item) => item.ZUID === zuid)
+  );
+  const fileData = useSelector((state) =>
+    Object.values(state.files).find((item) => item.ZUID === zuid)
+  );
+
+  const settingsData = useSelector((state) =>
+    state.settings.instance?.find(
+      (instanceSetting) => instanceSetting.ZUID === zuid
+    )
+  );
+
   useEffect(() => {
-    // If there are no date parameters set, sets date parameters to 1 week
+    // If there are no date parameters set, sets date parameters from when the resource was created
     if (!params.get("from") && !params.get("to")) {
-      setParams(moment().add(-6, "days").format("YYYY-MM-DD"), "from");
+      let fromDate;
+      if (contentData) {
+        fromDate = moment(contentData?.createdAt);
+      } else if (modelData) {
+        fromDate = moment(modelData?.createdAt);
+      } else if (fileData) {
+        fromDate = moment(fileData?.createdAt);
+      } else if (settingsData) {
+        fromDate = moment(settingsData?.createdAt);
+      } else {
+        fromDate = moment().add(-6, "days");
+      }
+      setParams(fromDate.format("YYYY-MM-DD"), "from");
       setParams(moment().add(1, "days").format("YYYY-MM-DD"), "to");
     }
     /*
@@ -36,6 +69,7 @@ export const ResourceDetails = () => {
   const {
     data: actions,
     isLoading,
+    isFetching,
     isUninitialized,
   } = instanceApi.useGetAuditsQuery(
     {
@@ -47,11 +81,6 @@ export const ResourceDetails = () => {
       }),
     },
     { skip: !initialized }
-  );
-
-  const zuid = useMemo(
-    () => location.pathname.split("/").pop(),
-    [location.pathname]
   );
 
   const actionsByZuid = useMemo(
@@ -70,8 +99,6 @@ export const ResourceDetails = () => {
     }
   }
 
-  // if (isLoading || isUninitialized) return <div>loading...</div>;
-
   return (
     <Box sx={{ pt: 1.75 }}>
       <Breadcrumbs
@@ -87,13 +114,6 @@ export const ResourceDetails = () => {
             e.preventDefault();
             history.push({
               pathname: `/reports/activity-log/resources`,
-              // Persist date selection
-              search: new URLSearchParams(
-                omitBy(
-                  { from: params.get("from"), to: params.get("to") },
-                  isEmpty
-                )
-              ).toString(),
             });
           }}
         >
@@ -108,13 +128,6 @@ export const ResourceDetails = () => {
             e.preventDefault();
             history.push({
               pathname: `/reports/activity-log/resources`,
-              // Persist date selection
-              search: new URLSearchParams(
-                omitBy(
-                  { from: params.get("from"), to: params.get("to") },
-                  isEmpty
-                )
-              ).toString(),
             });
           }}
         >
@@ -183,9 +196,15 @@ export const ResourceDetails = () => {
           showSkeletons={isLoading}
         />
         <Box sx={{ display: "flex", gap: 17 }}>
-          <ActionsTimeline actions={filteredActions} />
+          <ActionsTimeline
+            actions={filteredActions}
+            showSkeletons={isLoading}
+          />
           <Box sx={{ minWidth: 298, py: 5 }}>
-            <ActionsByUsers actions={filteredActions} />
+            <ActionsByUsers
+              actions={filteredActions}
+              showSkeletons={isFetching}
+            />
           </Box>
         </Box>
       </Box>

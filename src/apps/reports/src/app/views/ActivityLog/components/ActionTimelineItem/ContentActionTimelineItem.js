@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { searchItems } from "shell/store/content";
 import { TimelineItem } from "./TimelineItem";
+import { fetchModel } from "shell/store/models";
 
 export const ContentActionTimelineItem = (props) => {
   const dispatch = useDispatch();
   const [contentError, setContentError] = useState(false);
   const [modelError, setModelError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const contentData = useSelector((state) =>
     Object.values(state.content).find(
@@ -22,9 +24,11 @@ export const ContentActionTimelineItem = (props) => {
 
   useEffect(() => {
     if (!contentData && !contentError) {
+      setIsLoading(true);
       dispatch(searchItems(props.action.affectedZUID))
         .then((res) => !res.data.length && setContentError(true))
-        .catch(() => setContentError(true));
+        .catch(() => setContentError(true))
+        .finally(() => setIsLoading(false));
     }
     if (!modelData && contentData && !modelError) {
       setIsLoading(true);
@@ -46,6 +50,7 @@ export const ContentActionTimelineItem = (props) => {
       }
       itemSubtext={modelData && modelData?.label}
       renderConnector={props.renderConnector}
+      showSkeletons={isLoading}
     />
   );
 };

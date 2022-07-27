@@ -34,13 +34,6 @@ export const UserListItem = (props) => {
           ? () =>
               history.push({
                 pathname: `users/${props.action?.actionByUserZUID}`,
-                // Persist date selection
-                search: new URLSearchParams(
-                  omitBy(
-                    { from: params.get("from"), to: params.get("to") },
-                    isEmpty
-                  )
-                ).toString(),
               })
           : undefined
       }

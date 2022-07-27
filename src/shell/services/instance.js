@@ -18,21 +18,23 @@ export const instanceApi = createApi({
       },
       transformResponse: (response) => {
         return response.data.map((action) => {
-          const normalizedAffectedZUID = action.affectedZUID.startsWith("12")
-            ? action.meta.uri.split("/")[4]
+          const normalizedAffectedZUID = action.affectedZUID?.startsWith("12")
+            ? action.meta?.uri?.split("/")[4]
             : action.action === 5
-            ? action.meta.uri.split("/")[6]
+            ? action.meta?.uri?.split("/")[6]
             : action.affectedZUID;
 
           // Sets action number to 6 for scheduled publishes in order differentiate publish types
           const normalizedAction =
-            action.action === 4 && action.meta.message.includes("scheduled")
+            action.action === 4 && action?.meta?.message.includes("scheduled")
               ? 6
               : action.action;
           return {
             ...action,
-            resourceType: resolveResourceType(normalizedAffectedZUID),
-            affectedZUID: normalizedAffectedZUID,
+            resourceType: resolveResourceType(
+              normalizedAffectedZUID || action.affectedZUID
+            ),
+            affectedZUID: normalizedAffectedZUID || action.affectedZUID,
             action: normalizedAction,
           };
         });

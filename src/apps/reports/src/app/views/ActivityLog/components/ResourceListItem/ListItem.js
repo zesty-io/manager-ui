@@ -29,8 +29,6 @@ export const ListItem = (props) => {
                 search: new URLSearchParams(
                   omitBy(
                     {
-                      from: params.get("from"),
-                      to: params.get("to"),
                       // If we are in the user details view then push to resource detail page with user query param
                       ...(location.pathname.includes("users") && {
                         actionByUserZUID: location.pathname.split("/").pop(),

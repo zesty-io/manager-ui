@@ -4,7 +4,6 @@ import { useParams } from "shell/hooks/useParams";
 import moment from "moment";
 import { instanceApi } from "shell/services/instance";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { omitBy, isEmpty } from "lodash";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router";
@@ -83,13 +82,6 @@ export const UserDetails = () => {
             e.preventDefault();
             history.push({
               pathname: `/reports/activity-log/resources`,
-              // Persist date selection
-              search: new URLSearchParams(
-                omitBy(
-                  { from: params.get("from"), to: params.get("to") },
-                  isEmpty
-                )
-              ).toString(),
             });
           }}
         >
@@ -104,13 +96,6 @@ export const UserDetails = () => {
             e.preventDefault();
             history.push({
               pathname: `/reports/activity-log/users`,
-              // Persist date selection
-              search: new URLSearchParams(
-                omitBy(
-                  { from: params.get("from"), to: params.get("to") },
-                  isEmpty
-                )
-              ).toString(),
             });
           }}
         >

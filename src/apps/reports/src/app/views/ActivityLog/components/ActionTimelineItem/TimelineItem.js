@@ -6,7 +6,7 @@ import TimelineConnector from "@mui/lab/TimelineConnector";
 import TimelineContent from "@mui/lab/TimelineContent";
 import TimelineDot from "@mui/lab/TimelineDot";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Typography, Link } from "@mui/material";
+import { Typography, Link, Skeleton } from "@mui/material";
 import {
   faClock,
   faEye,
@@ -50,7 +50,7 @@ export const TimelineItem = (props) => {
   const history = useHistory();
 
   const actionMessage = useMemo(() => {
-    switch (props.action.action) {
+    switch (props.action?.action) {
       case 1:
         return "Created";
       case 2:
@@ -66,12 +66,14 @@ export const TimelineItem = (props) => {
           props.action?.happenedAt
         ).format("MMMM DD [at] hh:mm A")}`;
       default:
-        return props.action.meta.message;
+        return props.action?.meta?.message;
     }
   }, [props.action]);
 
   return (
-    <MuiTimelineItem sx={{ "&::before": { flex: "unset", padding: 0 } }}>
+    <MuiTimelineItem
+      sx={{ maxWidth: 720, "&::before": { flex: "unset", padding: 0 } }}
+    >
       <TimelineSeparator>
         <TimelineDot
           sx={{
@@ -80,14 +82,20 @@ export const TimelineItem = (props) => {
             width: 40,
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: actionBackgroundColorMap?.[props.action.action],
-            color: actionIconColorMap?.[props.action.action],
+            backgroundColor: props.showSkeletons
+              ? "unset"
+              : actionBackgroundColorMap?.[props.action?.action],
+            color: actionIconColorMap?.[props.action?.action],
           }}
         >
-          <FontAwesomeIcon
-            icon={actionIconMap?.[props.action.action] || faFileDownload}
-            style={{ fontSize: 16 }}
-          />
+          {props.showSkeletons ? (
+            <Skeleton variant="circular" width={40} height={40} />
+          ) : (
+            <FontAwesomeIcon
+              icon={actionIconMap?.[props.action?.action] || faFileDownload}
+              style={{ fontSize: 16 }}
+            />
+          )}
         </TimelineDot>
         {props.renderConnector && (
           <TimelineConnector sx={{ height: 35, backgroundColor: "grey.200" }} />
@@ -95,7 +103,16 @@ export const TimelineItem = (props) => {
       </TimelineSeparator>
       <TimelineContent sx={{ overflow: "hidden" }}>
         <Typography variant="caption" component="div" color="text.secondary">
-          {moment(props.action.happenedAt).format("hh:mm A")}
+          {props.showSkeletons ? (
+            <Skeleton
+              variant="rectangular"
+              width={200}
+              height={4}
+              sx={{ my: 1 }}
+            />
+          ) : (
+            moment(props.action?.happenedAt).format("hh:mm A")
+          )}
         </Typography>
         <Typography
           variant="body1"
@@ -105,10 +122,18 @@ export const TimelineItem = (props) => {
             textOverflow: "ellipsis",
           }}
         >
-          {/* Hide item name on resource detail view */}
-          {location.pathname.includes("resources")
-            ? actionMessage
-            : `${actionMessage} ${props.itemName}`}
+          {props.showSkeletons ? (
+            <Skeleton
+              variant="rectangular"
+              width={555}
+              height={16}
+              sx={{ mb: 1 }}
+            />
+          ) : location.pathname.includes("resources") ? (
+            actionMessage
+          ) : (
+            `${actionMessage} ${props.itemName}`
+          )}
         </Typography>
         <Typography
           variant="caption"
@@ -120,19 +145,26 @@ export const TimelineItem = (props) => {
             textOverflow: "ellipsis",
           }}
         >
-          In {props.itemSubtext} by{" "}
-          <Link
-            underline="hover"
-            href="#"
-            onClick={(evt) => {
-              evt.preventDefault();
-              history.push(
-                `/reports/activity-log/users/${props.action.actionByUserZUID}`
-              );
-            }}
-          >
-            {props.action.firstName} {props.action.lastName}
-          </Link>
+          {" "}
+          {props.showSkeletons ? (
+            <Skeleton variant="rectangular" width={200} height={4} />
+          ) : (
+            <>
+              In {props.itemSubtext} by{" "}
+              <Link
+                underline="hover"
+                href="#"
+                onClick={(evt) => {
+                  evt.preventDefault();
+                  history.push(
+                    `/reports/activity-log/users/${props.action?.actionByUserZUID}`
+                  );
+                }}
+              >
+                {props.action?.firstName} {props.action?.lastName}
+              </Link>
+            </>
+          )}
         </Typography>
       </TimelineContent>
     </MuiTimelineItem>

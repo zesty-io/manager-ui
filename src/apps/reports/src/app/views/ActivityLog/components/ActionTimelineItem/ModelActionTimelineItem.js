@@ -6,6 +6,7 @@ import { TimelineItem } from "./TimelineItem";
 export const ModelActionTimelineItem = (props) => {
   const dispatch = useDispatch();
   const [modelError, setModelError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const modelData = useSelector((state) =>
     Object.values(state.models).find(
@@ -15,9 +16,10 @@ export const ModelActionTimelineItem = (props) => {
 
   useEffect(() => {
     if (!modelData && !modelError) {
-      dispatch(fetchModel(props.action.affectedZUID)).catch(() =>
-        setModelError(true)
-      );
+      setIsLoading(true);
+      dispatch(fetchModel(props.action.affectedZUID))
+        .catch(() => setModelError(true))
+        .finally(() => setIsLoading(false));
     }
   }, [modelData, modelError]);
 
@@ -29,6 +31,7 @@ export const ModelActionTimelineItem = (props) => {
         modelError ? `${props.action.affectedZUID} (Deleted)` : modelData?.label
       }
       renderConnector={props.renderConnector}
+      showSkeleton={isLoading}
     />
   );
 };
