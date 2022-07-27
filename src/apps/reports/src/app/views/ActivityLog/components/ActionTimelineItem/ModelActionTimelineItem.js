@@ -24,7 +24,8 @@ export const ModelActionTimelineItem = (props) => {
   return (
     <TimelineItem
       action={props.action}
-      itemName={
+      itemName={`Field ${props.action.meta?.message?.split(" ")?.[2]}`}
+      itemSubtext={
         modelError ? `${props.action.affectedZUID} (Deleted)` : modelData?.label
       }
       renderConnector={props.renderConnector}

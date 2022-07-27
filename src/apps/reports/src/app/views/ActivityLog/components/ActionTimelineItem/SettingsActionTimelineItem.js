@@ -26,6 +26,7 @@ export const SettingsActionTimelineItem = (props) => {
     <TimelineItem
       action={props.action}
       itemName={itemName}
+      itemSubtext="Settings"
       renderConnector={props.renderConnector}
     />
   );

@@ -6,7 +6,7 @@ import TimelineConnector from "@mui/lab/TimelineConnector";
 import TimelineContent from "@mui/lab/TimelineContent";
 import TimelineDot from "@mui/lab/TimelineDot";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Typography } from "@mui/material";
+import { Typography, Link } from "@mui/material";
 import {
   faClock,
   faEye,
@@ -16,7 +16,7 @@ import {
   faSave,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import { useLocation } from "react-router";
+import { useHistory, useLocation } from "react-router";
 
 const actionIconMap = {
   1: faPencilAlt,
@@ -47,6 +47,7 @@ const actionIconColorMap = {
 
 export const TimelineItem = (props) => {
   const location = useLocation();
+  const history = useHistory();
 
   const actionMessage = useMemo(() => {
     switch (props.action.action) {
@@ -70,7 +71,7 @@ export const TimelineItem = (props) => {
   }, [props.action]);
 
   return (
-    <MuiTimelineItem sx={{ "&::before": { flex: "unset" } }}>
+    <MuiTimelineItem sx={{ "&::before": { flex: "unset", padding: 0 } }}>
       <TimelineSeparator>
         <TimelineDot
           sx={{
@@ -119,7 +120,19 @@ export const TimelineItem = (props) => {
             textOverflow: "ellipsis",
           }}
         >
-          By {props.action.firstName} {props.action.lastName}
+          In {props.itemSubtext} by{" "}
+          <Link
+            underline="hover"
+            href="#"
+            onClick={(evt) => {
+              evt.preventDefault();
+              history.push(
+                `/reports/activity-log/users/${props.action.actionByUserZUID}`
+              );
+            }}
+          >
+            {props.action.firstName} {props.action.lastName}
+          </Link>
         </Typography>
       </TimelineContent>
     </MuiTimelineItem>

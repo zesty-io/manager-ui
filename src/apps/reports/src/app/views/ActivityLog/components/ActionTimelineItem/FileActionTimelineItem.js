@@ -16,6 +16,7 @@ export const FileActionTimelineItem = (props) => {
           ? `${props.action.affectedZUID} (Deleted)`
           : fileData?.fileName
       }
+      itemSubtext="Code"
       renderConnector={props.renderConnector}
     />
   );

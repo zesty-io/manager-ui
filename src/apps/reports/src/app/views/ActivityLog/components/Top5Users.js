@@ -77,7 +77,7 @@ export const Top5Users = (props) => {
           "Actions"
         )}
       </Typography>
-      <Box sx={{ width: 238, height: 184, mt: 3, mb: 4 }}>
+      <Box sx={{ height: 184, mt: 3, mb: 4 }}>
         {props.showSkeletons ? (
           Array(5)
             .fill({})
@@ -109,6 +109,7 @@ export const Top5Users = (props) => {
                   anchor: "end",
                   align: "start",
                   padding: 8,
+                  clip: true,
                 },
               },
               indexAxis: "y",

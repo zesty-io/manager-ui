@@ -112,10 +112,10 @@ export const Home = () => {
         );
       case "timeline":
         return (
-          <Box sx={{ display: "flex", gap: 17 }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <ActionsTimeline actions={filteredActions} />
             <Box
-              sx={{ px: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}
+              sx={{ pl: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}
             >
               <Top5Users actions={filteredActions} showSkeletons={isLoading} />
             </Box>
