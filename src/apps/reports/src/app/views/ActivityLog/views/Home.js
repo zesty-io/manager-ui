@@ -90,7 +90,7 @@ export const Home = () => {
           <Box sx={{ display: "flex" }}>
             <ResourceList actions={filteredActions} showSkeletons={isLoading} />
             <Box
-              sx={{ px: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}
+              sx={{ pl: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}
             >
               <ActivityByResource
                 actions={filteredActions}
