@@ -3,7 +3,7 @@ import { memo, useState, useEffect } from "react";
 import moment from "moment-timezone";
 import { useHistory } from "react-router";
 
-import Button from "@mui/material/Button";
+import { Select, Button, MenuItem } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -13,7 +13,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 import { AppLink } from "@zesty-io/core/AppLink";
-import { Select, Option } from "@zesty-io/core/Select";
 
 import {
   fetchFileVersions,
@@ -122,12 +121,21 @@ export const DifferActions = memo(function DifferActions(props) {
   }, []);
 
   const options = versions.map((version) => {
-    let html = `Version ${version.version} <small>[${moment(
-      version.createdAt
-    ).format("MMM Do YYYY, [at] h:mm a")}]</small>`;
+    let html = (
+      <span>
+        Version {version.version}{" "}
+        <small>
+          [{moment(version.createdAt).format("MMM Do YYYY, [at] h:mm a")}]
+        </small>
+      </span>
+    );
 
     if (version.version == props.publishedVersion) {
-      html = "<strong>(Live)</strong> " + html;
+      html = (
+        <>
+          <strong>(Live)</strong> {html}
+        </>
+      );
     }
 
     return {
@@ -141,9 +149,12 @@ export const DifferActions = memo(function DifferActions(props) {
       <Select
         name="codeOne"
         className={styles.VersionSelector}
-        value={options[0] && options[0].value}
-        onSelect={(value) => {
-          const version = versions.find((version) => version.version == value);
+        defaultValue="local"
+        size="small"
+        onChange={(evt) => {
+          const version = versions.find(
+            (version) => version.version == evt.target.value
+          );
           if (version) {
             props.setVersionCodeLeft(version.code);
           } else {
@@ -152,7 +163,9 @@ export const DifferActions = memo(function DifferActions(props) {
         }}
       >
         {options.map((el, i) => (
-          <Option key={i} html={el.html} value={el.value} />
+          <MenuItem key={i} value={el.value}>
+            {el.html}
+          </MenuItem>
         ))}
       </Select>
 
@@ -162,8 +175,11 @@ export const DifferActions = memo(function DifferActions(props) {
         name="codeTwo"
         className={styles.VersionSelector}
         value={selectedVersion}
-        onSelect={(value) => {
-          const version = versions.find((version) => version.version == value);
+        size="small"
+        onChange={(evt) => {
+          const version = versions.find(
+            (version) => version.version == evt.target.value
+          );
           if (version) {
             props.setVersionCodeRight(version.code);
             setSelectedVersion(version.version);
@@ -174,7 +190,9 @@ export const DifferActions = memo(function DifferActions(props) {
         }}
       >
         {options.map((el, i) => (
-          <Option key={i} html={el.html} value={el.value} />
+          <MenuItem key={i} value={el.value}>
+            {el.html}
+          </MenuItem>
         ))}
       </Select>
 
