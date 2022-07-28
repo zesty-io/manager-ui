@@ -1,14 +1,14 @@
 import * as React from "react";
 import { TextField, FormLabel, FormControl, Box } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers-pro";
-import { DateRangePicker as MuiDateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
+import { DesktopDateRangePicker as MuiDesktopDateRangePicker } from "@mui/x-date-pickers-pro/DesktopDateRangePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 
 // TODO: Move to zesty material package
 export default function DateRangePicker(props) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <MuiDateRangePicker
+      <MuiDesktopDateRangePicker
         renderInput={(startProps, endProps) => (
           <Box sx={{ display: "flex", gap: 1.75 }}>
             <FormControl fullWidth>

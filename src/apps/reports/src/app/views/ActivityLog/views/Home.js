@@ -183,6 +183,7 @@ export const Home = () => {
             }}
           >
             <UsersList
+              actions={filteredActions}
               uniqueUserActions={uniqueUserActions}
               showSkeletons={isLoading}
             />
