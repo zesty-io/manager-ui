@@ -108,9 +108,10 @@ export const UserDetails = () => {
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
           px: 3,
-          borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
+          borderBottom: "1px solid",
+          borderColor: "divider",
+          pb: 1,
         }}
       >
         <UserListItem
@@ -119,7 +120,7 @@ export const UserDetails = () => {
           size="large"
           showSkeletons={isLoading}
         />
-        <Box>
+        <Box sx={{ pt: 2 }}>
           <Button
             startIcon={<EmailIcon />}
             variant="contained"
@@ -143,7 +144,7 @@ export const UserDetails = () => {
           </Button>
         </Box>
       </Box>
-      <Box sx={{ px: 3, mt: 3 }}>
+      <Box sx={{ px: 3 }}>
         <Filters
           actions={actionsByZuid}
           filters={["happenedAt", "resourceType"]}
@@ -151,7 +152,7 @@ export const UserDetails = () => {
         />
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <ResourceList actions={filteredActions} showSkeletons={isLoading} />
-          <Box sx={{ pl: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}>
+          <Box sx={{ pl: 8, minWidth: 298, boxSizing: "border-box" }}>
             <ActivityByResource
               actions={filteredActions}
               showSkeletons={isFetching}

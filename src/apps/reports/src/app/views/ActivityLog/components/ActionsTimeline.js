@@ -30,7 +30,7 @@ export const ActionsTimeline = (props) => {
     if (typeof action === "string") {
       return (
         <div style={style}>
-          <Typography sx={{ py: 5 }} variant="h5" fontWeight={600}>
+          <Typography variant="h5" fontWeight={600}>
             {props.showSkeletons ? (
               <Skeleton variant="rectangular" width={120} />
             ) : moment().isSame(action, "day") ? (
@@ -75,9 +75,9 @@ export const ActionsTimeline = (props) => {
 
   return (
     <List
-      height={height - 298}
+      height={height - 284}
       itemCount={props.showSkeletons ? 10 : actionsWithHeaders.length}
-      itemSize={110}
+      itemSize={79}
       width={"100%"}
       itemData={props.showSkeletons ? skeletonDataset : actionsWithHeaders}
     >

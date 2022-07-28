@@ -50,6 +50,7 @@ export const ListItem = (props) => {
               ...(props.size === "large" && {
                 height: 48,
                 width: 48,
+                mr: 2,
               }),
             }}
           >

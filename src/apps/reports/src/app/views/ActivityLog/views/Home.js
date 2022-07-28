@@ -142,9 +142,7 @@ export const Home = () => {
             }}
           >
             <ResourceList actions={filteredActions} showSkeletons={isLoading} />
-            <Box
-              sx={{ pl: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}
-            >
+            <Box sx={{ pl: 8, minWidth: 298, boxSizing: "border-box" }}>
               <ActivityByResource
                 actions={filteredActions}
                 showSkeletons={isFetching}
@@ -187,7 +185,7 @@ export const Home = () => {
               uniqueUserActions={uniqueUserActions}
               showSkeletons={isLoading}
             />
-            <Box sx={{ pl: 4, py: 2, minWidth: 298, boxSizing: "border-box" }}>
+            <Box sx={{ pl: 8, minWidth: 298, boxSizing: "border-box" }}>
               <Top5Users actions={filteredActions} showSkeletons={isFetching} />
             </Box>
           </Box>
@@ -227,9 +225,7 @@ export const Home = () => {
               actions={filteredActions}
               showSkeletons={isLoading}
             />
-            <Box
-              sx={{ pl: 4, py: 2.5, minWidth: 298, boxSizing: "border-box" }}
-            >
+            <Box sx={{ pl: 8, minWidth: 298, boxSizing: "border-box" }}>
               <Top5Users actions={filteredActions} showSkeletons={isFetching} />
             </Box>
           </Box>

@@ -42,7 +42,7 @@ export const ResourceList = (props) => {
 
   return (
     <List
-      height={height - 292}
+      height={height - 284}
       itemCount={props.showSkeletons ? 10 : sortedResources.length}
       itemSize={77}
       width={"100%"}

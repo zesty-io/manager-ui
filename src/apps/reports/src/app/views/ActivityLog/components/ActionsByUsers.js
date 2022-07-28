@@ -56,7 +56,12 @@ export const ActionsByUsers = (props) => {
                 )}
               </ListItemAvatar>
               <ListItemText
-                primaryTypographyProps={{ variant: "body2" }}
+                primaryTypographyProps={{
+                  variant: "body2",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
                 primary={
                   props.showSkeletons ? (
                     <Skeleton

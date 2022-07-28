@@ -86,6 +86,8 @@ export const TimelineItem = (props) => {
               ? "unset"
               : actionBackgroundColorMap?.[props.action?.action],
             color: actionIconColorMap?.[props.action?.action],
+            margin: 0,
+            padding: 0,
           }}
         >
           {props.showSkeletons ? (
@@ -101,7 +103,9 @@ export const TimelineItem = (props) => {
           <TimelineConnector sx={{ height: 35, backgroundColor: "grey.200" }} />
         )}
       </TimelineSeparator>
-      <TimelineContent sx={{ overflow: "hidden" }}>
+      <TimelineContent
+        sx={{ overflow: "hidden", paddingTop: 0, marginTop: "-12px" }}
+      >
         <Typography variant="caption" component="div" color="text.secondary">
           {props.showSkeletons ? (
             <Skeleton
@@ -111,7 +115,7 @@ export const TimelineItem = (props) => {
               sx={{ my: 1 }}
             />
           ) : (
-            moment(props.action?.happenedAt).format("hh:mm A")
+            moment(props.action?.happenedAt).format("h:mm A")
           )}
         </Typography>
         <Typography
@@ -150,7 +154,10 @@ export const TimelineItem = (props) => {
             <Skeleton variant="rectangular" width={200} height={4} />
           ) : (
             <>
-              In {props.itemSubtext} by{" "}
+              {/*Hide item subtext on resource detail page*/}
+              {location.pathname.includes("resources")
+                ? "by "
+                : `In ${props.itemSubtext} by`}
               <Link
                 underline="hover"
                 href="#"

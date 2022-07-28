@@ -9,11 +9,9 @@ import {
   Skeleton,
 } from "@mui/material";
 import { useHistory } from "react-router";
-import { useParams } from "shell/hooks/useParams";
 
 export const UserListItem = (props) => {
   const history = useHistory();
-  const [params] = useParams();
   const { data: usersRoles } = accountsApi.useGetUsersRolesQuery();
 
   const user = usersRoles?.find(
@@ -27,7 +25,12 @@ export const UserListItem = (props) => {
     <ListItem
       disableGutters
       divider={props.divider}
-      sx={{ py: 2, cursor: props.clickable && "pointer", maxWidth: 720 }}
+      sx={{
+        py: 2,
+        cursor: props.clickable && "pointer",
+        maxWidth: 720,
+        alignItems: "flex-start",
+      }}
       onClick={
         props.clickable
           ? () =>
@@ -50,20 +53,23 @@ export const UserListItem = (props) => {
       <ListItemText
         sx={{ margin: props.size === "large" && 0 }}
         primaryTypographyProps={{
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
           ...(props.size === "large" && {
             variant: "h5",
             fontWeight: 600,
             mb: 0.5,
           }),
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
         }}
         secondaryTypographyProps={{
           variant: "body2",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
+          ...(props.size === "large" && {
+            variant: "caption",
+          }),
         }}
         primary={
           props.showSkeletons ? (

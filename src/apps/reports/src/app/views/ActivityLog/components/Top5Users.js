@@ -106,8 +106,8 @@ export const Top5Users = (props) => {
                 legend: { display: false },
                 datalabels: {
                   color: "#fff",
-                  anchor: "end",
-                  align: "start",
+                  anchor: "start",
+                  align: "end",
                   padding: 8,
                   clip: true,
                 },

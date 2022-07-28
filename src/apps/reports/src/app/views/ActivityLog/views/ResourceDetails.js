@@ -6,8 +6,8 @@ import { instanceApi } from "shell/services/instance";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useSelector } from "react-redux";
 import { ResourceListItem } from "../components/ResourceListItem";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faFileDownload } from "@fortawesome/free-solid-svg-icons";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import DownloadIcon from "@mui/icons-material/Download";
 import { ActionsTimeline } from "../components/ActionsTimeline";
 import { useHistory } from "react-router";
 import { ActionsByUsers } from "../components/ActionsByUsers";
@@ -105,7 +105,7 @@ export const ResourceDetails = () => {
         separator={
           <ChevronRightIcon fontSize="small" sx={{ color: "action.active" }} />
         }
-        sx={{ px: 3, pt: 1.75 }}
+        sx={{ px: 3, pt: 3 }}
       >
         <Link
           underline="none"
@@ -140,9 +140,10 @@ export const ResourceDetails = () => {
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
           px: 3,
-          borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
+          pb: 1,
+          borderBottom: "1px solid",
+          borderColor: "divider",
         }}
       >
         <Box sx={{ maxWidth: 640 }}>
@@ -156,10 +157,10 @@ export const ResourceDetails = () => {
             size="large"
           />
         </Box>
-        <Box sx={{ display: "flex", gap: 1.5 }}>
+        <Box sx={{ display: "flex", gap: 1.5, pt: 2 }}>
           <Button
             sx={{ height: "max-content" }}
-            startIcon={<FontAwesomeIcon icon={faEye} />}
+            startIcon={<OpenInNewIcon />}
             variant="outlined"
             size="small"
             onClick={() => {
@@ -177,7 +178,7 @@ export const ResourceDetails = () => {
           </Button>
           <Button
             sx={{ height: "max-content" }}
-            startIcon={<FontAwesomeIcon icon={faFileDownload} />}
+            startIcon={<DownloadIcon />}
             variant="contained"
             size="small"
             onClick={() => {
@@ -191,7 +192,7 @@ export const ResourceDetails = () => {
           </Button>
         </Box>
       </Box>
-      <Box sx={{ px: 3, mt: 3 }}>
+      <Box sx={{ px: 3 }}>
         <Filters
           actions={actionsByZuid}
           filters={["action", "actionByUserZUID"]}
@@ -224,7 +225,7 @@ export const ResourceDetails = () => {
               actions={filteredActions}
               showSkeletons={isLoading}
             />
-            <Box sx={{ minWidth: 298, py: 5 }}>
+            <Box sx={{ minWidth: 298, pl: 8 }}>
               <ActionsByUsers
                 actions={filteredActions}
                 showSkeletons={isFetching}

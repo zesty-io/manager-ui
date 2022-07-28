@@ -136,7 +136,7 @@ export const Filters = (props) => {
         display: "flex",
         gap: 1,
         justifyContent: "space-between",
-        mt: 3,
+        mt: 2,
         mb: 1.5,
       }}
     >

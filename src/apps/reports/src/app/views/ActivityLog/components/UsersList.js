@@ -26,7 +26,7 @@ export const UsersList = (props) => {
         padding: 0,
         overflowY: "scroll",
         width: "100%",
-        height: "calc(100vh - 292px)",
+        height: "calc(100vh - 280px)",
       }}
     >
       {props.showSkeletons
