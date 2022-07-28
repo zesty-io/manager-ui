@@ -26,9 +26,6 @@ describe("Reports > Activity Log > Home", () => {
     it("Navigates on tab click", () => {
       cy.visit("/reports/activity-log/resources");
 
-      cy.get(".MuiTabs-root").contains("RESOURCES").click();
-      cy.location("pathname").should("eq", "/reports/activity-log/resources");
-
       cy.get(".MuiTabs-root").contains("USERS").click();
       cy.location("pathname").should("eq", "/reports/activity-log/users");
 
@@ -39,6 +36,10 @@ describe("Reports > Activity Log > Home", () => {
       cy.visit("/reports/activity-log/insights");
       cy.get(".MuiTabs-root").contains("INSIGHTS").click();
       cy.location("pathname").should("eq", "/reports/activity-log/insights");
+
+      cy.visit("/reports/activity-log/resources");
+      cy.get(".MuiTabs-root").contains("RESOURCES").click();
+      cy.location("pathname").should("eq", "/reports/activity-log/resources");
     });
   });
 
