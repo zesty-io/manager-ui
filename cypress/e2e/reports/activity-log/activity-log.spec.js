@@ -107,8 +107,8 @@ describe("Reports > Activity Log > Home", () => {
     });
   });
 
-  describe("Resource Tab", () => {
-    it("Navigates to Resource Detail on Resource Item click", () => {
+  describe.only("Resource Tab", () => {
+    it.only("Navigates to Resource Detail on Resource Item click", () => {
       cy.waitOn("/v1/env/audits*", () => {
         cy.visit(
           "/reports/activity-log/resources?from=2022-07-21&to=2022-07-29"
