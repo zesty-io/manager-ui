@@ -114,6 +114,7 @@ describe("Reports > Activity Log > Home", () => {
           "/reports/activity-log/resources?from=2022-07-14&to=2022-07-16"
         );
       });
+      cy.wait(1000);
       cy.get(".MuiListItem-root").contains("new all fields").click();
       cy.location("pathname").should(
         "eq",
