@@ -58,7 +58,7 @@ export const ResourceDetails = () => {
   const setDefaultDateParams = () => {
     let fromDate;
     if (contentData) {
-      fromDate = moment(contentData?.createdAt);
+      fromDate = moment(contentData?.meta?.createdAt);
     } else if (modelData) {
       fromDate = moment(modelData?.createdAt);
     } else if (fileData) {
