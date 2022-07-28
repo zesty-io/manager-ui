@@ -55,7 +55,7 @@ describe("Reports > Activity Log > Home", () => {
     });
 
     it("Does not set default date url parameters if they are set", () => {
-      cy.visit("/reports/activity-log/resources?from=2020-07-21&to=2020-07-28");
+      cy.visit("/reports/activity-log/resources?from=2020-07-21&to=2020-07-29");
       cy.location("search").should(
         "not.eq",
         `?from=${moment().add(-6, "days").format("YYYY-MM-DD")}&to=${moment()
@@ -67,7 +67,7 @@ describe("Reports > Activity Log > Home", () => {
     it("Displays all url parameters on filters", () => {
       cy.waitOn("/v1/env/audits*", () => {
         cy.visit(
-          "/reports/activity-log/resources?from=2022-07-21&to=2022-07-28&ar&resourceType=content&actionByUserZUID=5-aabe9db189-s0n789&sortBy=happenedAt"
+          "/reports/activity-log/resources?from=2022-07-21&to=2022-07-29&ar&resourceType=content&actionByUserZUID=5-aabe9db189-s0n789&sortBy=happenedAt"
         );
       });
       cy.get('[data-cy="filters"]').within(() => {
@@ -80,7 +80,7 @@ describe("Reports > Activity Log > Home", () => {
     it("Adds and modifies url parameters via filters", () => {
       cy.waitOn("/v1/env/audits*", () => {
         cy.visit(
-          "/reports/activity-log/resources?from=2022-07-21&to=2022-07-28"
+          "/reports/activity-log/resources?from=2022-07-21&to=2022-07-29"
         );
       });
       cy.get('[data-cy="filters"]').contains("Sort By").next().click();
@@ -111,7 +111,7 @@ describe("Reports > Activity Log > Home", () => {
     it("Navigates to Resource Detail on Resource Item click", () => {
       cy.waitOn("/v1/env/audits*", () => {
         cy.visit(
-          "/reports/activity-log/resources?from=2022-07-21&to=2022-07-28"
+          "/reports/activity-log/resources?from=2022-07-21&to=2022-07-29"
         );
       });
       cy.get(".MuiListItem-root").first().click();
@@ -130,7 +130,7 @@ describe("Reports > Activity Log > Home", () => {
           return res;
         });
       }).as("request");
-      cy.visit("/reports/activity-log/resources?from=2022-07-21&to=2022-07-28");
+      cy.visit("/reports/activity-log/resources?from=2022-07-21&to=2022-07-29");
       cy.get(".MuiSkeleton-root").should("have.length", 50);
       cy.wait("@request");
       cy.get(".MuiSkeleton-root").should("have.length", 0);
@@ -139,7 +139,7 @@ describe("Reports > Activity Log > Home", () => {
     it("Displays partial Skeletons when changing dates and refetching API", () => {
       cy.waitOn("/v1/env/audits*", () => {
         cy.visit(
-          "/reports/activity-log/resources?from=2022-07-21&to=2022-07-28"
+          "/reports/activity-log/resources?from=2022-07-21&to=2022-07-29"
         );
       });
 
