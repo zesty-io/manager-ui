@@ -131,6 +131,7 @@ export const Filters = (props) => {
 
   return (
     <Box
+      data-cy="filters"
       sx={{
         display: "flex",
         gap: 1,

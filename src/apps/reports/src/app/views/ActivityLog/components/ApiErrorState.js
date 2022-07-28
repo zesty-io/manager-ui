@@ -8,7 +8,7 @@ export const ApiErrorState = (props) => {
         Whoops!
       </Typography>
       <Typography color="text.secondary" sx={{ mb: 3 }}>
-        An error occured loading the data
+        An error occurred loading the data
       </Typography>
       <Button variant="contained" color="error" onClick={props.onRetry}>
         RETRY

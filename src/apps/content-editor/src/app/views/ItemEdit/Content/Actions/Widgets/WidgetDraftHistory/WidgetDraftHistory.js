@@ -76,9 +76,7 @@ export default connect((state, props) => {
             </Link>
           </>
         ) : (
-          <p className="noLogs">
-            No Audit Trail&trade; edit logs for this content.
-          </p>
+          <p className="noLogs">No Activity Log edit logs for this content.</p>
         )}
       </CardContent>
     </Card>
