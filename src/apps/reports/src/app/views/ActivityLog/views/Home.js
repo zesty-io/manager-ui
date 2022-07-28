@@ -73,9 +73,9 @@ export const Home = () => {
     { skip: !initialized }
   );
 
-  // Sets date parameters to 1 week
+  // Sets date parameters to 3 months
   const setDefaultDateParams = () => {
-    setParams(moment().add(-6, "days").format("YYYY-MM-DD"), "from");
+    setParams(moment().add(-3, "months").format("YYYY-MM-DD"), "from");
     setParams(moment().add(1, "days").format("YYYY-MM-DD"), "to");
   };
 

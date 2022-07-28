@@ -66,7 +66,7 @@ export const ResourceDetails = () => {
     } else if (settingsData) {
       fromDate = moment(settingsData?.createdAt);
     } else {
-      fromDate = moment().add(-6, "days");
+      fromDate = moment().add(-3, "months");
     }
     setParams(fromDate.format("YYYY-MM-DD"), "from");
     setParams(moment().add(1, "days").format("YYYY-MM-DD"), "to");

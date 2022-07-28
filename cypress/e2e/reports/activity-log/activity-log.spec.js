@@ -48,7 +48,7 @@ describe("Reports > Activity Log > Home", () => {
       cy.visit("/reports/activity-log/resources");
       cy.location("search").should(
         "eq",
-        `?from=${moment().add(-6, "days").format("YYYY-MM-DD")}&to=${moment()
+        `?from=${moment().add(-3, "months").format("YYYY-MM-DD")}&to=${moment()
           .add(1, "days")
           .format("YYYY-MM-DD")}`
       );
@@ -58,7 +58,7 @@ describe("Reports > Activity Log > Home", () => {
       cy.visit("/reports/activity-log/resources?from=2020-07-14&to=2020-07-16");
       cy.location("search").should(
         "not.eq",
-        `?from=${moment().add(-6, "days").format("YYYY-MM-DD")}&to=${moment()
+        `?from=${moment().add(-3, "months").format("YYYY-MM-DD")}&to=${moment()
           .add(1, "days")
           .format("YYYY-MM-DD")}`
       );
@@ -192,7 +192,7 @@ describe("Reports > Activity Log > Home", () => {
       cy.contains("RESET FILTERS").click();
       cy.location("search").should(
         "eq",
-        `?from=${moment().add(-6, "days").format("YYYY-MM-DD")}&to=${moment()
+        `?from=${moment().add(-3, "months").format("YYYY-MM-DD")}&to=${moment()
           .add(1, "days")
           .format("YYYY-MM-DD")}`
       );
