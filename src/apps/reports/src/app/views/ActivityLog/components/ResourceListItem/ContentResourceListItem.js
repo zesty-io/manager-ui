@@ -35,7 +35,6 @@ export const ContentResourceListItem = (props) => {
       setIsLoading(true);
       dispatch(searchItems(props.affectedZUID))
         .then((res) => !res.data.length && setContentError(true))
-        .catch(() => setContentError(true))
         .finally(() => setIsLoading(false));
     }
 

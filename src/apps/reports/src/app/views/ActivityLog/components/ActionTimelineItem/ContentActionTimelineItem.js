@@ -27,7 +27,6 @@ export const ContentActionTimelineItem = (props) => {
       setIsLoading(true);
       dispatch(searchItems(props.action.affectedZUID))
         .then((res) => !res.data.length && setContentError(true))
-        .catch(() => setContentError(true))
         .finally(() => setIsLoading(false));
     }
     if (!modelData && contentData && !modelError) {

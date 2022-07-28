@@ -55,7 +55,7 @@ describe("Reports > Activity Log > Home", () => {
     });
 
     it("Does not set default date url parameters if they are set", () => {
-      cy.visit("/reports/activity-log/resources?from=2020-07-21&to=2020-07-29");
+      cy.visit("/reports/activity-log/resources?from=2020-07-14&to=2020-07-16");
       cy.location("search").should(
         "not.eq",
         `?from=${moment().add(-6, "days").format("YYYY-MM-DD")}&to=${moment()
@@ -67,20 +67,20 @@ describe("Reports > Activity Log > Home", () => {
     it("Displays all url parameters on filters", () => {
       cy.waitOn("/v1/env/audits*", () => {
         cy.visit(
-          "/reports/activity-log/resources?from=2022-07-21&to=2022-07-29&ar&resourceType=content&actionByUserZUID=5-aabe9db189-s0n789&sortBy=happenedAt"
+          "/reports/activity-log/resources?from=2022-07-14&to=2022-07-29&resourceType=content&actionByUserZUID=5-84d1e6d4ae-s3m974&sortBy=happenedAt"
         );
       });
       cy.get('[data-cy="filters"]').within(() => {
         cy.contains("Sort By").next().contains("Oldest First");
         cy.contains("Resource Type").next().contains("Content");
-        cy.contains("User").next().contains("Developers Test Manager-UI");
+        cy.contains("User").next().contains("Andres Galindo");
       });
     });
 
     it("Adds and modifies url parameters via filters", () => {
       cy.waitOn("/v1/env/audits*", () => {
         cy.visit(
-          "/reports/activity-log/resources?from=2022-07-21&to=2022-07-29"
+          "/reports/activity-log/resources?from=2022-07-14&to=2022-07-16"
         );
       });
       cy.get('[data-cy="filters"]').contains("Sort By").next().click();
@@ -90,7 +90,7 @@ describe("Reports > Activity Log > Home", () => {
       cy.get('li[data-value="content"]').click();
 
       cy.get('[data-cy="filters"]').contains("User").next().click();
-      cy.get('li[data-value="5-aabe9db189-s0n789"]').click();
+      cy.get('li[data-value="5-84d1e6d4ae-s3m974"]').click();
 
       cy.get('[data-cy="filters"]').contains("From").next().click();
       cy.get(
@@ -102,22 +102,22 @@ describe("Reports > Activity Log > Home", () => {
       ).click();
       cy.location("search").should(
         "eq",
-        "?from=2022-07-18&to=2022-07-30&sortBy=happenedAt&resourceType=content&actionByUserZUID=5-aabe9db189-s0n789"
+        "?from=2022-07-18&sortBy=happenedAt&resourceType=content&actionByUserZUID=5-84d1e6d4ae-s3m974&to=2022-07-30"
       );
     });
   });
 
-  describe.only("Resource Tab", () => {
-    it.only("Navigates to Resource Detail on Resource Item click", () => {
+  describe("Resource Tab", () => {
+    it("Navigates to Resource Detail on Resource Item click", () => {
       cy.waitOn("/v1/env/audits*", () => {
         cy.visit(
-          "/reports/activity-log/resources?from=2022-07-21&to=2022-07-29"
+          "/reports/activity-log/resources?from=2022-07-14&to=2022-07-16"
         );
       });
-      cy.get(".MuiListItem-root").first().click();
+      cy.get(".MuiListItem-root").contains("new all fields").click();
       cy.location("pathname").should(
         "eq",
-        "/reports/activity-log/resources/29-875da5e-678241"
+        "/reports/activity-log/resources/7-f28fd4d4a9-qtjb66"
       );
     });
   });
@@ -130,7 +130,7 @@ describe("Reports > Activity Log > Home", () => {
           return res;
         });
       }).as("request");
-      cy.visit("/reports/activity-log/resources?from=2022-07-21&to=2022-07-29");
+      cy.visit("/reports/activity-log/resources?from=2022-07-14&to=2022-07-16");
       cy.get(".MuiSkeleton-root").should("have.length", 50);
       cy.wait("@request");
       cy.get(".MuiSkeleton-root").should("have.length", 0);
@@ -139,7 +139,7 @@ describe("Reports > Activity Log > Home", () => {
     it("Displays partial Skeletons when changing dates and refetching API", () => {
       cy.waitOn("/v1/env/audits*", () => {
         cy.visit(
-          "/reports/activity-log/resources?from=2022-07-21&to=2022-07-29"
+          "/reports/activity-log/resources?from=2022-07-14&to=2022-07-16"
         );
       });
 
@@ -156,10 +156,12 @@ describe("Reports > Activity Log > Home", () => {
       cy.get(
         '.MuiDateRangePickerDay-root button[aria-label="Jul 18, 2022"]'
       ).click();
+      cy.root().click();
       cy.get('[data-cy="filters"]').contains("To").next().click();
       cy.get(
         '.MuiDateRangePickerDay-root button[aria-label="Jul 30, 2022"]'
       ).click();
+      cy.root().click();
       cy.get(".MuiSkeleton-root").should("have.length", 16);
       cy.wait("@request");
       cy.get(".MuiSkeleton-root").should("have.length", 0);
