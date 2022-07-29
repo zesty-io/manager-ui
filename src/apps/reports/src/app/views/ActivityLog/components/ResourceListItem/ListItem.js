@@ -19,7 +19,16 @@ export const ListItem = (props) => {
     <MuiListItem
       disableGutters
       divider={props.divider}
-      sx={{ py: 2, cursor: props.clickable && "pointer", maxWidth: 720 }}
+      sx={{
+        py: 2,
+        cursor: props.clickable && "pointer",
+        maxWidth: 720,
+        "&:hover": {
+          " .MuiAvatar-root": {
+            backgroundColor: "primary.main",
+          },
+        },
+      }}
       onClick={
         props.clickable
           ? () =>

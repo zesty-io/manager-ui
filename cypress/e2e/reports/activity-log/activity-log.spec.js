@@ -128,6 +128,7 @@ describe("Reports > Activity Log > Home", () => {
     it("Displays All Skeletons while initial API is called", () => {
       cy.intercept("/v1/env/audits*", (req) => {
         req.continue(async (res) => {
+          // Throttles API to test Skeleton loaders
           await new Promise((resolve) => setTimeout(resolve, 4000));
           return res;
         });
@@ -149,6 +150,7 @@ describe("Reports > Activity Log > Home", () => {
 
       cy.intercept("/v1/env/audits*", (req) => {
         req.continue(async (res) => {
+          // Throttles API to test Skeleton loaders
           await new Promise((resolve) => setTimeout(resolve, 4000));
           return res;
         });
