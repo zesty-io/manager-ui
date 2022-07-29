@@ -1,9 +1,8 @@
 import { memo, useState, useEffect, useCallback } from "react";
 import { connect } from "react-redux";
 import moment from "moment-timezone";
-import cx from "classnames";
 
-import { Select, Option } from "@zesty-io/core/Select";
+import { Box, Select, MenuItem } from "@mui/material";
 
 import { fetchVersions } from "shell/store/contentVersions";
 
@@ -42,9 +41,9 @@ export default connect((state, props) => {
     }, [props.latestVersionNum]);
 
     // Set item editing view to selected version
-    const onSelect = (versionNumber) => {
+    const onSelect = (e) => {
       const version = props.versions.find(
-        (version) => version.meta.version == versionNumber
+        (version) => version.meta.version == e.target.value
       );
 
       if (version) {
@@ -61,26 +60,31 @@ export default connect((state, props) => {
     return (
       <Select
         name="itemVersion"
-        className={cx(
-          styles.VersionSelector,
-          selectedVersionNum !== props.latestVersionNum
-            ? styles.NotLatest
-            : null
-        )}
+        sx={{
+          maxWidth: "125px",
+          backgroundColor:
+            selectedVersionNum !== props.latestVersionNum
+              ? "warning.light"
+              : "",
+        }}
         value={selectedVersionNum}
         loading={loading}
-        onSelect={onSelect}
+        onChange={onSelect}
+        size="small"
       >
         {Array.isArray(props.versions) &&
           props.versions.map((item) => (
-            <Option
+            <MenuItem
               key={`${item.meta?.ZUID}-${item.meta?.version}`}
               className={styles.VersionOption}
               value={item.meta?.version}
-              html={`Version ${item.meta?.version}   <small>${moment(
-                item.web?.createdAt
-              ).format("MMM Do YYYY, [at] h:mm a")}</small>`}
-            />
+            >
+              Version {item.meta?.version}
+              <Box component="small" sx={{ ml: 0.5 }}>
+                {" "}
+                {moment(item.web?.createdAt).format("MMM Do YYYY, [at] h:mm a")}
+              </Box>
+            </MenuItem>
           ))}
       </Select>
     );

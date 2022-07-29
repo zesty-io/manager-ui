@@ -76,7 +76,11 @@ export const templates = {
    * 3) change object key and name references to new model
    */
   Iphone5: {
-    option: `<span>iPhone 5 <small>320x568px</small></span>`,
+    option: (
+      <span>
+        iPhone 5 <small>320x568px</small>
+      </span>
+    ),
     template: (props) => {
       return (
         <div className={`marvel-device iphone5s silver ${props.orientation}`}>
@@ -94,7 +98,11 @@ export const templates = {
     },
   },
   Iphone8: {
-    option: `<span>iPhone 8 <small>375x667px</small></span>`,
+    option: (
+      <span>
+        iPhone 8 <small>375x667px</small>
+      </span>
+    ),
     template: (props) => (
       <div className={`marvel-device iphone8 black ${props.orientation}`}>
         <div className="top-bar"></div>
@@ -110,7 +118,11 @@ export const templates = {
     ),
   },
   IphoneX: {
-    option: `<span>iPhone X <small>375x812px</small></span>`,
+    option: (
+      <span>
+        iPhone X <small>375x812px</small>
+      </span>
+    ),
     template: (props) => (
       <div className={`marvel-device iphone-x ${props.orientation}`}>
         <div className="notch">
@@ -133,7 +145,11 @@ export const templates = {
     ),
   },
   iPadMini: {
-    option: `<span>iPad Mini <small>576x768px</small></span>`,
+    option: (
+      <span>
+        iPad Mini <small>576x768px</small>
+      </span>
+    ),
     template: (props) => (
       <div className={`marvel-device ipad silver ${props.orientation}`}>
         <div className="camera"></div>
@@ -143,7 +159,11 @@ export const templates = {
     ),
   },
   Note8: {
-    option: `<span>Note 8 <small>400x822px</small></span>`,
+    option: (
+      <span>
+        Note 8 <small>400x822px</small>
+      </span>
+    ),
     template: (props) => (
       <div className={`marvel-device note8 ${props.orientation}`}>
         <div className="inner"></div>
@@ -161,7 +181,11 @@ export const templates = {
     ),
   },
   Nexus5: {
-    option: `<span>Nexus 5 <small>320x568px</small></span>`,
+    option: (
+      <span>
+        Nexus 5 <small>320x568px</small>
+      </span>
+    ),
     template: (props) => (
       <div className={`marvel-device nexus5 ${props.orientation}`}>
         <div className="top-bar"></div>
@@ -173,7 +197,11 @@ export const templates = {
     ),
   },
   HTCOne: {
-    option: `<span>HTCOne <small>320x568px</small></span>`,
+    option: (
+      <span>
+        HTCOne <small>320x568px</small>
+      </span>
+    ),
     template: (props) => (
       <div className={`marvel-device htc-one ${props.orientation}`}>
         <div className="top-bar"></div>
@@ -185,7 +213,11 @@ export const templates = {
     ),
   },
   Lumina920: {
-    option: `<span>Lumina 920 <small>320x553px</small></span>`,
+    option: (
+      <span>
+        Lumina 920 <small>320x553px</small>
+      </span>
+    ),
     template: (props) => (
       <div className={`marvel-device lumia920 black ${props.orientation}`}>
         <div className="top-bar"></div>

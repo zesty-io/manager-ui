@@ -2,7 +2,7 @@ import React from "react";
 
 import cx from "classnames";
 
-import { Select, Option } from "@zesty-io/core";
+import { Select, MenuItem } from "@mui/material";
 
 import { formatName } from "utility/formatName";
 
@@ -22,18 +22,17 @@ export default function Columns(props) {
               <span className={cx(styles.Cell)}>{col.toUpperCase()}</span>
               <Select
                 name={colName}
-                onSelect={(value) => {
-                  props.handleMap(value, col);
+                onChange={(evt) => {
+                  props.handleMap(evt.target.value, col);
                 }}
-                value="none"
+                defaultValue="none"
+                size="small"
               >
-                <Option text="none" value="none" />
+                <MenuItem value="none">none</MenuItem>
                 {filterDeactivated.map((field) => (
-                  <Option
-                    key={field.name}
-                    text={field.label}
-                    value={field.name}
-                  />
+                  <MenuItem key={field.name} value={field.name}>
+                    {field.label}
+                  </MenuItem>
                 ))}
               </Select>
             </div>
