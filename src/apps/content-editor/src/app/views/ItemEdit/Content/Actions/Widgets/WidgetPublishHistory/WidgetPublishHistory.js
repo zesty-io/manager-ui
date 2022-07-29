@@ -13,8 +13,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import { fetchAuditTrailPublish } from "shell/store/logs";
 import cx from "classnames";
 import SharedWidgetStyles from "../SharedWidget.less";
-import { useHistory } from "react-router";
-import { Link } from "@mui/material";
+import { AppLink } from "@zesty-io/core";
 
 export default connect((state) => {
   return {
@@ -24,7 +23,6 @@ export default connect((state) => {
 })(
   memo(function WidgetPublishHistory(props) {
     const [loading, setLoading] = useState(false);
-    const history = useHistory();
 
     useEffect(() => {
       setLoading(true);
@@ -77,20 +75,9 @@ export default connect((state) => {
                     );
                   })}
               </ul>
-              {/* TODO: Replace this link with Zesty MUI AppLink */}
-              <Link
-                color="#FF5D03"
-                underline="hover"
-                href="#"
-                onClick={(evt) => {
-                  evt.preventDefault();
-                  history.push(
-                    `/reports/activity-log/resources/${props.itemZUID}`
-                  );
-                }}
-              >
-                View logs
-              </Link>
+              <AppLink to={`/reports/activity-log/resources/${props.itemZUID}`}>
+                View Logs
+              </AppLink>
             </>
           )}
         </CardContent>

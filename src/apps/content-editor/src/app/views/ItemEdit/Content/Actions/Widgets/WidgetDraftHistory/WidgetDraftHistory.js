@@ -6,7 +6,7 @@ import { Card, CardHeader, CardContent, Link } from "@mui/material";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
 import cx from "classnames";
 import SharedWidgetStyles from "../SharedWidget.less";
-import { useHistory } from "react-router";
+import { AppLink } from "@zesty-io/core";
 
 export default connect((state, props) => {
   return {
@@ -17,7 +17,6 @@ export default connect((state, props) => {
         : [],
   };
 })(function WidgetDraftHistory(props) {
-  const history = useHistory();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -60,20 +59,9 @@ export default connect((state, props) => {
                 </li>
               ))}
             </ul>
-            {/* TODO: Replace this link with Zesty MUI AppLink */}
-            <Link
-              color="#FF5D03"
-              underline="hover"
-              href="#"
-              onClick={(evt) => {
-                evt.preventDefault();
-                history.push(
-                  `/reports/activity-log/resources/${props.itemZUID}`
-                );
-              }}
-            >
-              View logs
-            </Link>
+            <AppLink to={`/reports/activity-log/resources/${props.itemZUID}`}>
+              View Logs
+            </AppLink>
           </>
         ) : (
           <p className="noLogs">No Activity Log edit logs for this content.</p>
