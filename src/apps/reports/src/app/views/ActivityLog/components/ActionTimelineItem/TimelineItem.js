@@ -133,7 +133,8 @@ export const TimelineItem = (props) => {
               height={16}
               sx={{ mb: 1 }}
             />
-          ) : location.pathname.includes("resources") ? (
+          ) : location.pathname.includes("resources") &&
+            props.action?.resourceType !== "schema" ? (
             actionMessage
           ) : (
             `${actionMessage} ${props.itemName}`

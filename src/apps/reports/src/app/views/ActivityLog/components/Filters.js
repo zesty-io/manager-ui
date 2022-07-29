@@ -56,9 +56,9 @@ export const Filters = (props) => {
               displayEmpty
             >
               <MenuItem value="">All</MenuItem>
+              <MenuItem value="code">Code</MenuItem>
               <MenuItem value="content">Content</MenuItem>
               <MenuItem value="schema">Schema</MenuItem>
-              <MenuItem value="code">Code</MenuItem>
               <MenuItem value="settings">Settings</MenuItem>
             </Select>
           </>
@@ -76,12 +76,14 @@ export const Filters = (props) => {
               displayEmpty
             >
               <MenuItem value="">All</MenuItem>
-              {uniqueUserActions.map((resource) => (
-                <MenuItem
-                  key={resource.actionByUserZUID}
-                  value={resource.actionByUserZUID}
-                >{`${resource.firstName} ${resource.lastName}`}</MenuItem>
-              ))}
+              {uniqueUserActions
+                .sort((a, b) => a.firstName.localeCompare(b.firstName))
+                .map((resource) => (
+                  <MenuItem
+                    key={resource.actionByUserZUID}
+                    value={resource.actionByUserZUID}
+                  >{`${resource.firstName} ${resource.lastName}`}</MenuItem>
+                ))}
             </Select>
           </>
         );

@@ -31,7 +31,7 @@ const tabPaths = ["resources", "users", "timeline", "insights"];
 const filtersOnView = {
   resources: ["happenedAt", "resourceType", "actionByUserZUID"],
   users: ["happenedAt", "userRole"],
-  timeline: ["action", "actionByUserZUID"],
+  timeline: ["action", , "resourceType", "actionByUserZUID"],
   insights: ["action", "actionByUserZUID"],
 };
 

@@ -24,7 +24,11 @@ export const FileResourceListItem = (props) => {
       primary={
         !fileData ? `${props.affectedZUID} (Deleted)` : fileData?.fileName
       }
-      secondary={`Last action @ ${moment(props.updatedAt).format("hh:mm A")}${
+      secondary={`Last action @ ${
+        moment(props.updatedAt).isSame(new Date(), "year")
+          ? moment(props.updatedAt).format("MMM D, h:mm A")
+          : moment(props.updatedAt).format("ll, h:mm A")
+      }${
         fileData ? ` • ${fileTypeName?.[fileData?.type] || fileData?.type}` : ""
       }`}
     />

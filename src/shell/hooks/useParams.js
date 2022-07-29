@@ -20,7 +20,7 @@ export const useParams = () => {
       params.delete(name);
     }
 
-    history.push({
+    history.replace({
       pathname: location.pathname,
       search: params.toString(),
     });

@@ -7,9 +7,9 @@ import { fetchModel } from "shell/store/models";
 import { ListItem } from "./ListItem";
 
 const modelTypeName = {
-  templateset: "Single Page Model",
-  pageset: "Multi Page Model",
-  dataset: "Headless Data Model",
+  templateset: "Single Page Item",
+  pageset: "Multi Page Item",
+  dataset: "Headless Data Item",
 };
 
 export const ContentResourceListItem = (props) => {
@@ -48,7 +48,11 @@ export const ContentResourceListItem = (props) => {
 
   const secondaryText = useMemo(() => {
     const chips = [
-      `Last action @ ${moment(props.updatedAt).format("hh:mm A")}`,
+      `Last action @ ${
+        moment(props.updatedAt).isSame(new Date(), "year")
+          ? moment(props.updatedAt).format("MMM D, h:mm A")
+          : moment(props.updatedAt).format("ll, h:mm A")
+      }`,
     ];
     if (modelData) {
       chips.push(modelTypeName[modelData?.type]);

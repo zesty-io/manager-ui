@@ -33,9 +33,11 @@ export const ModelResourceListItem = (props) => {
       primary={
         modelError ? `${props.affectedZUID} (Deleted)` : modelData?.label
       }
-      secondary={`Last action @ ${moment(props.updatedAt).format(
-        "hh:mm A"
-      )} • Content Model`}
+      secondary={`Last action @ ${
+        moment(props.updatedAt).isSame(new Date(), "year")
+          ? moment(props.updatedAt).format("MMM D, h:mm A")
+          : moment(props.updatedAt).format("ll, h:mm A")
+      } • Content Model`}
       showSkeletons={isLoading}
     />
   );

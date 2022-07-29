@@ -80,7 +80,7 @@ export const ActivityByResource = (props) => {
               plugins: { legend: { display: false } },
             }}
             data={{
-              labels: resourceTypes,
+              labels: resourceTypes.map((type) => startCase(type)),
               datasets: [
                 {
                   data: resourceTypePercentages.map(
@@ -111,7 +111,7 @@ export const ActivityByResource = (props) => {
                 variant="reactangular"
                 height={8}
                 width={26}
-                sx={{ ml: "auto" }}
+                sx={{ ml: "120px" }}
               />
             </>
           ) : (
@@ -125,13 +125,17 @@ export const ActivityByResource = (props) => {
                   borderRadius: 100,
                 }}
               ></Box>
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ width: 45 }}
+              >
                 {startCase(resource.type)}
               </Typography>
               <Typography
                 variant="caption"
                 color="text.secondary"
-                sx={{ ml: "auto" }}
+                sx={{ ml: "120px" }}
               >
                 {resource.percentage}%
               </Typography>
