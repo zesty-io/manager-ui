@@ -107,15 +107,14 @@ describe("Reports > Activity Log > Home", () => {
     });
   });
 
-  describe("Resource Tab", () => {
+  describe("Resources View", () => {
     it("Navigates to Resource Detail on Resource Item click", () => {
       cy.waitOn("/v1/env/audits*", () => {
         cy.visit(
           "/reports/activity-log/resources?from=2022-07-14&to=2022-07-16"
         );
       });
-      cy.wait(1000);
-      cy.get(".MuiListItem-root").contains("new all fields").click();
+      cy.contains("new all fields").click();
       cy.location("pathname").should(
         "eq",
         "/reports/activity-log/resources/7-f28fd4d4a9-qtjb66"
