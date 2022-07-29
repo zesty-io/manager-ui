@@ -11,6 +11,11 @@ import { theme } from "@zesty-io/material";
 
 import "chart.js/auto";
 
+import { LicenseInfo } from "@mui/x-license-pro";
+LicenseInfo.setLicenseKey(
+  "e9268055e7858ccf7d7bc5d078217f7eTz00ODIyOCxFPTE2OTA3Mzk5NDkxNjgsUz1wcm8sTE09c3Vic2NyaXB0aW9uLEtWPTI="
+);
+
 import idb from "utility/idb";
 import observable from "@riotjs/observable";
 
