@@ -7,7 +7,7 @@ import { fetchInstalledApps } from "shell/store/apps";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileAlt, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlug, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./styles.less";
 export default memo(function GlobalCustomApps(props) {
@@ -53,7 +53,7 @@ export default memo(function GlobalCustomApps(props) {
             to={`/app/${app.ZUID}`}
             title={`${app.label}`}
           >
-            <FontAwesomeIcon icon={faFileAlt} />
+            <FontAwesomeIcon icon={faPlug} />
             <span className={styles.title}>{app.label}</span>
           </Link>
         );
