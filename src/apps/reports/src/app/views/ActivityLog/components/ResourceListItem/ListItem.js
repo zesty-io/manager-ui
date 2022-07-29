@@ -23,11 +23,13 @@ export const ListItem = (props) => {
         py: 2,
         cursor: props.clickable && "pointer",
         maxWidth: 720,
-        "&:hover": {
-          " .MuiAvatar-root": {
-            backgroundColor: "primary.main",
+        ...(props.clickable && {
+          "&:hover": {
+            " .MuiAvatar-root": {
+              backgroundColor: "primary.main",
+            },
           },
-        },
+        }),
       }}
       onClick={
         props.clickable
