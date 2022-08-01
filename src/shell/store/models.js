@@ -106,7 +106,7 @@ export function fetchModel(modelZUID) {
               message: `Failed to fetch models`,
             })
           );
-          if (res.error) {
+          if (res.error || res.status === 404) {
             throw new Error(res.error);
           }
         }

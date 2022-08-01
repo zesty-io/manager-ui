@@ -65,7 +65,6 @@ export function ChartDashboard(props) {
           <Bar
             data={{
               labels: [...categories],
-
               datasets: [
                 {
                   display: false,
@@ -79,9 +78,7 @@ export function ChartDashboard(props) {
             options={{
               maintainAspectRatio: false,
               responsive: true,
-              legend: {
-                display: false,
-              },
+              plugins: { legend: { display: false } },
               title: {
                 text: "Create: 1 Update: 2 Delete: 3 Publish: 4 Unpublish: 5",
                 display: false,

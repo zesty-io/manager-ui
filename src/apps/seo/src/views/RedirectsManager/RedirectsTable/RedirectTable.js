@@ -1,135 +1,194 @@
-import { useEffect, useState } from "react";
+import { useMemo, useCallback } from "react";
+import { DataGridPro, GridActionsCellItem } from "@mui/x-data-grid-pro";
+import { Box, Tooltip } from "@mui/material";
+import InfoIcon from "@mui/icons-material/InfoOutlined";
+import DeleteIcon from "@mui/icons-material/Delete";
 import styles from "./RedirectTable.less";
-import cx from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowRight,
+  faExternalLinkAlt,
+  faFile,
+  faFileAlt,
+} from "@fortawesome/free-solid-svg-icons";
 
 import { removeRedirect } from "../../../store/redirects";
 
 import { RedirectCreator } from "./RedirectCreator";
-import RedirectsTableHeader from "./RedirectsTableHeader";
-import RedirectsTableRow from "./RedirectsTableRow";
+import { RedirectTargetCell } from "./RedirectTargetCell";
 
 export default function RedirectTable(props) {
-  const [redirects, setRedirects] = useState(props.redirects);
+  const handleRemoveRedirect = useCallback((zuid) => {
+    props.dispatch(removeRedirect(zuid));
+  }, []);
 
-  const [redirectsOrder, setRedirectsOrder] = useState(
-    Object.keys(props.redirects)
+  const columns = useMemo(
+    () => [
+      { field: "id", headerName: "Id", hide: true },
+      {
+        field: "path",
+        flex: 2,
+        renderHeader: () => (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Tooltip title="File Path Only" arrow placement="top-start">
+              <InfoIcon fontSize="small" />
+            </Tooltip>
+            Incoming Path
+          </Box>
+        ),
+        renderCell: ({ value }) => (
+          <Box
+            sx={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              direction: "rtl",
+            }}
+          >
+            {value}
+          </Box>
+        ),
+      },
+      {
+        field: "code",
+        width: 135,
+        renderHeader: () => (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Tooltip
+              title={
+                <>
+                  301: Moved Permanently <br />
+                  302: Temporarily Moved
+                </>
+              }
+              arrow
+              placement="top-start"
+            >
+              <InfoIcon fontSize="small" />
+            </Tooltip>
+            HTTP Code
+          </Box>
+        ),
+        renderCell: ({ value }) => {
+          return (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              {value} <FontAwesomeIcon icon={faArrowRight} />
+            </Box>
+          );
+        },
+      },
+      {
+        field: "targetType",
+        width: 140,
+        renderHeader: () => (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Tooltip
+              title={
+                <>
+                  Internal E.g. /about <br />
+                  External E.g. https://zesty.org/ <br />
+                  Wildcard E.g. /blog/*/*/
+                </>
+              }
+              arrow
+              placement="top-start"
+            >
+              <InfoIcon fontSize="small" />
+            </Tooltip>
+            Redirect Type
+          </Box>
+        ),
+        renderCell: ({ value }) => {
+          return (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              {value === "external" ? (
+                <>
+                  <FontAwesomeIcon
+                    icon={faExternalLinkAlt}
+                    className={styles.mr}
+                  />
+                  External&nbsp;
+                </>
+              ) : value === "path" ? (
+                <>
+                  <FontAwesomeIcon icon={faFile} className={styles.mr} />
+                  Wildcard&nbsp;
+                </>
+              ) : (
+                <>
+                  <FontAwesomeIcon icon={faFileAlt} className={styles.mr} />
+                  Internal&nbsp;
+                </>
+              )}
+            </Box>
+          );
+        },
+      },
+      {
+        field: "target",
+        headerName: "Redirect Target",
+        flex: 2,
+        renderCell: ({ value, row }) => (
+          <RedirectTargetCell target={value} targetType={row.targetType} />
+        ),
+      },
+      {
+        field: "actions",
+        type: "actions",
+        width: 40,
+        getActions: ({ row }) => [
+          <GridActionsCellItem
+            icon={<DeleteIcon />}
+            color="warning"
+            label="Delete"
+            sx={{ "&:hover": { color: "error.main" } }}
+            onClick={() => handleRemoveRedirect(row.ZUID)}
+          />,
+        ],
+      },
+    ],
+    []
   );
 
-  const [sortBy, setSortBy] = useState("");
-  const [sortDirection, setSortDirection] = useState("");
-
-  useEffect(() => {
-    setRedirects(props.redirects);
-    setRedirectsOrder(sort(props.redirects, sortBy, sortDirection));
-  }, [props.redirects]);
-
-  const handleRemoveRedirect = (zuid) => {
-    props.dispatch(removeRedirect(zuid));
-  };
-
-  const sort = (redirects, by, direction) => {
-    const mapping = {
-      type: "code",
-      from: "path",
-      to: "path",
-    };
-
-    if (direction === "desc") {
-      return Object.keys(redirects).sort((a, b) => {
-        const prev = String(redirects[a][mapping[by]])?.toLowerCase().trim();
-        const next = String(redirects[b][mapping[by]])?.toLowerCase().trim();
-
-        if (prev > next) {
-          return -1;
-        }
-        if (prev < next) {
-          return 1;
-        }
-        return 0;
-      });
-    } else if (direction === "asc") {
-      return Object.keys(redirects).sort((a, b) => {
-        const prev = String(redirects[a][mapping[by]])?.toLowerCase().trim();
-        const next = String(redirects[b][mapping[by]])?.toLowerCase().trim();
-
-        if (prev < next) {
-          return -1;
-        }
-        if (prev > next) {
-          return 1;
-        }
-        return 0;
-      });
-    } else {
-      return Object.keys(redirects);
-    }
-  };
-
-  const handleSortBy = (el) => {
-    const by = el.currentTarget.dataset.value;
-    const direction = sortDirection === "desc" ? "asc" : "desc";
-    setSortBy(by);
-    setSortDirection(direction);
-    setRedirectsOrder(sort(redirects, by, direction));
-  };
-
-  const renderRows = () => {
-    const filter = props.redirectsFilter;
-    let order = [...redirectsOrder];
-
-    if (filter) {
-      order = order.filter((key) => {
-        const redirect = props.redirects[key];
-        if (
-          redirect.path.indexOf(filter) !== -1 ||
-          String(redirect.code).indexOf(filter) !== -1 ||
-          redirect.ZUID.indexOf(filter) !== -1 ||
-          redirect.target.indexOf(filter) !== -1
-        ) {
-          return true;
-        } else {
-          return false;
-        }
-      });
-    }
-
-    if (order.length) {
-      return order.map((key) => {
-        const redirect = props.redirects[key];
-
-        return (
-          <RedirectsTableRow
-            key={key}
-            removeRedirect={() => handleRemoveRedirect(redirect.ZUID)}
-            {...redirect}
-          />
-        );
-      });
-    } else {
-      return (
-        <div className={cx(styles.noResults, styles.subheadline)}>
-          No Redirect Found
-        </div>
-      );
-    }
-  };
+  const rows = useMemo(
+    () =>
+      Object.values(props.redirects)
+        .filter((redirect) => {
+          if (
+            redirect.path.indexOf(props.redirectsFilter) !== -1 ||
+            String(redirect.code).indexOf(props.redirectsFilter) !== -1 ||
+            redirect.ZUID.indexOf(props.redirectsFilter) !== -1 ||
+            redirect.target.indexOf(props.redirectsFilter) !== -1
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        })
+        .map((redirect) => ({
+          ...redirect,
+          id: redirect.ZUID,
+        })),
+    [props.redirects, props.redirectsFilter]
+  );
 
   return (
     <section className={styles.RedirectsTable}>
-      <RedirectsTableHeader
-        sortBy={sortBy}
-        sortDirection={sortDirection}
-        handleSortBy={handleSortBy}
-      />
-
       <main className={styles.TableBody}>
         <RedirectCreator
           options={props.paths}
           siteZuid={props.siteZuid}
           dispatch={props.dispatch}
         />
-        {renderRows()}
       </main>
+      <div style={{ height: "100%" }}>
+        <DataGridPro
+          columns={columns}
+          rows={rows}
+          rowHeight={60}
+          initialState={{ pinnedColumns: { right: ["actions"] } }}
+          hideFooter
+        />
+      </div>
     </section>
   );
 }
