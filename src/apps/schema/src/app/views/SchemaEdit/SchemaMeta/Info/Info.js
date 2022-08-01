@@ -136,6 +136,11 @@ export default connect((state) => {
               &nbsp;Edit Code
             </AppLink>
           </li>
+          <li>
+            <AppLink to={`/reports/activity-log/resources/${props.model.ZUID}`}>
+              &nbsp;View Logs
+            </AppLink>
+          </li>
         </ul>
       </CardActions>
     </Card>

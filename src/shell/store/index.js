@@ -32,6 +32,8 @@ import { users } from "./users";
 import { releases } from "./releases";
 import { releaseMembers } from "./releaseMembers";
 import apps from "./apps";
+import { instanceApi } from "../services/instance";
+import { accountsApi } from "../services/accounts";
 
 // Middleware is applied in order of array
 const middlewares = [
@@ -42,6 +44,8 @@ const middlewares = [
   fetchResource,
   resolveFieldOptions,
   thunkMiddleware,
+  instanceApi.middleware,
+  accountsApi.middleware,
 ];
 
 /**
@@ -100,6 +104,8 @@ function createReducer(asyncReducers) {
     platform,
     headTags,
     ui: ui.reducer,
+    [instanceApi.reducerPath]: instanceApi.reducer,
+    [accountsApi.reducerPath]: accountsApi.reducer,
   };
 
   return combineReducers({

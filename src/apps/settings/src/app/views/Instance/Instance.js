@@ -4,20 +4,23 @@ import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
 
-import Stack from "@mui/material/Stack";
-import Tooltip from "@mui/material/Tooltip";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import ToggleButton from "@mui/material/ToggleButton";
-import FormLabel from "@mui/material/FormLabel";
-import Button from "@mui/material/Button";
+import {
+  Divider,
+  ToggleButtonGroup,
+  ToggleButton,
+  FormLabel,
+  Button,
+  CircularProgress,
+  Tooltip,
+  Select,
+  MenuItem,
+  Stack,
+} from "@mui/material";
+
 import SaveIcon from "@mui/icons-material/Save";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
-import CircularProgress from "@mui/material/CircularProgress";
 
 import { FieldTypeText } from "@zesty-io/material";
-import { Select, Option } from "@zesty-io/core/Select";
-
-import Divider from "@mui/material/Divider";
 
 import { Docs } from "@zesty-io/core/Docs";
 import { notify } from "shell/store/notifications";
@@ -180,17 +183,17 @@ export default connect((state) => {
                     <div className={styles.selectProtocol}>
                       <Select
                         name={field.key}
-                        onSelect={setValue}
+                        onChange={(evt) =>
+                          setValue(evt.target.value, field.key)
+                        }
                         value={fieldValues[field.key]}
+                        size="small"
                       >
-                        <Option value="Select" text="Select" />
+                        <MenuItem value="Select">Select</MenuItem>
                         {field.options.split(",").map((option, index) => (
-                          <Option
-                            key={index}
-                            value={option}
-                            text={option}
-                            selected={fieldValues[field.key] === option}
-                          />
+                          <MenuItem key={index} value={option}>
+                            {option}
+                          </MenuItem>
                         ))}
                       </Select>
                     </div>
@@ -294,18 +297,16 @@ export default connect((state) => {
                   <div className={styles.selectProtocol}>
                     <Select
                       name={field.key}
-                      onSelect={setValue}
+                      onChange={(evt) => setValue(evt.target.value, field.key)}
                       value={fieldValues[field.key]}
+                      size="small"
                     >
                       {field.options.split(";").map((option, index) => {
                         let val = option.split(":");
                         return (
-                          <Option
-                            key={index}
-                            value={val[0]}
-                            text={val[1]}
-                            selected={fieldValues[field.key] === val[0]}
-                          />
+                          <MenuItem key={index} value={val[0]}>
+                            {val[1]}
+                          </MenuItem>
                         );
                       })}
                     </Select>

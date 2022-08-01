@@ -7,7 +7,7 @@ import { ContentNavToggle } from "./components/ContentNavToggle";
 
 import { actions as uiActions } from "../../../../../../shell/store/ui";
 
-import Button from "@mui/material/Button";
+import { Select, MenuItem, Button } from "@mui/material";
 import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import HomeIcon from "@mui/icons-material/Home";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
@@ -22,7 +22,6 @@ import { ReorderNav } from "../ReorderNav";
 import { Nav } from "@zesty-io/core/Nav";
 
 import { Notice } from "@zesty-io/core/Notice";
-import { Select, Option } from "@zesty-io/core/Select";
 
 import ItemsFilter from "./ItemsFilter";
 import { collapseNavItem, hideNavItem } from "../../../store/navContent";
@@ -78,7 +77,8 @@ export function ContentNav(props) {
     dispatch(collapseNavItem(nodeProps.path));
   };
 
-  const handleCreateSelect = (ZUID) => {
+  const handleCreateSelect = (e) => {
+    const ZUID = e.target.value;
     if (ZUID && ZUID != "0") {
       history.push(`/content/${ZUID}/new`);
     }
@@ -112,11 +112,12 @@ export function ContentNav(props) {
         <Select
           name="createItemFromModel"
           className={`${styles.CreateSelect} ${styles.Select} CreateItemDropdown`}
-          onSelect={handleCreateSelect}
-          value="0"
+          onChange={handleCreateSelect}
+          defaultValue="0"
+          size="small"
         >
-          <Option value="0" text="— Create Item —" />
-          <Option value="link" text="Internal/External Link" />
+          <MenuItem value="0">— Create Item —</MenuItem>
+          <MenuItem value="link">Internal/External Link</MenuItem>
           {Object.keys(props.models)
             .filter((modelZUID) => {
               // exclude these special models from the create item list
@@ -128,11 +129,9 @@ export function ContentNav(props) {
               return props.models[a].label >= props.models[b].label ? 1 : -1;
             })
             .map((modelZUID) => (
-              <Option
-                key={modelZUID}
-                value={modelZUID}
-                text={props.models[modelZUID].label}
-              />
+              <MenuItem key={modelZUID} value={modelZUID}>
+                {props.models[modelZUID].label}
+              </MenuItem>
             ))}
         </Select>
         <Button variant="contained" id="ReorderNavButton" onClick={toggleModal}>

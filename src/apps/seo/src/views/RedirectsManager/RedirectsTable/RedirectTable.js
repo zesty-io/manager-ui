@@ -1,5 +1,5 @@
 import { useMemo, useCallback } from "react";
-import { DataGridPremium, GridActionsCellItem } from "@mui/x-data-grid-premium";
+import { DataGridPro, GridActionsCellItem } from "@mui/x-data-grid-pro";
 import { Box, Tooltip } from "@mui/material";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -181,7 +181,7 @@ export default function RedirectTable(props) {
         />
       </main>
       <div style={{ height: "100%" }}>
-        <DataGridPremium
+        <DataGridPro
           columns={columns}
           rows={rows}
           rowHeight={60}

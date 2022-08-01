@@ -58,12 +58,12 @@ const numberWithCommas = (x) => {
 
 const floatWithCommas = (x) => {
   x = x.toFixed(2);
-  let parts = x.toString().split(".");
+  const parts = x.toString().split(".");
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return parts.join(".");
 };
 
-export default function Metrics(props) {
+export default function Metrics() {
   const zuid = useSelector((state) => state.instance.ZUID);
   const [timePeriod, setTimePeriod] = useState(30);
   const { start, end } = getDates(timePeriod);
@@ -75,8 +75,8 @@ export default function Metrics(props) {
   const [usageData, setUsageData] = useState();
   const [requestData, setRequestsData] = useState();
 
-  let StartDisplay = start.toString().split(" ").slice(0, 3).join(" ");
-  let EndDisplay = end.toString().split(" ").slice(0, 3).join(" ");
+  const StartDisplay = start.toString().split(" ").slice(0, 3).join(" ");
+  const EndDisplay = end.toString().split(" ").slice(0, 3).join(" ");
 
   useEffect(async () => {
     setUsageData();
@@ -176,14 +176,14 @@ const Content = ({
   EndDisplay,
   timePeriod,
 }) => {
-  let totalMediaThroughput = usageData.MediaConsumption.TotalGBs;
-  let totalMediaRequests = usageData.MediaConsumption.TotalRequests;
+  const totalMediaThroughput = usageData.MediaConsumption.TotalGBs;
+  const totalMediaRequests = usageData.MediaConsumption.TotalRequests;
 
-  let totalRequestThroughput = requestData.TotalThroughputGB;
-  let totalPageRequests = requestData.TotalRequests;
+  const totalRequestThroughput = requestData.TotalThroughputGB;
+  const totalPageRequests = requestData.TotalRequests;
 
-  let totalRequests = totalPageRequests + totalMediaRequests;
-  let totalThroughput = totalMediaThroughput + totalRequestThroughput;
+  const totalRequests = totalPageRequests + totalMediaRequests;
+  const totalThroughput = totalMediaThroughput + totalRequestThroughput;
 
   const colors = [
     "#75bf25",
@@ -205,7 +205,7 @@ const Content = ({
   };
   const barChartLabels = [];
   const barChartSeries = [];
-  for (let req of requestData.ResponseCodes) {
+  for (const req of requestData.ResponseCodes) {
     barChartLabels.push(req.Code);
     barChartSeries.push(req.RequestCount);
   }
@@ -338,7 +338,11 @@ const Content = ({
             </div>
 
             <div id="chart2">
-              <Pie data={pieChartData} max-width="100%" />
+              <Pie
+                data={pieChartData}
+                max-width="100%"
+                options={{ maintainAspectRatio: false }}
+              />
             </div>
 
             <div id="chart2">
@@ -490,7 +494,7 @@ const Content = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {usageData.TopMedia.map((m, i) => (
+                  {usageData.TopMedia?.map((m, i) => (
                     <Media media={m} key={i} />
                   ))}
                 </tbody>
@@ -518,7 +522,7 @@ const Content = ({
                 </thead>
                 <tbody>
                   {/* Top Request 404 */}
-                  {requestData.TopRequestByFilePathAndResponseCode[2].TopPaths?.map(
+                  {requestData.TopRequestByFilePathAndResponseCode[2]?.TopPaths?.map(
                     (req, i) => (
                       <TopReq
                         req={req}
@@ -555,7 +559,7 @@ const Content = ({
                 </thead>
                 <tbody>
                   {/* Top Requested 301 */}
-                  {requestData.TopRequestByFilePathAndResponseCode[1].TopPaths?.map(
+                  {requestData.TopRequestByFilePathAndResponseCode[1]?.TopPaths?.map(
                     (req, i) => (
                       <TopReq
                         req={req}
@@ -593,7 +597,7 @@ const Content = ({
                 </thead>
                 <tbody>
                   {/* Top Request 403 */}
-                  {requestData.TopRequestByFilePathAndResponseCode[3].TopPaths?.map(
+                  {requestData.TopRequestByFilePathAndResponseCode[3]?.TopPaths?.map(
                     (req, i) => (
                       <TopReq
                         req={req}
@@ -628,7 +632,7 @@ const Content = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {requestData.ResponseCodes.map((req, i) => (
+                  {requestData.ResponseCodes?.map((req, i) => (
                     <TopReqAllRow req={req} key={i} />
                   ))}
                 </tbody>
