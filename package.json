@@ -45,6 +45,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@mui/lab": "^5.0.0-alpha.90",
+    "@mui/x-data-grid-pro": "^5.15.0",
     "@mui/x-date-pickers-pro": "^5.0.0-beta.0",
     "@mui/x-license-pro": "^5.15.0",
     "@reduxjs/toolkit": "^1.6.0",
