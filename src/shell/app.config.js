@@ -33,8 +33,7 @@ module.exports = {
     URL_PREVIEW: "-dev.webengine.zesty.io",
     URL_PREVIEW_PROTOCOL: "https://",
     URL_ACCOUNTS: "https://accounts.zesty.io",
-    URL_MARKETPLACE:
-      "https://kfg6bckb-dev.webengine.zesty.io/marketplace/apps/",
+    URL_MARKETPLACE: "https://zesty.io/marketplace/apps/",
 
     COOKIE_NAME: "APP_SID",
     COOKIE_DOMAIN: ".zesty.io",
