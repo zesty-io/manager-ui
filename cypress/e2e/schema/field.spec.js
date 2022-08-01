@@ -14,8 +14,9 @@ describe("Fields", () => {
     const fieldLabel = `Text Field: ${timestamp}`;
     const fieldName = `text_field_${timestamp}`;
 
-    cy.get(".FieldAdd .Select").click();
-    cy.get(".FieldAdd .selections .options li[data-value='text']").click();
+    cy.get(".FieldAdd .MuiSelect-select").click();
+
+    cy.get("[role=presentation] li[data-value='text']").click();
 
     // NOTE: the name should be autoset by the label
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
@@ -64,12 +65,12 @@ describe("Fields", () => {
     cy.get("[data-cy=deactivated]").eq(0).click();
   });
 
-  it("Create:textarea", () => {
+  it.only("Create:textarea", () => {
     const fieldLabel = `TextArea Field: ${timestamp}`;
     const fieldName = `textarea_field_${timestamp}`;
 
-    cy.get(".FieldAdd .Select").click();
-    cy.get(".FieldAdd .selections .options li[data-value='textarea']").click();
+    cy.get(".FieldAdd .MuiSelect-select").click();
+    cy.get(".MuiList-root li[data-value='textarea']").click();
 
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
     cy.get('.FieldAdd input[name="name"]').type(fieldName);
@@ -85,10 +86,8 @@ describe("Fields", () => {
     const fieldLabel = `wysiwyg field: ${timestamp}`;
     const fieldName = `wysiwyg_field_${timestamp}`;
 
-    cy.get(".FieldAdd .Select").click();
-    cy.get(
-      ".FieldAdd .selections .options li[data-value='wysiwyg_basic']"
-    ).click();
+    cy.get(".FieldAdd .MuiSelect-select").click();
+    cy.get("[role=presentation] li[data-value='wysiwyg_basic']").click();
 
     cy.get('.FieldAdd input[name="label"]').type(fieldLabel);
     cy.get('.FieldAdd input[name="name"]').type(fieldName);

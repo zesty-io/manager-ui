@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import flatten from "lodash/flatten";
 
@@ -17,8 +17,8 @@ import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
-
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
+import { FormControl, FormLabel } from "@mui/material";
+import { VirtualizedAutocomplete } from "@zesty-io/material";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 import { WithLoader } from "@zesty-io/core/WithLoader";
@@ -27,6 +27,7 @@ import { fetchReleases } from "shell/store/releases";
 import { createMember, fetchMembers } from "shell/store/releaseMembers";
 
 import styles from "./Release.less";
+
 export const Release = memo(function Release(props) {
   const dispatch = useDispatch();
   const releases = useSelector((state) => state.releases.data);
@@ -34,13 +35,13 @@ export const Release = memo(function Release(props) {
   const [loading, setLoading] = useState(false);
   const [addingMember, setAddingMember] = useState(false);
   const [active, setActive] = useState(true);
-  const [selectedRelease, setSelectedRelease] = useState("0");
+  const [selectedRelease, setSelectedRelease] = useState(null);
   const [releaseInfo, setReleaseInfo] = useState([]);
 
   const onAdd = () => {
     setAddingMember(true);
     dispatch(
-      createMember(selectedRelease, {
+      createMember(selectedRelease.value, {
         resourceZUID: props.item.meta.ZUID,
         version: props.item.meta.version,
       })
@@ -83,6 +84,25 @@ export const Release = memo(function Release(props) {
     });
   }, [releases, addingMember]);
 
+  const releaseOptions = useMemo(() => {
+    return releases.map((release) => {
+      return {
+        inputLabel: release.ZUID,
+        value: release.ZUID,
+        component: (
+          <span>
+            <span onClick={(evt) => evt.stopPropagation()}>
+              <AppLink to={`/release/${release.ZUID}`}>
+                <FontAwesomeIcon icon={faEdit} />
+              </AppLink>
+            </span>
+            &nbsp;{release.name}
+          </span>
+        ),
+      };
+    });
+  }, [releases]);
+
   return (
     <Card className={styles.Release} sx={{ m: 2 }}>
       <CardHeader
@@ -92,34 +112,33 @@ export const Release = memo(function Release(props) {
       <CardContent className={styles.CardContent}>
         <WithLoader condition={!loading}>
           {active ? (
-            <section className={styles.ReleaseWrap}>
-              <FieldTypeDropDown
-                name="release"
-                label="Queue item for release"
-                className={styles.SelectRelease}
-                value={selectedRelease}
-                onChange={setSelectedRelease}
-                options={releases.map((release) => {
-                  return {
-                    value: release.ZUID,
-                    component: (
-                      <span>
-                        <span onClick={(evt) => evt.stopPropagation()}>
-                          <AppLink to={`/release/${release.ZUID}`}>
-                            <FontAwesomeIcon icon={faEdit} />
-                          </AppLink>
-                        </span>
-                        &nbsp;{release.name}
-                      </span>
-                    ),
-                  };
-                })}
-              />
+            <section>
+              <FormControl fullWidth>
+                <FormLabel>Queue item for release</FormLabel>
+                <VirtualizedAutocomplete
+                  name="release"
+                  value={selectedRelease}
+                  onChange={(_, option) => {
+                    // delete option.component;
+                    setSelectedRelease(option);
+                  }}
+                  placeholder="Select release..."
+                  options={releaseOptions}
+                  startAdornment={
+                    selectedRelease && (
+                      <AppLink to={`/release/${selectedRelease.ZUID}`}>
+                        <FontAwesomeIcon icon={faEdit} />
+                      </AppLink>
+                    )
+                  }
+                />
+              </FormControl>
               <Button
+                fullWidth
                 variant="contained"
                 className={styles.Add}
                 onClick={onAdd}
-                disabled={selectedRelease === "0" || addingMember}
+                disabled={!selectedRelease || addingMember}
                 startIcon={
                   addingMember ? <CircularProgress size="20px" /> : <AddIcon />
                 }

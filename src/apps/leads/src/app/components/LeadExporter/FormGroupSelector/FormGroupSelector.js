@@ -1,7 +1,8 @@
 import { Component } from "react";
 import { connect } from "react-redux";
 
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
+import { FormControl, FormLabel } from "@mui/material";
+import { VirtualizedAutocomplete } from "@zesty-io/material";
 
 import { setFilterFormGroup } from "../../../../store/filter";
 import { FORM_GROUP_PRESETS } from "./FormGroupSelector.model";
@@ -18,7 +19,14 @@ export default connect((state) => {
 
       this.props = props;
       this.state = {
-        groups: this.generateFormGroups(props.leads),
+        groups: [
+          {
+            value: FORM_GROUP_PRESETS.ALL,
+            inputLabel: FORM_GROUP_PRESETS.ALL,
+            component: FORM_GROUP_PRESETS.ALL,
+          },
+          ...this.generateFormGroups(props.leads),
+        ],
       };
     }
 
@@ -32,7 +40,8 @@ export default connect((state) => {
       return uniqueGroups.map((group) => {
         return {
           value: group,
-          text: group,
+          inputLabel: group,
+          component: group,
         };
       });
     }
@@ -43,17 +52,23 @@ export default connect((state) => {
 
     render() {
       return (
-        <div>
-          <FieldTypeDropDown
-            defaultOptText="All"
-            defaultOptValue={FORM_GROUP_PRESETS.ALL}
-            label="Form Group"
+        <FormControl fullWidth>
+          <FormLabel>Form Group</FormLabel>
+          <VirtualizedAutocomplete
             name="form-group-filter"
-            onChange={this.onGroupFilterChange}
+            defaultValue={{
+              value: FORM_GROUP_PRESETS.ALL,
+              inputLabel: FORM_GROUP_PRESETS.ALL,
+              component: FORM_GROUP_PRESETS.ALL,
+            }}
+            onChange={(_, option) => {
+              this.onGroupFilterChange(option.value);
+            }}
+            placeholder="Select release..."
             options={this.state.groups}
-            value={FORM_GROUP_PRESETS.ALL}
+            disableClearable
           />
-        </div>
+        </FormControl>
       );
     }
   }
