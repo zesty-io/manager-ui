@@ -1,5 +1,5 @@
 import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { createDispatchHook, useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import cx from "classnames";
 import usePrevious from "react-use/lib/usePrevious";
@@ -8,8 +8,17 @@ import debounce from "lodash/debounce";
 import { AppLink } from "@zesty-io/core/AppLink";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import PinIcon from "@mui/icons-material/PushPin";
+import OutlinedPinIcon from "@mui/icons-material/PushPinOutlined";
 
-import { closeTab, openTab, loadTabs, rebuildTabs } from "shell/store/ui";
+import {
+  pinTab,
+  unpinTab,
+  closeTab,
+  openTab,
+  loadTabs,
+  rebuildTabs,
+} from "shell/store/ui";
 
 import styles from "./GlobalTabs.less";
 
@@ -23,6 +32,7 @@ export default memo(function GlobalTabs() {
 
   const dispatch = useDispatch();
   const tabs = useSelector((state) => state.ui.tabs);
+  const pinnedTabs = useSelector((state) => state.ui.pinnedTabs);
 
   const instanceZUID = useSelector((state) => state.instance.ZUID);
   const loadedTabs = useSelector((state) => state.ui.loadedTabs);
@@ -56,6 +66,9 @@ export default memo(function GlobalTabs() {
       dispatch(openTab({ path: location.pathname, prevPath }));
     }
   }, [loadedTabs, location.pathname]);
+  useEffect(() => {
+    //setSt
+  }, [location.pathname]);
 
   // rebuild tabs if any of the store slices changes
   // slices could include tab.name updates
@@ -101,37 +114,74 @@ export default memo(function GlobalTabs() {
       TAB_BORDER;
   }
 
+  //const inactiveTabs = [] //tabs.filter(tab => tab.pathname !== location.pathname)
+  const inactiveTabs = pinnedTabs.filter(
+    (tab) => tab.pathname !== location.pathname
+  );
+
+  const activeTab = tabs.find((tab) => tab.pathname === location.pathname);
+
+  if (!activeTab) {
+    // this should never happen
+    console.log("no active tab", tabs);
+  }
+
+  const numTabs = Math.floor(tabBarWidth / tabWidth) - 2;
+
+  const displayedTabs = inactiveTabs.filter((t, i) => i < numTabs);
+  const orderedTabs = activeTab ? [activeTab, ...displayedTabs] : displayedTabs;
+  console.log({ activeTab, inactiveTabs, orderedTabs, pinnedTabs });
+
   return (
     <nav ref={tabContainerRef} className={styles.QuickLinks}>
       <ol className={styles.Links}>
-        {tabs.map((tab, i) => {
-          const isActiveTab = tab.pathname === location.pathname;
-          const tabProps = {};
-          if (isActiveTab) {
-            tabProps.ref = activeTabRef;
-          }
+        {orderedTabs.map((tab, i) => {
+          const isPinned =
+            pinnedTabs.findIndex((t) => tab.pathname === t.pathname) >= 0;
+          console.log({ tab, pinnedTabs, isPinned });
           return (
-            <li
-              {...tabProps}
+            <Tab
+              tab={tab}
               key={i}
-              style={{ width: `${tabWidth}px` }}
-              className={cx(styles.Route, isActiveTab ? styles.active : null)}
-            >
-              <AppLink to={`${tab.pathname}`}>
-                {tab.icon && <FontAwesomeIcon icon={tab.icon} />}
-                &nbsp;
-                {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
-              </AppLink>
-              <span
-                className={styles.Close}
-                onClick={() => dispatch(closeTab(tab.pathname))}
-              >
-                <FontAwesomeIcon icon={faTimesCircle} />
-              </span>
-            </li>
+              isPinned={isPinned}
+              tabWidth={tabWidth}
+              onClick={() => {
+                console.log("click");
+                if (isPinned) dispatch(unpinTab(tab));
+                else dispatch(pinTab(tab));
+              }}
+            />
           );
         })}
       </ol>
     </nav>
   );
 });
+
+const Tab = ({ tab, tabWidth, isPinned, onClick }) => {
+  const isActiveTab = tab.pathname === location.pathname;
+  console.log(tab);
+  const tabProps = {};
+  /*
+  if (isActiveTab) {
+    tabProps.ref = activeTabRef;
+  }
+  */
+  const Pin = isPinned ? PinIcon : OutlinedPinIcon;
+  return (
+    <li
+      {...tabProps}
+      style={{ width: `${tabWidth}px` }}
+      className={cx(styles.Route, isActiveTab ? styles.active : null)}
+    >
+      <AppLink to={`${tab.pathname}`}>
+        {tab.icon && <FontAwesomeIcon icon={tab.icon} />}
+        &nbsp;
+        {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
+      </AppLink>
+      <span className={styles.Close} onClick={onClick}>
+        <Pin fontSize="small" />
+      </span>
+    </li>
+  );
+};

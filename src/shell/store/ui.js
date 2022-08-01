@@ -15,6 +15,7 @@ import {
   faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import { isEqual } from "lodash";
+import parse from "csv-parse";
 
 const typeToIconMap = {
   templateset: faFile,
@@ -34,6 +35,7 @@ export const ui = createSlice({
   initialState: {
     loadedTabs: false,
     tabs: [],
+    pinnedTabs: [],
     openNav: true,
     contentNav: true,
     contentNavHover: false,
@@ -50,6 +52,25 @@ export const ui = createSlice({
     },
     setTabs(state, action) {
       state.tabs = action.payload;
+    },
+    pinTabASDF(state, action) {
+      const tabIndex = state.pinnedTabs.findIndex(
+        (tab) => tab.pathname === action.payload.pathname
+      );
+      console.log({ tabIndex });
+      if (tabIndex < 0) {
+        // if it doesn't exist, add it
+        state.pinnedTabs = [action.payload, ...state.pinnedTabs];
+      } else {
+        // if it does exist, update it with new information
+        // state.pinnedTabs[tabIndex] = action.payload
+      }
+    },
+    unpinTabASDF(state, action) {
+      const newTabs = state.tabs.filter(
+        (tab) => tab.pathname === action.payload.pathname
+      );
+      state.tabs = newTabs;
     },
     loadedUI(state, action) {
       if (action.payload) {
@@ -238,6 +259,26 @@ export function loadTabs(instanceZUID) {
     return idb.get(`${instanceZUID}:session:routes`).then((tabs = []) => {
       return dispatch(actions.loadTabsSuccess(tabs));
     });
+  };
+}
+
+export function pinTab({ pathname }) {
+  return async (dispatch, getState) => {
+    const state = getState();
+    const parsedPath = parsePath(pathname);
+    const tab = createTab(state, parsedPath);
+    await dispatch(actions.pinTabASDF(tab));
+    await idb.set(`${state.instance.ZUID}:pinned`, state.pinnedTabs);
+  };
+}
+
+export function unpinTab({ pathname }) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const parsedPath = parsePath(pathname);
+    const tab = createTab(state, parsedPath);
+    dispatch(actions.unpinTabASDF(tab));
+    idb.set(`${state.instance.ZUID}:pinned`, state.pinnedTabs);
   };
 }
 
