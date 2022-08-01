@@ -174,7 +174,7 @@ export const ResourceDetails = () => {
               }
             }}
           >
-            View
+            Open Resource
           </Button>
           <Button
             sx={{ height: "max-content" }}
@@ -188,7 +188,7 @@ export const ResourceDetails = () => {
               );
             }}
           >
-            Export
+            Export Audit Trail Report
           </Button>
         </Box>
       </Box>
