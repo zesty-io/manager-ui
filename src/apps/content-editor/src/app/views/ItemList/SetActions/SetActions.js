@@ -2,7 +2,7 @@ import { Component } from "react";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 
-import Button from "@mui/material/Button";
+import { Button, Select, MenuItem, TextField } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -10,14 +10,12 @@ import SaveIcon from "@mui/icons-material/Save";
 import StorageIcon from "@mui/icons-material/Storage";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import AddIcon from "@mui/icons-material/Add";
-import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faBolt } from "@fortawesome/free-solid-svg-icons";
 
-import { Select, Option } from "@zesty-io/core/Select";
 import { AppLink } from "@zesty-io/core/AppLink";
 
 import MuiLink from "@mui/material/Link";
@@ -66,12 +64,15 @@ export class SetActions extends Component {
               className={cx(styles.Action, styles.Select)}
               name="status"
               value={this.props.status}
-              onSelect={this.props.onStatus}
+              onChange={(evt) =>
+                this.props.onStatus(evt.target.value, "status")
+              }
+              size="small"
             >
-              <Option text="All Status" value="all" />
-              <Option text="Published" value="published" />
-              <Option text="Scheduled" value="scheduled" />
-              <Option text="Un-Published" value="unpublished" />
+              <MenuItem value="all">All Status</MenuItem>
+              <MenuItem value="published">Published</MenuItem>
+              <MenuItem value="scheduled">Scheduled</MenuItem>
+              <MenuItem value="unpublished">Un-Published</MenuItem>
             </Select>
 
             <AppLink to={`/content/${this.props.modelZUID}/new`}>
