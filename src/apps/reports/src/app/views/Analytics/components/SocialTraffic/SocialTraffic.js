@@ -82,10 +82,7 @@ export class SocialTraffic extends PureComponent {
             height={250}
             options={{
               maintainAspectRatio: false,
-              legend: {
-                display: true,
-                position: "left",
-              },
+              plugins: { legend: { display: true, position: "left" } },
             }}
           />
         </CardContent>

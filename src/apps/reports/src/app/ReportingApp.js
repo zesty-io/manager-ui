@@ -2,7 +2,7 @@ import { Route, Switch, Redirect } from "react-router";
 import { Box, Typography } from "@mui/material";
 
 import { ReportingNav } from "./components/ReportingNav";
-import AuditTrail from "./views/AuditTrail";
+import { ActivityLog } from "./views/ActivityLog";
 import Analytics from "./views/Analytics";
 import Metrics from "./views/Metrics";
 
@@ -15,10 +15,10 @@ export function ReportingApp() {
       </Box>
       <Box sx={{ boxShadow: 3, flex: 1, overflowY: "scroll" }}>
         <Switch>
-          <Route path="/reports/audit-trail" component={AuditTrail} />
+          <Route path="/reports/activity-log" component={ActivityLog} />
           <Route path="/reports/metrics" component={Metrics} />
           <Route path="/reports/analytics" component={Analytics} />
-          <Redirect to="/reports/audit-trail" />
+          <Redirect to="/reports/activity-log" />
         </Switch>
       </Box>
     </Box>
