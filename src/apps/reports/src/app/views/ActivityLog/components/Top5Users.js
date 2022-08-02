@@ -82,7 +82,10 @@ export const Top5Users = (props) => {
           Array(5)
             .fill({})
             .map((_, idx) => (
-              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+              <Box
+                key={idx}
+                sx={{ display: "flex", alignItems: "center", mb: 2 }}
+              >
                 <Skeleton
                   variant="reactangular"
                   height={12}
