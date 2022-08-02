@@ -19,13 +19,13 @@ const STORE = "manager-ui";
 let customStore = createStore(DB, STORE);
 
 export default {
-  get(key) {
+  get(key: IDBValidKey) {
     return get(key, customStore);
   },
-  getMany(arr) {
+  getMany(arr: IDBValidKey[]) {
     return getMany(arr, customStore);
   },
-  set(key, val) {
+  async set(key: IDBValidKey, val: any) {
     return set(key, val, customStore).catch((err) => {
       if (err.name === "InvalidStateError") {
         // recreate store
@@ -35,10 +35,10 @@ export default {
       }
     });
   },
-  setMany(arr) {
+  setMany(arr: [IDBValidKey, any][]) {
     return setMany(arr, customStore);
   },
-  del(key) {
+  del(key: IDBValidKey) {
     return del(key, customStore);
   },
   clear() {
