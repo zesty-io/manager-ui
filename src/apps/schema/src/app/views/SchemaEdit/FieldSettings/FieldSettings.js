@@ -509,6 +509,11 @@ export const FIELD_TYPES = [
     description: "",
     title: "Number",
     html: "<i>+0</i>&nbsp;Number",
+    component: (
+      <>
+        <i>+0</i>&nbsp;Number
+      </>
+    ),
   },
   {
     value: "color",

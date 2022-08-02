@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
-
-import TextField from "@mui/material/TextField";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
+import { FormControl, FormLabel, TextField } from "@mui/material";
+import { VirtualizedAutocomplete } from "@zesty-io/material";
 
 import { fetchAllBins, fetchAllGroups } from "shell/store/media";
 
@@ -33,7 +30,8 @@ export default connect((state) => {
           const group = props.media.groups[id];
           return {
             value: group.id,
-            text: group.name,
+            inputLabel: group.name,
+            component: group.name,
           };
         })
     );
@@ -58,13 +56,23 @@ export default connect((state) => {
       </div>
 
       <div className={styles.Option}>
-        <FieldTypeDropDown
-          name="group_id"
-          label="Lock field to media folder"
-          value={props.field.settings && props.field.settings.group_id}
-          onChange={props.updateFieldSetting}
-          options={groups}
-        />
+        <FormControl fullWidth>
+          <FormLabel>Lock field to media folder</FormLabel>
+          <VirtualizedAutocomplete
+            name="group_id"
+            label="Queue item for release"
+            value={
+              groups.find(
+                (group) => group.value === props.field.settings.group_id
+              ) || null
+            }
+            onChange={(_, option) =>
+              props.updateFieldSetting(option?.value || "0", "group_id")
+            }
+            placeholder="Select media folder..."
+            options={groups}
+          />
+        </FormControl>
       </div>
     </div>
   );

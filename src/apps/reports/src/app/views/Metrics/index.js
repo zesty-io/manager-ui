@@ -338,7 +338,11 @@ const Content = ({
             </div>
 
             <div id="chart2">
-              <Pie data={pieChartData} max-width="100%" />
+              <Pie
+                data={pieChartData}
+                max-width="100%"
+                options={{ maintainAspectRatio: false }}
+              />
             </div>
 
             <div id="chart2">

@@ -1,0 +1,12 @@
+{
+  "include": ["src/**/*ts"],
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "allowJs": true,
+    "module": "es6",
+    "target": "esnext",
+    "jsx": "react",
+    "moduleResolution": "node",
+    "sourceMap": true
+  }
+}

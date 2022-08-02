@@ -1,4 +1,10 @@
-export function notifications(state = [], action) {
+type Action = {
+  type: "NEW_NOTIFICATION" | "REMOVE_NOTIFICATION";
+  data: Notification;
+  epoch: Date;
+};
+
+export function notifications(state: Notification[] = [], action: Action) {
   switch (action.type) {
     case "NEW_NOTIFICATION":
       return [action.data, ...state];
@@ -8,7 +14,7 @@ export function notifications(state = [], action) {
         if (notification.epoch === action.epoch) {
           notification.active = false;
         }
-        return notificaiton;
+        return notification;
       });
 
     default:
@@ -16,7 +22,18 @@ export function notifications(state = [], action) {
   }
 }
 
-export function notify(data) {
+type NotifyArgs = {
+  kind: "warn" | "error";
+  HTML?: unknown;
+  message?: string;
+};
+
+type Notification = NotifyArgs & {
+  epoch: Date;
+  active: boolean;
+};
+
+export function notify(data: NotifyArgs) {
   if (!data.message && !data.HTML) {
     throw new Error("Cannot trigger notification without a message");
   }
@@ -34,7 +51,7 @@ export function notify(data) {
   };
 }
 
-export function remove(epoch) {
+export function remove(epoch: Date) {
   if (!epoch) {
     throw new Error("Cannot remove notification without epoch timestamp");
   }

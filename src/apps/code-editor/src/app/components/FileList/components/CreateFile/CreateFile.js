@@ -9,9 +9,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
-import { Option } from "@zesty-io/core/Select";
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeText } from "@zesty-io/material";
+import { FormControl, FormLabel, Select, MenuItem } from "@mui/material";
 
 import { notify } from "shell/store/notifications";
 import { createFile } from "../../../../../store/files";
@@ -93,25 +92,30 @@ export const CreateFile = memo(function CreateFile(props) {
           onClose={() => setOpen(false)}
         >
           <ModalContent className={styles.ModalContent}>
-            <FieldTypeDropDown
-              name="file_type"
-              className={styles.FileType}
-              label="File Type"
-              defaultOptText="-- choose a file type --"
-              onChange={(value) => {
-                setType(value);
-              }}
-            >
-              <Option value="snippet" text="Snippet (html)" />
-              <Option value="text/css" text="CSS File (css)" />
-              <Option value="text/less" text="LESS File (less)" />
-              <Option value="text/scss" text="SCSS File (scss/sass)" />
-              <Option value="text/javascript" text="JavaScript File (js)" />
-              <Option
-                value="ajax-json"
-                text="Custom File Type/Endpoint (Mixed Extensions)"
-              />
-            </FieldTypeDropDown>
+            <FormControl fullWidth sx={{ mb: 2 }} size="small">
+              <FormLabel>File Type</FormLabel>
+              <Select
+                name="file_type"
+                variant="outlined"
+                displayEmpty
+                value={type}
+                onChange={(e) => {
+                  setType(e.target.value);
+                }}
+              >
+                <MenuItem value="">-- choose a file type --</MenuItem>
+                <MenuItem value="snippet">Snippet (html)</MenuItem>
+                <MenuItem value="text/css">CSS File (css)</MenuItem>
+                <MenuItem value="text/less">LESS File (less)</MenuItem>
+                <MenuItem value="text/scss">SCSS File (scss/sass)</MenuItem>
+                <MenuItem value="text/javascript">
+                  JavaScript File (js)
+                </MenuItem>
+                <MenuItem value="ajax-json">
+                  Custom File Type/Endpoint (Mixed Extensions)
+                </MenuItem>
+              </Select>
+            </FormControl>
             {type === "snippet" && (
               <p className={styles.description}>
                 Parsley accessible file meant to abstract common use of code, or

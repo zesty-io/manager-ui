@@ -17,8 +17,8 @@ export function ReportingNav() {
 
   const tree = [
     {
-      label: "Audit Trail",
-      path: "/reports/audit-trail",
+      label: "Activity Log",
+      path: "/reports/activity-log",
       icon: faHistory,
     },
     {

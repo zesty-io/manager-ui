@@ -30,7 +30,7 @@ export function fetchInstances() {
         dispatch(
           notify({
             kind: "warn",
-            messages: "There was an issue loading your instances list",
+            message: "There was an issue loading your instances list",
           })
         );
       }
@@ -39,7 +39,7 @@ export function fetchInstances() {
         dispatch(
           notify({
             kind: "warn",
-            messages: "You are forbidden from loading an instances list",
+            message: "You are forbidden from loading an instances list",
           })
         );
       }
