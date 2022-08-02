@@ -34,17 +34,19 @@ export const ContentResourceListItem = (props) => {
     if (!contentData && !contentError) {
       setIsLoading(true);
       dispatch(searchItems(props.affectedZUID))
-        .then((res) => !res.data.length && setContentError(true))
+        .then((res) => !res?.data?.length && setContentError(true))
         .finally(() => setIsLoading(false));
     }
+  }, [contentData, contentError]);
 
+  useEffect(() => {
     if (!modelData && contentData && !modelError) {
       setIsLoading(true);
       dispatch(fetchModel(contentData.meta.contentModelZUID))
         .catch(() => setModelError(true))
         .finally(() => setIsLoading(false));
     }
-  }, [contentData, modelData, contentError, modelError]);
+  }, [contentData, modelData, modelError]);
 
   const secondaryText = useMemo(() => {
     const chips = [
