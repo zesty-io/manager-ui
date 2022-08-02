@@ -80,7 +80,9 @@ export const ActivityByResource = (props) => {
               plugins: { legend: { display: false } },
             }}
             data={{
-              labels: resourceTypes.map((type) => startCase(type)),
+              labels: resourceTypePercentages.map((resource) =>
+                startCase(resource.type)
+              ),
               datasets: [
                 {
                   data: resourceTypePercentages.map(
