@@ -6,8 +6,8 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { theme } from "@zesty-io/material";
+import { ThemeProvider } from "@mui/material/styles";
+import { legacyTheme } from "@zesty-io/material";
 
 import "chart.js/auto";
 
@@ -52,7 +52,7 @@ MonacoSetup(store);
 const App = Sentry.withProfiler(() => (
   <StrictMode>
     <Sentry.ErrorBoundary fallback={() => <AppError />}>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={legacyTheme}>
         <Provider store={store}>
           <Router history={history}>
             <PrivateRoute>

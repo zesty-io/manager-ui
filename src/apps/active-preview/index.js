@@ -1,13 +1,13 @@
 import ReactDOM from "react-dom";
 import { Preview } from "./Preview";
 import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "@zesty-io/material";
+import { legacyTheme } from "@zesty-io/material";
 
 // interploated by webpack at build time
 window.CONFIG = __CONFIG__;
 
 ReactDOM.render(
-  <ThemeProvider theme={theme}>
+  <ThemeProvider theme={legacyTheme}>
     <Preview />
   </ThemeProvider>,
   document.getElementById("root")
