@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import idb from "utility/idb";
-import history from "utility/history";
+import { Dispatch } from "redux";
+// TODO why do I have to use relative paths here?
+import idb from "../../utility/idb";
+import history from "../../utility/history";
 
 import {
   faCode,
@@ -13,9 +15,9 @@ import {
   faExternalLinkSquareAlt,
   faLink,
   faHome,
+  IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import { isEqual } from "lodash";
-import parse from "csv-parse";
 
 const typeToIconMap = {
   templateset: faFile,
@@ -30,6 +32,27 @@ const typeToIconMap = {
 
 const ZUID_REGEX = /[a-zA-Z0-9]{1,5}-[a-zA-Z0-9]{6,10}-[a-zA-Z0-9]{5,35}/;
 
+export type Tab = {
+  pathname: string;
+  name?: string;
+  icon?: IconDefinition;
+};
+export type CodeEditorPosition = Record<
+  string,
+  { lineNumber: number; column: number }
+>;
+export type UIState = {
+  loadedTabs: boolean;
+  tabs: Tab[];
+  pinnedTabs: Tab[];
+  openNav: boolean;
+  contentNav: boolean;
+  contentNavHover: boolean;
+  contentActions: boolean;
+  contentActionsHover: boolean;
+  duoMode: boolean;
+  codeEditorPosition: null | CodeEditorPosition;
+};
 export const ui = createSlice({
   name: "ui",
   initialState: {
@@ -45,15 +68,15 @@ export const ui = createSlice({
     codeEditorPosition: null,
   },
   reducers: {
-    loadTabsSuccess(state, action) {
+    loadTabsSuccess(state: UIState, action: { payload: Tab[] }) {
       const tabs = action.payload;
       state.tabs = tabs;
       state.loadedTabs = true;
     },
-    setTabs(state, action) {
+    setTabs(state: UIState, action: { payload: Tab[] }) {
       state.tabs = action.payload;
     },
-    pinTabASDF(state, action) {
+    pinTabASDF(state: UIState, action: { payload: Tab }) {
       const tabIndex = state.pinnedTabs.findIndex(
         (tab) => tab.pathname === action.payload.pathname
       );
@@ -66,13 +89,21 @@ export const ui = createSlice({
         // state.pinnedTabs[tabIndex] = action.payload
       }
     },
-    unpinTabASDF(state, action) {
+    unpinTabASDF(state: UIState, action: { payload: Tab }) {
       const newTabs = state.tabs.filter(
         (tab) => tab.pathname === action.payload.pathname
       );
       state.tabs = newTabs;
     },
-    loadedUI(state, action) {
+    loadedUI(
+      state: UIState,
+      action: {
+        payload: Pick<
+          UIState,
+          "openNav" | "contentNav" | "contentActions" | "duoMode"
+        >;
+      }
+    ) {
       if (action.payload) {
         state.openNav = action.payload.openNav;
         state.contentNav = action.payload.contentNav;
@@ -80,25 +111,28 @@ export const ui = createSlice({
         state.duoMode = action.payload.duoMode;
       }
     },
-    setGlobalNav(state, action) {
+    setGlobalNav(state: UIState, action: { payload: boolean }) {
       state.openNav = action.payload;
     },
-    setContentNav(state, action) {
+    setContentNav(state: UIState, action: { payload: boolean }) {
       state.contentNav = action.payload;
     },
-    setContentActions(state, action) {
+    setContentActions(state: UIState, action: { payload: boolean }) {
       state.contentActions = action.payload;
     },
-    setContentActionsHover(state, action) {
+    setContentActionsHover(state: UIState, action: { payload: boolean }) {
       state.contentActionsHover = action.payload;
     },
-    setDuoMode(state, action) {
+    setDuoMode(state: UIState, action: { payload: boolean }) {
       state.duoMode = action.payload;
     },
-    setContentNavHover(state, action) {
+    setContentNavHover(state: UIState, action: { payload: boolean }) {
       state.contentNavHover = action.payload;
     },
-    setCodeEditorPosition(state, action) {
+    setCodeEditorPosition(
+      state: UIState,
+      action: { payload: CodeEditorPosition }
+    ) {
       state.codeEditorPosition = action.payload;
     },
   },
@@ -107,7 +141,7 @@ export const ui = createSlice({
 export const { actions, reducer } = ui;
 
 // Thunk helper functions
-function parsePath(path) {
+function parsePath(path: string) {
   let parts = path.split("/").filter((part) => part);
   let zuid = null;
   let prefix = null;
@@ -132,7 +166,8 @@ function parsePath(path) {
   return { path, parts, zuid, prefix, contentSection };
 }
 
-function validatePath(parsedPath) {
+type ParsedPath = ReturnType<typeof parsePath>;
+function validatePath(parsedPath: ParsedPath) {
   const { parts, zuid, contentSection } = parsedPath;
   // don't show root
   if (parts.length === 0) {
@@ -178,9 +213,20 @@ function validatePath(parsedPath) {
   return true;
 }
 
-function createTab(state, parsedPath) {
+/*
+  TODO
+  The UI state is well typed but the rest of the application state is entirely
+  untyped (i.e. any). Ideally AppState would be completely specified, but that
+  would require typing the entire redux store of the app just for this one
+  function. For now, the ui member is typed but every other member is any
+
+  Eventually, after the rest of the redux store is typed, we will replace this
+  with an imported AppState that has the proper types
+*/
+type AppState = { ui: UIState } & { [key: string]: any };
+function createTab(state: AppState, parsedPath: ParsedPath) {
   const { path, parts, zuid, prefix } = parsedPath;
-  const tab = { pathname: path };
+  const tab: Tab = { pathname: path };
 
   // resolve ZUID from store to determine display information
   switch (prefix) {
@@ -196,10 +242,12 @@ function createTab(state, parsedPath) {
       tab.icon = faDatabase;
 
       if (state.models) {
-        const model = state.models[zuid];
+        const model: any = state.models[zuid];
 
         tab.name = model?.label;
-        tab.icon = typeToIconMap?.[model?.type] || faDatabase;
+        tab.icon =
+          typeToIconMap?.[model?.type as keyof typeof typeToIconMap] ||
+          faDatabase;
       }
       break;
     case "7":
@@ -215,7 +263,9 @@ function createTab(state, parsedPath) {
     case "10":
     case "11":
       if (state.files) {
-        const selectedFile = state.files.find((file) => file.ZUID === zuid);
+        const selectedFile = state.files.find(
+          (file: any) => file.ZUID === zuid
+        );
         if (selectedFile) {
           tab.name = selectedFile.fileName;
         }
@@ -248,46 +298,54 @@ function createTab(state, parsedPath) {
   return tab;
 }
 
-function toCapitalCase(string) {
+function toCapitalCase(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 // Thunks
 
-export function loadTabs(instanceZUID) {
-  return (dispatch) => {
+export function loadTabs(instanceZUID: string) {
+  return (dispatch: Dispatch) => {
     return idb.get(`${instanceZUID}:session:routes`).then((tabs = []) => {
       return dispatch(actions.loadTabsSuccess(tabs));
     });
   };
 }
 
-export function pinTab({ pathname }) {
-  return async (dispatch, getState) => {
+export function pinTab({ pathname }: { pathname: string }) {
+  return async (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const parsedPath = parsePath(pathname);
     const tab = createTab(state, parsedPath);
     await dispatch(actions.pinTabASDF(tab));
-    await idb.set(`${state.instance.ZUID}:pinned`, state.pinnedTabs);
+    await idb.set(`${state.instance.ZUID}:pinned`, state.ui.pinnedTabs);
   };
 }
 
-export function unpinTab({ pathname }) {
-  return (dispatch, getState) => {
+export function unpinTab({ pathname }: { pathname: string }) {
+  return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const parsedPath = parsePath(pathname);
     const tab = createTab(state, parsedPath);
     dispatch(actions.unpinTabASDF(tab));
-    idb.set(`${state.instance.ZUID}:pinned`, state.pinnedTabs);
+    idb.set(`${state.instance.ZUID}:pinned`, state.ui.pinnedTabs);
   };
 }
 
-export function openTab({ path, prevPath }) {
-  return (dispatch, getState) => {
+export function openTab({
+  path,
+  prevPath,
+}: {
+  path: string;
+  prevPath: string;
+}) {
+  return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const parsedPath = parsePath(path);
     if (validatePath(parsedPath)) {
-      const tabIndex = state.ui.tabs.findIndex((tab) => tab.pathname === path);
+      const tabIndex = state.ui.tabs.findIndex(
+        (tab: Tab) => tab.pathname === path
+      );
       // add new tab if not existing
       if (tabIndex === -1) {
         const newTab = createTab(state, parsedPath);
@@ -307,11 +365,11 @@ export function openTab({ path, prevPath }) {
   };
 }
 
-export function closeTab(path) {
-  return (dispatch, getState) => {
+export function closeTab(path: string) {
+  return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const removeTabIndex = state.ui.tabs.findIndex(
-      (tab) => tab.pathname === path
+      (tab: Tab) => tab.pathname === path
     );
     if (removeTabIndex !== -1) {
       // calculate new tabs here instead of reducer
@@ -339,9 +397,9 @@ export function closeTab(path) {
 }
 
 export function rebuildTabs() {
-  return (dispatch, getState) => {
+  return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
-    const newTabs = state.ui.tabs.map((tab) =>
+    const newTabs = state.ui.tabs.map((tab: Tab) =>
       createTab(state, parsePath(tab.pathname))
     );
     /* 
