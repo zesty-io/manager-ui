@@ -1,3 +1,9 @@
+declare global {
+  interface Window {
+    openNavigationModal: null | ((callback: (result: boolean) => void) => void);
+  }
+}
+
 import { createBrowserHistory } from "history";
 const history = createBrowserHistory({
   getUserConfirmation(message, callback) {
