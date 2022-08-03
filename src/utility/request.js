@@ -56,8 +56,10 @@ export function request(url, opts = {}) {
         return res;
       }
 
-      // // Bad Request
-      // if (res.status === 400) {}
+      // Bad Request
+      if (res.status === 400) {
+        throw new Error(`400:RequestError: ${res.url}`);
+      }
 
       // if (res.status === 401) {
       //   store.dispatch(endSession());
