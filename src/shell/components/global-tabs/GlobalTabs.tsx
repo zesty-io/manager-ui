@@ -18,7 +18,9 @@ import {
   openTab,
   loadTabs,
   rebuildTabs,
+  parsePath,
   Tab,
+  createTab,
 } from "../../../shell/store/ui";
 import { AppState } from "../../store/types";
 
@@ -45,7 +47,12 @@ export default memo(function GlobalTabs() {
   const content = useSelector((state: AppState) => state.content);
   const files = useSelector((state: AppState) => state.files);
   const mediaGroups = useSelector((state: AppState) => state.media.groups);
+  // TODO is this going to cause rerenders all the time?
+  const state = useSelector((state: AppState) => state);
   const [tabBarWidth, setTabBarWidth] = useState(0);
+
+  // For the window title
+  const instanceName = useSelector((state: AppState) => state.instance.name);
 
   // update state if window is resized (debounced)
   useEffect(() => {
@@ -70,6 +77,19 @@ export default memo(function GlobalTabs() {
   }, [loadedTabs, location.pathname]);
   useEffect(() => {
     //setSt
+    const parsedPath = parsePath(location.pathname);
+    const t = createTab(state, parsedPath);
+    const { parts } = parsedPath;
+    const app = parts[0];
+    const item = t.name || t.pathname;
+    const title = `${app} - ${item} - Zesty.io - ${instanceName} - Manager`;
+    console.log({ title });
+    // set the title
+    document.title = title;
+    const oldTitle = document.title;
+    return () => {
+      document.title = oldTitle;
+    };
   }, [location.pathname]);
 
   // rebuild tabs if any of the store slices changes

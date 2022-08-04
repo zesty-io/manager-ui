@@ -142,7 +142,7 @@ export const ui = createSlice({
 export const { actions, reducer } = ui;
 
 // Thunk helper functions
-function parsePath(path: string) {
+export function parsePath(path: string) {
   let parts = path.split("/").filter((part) => part);
   let zuid = null;
   let prefix = null;
@@ -167,7 +167,7 @@ function parsePath(path: string) {
   return { path, parts, zuid, prefix, contentSection };
 }
 
-type ParsedPath = ReturnType<typeof parsePath>;
+export type ParsedPath = ReturnType<typeof parsePath>;
 function validatePath(parsedPath: ParsedPath) {
   const { parts, zuid, contentSection } = parsedPath;
   // don't show root
@@ -214,7 +214,7 @@ function validatePath(parsedPath: ParsedPath) {
   return true;
 }
 
-function createTab(state: AppState, parsedPath: ParsedPath) {
+export function createTab(state: AppState, parsedPath: ParsedPath) {
   const { path, parts, zuid, prefix } = parsedPath;
   const tab: Tab = { pathname: path };
 
