@@ -3,6 +3,7 @@ import { Dispatch } from "redux";
 // TODO why do I have to use relative paths here?
 import idb from "../../utility/idb";
 import history from "../../utility/history";
+import { AppState } from "./types";
 
 import {
   faCode,
@@ -213,17 +214,6 @@ function validatePath(parsedPath: ParsedPath) {
   return true;
 }
 
-/*
-  TODO
-  The UI state is well typed but the rest of the application state is entirely
-  untyped (i.e. any). Ideally AppState would be completely specified, but that
-  would require typing the entire redux store of the app just for this one
-  function. For now, the ui member is typed but every other member is any
-
-  Eventually, after the rest of the redux store is typed, we will replace this
-  with an imported AppState that has the proper types
-*/
-type AppState = { ui: UIState } & { [key: string]: any };
 function createTab(state: AppState, parsedPath: ParsedPath) {
   const { path, parts, zuid, prefix } = parsedPath;
   const tab: Tab = { pathname: path };

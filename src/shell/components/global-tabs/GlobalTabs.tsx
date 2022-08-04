@@ -1,9 +1,9 @@
-import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { memo, useEffect, useLayoutEffect, useRef, useState, FC } from "react";
 import { createDispatchHook, useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import cx from "classnames";
 import usePrevious from "react-use/lib/usePrevious";
-import debounce from "lodash/debounce";
+import { debounce } from "lodash";
 
 import { AppLink } from "@zesty-io/core/AppLink";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,7 +18,9 @@ import {
   openTab,
   loadTabs,
   rebuildTabs,
-} from "shell/store/ui";
+  Tab,
+} from "../../../shell/store/ui";
+import { AppState } from "../../store/types";
 
 import styles from "./GlobalTabs.less";
 
@@ -31,18 +33,18 @@ export default memo(function GlobalTabs() {
   const location = useLocation();
 
   const dispatch = useDispatch();
-  const tabs = useSelector((state) => state.ui.tabs);
-  const pinnedTabs = useSelector((state) => state.ui.pinnedTabs);
+  const tabs = useSelector((state: AppState) => state.ui.tabs);
+  const pinnedTabs = useSelector((state: AppState) => state.ui.pinnedTabs);
 
-  const instanceZUID = useSelector((state) => state.instance.ZUID);
-  const loadedTabs = useSelector((state) => state.ui.loadedTabs);
+  const instanceZUID = useSelector((state: AppState) => state.instance.ZUID);
+  const loadedTabs = useSelector((state: AppState) => state.ui.loadedTabs);
   const prevPath = usePrevious(location.pathname);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const models = useSelector((state) => state.models);
+  const models = useSelector((state: AppState) => state.models);
 
-  const content = useSelector((state) => state.content);
-  const files = useSelector((state) => state.files);
-  const mediaGroups = useSelector((state) => state.media.groups);
+  const content = useSelector((state: AppState) => state.content);
+  const files = useSelector((state: AppState) => state.files);
+  const mediaGroups = useSelector((state: AppState) => state.media.groups);
   const [tabBarWidth, setTabBarWidth] = useState(0);
 
   // update state if window is resized (debounced)
@@ -78,12 +80,14 @@ export default memo(function GlobalTabs() {
     }
   }, [loadedTabs, models, content, files, mediaGroups]);
 
+  /*
   const activeTabRef = useRef();
   useEffect(() => {
     if (activeTabRef.current) {
       activeTabRef.current.scrollIntoView();
     }
   }, [tabs]);
+  */
 
   // measure the tab bar width and set state
   // to trigger a synchronous re-render before paint
@@ -158,7 +162,13 @@ export default memo(function GlobalTabs() {
   );
 });
 
-const Tab = ({ tab, tabWidth, isPinned, onClick }) => {
+type TabComponent = {
+  tab: Tab;
+  tabWidth: number;
+  isPinned: boolean;
+  onClick: () => void;
+};
+const Tab: FC<TabComponent> = ({ tab, tabWidth, isPinned, onClick }) => {
   const isActiveTab = tab.pathname === location.pathname;
   console.log(tab);
   const tabProps = {};
