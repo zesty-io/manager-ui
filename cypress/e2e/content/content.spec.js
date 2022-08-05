@@ -139,19 +139,20 @@ describe("Content Specs", () => {
     });
 
     it("Dropdown Field", () => {
-      cy.get("#12-f3152c-kjz88l .Select")
-        .click()
+      cy.get("#12-f3152c-kjz88l").find(".MuiSelect-select").click();
+
+      cy.get("[role=presentation]")
         .find('[data-value="custom_option_one"]')
         .click();
 
-      cy.contains("#12-f3152c-kjz88l .Select", "Custom Option One");
+      cy.contains("#12-f3152c-kjz88l .MuiSelect-select", "Custom Option One");
 
-      cy.get("#12-f3152c-kjz88l .Select")
-        .click()
+      cy.get("#12-f3152c-kjz88l").find(".MuiSelect-select").click();
+      cy.get("[role=presentation]")
         .find('[data-value="custom_option_two"]')
         .click();
 
-      cy.contains("#12-f3152c-kjz88l .Select", "Custom Option Two");
+      cy.contains("#12-f3152c-kjz88l .MuiSelect-select", "Custom Option Two");
     });
 
     it("Url Field", () => {

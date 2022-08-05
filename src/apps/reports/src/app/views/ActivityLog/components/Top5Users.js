@@ -58,7 +58,7 @@ export const Top5Users = (props) => {
           "TOP 5 ACTIVE USERS"
         )}
       </Typography>
-      <Typography variant="h4">
+      <Typography variant="h4" fontWeight={600}>
         {props.showSkeletons ? (
           <Skeleton
             variant="reactangular"
@@ -82,7 +82,10 @@ export const Top5Users = (props) => {
           Array(5)
             .fill({})
             .map((_, idx) => (
-              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+              <Box
+                key={idx}
+                sx={{ display: "flex", alignItems: "center", mb: 2 }}
+              >
                 <Skeleton
                   variant="reactangular"
                   height={12}

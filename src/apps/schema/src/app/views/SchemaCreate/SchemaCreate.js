@@ -12,6 +12,7 @@ import FormLabel from "@mui/material/FormLabel";
 import Tooltip from "@mui/material/Tooltip";
 import AddIcon from "@mui/icons-material/Add";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
+import { FormControl, Select, MenuItem } from "@mui/material";
 
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -27,10 +28,8 @@ import {
   faFile,
   faListAlt,
 } from "@fortawesome/free-solid-svg-icons";
-// import { Card, CardHeader, CardContent, CardFooter } from "@zesty-io/core/Card";
 
-import { FieldTypeText } from "@zesty-io/material";
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
+import { FieldTypeText, VirtualizedAutocomplete } from "@zesty-io/material";
 
 import { fetchParents } from "../../../store/parents";
 import { createModel } from "shell/store/models";
@@ -87,7 +86,7 @@ export default connect((state) => {
   const [label, setLabel] = useState("");
   const [description, setDescription] = useState("");
   const [listed, setListed] = useState(true);
-  const [parent, setParent] = useState("");
+  const [parent, setParent] = useState(null);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -234,20 +233,30 @@ export default connect((state) => {
               </ToggleButtonGroup>
             </div>
 
-            <FieldTypeDropDown
-              className={styles.FieldTypeDropDown}
-              name="type"
-              label="Selected Model Type"
-              value={type}
-              onChange={(val) =>
-                setType({
-                  type: "type",
-                  payload: val,
-                })
-              }
-              options={SCHEMA_TYPES}
-              error={errors["type"]}
-            />
+            <FormControl fullWidth size="small">
+              <FormLabel sx={{ mb: "0 !important" }}>
+                Selected Model Type
+              </FormLabel>
+              <Select
+                name="type"
+                variant="outlined"
+                displayEmpty
+                value={type}
+                onChange={(evt) => {
+                  setType({
+                    type: "type",
+                    payload: evt.target.value,
+                  });
+                }}
+              >
+                <MenuItem value="">- None -</MenuItem>
+                {SCHEMA_TYPES.map((schemaType, idx) => (
+                  <MenuItem key={idx} value={schemaType.value}>
+                    {schemaType.component}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             <main className={cx(styles.Types)}>
               <div
@@ -384,12 +393,28 @@ export default connect((state) => {
               navigation and default routing for this model's items.
             </p>
 
-            <FieldTypeDropDown
-              name="parent"
-              label="Select this model's parent"
-              onChange={(value) => setParent(value)}
-              options={props.parents}
-            />
+            <FormControl fullWidth>
+              <FormLabel sx={{ mb: "0 !important" }}>
+                Select this model's parent
+              </FormLabel>
+
+              <VirtualizedAutocomplete
+                name="parent"
+                displayEmpty
+                value={parent}
+                onChange={(_, option) => {
+                  setParent(option);
+                }}
+                placeholder="Select this model's parent..."
+                options={props.parents.map((parent) => {
+                  return {
+                    inputLabel: parent.text,
+                    value: parent.value,
+                    component: parent.text,
+                  };
+                })}
+              />
+            </FormControl>
 
             <div className={styles.questionnaire}>
               <FormLabel>
@@ -454,7 +479,7 @@ export default connect((state) => {
               props
                 .dispatch(
                   createModel({
-                    parentZUID: parent,
+                    parentZUID: parent?.value || "",
                     name,
                     label,
                     description,
@@ -486,7 +511,7 @@ export default connect((state) => {
                                 metaLinkText: label,
                                 metaTitle: label,
                                 pathPart: pathPart,
-                                parentZUID: parent,
+                                parentZUID: parent?.value || "",
                               },
                               meta: {
                                 contentModelZUID: res.data.ZUID,

@@ -8,7 +8,6 @@ export const ResourceListItem = (props) => {
     case "content":
       return (
         <ContentResourceListItem
-          key={props.resource.ZUID}
           affectedZUID={props.resource.affectedZUID}
           updatedAt={props.resource.updatedAt}
           size={props.size}
@@ -19,7 +18,6 @@ export const ResourceListItem = (props) => {
     case "schema":
       return (
         <ModelResourceListItem
-          key={props.resource.ZUID}
           affectedZUID={props.resource.affectedZUID}
           updatedAt={props.resource.updatedAt}
           size={props.size}
@@ -30,7 +28,6 @@ export const ResourceListItem = (props) => {
     case "code":
       return (
         <FileResourceListItem
-          key={props.resource.ZUID}
           affectedZUID={props.resource.affectedZUID}
           updatedAt={props.resource.updatedAt}
           size={props.size}
@@ -41,7 +38,6 @@ export const ResourceListItem = (props) => {
     default:
       return (
         <SettingsResourceListItem
-          key={props.resource.ZUID}
           affectedZUID={props.resource.affectedZUID}
           updatedAt={props.resource.updatedAt}
           message={props.resource?.meta?.message}

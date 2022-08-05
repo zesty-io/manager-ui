@@ -45,7 +45,7 @@ export const ActivityByResource = (props) => {
           "ACTIVITY BY RESOURCE"
         )}
       </Typography>
-      <Typography variant="h4" sx={{ mb: 0.25 }}>
+      <Typography variant="h4" fontWeight={600} sx={{ mb: 0.25 }}>
         {props.showSkeletons ? (
           <Skeleton
             variant="reactangular"
@@ -80,7 +80,9 @@ export const ActivityByResource = (props) => {
               plugins: { legend: { display: false } },
             }}
             data={{
-              labels: resourceTypes.map((type) => startCase(type)),
+              labels: resourceTypePercentages.map((resource) =>
+                startCase(resource.type)
+              ),
               datasets: [
                 {
                   data: resourceTypePercentages.map(

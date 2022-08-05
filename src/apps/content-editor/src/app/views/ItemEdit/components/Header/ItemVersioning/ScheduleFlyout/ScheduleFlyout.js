@@ -10,7 +10,7 @@ import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Notice } from "@zesty-io/core/Notice";
 import { FieldTypeDateTime } from "@zesty-io/material";
 
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
+import { FormControl, FormLabel, Autocomplete, TextField } from "@mui/material";
 
 import { publish, unpublish } from "shell/store/content";
 
@@ -35,12 +35,7 @@ export default class ScheduleFlyout extends Component {
       userTimezone: userTimezone,
       selectedTimezone: userTimezone,
       selectedTime: moment().format(UTC_FORMAT),
-      timezones: moment.tz.names().map((el, i) => {
-        return {
-          value: el,
-          html: el,
-        };
-      }),
+      timezones: moment.tz.names(),
     });
   }
 
@@ -191,13 +186,18 @@ export default class ScheduleFlyout extends Component {
             <>
               <ModalContent>
                 <div className={styles.Row}>
-                  <FieldTypeDropDown
-                    label="Timezone where this will be published"
-                    name="selectedTimezone"
-                    onChange={this.handleChangeTimezone}
-                    value={this.state.selectedTimezone}
-                    options={this.state.timezones}
-                  />
+                  <FormControl fullWidth>
+                    <FormLabel>Timezone where this will be published</FormLabel>
+                    <Autocomplete
+                      name="selectedTimezone"
+                      size="small"
+                      disableClearable
+                      renderInput={(params) => <TextField {...params} />}
+                      value={this.state.selectedTimezone}
+                      onChange={(_, value) => this.handleChangeTimezone(value)}
+                      options={this.state.timezones}
+                    />
+                  </FormControl>
                 </div>
                 <div className={styles.Row}>
                   <FieldTypeDateTime

@@ -7,9 +7,15 @@ describe("Head Tags", () => {
 
     cy.contains("Create Head Tag").click();
 
-    cy.get("[data-cy=tagCard]").last().find(".Select button").click();
+    cy.get("[data-cy=tagCard]")
+      .last()
+      .find(".MuiSelect-select")
+      .click({ force: true });
 
-    cy.get("[data-cy=tagCard]").last().find('[data-value="script"]').click();
+    cy.get("[role=presentation]")
+      .last()
+      .find('[data-value="script"]')
+      .click({ force: true });
 
     //cy.get("[data-cy=tagCard]:last-child")
     cy.get("[data-cy=tagCard]")

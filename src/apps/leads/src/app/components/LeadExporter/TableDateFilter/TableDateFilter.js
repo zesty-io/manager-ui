@@ -3,7 +3,7 @@ import { Component } from "react";
 import { connect } from "react-redux";
 
 import { FieldTypeDate } from "@zesty-io/material";
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
+import { FormControl, FormLabel, Select, MenuItem } from "@mui/material";
 
 import { DATE_PRESETS } from "./TableDateFilter.model";
 import {
@@ -15,7 +15,7 @@ import {
 import styles from "./TableDateFilter.less";
 
 const datePresets = [
-  // Skipping "All" since it's the default
+  { value: DATE_PRESETS.ALL, text: "ALL" },
   { value: DATE_PRESETS.THIRTY, text: "30 Days" },
   { value: DATE_PRESETS.SIXTY, text: "60 Days" },
   { value: DATE_PRESETS.NINETY, text: "90 Days" },
@@ -113,15 +113,21 @@ export default connect((state) => {
     render() {
       return (
         <div>
-          <FieldTypeDropDown
-            defaultOptText="All"
-            defaultOptValue={DATE_PRESETS.ALL}
-            label="Date Range"
-            name="form-group-filter"
-            onChange={this.onDateRangeChange}
-            options={datePresets}
-            value={DATE_PRESETS.ALL}
-          />
+          <FormControl fullWidth size="small">
+            <FormLabel sx={{ color: "#c3cddf" }}>Date Range</FormLabel>
+            <Select
+              name="form-group-filter"
+              variant="outlined"
+              defaultValue={DATE_PRESETS.ALL}
+              onChange={(evt) => this.onDateRangeChange(evt.target.value)}
+            >
+              {datePresets.map((datePreset, idx) => (
+                <MenuItem key={idx} value={datePreset.value}>
+                  {datePreset.text}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <div
             className={styles.customDateWrapper}
             style={this.state.datePickerIsVisible ? {} : { display: "none" }}

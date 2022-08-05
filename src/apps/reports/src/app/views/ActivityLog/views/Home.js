@@ -321,7 +321,7 @@ export const Home = () => {
   return (
     <>
       <Box sx={{ px: 3, pt: 3, mb: 1 }}>
-        <Typography variant="h4" sx={{ mb: 0.5 }}>
+        <Typography variant="h4" fontWeight={600} sx={{ mb: 0.5 }}>
           Activity Log
         </Typography>
         <Typography variant="subtitle2" color="text.secondary">
