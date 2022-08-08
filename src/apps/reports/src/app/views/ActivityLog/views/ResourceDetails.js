@@ -52,7 +52,7 @@ export const ResourceDetails = () => {
       if API call is ready to be executed
     */
     setInitialized(true);
-  }, []);
+  }, [location.pathname]);
 
   // Sets date parameters from when the resource was created
   const setDefaultDateParams = () => {

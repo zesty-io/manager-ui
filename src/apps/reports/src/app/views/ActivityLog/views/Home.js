@@ -52,7 +52,7 @@ export const Home = () => {
       if API call is ready to be executed
     */
     setInitialized(true);
-  }, []);
+  }, [location.pathname]);
 
   const {
     data: actions,

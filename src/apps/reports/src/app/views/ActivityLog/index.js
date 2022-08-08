@@ -33,7 +33,7 @@ export const ActivityLog = () => {
             path="/reports/activity-log/users/:id"
             component={UserDetails}
           />
-          <Route path="/reports/activity-log/:tab" component={Home} />
+          <Route exact path="/reports/activity-log/:tab" component={Home} />
           <Redirect to="/reports/activity-log/resources" />
         </Switch>
       </Box>
