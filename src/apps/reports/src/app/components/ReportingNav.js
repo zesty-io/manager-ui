@@ -21,16 +21,19 @@ export function ReportingNav() {
   const tree = [
     {
       label: "Activity Log",
-      path: "/reports/activity-log",
+      rootPath: "/reports/activity-log",
+      path: "/reports/activity-log/resources",
       icon: <HistoryIcon />,
     },
     {
       label: "Metrics",
+      rootPath: "/reports/metrics",
       path: "/reports/metrics",
       icon: <PieChartIcon />,
     },
     {
       label: "Analytics",
+      rootPath: "/reports/analytics",
       path: "/reports/analytics",
       icon: <InsightsIcon />,
     },
@@ -53,11 +56,11 @@ export function ReportingNav() {
           </Typography>
         </Box>
         <List sx={{ p: 1 }} color="primary">
-          {tree.map(({ label, path, icon }) => (
+          {tree.map(({ label, path, icon, rootPath }) => (
             <ListItem
               key={path}
               disablePadding
-              selected={location.pathname.includes(path)}
+              selected={location.pathname.includes(rootPath)}
               sx={{
                 mb: 1,
                 borderRadius: "4px",
