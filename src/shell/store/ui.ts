@@ -77,29 +77,13 @@ export const ui = createSlice({
     setTabs(state: UIState, action: { payload: Tab[] }) {
       state.tabs = action.payload;
     },
-    pinTabASDF(state: UIState, action: { payload: Tab }) {
-      const tabIndex = state.pinnedTabs.findIndex(
-        (tab) => tab.pathname === action.payload.pathname
-      );
-      console.log({ tabIndex });
-      if (tabIndex < 0) {
-        // if it doesn't exist, add it
-        state.pinnedTabs = [action.payload, ...state.pinnedTabs];
-      } else {
-        // if it does exist, update it with new information
-        // state.pinnedTabs[tabIndex] = action.payload
-      }
-    },
-    unpinTabASDF(state: UIState, action: { payload: Tab }) {
-      const newTabs = state.tabs.filter(
-        (tab) => tab.pathname === action.payload.pathname
-      );
-      state.tabs = newTabs;
+    setPinnedTabs(state: UIState, action: { payload: Tab[] }) {
+      state.pinnedTabs = action.payload;
     },
     loadedUI(
       state: UIState,
       action: {
-        payload: Pick<
+        payload?: Pick<
           UIState,
           "openNav" | "contentNav" | "contentActions" | "duoMode"
         >;
@@ -307,8 +291,21 @@ export function pinTab({ pathname }: { pathname: string }) {
     const state = getState();
     const parsedPath = parsePath(pathname);
     const tab = createTab(state, parsedPath);
-    await dispatch(actions.pinTabASDF(tab));
-    await idb.set(`${state.instance.ZUID}:pinned`, state.ui.pinnedTabs);
+    let newTabs = state.ui.pinnedTabs;
+    const tabIndex = state.ui.pinnedTabs.findIndex(
+      (t) => t.pathname === tab.pathname
+    );
+    console.log({ tabIndex });
+    if (tabIndex < 0) {
+      // if it doesn't exist, add it
+      //state.pinnedTabs = [action.payload, ...state.pinnedTabs];
+      newTabs = [tab, ...state.ui.pinnedTabs];
+    } else {
+      // if it does exist, update it with new information
+      // state.pinnedTabs[tabIndex] = action.payload
+    }
+    dispatch(actions.setPinnedTabs(newTabs));
+    await idb.set(`${state.instance.ZUID}:pinned`, newTabs);
   };
 }
 
@@ -317,8 +314,11 @@ export function unpinTab({ pathname }: { pathname: string }) {
     const state = getState();
     const parsedPath = parsePath(pathname);
     const tab = createTab(state, parsedPath);
-    dispatch(actions.unpinTabASDF(tab));
-    idb.set(`${state.instance.ZUID}:pinned`, state.ui.pinnedTabs);
+    const newTabs = state.ui.pinnedTabs.filter(
+      (t) => t.pathname !== tab.pathname
+    );
+    dispatch(actions.setPinnedTabs(newTabs));
+    idb.set(`${state.instance.ZUID}:pinned`, newTabs);
   };
 }
 

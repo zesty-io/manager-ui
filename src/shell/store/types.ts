@@ -7,6 +7,47 @@ import { UIState } from "./ui";
   function. For now, the ui member is typed but every other member is any
 
   Eventually, after the rest of the redux store is typed, we will replace this
-  with an imported AppState that has the proper types
+  with an AppState that has the proper types
 */
-export type AppState = { ui: UIState } & { [key: string]: any };
+export type AppState = {
+  ui: UIState;
+  apps: any;
+  auth: any;
+  user: any;
+  users: any;
+  releases: any;
+  releaseMembers: any;
+  userRole: any;
+  products: any;
+  instance: any;
+  instances: any;
+  languages: any;
+  models: any;
+  fields: any;
+  content: any;
+  contentVersions: any;
+  media: any;
+  logs: any;
+  notifications: any;
+  platform: any;
+  headTags: any;
+  instanceApi: any;
+  accountsApi: any;
+  modal: any;
+  listFilters: any;
+  logsInView: any;
+  files: any;
+  status: any;
+  auditTrail: any;
+  headers: any;
+  navCode: any;
+  leads: any;
+  filter: any;
+  navSchema: any;
+  parents: any;
+  redirects: any;
+  redirectsFilter: any;
+  imports: any;
+  settings: any;
+  navContent: any;
+};
