@@ -34,7 +34,7 @@ export default connect((state, props) => {
           <>
             {" "}
             <span className="audit-title">Draft History</span>
-            <small>&nbsp;Activity Log;</small>
+            <small>&nbsp;Activity Log</small>
           </>
         }
       ></CardHeader>
