@@ -68,8 +68,12 @@ export function ReportingNav() {
                   " .MuiListItemIcon-root": {
                     color: "primary.main",
                   },
+                  " .MuiListItemButton-root": {
+                    "&:hover": {
+                      backgroundColor: "unset",
+                    },
+                  },
                   color: "primary.dark",
-                  pointerEvents: "none",
                 },
               }}
             >
