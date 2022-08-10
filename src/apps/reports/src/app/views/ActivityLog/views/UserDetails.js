@@ -42,7 +42,7 @@ export const UserDetails = () => {
       if API call is ready to be executed
     */
     setInitialized(true);
-  }, [usersLoading]);
+  }, [usersLoading, location.pathname]);
 
   const {
     data: actionsByZuid,
