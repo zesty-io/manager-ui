@@ -28,9 +28,7 @@ export const PublishStatusCell = memo(function PublishStatusCell(props) {
         className={cx(styles.PublishStatusCell)}
         to={`/content/${props.modelZUID}/${props.itemZUID}`}
       >
-        {props.item &&
-        props.item.scheduling &&
-        props.item.scheduling.isScheduled ? (
+        {props.item?.scheduling?.isScheduled ? (
           <FontAwesomeIcon icon={faClock} className={styles.Scheduled} />
         ) : props.item &&
           props.item.publishing &&
@@ -46,7 +44,7 @@ export const PublishStatusCell = memo(function PublishStatusCell(props) {
       <Link
         underline="none"
         color="secondary"
-        href={`${CONFIG.URL_PREVIEW_FULL}${props.item.web.path}`}
+        href={`${CONFIG.URL_PREVIEW_FULL}${props.item?.web?.path}`}
         sx={{
           alignItems: "center",
           display: "flex",
@@ -64,13 +62,9 @@ export const PublishStatusCell = memo(function PublishStatusCell(props) {
         target="_blank"
         title="Opens item preview in a new tab"
       >
-        {props.item &&
-        props.item.scheduling &&
-        props.item.scheduling.isScheduled ? (
+        {props.item?.scheduling?.isScheduled ? (
           <ClockIcon fontSize="small" color="warning" />
-        ) : props.item &&
-          props.item.publishing &&
-          props.item.publishing.isPublished ? (
+        ) : props.item?.publishing?.isPublished ? (
           <VisibilityIcon fontSize="small" color="success" />
         ) : (
           <VisibilityIcon fontSize="small" color="primary" />
