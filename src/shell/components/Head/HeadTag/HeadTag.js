@@ -26,9 +26,10 @@ import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 
-import { FieldTypeDropDown } from "@zesty-io/core/FieldTypeDropDown";
 import { FieldTypeText } from "@zesty-io/material";
 import { FieldTypeSort } from "@zesty-io/material";
+
+import { FormControl, FormLabel, Select, MenuItem } from "@mui/material";
 
 import styles from "./HeadTag.less";
 export const HeadTag = (props) => {
@@ -118,19 +119,23 @@ export const HeadTag = (props) => {
               gap: "8px",
             }}
           >
-            {" "}
-            <FieldTypeDropDown
-              className={styles.DropDown}
-              name={tag.ZUID}
-              label="Tag"
-              onChange={(value) => dispatch(updateTagType(tag.ZUID, value))}
-              value={tag.type}
-              options={[
-                { text: "Script", value: "script" },
-                { text: "Meta", value: "meta" },
-                { text: "Link", value: "link" },
-              ]}
-            />
+            <FormControl size="small" sx={{ width: "210px" }}>
+              <FormLabel>Tag</FormLabel>
+              <Select
+                name={tag.ZUID}
+                variant="outlined"
+                displayEmpty
+                value={tag.type}
+                onChange={(e) =>
+                  dispatch(updateTagType(tag.ZUID, e.target.value))
+                }
+              >
+                <MenuItem value="">- None -</MenuItem>
+                <MenuItem value="script">Script</MenuItem>
+                <MenuItem value="meta">Meta</MenuItem>
+                <MenuItem value="link">Link</MenuItem>
+              </Select>
+            </FormControl>
             <Box sx={{ maxWidth: "200px" }}>
               <FieldTypeSort
                 value={tag.sort ? tag.sort.toString() : "0"}

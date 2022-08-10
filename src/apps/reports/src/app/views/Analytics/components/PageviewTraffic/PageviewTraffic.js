@@ -108,10 +108,7 @@ export class PageviewTraffic extends PureComponent {
                 ],
               },
               options: {
-                legend: {
-                  display: true,
-                  position: "bottom",
-                },
+                plugins: { legend: { display: true, position: "bottom" } },
               },
             }}
           />

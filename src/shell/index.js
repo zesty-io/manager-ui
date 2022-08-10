@@ -6,8 +6,15 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { theme } from "@zesty-io/material";
+import { ThemeProvider } from "@mui/material/styles";
+import { legacyTheme } from "@zesty-io/material";
+
+import "chart.js/auto";
+
+import { LicenseInfo } from "@mui/x-license-pro";
+LicenseInfo.setLicenseKey(
+  "e9268055e7858ccf7d7bc5d078217f7eTz00ODIyOCxFPTE2OTA3Mzk5NDkxNjgsUz1wcm8sTE09c3Vic2NyaXB0aW9uLEtWPTI="
+);
 
 import idb from "utility/idb";
 import observable from "@riotjs/observable";
@@ -45,7 +52,7 @@ MonacoSetup(store);
 const App = Sentry.withProfiler(() => (
   <StrictMode>
     <Sentry.ErrorBoundary fallback={() => <AppError />}>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={legacyTheme}>
         <Provider store={store}>
           <Router history={history}>
             <PrivateRoute>

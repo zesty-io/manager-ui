@@ -28,7 +28,7 @@ export default function AuditTrail(props) {
     >
       <CardHeader
         avatar={<HistoryIcon fontSize="small" />}
-        title="AuditTrail™"
+        title="Activity Log"
         sx={{ backgroundColor: "#272728" }}
       ></CardHeader>
 
@@ -55,7 +55,10 @@ export default function AuditTrail(props) {
         </ul>
       </CardContent>
       <CardActions sx={{ marginTop: "auto" }}>
-        <AppLink className={styles.MoreLogs} to={`/reports/audit-trail`}>
+        <AppLink
+          className={styles.MoreLogs}
+          to={`/reports/activity-log/resources/${props.logs?.[0]?.affectedZUID}`}
+        >
           <FontAwesomeIcon icon={faLink} /> View all logs
         </AppLink>
       </CardActions>
