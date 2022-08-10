@@ -69,9 +69,13 @@ export const ui = createSlice({
     codeEditorPosition: null,
   },
   reducers: {
-    loadTabsSuccess(state: UIState, action: { payload: Tab[] }) {
-      const tabs = action.payload;
+    loadTabsSuccess(
+      state: UIState,
+      action: { payload: { tabs: Tab[]; pinnedTabs: Tab[] } }
+    ) {
+      const { tabs, pinnedTabs } = action.payload;
       state.tabs = tabs;
+      state.pinnedTabs = pinnedTabs;
       state.loadedTabs = true;
     },
     setTabs(state: UIState, action: { payload: Tab[] }) {
@@ -277,12 +281,11 @@ function toCapitalCase(string: string) {
 }
 
 // Thunks
-
 export function loadTabs(instanceZUID: string) {
-  return (dispatch: Dispatch) => {
-    return idb.get(`${instanceZUID}:session:routes`).then((tabs = []) => {
-      return dispatch(actions.loadTabsSuccess(tabs));
-    });
+  return async (dispatch: Dispatch) => {
+    const tabs = (await idb.get(`${instanceZUID}:session:routes`)) || [];
+    const pinnedTabs = (await idb.get(`${instanceZUID}:pinned`)) || [];
+    return dispatch(actions.loadTabsSuccess({ tabs, pinnedTabs }));
   };
 }
 

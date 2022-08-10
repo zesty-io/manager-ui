@@ -11,6 +11,12 @@ import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import PinIcon from "@mui/icons-material/PushPin";
 import OutlinedPinIcon from "@mui/icons-material/PushPinOutlined";
 
+// For dropdown
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Input from "@mui/material/Input";
+
 import {
   pinTab,
   unpinTab,
@@ -147,14 +153,31 @@ export default memo(function GlobalTabs() {
 
   if (!activeTab) {
     // this should never happen
-    console.log("no active tab", tabs);
+    console.error("no active tab", tabs);
   }
 
-  const numTabs = Math.floor(tabBarWidth / tabWidth) - 2;
+  const numTabs = Math.floor(tabBarWidth / tabWidth) - 3;
 
   const displayedTabs = inactiveTabs.filter((t, i) => i < numTabs);
+  const nonDisplayedTabs = inactiveTabs.filter(
+    (t, i) => i >= numTabs && t !== activeTab
+  );
   const orderedTabs = activeTab ? [activeTab, ...displayedTabs] : displayedTabs;
   console.log({ activeTab, inactiveTabs, orderedTabs, pinnedTabs });
+  const dropdown = nonDisplayedTabs.length ? (
+    <Dropdown
+      tabs={nonDisplayedTabs}
+      isPinned={true}
+      tabWidth={tabWidth}
+      onClick={(tab) => {
+        console.log("click");
+        const isPinned =
+          pinnedTabs.findIndex((t) => tab.pathname === t.pathname) >= 0;
+        if (isPinned) dispatch(unpinTab(tab));
+        else dispatch(pinTab(tab));
+      }}
+    />
+  ) : null;
 
   return (
     <nav ref={tabContainerRef} className={styles.QuickLinks}>
@@ -166,7 +189,7 @@ export default memo(function GlobalTabs() {
           return (
             <Tab
               tab={tab}
-              key={i}
+              key={tab.pathname}
               isPinned={isPinned}
               tabWidth={tabWidth}
               onClick={() => {
@@ -177,6 +200,7 @@ export default memo(function GlobalTabs() {
             />
           );
         })}
+        {dropdown}
       </ol>
     </nav>
   );
@@ -200,9 +224,9 @@ const Tab: FC<TabComponent> = ({ tab, tabWidth, isPinned, onClick }) => {
   const Pin = isPinned ? PinIcon : OutlinedPinIcon;
   return (
     <li
-      {...tabProps}
       style={{ width: `${tabWidth}px` }}
       className={cx(styles.Route, isActiveTab ? styles.active : null)}
+      {...tabProps}
     >
       <AppLink to={`${tab.pathname}`}>
         {tab.icon && <FontAwesomeIcon icon={tab.icon} />}
@@ -213,5 +237,77 @@ const Tab: FC<TabComponent> = ({ tab, tabWidth, isPinned, onClick }) => {
         <Pin fontSize="small" />
       </span>
     </li>
+  );
+};
+
+type Dropdown = {
+  tabs: Tab[];
+  tabWidth: number;
+  isPinned: boolean;
+  onClick: (tab: Tab) => void;
+};
+
+const Dropdown: FC<Dropdown> = ({ tabs, tabWidth, isPinned, onClick }) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const [filter, setFilter] = useState("");
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const filterTerm = filter.trim().toLocaleLowerCase();
+  // TODO consider memoizing this
+  const filteredTabs = tabs.filter(
+    (tab) =>
+      tab.pathname.toLocaleLowerCase().includes(filterTerm) ||
+      tab.name.toLocaleLowerCase().includes(filterTerm)
+  );
+
+  return (
+    <div>
+      <Button
+        id="basic-button"
+        aria-controls={open ? "basic-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? "true" : undefined}
+        onClick={handleClick}
+      >
+        See more
+      </Button>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          "aria-labelledby": "basic-button",
+        }}
+      >
+        <MenuItem>
+          <Input
+            value={filter}
+            onChange={(evt) => setFilter(evt.target.value)}
+          />
+        </MenuItem>
+        <MenuItem>
+          <Button onClick={() => filteredTabs.forEach((tab) => onClick(tab))}>
+            Clear all
+          </Button>
+        </MenuItem>
+        {filteredTabs.map((tab) => (
+          <MenuItem>
+            <Tab
+              tab={tab}
+              tabWidth={tabWidth}
+              isPinned={isPinned}
+              onClick={() => onClick(tab)}
+            />
+          </MenuItem>
+        ))}
+      </Menu>
+    </div>
   );
 };
