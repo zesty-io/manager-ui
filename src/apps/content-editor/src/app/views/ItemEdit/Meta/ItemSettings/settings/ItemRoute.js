@@ -76,12 +76,7 @@ export const ItemRoute = connect((state) => {
 
                   setUnique(!matches.length);
                 } else {
-                  props.dispatch(
-                    notify({
-                      kind: "warn",
-                      message: `Path not found ${res.status}`,
-                    })
-                  );
+                  setUnique(true);
                 }
               } else {
                 props.dispatch(
