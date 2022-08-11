@@ -8,7 +8,8 @@ export function NotFound(props) {
         <h1 className={styles.display}>{props.message}</h1>
         {/* <h2>{props.message}</h2> */}
         <p className={styles.title}>
-          If an item is missing please contact support and provide the url;
+          If this is an error please contact support@zesty.io and provide the
+          following url;
         </p>
         <p className={styles.title}>
           <Link

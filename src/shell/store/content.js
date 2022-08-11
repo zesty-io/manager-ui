@@ -50,33 +50,85 @@ export function content(state = {}, action) {
         },
       };
 
-    case "FETCH_ITEMS_SUCCESS":
-    case "SEARCH_ITEMS_SUCCESS":
     case "LOADED_LOCAL_ITEMS":
+      // Shape should match the store expectations
+      return action.data;
+
+    case "SEARCH_ITEMS_SUCCESS":
+      // need to handle this separetly as it is a subset of all model items
+      // and so can not rely on an implict behavior of a record not being present
+      // means it is deleted and should be attempted to be dropped from in-memory
       if (action.data) {
-        let items = { ...state };
-        Object.keys(action.data).forEach((itemZUID) => {
-          // Ensure all items include meta, web & data
-          if (
-            action.data[itemZUID] &&
-            action.data[itemZUID].meta &&
-            action.data[itemZUID].web &&
-            action.data[itemZUID].data
-          ) {
-            // Only update items that don't exist locally or that are not dirty
-            // otherwise we lose users local changes
-            if (!items[itemZUID] || !items[itemZUID].dirty) {
-              items[itemZUID] = {
-                // Keep derived publishing/scheduling state when updating items
-                ...items[itemZUID],
-                ...action.data[itemZUID],
-                dirty: false,
+        const items = { ...state };
+
+        Object.values(action.data).forEach((rec) => {
+          if (items[rec.meta.ZUID]) {
+            if (!items[rec.meta.ZUID].dirty) {
+              items[rec.meta.ZUID] = {
+                ...items[rec.meta.ZUID],
+                ...rec,
               };
             }
+            // if dirty leave record as-is
+          } else {
+            items[rec.meta.ZUID] = rec;
           }
         });
 
         return items;
+      } else {
+        return state;
+      }
+
+    case "FETCH_ITEMS_SUCCESS":
+      if (action.data) {
+        const incomingRecords = Object.values(action.data);
+        const currentRecords = Object.values(state);
+
+        const validIncomingRecords = incomingRecords.filter((rec) => {
+          return rec && rec.meta && rec.web && rec.data;
+        });
+
+        // Get first items model zuid. All items should belong to the same model.
+        const contentModelZUID =
+          validIncomingRecords[0]?.meta?.contentModelZUID;
+
+        // Get other items in the store not part of the current model.
+        const otherModelItems = currentRecords.filter(
+          (rec) => rec.meta.contentModelZUID !== contentModelZUID
+        );
+
+        const unsavedNewItems = currentRecords.filter((rec) =>
+          rec.meta.ZUID?.includes("new:")
+        );
+
+        // If a user has a local record which is dirty keep the local record state
+        // versus the incoming record state. This avoids loss of local work which
+        // has not been persisted to the API
+        const mergedDirtyRecords = validIncomingRecords.map((rec) => {
+          if (state[rec.meta.ZUID]) {
+            if (!state[rec.meta.ZUID].dirty) {
+              // merge current and incoming records in order
+              // to maintain derived publishing state
+              return { ...state[rec.meta.ZUID], ...rec };
+            } else {
+              // if dirty leave record as-is
+              return state[rec.meta.ZUID];
+            }
+          } else {
+            return { ...rec, dirty: false };
+          }
+        });
+
+        // recombine and convert back to normalized data shape
+        return [
+          ...unsavedNewItems,
+          ...otherModelItems,
+          ...mergedDirtyRecords,
+        ].reduce((acc, item) => {
+          acc[item.meta.ZUID] = item;
+          return acc;
+        }, {});
       } else {
         return state;
       }
