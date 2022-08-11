@@ -8,7 +8,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 import { Modal, ModalContent, ModalFooter } from "@zesty-io/core/Modal";
 import { Notice } from "@zesty-io/core/Notice";
-import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
+import { FieldTypeDateTime } from "@zesty-io/material";
 
 import { FormControl, FormLabel, Autocomplete, TextField } from "@mui/material";
 
@@ -200,14 +200,12 @@ export default class ScheduleFlyout extends Component {
                   </FormControl>
                 </div>
                 <div className={styles.Row}>
-                  <FieldTypeDate
-                    type="date"
+                  <FieldTypeDateTime
                     name="publish"
                     label="Publish date and time"
-                    future={true}
                     value={this.state.selectedTime}
-                    datatype={"datetime"}
                     onChange={this.handleChangePublish}
+                    disablePast
                   />
                 </div>
               </ModalContent>
