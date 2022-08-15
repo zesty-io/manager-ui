@@ -120,7 +120,7 @@ export const PublishState = () => {
                   })
                 }
               >
-                Take Offline
+                Cancel
               </Button>,
             ];
           } else {
