@@ -32,7 +32,7 @@ import { HeadlessOptions } from "./HeadlessOptions";
 
 import { NotFound } from "../NotFound";
 
-import { PublishHistory } from "./PublishHistory.tsx";
+import { PublishState } from "./PublishState.tsx";
 import { Header } from "./components/Header";
 
 const selectSortedModelFields = createSelector(
@@ -340,7 +340,7 @@ export default function ItemEdit() {
               />
               <Route
                 exact
-                path="/content/:modelZUID/:itemZUID/publish-history"
+                path="/content/:modelZUID/:itemZUID/publish-state"
                 render={() => (
                   <>
                     <Header
@@ -350,7 +350,7 @@ export default function ItemEdit() {
                       itemZUID={itemZUID}
                       item={item}
                     />
-                    <PublishHistory />
+                    <PublishState />
                   </>
                 )}
               />

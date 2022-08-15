@@ -13,7 +13,7 @@ type Params = {
   itemZUID: string;
 };
 
-export const PublishHistory = () => {
+export const PublishState = () => {
   const { modelZUID, itemZUID } = useParams<Params>();
   const { data, isLoading } = instanceApi.useGetItemPublishingsQuery({
     modelZUID,
@@ -24,15 +24,6 @@ export const PublishHistory = () => {
   const columns = useMemo(
     () => [
       { field: "id", headerName: "Id", hide: true },
-      {
-        field: "publishAt",
-        headerName: "Go Online",
-        type: "dateTime",
-        flex: 1,
-        valueGetter: (value: GridValueGetterParams) => {
-          return `${moment(value.row.publishAt).format("ll, h:mm A")}`;
-        },
-      },
       {
         field: "_active",
         headerName: "Status",
@@ -60,14 +51,32 @@ export const PublishHistory = () => {
         },
       },
       {
+        field: "version",
+        headerName: "Version",
+      },
+      {
+        field: "publishAt",
+        headerName: "Go Online",
+        type: "dateTime",
+        flex: 1,
+        valueGetter: (value: GridValueGetterParams) => {
+          return `${moment(value.row.publishAt).format("ll, h:mm A")}`;
+        },
+      },
+      {
         field: "unpublishAt",
-        headerName: "Take Offline",
+        headerName: "Go Offline",
         type: "dateTime",
         flex: 1,
         valueGetter: (value: GridValueGetterParams) =>
           value.row.unpublishAt
             ? moment(value.row.unpublishAt).format("lll")
             : null,
+      },
+      {
+        field: "ZUID",
+        flex: 1,
+        headerName: "Publishing ZUID",
       },
       {
         field: "createdAt",
@@ -78,18 +87,9 @@ export const PublishHistory = () => {
           moment(value.row.createdAt).format("lll"),
       },
       {
-        field: "version",
-        headerName: "Version Number",
-      },
-      {
-        field: "versionZUID",
-        flex: 1,
-        headerName: "Version ZUID",
-      },
-      {
         field: "actions",
         headerName: "Actions",
-        width: 200,
+        width: 120,
         renderCell: (value) => {
           if (value.row._active) {
             return [
@@ -104,7 +104,7 @@ export const PublishHistory = () => {
                   })
                 }
               >
-                Unpublish Live Item
+                Take Offline
               </Button>,
             ];
           } else if (new Date(value.row.publishAt) > new Date()) {
@@ -120,7 +120,7 @@ export const PublishHistory = () => {
                   })
                 }
               >
-                Cancel Scheduled Publish
+                Take Offline
               </Button>,
             ];
           } else {
