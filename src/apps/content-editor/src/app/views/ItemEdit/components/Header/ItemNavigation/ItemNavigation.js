@@ -17,7 +17,8 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
           slug !== "meta" &&
             slug !== "head" &&
             slug !== "preview" &&
-            slug !== "headless"
+            slug !== "headless" &&
+            slug !== "publish-history"
             ? styles.Selected
             : null
         )}
@@ -63,6 +64,18 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
         to={`/content/${modelZUID}/${itemZUID}/headless`}
       >
         Headless <span className={styles.Hide}>Options</span>
+      </AppLink>
+      <AppLink
+        title="Publish History"
+        data-cy="publish-history"
+        className={cx(
+          styles.AppLink,
+          styles.buttonText,
+          slug === "publish-history" ? styles.Selected : null
+        )}
+        to={`/content/${modelZUID}/${itemZUID}/publish-history`}
+      >
+        Publish History
       </AppLink>
     </nav>
   );

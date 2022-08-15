@@ -1,12 +1,13 @@
 {
-  "include": ["src/**/*ts"],
+  "include": ["src"],
   "compilerOptions": {
     "noImplicitAny": true,
     "allowJs": true,
     "module": "es6",
     "target": "esnext",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "moduleResolution": "node",
-    "sourceMap": true
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true
   }
 }
