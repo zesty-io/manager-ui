@@ -23,7 +23,7 @@ export const SitemapPriority = memo(function SitemapPriority(props) {
         name="sitemapPriority"
         defaultValue={props.sitemapPriority || "-1.0"}
         size="small"
-        onSelect={(e) => {
+        onChange={(e) => {
           // this value is coerced here due to API restrictions
           props.onChange(Number(e.target.value), "sitemapPriority");
         }}
