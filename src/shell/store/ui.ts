@@ -16,6 +16,7 @@ import {
   faExternalLinkSquareAlt,
   faLink,
   faHome,
+  faPlug,
   IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import { isEqual } from "lodash";
@@ -158,6 +159,7 @@ export function parsePath(path: string) {
 export type ParsedPath = ReturnType<typeof parsePath>;
 function validatePath(parsedPath: ParsedPath) {
   const { parts, zuid, contentSection } = parsedPath;
+  console.log(parsedPath);
   // don't show root
   if (parts.length === 0) {
     return false;
@@ -205,7 +207,38 @@ function validatePath(parsedPath: ParsedPath) {
 export function createTab(state: AppState, parsedPath: ParsedPath) {
   const { path, parts, zuid, prefix } = parsedPath;
   const tab: Tab = { pathname: path };
+  console.log(parsedPath);
 
+  const appNameMap = {
+    seo: "SEO",
+    content: "Content",
+    media: "Media",
+    schema: "Schema",
+    code: "Code",
+    leads: "Leads",
+    settings: "Settings",
+  };
+
+  if (parts[0] === "app") {
+    tab.icon = faPlug;
+    const app = state.apps.installed.find((app: any) => app.ZUID === zuid);
+    tab.name = app?.label || app?.name || "Custom App";
+  } else if (parts[0] === "reports") {
+    switch (parts[1]) {
+      case "activity-log":
+        tab.name = "Activity Log";
+        break;
+      case "metrics":
+        tab.name = "Metrics";
+        break;
+      case "analytics":
+        tab.name = "Analytics";
+        break;
+    }
+  } else if (parts[0] in appNameMap) {
+    //@ts-ignore
+    tab.name = appNameMap[parts[0]];
+  }
   // resolve ZUID from store to determine display information
   switch (prefix) {
     case "1":
@@ -319,6 +352,18 @@ export function unpinTab({ pathname }: { pathname: string }) {
     const tab = createTab(state, parsedPath);
     const newTabs = state.ui.pinnedTabs.filter(
       (t) => t.pathname !== tab.pathname
+    );
+    dispatch(actions.setPinnedTabs(newTabs));
+    idb.set(`${state.instance.ZUID}:pinned`, newTabs);
+  };
+}
+
+export function unpinManyTabs(tabs: { pathname: string }[]) {
+  return (dispatch: Dispatch, getState: () => AppState) => {
+    const state = getState();
+    const pathnames = new Set(tabs.map(({ pathname }) => pathname));
+    const newTabs = state.ui.pinnedTabs.filter(
+      (t) => !pathnames.has(t.pathname)
     );
     dispatch(actions.setPinnedTabs(newTabs));
     idb.set(`${state.instance.ZUID}:pinned`, newTabs);

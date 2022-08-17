@@ -1,16 +1,19 @@
 import { memo, useEffect, useLayoutEffect, useRef, useState, FC } from "react";
 import { createDispatchHook, useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link as Link } from "react-router-dom";
 import cx from "classnames";
 import usePrevious from "react-use/lib/usePrevious";
 import { debounce } from "lodash";
 
-import { AppLink } from "@zesty-io/core/AppLink";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import PinIcon from "@mui/icons-material/PushPin";
+import SearchIcon from "@mui/icons-material/Search";
 import OutlinedPinIcon from "@mui/icons-material/PushPinOutlined";
 
+import MuiLink from "@mui/material/Link";
+import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
 // For dropdown
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
@@ -20,8 +23,7 @@ import Input from "@mui/material/Input";
 import {
   pinTab,
   unpinTab,
-  closeTab,
-  openTab,
+  unpinManyTabs,
   loadTabs,
   rebuildTabs,
   parsePath,
@@ -29,8 +31,6 @@ import {
   createTab,
 } from "../../../shell/store/ui";
 import { AppState } from "../../store/types";
-
-import styles from "./GlobalTabs.less";
 
 const MIN_TAB_WIDTH = 150;
 const MAX_TAB_WIDTH = 200;
@@ -49,6 +49,7 @@ export default memo(function GlobalTabs() {
   const prevPath = usePrevious(location.pathname);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const models = useSelector((state: AppState) => state.models);
+  const apps = useSelector((state: AppState) => state.apps.installed);
 
   const content = useSelector((state: AppState) => state.content);
   const files = useSelector((state: AppState) => state.files);
@@ -75,12 +76,6 @@ export default memo(function GlobalTabs() {
     dispatch(loadTabs(instanceZUID));
   }, [instanceZUID]);
 
-  // openTab every time path changes
-  useEffect(() => {
-    if (loadedTabs) {
-      dispatch(openTab({ path: location.pathname, prevPath }));
-    }
-  }, [loadedTabs, location.pathname]);
   useEffect(() => {
     //setSt
     const parsedPath = parsePath(location.pathname);
@@ -104,7 +99,7 @@ export default memo(function GlobalTabs() {
     if (loadedTabs) {
       dispatch(rebuildTabs());
     }
-  }, [loadedTabs, models, content, files, mediaGroups]);
+  }, [loadedTabs, models, content, files, mediaGroups, apps]);
 
   /*
   const activeTabRef = useRef();
@@ -149,7 +144,9 @@ export default memo(function GlobalTabs() {
     (tab) => tab.pathname !== location.pathname
   );
 
-  const activeTab = tabs.find((tab) => tab.pathname === location.pathname);
+  const activeTab =
+    tabs.find((tab) => tab.pathname === location.pathname) ||
+    createTab(state, parsePath(location.pathname));
 
   if (!activeTab) {
     // this should never happen
@@ -164,30 +161,27 @@ export default memo(function GlobalTabs() {
   );
   const orderedTabs = activeTab ? [activeTab, ...displayedTabs] : displayedTabs;
   console.log({ activeTab, inactiveTabs, orderedTabs, pinnedTabs });
-  const dropdown = nonDisplayedTabs.length ? (
-    <Dropdown
-      tabs={nonDisplayedTabs}
-      isPinned={true}
-      tabWidth={tabWidth}
-      onClick={(tab) => {
-        console.log("click");
-        const isPinned =
-          pinnedTabs.findIndex((t) => tab.pathname === t.pathname) >= 0;
-        if (isPinned) dispatch(unpinTab(tab));
-        else dispatch(pinTab(tab));
-      }}
-    />
-  ) : null;
 
   return (
-    <nav ref={tabContainerRef} className={styles.QuickLinks}>
-      <ol className={styles.Links}>
+    <Stack
+      ref={tabContainerRef}
+      component="nav"
+      direction="row"
+      sx={{ flex: 1 }}
+    >
+      <Stack
+        component="ol"
+        direction="row"
+        sx={{
+          flex: 1,
+        }}
+      >
         {orderedTabs.map((tab, i) => {
           const isPinned =
             pinnedTabs.findIndex((t) => tab.pathname === t.pathname) >= 0;
           console.log({ tab, pinnedTabs, isPinned });
           return (
-            <Tab
+            <TopTab
               tab={tab}
               key={tab.pathname}
               isPinned={isPinned}
@@ -200,19 +194,35 @@ export default memo(function GlobalTabs() {
             />
           );
         })}
-        {dropdown}
-      </ol>
-    </nav>
+        <Dropdown
+          tabs={nonDisplayedTabs}
+          isPinned={true}
+          tabWidth={tabWidth}
+          removeOne={(tab) => {
+            console.log("click");
+            dispatch(unpinTab(tab));
+          }}
+          removeMany={(tabs) => {
+            console.log("click");
+            dispatch(unpinManyTabs(tabs));
+          }}
+        />
+      </Stack>
+    </Stack>
   );
 });
 
-type TabComponent = {
+const activeTabStyles = {
+  backgroundColor: "white",
+};
+
+type TopTab = {
   tab: Tab;
   tabWidth: number;
   isPinned: boolean;
   onClick: () => void;
 };
-const Tab: FC<TabComponent> = ({ tab, tabWidth, isPinned, onClick }) => {
+const TopTab: FC<TopTab> = ({ tab, tabWidth, isPinned, onClick }) => {
   const isActiveTab = tab.pathname === location.pathname;
   console.log(tab);
   const tabProps = {};
@@ -221,22 +231,69 @@ const Tab: FC<TabComponent> = ({ tab, tabWidth, isPinned, onClick }) => {
     tabProps.ref = activeTabRef;
   }
   */
-  const Pin = isPinned ? PinIcon : OutlinedPinIcon;
   return (
-    <li
-      style={{ width: `${tabWidth}px` }}
-      className={cx(styles.Route, isActiveTab ? styles.active : null)}
+    <Box
+      component="li"
+      sx={{
+        borderWidth: "1px",
+        borderColor: "grey.800",
+        // TODO how to pull from theme?
+        borderRadius: "12px 12px 0px 0px",
+        padding: 1.5,
+        gap: 1,
+        backgroundColor: isActiveTab ? "white" : "grey.700",
+
+        width: `${tabWidth}px`,
+        // taken from old less
+        alignItems: "center",
+        display: "flex",
+        flexShrink: 0,
+      }}
       {...tabProps}
     >
-      <AppLink to={`${tab.pathname}`}>
+      <TabInternals tab={tab} isPinned={isPinned} onClick={onClick} />
+    </Box>
+  );
+};
+
+type TabInternals = {
+  tab: Tab;
+  isPinned: boolean;
+  onClick: () => void;
+};
+const TabInternals: FC<TabInternals> = ({ tab, isPinned, onClick }) => {
+  const Pin = isPinned ? PinIcon : OutlinedPinIcon;
+  return (
+    <>
+      <MuiLink
+        component={Link}
+        to={`${tab.pathname}`}
+        sx={{
+          color: "grey.400",
+          justifyContent: "space-between",
+          // taken from old less
+          width: "100%",
+          display: "inline-block",
+          maxWidth: "300px",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          textShadow: "none",
+          wordBreak: "keep-all",
+          transitionDuration: "unset",
+          transitionProperty: "unset",
+        }}
+      >
         {tab.icon && <FontAwesomeIcon icon={tab.icon} />}
         &nbsp;
         {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
-      </AppLink>
-      <span className={styles.Close} onClick={onClick}>
-        <Pin fontSize="small" />
-      </span>
-    </li>
+      </MuiLink>
+      <Box component="span" onClick={onClick} sx={{ cursor: "pointer" }}>
+        <Pin
+          fontSize="small"
+          sx={{ transform: "rotate(45deg)", marginRight: 0.25 }}
+        />
+      </Box>
+    </>
   );
 };
 
@@ -244,10 +301,11 @@ type Dropdown = {
   tabs: Tab[];
   tabWidth: number;
   isPinned: boolean;
-  onClick: (tab: Tab) => void;
+  removeOne: (tab: Tab) => void;
+  removeMany: (tabs: Tab[]) => void;
 };
 
-const Dropdown: FC<Dropdown> = ({ tabs, tabWidth, isPinned, onClick }) => {
+const Dropdown: FC<Dropdown> = ({ tabs, isPinned, removeOne, removeMany }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [filter, setFilter] = useState("");
@@ -258,12 +316,13 @@ const Dropdown: FC<Dropdown> = ({ tabs, tabWidth, isPinned, onClick }) => {
     setAnchorEl(null);
   };
 
+  if (tabs.length === 0) return null;
   const filterTerm = filter.trim().toLocaleLowerCase();
   // TODO consider memoizing this
   const filteredTabs = tabs.filter(
     (tab) =>
       tab.pathname.toLocaleLowerCase().includes(filterTerm) ||
-      tab.name.toLocaleLowerCase().includes(filterTerm)
+      (tab.name && tab.name.toLocaleLowerCase().includes(filterTerm))
   );
 
   return (
@@ -275,7 +334,7 @@ const Dropdown: FC<Dropdown> = ({ tabs, tabWidth, isPinned, onClick }) => {
         aria-expanded={open ? "true" : undefined}
         onClick={handleClick}
       >
-        See more
+        More
       </Button>
       <Menu
         id="basic-menu"
@@ -288,22 +347,27 @@ const Dropdown: FC<Dropdown> = ({ tabs, tabWidth, isPinned, onClick }) => {
       >
         <MenuItem>
           <Input
+            placeholder="Search Tabs"
+            startAdornment={<SearchIcon />}
             value={filter}
             onChange={(evt) => setFilter(evt.target.value)}
           />
         </MenuItem>
         <MenuItem>
-          <Button onClick={() => filteredTabs.forEach((tab) => onClick(tab))}>
-            Clear all
-          </Button>
+          <Stack direction="row" justifyContent="space-between">
+            PINNED TABS
+            {Boolean(filterTerm) || (
+              <Button onClick={() => removeMany(tabs)}>UNPIN ALL</Button>
+            )}
+          </Stack>
         </MenuItem>
         {filteredTabs.map((tab) => (
           <MenuItem>
-            <Tab
+            <TabInternals
               tab={tab}
-              tabWidth={tabWidth}
+              key={tab.pathname}
               isPinned={isPinned}
-              onClick={() => onClick(tab)}
+              onClick={() => removeOne(tab)}
             />
           </MenuItem>
         ))}

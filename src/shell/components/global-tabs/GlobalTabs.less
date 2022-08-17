@@ -14,43 +14,8 @@
 }
 
 .QuickLinks {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  overflow-x: scroll;
-
   .Links {
-    flex: 1;
-    display: flex;
-
-    &::-webkit-scrollbar {
-      width: 4px;
-      height: 4px;
-    }
-    &::-webkit-scrollbar-track-piece {
-      background-color: lighten(#171b26, 10%);
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: lighten(#171b26, 5%);
-    }
-    &::-webkit-scrollbar-thumb:hover {
-      background-color: @zesty-orange;
-    }
-
     li {
-      align-items: center;
-      display: flex;
-      border-right: 1px solid #0d1016;
-      padding: 0 8px;
-      flex-shrink: 0;
-
-      //Active tab
-      &.active {
-        background-color: lighten(@globalMenuBkgColor, 5%);
-        a {
-          color: @zesty-white;
-        }
-      }
       a {
         width: 100%;
         padding: 12px 6px;
@@ -73,9 +38,136 @@
           margin-right: 2px;
         }
       }
-      .Close {
-        cursor: pointer;
-      }
     }
   }
+}
+
+/* Pinned=Unpinned, State=Not Selected */
+
+.figma {
+  box-sizing: border-box;
+
+  /* Auto layout */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 12px;
+  gap: 8px;
+
+  position: absolute;
+  width: 141px;
+  height: 48px;
+  left: 40px;
+  top: 216px;
+
+  /* Grey/800 */
+  background: #1d2939;
+  /* Grey/700 */
+  border-width: 2px 2px 0px 0px;
+  border-style: solid;
+  border-color: #344054;
+  border-radius: 12px 12px 0px 0px;
+
+  /* App Icon and Tab Name  */
+
+  /* Auto layout */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  gap: 4px;
+
+  width: 85px;
+  height: 20px;
+
+  /* Inside auto layout */
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+
+  /* App Icons */
+
+  width: 16px;
+  height: 16px;
+
+  /* Inside auto layout */
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+
+  /* Vector */
+
+  position: absolute;
+  left: 0%;
+  right: -0.01%;
+  top: 11.12%;
+  bottom: 11.11%;
+
+  /* Grey/400 */
+  background: #98a2b3;
+
+  /* Home Page */
+
+  width: 65px;
+  height: 20px;
+
+  /* Typography/Caption */
+  font-family: "Mulish";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 20px;
+  /* identical to box height, or 167% */
+
+  /* Primary/Common/White */
+  color: #ffffff;
+
+  /* Inside auto layout */
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+
+  /* Pin Icon */
+
+  width: 24px;
+  height: 24px;
+
+  /* Inside auto layout */
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+
+  /* PushPinFilled */
+
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 12px;
+  top: 1px;
+
+  transform: rotate(45deg);
+
+  /* Group */
+
+  position: absolute;
+  left: 79.55%;
+  right: -37.88%;
+  top: 20.62%;
+  bottom: -3.96%;
+
+  transform: rotate(45deg);
+
+  /* Vector */
+
+  box-sizing: border-box;
+
+  position: absolute;
+  left: 79.55%;
+  right: -37.88%;
+  top: 20.62%;
+  bottom: -3.96%;
+
+  /* Grey/400 */
+  border: 1px solid #98a2b3;
+  transform: rotate(45deg);
 }
