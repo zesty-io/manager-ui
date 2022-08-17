@@ -340,7 +340,7 @@ export default function ItemEdit() {
               />
               <Route
                 exact
-                path="/content/:modelZUID/:itemZUID/publish-state"
+                path="/content/:modelZUID/:itemZUID/publishings"
                 render={() => (
                   <>
                     <Header

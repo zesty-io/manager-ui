@@ -18,7 +18,7 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
             slug !== "head" &&
             slug !== "preview" &&
             slug !== "headless" &&
-            slug !== "publish-state"
+            slug !== "publishings"
             ? styles.Selected
             : null
         )}
@@ -67,13 +67,13 @@ export default function ItemNavigation({ modelZUID, itemZUID, item }) {
       </AppLink>
       <AppLink
         title="Publish State"
-        data-cy="publish-state"
+        data-cy="publishings"
         className={cx(
           styles.AppLink,
           styles.buttonText,
-          slug === "publish-state" ? styles.Selected : null
+          slug === "publishings" ? styles.Selected : null
         )}
-        to={`/content/${modelZUID}/${itemZUID}/publish-state`}
+        to={`/content/${modelZUID}/${itemZUID}/publishings`}
       >
         Publish State
       </AppLink>

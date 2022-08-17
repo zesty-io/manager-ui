@@ -31,7 +31,7 @@ export const Unpublish = memo(function Unpublish(props) {
     //   .finally(() => {
     //     setLoading(false);
     //   });
-    history.push(`${location.pathname}/publish-state`);
+    history.push(`${location.pathname}/publishings`);
   };
 
   return (
