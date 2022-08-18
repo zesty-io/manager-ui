@@ -75,7 +75,7 @@ export const FileDrawer = memo(function FileDrawer(props) {
           );
           setFields(tempArray);
         }
-        if (items && items.data) {
+        if (items?.data?.slice) {
           setItems(items.data.slice(0, 3));
         }
       })
