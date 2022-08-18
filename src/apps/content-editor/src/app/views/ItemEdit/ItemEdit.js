@@ -130,15 +130,8 @@ export default function ItemEdit() {
     try {
       const itemResponse = await dispatch(fetchItem(modelZUID, itemZUID));
 
-      if (
-        itemResponse.status === 404 ||
-        itemResponse.status === 400 ||
-        itemResponse.data === null // no data found for item, most likely deleted
-      ) {
-        setNotFound(
-          itemResponse.message || itemResponse.error || "Item not found"
-        );
-        return;
+      if (itemResponse.status === 404 || itemResponse.status === 400) {
+        setNotFound(itemResponse.message || itemResponse.error);
       }
 
       if (itemResponse?.data?.meta?.langID) {

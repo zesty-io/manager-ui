@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useMetaKey } from "shell/hooks/useMetaKey";
+import { actions } from "shell/store/ui";
 import cx from "classnames";
 
 import ButtonGroup from "@mui/material/ButtonGroup";
@@ -10,6 +12,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import BackupIcon from "@mui/icons-material/Backup";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import { ScheduleFlyout } from "./ScheduleFlyout";
 import { VersionSelector } from "./VersionSelector";
@@ -21,6 +24,10 @@ import { useDomain } from "shell/hooks/use-domain";
 
 import styles from "./ItemVersioning.less";
 export function ItemVersioning(props) {
+  const dispatch = useDispatch();
+
+  const collapseNavs = useMediaQuery("(max-width:1400px)");
+
   const canPublish = usePermission("PUBLISH");
   const domain = useDomain();
 
@@ -29,6 +36,16 @@ export function ItemVersioning(props) {
   const [cached, setCached] = useState(false);
 
   const metaShortcut = useMetaKey("s", props.onSave);
+
+  useEffect(() => {
+    if (collapseNavs) {
+      dispatch(actions.setGlobalNav(false));
+      dispatch(actions.setContentNav(false));
+    } else {
+      dispatch(actions.setGlobalNav(true));
+      dispatch(actions.setContentNav(true));
+    }
+  }, [collapseNavs, actions, dispatch]);
 
   const checkCache = () => {
     if (props?.props?.item?.web?.path) {
