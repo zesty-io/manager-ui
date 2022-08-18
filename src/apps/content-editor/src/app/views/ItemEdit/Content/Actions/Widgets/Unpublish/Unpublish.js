@@ -13,25 +13,21 @@ import LinkOffIcon from "@mui/icons-material/LinkOff";
 import UnpublishedIcon from "@mui/icons-material/Unpublished";
 
 import { unpublish } from "shell/store/content";
-import { useHistory, useLocation } from "react-router";
 
 export const Unpublish = memo(function Unpublish(props) {
   const isPublished = props.publishing && props.publishing.isPublished;
 
   const [loading, setLoading] = useState(false);
-  const location = useLocation();
-  const history = useHistory();
 
   const handleUnpublish = () => {
-    // setLoading(true);
-    // props
-    //   .dispatch(
-    //     unpublish(props.modelZUID, props.itemZUID, props.publishing.ZUID)
-    //   )
-    //   .finally(() => {
-    //     setLoading(false);
-    //   });
-    history.push(`${location.pathname}/publishings`);
+    setLoading(true);
+    props
+      .dispatch(
+        unpublish(props.modelZUID, props.itemZUID, props.publishing.ZUID)
+      )
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (

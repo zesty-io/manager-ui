@@ -74,7 +74,7 @@ module.exports = async (env) => {
         utility: path.resolve(__dirname, "../utility"),
         apps: path.resolve(__dirname, "../apps"),
       },
-      extensions: [".ts", ".tsx", ".js"],
+      extensions: [".ts", ".js"],
     },
     plugins: [
       new SentryCliPlugin({
@@ -199,7 +199,7 @@ module.exports = async (env) => {
     module: {
       rules: [
         {
-          test: /\.ts$|tsx/,
+          test: /\.ts?$/,
           use: "ts-loader",
           exclude: /node_modules/,
         },
