@@ -1,38 +1,20 @@
 import { memo, useEffect, useLayoutEffect, useRef, useState, FC } from "react";
 import { createDispatchHook, useDispatch, useSelector } from "react-redux";
 import { useLocation, Link as Link } from "react-router-dom";
-import cx from "classnames";
-import usePrevious from "react-use/lib/usePrevious";
 import { debounce } from "lodash";
 
-import { ConfirmDialog } from "@zesty-io/material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
-import PinIcon from "@mui/icons-material/PushPin";
-import SearchIcon from "@mui/icons-material/Search";
-import OutlinedPinIcon from "@mui/icons-material/PushPinOutlined";
-
 import { Dropdown } from "./components/Dropdown";
-import { TopTab } from "./components/Tab";
+import { ActiveTab, InactiveTabGroup } from "./components/Tab";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
-import MuiLink from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
-import Box from "@mui/material/Box";
-// For dropdown
-import Button from "@mui/material/Button";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import Input from "@mui/material/Input";
 
 import {
-  pinTab,
   unpinTab,
   unpinManyTabs,
   loadTabs,
   rebuildTabs,
   parsePath,
-  Tab,
   createTab,
   tabLocationEquality,
 } from "../../../shell/store/ui";
@@ -51,7 +33,6 @@ export default memo(function GlobalTabs() {
 
   const instanceZUID = useSelector((state: AppState) => state.instance.ZUID);
   const loadedTabs = useSelector((state: AppState) => state.ui.loadedTabs);
-  const prevPath = usePrevious(location.pathname);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const models = useSelector((state: AppState) => state.models);
   const apps = useSelector((state: AppState) => state.apps.installed);
@@ -151,23 +132,10 @@ export default memo(function GlobalTabs() {
   );
   console.log({ inactiveTabs, pinnedTabs });
 
-  const activeTab =
-    pinnedTabs.find((tab) => tabLocationEquality(tab, location)) ||
-    createTab(state, parsePath(location));
-
-  if (!activeTab) {
-    // this should never happen
-    console.error("no active tab", pinnedTabs);
-  }
-
   const numTabs = Math.floor(tabBarWidth / tabWidth) - 3;
 
-  const displayedTabs = inactiveTabs.filter((t, i) => i < numTabs);
-  const nonDisplayedTabs = inactiveTabs.filter(
-    (t, i) => i >= numTabs && t !== activeTab
-  );
-  const orderedTabs = activeTab ? [activeTab, ...displayedTabs] : displayedTabs;
-  console.log({ activeTab, inactiveTabs, orderedTabs, pinnedTabs });
+  const topBarTabs = inactiveTabs.filter((t, i) => i < numTabs);
+  const dropDownTabs = inactiveTabs.filter((t, i) => i >= numTabs);
 
   return (
     <ThemeProvider theme={theme}>
@@ -184,26 +152,10 @@ export default memo(function GlobalTabs() {
             flex: 1,
           }}
         >
-          {orderedTabs.map((tab, i) => {
-            const isPinned =
-              pinnedTabs.findIndex((t) => tabLocationEquality(t, tab)) >= 0;
-            console.log({ tab, pinnedTabs, isPinned });
-            return (
-              <TopTab
-                tab={tab}
-                key={tab.pathname + tab.search}
-                isPinned={isPinned}
-                tabWidth={tabWidth}
-                onClick={() => {
-                  console.log("click");
-                  if (isPinned) dispatch(unpinTab(tab));
-                  else dispatch(pinTab(tab));
-                }}
-              />
-            );
-          })}
+          <ActiveTab tabWidth={tabWidth} />
+          <InactiveTabGroup tabs={topBarTabs} tabWidth={tabWidth} />
           <Dropdown
-            tabs={nonDisplayedTabs}
+            tabs={dropDownTabs}
             tabWidth={tabWidth}
             removeOne={(tab) => {
               console.log("click");
@@ -219,7 +171,3 @@ export default memo(function GlobalTabs() {
     </ThemeProvider>
   );
 });
-
-const activeTabStyles = {
-  backgroundColor: "white",
-};
