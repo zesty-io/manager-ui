@@ -365,12 +365,14 @@ export function unpinTab({ pathname, search }: TabLocation) {
   };
 }
 
-export function unpinManyTabs(tabs: { pathname: string }[]) {
+export function unpinManyTabs(tabs: TabLocation[]) {
   return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
-    const pathnames = new Set(tabs.map(({ pathname }) => pathname));
+    const pathnames = new Set(
+      tabs.map(({ pathname, search }) => pathname + search)
+    );
     const newTabs = state.ui.pinnedTabs.filter(
-      (t) => !pathnames.has(t.pathname)
+      (t) => !pathnames.has(t.pathname + t.search)
     );
     dispatch(actions.setPinnedTabs(newTabs));
     idb.set(`${state.instance.ZUID}:pinned`, newTabs);
