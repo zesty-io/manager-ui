@@ -134,6 +134,10 @@ export default function ItemEdit() {
         setNotFound(itemResponse.message || itemResponse.error);
       }
 
+      if (itemResponse.data === null) {
+        setNotFound("Item has been deleted");
+      }
+
       if (itemResponse?.data?.meta?.langID) {
         // select lang based on content lang
         dispatch(
