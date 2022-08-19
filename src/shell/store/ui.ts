@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { Dispatch } from "redux";
+import { Location } from "history";
 // TODO why do I have to use relative paths here?
 import idb from "../../utility/idb";
 import history from "../../utility/history";
@@ -36,6 +37,7 @@ const ZUID_REGEX = /[a-zA-Z0-9]{1,5}-[a-zA-Z0-9]{6,10}-[a-zA-Z0-9]{5,35}/;
 
 export type Tab = {
   pathname: string;
+  search: string;
   name?: string;
   icon?: IconDefinition;
 };
@@ -131,7 +133,12 @@ export const ui = createSlice({
 export const { actions, reducer } = ui;
 
 // Thunk helper functions
-export function parsePath(path: string) {
+export function tabLocationEquality(tab1: TabLocation, tab2: TabLocation) {
+  return tab1.pathname === tab2.pathname && tab1.search === tab2.search;
+}
+
+type TabLocation = Pick<Location, "pathname" | "search">;
+export function parsePath({ pathname: path, search }: TabLocation) {
   let parts = path.split("/").filter((part) => part);
   let zuid = null;
   let prefix = null;
@@ -153,7 +160,7 @@ export function parsePath(path: string) {
     prefix = zuid.split("-")[0];
   }
 
-  return { path, parts, zuid, prefix, contentSection };
+  return { path, parts, zuid, prefix, contentSection, search };
 }
 
 export type ParsedPath = ReturnType<typeof parsePath>;
@@ -205,8 +212,8 @@ function validatePath(parsedPath: ParsedPath) {
 }
 
 export function createTab(state: AppState, parsedPath: ParsedPath) {
-  const { path, parts, zuid, prefix } = parsedPath;
-  const tab: Tab = { pathname: path };
+  const { path, parts, zuid, prefix, search } = parsedPath;
+  const tab: Tab = { pathname: path, search };
   console.log(parsedPath);
 
   const appNameMap = {
@@ -322,14 +329,14 @@ export function loadTabs(instanceZUID: string) {
   };
 }
 
-export function pinTab({ pathname }: { pathname: string }) {
+export function pinTab({ pathname, search }: TabLocation) {
   return async (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
-    const parsedPath = parsePath(pathname);
+    const parsedPath = parsePath({ pathname, search });
     const tab = createTab(state, parsedPath);
     let newTabs = state.ui.pinnedTabs;
-    const tabIndex = state.ui.pinnedTabs.findIndex(
-      (t) => t.pathname === tab.pathname
+    const tabIndex = state.ui.pinnedTabs.findIndex((t) =>
+      tabLocationEquality(t, tab)
     );
     console.log({ tabIndex });
     if (tabIndex < 0) {
@@ -345,10 +352,10 @@ export function pinTab({ pathname }: { pathname: string }) {
   };
 }
 
-export function unpinTab({ pathname }: { pathname: string }) {
+export function unpinTab({ pathname, search }: TabLocation) {
   return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
-    const parsedPath = parsePath(pathname);
+    const parsedPath = parsePath({ pathname, search });
     const tab = createTab(state, parsedPath);
     const newTabs = state.ui.pinnedTabs.filter(
       (t) => t.pathname !== tab.pathname
@@ -370,6 +377,7 @@ export function unpinManyTabs(tabs: { pathname: string }[]) {
   };
 }
 
+/*
 export function openTab({
   path,
   prevPath,
@@ -433,12 +441,13 @@ export function closeTab(path: string) {
     }
   };
 }
+*/
 
 export function rebuildTabs() {
   return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const newTabs = state.ui.tabs.map((tab: Tab) =>
-      createTab(state, parsePath(tab.pathname))
+      createTab(state, parsePath(tab))
     );
     /* 
       This function is called on every slice update so

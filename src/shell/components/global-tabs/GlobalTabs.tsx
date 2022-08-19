@@ -32,6 +32,7 @@ import {
   parsePath,
   Tab,
   createTab,
+  tabLocationEquality,
 } from "../../../shell/store/ui";
 import { AppState } from "../../store/types";
 
@@ -44,7 +45,6 @@ export default memo(function GlobalTabs() {
   const location = useLocation();
 
   const dispatch = useDispatch();
-  const tabs = useSelector((state: AppState) => state.ui.tabs);
   const pinnedTabs = useSelector((state: AppState) => state.ui.pinnedTabs);
 
   const instanceZUID = useSelector((state: AppState) => state.instance.ZUID);
@@ -81,7 +81,8 @@ export default memo(function GlobalTabs() {
 
   useEffect(() => {
     //setSt
-    const parsedPath = parsePath(location.pathname);
+    const { pathname, search } = location;
+    const parsedPath = parsePath({ pathname, search });
     const t = createTab(state, parsedPath);
     const { parts } = parsedPath;
     const app = parts[0];
@@ -94,7 +95,7 @@ export default memo(function GlobalTabs() {
     return () => {
       document.title = oldTitle;
     };
-  }, [location.pathname]);
+  }, [location.pathname, location.search]);
 
   // rebuild tabs if any of the store slices changes
   // slices could include tab.name updates
@@ -130,12 +131,12 @@ export default memo(function GlobalTabs() {
   // with old tab width
   // cheap enough to run every render
   // TODO WTF?
-  let tabWidth = 0; //100;
-  if (tabs.length) {
+  let tabWidth = 100; //100;
+  if (pinnedTabs.length) {
     tabWidth =
       Math.floor(
         Math.min(
-          Math.max(tabBarWidth / tabs.length, MIN_TAB_WIDTH),
+          Math.max(tabBarWidth / pinnedTabs.length, MIN_TAB_WIDTH),
           MAX_TAB_WIDTH
         )
       ) -
@@ -145,16 +146,17 @@ export default memo(function GlobalTabs() {
 
   //const inactiveTabs = [] //tabs.filter(tab => tab.pathname !== location.pathname)
   const inactiveTabs = pinnedTabs.filter(
-    (tab) => tab.pathname !== location.pathname
+    (tab) => !tabLocationEquality(tab, location)
   );
+  console.log({ inactiveTabs, pinnedTabs });
 
   const activeTab =
-    tabs.find((tab) => tab.pathname === location.pathname) ||
-    createTab(state, parsePath(location.pathname));
+    pinnedTabs.find((tab) => tabLocationEquality(tab, location)) ||
+    createTab(state, parsePath(location));
 
   if (!activeTab) {
     // this should never happen
-    console.error("no active tab", tabs);
+    console.error("no active tab", pinnedTabs);
   }
 
   //TODO FIX WUT?
@@ -184,12 +186,12 @@ export default memo(function GlobalTabs() {
         >
           {orderedTabs.map((tab, i) => {
             const isPinned =
-              pinnedTabs.findIndex((t) => tab.pathname === t.pathname) >= 0;
+              pinnedTabs.findIndex((t) => tabLocationEquality(t, tab)) >= 0;
             console.log({ tab, pinnedTabs, isPinned });
             return (
               <TopTab
                 tab={tab}
-                key={tab.pathname}
+                key={tab.pathname + tab.search}
                 isPinned={isPinned}
                 tabWidth={tabWidth}
                 onClick={() => {
@@ -230,7 +232,7 @@ type TopTab = {
   onClick: () => void;
 };
 const TopTab: FC<TopTab> = ({ tab, tabWidth, isPinned, onClick }) => {
-  const isActiveTab = tab.pathname === location.pathname;
+  const isActiveTab = tabLocationEquality(tab, location);
   console.log(tab);
   const tabProps = {};
   /*
@@ -274,7 +276,7 @@ const TabInternals: FC<TabInternals> = ({ tab, isPinned, onClick }) => {
     <>
       <MuiLink
         component={Link}
-        to={`${tab.pathname}`}
+        to={tab.pathname + tab.search}
         sx={{
           color: "grey.400",
           justifyContent: "space-between",
