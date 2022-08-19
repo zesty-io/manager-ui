@@ -9,29 +9,17 @@ import { AppState } from "./types";
 import {
   faCode,
   faCog,
+  faChartLine,
   faDatabase,
   faEdit,
   faFolder,
-  faFile,
-  faListAlt,
-  faExternalLinkSquareAlt,
-  faLink,
-  faHome,
   faPlug,
+  faBullseye,
+  faImage,
+  faAddressCard,
   IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import { isEqual } from "lodash";
-
-const typeToIconMap = {
-  templateset: faFile,
-  pageset: faListAlt,
-  dataset: faDatabase,
-  external: faExternalLinkSquareAlt,
-  internal: faLink,
-  item: faFile,
-  homepage: faHome,
-  socialfeed: faDatabase,
-};
 
 const ZUID_REGEX = /[a-zA-Z0-9]{1,5}-[a-zA-Z0-9]{6,10}-[a-zA-Z0-9]{5,35}/;
 
@@ -217,13 +205,34 @@ export function createTab(state: AppState, parsedPath: ParsedPath) {
   console.log(parsedPath);
 
   const appNameMap = {
-    seo: "SEO",
-    content: "Content",
-    media: "Media",
-    schema: "Schema",
-    code: "Code",
-    leads: "Leads",
-    settings: "Settings",
+    seo: {
+      name: "SEO",
+      icon: faBullseye,
+    },
+    content: {
+      name: "Content",
+      icon: faEdit,
+    },
+    media: {
+      name: "Media",
+      icon: faImage,
+    },
+    schema: {
+      name: "Schema",
+      icon: faDatabase,
+    },
+    code: {
+      name: "Code",
+      icon: faCode,
+    },
+    leads: {
+      name: "Leads",
+      icon: faAddressCard,
+    },
+    settings: {
+      name: "Settings",
+      icon: faCog,
+    },
   };
 
   if (parts[0] === "app") {
@@ -231,6 +240,7 @@ export function createTab(state: AppState, parsedPath: ParsedPath) {
     const app = state.apps.installed.find((app: any) => app.ZUID === zuid);
     tab.name = app?.label || app?.name || "Custom App";
   } else if (parts[0] === "reports") {
+    tab.icon = faChartLine;
     switch (parts[1]) {
       case "activity-log":
         tab.name = "Activity Log";
@@ -243,8 +253,9 @@ export function createTab(state: AppState, parsedPath: ParsedPath) {
         break;
     }
   } else if (parts[0] in appNameMap) {
-    //@ts-ignore
-    tab.name = appNameMap[parts[0]];
+    const name = parts[0] as keyof typeof appNameMap;
+    tab.name = appNameMap[name].name;
+    tab.icon = appNameMap[name].icon;
   }
   // resolve ZUID from store to determine display information
   switch (prefix) {
@@ -263,9 +274,7 @@ export function createTab(state: AppState, parsedPath: ParsedPath) {
         const model: any = state.models[zuid];
 
         tab.name = model?.label;
-        tab.icon =
-          typeToIconMap?.[model?.type as keyof typeof typeToIconMap] ||
-          faDatabase;
+        tab.icon = faDatabase;
       }
       break;
     case "7":
