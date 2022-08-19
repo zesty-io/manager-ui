@@ -12,6 +12,8 @@ import PinIcon from "@mui/icons-material/PushPin";
 import SearchIcon from "@mui/icons-material/Search";
 import OutlinedPinIcon from "@mui/icons-material/PushPinOutlined";
 
+import { Dropdown } from "./components/Dropdown";
+import { TopTab } from "./components/Tab";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 import MuiLink from "@mui/material/Link";
@@ -130,8 +132,7 @@ export default memo(function GlobalTabs() {
   // if we used useEffect here, we would get new tabs.length
   // with old tab width
   // cheap enough to run every render
-  // TODO WTF?
-  let tabWidth = 100; //100;
+  let tabWidth = MIN_TAB_WIDTH; //100;
   if (pinnedTabs.length) {
     tabWidth =
       Math.floor(
@@ -159,7 +160,6 @@ export default memo(function GlobalTabs() {
     console.error("no active tab", pinnedTabs);
   }
 
-  //TODO FIX WUT?
   const numTabs = Math.floor(tabBarWidth / tabWidth) - 3;
 
   const displayedTabs = inactiveTabs.filter((t, i) => i < numTabs);
@@ -204,7 +204,6 @@ export default memo(function GlobalTabs() {
           })}
           <Dropdown
             tabs={nonDisplayedTabs}
-            isPinned={true}
             tabWidth={tabWidth}
             removeOne={(tab) => {
               console.log("click");
@@ -223,187 +222,4 @@ export default memo(function GlobalTabs() {
 
 const activeTabStyles = {
   backgroundColor: "white",
-};
-
-type TopTab = {
-  tab: Tab;
-  tabWidth: number;
-  isPinned: boolean;
-  onClick: () => void;
-};
-const TopTab: FC<TopTab> = ({ tab, tabWidth, isPinned, onClick }) => {
-  const isActiveTab = tabLocationEquality(tab, location);
-  console.log(tab);
-  const tabProps = {};
-  /*
-  if (isActiveTab) {
-    tabProps.ref = activeTabRef;
-  }
-  */
-  return (
-    <Box
-      component="li"
-      sx={{
-        borderWidth: "1px",
-        borderColor: "grey.800",
-        // TODO how to pull from theme?
-        borderRadius: "12px 12px 0px 0px",
-        padding: 1.5,
-        gap: 1,
-        backgroundColor: isActiveTab ? "white" : "grey.800",
-
-        width: `${tabWidth}px`,
-        // taken from old less
-        alignItems: "center",
-        display: "flex",
-        flexShrink: 0,
-      }}
-      {...tabProps}
-    >
-      <TabInternals tab={tab} isPinned={isPinned} onClick={onClick} />
-    </Box>
-  );
-};
-
-type TabInternals = {
-  tab: Tab;
-  isPinned: boolean;
-  onClick: () => void;
-};
-const TabInternals: FC<TabInternals> = ({ tab, isPinned, onClick }) => {
-  const Pin = isPinned ? PinIcon : OutlinedPinIcon;
-  return (
-    <>
-      <MuiLink
-        component={Link}
-        to={tab.pathname + tab.search}
-        sx={{
-          color: "grey.400",
-          justifyContent: "space-between",
-          // taken from old less
-          width: "100%",
-          display: "inline-block",
-          maxWidth: "300px",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          textShadow: "none",
-          wordBreak: "keep-all",
-          transitionDuration: "unset",
-          transitionProperty: "unset",
-        }}
-      >
-        {tab.icon && <FontAwesomeIcon icon={tab.icon} />}
-        &nbsp;
-        {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
-      </MuiLink>
-      <Box component="span" onClick={onClick} sx={{ cursor: "pointer" }}>
-        <Pin
-          fontSize="small"
-          sx={{ transform: "rotate(45deg)", marginRight: 0.25 }}
-        />
-      </Box>
-    </>
-  );
-};
-
-type Dropdown = {
-  tabs: Tab[];
-  tabWidth: number;
-  isPinned: boolean;
-  removeOne: (tab: Tab) => void;
-  removeMany: (tabs: Tab[]) => void;
-};
-
-const Dropdown: FC<Dropdown> = ({ tabs, isPinned, removeOne, removeMany }) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const [filter, setFilter] = useState("");
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  if (tabs.length === 0) {
-    if (open) {
-      handleClose();
-      setFilter("");
-    }
-    return null;
-  }
-  const filterTerm = filter.trim().toLocaleLowerCase();
-  // TODO consider memoizing this
-  const filteredTabs = tabs.filter(
-    (tab) =>
-      tab.pathname.toLocaleLowerCase().includes(filterTerm) ||
-      (tab.name && tab.name.toLocaleLowerCase().includes(filterTerm))
-  );
-
-  return (
-    <>
-      <div>
-        <Button
-          id="basic-button"
-          aria-controls={open ? "basic-menu" : undefined}
-          aria-haspopup="true"
-          aria-expanded={open ? "true" : undefined}
-          onClick={handleClick}
-        >
-          More
-        </Button>
-        <Menu
-          id="basic-menu"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}
-          MenuListProps={{
-            "aria-labelledby": "basic-button",
-          }}
-        >
-          <MenuItem>
-            <Input
-              placeholder="Search Tabs"
-              startAdornment={<SearchIcon />}
-              value={filter}
-              onChange={(evt) => setFilter(evt.target.value)}
-            />
-          </MenuItem>
-          <MenuItem>
-            <Stack direction="row" justifyContent="space-between">
-              PINNED TABS
-              {Boolean(filterTerm) || (
-                <Button onClick={() => setConfirmOpen(true)}>UNPIN ALL</Button>
-              )}
-            </Stack>
-          </MenuItem>
-          {filteredTabs.map((tab) => (
-            <MenuItem>
-              <TabInternals
-                tab={tab}
-                key={tab.pathname}
-                isPinned={isPinned}
-                onClick={() => removeOne(tab)}
-              />
-            </MenuItem>
-          ))}
-        </Menu>
-      </div>
-      <ConfirmDialog
-        open={confirmOpen}
-        callback={(confirmed) => {
-          console.log({ confirmed });
-          if (confirmed) {
-            setFilter("");
-            handleClose();
-            removeMany(tabs);
-          }
-          setConfirmOpen(false);
-        }}
-        title="Unpin All Tabs in See More Menu?"
-        content="This  cannot be undone"
-      />
-    </>
-  );
 };
