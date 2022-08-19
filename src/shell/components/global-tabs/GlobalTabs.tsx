@@ -113,7 +113,7 @@ export default memo(function GlobalTabs() {
   // if we used useEffect here, we would get new tabs.length
   // with old tab width
   // cheap enough to run every render
-  let tabWidth = MIN_TAB_WIDTH; //100;
+  let tabWidth = MIN_TAB_WIDTH; //150;
   if (pinnedTabs.length) {
     tabWidth =
       Math.floor(
@@ -130,9 +130,8 @@ export default memo(function GlobalTabs() {
   const inactiveTabs = pinnedTabs.filter(
     (tab) => !tabLocationEquality(tab, location)
   );
-  console.log({ inactiveTabs, pinnedTabs });
 
-  const numTabs = Math.floor(tabBarWidth / tabWidth) - 3;
+  const numTabs = Math.floor(tabBarWidth / tabWidth);
 
   const topBarTabs = inactiveTabs.filter((t, i) => i < numTabs);
   const dropDownTabs = inactiveTabs.filter((t, i) => i >= numTabs);
@@ -143,30 +142,34 @@ export default memo(function GlobalTabs() {
         ref={tabContainerRef}
         component="nav"
         direction="row"
-        sx={{ flex: 1 }}
+        sx={{
+          height: "46px",
+          padding: "8px 0 0 0",
+          display: "grid",
+          gridTemplateColumns: "1fr 80px",
+        }}
       >
         <Stack
           component="ol"
           direction="row"
           sx={{
-            flex: 1,
+            display: "flex",
+            overflow: "hidden",
           }}
         >
           <ActiveTab tabWidth={tabWidth} />
           <InactiveTabGroup tabs={topBarTabs} tabWidth={tabWidth} />
-          <Dropdown
-            tabs={dropDownTabs}
-            tabWidth={tabWidth}
-            removeOne={(tab) => {
-              console.log("click");
-              dispatch(unpinTab(tab));
-            }}
-            removeMany={(tabs) => {
-              console.log("click");
-              dispatch(unpinManyTabs(tabs));
-            }}
-          />
         </Stack>
+        <Dropdown
+          tabs={dropDownTabs}
+          tabWidth={tabWidth}
+          removeOne={(tab) => {
+            dispatch(unpinTab(tab));
+          }}
+          removeMany={(tabs) => {
+            dispatch(unpinManyTabs(tabs));
+          }}
+        />
       </Stack>
     </ThemeProvider>
   );

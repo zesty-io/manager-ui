@@ -35,47 +35,38 @@ const BaseTab: FC<BaseTab> = ({
   sxOverrides,
 }) => {
   const Pin = variant === "outline" ? OutlinedPinIcon : PinIcon;
-  console.log(tab);
+
   return (
     <Box
       component="li"
       sx={{
+        overflow: "hidden",
+        width: `${tabWidth}px`,
+        display: "grid",
+        gridTemplateColumns: "20px 1fr 20px",
+        backgroundColor: "grey.800",
+        borderRadius: "12px 12px 0px 0px",
         borderWidth: "1px",
         borderColor: "grey.800",
-        // TODO how to pull from theme?
-        borderRadius: "12px 12px 0px 0px",
-        padding: 1.5,
-        gap: 1,
-        backgroundColor: "grey.800",
-
-        width: `${tabWidth}px`,
-        // taken from old less
+        padding: "0 12px 0 12px",
         alignItems: "center",
-        display: "flex",
-        flexShrink: 0,
-        ...sxOverrides,
       }}
     >
+      <Box component="span">
+        {tab.icon && <FontAwesomeIcon icon={tab.icon} />}
+      </Box>
       <MuiLink
         component={Link}
         to={tab.pathname + tab.search}
         sx={{
           color: "grey.400",
-          justifyContent: "space-between",
-          // taken from old less
-          width: "100%",
-          display: "inline-block",
-          maxWidth: "300px",
-          textOverflow: "ellipsis",
+          textDecoration: "none",
+          flex: "1",
           whiteSpace: "nowrap",
-          textShadow: "none",
-          wordBreak: "keep-all",
-          transitionDuration: "unset",
-          transitionProperty: "unset",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
         }}
       >
-        {tab.icon && <FontAwesomeIcon icon={tab.icon} />}
-        &nbsp;
         {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
       </MuiLink>
       <Box component="span" onClick={onClick} sx={{ cursor: "pointer" }}>
