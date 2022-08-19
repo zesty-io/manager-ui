@@ -35,7 +35,6 @@ export type CodeEditorPosition = Record<
 >;
 export type UIState = {
   loadedTabs: boolean;
-  tabs: Tab[];
   pinnedTabs: Tab[];
   openNav: boolean;
   contentNav: boolean;
@@ -62,15 +61,11 @@ export const ui = createSlice({
   reducers: {
     loadTabsSuccess(
       state: UIState,
-      action: { payload: { tabs: Tab[]; pinnedTabs: Tab[] } }
+      action: { payload: { pinnedTabs: Tab[] } }
     ) {
-      const { tabs, pinnedTabs } = action.payload;
-      state.tabs = tabs;
+      const { pinnedTabs } = action.payload;
       state.pinnedTabs = pinnedTabs;
       state.loadedTabs = true;
-    },
-    setTabs(state: UIState, action: { payload: Tab[] }) {
-      state.tabs = action.payload;
     },
     setPinnedTabs(state: UIState, action: { payload: Tab[] }) {
       state.pinnedTabs = action.payload;
@@ -332,9 +327,8 @@ function toCapitalCase(string: string) {
 // Thunks
 export function loadTabs(instanceZUID: string) {
   return async (dispatch: Dispatch) => {
-    const tabs = (await idb.get(`${instanceZUID}:session:routes`)) || [];
     const pinnedTabs = (await idb.get(`${instanceZUID}:pinned`)) || [];
-    return dispatch(actions.loadTabsSuccess({ tabs, pinnedTabs }));
+    return dispatch(actions.loadTabsSuccess({ pinnedTabs }));
   };
 }
 
@@ -388,76 +382,10 @@ export function unpinManyTabs(tabs: TabLocation[]) {
   };
 }
 
-/*
-export function openTab({
-  path,
-  prevPath,
-}: {
-  path: string;
-  prevPath: string;
-}) {
-  return (dispatch: Dispatch, getState: () => AppState) => {
-    const state = getState();
-    const parsedPath = parsePath(path);
-    if (validatePath(parsedPath)) {
-      const tabIndex = state.ui.tabs.findIndex(
-        (tab: Tab) => tab.pathname === path
-      );
-      // add new tab if not existing
-      if (tabIndex === -1) {
-        const newTab = createTab(state, parsedPath);
-        const activeTabIndex = state.ui.tabs.findIndex(
-          (t) => t.pathname === prevPath
-        );
-        // calculate new tabs here instead of reducer
-        // so we have them on hand for idb.set
-        let newTabs = [...state.ui.tabs];
-        newTabs.splice(activeTabIndex + 1, 0, newTab);
-        // Maximum of 20 route records
-        newTabs = newTabs.slice(0, 20);
-        dispatch(actions.setTabs(newTabs));
-        idb.set(`${state.instance.ZUID}:session:routes`, newTabs);
-      }
-    }
-  };
-}
-
-export function closeTab(path: string) {
-  return (dispatch: Dispatch, getState: () => AppState) => {
-    const state = getState();
-    const removeTabIndex = state.ui.tabs.findIndex(
-      (tab: Tab) => tab.pathname === path
-    );
-    if (removeTabIndex !== -1) {
-      // calculate new tabs here instead of reducer
-      // so we have them on hand for idb.set
-      const newTabs = [...state.ui.tabs];
-      newTabs.splice(removeTabIndex, 1);
-      // if we are removing activeTab
-      // switch to next or previous (if no next) tab
-      if (
-        history.location.pathname === state.ui.tabs[removeTabIndex].pathname
-      ) {
-        const nextTab = state.ui.tabs[removeTabIndex + 1];
-        const prevTab = state.ui.tabs[removeTabIndex - 1];
-        if (nextTab) {
-          history.push(nextTab.pathname);
-        } else if (prevTab) {
-          history.push(prevTab.pathname);
-        }
-      }
-
-      dispatch(actions.setTabs(newTabs));
-      idb.set(`${state.instance.ZUID}:session:routes`, newTabs);
-    }
-  };
-}
-*/
-
 export function rebuildTabs() {
   return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
-    const newTabs = state.ui.tabs.map((tab: Tab) =>
+    const newTabs = state.ui.pinnedTabs.map((tab: Tab) =>
       createTab(state, parsePath(tab))
     );
     /* 
@@ -465,9 +393,9 @@ export function rebuildTabs() {
       we first determine if the tabs have changed before setting
       a new set of tabs to the store
     */
-    if (!isEqual(state.ui.tabs, newTabs)) {
-      dispatch(actions.setTabs(newTabs));
-      idb.set(`${state.instance.ZUID}:session:routes`, newTabs);
+    if (!isEqual(state.ui.pinnedTabs, newTabs)) {
+      dispatch(actions.setPinnedTabs(newTabs));
+      idb.set(`${state.instance.ZUID}:pinnedTabs`, newTabs);
     }
   };
 }
