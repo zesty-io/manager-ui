@@ -241,7 +241,7 @@ export function fetchItem(modelZUID, itemZUID) {
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}`,
       handler: (res) => {
-        if (res.status === 404) {
+        if (res.status === 404 || res.data === null) {
           dispatch({
             type: "REMOVE_ITEM",
             itemZUID,
