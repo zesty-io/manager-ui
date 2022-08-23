@@ -8,7 +8,6 @@ export const UsersList = (props) => {
   const sortBy = params.get("sortByUsers");
 
   const sortedUserActions = useMemo(() => {
-    console.log("im in with", sortBy);
     if (sortBy === "happenedAt") {
       return props.uniqueUserActions.sort(
         (a, b) => new Date(b?.[sortBy]) - new Date(a?.[sortBy])
