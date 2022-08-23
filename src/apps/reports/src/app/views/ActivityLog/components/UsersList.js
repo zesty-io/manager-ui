@@ -5,20 +5,36 @@ import { UserListItem } from "./UserListItem";
 
 export const UsersList = (props) => {
   const [params] = useParams();
-  const sortBy = params.get("sortBy");
-  const sortOrder = sortBy?.startsWith("+") ? "desc" : "asc";
+  const sortBy = params.get("sortByUsers");
 
-  const sortedUserActions = useMemo(
-    () =>
-      props.uniqueUserActions.sort((a, b) => {
-        if (sortOrder === "asc") {
-          return new Date(a?.[sortBy]) - new Date(b?.[sortBy]);
-        } else {
-          return new Date(b?.[sortBy]) - new Date(a?.[sortBy]);
-        }
-      }),
-    [props.uniqueUserActions]
-  );
+  const sortedUserActions = useMemo(() => {
+    console.log("im in with", sortBy);
+    if (sortBy === "happenedAt") {
+      return props.uniqueUserActions.sort(
+        (a, b) => new Date(b?.[sortBy]) - new Date(a?.[sortBy])
+      );
+    } else if (sortBy === "leastActive") {
+      return props.uniqueUserActions.sort(
+        (a, b) =>
+          props.actions?.filter(
+            (action) => action.actionByUserZUID === a?.actionByUserZUID
+          ).length -
+          props.actions?.filter(
+            (action) => action.actionByUserZUID === b?.actionByUserZUID
+          ).length
+      );
+    } else {
+      return props.uniqueUserActions.sort(
+        (a, b) =>
+          props.actions?.filter(
+            (action) => action.actionByUserZUID === b?.actionByUserZUID
+          ).length -
+          props.actions?.filter(
+            (action) => action.actionByUserZUID === a?.actionByUserZUID
+          ).length
+      );
+    }
+  }, [props.uniqueUserActions]);
 
   return (
     <List
