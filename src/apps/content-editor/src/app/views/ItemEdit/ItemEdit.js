@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState, useRef } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   Switch,
   Route,
@@ -79,17 +79,13 @@ export default function ItemEdit() {
   const userRole = useSelector((state) => state.userRole);
   const instance = useSelector((state) => state.instance);
 
-  const prevMetaLink = useRef();
+  const [initialNavLink, setInitialNavLink] = useState(item.web.metaLinkText);
 
   const [lockState, setLockState] = useState({});
   const [checkingLock, setCheckingLock] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [notFound, setNotFound] = useState("");
-
-  useEffect(() => {
-    prevMetaLink.current = item.web.metaLinkText;
-  }, []);
 
   useEffect(() => {
     setNotFound("");
@@ -211,10 +207,9 @@ export default function ItemEdit() {
       }
 
       // fetch nav only when metaLinkText is updated
-      const metaLinkText = item.web.metaLinkText;
-      if (metaLinkText !== prevMetaLink.current) {
+      if (item.web.metaLinkText !== initialNavLink) {
         dispatch(fetchNav());
-        prevMetaLink.current = metaLinkText;
+        setInitialNavLink(item.web.metaLinkText);
       }
 
       dispatch(
