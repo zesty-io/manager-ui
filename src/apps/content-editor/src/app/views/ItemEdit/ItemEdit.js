@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, useRef } from "react";
 import {
   Switch,
   Route,
@@ -23,6 +23,7 @@ import {
 } from "shell/store/content";
 import { selectLang } from "shell/store/user";
 import { WithLoader } from "@zesty-io/core/WithLoader";
+import { fetchNav } from "../../../store/navContent";
 import { PendingEditsModal } from "../../components/PendingEditsModal";
 import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
@@ -78,11 +79,17 @@ export default function ItemEdit() {
   const userRole = useSelector((state) => state.userRole);
   const instance = useSelector((state) => state.instance);
 
+  const prevMetaLink = useRef();
+
   const [lockState, setLockState] = useState({});
   const [checkingLock, setCheckingLock] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [notFound, setNotFound] = useState("");
+
+  useEffect(() => {
+    prevMetaLink.current = item.web.metaLinkText;
+  }, []);
 
   useEffect(() => {
     setNotFound("");
@@ -202,6 +209,14 @@ export default function ItemEdit() {
         );
         return;
       }
+
+      // fetch nav only when metaLinkText is updated
+      const metaLinkText = item.web.metaLinkText;
+      if (metaLinkText !== prevMetaLink.current) {
+        dispatch(fetchNav());
+        prevMetaLink.current = metaLinkText;
+      }
+
       dispatch(
         notify({
           message: `Saved a new ${
