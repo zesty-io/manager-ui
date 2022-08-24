@@ -25,14 +25,16 @@ type BaseTab = {
   tabWidth: number;
   variant: "outline" | "fill";
   onClick: () => void;
-  sxOverrides?: SxProps;
+  sx?: SxProps;
+  linkProps?: SxProps;
 };
 const BaseTab: FC<BaseTab> = ({
   tab,
   tabWidth,
   variant,
   onClick,
-  sxOverrides,
+  sx,
+  linkProps,
 }) => {
   const Pin = variant === "outline" ? OutlinedPinIcon : PinIcon;
 
@@ -46,25 +48,32 @@ const BaseTab: FC<BaseTab> = ({
         gridTemplateColumns: "20px 1fr 20px",
         backgroundColor: "grey.800",
         borderRadius: "12px 12px 0px 0px",
-        borderWidth: "1px",
-        borderColor: "grey.800",
+        borderWidth: "2px 2px 0px 0px",
+        borderColor: "grey.700",
+        borderStyle: "solid",
+        boxSizing: "border-box",
         padding: "0 12px 0 12px",
         alignItems: "center",
+        //TODO make sure this is right
+        filter: "drop-shadow(0px 4px 4px #000000)",
+        ...sx,
       }}
     >
-      <Box component="span">
+      <Box component="span" color="grey.400">
         {tab.icon && <FontAwesomeIcon icon={tab.icon} />}
       </Box>
       <MuiLink
         component={Link}
         to={tab.pathname + tab.search}
+        underline="none"
         sx={{
-          color: "grey.400",
+          color: "white",
           textDecoration: "none",
           flex: "1",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
+          ...linkProps,
         }}
       >
         {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
@@ -72,7 +81,11 @@ const BaseTab: FC<BaseTab> = ({
       <Box component="span" onClick={onClick} sx={{ cursor: "pointer" }}>
         <Pin
           fontSize="small"
-          sx={{ transform: "rotate(45deg)", marginRight: 0.25 }}
+          sx={{
+            transform: "rotate(45deg)",
+            color: "grey.400",
+            marginRight: 0.25,
+          }}
         />
       </Box>
     </Box>
@@ -113,6 +126,11 @@ export const InactiveTab: FC<InactiveTab> = ({ tab, tabWidth }) => {
       tab={tab}
       tabWidth={tabWidth}
       onClick={() => dispatch(unpinTab(tab))}
+      sx={{
+        "&:hover": {
+          backgroundColor: "grey.700",
+        },
+      }}
     />
   );
 };
@@ -138,8 +156,11 @@ export const ActiveTab: FC<ActiveTab> = ({ tabWidth }) => {
         if (isPinned) dispatch(unpinTab(activeTab));
         else dispatch(pinTab(activeTab));
       }}
-      sxOverrides={{
+      sx={{
         backgroundColor: "white",
+      }}
+      linkProps={{
+        color: "grey.800",
       }}
     />
   );

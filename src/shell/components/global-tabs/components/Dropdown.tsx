@@ -12,7 +12,8 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Input from "@mui/material/Input";
+import TextField from "@mui/material/TextField";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 import { Tab } from "../../../../shell/store/ui";
 
@@ -52,38 +53,91 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
 
   return (
     <>
-      <div>
+      <Box>
         <Button
           id="basic-button"
           aria-controls={open ? "basic-menu" : undefined}
           aria-haspopup="true"
           aria-expanded={open ? "true" : undefined}
           onClick={handleClick}
+          disableRipple
+          disableElevation
+          disableTouchRipple
+          sx={{
+            alignItems: "center",
+            display: "flex",
+            flexDirection: "row",
+            width: "100%",
+            textTransform: "none",
+            padding: "12px 12px 12px",
+            gap: "8px",
+            borderRadius: "12px 12px 0px 0px",
+            "&:hover": {
+              backgroundColor: "grey.800",
+            },
+          }}
         >
-          More
+          <Box component="span" sx={{ color: "white" }}>
+            More
+          </Box>
+          <ArrowDropDownIcon sx={{ color: "grey.400" }} fontSize="small" />
         </Button>
         <Menu
           id="basic-menu"
           anchorEl={anchorEl}
           open={open}
           onClose={handleClose}
+          disableScrollLock
           MenuListProps={{
             "aria-labelledby": "basic-button",
+            sx: {
+              backgroundColor: "grey.900",
+              boxSizing: "border-box",
+              padding: "0px",
+              width: "240px",
+            },
           }}
         >
-          <MenuItem>
-            <Input
+          <MenuItem
+            onKeyDown={(e) => e.stopPropagation()}
+            sx={{ cursor: "auto" }}
+            disableRipple
+          >
+            <TextField
+              variant="outlined"
               placeholder="Search Tabs"
-              startAdornment={<SearchIcon />}
+              size="small"
+              InputProps={{
+                startAdornment: (
+                  <SearchIcon fontSize="small" sx={{ color: "grey.300" }} />
+                ),
+                sx: {
+                  backgroundColor: "grey.800",
+                  color: "grey.50",
+                },
+              }}
               value={filter}
               onChange={(evt) => setFilter(evt.target.value)}
             />
           </MenuItem>
-          <MenuItem>
-            <Stack direction="row" justifyContent="space-between">
-              PINNED TABS
+          <MenuItem disableRipple sx={{ cursor: "auto" }}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              flex="1"
+            >
+              <Box component="span" sx={{ color: "white", lineHeight: "266%" }}>
+                {Boolean(filterTerm) ? `${tabs.length} RESULTS` : "PINNED TABS"}
+              </Box>
               {Boolean(filterTerm) || (
-                <Button onClick={() => setConfirmOpen(true)}>UNPIN ALL</Button>
+                <Button
+                  onClick={() => setConfirmOpen(true)}
+                  size="small"
+                  sx={{ mr: 0, color: "grey.400", lineHeight: "266%" }}
+                >
+                  UNPIN ALL
+                </Button>
               )}
             </Stack>
           </MenuItem>
@@ -95,21 +149,34 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
             />
           ))}
         </Menu>
-      </div>
+      </Box>
       <ConfirmDialog
         open={confirmOpen}
-        callback={(confirmed) => {
-          console.log({ confirmed });
-          if (confirmed) {
+        title="Unpin All Tabs in See More Menu?"
+        content="This  cannot be undone"
+        callback={() => {} /* TODO why is this required?? */}
+      >
+        <Button
+          color="info"
+          sx={{
+            color: "text.secondary",
+            textTransform: "none",
+          }}
+          onClick={() => setConfirmOpen(false)}
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={() => {
             setFilter("");
             handleClose();
             removeMany(tabs);
-          }
-          setConfirmOpen(false);
-        }}
-        title="Unpin All Tabs in See More Menu?"
-        content="This  cannot be undone"
-      />
+            setConfirmOpen(false);
+          }}
+        >
+          Unpin All
+        </Button>
+      </ConfirmDialog>
     </>
   );
 };
@@ -119,27 +186,38 @@ type DropdownItem = {
 };
 const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
   return (
-    <MenuItem>
+    <MenuItem
+      disableRipple
+      sx={{
+        color: "grey.400",
+        width: "100%",
+        display: "grid",
+        gridTemplateColumns: "20px 1fr 20px",
+        justifyContent: "space-between",
+        alignItems: "center",
+        height: "48px",
+        padding: "12px 12px 12px 12px",
+        cursor: "auto",
+      }}
+    >
+      <Box component="span" color="grey.400">
+        {tab.icon && <FontAwesomeIcon icon={tab.icon} />}
+      </Box>
       <MuiLink
         component={Link}
         to={tab.pathname + tab.search}
+        underline="none"
         sx={{
           color: "grey.400",
-          justifyContent: "space-between",
-          // taken from old less
-          width: "100%",
-          display: "inline-block",
-          maxWidth: "300px",
-          textOverflow: "ellipsis",
+          textDecoration: "none",
+          flex: "1",
           whiteSpace: "nowrap",
-          textShadow: "none",
-          wordBreak: "keep-all",
-          transitionDuration: "unset",
-          transitionProperty: "unset",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+
+          alignContent: "center",
         }}
       >
-        {tab.icon && <FontAwesomeIcon icon={tab.icon} />}
-        &nbsp;
         {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
       </MuiLink>
       <Box component="span" onClick={remove} sx={{ cursor: "pointer" }}>
