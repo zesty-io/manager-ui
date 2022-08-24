@@ -40,7 +40,6 @@ export default memo(function GlobalTabs() {
   const content = useSelector((state: AppState) => state.content);
   const files = useSelector((state: AppState) => state.files);
   const mediaGroups = useSelector((state: AppState) => state.media.groups);
-  // TODO is this going to cause rerenders all the time?
   const state = useSelector((state: AppState) => state);
   const [tabBarWidth, setTabBarWidth] = useState(0);
 
@@ -67,11 +66,9 @@ export default memo(function GlobalTabs() {
     const { pathname, search } = location;
     const parsedPath = parsePath({ pathname, search });
     const t = createTab(state, parsedPath);
-    const { parts } = parsedPath;
-    const app = parts[0];
+    const { app } = t;
     const item = t.name || t.pathname;
     const title = `${app} - ${item} - Zesty.io - ${instanceName} - Manager`;
-    console.log({ title });
     // set the title
     document.title = title;
     const oldTitle = document.title;

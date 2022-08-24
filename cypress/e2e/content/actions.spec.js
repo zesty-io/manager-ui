@@ -97,6 +97,24 @@ describe("Actions in content editor", () => {
     cy.get("#SchedulePublishClose").click();
   });
 
+  it("Only allows future dates to be scheduled for publish", () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit("/content/6-556370-8sh47g/7-82a5c7ffb0-07vj1c");
+    });
+
+    cy.get("#PublishScheduleButton").click();
+    cy.get(
+      ".ModalAligner--ptdt- .MuiOutlinedInput-root .MuiInputAdornment-root .MuiButtonBase-root"
+    ).click();
+
+    cy.get(
+      '.MuiCalendarPicker-root .MuiPickersArrowSwitcher-root button[aria-label="Previous month"]'
+    ).should("be.disabled");
+    cy.get(
+      '.MuiCalendarPicker-root .MuiPickersArrowSwitcher-root button[aria-label="Next month"]'
+    ).should("not.be.disabled");
+  });
+
   it.skip("Unschedules a Publish for an item", () => {
     cy.get("#PublishScheduleButton").click();
     cy.get("[data-cy=UnschedulePublishButton]").click();

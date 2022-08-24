@@ -32,6 +32,9 @@ import { HeadlessOptions } from "./HeadlessOptions";
 
 import { NotFound } from "../NotFound";
 
+import { PublishState } from "./PublishState.tsx";
+import { Header } from "./components/Header";
+
 const selectSortedModelFields = createSelector(
   (state) => state.fields,
   (_, modelZUID) => modelZUID,
@@ -129,6 +132,10 @@ export default function ItemEdit() {
 
       if (itemResponse.status === 404 || itemResponse.status === 400) {
         setNotFound(itemResponse.message || itemResponse.error);
+      }
+
+      if (itemResponse.data === null) {
+        setNotFound("Item has been deleted");
       }
 
       if (itemResponse?.data?.meta?.langID) {
@@ -267,7 +274,7 @@ export default function ItemEdit() {
             onDiscard={discard}
           />
 
-          <section>
+          <section style={{ height: "100%" }}>
             <Switch>
               <Route
                 exact
@@ -326,6 +333,22 @@ export default function ItemEdit() {
                     dispatch={dispatch}
                     saving={saving}
                   />
+                )}
+              />
+              <Route
+                exact
+                path="/content/:modelZUID/:itemZUID/publishings"
+                render={() => (
+                  <>
+                    <Header
+                      instance={instance}
+                      modelZUID={modelZUID}
+                      model={model}
+                      itemZUID={itemZUID}
+                      item={item}
+                    />
+                    <PublishState />
+                  </>
                 )}
               />
               <Route

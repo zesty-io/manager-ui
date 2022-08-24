@@ -1,5 +1,5 @@
 {
-  "include": ["src/**/*ts"],
+  "include": ["src"],
   "compilerOptions": {
     "noImplicitAny": true,
     "allowJs": true,
@@ -7,6 +7,7 @@
     "target": "esnext",
     "jsx": "react-jsx",
     "moduleResolution": "node",
-    "sourceMap": true
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true
   }
 }

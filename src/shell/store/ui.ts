@@ -27,6 +27,7 @@ export type Tab = {
   pathname: string;
   search: string;
   name?: string;
+  app?: string;
   icon?: IconDefinition;
 };
 export type CodeEditorPosition = Record<
@@ -147,57 +148,10 @@ export function parsePath({ pathname: path, search }: TabLocation) {
 }
 
 export type ParsedPath = ReturnType<typeof parsePath>;
-function validatePath(parsedPath: ParsedPath) {
-  const { parts, zuid, contentSection } = parsedPath;
-  console.log(parsedPath);
-  // don't show root
-  if (parts.length === 0) {
-    return false;
-  }
-  // don't show global tab for top level section
-  if (parts.length === 1 && !zuid) {
-    return false;
-  }
-  // don't show global tab for content head/meta sections
-  if (contentSection) {
-    return false;
-  }
-  // don't show global tab for settings first level section (except robots, styles)
-  if (
-    parts.length === 2 &&
-    parts[0] === "settings" &&
-    parts[1] !== "robots" &&
-    parts[1] !== "styles"
-  ) {
-    return false;
-  }
-
-  // don't show tertiary style tabs
-  if (parts.length === 3 && parts[0] === "settings" && parts[1] === "styles") {
-    return false;
-  }
-
-  // Don't show Schema Field Tabs
-  if (parts[0] === "schema" && parts[2] === "field") {
-    return false;
-  }
-
-  // Don't show Media File Tabs
-  if (parts[0] === "media" && parts[2] === "file") {
-    return false;
-  }
-
-  // Don't show Code Editor Diff Tabs
-  if (parts[0] === "code" && parts[4] === "diff") {
-    return false;
-  }
-  return true;
-}
 
 export function createTab(state: AppState, parsedPath: ParsedPath) {
   const { path, parts, zuid, prefix, search } = parsedPath;
   const tab: Tab = { pathname: path, search };
-  console.log(parsedPath);
 
   const appNameMap = {
     seo: {
@@ -239,18 +193,22 @@ export function createTab(state: AppState, parsedPath: ParsedPath) {
     switch (parts[1]) {
       case "activity-log":
         tab.name = "Activity Log";
+        tab.app = "Activity Log";
         break;
       case "metrics":
         tab.name = "Metrics";
+        tab.app = "Metrics";
         break;
       case "analytics":
         tab.name = "Analytics";
+        tab.app = "Analytics";
         break;
     }
   } else if (parts[0] in appNameMap) {
     const name = parts[0] as keyof typeof appNameMap;
     tab.name = appNameMap[name].name;
     tab.icon = appNameMap[name].icon;
+    tab.app = appNameMap[name].name;
   }
   // resolve ZUID from store to determine display information
   switch (prefix) {
@@ -341,7 +299,6 @@ export function pinTab({ pathname, search }: TabLocation) {
     const tabIndex = state.ui.pinnedTabs.findIndex((t) =>
       tabLocationEquality(t, tab)
     );
-    console.log({ tabIndex });
     if (tabIndex < 0) {
       // if it doesn't exist, add it
       //state.pinnedTabs = [action.payload, ...state.pinnedTabs];

@@ -44,7 +44,6 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
     return null;
   }
   const filterTerm = filter.trim().toLocaleLowerCase();
-  // TODO consider memoizing this
   const filteredTabs = tabs.filter(
     (tab) =>
       tab.pathname.toLocaleLowerCase().includes(filterTerm) ||

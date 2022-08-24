@@ -36,7 +36,6 @@ import { Modal } from "@zesty-io/core/Modal";
 import MediaApp from "../../../../../../media/src/app/MediaApp";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
 import { FieldTypeCurrency } from "@zesty-io/core/FieldTypeCurrency";
-import { FieldTypeDate } from "@zesty-io/core/FieldTypeDate";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { FieldTypeSort } from "@zesty-io/material";
@@ -47,6 +46,8 @@ import {
   FieldTypeOneToOne,
   FieldTypeOneToMany,
   FieldTypeText,
+  FieldTypeDate,
+  FieldTypeDateTime,
 } from "@zesty-io/material";
 
 import styles from "./Field.less";
@@ -861,7 +862,6 @@ export default function Field({
       );
 
     case "date":
-    case "datetime":
       /**
        * Every time this parent compenent re-renders it creates a new function
        * invalidating the FieldTypeData components referential prop check,
@@ -872,7 +872,7 @@ export default function Field({
         /**
          * Flatpickr emits a utc timestamp, offset from users local time.
          * Legacy behavior did not send utc but sent the value as is selected by the user
-         * this ensures that behavior is maintained
+         * this ensures that behavior is maintained.
          */
         onChange(moment(value).format("YYYY-MM-DD HH:mm:ss"), name, datatype);
       }, []);
@@ -880,13 +880,60 @@ export default function Field({
       return (
         <FieldTypeDate
           name={name}
-          label={FieldTypeLabel}
-          description={description}
-          tooltip={settings.tooltip}
-          datatype={datatype}
+          label={
+            <Stack direction="row" alignItems="center">
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                </Tooltip>
+              ) : (
+                ""
+              )}
+
+              {FieldTypeLabel}
+            </Stack>
+          }
+          helperText={description}
           required={required}
-          value={value}
-          onChange={onDateChange}
+          value={moment(value).format("YYYY-MM-DD HH:mm:ss")}
+          inputFormat="yyyy-MM-dd"
+          onChange={(date) => onDateChange(date, name, datatype)}
+        />
+      );
+
+    case "datetime":
+      const onDateTimeChange = useCallback((value, name, datatype) => {
+        onChange(moment(value).format("YYYY-MM-DD HH:mm:ss"), name, datatype);
+      }, []);
+      return (
+        <FieldTypeDateTime
+          name={name}
+          label={
+            <Stack direction="row" alignItems="center">
+              {settings.tooltip ? (
+                <Tooltip
+                  placement="top-start"
+                  arrow
+                  title={settings.tooltip ? settings.tooltip : " "}
+                >
+                  <InfoIcon fontSize="small" sx={{ mr: 1 }} />
+                </Tooltip>
+              ) : (
+                ""
+              )}
+
+              {FieldTypeLabel}
+            </Stack>
+          }
+          helperText={description}
+          required={required}
+          value={moment(value).format("YYYY-MM-DD HH:mm:ss")}
+          inputFormat="yyyy-MM-dd HH:mm:ss.SSSSSS"
+          onChange={(date) => onDateTimeChange(date, name, datatype)}
         />
       );
 
