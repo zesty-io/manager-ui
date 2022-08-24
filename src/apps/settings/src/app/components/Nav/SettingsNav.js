@@ -15,6 +15,7 @@ import {
 import cx from "classnames";
 
 import { Nav } from "@zesty-io/core/Nav";
+import { AppLink } from "@zesty-io/core/AppLink";
 
 import styles from "./SettingsNav.less";
 export default connect((state) => {
@@ -95,6 +96,10 @@ export default connect((state) => {
           selected={selected}
           tree={treeAlt}
         />
+
+        <h1 className={styles.NavTitle}>
+          <AppLink to="/settings/beta">Beta</AppLink>
+        </h1>
       </div>
     </nav>
   );

@@ -9,6 +9,7 @@ import { Instance } from "./views/Instance";
 import { Styles } from "./views/Styles";
 import { Browse, Installed } from "./views/Fonts";
 import { Robots } from "./views/Robots";
+import { Beta } from "./views/Beta";
 
 import { Head } from "shell/components/Head";
 
@@ -49,6 +50,8 @@ export default connect((state) => ({
           <div className={styles.OverflowWrap}>
             <main className={styles.Content}>
               <Switch>
+                <Route exact path="/settings/beta" component={Beta} />
+
                 <Route
                   exact
                   path="/settings/styles/:category"
