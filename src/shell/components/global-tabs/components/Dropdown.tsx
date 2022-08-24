@@ -100,8 +100,12 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
         >
           <MenuItem
             onKeyDown={(e) => e.stopPropagation()}
-            sx={{ cursor: "auto" }}
             disableRipple
+            sx={{
+              cursor: "auto",
+              padding: "12px 12px 12px 12px",
+              height: "56px",
+            }}
           >
             <TextField
               variant="outlined"
@@ -114,18 +118,21 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
                 sx: {
                   backgroundColor: "grey.800",
                   color: "grey.50",
+                  padding: "0px 8px",
+                  gap: "8px",
                 },
               }}
               value={filter}
               onChange={(evt) => setFilter(evt.target.value)}
             />
           </MenuItem>
-          <MenuItem disableRipple sx={{ cursor: "auto" }}>
+          <MenuItem disableRipple sx={{ cursor: "auto", padding: "6px 12px" }}>
             <Stack
               direction="row"
               justifyContent="space-between"
               alignItems="center"
               flex="1"
+              sx={{ height: "32px" }}
             >
               <Box component="span" sx={{ color: "white", lineHeight: "266%" }}>
                 {Boolean(filterTerm) ? `${tabs.length} RESULTS` : "PINNED TABS"}
@@ -197,7 +204,12 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
         alignItems: "center",
         height: "48px",
         padding: "12px 12px 12px 12px",
+        gap: "8px",
         cursor: "auto",
+
+        boxSizing: "border-box",
+        borderBottom: "1px solid",
+        borderColor: "grey.800",
       }}
     >
       <Box component="span" color="grey.400">
