@@ -74,6 +74,12 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
             "&:hover": {
               backgroundColor: "grey.800",
             },
+            /*
+             Needed to prevent button from outgrowing parent
+             which will push the dropdown below the nav bar,
+             creating an unsightly gap
+            */
+            lineHeight: "inherit",
           }}
         >
           <Box component="span" sx={{ color: "white" }}>

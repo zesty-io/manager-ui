@@ -45,7 +45,8 @@ const BaseTab: FC<BaseTab> = ({
         overflow: "hidden",
         width: `${tabWidth}px`,
         display: "grid",
-        gridTemplateColumns: "20px 1fr 20px",
+        gridTemplateColumns: "16px 1fr 16px",
+        gap: "3px",
         backgroundColor: "grey.800",
         borderRadius: "12px 12px 0px 0px",
         borderWidth: "2px 2px 0px 0px",
@@ -59,7 +60,17 @@ const BaseTab: FC<BaseTab> = ({
         ...sx,
       }}
     >
-      <Box component="span" color="grey.400">
+      <Box
+        component="span"
+        color="grey.400"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "16px",
+          height: "16px",
+        }}
+      >
         {tab.icon && <FontAwesomeIcon icon={tab.icon} />}
       </Box>
       <MuiLink
@@ -78,13 +89,25 @@ const BaseTab: FC<BaseTab> = ({
       >
         {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
       </MuiLink>
-      <Box component="span" onClick={onClick} sx={{ cursor: "pointer" }}>
+      <Box
+        component="span"
+        onClick={onClick}
+        sx={{
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "16px",
+          height: "16px",
+        }}
+      >
         <Pin
           fontSize="small"
           sx={{
+            width: "16px",
+            height: "16px",
             transform: "rotate(45deg)",
             color: "grey.400",
-            marginRight: 0.25,
           }}
         />
       </Box>

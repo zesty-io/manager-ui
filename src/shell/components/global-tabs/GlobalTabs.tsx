@@ -20,8 +20,8 @@ import {
 } from "../../../shell/store/ui";
 import { AppState } from "../../store/types";
 
-const MIN_TAB_WIDTH = 150;
-const MAX_TAB_WIDTH = 200;
+const MIN_TAB_WIDTH = 250;
+const MAX_TAB_WIDTH = 300;
 const TAB_PADDING = 16;
 const TAB_BORDER = 1;
 
