@@ -43,7 +43,7 @@ export default function Beta(props) {
         <ToggleButtonGroup
           color="secondary"
           size="small"
-          value={cookieVal}
+          value={Number(cookieVal)}
           exclusive
           onChange={(_, val) => {
             console.log("toggle value", val);
