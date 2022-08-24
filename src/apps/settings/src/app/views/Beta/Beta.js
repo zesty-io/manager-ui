@@ -1,30 +1,19 @@
-import { useEffect, useState } from "react";
-import cx from "classnames";
+import { useState } from "react";
+import Cookies from "js-cookie";
 
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
+import Divider from "@mui/material/Divider";
+import FormLabel from "@mui/material/FormLabel";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
 
 import { Notice } from "@zesty-io/core/Notice";
 
-import Divider from "@mui/material/Divider";
-
-import Cookies from "js-cookie";
-
 import styles from "./Beta.less";
-
-export default function Beta(props) {
-  // v2 = ga = 0-899
-  // v1 = beta = 900-999
-
-  // ga = 0
-  // beta = 999
-
-  const [cookieVal, setCookieVal] = useState(Cookies.get("GOOGAPPUID"));
-
-  console.log("cookie", cookieVal);
+export default function Beta() {
+  const [cookieVal, setCookieVal] = useState(Cookies.get("GOOGAPPUID") || 999);
 
   return (
     <div className={styles.Robots}>
@@ -40,13 +29,22 @@ export default function Beta(props) {
       />
 
       <div className={styles.Row}>
+        <FormLabel>
+          <p>Activate Beta</p>
+        </FormLabel>
+        <Notice>
+          By opting into the manager-ui beta you will recieve access to new
+          features before they become GA(generally available). Beta changes are
+          promoted to GA every 2 weeks.
+        </Notice>
         <ToggleButtonGroup
           color="secondary"
           size="small"
           value={Number(cookieVal)}
           exclusive
           onChange={(_, val) => {
-            console.log("toggle value", val);
+            // ga = 999
+            // beta = 0
 
             Cookies.set("GOOGAPPUID", val, {
               path: "/",
@@ -56,8 +54,8 @@ export default function Beta(props) {
             setCookieVal(val);
           }}
         >
-          <ToggleButton value={0}>No</ToggleButton>
-          <ToggleButton value={999}>Yes</ToggleButton>
+          <ToggleButton value={999}>No</ToggleButton>
+          <ToggleButton value={0}>Yes</ToggleButton>
         </ToggleButtonGroup>
       </div>
     </div>
