@@ -9,6 +9,7 @@ import { SxProps } from "@mui/system";
 
 import MuiLink from "@mui/material/Link";
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 import {
   pinTab,
@@ -46,7 +47,7 @@ const BaseTab: FC<BaseTab> = ({
         width: `${tabWidth}px`,
         display: "grid",
         gridTemplateColumns: "16px 1fr 16px",
-        gap: "3px",
+        gap: "4px",
         backgroundColor: "grey.800",
         borderRadius: "12px 12px 0px 0px",
         borderWidth: "2px 2px 0px 0px",
@@ -57,6 +58,9 @@ const BaseTab: FC<BaseTab> = ({
         alignItems: "center",
         //TODO make sure this is right
         filter: "drop-shadow(0px 4px 4px #000000)",
+        "&hover": {
+          border: "none",
+        },
         ...sx,
       }}
     >
@@ -68,15 +72,20 @@ const BaseTab: FC<BaseTab> = ({
           alignItems: "center",
           justifyContent: "center",
           width: "16px",
-          height: "16px",
+          height: "auto",
         }}
       >
-        {tab.icon && <FontAwesomeIcon icon={tab.icon} />}
+        {tab.icon && (
+          <FontAwesomeIcon
+            icon={tab.icon}
+            style={{ width: "16px", height: "auto" }}
+          />
+        )}
       </Box>
       <MuiLink
         component={Link}
         to={tab.pathname + tab.search}
-        underline="none"
+        variant="caption"
         sx={{
           color: "white",
           textDecoration: "none",
@@ -97,8 +106,6 @@ const BaseTab: FC<BaseTab> = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          width: "16px",
-          height: "16px",
         }}
       >
         <Pin
@@ -181,6 +188,7 @@ export const ActiveTab: FC<ActiveTab> = ({ tabWidth }) => {
       }}
       sx={{
         backgroundColor: "white",
+        border: "none",
       }}
       linkProps={{
         color: "grey.800",
