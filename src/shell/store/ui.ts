@@ -218,16 +218,12 @@ export function createTab(state: AppState, parsedPath: ParsedPath) {
       if (group) {
         tab.name = group.name;
       }
-      tab.icon = faFolder;
       break;
     case "6":
-      tab.icon = faDatabase;
-
       if (state.models) {
         const model: any = state.models[zuid];
 
         tab.name = model?.label;
-        tab.icon = faDatabase;
       }
       break;
     case "7":
@@ -238,7 +234,6 @@ export function createTab(state: AppState, parsedPath: ParsedPath) {
             item.web.metaLinkText || item.web.metaTitle || item.web.pathPart;
         }
       }
-      tab.icon = faEdit;
       break;
     case "10":
     case "11":
@@ -250,13 +245,11 @@ export function createTab(state: AppState, parsedPath: ParsedPath) {
           tab.name = selectedFile.fileName;
         }
       }
-      tab.icon = faCode;
       break;
     case "17":
       break;
   }
   if (parts[0] === "settings") {
-    tab.icon = faCog;
     if (parts[2]) {
       if (parts[1] === "instance") {
         tab.name =

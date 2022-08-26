@@ -16,6 +16,7 @@ import TextField from "@mui/material/TextField";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 import { Tab } from "../../../../shell/store/ui";
+import { Typography } from "@mui/material";
 
 export type Dropdown = {
   tabs: Tab[];
@@ -116,11 +117,16 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
               variant="outlined"
               placeholder="Search Tabs"
               size="small"
+              sx={{ height: "32px" }}
               InputProps={{
                 startAdornment: (
                   <SearchIcon fontSize="small" sx={{ color: "grey.300" }} />
                 ),
                 sx: {
+                  "&.Mui-focused": {
+                    backgroundColor: "white",
+                    color: "grey.400",
+                  },
                   backgroundColor: "grey.800",
                   color: "grey.50",
                   padding: "0px 8px",
@@ -131,24 +137,46 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
               onChange={(evt) => setFilter(evt.target.value)}
             />
           </MenuItem>
-          <MenuItem disableRipple sx={{ cursor: "auto", padding: "6px 12px" }}>
+          <MenuItem
+            disableRipple
+            sx={{
+              cursor: "auto",
+              padding: "6px 12px",
+              height: "32px",
+            }}
+          >
             <Stack
               direction="row"
               justifyContent="space-between"
               alignItems="center"
               flex="1"
-              sx={{ height: "32px" }}
             >
               <Box component="span" sx={{ color: "white", lineHeight: "266%" }}>
-                {Boolean(filterTerm) ? `${tabs.length} RESULTS` : "PINNED TABS"}
+                <Typography variant="overline">
+                  {Boolean(filterTerm)
+                    ? `${filteredTabs.length} RESULTS`
+                    : "PINNED TABS"}
+                </Typography>
               </Box>
               {Boolean(filterTerm) || (
                 <Button
+                  disableRipple
+                  disableFocusRipple
+                  disableTouchRipple
                   onClick={() => setConfirmOpen(true)}
                   size="small"
-                  sx={{ mr: 0, color: "grey.400", lineHeight: "266%" }}
+                  sx={{
+                    mr: 0,
+                    pr: 0,
+                    color: "grey.400",
+                    lineHeight: "266%",
+                    "&:hover": {
+                      color: "warning.main",
+                      backgroundColor: "transparent",
+                    },
+                  }}
                 >
-                  UNPIN ALL
+                  <Typography variant="overline">UNPIN ALL</Typography>
                 </Button>
               )}
             </Stack>
@@ -235,12 +263,27 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
           alignContent: "center",
         }}
       >
-        {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
+        <Typography variant="caption">
+          {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
+        </Typography>
       </MuiLink>
-      <Box component="span" onClick={remove} sx={{ cursor: "pointer" }}>
+      <Box
+        component="span"
+        onClick={remove}
+        sx={{
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <PinIcon
           fontSize="small"
-          sx={{ transform: "rotate(45deg)", marginRight: 0.25 }}
+          sx={{
+            width: "16px",
+            height: "16px",
+            transform: "rotate(45deg)",
+          }}
         />
       </Box>
     </MenuItem>

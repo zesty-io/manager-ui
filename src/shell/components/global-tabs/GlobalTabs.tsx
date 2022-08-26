@@ -106,22 +106,15 @@ export default memo(function GlobalTabs() {
     }
   }, [windowWidth]);
 
-  // we want to synchronize tabs.length with tab width
-  // if we used useEffect here, we would get new tabs.length
-  // with old tab width
-  // cheap enough to run every render
-  let tabWidth = MIN_TAB_WIDTH; //150;
-  if (pinnedTabs.length) {
-    tabWidth =
-      Math.floor(
-        Math.min(
-          Math.max(tabBarWidth / pinnedTabs.length, MIN_TAB_WIDTH),
-          MAX_TAB_WIDTH
-        )
-      ) -
-      TAB_PADDING -
-      TAB_BORDER;
-  }
+  const tabWidth =
+    Math.floor(
+      Math.min(
+        Math.max(tabBarWidth / pinnedTabs.length, MIN_TAB_WIDTH),
+        MAX_TAB_WIDTH
+      )
+    ) -
+    TAB_PADDING -
+    TAB_BORDER;
 
   //const inactiveTabs = [] //tabs.filter(tab => tab.pathname !== location.pathname)
   const inactiveTabs = pinnedTabs.filter(
