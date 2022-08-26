@@ -899,7 +899,7 @@ export default function Field({
           }
           helperText={description}
           required={required}
-          value={moment(value || null).format("YYYY-MM-DD HH:mm:ss")}
+          value={value ? moment(value).format("YYYY-MM-DD HH:mm:ss") : null}
           inputFormat="yyyy-MM-dd"
           onChange={(date) => onDateChange(date, name, datatype)}
         />
@@ -931,7 +931,7 @@ export default function Field({
           }
           helperText={description}
           required={required}
-          value={moment(value || null).format("YYYY-MM-DD HH:mm:ss")}
+          value={value ? moment(value).format("YYYY-MM-DD HH:mm:ss") : null}
           inputFormat="yyyy-MM-dd HH:mm:ss.SSSSSS"
           onChange={(date) => onDateTimeChange(date, name, datatype)}
         />
