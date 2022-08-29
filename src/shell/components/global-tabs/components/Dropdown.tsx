@@ -125,6 +125,12 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
                 sx: {
                   "&.Mui-focused": {
                     backgroundColor: "white",
+                    color: "grey.900",
+                  },
+                  "&.Mui-focused fieldset": {
+                    border: "none",
+                  },
+                  "&.Mui-focused svg": {
                     color: "grey.400",
                   },
                   backgroundColor: "grey.800",
