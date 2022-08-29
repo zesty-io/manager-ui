@@ -21,6 +21,11 @@ import {
 } from "../../../../shell/store/ui";
 import { AppState } from "../../../store/types";
 
+/*
+  we need a descending z-index to make the drop shadow render correctly
+*/
+const zIndex = 25;
+
 type BaseTab = {
   tab: Tab;
   tabWidth: number;
@@ -130,11 +135,12 @@ export type InactiveTabGroup = {
 export const InactiveTabGroup: FC<InactiveTabGroup> = ({ tabs, tabWidth }) => {
   return (
     <>
-      {tabs.map((tab) => (
+      {tabs.map((tab, i) => (
         <InactiveTab
           tab={tab}
           key={tab.pathname + tab.search}
           tabWidth={tabWidth}
+          sx={{ zIndex: zIndex - i - 1 }}
         />
       ))}
     </>
@@ -144,9 +150,10 @@ export const InactiveTabGroup: FC<InactiveTabGroup> = ({ tabs, tabWidth }) => {
 export type InactiveTab = {
   tab: Tab;
   tabWidth: number;
+  sx?: SxProps;
 };
 
-export const InactiveTab: FC<InactiveTab> = ({ tab, tabWidth }) => {
+export const InactiveTab: FC<InactiveTab> = ({ tab, tabWidth, sx }) => {
   const dispatch = useDispatch();
   const location = useLocation();
   if (tabLocationEquality(location, tab)) return null;
@@ -160,6 +167,7 @@ export const InactiveTab: FC<InactiveTab> = ({ tab, tabWidth }) => {
         "&:hover": {
           backgroundColor: "grey.700",
         },
+        ...sx,
       }}
     />
   );
@@ -189,6 +197,7 @@ export const ActiveTab: FC<ActiveTab> = ({ tabWidth }) => {
       sx={{
         backgroundColor: "white",
         border: "none",
+        zIndex,
       }}
       linkProps={{
         color: "grey.800",
