@@ -5,6 +5,7 @@ export const IMPORT_REDIRECTS = "IMPORT_REDIRECTS";
 export const IMPORT_CODE = "IMPORT_CODE";
 export const IMPORT_TARGET = "IMPORT_TARGET";
 export const IMPORT_QUERY = "IMPORT_QUERY";
+export const IMPORT_TARGET_TYPE = "IMPORT_TARGET_TYPE";
 
 export function imports(state = {}, action) {
   switch (action.type) {
@@ -53,6 +54,15 @@ export function imports(state = {}, action) {
         return acc;
       }, {});
 
+    case IMPORT_TARGET_TYPE:
+      return Object.keys(state).reduce((acc, key) => {
+        acc[key] = { ...state[key] };
+        if (key === action.path) {
+          acc[key].targetType = action.targetType;
+        }
+        return acc;
+      }, {});
+
     default:
       return state;
   }
@@ -83,6 +93,13 @@ export function importTarget(path, target, targetZuid) {
 export function importQuery(path, query) {
   return {
     type: IMPORT_QUERY,
+    path,
+    query,
+  };
+}
+export function importTargetType(path, query) {
+  return {
+    type: IMPORT_TARGET_TYPE,
     path,
     query,
   };
@@ -173,15 +190,19 @@ function CSVToArray(csv) {
     skip_empty_lines: true,
   });
   const columns = rows[0];
+  const validColumns = ["from", "target", "targetType", "code"];
+  const columnIndexes = validColumns.map((column) => columns.indexOf(column));
   const redirects = rows
     .slice(1)
     .map((row) => {
-      const [original, target, code] = row;
+      const [original, target, targetType, code] = columnIndexes.map(
+        (columnIndex) => row[columnIndex]
+      );
       const [path, query] = original.split("?");
       return {
         path: path,
         query_string: query || null,
-        target_type: "path",
+        targetType: targetType || "path",
         target_zuid: null,
         target: target,
         code: code || "301",
@@ -259,7 +280,7 @@ function parseXML(xml, dispatch) {
     redirects[path] = {
       path: path,
       query_string: query || null,
-      target_type: "path",
+      targetType: "path",
       target_zuid: null,
       target: "/", // Default to homepage
       code: "301",
