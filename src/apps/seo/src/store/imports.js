@@ -191,7 +191,9 @@ function CSVToArray(csv) {
   });
   const columns = rows[0];
   const validColumns = ["from", "target", "targetType", "code"];
-  const columnIndexes = validColumns.map((column) => columns.indexOf(column));
+  const columnIndexes = validColumns.map((column) =>
+    columns.indexOf(column.toLowerCase())
+  );
   const redirects = rows
     .slice(1)
     .map((row) => {
