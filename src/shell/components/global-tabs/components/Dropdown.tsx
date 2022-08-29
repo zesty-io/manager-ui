@@ -84,7 +84,7 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
           }}
         >
           <Box component="span" sx={{ color: "white" }}>
-            More
+            <Typography variant="caption">More</Typography>
           </Box>
           <ArrowDropDownIcon sx={{ color: "grey.400" }} fontSize="small" />
         </Button>
