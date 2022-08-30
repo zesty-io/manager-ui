@@ -69,6 +69,7 @@ export const MemoizedEditor = memo(
         theme="vs-dark"
         options={{
           selectOnLineNumbers: true,
+          automaticLayout: true,
           wordWrap: "on",
         }}
         onChange={(newValue) => {

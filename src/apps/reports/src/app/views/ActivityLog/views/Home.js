@@ -30,7 +30,7 @@ const tabPaths = ["resources", "users", "timeline", "insights"];
 
 const filtersOnView = {
   resources: ["happenedAt", "resourceType", "actionByUserZUID"],
-  users: ["happenedAt", "userRole"],
+  users: ["sortByUsers", "userRole"],
   timeline: ["action", , "resourceType", "actionByUserZUID"],
   insights: ["action", "actionByUserZUID"],
 };
@@ -207,6 +207,7 @@ export const Home = () => {
                 onReset={() => {
                   setParams("", "action");
                   setParams("", "actionByUserZUID");
+                  setParams("", "resourceType");
                   setDefaultDateParams();
                 }}
               />
