@@ -207,6 +207,7 @@ export const Home = () => {
                 onReset={() => {
                   setParams("", "action");
                   setParams("", "actionByUserZUID");
+                  setParams("", "resourceType");
                   setDefaultDateParams();
                 }}
               />
