@@ -36,6 +36,7 @@ export default connect((state) => {
 })(
   memo(function LoadInstance(props) {
     const [error, setError] = useState("");
+    const [pendoInit, setPendoInit] = useState(false);
     useEffect(() => {
       props
         .dispatch(fetchInstance())
@@ -71,7 +72,6 @@ export default connect((state) => {
     }, []);
 
     useEffect(() => {
-      console.log({ props, wp: window.pendo });
       if (
         props.auth?.valid &&
         window.pendo &&
@@ -79,38 +79,7 @@ export default connect((state) => {
         props.instance?.ZUID &&
         props.role
       ) {
-        console.log("initializing pendo");
-        console.log(
-          JSON.stringify({
-            visitor: {
-              id: props.user.ZUID,
-              email: props.user.email,
-              firstName: props.user.firstName,
-              lastName: props.user.lastName,
-              full_name: `${props.user.firstName} ${props.user.lastName}`,
-              role: props.role,
-
-              // You can add any additional visitor level key-values here,
-              // as long as it's not one of the above reserved names.
-              staff: props.user.staff,
-              creationDate: props.user.createdAt,
-            },
-
-            account: {
-              id: props.instance.ZUID,
-              name: props.instance.name,
-              creationDate: props.instance.createdAt,
-              // You can add any additional account level key-values here,
-              // as long as it's not one of the above reserved names.
-
-              ecoID: props.instance.ecoID,
-              ecoZUID: props.instance.ecoZUID,
-              randomHashID: props.instance.randomHashID,
-              domain: props.instance.domain,
-            },
-          })
-        );
-        pendo.initialize({
+        const pendoData = {
           visitor: {
             id: props.user.ZUID,
             email: props.user.email,
@@ -137,44 +106,16 @@ export default connect((state) => {
             randomHashID: props.instance.randomHashID,
             domain: props.instance.domain,
           },
-        });
-        pendo.identify({
-          visitor: {
-            id: props.user.ZUID,
-            email: props.user.email,
-            firstName: props.user.firstName,
-            lastName: props.user.lastName,
-            full_name: `${props.user.firstName} ${props.user.lastName}`,
-            role: props.role,
-
-            // You can add any additional visitor level key-values here,
-            // as long as it's not one of the above reserved names.
-            staff: props.user.staff,
-            creationDate: props.user.createdAt,
-          },
-          account: {
-            id: props.instance.ZUID,
-            name: props.instance.name,
-            creationDate: props.instance.createdAt,
-            // You can add any additional account level key-values here,
-            // as long as it's not one of the above reserved names.
-
-            ecoID: props.instance.ecoID,
-            ecoZUID: props.instance.ecoZUID,
-            randomHashID: props.instance.randomHashID,
-            domain: props.instance.domain,
-          },
-        });
-        console.log(pendo.validateInstall());
+        };
+        if (!pendoInit) {
+          pendo.initialize(pendoData);
+          setPendoInit(true);
+        } else {
+          pendo.identify(pendoData);
+        }
       }
-      //Check if pendo is running correctly open browser console and run pendo.validateInstall()
-      //Clean-up function
-      return () => {
-        console.log("cleanup function");
-        console.log(props);
-        console.log("clearing pendo session");
-        pendo.clearSession();
-      };
+      //Clean-up function to clear pendo session when a user is logged out
+      return () => pendo.clearSession();
     }, [props.user, props.instance, props.role, props.auth, props.auth.valid]);
 
     return (
