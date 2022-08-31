@@ -31,6 +31,7 @@ export default connect((state) => {
     languages: state.languages,
     files: state.files,
     role: state.userRole.systemRole.name,
+    auth: state.auth,
   };
 })(
   memo(function LoadInstance(props) {
@@ -70,12 +71,45 @@ export default connect((state) => {
     }, []);
 
     useEffect(() => {
+      console.log({ props, wp: window.pendo });
       if (
+        props.auth?.valid &&
         window.pendo &&
         props.user?.email &&
         props.instance?.ZUID &&
         props.role
       ) {
+        console.log("initializing pendo");
+        console.log(
+          JSON.stringify({
+            visitor: {
+              id: props.user.ZUID,
+              email: props.user.email,
+              firstName: props.user.firstName,
+              lastName: props.user.lastName,
+              full_name: `${props.user.firstName} ${props.user.lastName}`,
+              role: props.role,
+
+              // You can add any additional visitor level key-values here,
+              // as long as it's not one of the above reserved names.
+              staff: props.user.staff,
+              creationDate: props.user.createdAt,
+            },
+
+            account: {
+              id: props.instance.ZUID,
+              name: props.instance.name,
+              creationDate: props.instance.createdAt,
+              // You can add any additional account level key-values here,
+              // as long as it's not one of the above reserved names.
+
+              ecoID: props.instance.ecoID,
+              ecoZUID: props.instance.ecoZUID,
+              randomHashID: props.instance.randomHashID,
+              domain: props.instance.domain,
+            },
+          })
+        );
         pendo.initialize({
           visitor: {
             id: props.user.ZUID,
@@ -104,9 +138,44 @@ export default connect((state) => {
             domain: props.instance.domain,
           },
         });
+        pendo.identify({
+          visitor: {
+            id: props.user.ZUID,
+            email: props.user.email,
+            firstName: props.user.firstName,
+            lastName: props.user.lastName,
+            full_name: `${props.user.firstName} ${props.user.lastName}`,
+            role: props.role,
+
+            // You can add any additional visitor level key-values here,
+            // as long as it's not one of the above reserved names.
+            staff: props.user.staff,
+            creationDate: props.user.createdAt,
+          },
+          account: {
+            id: props.instance.ZUID,
+            name: props.instance.name,
+            creationDate: props.instance.createdAt,
+            // You can add any additional account level key-values here,
+            // as long as it's not one of the above reserved names.
+
+            ecoID: props.instance.ecoID,
+            ecoZUID: props.instance.ecoZUID,
+            randomHashID: props.instance.randomHashID,
+            domain: props.instance.domain,
+          },
+        });
+        console.log(pendo.validateInstall());
       }
       //Check if pendo is running correctly open browser console and run pendo.validateInstall()
-    }, [props.user, props.instance, props.role]);
+      //Clean-up function
+      return () => {
+        console.log("cleanup function");
+        console.log(props);
+        console.log("clearing pendo session");
+        pendo.clearSession();
+      };
+    }, [props.user, props.instance, props.role, props.auth, props.auth.valid]);
 
     return (
       <>
