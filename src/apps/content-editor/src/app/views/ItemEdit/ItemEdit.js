@@ -79,7 +79,7 @@ export default function ItemEdit() {
   const userRole = useSelector((state) => state.userRole);
   const instance = useSelector((state) => state.instance);
 
-  const [initialNavLink, setInitialNavLink] = useState(item.web.metaLinkText);
+  const [initialNavLink, setInitialNavLink] = useState("");
 
   const [lockState, setLockState] = useState({});
   const [checkingLock, setCheckingLock] = useState(false);
@@ -141,6 +141,12 @@ export default function ItemEdit() {
         setNotFound("Item has been deleted");
       }
 
+      // set initial navigation link
+      // this will be used to compare new NavLink value to the initial value
+      if (itemResponse?.data?.web?.metaLinkText) {
+        setInitialNavLink(itemResponse.data.web.metaLinkText);
+      }
+
       if (itemResponse?.data?.meta?.langID) {
         // select lang based on content lang
         dispatch(
@@ -184,7 +190,7 @@ export default function ItemEdit() {
   async function save() {
     setSaving(true);
     try {
-      const res = await dispatch(saveItem(itemZUID));
+      const res = await dispatch(saveItem(itemZUID, initialNavLink));
       if (res.err === "MISSING_REQUIRED") {
         dispatch(
           notify({
