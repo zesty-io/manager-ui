@@ -23,7 +23,6 @@ import {
 } from "shell/store/content";
 import { selectLang } from "shell/store/user";
 import { WithLoader } from "@zesty-io/core/WithLoader";
-import { fetchNav } from "../../../store/navContent";
 import { PendingEditsModal } from "../../components/PendingEditsModal";
 import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
@@ -210,12 +209,6 @@ export default function ItemEdit() {
           })
         );
         return;
-      }
-
-      // fetch nav only when metaLinkText is updated
-      if (item.web.metaLinkText !== initialNavLink) {
-        dispatch(fetchNav());
-        setInitialNavLink(item.web.metaLinkText);
       }
 
       dispatch(
