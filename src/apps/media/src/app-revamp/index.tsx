@@ -23,7 +23,7 @@ export const MediaApp = () => {
           <Route exact path="/media/:binId/" component={FolderMedia} />
           <Route exact path="/media/:binId/:groupID" component={FolderMedia} />
           <Route exact path="/media/search" component={SearchMedia} />
-          <Redirect to="/" />
+          <Redirect to="/media" />
         </Switch>
       </Box>
     </ThemeProvider>
