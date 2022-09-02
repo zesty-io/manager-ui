@@ -185,7 +185,7 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
                     },
                   }}
                 >
-                  <Typography variant="overline">UNPIN ALL</Typography>
+                  <Typography variant="overline">Unpin All</Typography>
                 </Button>
               )}
             </Stack>
@@ -204,6 +204,8 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
         title="Unpin All Tabs in See More Menu?"
         content="This  cannot be undone"
         callback={() => {} /* TODO why is this required?? */}
+        maxWidth="xs"
+        fullWidth
       >
         <Button
           color="info"
@@ -222,6 +224,7 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
             removeMany(tabs);
             setConfirmOpen(false);
           }}
+          sx={{ textTransform: "none" }}
         >
           Unpin All
         </Button>

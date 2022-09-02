@@ -186,7 +186,9 @@ export function createTab(state: AppState, parsedPath: ParsedPath) {
 
   if (parts[0] === "app") {
     tab.icon = faPlug;
-    const app = state.apps.installed.find((app: any) => app.ZUID === zuid);
+    const app = state.apps.installed.find(
+      (app: { ZUID: string }) => app.ZUID === zuid
+    );
     tab.name = app?.label || app?.name || "Custom App";
   } else if (parts[0] === "reports") {
     tab.icon = faChartLine;
@@ -194,6 +196,34 @@ export function createTab(state: AppState, parsedPath: ParsedPath) {
       case "activity-log":
         tab.name = "Activity Log";
         tab.app = "Activity Log";
+        /*
+          If there is a user associated with an activity log page,
+          put that user's name in the tab
+        */
+        if (parts[2]) {
+          tab.name = `${toCapitalCase(parts[2])} - Activity Log`;
+          if (parts[2] === "users" && Boolean(zuid)) {
+            const user = state.users.find(
+              (user: { ZUID: string }) => user.ZUID === zuid
+            );
+            if (user) {
+              const { firstName, lastName } = user;
+              tab.name = `${firstName} ${lastName} - Activity Log`;
+            }
+          }
+        }
+        // Hacky way to get the user ZUID out of the search string
+        const url = new URL(`http://example.com/${search}`);
+        const userZUID = url.searchParams.get("actionByUserZUID");
+        if (userZUID) {
+          const user = state.users.find(
+            (user: { ZUID: string }) => user.ZUID === userZUID
+          );
+          if (user) {
+            const { firstName, lastName } = user;
+            tab.name = `${firstName} ${lastName} - Activity Log`;
+          }
+        }
         break;
       case "metrics":
         tab.name = "Metrics";

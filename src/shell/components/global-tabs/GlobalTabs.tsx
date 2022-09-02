@@ -39,6 +39,7 @@ export default memo(function GlobalTabs() {
 
   const content = useSelector((state: AppState) => state.content);
   const files = useSelector((state: AppState) => state.files);
+  const users = useSelector((state: AppState) => state.users);
   const mediaGroups = useSelector((state: AppState) => state.media.groups);
   const state = useSelector((state: AppState) => state);
   const [tabBarWidth, setTabBarWidth] = useState(0);
@@ -83,7 +84,7 @@ export default memo(function GlobalTabs() {
     if (loadedTabs) {
       dispatch(rebuildTabs());
     }
-  }, [loadedTabs, models, content, files, mediaGroups, apps]);
+  }, [loadedTabs, models, content, files, mediaGroups, apps, users]);
 
   /*
   const activeTabRef = useRef();
