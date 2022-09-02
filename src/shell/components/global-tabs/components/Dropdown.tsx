@@ -25,6 +25,8 @@ export type Dropdown = {
   removeMany: (tabs: Tab[]) => void;
 };
 
+const ITEM_HEIGHT = 48;
+
 export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -94,6 +96,7 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
           open={open}
           onClose={handleClose}
           disableScrollLock
+          PaperProps={{ style: { maxHeight: ITEM_HEIGHT * 10 } }}
           MenuListProps={{
             "aria-labelledby": "basic-button",
             sx: {
@@ -241,7 +244,7 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
         gridTemplateColumns: "20px 1fr 20px",
         justifyContent: "space-between",
         alignItems: "center",
-        height: "48px",
+        height: `${ITEM_HEIGHT}px`,
         padding: "12px 12px 12px 12px",
         gap: "8px",
         cursor: "auto",
@@ -253,10 +256,7 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
     >
       <Box component="span" color="grey.400">
         {tab.icon && (
-          <FontAwesomeIcon
-            icon={tab.icon}
-            style={{ width: "16px", height: "auto" }}
-          />
+          <FontAwesomeIcon icon={tab.icon} style={{ fontSize: 16 }} />
         )}
       </Box>
       <MuiLink

@@ -81,10 +81,7 @@ const BaseTab: FC<BaseTab> = ({
         }}
       >
         {tab.icon && (
-          <FontAwesomeIcon
-            icon={tab.icon}
-            style={{ width: "16px", height: "auto" }}
-          />
+          <FontAwesomeIcon icon={tab.icon} style={{ fontSize: 16 }} />
         )}
       </Box>
       <MuiLink
