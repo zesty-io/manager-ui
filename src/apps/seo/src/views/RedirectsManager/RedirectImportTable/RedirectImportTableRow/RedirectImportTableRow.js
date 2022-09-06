@@ -74,7 +74,7 @@ function RedirectImportTableRow(props) {
 
       <span className={styles.RowCell}>
         <Select
-          onChange={(evt) => handleTargetType(evt.target.value)}
+          onChange={handleTargetType}
           size="small"
           fullWidth
           value={props.targetType}
