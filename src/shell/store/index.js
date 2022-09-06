@@ -34,6 +34,7 @@ import { releaseMembers } from "./releaseMembers";
 import apps from "./apps";
 import { instanceApi } from "../services/instance";
 import { accountsApi } from "../services/accounts";
+import { mediaManagerApi } from "../services/mediaManager";
 
 // Middleware is applied in order of array
 const middlewares = [
@@ -46,6 +47,7 @@ const middlewares = [
   thunkMiddleware,
   instanceApi.middleware,
   accountsApi.middleware,
+  mediaManagerApi.middleware,
 ];
 
 /**
@@ -106,6 +108,7 @@ function createReducer(asyncReducers) {
     ui: ui.reducer,
     [instanceApi.reducerPath]: instanceApi.reducer,
     [accountsApi.reducerPath]: accountsApi.reducer,
+    [mediaManagerApi.reducerPath]: mediaManagerApi.reducer,
   };
 
   return combineReducers({
