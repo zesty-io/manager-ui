@@ -97,11 +97,11 @@ export function importQuery(path, query) {
     query,
   };
 }
-export function importTargetType(path, query) {
+export function importTargetType(path, targetType) {
   return {
     type: IMPORT_TARGET_TYPE,
     path,
-    query,
+    targetType,
   };
 }
 
@@ -189,11 +189,10 @@ function CSVToArray(csv) {
   const rows = parse(csv, {
     skip_empty_lines: true,
   });
-  const columns = rows[0];
-  const validColumns = ["from", "target", "targetType", "code"];
-  const columnIndexes = validColumns.map((column) =>
-    columns.indexOf(column.toLowerCase())
-  );
+  const columns = rows[0].map((col) => col.toLowerCase());
+  const validColumns = ["from", "target", "targettype", "code"];
+  const columnIndexes = validColumns.map((column) => columns.indexOf(column));
+
   const redirects = rows
     .slice(1)
     .map((row) => {
