@@ -2,6 +2,7 @@ import { FC } from "react";
 import Button from "@mui/material/Button";
 import FileUpload from "@mui/icons-material/FileUpload";
 import { Typography } from "@mui/material";
+import Pic from "../downloading.svg";
 
 export type UploadButton = {
   onClick: () => void;
