@@ -410,8 +410,8 @@ export function saveItem(itemZUID, action = "") {
     }
 
     // fetch nav only when metaLinkText is updated
-    const navItem = getState().navContent.raw.find(
-      (nav) => nav.ZUID === item.siblings["en-US"]
+    const navItem = state.navContent.raw.find(
+      (nav) => nav.ZUID === item.meta.ZUID
     );
     if (item.web.metaLinkText !== navItem.label) {
       dispatch(fetchNav());
