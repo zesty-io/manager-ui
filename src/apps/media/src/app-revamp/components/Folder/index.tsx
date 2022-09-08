@@ -15,8 +15,6 @@ export const Folder: React.FC<FolderProps> = ({ name, path }) => {
       startIcon={<FolderIcon />}
       variant="outlined"
       sx={{
-        py: 2,
-        px: 2,
         color: "grey.500",
         borderColor: "grey.100",
       }}
