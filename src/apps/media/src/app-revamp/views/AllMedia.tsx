@@ -1,6 +1,5 @@
 import { useSelector } from "react-redux";
 import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
-import { Folder } from "../components/Folder";
 
 export const AllMedia = () => {
   const instanceId = useSelector((state: any) => state.instance.ID);
@@ -12,10 +11,5 @@ export const AllMedia = () => {
 
   console.log("ALL MEDIA FILES", files);
 
-  return (
-    <div>
-      All Media
-      <Folder name="test" path="/" />
-    </div>
-  );
+  return <div>All Media</div>;
 };
