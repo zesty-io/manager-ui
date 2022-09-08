@@ -21,8 +21,7 @@ export const MediaApp = () => {
         <Sidebar />
         <Switch>
           <Route exact path="/media" component={AllMedia} />
-          <Route exact path="/media/:binId/" component={FolderMedia} />
-          <Route exact path="/media/:binId/:groupID" component={FolderMedia} />
+          <Route exact path="/media/:binId" component={FolderMedia} />
           <Route exact path="/media/search" component={SearchMedia} />
           <Redirect to="/media" />
         </Switch>
