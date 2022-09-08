@@ -14,9 +14,8 @@ import {
   unpinManyTabs,
   loadTabs,
   rebuildTabs,
-  parsePath,
-  createTab,
   tabLocationEquality,
+  setDocumentTitle,
 } from "../../../shell/store/ui";
 import { AppState } from "../../store/types";
 
@@ -41,11 +40,7 @@ export default memo(function GlobalTabs() {
   const files = useSelector((state: AppState) => state.files);
   const users = useSelector((state: AppState) => state.users);
   const mediaGroups = useSelector((state: AppState) => state.media.groups);
-  const state = useSelector((state: AppState) => state);
   const [tabBarWidth, setTabBarWidth] = useState(0);
-
-  // For the window title
-  const instanceName = useSelector((state: AppState) => state.instance.name);
 
   // update state if window is resized (debounced)
   useEffect(() => {
@@ -63,19 +58,7 @@ export default memo(function GlobalTabs() {
   }, [instanceZUID]);
 
   useEffect(() => {
-    //setSt
-    const { pathname, search } = location;
-    const parsedPath = parsePath({ pathname, search });
-    const t = createTab(state, parsedPath);
-    const { app } = t;
-    const item = t.name || t.pathname;
-    const title = `${app} - ${item} - Zesty.io - ${instanceName} - Manager`;
-    // set the title
-    document.title = title;
-    const oldTitle = document.title;
-    return () => {
-      document.title = oldTitle;
-    };
+    dispatch(setDocumentTitle(location));
   }, [location.pathname, location.search]);
 
   // rebuild tabs if any of the store slices changes
@@ -85,15 +68,6 @@ export default memo(function GlobalTabs() {
       dispatch(rebuildTabs());
     }
   }, [loadedTabs, models, content, files, mediaGroups, apps, users]);
-
-  /*
-  const activeTabRef = useRef();
-  useEffect(() => {
-    if (activeTabRef.current) {
-      activeTabRef.current.scrollIntoView();
-    }
-  }, [tabs]);
-  */
 
   // measure the tab bar width and set state
   // to trigger a synchronous re-render before paint

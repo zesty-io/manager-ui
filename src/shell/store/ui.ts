@@ -379,3 +379,19 @@ export function rebuildTabs() {
     }
   };
 }
+
+export function setDocumentTitle(location: TabLocation) {
+  return (dispatch: Dispatch, getState: () => AppState) => {
+    const state = getState();
+    const instanceName = state.instance.name;
+
+    const { pathname, search } = location;
+    const parsedPath = parsePath({ pathname, search });
+    const t = createTab(state, parsedPath);
+    const { app } = t;
+    const item = t.name || t.pathname;
+    const title = `${app} - ${item} - Zesty.io - ${instanceName} - Manager`;
+    // set the title
+    document.title = title;
+  };
+}
