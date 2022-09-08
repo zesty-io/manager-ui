@@ -403,8 +403,6 @@ export function saveItem(itemZUID, action = "") {
       });
     }
 
-    // console.log("ItemWeb", state.content)
-
     if (item.web.metaDescription) {
       item.web.metaDescription = item.web.metaDescription.slice(0, 160);
     }
