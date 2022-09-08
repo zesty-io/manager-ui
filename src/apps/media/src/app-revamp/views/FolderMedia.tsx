@@ -1,5 +1,3 @@
-import { EmptyState } from "../components/EmptyState";
-
 export const FolderMedia = () => {
-  return <EmptyState />;
+  return <div>FOLDER VIEW</div>;
 };
