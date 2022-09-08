@@ -3,8 +3,8 @@ import { Stack } from "@mui/material";
 import { FC } from "react";
 import { UploadButton } from "./UploadButton";
 
-export type EmptyState = {};
-export const EmptyState: FC<EmptyState> = ({}) => {
+type Props = {};
+export const EmptyState: FC<Props> = ({}) => {
   return (
     <Stack sx={{ gap: 2, justifyContent: "center" }}>
       <Typography variant="h4">Start Uploading Now</Typography>
