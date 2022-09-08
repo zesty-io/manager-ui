@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
+import { EmptyState } from "../components/EmptyState";
 
 export const AllMedia = () => {
   const instanceId = useSelector((state: any) => state.instance.ID);
@@ -11,5 +12,8 @@ export const AllMedia = () => {
 
   console.log("ALL MEDIA FILES", files);
 
+  if (files && files.length === 0) {
+    return <EmptyState />;
+  }
   return <div>All Media</div>;
 };
