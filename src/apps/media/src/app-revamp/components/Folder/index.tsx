@@ -16,9 +16,9 @@ export const Folder: React.FC<FolderProps> = ({ name, path }) => {
       sx={{
         py: 2,
         px: 2,
+        color: "grey.500",
         cursor: "pointer",
         borderWidth: "1px",
-        color: "text.primary",
         borderStyle: "solid",
         borderColor: "grey.100",
       }}
