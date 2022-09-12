@@ -27,7 +27,7 @@
     "release:prod": "npm test && zutil deploy prod .",
     "serve:static": "serve build/ -l 9000 --single",
     "serve:webpack": "cross-env NODE_OPTIONS='--max_old_space_size=4096' webpack serve --host 127.0.0.1 --progress --config src/shell/webpack.config.js",
-    "serve:webpack:ssl": "npm run serve:webpack:ssl -- --https --cert ./etc/ssl/_.manager.dev.zesty.io.crt --key ./etc/ssl/_.manager.dev.zesty.io.key",
+    "serve:webpack:ssl": "npm run serve:webpack -- --node-env development --https --cert ./etc/ssl/_.manager.dev.zesty.io.crt --key ./etc/ssl/_.manager.dev.zesty.io.key",
     "start:local": "npm run serve:webpack -- --node-env local",
     "start": "npm run serve:webpack -- --node-env development",
     "start:stage": "npm run serve:webpack -- --node-env stage --mode=development",
