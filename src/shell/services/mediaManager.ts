@@ -6,7 +6,7 @@ import {
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
 import { resolveResourceType } from "../../utility/resolveResourceType";
-import { Bin, Group, GroupData, Publishing } from "./types";
+import { Bin, File, Group, GroupData, Publishing } from "./types";
 import { QueryReturnValue } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
 
 // Define a service using a base URL and expected endpoints
