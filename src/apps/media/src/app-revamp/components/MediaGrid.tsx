@@ -79,7 +79,12 @@ export const MediaGrid = ({
       <div style={style}>
         {gridItemType === "empty" && <div></div>}
         {gridItemType === "groups" && (
-          <Typography variant="h6" color="text.secondary" fontWeight={600}>
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            fontWeight={600}
+            sx={{ px: 1 }}
+          >
             Folders
           </Typography>
         )}
@@ -90,7 +95,12 @@ export const MediaGrid = ({
           </Box>
         )}
         {gridItemType === "files" && (
-          <Typography variant="h6" color="text.secondary" fontWeight={600}>
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            fontWeight={600}
+            sx={{ px: 1 }}
+          >
             Files
           </Typography>
         )}
