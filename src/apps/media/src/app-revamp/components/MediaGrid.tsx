@@ -26,7 +26,7 @@ export const MediaGrid = ({
   const listRef = useRef<VariableSizeGrid>();
 
   const columns = useMemo(() => {
-    return Math.floor(width / 290);
+    return Math.floor(width / 258);
   }, [width]);
 
   const grid = useMemo(() => {
@@ -56,7 +56,7 @@ export const MediaGrid = ({
     if (listRef.current) {
       listRef.current.resetAfterIndices({ columnIndex: 0, rowIndex: 0 });
     }
-  }, [width]);
+  }, [width, widthOffset]);
 
   const getRowHeight = (index: number) => {
     const gridItem = grid[index * columns];

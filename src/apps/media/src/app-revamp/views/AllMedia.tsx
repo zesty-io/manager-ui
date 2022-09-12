@@ -4,10 +4,14 @@ import { EmptyState } from "../components/EmptyState";
 import { MediaGrid } from "../components/MediaGrid";
 
 const HEADER_HEIGHT = 43;
+const SIDEBAR_COLLAPSED_WIDTH = 310;
 const SIDEBAR_WIDTH = 400;
+
+//400
 
 export const AllMedia = () => {
   const instanceId = useSelector((state: any) => state.instance.ID);
+  const openNav = useSelector((state: any) => state.ui.openNav);
   const { data: bins, isLoading: isBinsLoading } =
     mediaManagerApi.useGetSiteBinsQuery(instanceId);
   const { data: files, isLoading: isFilesLoading } =
@@ -34,7 +38,7 @@ export const AllMedia = () => {
       files={files}
       groups={groups}
       heightOffset={HEADER_HEIGHT}
-      widthOffset={SIDEBAR_WIDTH}
+      widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
     />
   );
 };
