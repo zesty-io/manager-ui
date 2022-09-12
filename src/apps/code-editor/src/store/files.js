@@ -214,6 +214,31 @@ export function files(state = [], action) {
 
       return files;
 
+    case "UNMARK_FILE_DIRTY":
+      console.log({ state });
+      files = state.map((file) => {
+        console.log({ file, p: action.payload });
+        if (file.ZUID === action.payload.ZUID && file.dirty) {
+          return {
+            ...file,
+            dirty: false,
+            //TODO what should this be?
+            //synced: true,
+          };
+        }
+
+        return file;
+      });
+
+      /*
+      idb.set(
+        `${action.payload.instanceZUID}:openFiles`,
+        files.filter((file) => file.open)
+      );
+      */
+
+      return files;
+
     default:
       return state;
   }

@@ -10,6 +10,8 @@ import { Workspace } from "../../components/Workspace/";
 import { fetchFiles } from "../../../store/files";
 
 import styles from "./CodeEditor.less";
+import { FileTabs } from "../../components/FileTabs/FileTabs";
+import { PendingEditsModal } from "../../../../../content-editor/src/app/components/PendingEditsModal";
 export default connect((state) => {
   return {
     files: state.files,
@@ -18,6 +20,7 @@ export default connect((state) => {
   };
 })(function CodeEditor(props) {
   const match = useRouteMatch("/code/file/:fileType/:fileZUID");
+  console.log({ props });
 
   // On initial render load files: Templates, Stylesheets, Scripts
   useEffect(() => {
@@ -59,6 +62,12 @@ export default connect((state) => {
           />
         </nav>
         <section className={styles.FileEditor}>
+          {/*<FileTabs
+            dispatch={props.dispatch}
+            status={props.status}
+            openFileZUID={""}
+            files={props.files}
+  />*/}
           <Workspace
             dispatch={props.dispatch}
             files={props.files}

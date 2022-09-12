@@ -1,14 +1,21 @@
 declare global {
   interface Window {
-    openNavigationModal: null | ((callback: (result: boolean) => void) => void);
+    openContentNavigationModal:
+      | null
+      | ((callback: (result: boolean) => void) => void);
+    openCodeNavigationModal:
+      | null
+      | ((callback: (result: boolean) => void) => void);
   }
 }
 
 import { createBrowserHistory } from "history";
 const history = createBrowserHistory({
   getUserConfirmation(message, callback) {
-    if (message === "confirm") {
-      window.openNavigationModal(callback);
+    if (message === "content_confirm") {
+      window.openContentNavigationModal(callback);
+    } else if (message === "code_confirm") {
+      window.openCodeNavigationModal(callback);
     } else {
       callback(true);
     }

@@ -8,7 +8,7 @@ import cx from "classnames";
 
 import { notify } from "shell/store/notifications";
 import { fetchFields } from "shell/store/fields";
-import { fetchFile } from "../../../../../store/files";
+import { fetchFile, saveFile } from "../../../../../store/files";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -16,8 +16,10 @@ import { Editor } from "../../../Editor";
 import { Differ } from "../../../Differ";
 import { FileDrawer } from "../../../FileDrawer";
 import { LockedView } from "../../../LockedView";
+import { PendingEditsModal } from "../../../../components/PendingEditsModal";
 
 import styles from "./FileViewer.less";
+import { tabLocationEquality } from "../../../../../../../../shell/store/ui";
 export const FileViewer = connect((state, props) => {
   const file = state.files.find(
     (file) => file.ZUID === props.match.params.fileZUID
@@ -35,14 +37,33 @@ export const FileViewer = connect((state, props) => {
           }, [])
       : [];
 
+  const pinnedTabs = state.ui.pinnedTabs;
+  const fileIsPinned = Boolean(
+    pinnedTabs.find((tab) =>
+      tabLocationEquality(tab, {
+        search: "",
+        pathname: `/code/file/views/${file.ZUID}`,
+      })
+    )
+  );
+  /*
+  pt.forEach(tab => {
+    const pathname = `/code/file/views/${file.ZUID}`
+    const thing = tabLocationEquality(tab, { search: "", pathname})
+    console.log({tab, pathname, thing})
+  })
+  */
+  console.log({ file, pinnedTabs, fileIsPinned });
   return {
     file: file ? file : {},
     fields,
+    fileIsPinned,
   };
 })(
   memo(function FileViewer(props) {
     const { match, location } = props;
     const [loading, setLoading] = useState(false);
+    console.log("FileViewer.js", { props });
 
     let lineNumber = 0;
     if (location.search) {
@@ -91,6 +112,34 @@ export const FileViewer = connect((state, props) => {
           {props.file && props.file.ZUID ? (
             <Fragment>
               <LockedView ZUID={props.file.ZUID} name={props.file.fileName} />
+              <PendingEditsModal
+                show={props.file.dirty && !props.fileIsPinned}
+                title="Unsaved Changes"
+                message="You have unsaved changes that will be lost if you leave this page."
+                loading={false}
+                onSave={() =>
+                  props
+                    .dispatch(saveFile(props.file.ZUID, "dev"))
+                    .catch((err) => {
+                      console.error(err);
+                    })
+                }
+                onDiscard={() =>
+                  props
+                    .dispatch(
+                      fetchFile(match.params.fileZUID, match.params.fileType, {
+                        forceSync: true,
+                      })
+                    )
+                    .then(() => {
+                      props.dispatch({
+                        type: "UNMARK_FILE_DIRTY",
+                        payload: props.file,
+                      });
+                    })
+                }
+              />
+
               <Switch>
                 <Route path={`${match.url}/diff`}>
                   <Differ

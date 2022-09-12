@@ -272,7 +272,12 @@ export function createTab(state: AppState, parsedPath: ParsedPath) {
           (file: any) => file.ZUID === zuid
         );
         if (selectedFile) {
-          tab.name = selectedFile.fileName;
+          let name = selectedFile.fileName;
+          // Trim leading slash
+          if (name.charAt(0) === "/") name = name.slice(1);
+          // prepend asterix to unsaved file
+          if (selectedFile.dirty) name = `*${name}`;
+          tab.name = name;
         }
       }
       break;
@@ -340,6 +345,29 @@ export function unpinTab({ pathname, search }: TabLocation) {
     const state = getState();
     const parsedPath = parsePath({ pathname, search });
     const tab = createTab(state, parsedPath);
+    //
+    const dirtyFiles = state.files.filter((f: any) => f.dirty);
+    if (
+      dirtyFiles.find((f: any) =>
+        tabLocationEquality(tab, {
+          pathname: `/code/file/views/${f.ZUID}`,
+          search: "",
+        })
+      )
+    ) {
+      window.openCodeNavigationModal((response) => {
+        console.log({ response });
+        if (response) {
+          const newTabs = state.ui.pinnedTabs.filter(
+            (t) => t.pathname !== tab.pathname
+          );
+          dispatch(actions.setPinnedTabs(newTabs));
+          idb.set(`${state.instance.ZUID}:pinned`, newTabs);
+        }
+      });
+      return;
+    }
+    //
     const newTabs = state.ui.pinnedTabs.filter(
       (t) => t.pathname !== tab.pathname
     );
