@@ -4,6 +4,7 @@ import { Box, Card, CardContent, CardMedia, Typography } from "@mui/material";
 import { useWindowSize } from "react-use";
 import { Folder } from "../components/Folder";
 import { File, Group } from "../../../../../shell/services/types";
+import { xhrCallback } from "@sentry/tracing/types/browser/request";
 
 const FILE_HEIGHT = 204;
 const FOLDER_HEIGHT = 44;
@@ -65,9 +66,11 @@ export const MediaGrid = ({
     if (gridItem.split("-")[0] === "file") {
       // + 16 row spacing
       return FILE_HEIGHT + 16;
-    } else {
+    } else if (gridItem.split("-")[0] === "group") {
       // + 20 row spacing
       return FOLDER_HEIGHT + 20;
+    } else {
+      return 42;
     }
   };
 
