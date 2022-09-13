@@ -1,11 +1,9 @@
+type NavModal = null | ((callback: (result: boolean) => void) => void);
+
 declare global {
   interface Window {
-    openContentNavigationModal:
-      | null
-      | ((callback: (result: boolean) => void) => void);
-    openCodeNavigationModal:
-      | null
-      | ((callback: (result: boolean) => void) => void);
+    openContentNavigationModal: NavModal;
+    openCodeNavigationModal: NavModal;
   }
 }
 
