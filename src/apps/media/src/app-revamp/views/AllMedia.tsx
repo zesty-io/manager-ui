@@ -12,8 +12,8 @@ export const AllMedia = () => {
 
   console.log("ALL MEDIA FILES", files);
 
-  if (files?.length === 0) {
-    return <EmptyState />;
-  }
+  //if (files?.length === 0) {
+  return <EmptyState />;
+  //}
   return <div>All Media</div>;
 };
