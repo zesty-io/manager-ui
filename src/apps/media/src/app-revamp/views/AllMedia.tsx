@@ -7,8 +7,6 @@ const HEADER_HEIGHT = 43;
 const SIDEBAR_COLLAPSED_WIDTH = 310;
 const SIDEBAR_WIDTH = 400;
 
-//400
-
 export const AllMedia = () => {
   const instanceId = useSelector((state: any) => state.instance.ID);
   const openNav = useSelector((state: any) => state.ui.openNav);

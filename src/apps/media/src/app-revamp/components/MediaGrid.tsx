@@ -26,6 +26,7 @@ export const MediaGrid = ({
   const listRef = useRef<VariableSizeGrid>();
 
   const columns = useMemo(() => {
+    // 258 px is the amount of extra space required to add a new column
     return Math.floor(width / 258);
   }, [width]);
 
