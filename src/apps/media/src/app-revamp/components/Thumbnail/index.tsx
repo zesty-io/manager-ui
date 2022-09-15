@@ -1,23 +1,37 @@
 import { FC } from "react";
-import { CardMedia, Card, Typography, CardContent } from "@mui/material";
+import {
+  CardMedia,
+  Card,
+  TextField,
+  Box,
+  Typography,
+  CardContent,
+} from "@mui/material";
 import { fileExtension } from "../../utils/FileUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
-
 interface ThumbnailProps {
   src?: string;
-  file: any;
-  width?: number;
-  height?: number;
+  filename?: string;
+  isEditable?: boolean;
+  setFilename?: (value: string) => void;
+  onClick?: () => void;
 }
 
-export const Thumbnail: FC<ThumbnailProps> = ({ src, file, width, height }) => {
+export const Thumbnail: FC<ThumbnailProps> = ({
+  src,
+  filename,
+  isEditable,
+  setFilename,
+  onClick,
+}) => {
   const CardStyle = {
-    maxWidth: width,
-    maxHeight: height,
+    maxWidth: "100%",
+    maxHeight: "100%",
     borderWidth: "1px",
     borderColor: "grey.100",
     borderStyle: "solid",
+    cursor: onClick ? "pointer" : "default",
   };
 
   const CardContentStyle = {
@@ -27,7 +41,39 @@ export const Thumbnail: FC<ThumbnailProps> = ({ src, file, width, height }) => {
     textOverflow: "ellipsis",
   };
 
-  switch (fileExtension(file.url)) {
+  const ImageBadgeStyle = {
+    px: 1,
+    py: 0.4,
+    backgroundColor: "blue.100",
+    color: "blue.600",
+    borderRadius: "4px",
+    textTransform: "uppercase",
+    position: "absolute",
+    right: 15,
+    transform: "translateY(-120%)",
+  };
+
+  const Filename = () => {
+    return (
+      <>
+        {isEditable ? (
+          <TextField
+            value={filename}
+            size="small"
+            variant="outlined"
+            color="primary"
+            InputProps={{ sx: { flex: 1 } }}
+            fullWidth
+            onChange={(e) => setFilename(e.target.value)}
+          />
+        ) : (
+          <Typography variant="caption">{filename}</Typography>
+        )}
+      </>
+    );
+  };
+
+  switch (fileExtension(src)) {
     case "jpg":
     case "jpeg":
     case "png":
@@ -35,7 +81,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({ src, file, width, height }) => {
     case "svg":
     case "webp":
       return (
-        <Card sx={CardStyle} elevation={0}>
+        <Card sx={CardStyle} elevation={0} onClick={onClick}>
           <CardMedia
             component="img"
             data-src={src}
@@ -43,21 +89,28 @@ export const Thumbnail: FC<ThumbnailProps> = ({ src, file, width, height }) => {
             loading="lazy"
             sx={{
               objectFit: "fit",
+              display: "table-cell",
+              verticalAlign: "bottom",
             }}
           />
+          <Box sx={ImageBadgeStyle}>{fileExtension(src)}</Box>
           <CardContent sx={CardContentStyle}>
-            <Typography variant="caption">{file.url}</Typography>
+            <Filename />
           </CardContent>
         </Card>
       );
     default:
       return (
-        <Card sx={CardStyle} elevation={0}>
+        <Card sx={CardStyle} elevation={0} onClick={onClick}>
           <FontAwesomeIcon icon={faFile} />
           <CardContent sx={CardContentStyle}>
-            <Typography variant="caption">{file.url}</Typography>
+            <Filename />
           </CardContent>
         </Card>
       );
   }
+};
+
+Thumbnail.defaultProps = {
+  isEditable: false,
 };
