@@ -108,7 +108,11 @@ export default connect((state) => {
         setCurrentGroupID(binID);
       }
     }
-  }, [props.media.groups]);
+    /*
+      It is never valid to have a falsy currentGroupID
+      The falsy check in this effect will prevent infinite rerenders
+    */
+  }, [props.media.groups, params.groupID, currentGroupID]);
 
   // update URL when currentGroupID or currentFileID changes
   useEffect(() => {
