@@ -115,8 +115,7 @@ export const MediaGrid = ({
               <CardMedia
                 component="img"
                 height="160"
-                // @ts-expect-error Need to type window object
-                image={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${files[gridItemIndex].id}/getimage?w=200&h=200&type=fit`}
+                image={`${files[gridItemIndex].thumbnail}`}
                 loading="lazy"
               />
               <CardContent>
