@@ -44,6 +44,7 @@ export type UIState = {
   contentActionsHover: boolean;
   duoMode: boolean;
   codeEditorPosition: null | CodeEditorPosition;
+  codeChangesModalZUID: null | string;
 };
 export const ui = createSlice({
   name: "ui",
@@ -58,6 +59,7 @@ export const ui = createSlice({
     contentActionsHover: false,
     duoMode: false,
     codeEditorPosition: null,
+    codeChangesModalZUID: null,
   },
   reducers: {
     loadTabsSuccess(
@@ -110,6 +112,14 @@ export const ui = createSlice({
       action: { payload: CodeEditorPosition }
     ) {
       state.codeEditorPosition = action.payload;
+    },
+    openCodeChangesModal(state: UIState, action: { payload: string }) {
+      console.log("openCodeChangesModal", action.payload);
+      state.codeChangesModalZUID = action.payload;
+    },
+    closeCodeChangesModal(state: UIState) {
+      console.log("closeCodeChangesModal");
+      state.codeChangesModalZUID = null;
     },
   },
 });
@@ -340,21 +350,24 @@ export function pinTab({ pathname, search }: TabLocation) {
   };
 }
 
-export function unpinTab({ pathname, search }: TabLocation) {
+// TODO this should probably be broken up, or have a name like "attempt unpin"
+export function unpinTab({ pathname, search }: TabLocation, force = false) {
   return (dispatch: Dispatch, getState: () => AppState) => {
+    console.log("unpinTab()");
     const state = getState();
     const parsedPath = parsePath({ pathname, search });
     const tab = createTab(state, parsedPath);
     //
-    const dirtyFiles = state.files.filter((f: any) => f.dirty);
-    if (
-      dirtyFiles.find((f: any) =>
-        tabLocationEquality(tab, {
-          pathname: `/code/file/views/${f.ZUID}`,
-          search: "",
-        })
-      )
-    ) {
+    const dirtyFiles = state.files.filter(({ dirty }) => dirty);
+    const dirtyFile = dirtyFiles.find(({ ZUID }) =>
+      tabLocationEquality(tab, {
+        pathname: `/code/file/views/${ZUID}`,
+        search: "",
+      })
+    );
+    console.log({ dirtyFile });
+    if (dirtyFile && !force) {
+      /*
       window.openCodeNavigationModal((response) => {
         console.log({ response });
         if (response) {
@@ -365,6 +378,8 @@ export function unpinTab({ pathname, search }: TabLocation) {
           idb.set(`${state.instance.ZUID}:pinned`, newTabs);
         }
       });
+      */
+      dispatch(actions.openCodeChangesModal(dirtyFile.ZUID));
       return;
     }
     //

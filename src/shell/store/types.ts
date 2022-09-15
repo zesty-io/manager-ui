@@ -36,7 +36,8 @@ export type AppState = {
   modal: any;
   listFilters: any;
   logsInView: any;
-  files: any;
+  // TODO: complete files
+  files: { dirty: boolean; ZUID: string; fileName: string }[];
   status: any;
   auditTrail: any;
   headers: any;
