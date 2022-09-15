@@ -14,7 +14,7 @@ import CardActions from "@mui/material/CardActions";
 import { MediaImage } from "./MediaImage";
 import styles from "./MediaWorkspaceItem.less";
 import shared from "./MediaShared.less";
-import { isImage } from "../FileUtils";
+import { isImage } from "../../app-revamp/components/Thumbnail/FileUtils";
 
 export const MediaWorkspaceItem = memo(function MediaWorkspaceItem(props) {
   const [lazyLoading, setLazyLoading] = useState(false);

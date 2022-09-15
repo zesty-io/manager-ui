@@ -5,6 +5,7 @@ import { useWindowSize } from "react-use";
 import { Folder } from "../components/Folder";
 import { File, Group } from "../../../../../shell/services/types";
 import { xhrCallback } from "@sentry/tracing/types/browser/request";
+import { Thumbnail } from "./Thumbnail";
 
 const FILE_HEIGHT = 204;
 const FOLDER_HEIGHT = 44;
@@ -32,6 +33,7 @@ export const MediaGrid = ({
   }, [width]);
 
   const grid = useMemo(() => {
+    console.log("files", files);
     let tmp: string[] = [];
     // Adds group section if there are groups
     if (groups?.length) {
@@ -62,6 +64,8 @@ export const MediaGrid = ({
 
   const getRowHeight = (index: number) => {
     const gridItem = grid[index * columns];
+
+    console.log("grid", grid);
 
     if (gridItem.split("-")[0] === "file") {
       // + 16 row spacing
@@ -110,20 +114,10 @@ export const MediaGrid = ({
         )}
         {gridItemType === "file" && (
           <Box sx={{ height: "204px", px: 1 }}>
-            {/* TODO: Replace with Thumbnail component */}
-            <Card>
-              <CardMedia
-                component="img"
-                height="160"
-                image={`${files[gridItemIndex].thumbnail}`}
-                loading="lazy"
-              />
-              <CardContent>
-                <Typography variant="body2">
-                  {files[gridItemIndex].title}
-                </Typography>
-              </CardContent>
-            </Card>
+            <Thumbnail
+              src={files[gridItemIndex].thumbnail}
+              filename={files[gridItemIndex].filename}
+            />
           </Box>
         )}
       </div>

@@ -7,14 +7,14 @@ import {
   Typography,
   CardContent,
 } from "@mui/material";
-import { fileExtension } from "../../utils/FileUtils";
+import { fileExtension } from "./FileUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
 interface ThumbnailProps {
   src?: string;
   filename?: string;
   isEditable?: boolean;
-  setFilename?: (value: string) => void;
+  onFilenameChange?: (value: string) => void;
   onClick?: () => void;
 }
 
@@ -22,7 +22,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   src,
   filename,
   isEditable,
-  setFilename,
+  onFilenameChange,
   onClick,
 }) => {
   const CardStyle = {
@@ -64,7 +64,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             color="primary"
             InputProps={{ sx: { flex: 1 } }}
             fullWidth
-            onChange={(e) => setFilename(e.target.value)}
+            onChange={(e) => onFilenameChange(e.target.value)}
           />
         ) : (
           <Typography variant="caption">{filename}</Typography>
@@ -73,7 +73,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     );
   };
 
-  switch (fileExtension(src)) {
+  switch (fileExtension(filename)) {
     case "jpg":
     case "jpeg":
     case "png":
@@ -93,7 +93,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               verticalAlign: "bottom",
             }}
           />
-          <Box sx={ImageBadgeStyle}>{fileExtension(src)}</Box>
+          <Box sx={ImageBadgeStyle}>{fileExtension(filename)}</Box>
           <CardContent sx={CardContentStyle}>
             <Filename />
           </CardContent>
