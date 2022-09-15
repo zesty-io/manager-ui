@@ -58,4 +58,5 @@ export interface File {
   updated_at: Date;
   deleted_at?: Date;
   deleted_from_storage_at?: Date;
+  thumbnail: string;
 }

@@ -33,7 +33,12 @@ export const mediaManagerApi = createApi({
           )) as QueryReturnValue<any, FetchBaseQueryError>[];
           const files = fileResponses
             .map((fileResponse) => fileResponse.data.data)
-            .flat() as File[];
+            .flat()
+            .map((file) => ({
+              ...file,
+              // @ts-expect-error Need to type window object
+              thumbnail: `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${file.id}/getimage?w=200&h=200&type=fit`,
+            })) as File[];
           return { data: files };
         } catch (error) {
           return { error };
@@ -64,7 +69,12 @@ export const mediaManagerApi = createApi({
     getBinFiles: builder.query<File[], string>({
       query: (binId) => `bin/${binId}/files`,
       providesTags: (result, error, binId) => [{ type: "BinFiles", id: binId }],
-      transformResponse: getResponseData,
+      transformResponse: (response: { data: File[] }) =>
+        response.data.map((file) => ({
+          ...file,
+          // @ts-expect-error Need to type window object
+          thumbnail: `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${file.id}/getimage?w=200&h=200&type=fit`,
+        })),
     }),
     getBinGroups: builder.query<Group[], string>({
       query: (binId) => `bin/${binId}/groups`,
