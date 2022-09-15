@@ -33,7 +33,6 @@ export const MediaGrid = ({
   }, [width]);
 
   const grid = useMemo(() => {
-    console.log("files", files);
     let tmp: string[] = [];
     // Adds group section if there are groups
     if (groups?.length) {
@@ -64,8 +63,6 @@ export const MediaGrid = ({
 
   const getRowHeight = (index: number) => {
     const gridItem = grid[index * columns];
-
-    console.log("grid", grid);
 
     if (gridItem.split("-")[0] === "file") {
       // + 16 row spacing
