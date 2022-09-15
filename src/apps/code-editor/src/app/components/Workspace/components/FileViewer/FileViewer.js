@@ -46,14 +46,6 @@ export const FileViewer = connect((state, props) => {
       })
     )
   );
-  /*
-  pt.forEach(tab => {
-    const pathname = `/code/file/views/${file.ZUID}`
-    const thing = tabLocationEquality(tab, { search: "", pathname})
-    console.log({tab, pathname, thing})
-  })
-  */
-  console.log({ file, pinnedTabs, fileIsPinned });
   return {
     file: file ? file : {},
     fields,
@@ -63,7 +55,6 @@ export const FileViewer = connect((state, props) => {
   memo(function FileViewer(props) {
     const { match, location } = props;
     const [loading, setLoading] = useState(false);
-    console.log("FileViewer.js", { props });
 
     let lineNumber = 0;
     if (location.search) {
