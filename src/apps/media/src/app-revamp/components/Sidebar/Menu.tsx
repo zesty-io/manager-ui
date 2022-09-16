@@ -11,7 +11,10 @@ export const Menu = () => {
         selected={location.pathname === "/media"}
         sx={{
           borderRadius: "4px",
-          "&.Mui-selected, &.Mui-selected .MuiListItemIcon-root ": {
+          "&.Mui-selected .MuiListItemIcon-root ": {
+            color: "primary.main",
+          },
+          "&.Mui-selected .MuiTypography-root": {
             color: "primary.dark",
           },
         }}

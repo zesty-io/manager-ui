@@ -60,12 +60,26 @@ export const Folders = () => {
     <TreeItem
       key={nodes.id}
       nodeId={nodes.id}
-      sx={{ " .MuiTreeItem-content": { width: "unset" } }}
+      sx={{
+        ".Mui-selected": {
+          ".MuiSvgIcon-root": {
+            color: "primary.main",
+          },
+          ".MuiTypography-root": {
+            color: "primary.dark",
+          },
+        },
+      }}
       label={
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Box
             component={nodes.eco_id ? LanguageIcon : FolderIcon}
-            sx={{ mr: 1 }}
+            sx={{
+              mr: 1,
+              ".Mui-selected": {
+                color: "primary.main",
+              },
+            }}
             color="action.active"
           />
           <Typography
@@ -73,7 +87,12 @@ export const Folders = () => {
             variant="body3"
             color="text.secondary"
             fontWeight={500}
-            sx={{ wordBreak: "break-all" }}
+            sx={{
+              wordBreak: "break-all",
+              ".Mui-selected": {
+                color: "primary.dark",
+              },
+            }}
           >
             {nodes.name}
           </Typography>
