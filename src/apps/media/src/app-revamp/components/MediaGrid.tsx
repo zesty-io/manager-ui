@@ -137,7 +137,7 @@ export const MediaGrid = ({
       columnCount={columns}
       columnWidth={(index) => (width - (widthOffset + 15)) / columns}
       rowHeight={(index) => getRowHeight(index)}
-      rowCount={100}
+      rowCount={grid.length / columns}
       width={width - widthOffset}
     >
       {Row}
