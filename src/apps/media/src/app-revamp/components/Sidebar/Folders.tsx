@@ -2,10 +2,12 @@ import { Box, Typography, IconButton } from "@mui/material";
 import { TreeView, TreeItem } from "@mui/lab";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import LanguageIcon from "@mui/icons-material/Language";
 import FolderIcon from "@mui/icons-material/Folder";
 import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
 import { useSelector } from "react-redux";
-import { useMemo } from "react";
+import { SyntheticEvent, useMemo } from "react";
+import { useHistory } from "react-router";
 
 // @ts-ignore
 const nest = (items: any, id, link = "group_id") =>
@@ -14,11 +16,19 @@ const nest = (items: any, id, link = "group_id") =>
     .map((item: any) => ({ ...item, children: nest(items, item.id) }));
 
 export const Folders = () => {
+  const history = useHistory();
+
   const instanceId = useSelector((state: any) => state.instance.ID);
+  const ecoId = useSelector((state: any) => state.instance.ecoID);
   const { data: bins } = mediaManagerApi.useGetSiteBinsQuery(instanceId);
+  const { data: ecoBins } = mediaManagerApi.useGetEcoBinsQuery(ecoId, {
+    skip: !ecoId,
+  });
+
+  const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
   const { data: binGroups } = mediaManagerApi.useGetAllBinGroupsQuery(
-    bins?.map((bin) => bin.id),
+    combinedBins?.map((bin) => bin.id),
     {
       skip: !bins?.length,
     }
@@ -27,7 +37,18 @@ export const Folders = () => {
   const trees = useMemo(() => {
     if (binGroups) {
       return binGroups
-        .map((binGroup) => nest(binGroup, binGroup[0].bin_id))
+        .map((binGroup, idx) => {
+          if (!binGroup.length) {
+            return { ...combinedBins[idx], children: [] };
+          } else if (combinedBins[idx].eco_id) {
+            return {
+              ...combinedBins[idx],
+              children: nest(binGroup, binGroup[0].bin_id),
+            };
+          } else {
+            return nest(binGroup, binGroup[0].bin_id);
+          }
+        })
         .flat();
     } else {
       return [];
@@ -41,7 +62,11 @@ export const Folders = () => {
       sx={{ " .MuiTreeItem-content": { width: "unset" } }}
       label={
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Box component={FolderIcon} sx={{ mr: 1 }} color="action.active" />
+          <Box
+            component={nodes.eco_id ? LanguageIcon : FolderIcon}
+            sx={{ mr: 1 }}
+            color="action.active"
+          />
           <Typography
             // @ts-expect-error body3 additional variant is not on Typography augmentation
             variant="body3"
@@ -59,7 +84,6 @@ export const Folders = () => {
         : null}
     </TreeItem>
   );
-  console.log("testing trees", trees);
 
   return (
     <>
@@ -74,10 +98,13 @@ export const Folders = () => {
         </IconButton>
       </Box>
       <TreeView
+        onNodeSelect={(
+          event: SyntheticEvent<Element, Event>,
+          nodeIds: string[]
+        ) => history.push(`/media/${nodeIds}`)}
         defaultCollapseIcon={
           <ArrowDropDownIcon sx={{ color: "action.active" }} />
         }
-        defaultExpanded={["root"]}
         defaultExpandIcon={<ArrowRightIcon sx={{ color: "action.active" }} />}
         sx={{ height: "100%", width: "100%", overflowY: "auto" }}
         selected={[]}

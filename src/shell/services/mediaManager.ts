@@ -23,6 +23,10 @@ export const mediaManagerApi = createApi({
       query: (instanceId) => `site/${instanceId}/bins`,
       transformResponse: getResponseData,
     }),
+    getEcoBins: builder.query<Bin[], number>({
+      query: (ecoId) => `eco/${ecoId}/bins`,
+      transformResponse: getResponseData,
+    }),
     getAllBinFiles: builder.query<File[], string[]>({
       async queryFn(binIds, _queryApi, _extraOptions, fetchWithBQ) {
         try {
@@ -89,7 +93,7 @@ export const mediaManagerApi = createApi({
       providesTags: (result, error, groupId) => [
         { type: "GroupData", id: groupId },
       ],
-      transformResponse: getResponseData,
+      transformResponse: (response: { data: GroupData[] }) => response.data[0],
     }),
   }),
 });
@@ -98,6 +102,7 @@ export const mediaManagerApi = createApi({
 // auto-generated based on the defined endpoints
 export const {
   useGetSiteBinsQuery,
+  useGetEcoBinsQuery,
   useGetAllBinFilesQuery,
   useGetAllBinGroupsQuery,
   useGetBinFilesQuery,
