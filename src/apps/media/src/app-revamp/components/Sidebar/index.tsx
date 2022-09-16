@@ -13,7 +13,6 @@ import { Menu } from "./Menu";
 export const Sidebar = () => {
   const location = useLocation();
 
-  console.log("testing loc", location);
   return (
     <Box
       sx={{

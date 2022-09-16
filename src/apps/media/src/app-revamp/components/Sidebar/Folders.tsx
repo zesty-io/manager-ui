@@ -9,8 +9,7 @@ import { useSelector } from "react-redux";
 import { SyntheticEvent, useMemo } from "react";
 import { useHistory, useLocation } from "react-router";
 
-// @ts-ignore
-const nest = (items: any, id, link = "group_id") =>
+const nest = (items: any, id: string, link = "group_id") =>
   items
     .filter((item: any) => item[link] === id)
     .map((item: any) => ({ ...item, children: nest(items, item.id) }));
@@ -87,8 +86,6 @@ export const Folders = () => {
     </TreeItem>
   );
 
-  console.log("testing trees", trees);
-
   return (
     <>
       <Box
@@ -101,7 +98,6 @@ export const Folders = () => {
           <ArrowDropDownIcon />
         </IconButton>
       </Box>
-      {/* @ts-ignore */}
       <TreeView
         onNodeSelect={(
           event: SyntheticEvent<Element, Event>,
