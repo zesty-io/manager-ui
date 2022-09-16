@@ -94,7 +94,7 @@ export function createRedirect(redirect) {
           dispatch(
             notify({
               kind: "error",
-              message: `Failed creating redirect from ${redirect.path}. Must be a relative path.`,
+              message: `Failed creating redirect from ${redirect.path}. ${json.error}`,
             })
           );
         }

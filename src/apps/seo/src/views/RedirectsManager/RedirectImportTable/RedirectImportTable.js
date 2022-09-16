@@ -5,8 +5,6 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { Notice } from "@zesty-io/core/Notice";
-
 import RedirectImportTableRow from "./RedirectImportTableRow";
 import ImportTableRowDisabled from "./ImportTableRowDisabled";
 
@@ -28,7 +26,7 @@ function RedirectImportTable(props) {
           createRedirect({
             path: redirect.path,
             query_string: redirect.query_string,
-            targetType: redirect.target_type,
+            targetType: redirect.targetType,
             target: redirect.target_zuid || redirect.target,
             code: +redirect.code,
           })
@@ -39,9 +37,6 @@ function RedirectImportTable(props) {
   return (
     <section className={styles.RedirectImportTable}>
       <div className={styles.Actions}>
-        <Notice>
-          Import CSV does not allow for external and wildcard redirects
-        </Notice>
         <div className={styles.RedirectButtons}>
           <Button
             variant="contained"
@@ -63,7 +58,7 @@ function RedirectImportTable(props) {
       </div>
       <div className={styles.Header}>
         <span className={cx(styles.Cell, styles.subheadline)}>From</span>
-
+        <span className={cx(styles.Cell, styles.subheadline)}>Code</span>
         <span className={cx(styles.Cell, styles.subheadline)}>Type</span>
         <span className={cx(styles.Cell, styles.subheadline)}>To</span>
       </div>
