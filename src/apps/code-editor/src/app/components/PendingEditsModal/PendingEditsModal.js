@@ -30,6 +30,9 @@ export default memo(function PendingEditsModal(props) {
       setOpen(true);
       setAnswer(() => callback);
     };
+    return () => {
+      window.openCodeNavigationModal = null;
+    };
   }, []);
 
   const handler = (action) => {

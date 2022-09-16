@@ -19,7 +19,10 @@ import { LockedView } from "../../../LockedView";
 import { PendingEditsModal } from "../../../../components/PendingEditsModal";
 
 import styles from "./FileViewer.less";
-import { tabLocationEquality } from "../../../../../../../../shell/store/ui";
+import {
+  tabLocationEquality,
+  unpinTab,
+} from "../../../../../../../../shell/store/ui";
 export const FileViewer = connect((state, props) => {
   const file = state.files.find(
     (file) => file.ZUID === props.match.params.fileZUID
@@ -115,19 +118,27 @@ export const FileViewer = connect((state, props) => {
                       console.error(err);
                     })
                 }
-                onDiscard={() =>
-                  props
-                    .dispatch(
+                onDiscard={
+                  () =>
+                    props.dispatch(
                       fetchFile(match.params.fileZUID, match.params.fileType, {
                         forceSync: true,
                       })
                     )
+                  /*
                     .then(() => {
                       props.dispatch({
                         type: "UNMARK_FILE_DIRTY",
                         payload: props.file,
                       });
                     })
+                    */
+                  /*
+                    .then(() => {
+                      console.log("unpin")
+                      props.dispatch(unpinTab({search: "", pathname: `/code/file/views/${props.file.ZUID}`, }))
+                    })
+                    */
                 }
               />
 

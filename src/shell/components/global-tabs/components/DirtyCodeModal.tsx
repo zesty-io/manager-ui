@@ -77,6 +77,17 @@ export const DirtyCodeModal: FC = () => {
               });
             })
             .then(() => {
+              dispatch(
+                unpinTab(
+                  {
+                    pathname: `/code/file/${fileType}/${dirtyCodeZuid}`,
+                    search: "",
+                  },
+                  true
+                )
+              );
+            })
+            .then(() => {
               dispatch(actions.closeCodeChangesModal());
             });
         }}

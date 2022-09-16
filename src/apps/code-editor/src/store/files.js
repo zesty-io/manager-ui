@@ -174,10 +174,17 @@ export function files(state = [], action) {
           file.ZUID === action.payload.ZUID &&
           file.status === action.payload.status
         ) {
+          /*
+            The code comparison could potentially be very expensive, so we check
+            the dirty flag in the store and only do the comparison if needed
+            (taking advantage of lazy evaluation)
+          */
+          const dirty = file.dirty || file.code !== action.payload.code;
+          console.log({ dirty });
           return {
             ...file,
             code: action.payload.code,
-            dirty: true,
+            dirty,
             synced: true,
           };
         }
@@ -223,7 +230,7 @@ export function files(state = [], action) {
             ...file,
             dirty: false,
             //TODO what should this be?
-            //synced: true,
+            synced: true,
           };
         }
 
