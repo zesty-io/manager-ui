@@ -21,8 +21,6 @@ export const BinMedia = () => {
   const { data: binFiles, isFetching: isFilesFetching } =
     mediaManagerApi.useGetBinFilesQuery(id);
 
-  console.log("testing this", binGroups, binFiles);
-
   if (isGroupsFetching || isFilesFetching) return <div>Loading...</div>;
 
   if (!isFilesFetching && !binFiles?.length) return <EmptyState />;

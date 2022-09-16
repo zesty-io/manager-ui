@@ -62,7 +62,6 @@ export const mediaManagerApi = createApi({
           const groups = groupResponses.map(
             (groupResponse) => groupResponse.data.data
           ) as Group[][];
-          // .flat() as Group[];
           return { data: groups };
         } catch (error) {
           return { error };
@@ -93,7 +92,15 @@ export const mediaManagerApi = createApi({
       providesTags: (result, error, groupId) => [
         { type: "GroupData", id: groupId },
       ],
-      transformResponse: (response: { data: GroupData[] }) => response.data[0],
+      transformResponse: (response: { data: GroupData[] }) => ({
+        ...response.data[0],
+
+        files: response.data[0].files.map((file) => ({
+          ...file,
+          // @ts-expect-error Need to type window object
+          thumbnail: `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${file.id}/getimage?w=200&h=200&type=fit`,
+        })),
+      }),
     }),
   }),
 });

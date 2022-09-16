@@ -7,7 +7,7 @@ import FolderIcon from "@mui/icons-material/Folder";
 import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
 import { useSelector } from "react-redux";
 import { SyntheticEvent, useMemo } from "react";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 
 // @ts-ignore
 const nest = (items: any, id, link = "group_id") =>
@@ -15,9 +15,11 @@ const nest = (items: any, id, link = "group_id") =>
     .filter((item: any) => item[link] === id)
     .map((item: any) => ({ ...item, children: nest(items, item.id) }));
 
+type Params = { id: string };
+
 export const Folders = () => {
   const history = useHistory();
-
+  const location = useLocation();
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const { data: bins } = mediaManagerApi.useGetSiteBinsQuery(instanceId);
@@ -85,6 +87,8 @@ export const Folders = () => {
     </TreeItem>
   );
 
+  console.log("testing trees", trees);
+
   return (
     <>
       <Box
@@ -97,6 +101,7 @@ export const Folders = () => {
           <ArrowDropDownIcon />
         </IconButton>
       </Box>
+      {/* @ts-ignore */}
       <TreeView
         onNodeSelect={(
           event: SyntheticEvent<Element, Event>,
@@ -107,7 +112,7 @@ export const Folders = () => {
         }
         defaultExpandIcon={<ArrowRightIcon sx={{ color: "action.active" }} />}
         sx={{ height: "100%", width: "100%", overflowY: "auto" }}
-        selected={[]}
+        selected={[location.pathname.split("/")[2]]}
       >
         {trees.map((tree: any) => renderTree(tree))}
       </TreeView>
