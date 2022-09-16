@@ -1,6 +1,5 @@
 import { MenuItem, ListItemIcon, ListItemText, MenuList } from "@mui/material";
 import BackupTableIcon from "@mui/icons-material/BackupTableRounded";
-import { theme } from "@zesty-io/material";
 import { useHistory } from "react-router";
 
 export const Menu = () => {

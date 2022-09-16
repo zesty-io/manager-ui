@@ -95,7 +95,7 @@ export const Folders = () => {
           FOLDERS
         </Typography>
         <IconButton size="small">
-          <ArrowDropDownIcon />
+          <ArrowDropDownIcon fontSize="small" />
         </IconButton>
       </Box>
       <TreeView
