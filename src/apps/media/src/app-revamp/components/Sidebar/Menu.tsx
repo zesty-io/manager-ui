@@ -22,7 +22,7 @@ export const Menu = () => {
         </ListItemIcon>
         <ListItemText
           //@ts-expect-error body3 additional variant is not on Typography augmentation
-          primaryTypographyProps={{ variant: "body3" }}
+          primaryTypographyProps={{ variant: "body3", color: "text.secondary" }}
           primary="All Media"
         />
       </MenuItem>
