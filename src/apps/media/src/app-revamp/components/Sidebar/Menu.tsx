@@ -1,11 +1,14 @@
 import { MenuItem, ListItemIcon, ListItemText, MenuList } from "@mui/material";
 import BackupTableIcon from "@mui/icons-material/BackupTableRounded";
 import { theme } from "@zesty-io/material";
+import { useHistory } from "react-router";
 
 export const Menu = () => {
+  const history = useHistory();
   return (
     <MenuList sx={{ py: 1, px: 1 }}>
       <MenuItem
+        onClick={() => history.push("/media")}
         selected={location.pathname === "/media"}
         sx={{
           borderRadius: "4px",
