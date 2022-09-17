@@ -34,6 +34,13 @@ export type CodeEditorPosition = Record<
   string,
   { lineNumber: number; column: number }
 >;
+
+type CodeChangesModalInfo = {
+  ZUID: string;
+  status: string;
+  fileType: string;
+};
+
 export type UIState = {
   loadedTabs: boolean;
   pinnedTabs: Tab[];
@@ -44,7 +51,7 @@ export type UIState = {
   contentActionsHover: boolean;
   duoMode: boolean;
   codeEditorPosition: null | CodeEditorPosition;
-  codeChangesModalZUID: null | string;
+  codeChangesModal: null | CodeChangesModalInfo;
 };
 export const ui = createSlice({
   name: "ui",
@@ -59,7 +66,7 @@ export const ui = createSlice({
     contentActionsHover: false,
     duoMode: false,
     codeEditorPosition: null,
-    codeChangesModalZUID: null,
+    codeChangesModal: null,
   },
   reducers: {
     loadTabsSuccess(
@@ -113,11 +120,14 @@ export const ui = createSlice({
     ) {
       state.codeEditorPosition = action.payload;
     },
-    openCodeChangesModal(state: UIState, action: { payload: string }) {
-      state.codeChangesModalZUID = action.payload;
+    openCodeChangesModal(
+      state: UIState,
+      action: { payload: { ZUID: string; fileType: string; status: string } }
+    ) {
+      state.codeChangesModal = action.payload;
     },
     closeCodeChangesModal(state: UIState) {
-      state.codeChangesModalZUID = null;
+      state.codeChangesModal = null;
     },
   },
 });
@@ -354,17 +364,23 @@ export function unpinTab({ pathname, search }: TabLocation, force = false) {
     const state = getState();
     const parsedPath = parsePath({ pathname, search });
     const tab = createTab(state, parsedPath);
-    //
-    const dirtyFiles = state.files.filter(({ dirty }) => dirty);
-    const dirtyFile = dirtyFiles.find(({ ZUID }) =>
-      tabLocationEquality(tab, {
-        pathname: `/code/file/views/${ZUID}`,
-        search: "",
-      })
-    );
-    if (dirtyFile && !force) {
-      dispatch(actions.openCodeChangesModal(dirtyFile.ZUID));
-      return;
+    const { parts } = parsedPath;
+    console.log({ parsedPath });
+    if (parts[0] === "code") {
+      // TODO fix me; account for fileType and maybe do tab equality different
+      const fileType = parts[2];
+      const dirtyFiles = state.files.filter(({ dirty }) => dirty);
+      const dirtyFile = dirtyFiles.find(({ ZUID }) =>
+        tabLocationEquality(tab, {
+          pathname: `/code/file/${fileType}/${ZUID}`,
+          search: "",
+        })
+      );
+      if (dirtyFile && !force) {
+        const { ZUID, status } = dirtyFile;
+        dispatch(actions.openCodeChangesModal({ ZUID, fileType, status }));
+        return;
+      }
     }
     //
     const newTabs = state.ui.pinnedTabs.filter(

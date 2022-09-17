@@ -20,10 +20,15 @@ import {
 export const DirtyCodeModal: FC = () => {
   const dispatch = useDispatch();
   const dirtyCodeZuid = useSelector(
-    (state: AppState) => state.ui.codeChangesModalZUID
+    (state: AppState) => state.ui.codeChangesModal?.ZUID
   );
-  // TODO fix this
-  const fileType = "views";
+  const dirtyCodeStatus = useSelector(
+    (state: AppState) => state.ui.codeChangesModal?.status
+  );
+  const dirtyCodeFileType = useSelector(
+    (state: AppState) => state.ui.codeChangesModal?.fileType
+  );
+ 
   return (
     <ConfirmDialog
       title="test"
@@ -36,18 +41,16 @@ export const DirtyCodeModal: FC = () => {
       </Button>
       <Button
         onClick={() => {
-          // TODO fix this magic string
-          dispatch(saveFile(dirtyCodeZuid, "dev"))
+          dispatch(saveFile(dirtyCodeZuid, dirtyCodeStatus))
             //@ts-ignore
             .catch((err: Error) => {
               console.error(err);
             })
             .then(() => {
-              console.log("unpin");
               dispatch(
                 unpinTab(
                   {
-                    pathname: `/code/file/${fileType}/${dirtyCodeZuid}`,
+                    pathname: `/code/file/${dirtyCodeFileType}/${dirtyCodeZuid}`,
                     search: "",
                   },
                   true
@@ -55,7 +58,6 @@ export const DirtyCodeModal: FC = () => {
               );
             })
             .then(() => {
-              console.log("close");
               dispatch(actions.closeCodeChangesModal());
             });
         }}
@@ -65,7 +67,7 @@ export const DirtyCodeModal: FC = () => {
       <Button
         onClick={() => {
           dispatch(
-            fetchFile(dirtyCodeZuid, fileType, {
+            fetchFile(dirtyCodeZuid, dirtyCodeFileType, {
               forceSync: true,
             })
           )
@@ -80,7 +82,7 @@ export const DirtyCodeModal: FC = () => {
               dispatch(
                 unpinTab(
                   {
-                    pathname: `/code/file/${fileType}/${dirtyCodeZuid}`,
+                    pathname: `/code/file/${dirtyCodeFileType}/${dirtyCodeZuid}`,
                     search: "",
                   },
                   true

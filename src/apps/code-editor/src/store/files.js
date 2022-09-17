@@ -229,8 +229,6 @@ export function files(state = [], action) {
           return {
             ...file,
             dirty: false,
-            //TODO what should this be?
-            synced: true,
           };
         }
 
