@@ -73,7 +73,7 @@ export default memo(function PendingEditsModal(props) {
         open={open}
       >
         <ModalHeader>
-          <h1>asdf{props.title}</h1>
+          <h1>{props.title}</h1>
         </ModalHeader>
         <ModalContent>
           <p>{props.message}</p>

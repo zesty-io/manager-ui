@@ -28,43 +28,24 @@ export const DirtyCodeModal: FC = () => {
   const dirtyCodeFileType = useSelector(
     (state: AppState) => state.ui.codeChangesModal?.fileType
   );
- 
+
   return (
     <ConfirmDialog
-      title="test"
+      title="Unsaved Changes"
       open={Boolean(dirtyCodeZuid)}
-      content="string"
+      content="Please save or discard your changes before navigating away"
       callback={(data) => console.log(data)}
     >
-      <Button onClick={() => dispatch(actions.closeCodeChangesModal())}>
+      <Button
+        variant="text"
+        onClick={() => dispatch(actions.closeCodeChangesModal())}
+        color="primary"
+      >
         Escape
       </Button>
       <Button
-        onClick={() => {
-          dispatch(saveFile(dirtyCodeZuid, dirtyCodeStatus))
-            //@ts-ignore
-            .catch((err: Error) => {
-              console.error(err);
-            })
-            .then(() => {
-              dispatch(
-                unpinTab(
-                  {
-                    pathname: `/code/file/${dirtyCodeFileType}/${dirtyCodeZuid}`,
-                    search: "",
-                  },
-                  true
-                )
-              );
-            })
-            .then(() => {
-              dispatch(actions.closeCodeChangesModal());
-            });
-        }}
-      >
-        Save
-      </Button>
-      <Button
+        variant="text"
+        color="error"
         onClick={() => {
           dispatch(
             fetchFile(dirtyCodeZuid, dirtyCodeFileType, {
@@ -95,6 +76,33 @@ export const DirtyCodeModal: FC = () => {
         }}
       >
         Discard
+      </Button>
+      <Button
+        variant="contained"
+        color="error"
+        onClick={() => {
+          dispatch(saveFile(dirtyCodeZuid, dirtyCodeStatus))
+            //@ts-ignore
+            .catch((err: Error) => {
+              console.error(err);
+            })
+            .then(() => {
+              dispatch(
+                unpinTab(
+                  {
+                    pathname: `/code/file/${dirtyCodeFileType}/${dirtyCodeZuid}`,
+                    search: "",
+                  },
+                  true
+                )
+              );
+            })
+            .then(() => {
+              dispatch(actions.closeCodeChangesModal());
+            });
+        }}
+      >
+        Save
       </Button>
     </ConfirmDialog>
   );
