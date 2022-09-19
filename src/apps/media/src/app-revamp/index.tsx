@@ -4,7 +4,7 @@ import { EmptyState } from "./components/EmptyState";
 import { Redirect, Route, Switch } from "react-router";
 import { Sidebar } from "./components/Sidebar";
 import { AllMedia } from "./views/AllMedia";
-import { FolderMedia } from "./views/FolderMedia";
+import { Media } from "./views/Media";
 import { SearchMedia } from "./views/SearchMedia";
 
 export const MediaApp = () => {
@@ -21,7 +21,7 @@ export const MediaApp = () => {
         <Sidebar />
         <Switch>
           <Route exact path="/media" component={AllMedia} />
-          <Route exact path="/media/:binId" component={FolderMedia} />
+          <Route exact path="/media/:id" component={Media} />
           <Route exact path="/media/search" component={SearchMedia} />
           <Redirect to="/media" />
         </Switch>

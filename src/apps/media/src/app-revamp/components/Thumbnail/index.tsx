@@ -26,8 +26,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   onClick,
 }) => {
   const CardStyle = {
-    maxWidth: "100%",
-    maxHeight: "100%",
+    width: "100%",
+    height: "100%",
     borderWidth: "1px",
     borderColor: "grey.100",
     borderStyle: "solid",
@@ -86,9 +86,10 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             component="img"
             data-src={src}
             image={src}
+            height={160}
             loading="lazy"
             sx={{
-              objectFit: "fit",
+              objectFit: "contain",
               display: "table-cell",
               verticalAlign: "bottom",
             }}
