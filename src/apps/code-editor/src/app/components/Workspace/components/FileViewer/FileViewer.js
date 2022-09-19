@@ -112,36 +112,9 @@ export const FileViewer = connect((state, props) => {
                 show={props.file.dirty && !props.fileIsPinned}
                 title="Unsaved Changes"
                 message="You have unsaved changes that will be lost if you leave this page."
-                loading={false}
-                onSave={() =>
-                  props
-                    .dispatch(saveFile(props.file.ZUID, props.status))
-                    .catch((err) => {
-                      console.error(err);
-                    })
-                }
-                onDiscard={
-                  () =>
-                    props.dispatch(
-                      fetchFile(match.params.fileZUID, match.params.fileType, {
-                        forceSync: true,
-                      })
-                    )
-                  /*
-                    .then(() => {
-                      props.dispatch({
-                        type: "UNMARK_FILE_DIRTY",
-                        payload: props.file,
-                      });
-                    })
-                    */
-                  /*
-                    .then(() => {
-                      console.log("unpin")
-                      props.dispatch(unpinTab({search: "", pathname: `/code/file/views/${props.file.ZUID}`, }))
-                    })
-                    */
-                }
+                dirtyCodeFileType={match.params.fileType}
+                dirtyCodeZuid={match.params.fileZUID}
+                dirtyCodeStatus={props.status}
               />
 
               <Switch>

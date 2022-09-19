@@ -17,6 +17,7 @@ export type DirtyCodeModal = {
   dirtyCodeFileType: string;
   title: string;
   content: string;
+  open: boolean;
 };
 export const DirtyCodeModal: FC<DirtyCodeModal> = ({
   dirtyCodeZuid,
@@ -24,6 +25,7 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
   dirtyCodeFileType,
   title,
   content,
+  open,
 }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -31,7 +33,7 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
   return (
     <ConfirmDialog
       title={title}
-      open={Boolean(dirtyCodeZuid)}
+      open={open}
       content={content}
       callback={(data) => console.log(data)}
     >

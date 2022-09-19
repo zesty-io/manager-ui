@@ -26,6 +26,7 @@ export const GlobalDirtyCodeModal: FC = () => {
       dirtyCodeFileType={dirtyCodeFileType}
       dirtyCodeStatus={dirtyCodeStatus}
       dirtyCodeZuid={dirtyCodeZuid}
+      open={Boolean(dirtyCodeZuid)}
     />
   );
 };
