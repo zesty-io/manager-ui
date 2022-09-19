@@ -19,5 +19,13 @@ export const GlobalDirtyCodeModal: FC = () => {
     dirtyCodeStatus,
     dirtyCodeZuid,
   };
-  return <DirtyCodeModal {...props} />;
+  return (
+    <DirtyCodeModal
+      title="Unsaved Changes"
+      content="Please save or discard your changes before navigating away"
+      dirtyCodeFileType={dirtyCodeFileType}
+      dirtyCodeStatus={dirtyCodeStatus}
+      dirtyCodeZuid={dirtyCodeZuid}
+    />
+  );
 };

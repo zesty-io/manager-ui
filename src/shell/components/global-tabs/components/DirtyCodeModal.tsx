@@ -15,20 +15,24 @@ export type DirtyCodeModal = {
   dirtyCodeZuid: string;
   dirtyCodeStatus: string;
   dirtyCodeFileType: string;
+  title: string;
+  content: string;
 };
 export const DirtyCodeModal: FC<DirtyCodeModal> = ({
   dirtyCodeZuid,
   dirtyCodeStatus,
   dirtyCodeFileType,
+  title,
+  content,
 }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
   return (
     <ConfirmDialog
-      title="Unsaved Changes"
+      title={title}
       open={Boolean(dirtyCodeZuid)}
-      content="Please save or discard your changes before navigating away"
+      content={content}
       callback={(data) => console.log(data)}
     >
       <Stack
