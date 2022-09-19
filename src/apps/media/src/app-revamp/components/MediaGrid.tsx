@@ -4,7 +4,6 @@ import { Box, Card, CardContent, CardMedia, Typography } from "@mui/material";
 import { useWindowSize } from "react-use";
 import { Folder } from "../components/Folder";
 import { File, Group } from "../../../../../shell/services/types";
-import { xhrCallback } from "@sentry/tracing/types/browser/request";
 import { Thumbnail } from "./Thumbnail";
 
 const FILE_HEIGHT = 204;

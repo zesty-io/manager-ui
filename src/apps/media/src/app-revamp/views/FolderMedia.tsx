@@ -7,8 +7,8 @@ import { useSelector } from "react-redux";
 type Params = { id: string };
 
 const HEADER_HEIGHT = 43;
-const SIDEBAR_COLLAPSED_WIDTH = 310;
-const SIDEBAR_WIDTH = 400;
+const SIDEBAR_COLLAPSED_WIDTH = 282;
+const SIDEBAR_WIDTH = 377;
 
 export const FolderMedia = () => {
   const params = useParams<Params>();

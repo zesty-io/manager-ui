@@ -4,8 +4,8 @@ import { EmptyState } from "../components/EmptyState";
 import { MediaGrid } from "../components/MediaGrid";
 
 const HEADER_HEIGHT = 43;
-const SIDEBAR_COLLAPSED_WIDTH = 310;
-const SIDEBAR_WIDTH = 400;
+const SIDEBAR_COLLAPSED_WIDTH = 282;
+const SIDEBAR_WIDTH = 377;
 
 export const AllMedia = () => {
   const instanceId = useSelector((state: any) => state.instance.ID);
