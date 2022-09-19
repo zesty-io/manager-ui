@@ -99,8 +99,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               py: imageOrientation === "horizontal" && 1,
               px: imageOrientation === "vertical" && "auto",
               boxSizing: "border-box",
-              maxHeight: "150px",
-              minHeight: "150px",
+              height: "160px",
               overflow: "hidden",
             }}
           >
@@ -114,9 +113,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               sx={{
                 objectFit:
                   imageOrientation === "horizontal" ? "fill" : "contain",
-                maxHeight: "inherit",
-                minHeight: "inherit",
                 overflow: "hidden",
+                height: "inherit",
                 display: "table-cell",
                 verticalAlign: "bottom",
               }}
@@ -128,24 +126,6 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </CardContent>
         </Card>
       );
-    case "ots":
-    case "xls":
-    case "xlsx":
-      return (
-        <Card sx={CardStyle} elevation={0} onClick={onClick}>
-          <CardMedia
-            component="div"
-            sx={{
-              backgroundColor: "green.100",
-            }}
-          />
-          <Box sx={ImageBadgeStyle}>{fileExtension(filename)}</Box>
-          <CardContent sx={CardContentStyle}>
-            <Filename />
-          </CardContent>
-        </Card>
-      );
-
     default:
       return (
         <Card sx={CardStyle} elevation={0} onClick={onClick}>
