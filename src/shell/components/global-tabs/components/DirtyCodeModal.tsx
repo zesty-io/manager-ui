@@ -4,7 +4,6 @@ import { ConfirmDialog } from "@zesty-io/material";
 import Button from "@mui/material/Button";
 import { unpinTab } from "../../../../shell/store/ui";
 import { actions } from "../../../../shell/store/ui";
-import { AppState } from "../../../store/types";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 
@@ -12,18 +11,18 @@ import {
   saveFile,
   fetchFile,
 } from "../../../../apps/code-editor/src/store/files";
-export const DirtyCodeModal: FC = () => {
+export type DirtyCodeModal = {
+  dirtyCodeZuid: string;
+  dirtyCodeStatus: string;
+  dirtyCodeFileType: string;
+};
+export const DirtyCodeModal: FC<DirtyCodeModal> = ({
+  dirtyCodeZuid,
+  dirtyCodeStatus,
+  dirtyCodeFileType,
+}) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const dirtyCodeZuid = useSelector(
-    (state: AppState) => state.ui.codeChangesModal?.ZUID
-  );
-  const dirtyCodeStatus = useSelector(
-    (state: AppState) => state.ui.codeChangesModal?.status
-  );
-  const dirtyCodeFileType = useSelector(
-    (state: AppState) => state.ui.codeChangesModal?.fileType
-  );
 
   return (
     <ConfirmDialog

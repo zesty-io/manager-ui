@@ -4,7 +4,7 @@ import { useLocation, Link as Link } from "react-router-dom";
 import { debounce } from "lodash";
 
 import { Dropdown } from "./components/Dropdown";
-import { DirtyCodeModal } from "./components/DirtyCodeModal";
+import { GlobalDirtyCodeModal } from "./components/GlobalDirtyCodeModal";
 import { ActiveTab, InactiveTabGroup } from "./components/Tab";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
@@ -104,7 +104,7 @@ export default memo(function GlobalTabs() {
 
   return (
     <ThemeProvider theme={theme}>
-      <DirtyCodeModal />
+      <GlobalDirtyCodeModal />
       <Stack
         ref={tabContainerRef}
         component="nav"

@@ -40,12 +40,13 @@ export const FileViewer = connect((state, props) => {
           }, [])
       : [];
 
+  const fileType = props.match.params.fileType;
   const pinnedTabs = state.ui.pinnedTabs;
   const fileIsPinned = Boolean(
     pinnedTabs.find((tab) =>
       tabLocationEquality(tab, {
         search: "",
-        pathname: `/code/file/views/${file.ZUID}`,
+        pathname: `/code/file/${fileType}/${file.ZUID}`,
       })
     )
   );
@@ -57,6 +58,7 @@ export const FileViewer = connect((state, props) => {
 })(
   memo(function FileViewer(props) {
     const { match, location } = props;
+    console.log({ props });
     const [loading, setLoading] = useState(false);
 
     let lineNumber = 0;
@@ -113,7 +115,7 @@ export const FileViewer = connect((state, props) => {
                 loading={false}
                 onSave={() =>
                   props
-                    .dispatch(saveFile(props.file.ZUID, "dev"))
+                    .dispatch(saveFile(props.file.ZUID, props.status))
                     .catch((err) => {
                       console.error(err);
                     })
