@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState, useRef } from "react";
 import {
   CardMedia,
   Card,
@@ -7,7 +7,7 @@ import {
   Typography,
   CardContent,
 } from "@mui/material";
-import { fileExtension } from "./FileUtils";
+import { fileExtension } from "../../utils/fileUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
 interface ThumbnailProps {
@@ -25,6 +25,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   onFilenameChange,
   onClick,
 }) => {
+  const imageEl = useRef<HTMLImageElement>();
+  const [imageOrientation, setImageOrientation] = useState<string>("");
   const CardStyle = {
     maxWidth: "100%",
     maxHeight: "100%",
@@ -51,6 +53,16 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     position: "absolute",
     right: 15,
     transform: "translateY(-120%)",
+  };
+
+  const handleImageLoad = () => {
+    const naturalHeight = imageEl.current.naturalHeight;
+    const naturalWidth = imageEl.current.naturalWidth;
+    if (naturalHeight > naturalWidth) {
+      setImageOrientation("vertical");
+    } else {
+      setImageOrientation("horizontal");
+    }
   };
 
   const Filename = () => {
@@ -82,15 +94,49 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "webp":
       return (
         <Card sx={CardStyle} elevation={0} onClick={onClick}>
-          <CardMedia
-            component="img"
-            data-src={src}
-            image={src}
-            loading="lazy"
+          <Box
             sx={{
-              objectFit: "fit",
-              display: "table-cell",
-              verticalAlign: "bottom",
+              py: imageOrientation === "horizontal" && 1,
+              px: imageOrientation === "vertical" && "auto",
+              boxSizing: "border-box",
+              maxHeight: "150px",
+              minHeight: "150px",
+              overflow: "hidden",
+            }}
+          >
+            <CardMedia
+              component="img"
+              ref={imageEl}
+              onLoad={handleImageLoad}
+              data-src={src}
+              image={src}
+              loading="lazy"
+              sx={{
+                objectFit:
+                  imageOrientation === "horizontal" ? "fill" : "contain",
+                maxHeight: "inherit",
+                minHeight: "inherit",
+                overflow: "hidden",
+                display: "table-cell",
+                verticalAlign: "bottom",
+              }}
+            />
+          </Box>
+          <Box sx={ImageBadgeStyle}>{fileExtension(filename)}</Box>
+          <CardContent sx={CardContentStyle}>
+            <Filename />
+          </CardContent>
+        </Card>
+      );
+    case "ots":
+    case "xls":
+    case "xlsx":
+      return (
+        <Card sx={CardStyle} elevation={0} onClick={onClick}>
+          <CardMedia
+            component="div"
+            sx={{
+              backgroundColor: "green.100",
             }}
           />
           <Box sx={ImageBadgeStyle}>{fileExtension(filename)}</Box>
@@ -99,9 +145,16 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </CardContent>
         </Card>
       );
+
     default:
       return (
         <Card sx={CardStyle} elevation={0} onClick={onClick}>
+          <CardMedia
+            component="div"
+            sx={{
+              backgroundColor: "green.100",
+            }}
+          />
           <FontAwesomeIcon icon={faFile} />
           <CardContent sx={CardContentStyle}>
             <Filename />
