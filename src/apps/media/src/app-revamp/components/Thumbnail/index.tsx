@@ -28,8 +28,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   const imageEl = useRef<HTMLImageElement>();
   const [imageOrientation, setImageOrientation] = useState<string>("");
   const CardStyle = {
-    maxWidth: "100%",
-    maxHeight: "100%",
+    width: "100%",
+    height: "100%",
     borderWidth: "1px",
     borderColor: "grey.100",
     borderStyle: "solid",
