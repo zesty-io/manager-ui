@@ -9,6 +9,7 @@ import { actions } from "shell/store/ui";
  * We memoize this component because we need to short circuit the redux->react->component update cycle
  * This is done for performance reasons. Constantly re-rendering slows down the editor typing experience.
  * But we still want to broadcast store updates `onChange`
+ *
  */
 export const MemoizedEditor = memo(
   function MemoizedEditor(props) {
