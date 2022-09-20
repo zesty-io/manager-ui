@@ -12,10 +12,8 @@ const mediaSlice = createSlice({
   },
   reducers: {
     fileUploadStart(state, action) {
-      console.log({ action });
-      const { file, ...data } = action.payload;
-      //state.filesToUpload.push(action.payload);
-      state.filesToUpload = [...state.filesToUpload, data];
+      const { name, type } = action.payload;
+      state.filesToUpload = [...state.filesToUpload, { name, type }];
     },
   },
 });
