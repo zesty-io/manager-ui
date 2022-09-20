@@ -1,9 +1,11 @@
 import { useSelector } from "react-redux";
+import { Box } from "@mui/material";
 import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 import { EmptyState } from "../components/EmptyState";
 import { MediaGrid } from "../components/MediaGrid";
+import { Header } from "../components/Header";
 
-const HEADER_HEIGHT = 43;
+const HEADER_HEIGHT = 140;
 const SIDEBAR_COLLAPSED_WIDTH = 282;
 const SIDEBAR_WIDTH = 377;
 
@@ -17,12 +19,8 @@ export const AllMedia = () => {
       bins?.map((bin) => bin.id),
       { skip: !bins?.length }
     );
-  const { data: groups, isLoading: isGroupsLoading } =
-    mediaManagerApi.useGetBinGroupsQuery(bins?.[0]?.id, {
-      skip: !bins?.length,
-    });
 
-  if (isFilesLoading || isGroupsLoading || isBinsLoading) {
+  if (isFilesLoading || isBinsLoading) {
     return <div>Loading...</div>;
   }
 
@@ -30,13 +28,14 @@ export const AllMedia = () => {
     return <EmptyState />;
   }
 
-  // TODO: Don't pass groups in this All Media view (currently passed for testing)
   return (
-    <MediaGrid
-      files={files}
-      groups={groups}
-      heightOffset={HEADER_HEIGHT}
-      widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
-    />
+    <main>
+      <Header title="All Media" />
+      <MediaGrid
+        files={files}
+        heightOffset={HEADER_HEIGHT}
+        widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
+      />
+    </main>
   );
 };

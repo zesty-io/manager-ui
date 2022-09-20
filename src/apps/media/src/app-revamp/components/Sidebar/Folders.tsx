@@ -61,8 +61,11 @@ export const Folders = () => {
       key={nodes.id}
       nodeId={nodes.id}
       sx={{
+        " .MuiTreeItem-content": {
+          width: "unset",
+        },
         ".Mui-selected": {
-          ".MuiSvgIcon-root": {
+          " .MuiTreeItem-label .MuiSvgIcon-root": {
             color: "primary.main",
           },
           ".MuiTypography-root": {
@@ -125,7 +128,12 @@ export const Folders = () => {
         defaultCollapseIcon={
           <ArrowDropDownIcon sx={{ color: "action.active" }} />
         }
-        defaultExpandIcon={<ArrowRightIcon sx={{ color: "action.active" }} />}
+        defaultExpandIcon={
+          <ArrowRightIcon
+            sx={{ color: "action.active" }}
+            onClick={() => console.log("im in brah")}
+          />
+        }
         sx={{ height: "100%", width: "100%", overflowY: "auto" }}
         selected={[location.pathname.split("/")[2]]}
       >
