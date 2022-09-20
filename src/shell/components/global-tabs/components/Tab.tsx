@@ -189,8 +189,11 @@ export const ActiveTab: FC<ActiveTab> = ({ tabWidth }) => {
       tab={activeTab}
       onClick={() => {
         // force unpin because we don't want to show the modal on the active tab
-        if (isPinned) dispatch(unpinTab(activeTab, true));
-        else dispatch(pinTab(activeTab));
+        if (isPinned) {
+          dispatch(unpinTab(activeTab, true));
+        } else {
+          dispatch(pinTab(activeTab));
+        }
       }}
       sx={{
         backgroundColor: "white",
