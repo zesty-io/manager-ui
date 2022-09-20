@@ -1,31 +1,16 @@
-import { FC, memo, useState, useEffect } from "react";
+import { FC, useState, useEffect } from "react";
 import { Prompt } from "react-router-dom";
 
-import Stack from "@mui/material/Stack";
-import Button from "@mui/material/Button";
-import SaveIcon from "@mui/icons-material/Save";
-import DeleteIcon from "@mui/icons-material/Delete";
-import CircularProgress from "@mui/material/CircularProgress";
-import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import {
   saveFile,
   fetchFile,
 } from "../../../../../../apps/code-editor/src/store/files";
-import { unpinTab } from "../../../../../../shell/store/ui";
-import { actions } from "../../../../../../shell/store/ui";
 
-import {
-  Modal,
-  ModalHeader,
-  ModalContent,
-  ModalFooter,
-} from "@zesty-io/core/Modal";
+import { DirtyCodeModal } from "../../../../../../shell/components//DirtyCodeModal";
 
-import { DirtyCodeModal } from "../../../../../../shell/components/global-tabs/components/DirtyCodeModal";
-
-export type PendingEditsModal = {
+export type LocalDirtyCodeModal = {
   title: string;
   content: string;
   show: boolean;
@@ -34,7 +19,7 @@ export type PendingEditsModal = {
   dirtyCodeFileType: string;
 };
 
-export const PendingEditsModal: FC<PendingEditsModal> = ({
+export const LocalDirtyCodeModal: FC<LocalDirtyCodeModal> = ({
   show,
   title,
   content,

@@ -2,7 +2,8 @@ import { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../store/types";
 
-import { DirtyCodeModal } from "./DirtyCodeModal";
+import { DirtyCodeModal } from "../../DirtyCodeModal";
+
 import {
   saveFile,
   fetchFile,

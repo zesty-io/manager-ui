@@ -16,13 +16,13 @@ import { Editor } from "../../../Editor";
 import { Differ } from "../../../Differ";
 import { FileDrawer } from "../../../FileDrawer";
 import { LockedView } from "../../../LockedView";
-import { PendingEditsModal } from "../../../../components/PendingEditsModal";
 
 import styles from "./FileViewer.less";
 import {
   tabLocationEquality,
   unpinTab,
 } from "../../../../../../../../shell/store/ui";
+import { LocalDirtyCodeModal } from "../../../LocalDirtyCodeModal";
 export const FileViewer = connect((state, props) => {
   const file = state.files.find(
     (file) => file.ZUID === props.match.params.fileZUID
@@ -108,7 +108,7 @@ export const FileViewer = connect((state, props) => {
           {props.file && props.file.ZUID ? (
             <Fragment>
               <LockedView ZUID={props.file.ZUID} name={props.file.fileName} />
-              <PendingEditsModal
+              <LocalDirtyCodeModal
                 show={props.file.dirty && !props.fileIsPinned}
                 title="Unsaved Changes"
                 content="You have unsaved changes that will be lost if you leave this page."
