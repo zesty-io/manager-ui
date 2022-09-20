@@ -58,7 +58,7 @@ export const MediaGrid = ({
     if (listRef.current) {
       listRef.current.resetAfterIndices({ columnIndex: 0, rowIndex: 0 });
     }
-  }, [width, widthOffset]);
+  }, [width, widthOffset, groups, files]);
 
   const getRowHeight = (index: number) => {
     const gridItem = grid[index * columns];
