@@ -111,7 +111,7 @@ export const FileViewer = connect((state, props) => {
               <PendingEditsModal
                 show={props.file.dirty && !props.fileIsPinned}
                 title="Unsaved Changes"
-                message="You have unsaved changes that will be lost if you leave this page."
+                content="You have unsaved changes that will be lost if you leave this page."
                 dirtyCodeFileType={match.params.fileType}
                 dirtyCodeZuid={match.params.fileZUID}
                 dirtyCodeStatus={props.status}

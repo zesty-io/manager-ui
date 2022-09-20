@@ -1,35 +1,27 @@
-import { useState, FC } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { FC } from "react";
 import { ConfirmDialog } from "@zesty-io/material";
 import Button from "@mui/material/Button";
-import { unpinTab } from "../../../../shell/store/ui";
-import { actions } from "../../../../shell/store/ui";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 
-import {
-  saveFile,
-  fetchFile,
-} from "../../../../apps/code-editor/src/store/files";
 export type DirtyCodeModal = {
-  dirtyCodeZuid: string;
-  dirtyCodeStatus: string;
-  dirtyCodeFileType: string;
   title: string;
   content: string;
   open: boolean;
+  loading: boolean;
+  onCancel: () => void;
+  onSave: () => void;
+  onDiscard: () => void;
 };
 export const DirtyCodeModal: FC<DirtyCodeModal> = ({
-  dirtyCodeZuid,
-  dirtyCodeStatus,
-  dirtyCodeFileType,
   title,
   content,
   open,
+  loading,
+  onCancel,
+  onSave,
+  onDiscard,
 }) => {
-  const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
-
   return (
     <ConfirmDialog
       title={title}
@@ -48,41 +40,19 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
       >
         <Button
           variant="text"
-          onClick={() => dispatch(actions.closeCodeChangesModal())}
+          onClick={onCancel}
           color="primary"
           disabled={loading}
           sx={{ alignSelf: "flex-start" }}
         >
-          Escape
+          Cancel
         </Button>
         <Box>
           <Button
             variant="text"
             color="error"
             disabled={loading}
-            onClick={async () => {
-              setLoading(true);
-              await dispatch(
-                fetchFile(dirtyCodeZuid, dirtyCodeFileType, {
-                  forceSync: true,
-                })
-              );
-              await dispatch({
-                type: "UNMARK_FILE_DIRTY",
-                payload: { ZUID: dirtyCodeZuid },
-              });
-              await dispatch(
-                unpinTab(
-                  {
-                    pathname: `/code/file/${dirtyCodeFileType}/${dirtyCodeZuid}`,
-                    search: "",
-                  },
-                  true
-                )
-              );
-              setLoading(false);
-              await dispatch(actions.closeCodeChangesModal());
-            }}
+            onClick={onDiscard}
           >
             Discard
           </Button>
@@ -90,20 +60,7 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
             variant="contained"
             color="error"
             disabled={loading}
-            onClick={async () => {
-              await dispatch(saveFile(dirtyCodeZuid, dirtyCodeStatus));
-              await dispatch(
-                unpinTab(
-                  {
-                    pathname: `/code/file/${dirtyCodeFileType}/${dirtyCodeZuid}`,
-                    search: "",
-                  },
-                  true
-                )
-              );
-              setLoading(false);
-              await dispatch(actions.closeCodeChangesModal());
-            }}
+            onClick={onSave}
           >
             Save
           </Button>

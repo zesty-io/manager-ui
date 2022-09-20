@@ -7,6 +7,14 @@ import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CircularProgress from "@mui/material/CircularProgress";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
+import { useDispatch, useSelector } from "react-redux";
+
+import {
+  saveFile,
+  fetchFile,
+} from "../../../../../../apps/code-editor/src/store/files";
+import { unpinTab } from "../../../../../../shell/store/ui";
+import { actions } from "../../../../../../shell/store/ui";
 
 import {
   Modal,
@@ -17,20 +25,28 @@ import {
 
 import { DirtyCodeModal } from "../../../../../../shell/components/global-tabs/components/DirtyCodeModal";
 
-export type PendingEditsModal = DirtyCodeModal & {
+export type PendingEditsModal = {
+  title: string;
+  content: string;
   show: boolean;
+  dirtyCodeZuid: string;
+  dirtyCodeStatus: string;
+  dirtyCodeFileType: string;
 };
 
 export const PendingEditsModal: FC<PendingEditsModal> = ({
   show,
   title,
   content,
-  dirtyCodeFileType,
-  dirtyCodeStatus,
   dirtyCodeZuid,
+  dirtyCodeStatus,
+  dirtyCodeFileType,
 }) => {
   const [open, setOpen] = useState(false);
-  const [answer, setAnswer] = useState(() => () => {});
+  const [loading, setLoading] = useState(false);
+  const [answer, setAnswer] = useState(() => (answer: boolean) => {});
+
+  const dispatch = useDispatch();
   // Expose globals so external components can invoke
   // NOTE: Should this be a portal?
   useEffect(() => {
@@ -50,9 +66,34 @@ export const PendingEditsModal: FC<PendingEditsModal> = ({
         title={title}
         content={content}
         open={open}
-        dirtyCodeFileType={dirtyCodeFileType}
-        dirtyCodeStatus={dirtyCodeStatus}
-        dirtyCodeZuid={dirtyCodeZuid}
+        loading={loading}
+        onCancel={() => {
+          setLoading(false);
+          setOpen(false);
+          answer(false);
+        }}
+        onSave={async () => {
+          setLoading(true);
+          await dispatch(saveFile(dirtyCodeZuid, dirtyCodeStatus));
+          setLoading(false);
+          setOpen(false);
+          answer(true);
+        }}
+        onDiscard={async () => {
+          setLoading(true);
+          await dispatch(
+            fetchFile(dirtyCodeZuid, dirtyCodeFileType, {
+              forceSync: true,
+            })
+          );
+          await dispatch({
+            type: "UNMARK_FILE_DIRTY",
+            payload: { ZUID: dirtyCodeZuid },
+          });
+          setLoading(false);
+          setOpen(false);
+          answer(true);
+        }}
       />
     </>
   );
