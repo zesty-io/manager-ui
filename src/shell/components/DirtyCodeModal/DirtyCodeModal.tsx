@@ -3,6 +3,9 @@ import { ConfirmDialog } from "@zesty-io/material";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import { theme } from "@zesty-io/material";
+import { ThemeProvider } from "@mui/material/styles";
 
 export type DirtyCodeModal = {
   title: string;
@@ -23,49 +26,58 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
   onDiscard,
 }) => {
   return (
-    <ConfirmDialog
-      title={title}
-      open={open}
-      content={content}
-      callback={(data) => console.log(data)}
-    >
-      <Stack
-        direction="row"
-        sx={{
-          alignItems: "flex-start",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          flex: 1,
-        }}
+    <ThemeProvider theme={theme}>
+      <ConfirmDialog
+        title={<Typography variant="h5">{title}</Typography>}
+        content={<Typography variant="body2">{content}</Typography>}
+        open={open}
+        callback={() => {} /* TODO fix dialog in DS lib */}
+        maxWidth="xs"
+        fullWidth
       >
-        <Button
-          variant="text"
-          onClick={onCancel}
-          color="primary"
-          disabled={loading}
-          sx={{ alignSelf: "flex-start" }}
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "flex-start",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            textDecoration: "none",
+            flex: 1,
+            margin: "8px",
+          }}
         >
-          Cancel
-        </Button>
-        <Box>
           <Button
             variant="text"
-            color="error"
+            onClick={onCancel}
+            color="inherit"
             disabled={loading}
-            onClick={onDiscard}
+            sx={{
+              alignSelf: "flex-start",
+              textDecoration: "none",
+            }}
           >
-            Discard
+            Cancel
           </Button>
-          <Button
-            variant="contained"
-            color="error"
-            disabled={loading}
-            onClick={onSave}
-          >
-            Save
-          </Button>
-        </Box>
-      </Stack>
-    </ConfirmDialog>
+          <Stack direction="row" sx={{ gap: "8px" }}>
+            <Button
+              variant="text"
+              color="primary"
+              disabled={loading}
+              onClick={onDiscard}
+            >
+              Discard
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={loading}
+              onClick={onSave}
+            >
+              Save
+            </Button>
+          </Stack>
+        </Stack>
+      </ConfirmDialog>
+    </ThemeProvider>
   );
 };

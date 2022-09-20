@@ -27,7 +27,7 @@ export const GlobalDirtyCodeModal: FC = () => {
   return (
     <DirtyCodeModal
       title="Unsaved Changes"
-      content="Please save or discard your changes before navigating away"
+      content="Please save or discard your changes before unpinning this tab"
       loading={loading}
       open={Boolean(dirtyCodeZuid)}
       onDiscard={async () => {
