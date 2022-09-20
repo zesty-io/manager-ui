@@ -1,9 +1,5 @@
 import { createSlice, current, Dispatch } from "@reduxjs/toolkit";
 
-import { enableMapSet } from "immer";
-
-enableMapSet();
-
 const mediaSlice = createSlice({
   name: "mediaRevamp",
   initialState: {
@@ -20,7 +16,7 @@ const mediaSlice = createSlice({
 
 export const { fileUploadStart } = mediaSlice.actions;
 
-export function uploadFile(file: any) {
+export function uploadFile(file: { name: string; type: string }) {
   return async (dispatch: Dispatch) => {
     console.log({ file });
     dispatch(fileUploadStart(file));
