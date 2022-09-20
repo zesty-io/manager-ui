@@ -6,7 +6,7 @@ import LanguageIcon from "@mui/icons-material/Language";
 import FolderIcon from "@mui/icons-material/Folder";
 import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
 import { useSelector } from "react-redux";
-import { SyntheticEvent, useMemo } from "react";
+import { SyntheticEvent, useEffect, useMemo } from "react";
 import { useHistory, useLocation } from "react-router";
 
 const nest = (items: any, id: string, link = "group_id") =>
@@ -28,12 +28,13 @@ export const Folders = () => {
 
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
-  const { data: binGroups } = mediaManagerApi.useGetAllBinGroupsQuery(
-    combinedBins?.map((bin) => bin.id),
-    {
-      skip: !bins?.length,
-    }
-  );
+  const { data: binGroups, isLoading } =
+    mediaManagerApi.useGetAllBinGroupsQuery(
+      combinedBins?.map((bin) => bin.id),
+      {
+        skip: !bins?.length,
+      }
+    );
 
   const trees = useMemo(() => {
     if (binGroups) {
@@ -50,11 +51,35 @@ export const Folders = () => {
             return nest(binGroup, binGroup[0].bin_id);
           }
         })
-        .flat();
+        .flat()
+        .sort((a, b) => a.name.localeCompare(b.name));
     } else {
       return [];
     }
   }, [binGroups]);
+
+  const selectedPath = useMemo(() => {
+    const id = location.pathname.split("/")[2];
+    const path = [];
+    let done = false;
+
+    if (id && trees.length) {
+      let currId = id;
+      while (!done) {
+        const node = binGroups.flat().find((group) => group.id === currId);
+        if (node) {
+          path.push(node.id);
+          currId = node.group_id;
+        } else {
+          path.push(binGroups.flat().find((group) => group.id === id).bin_id);
+          done = true;
+        }
+      }
+      return path.reverse();
+    }
+
+    return [];
+  }, [trees]);
 
   const renderTree = (nodes: any) => (
     <TreeItem
@@ -120,25 +145,23 @@ export const Folders = () => {
           <ArrowDropDownIcon fontSize="small" />
         </IconButton>
       </Box>
-      <TreeView
-        onNodeSelect={(
-          event: SyntheticEvent<Element, Event>,
-          nodeIds: string[]
-        ) => history.push(`/media/${nodeIds}`)}
-        defaultCollapseIcon={
-          <ArrowDropDownIcon sx={{ color: "action.active" }} />
-        }
-        defaultExpandIcon={
-          <ArrowRightIcon
-            sx={{ color: "action.active" }}
-            onClick={() => console.log("im in brah")}
-          />
-        }
-        sx={{ height: "100%", width: "100%", overflowY: "auto" }}
-        selected={[location.pathname.split("/")[2]]}
-      >
-        {trees.map((tree: any) => renderTree(tree))}
-      </TreeView>
+      {!isLoading ? (
+        <TreeView
+          onNodeSelect={(
+            event: SyntheticEvent<Element, Event>,
+            nodeIds: string[]
+          ) => history.push(`/media/${nodeIds}`)}
+          defaultCollapseIcon={
+            <ArrowDropDownIcon sx={{ color: "action.active" }} />
+          }
+          defaultExpandIcon={<ArrowRightIcon sx={{ color: "action.active" }} />}
+          defaultExpanded={selectedPath}
+          sx={{ height: "100%", width: "100%", overflowY: "auto" }}
+          selected={[location.pathname.split("/")[2]]}
+        >
+          {trees.map((tree: any) => renderTree(tree))}
+        </TreeView>
+      ) : null}
     </>
   );
 };
