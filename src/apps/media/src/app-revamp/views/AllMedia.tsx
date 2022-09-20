@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
+import { DnDProvider } from "../components/DnDProvider";
 import { EmptyState } from "../components/EmptyState";
 import { MediaGrid } from "../components/MediaGrid";
 
@@ -27,16 +28,22 @@ export const AllMedia = () => {
   }
 
   if (!files?.length) {
-    return <EmptyState />;
+    return (
+      <DnDProvider>
+        <EmptyState />;
+      </DnDProvider>
+    );
   }
 
   // TODO: Don't pass groups in this All Media view (currently passed for testing)
   return (
-    <MediaGrid
-      files={files}
-      groups={groups}
-      heightOffset={HEADER_HEIGHT}
-      widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
-    />
+    <DnDProvider>
+      <MediaGrid
+        files={files}
+        groups={groups}
+        heightOffset={HEADER_HEIGHT}
+        widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
+      />
+    </DnDProvider>
   );
 };

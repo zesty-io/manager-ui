@@ -6,20 +6,8 @@ import { Sidebar } from "./components/Sidebar";
 import { AllMedia } from "./views/AllMedia";
 import { Media } from "./views/Media";
 import { SearchMedia } from "./views/SearchMedia";
-import { useDropzone } from "react-dropzone";
-import { useCallback } from "react";
-import { uploadFile } from "../../../../shell/store/media-revamp";
-import { useDispatch } from "react-redux";
 
 export const MediaApp = () => {
-  const dispatch = useDispatch();
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    console.log({ acceptedFiles });
-    acceptedFiles.forEach((f) => dispatch(uploadFile(f)));
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -29,7 +17,6 @@ export const MediaApp = () => {
           height: "100%",
           display: "flex",
         }}
-        {...getRootProps()}
       >
         <Sidebar />
         <Switch>
@@ -38,7 +25,6 @@ export const MediaApp = () => {
           <Route exact path="/media/search" component={SearchMedia} />
           <Redirect to="/media" />
         </Switch>
-        <input {...getInputProps()} />
       </Box>
     </ThemeProvider>
   );

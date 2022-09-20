@@ -3,6 +3,7 @@ import { EmptyState } from "../components/EmptyState";
 import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 import { MediaGrid } from "../components/MediaGrid";
 import { useSelector } from "react-redux";
+import { DnDProvider } from "../components/DnDProvider";
 
 type Params = { id: string };
 
@@ -21,14 +22,23 @@ export const FolderMedia = () => {
 
   if (isFetching) return <div>Loading...</div>;
 
-  if (!isFetching && !groupData.files?.length) return <EmptyState />;
+  if (!isFetching && !groupData.files?.length)
+    return (
+      <>
+        <DnDProvider>
+          <EmptyState />
+        </DnDProvider>
+      </>
+    );
 
   return (
-    <MediaGrid
-      files={groupData.files}
-      groups={groupData.groups}
-      heightOffset={HEADER_HEIGHT}
-      widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
-    />
+    <DnDProvider>
+      <MediaGrid
+        files={groupData.files}
+        groups={groupData.groups}
+        heightOffset={HEADER_HEIGHT}
+        widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
+      />
+    </DnDProvider>
   );
 };
