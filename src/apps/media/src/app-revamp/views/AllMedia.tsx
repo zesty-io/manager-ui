@@ -24,7 +24,7 @@ export const AllMedia = () => {
     return <div>Loading...</div>;
   }
 
-  if (files?.length === 0) {
+  if (!files?.length) {
     return <EmptyState />;
   }
 
