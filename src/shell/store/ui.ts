@@ -365,7 +365,6 @@ export function unpinTab({ pathname, search }: TabLocation, force = false) {
     const parsedPath = parsePath({ pathname, search });
     const tab = createTab(state, parsedPath);
     const { parts } = parsedPath;
-    console.log({ parsedPath });
     if (parts[0] === "code") {
       // TODO fix me; account for fileType and maybe do tab equality different
       const fileType = parts[2];

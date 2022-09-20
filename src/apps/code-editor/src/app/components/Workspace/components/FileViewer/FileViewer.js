@@ -8,7 +8,7 @@ import cx from "classnames";
 
 import { notify } from "shell/store/notifications";
 import { fetchFields } from "shell/store/fields";
-import { fetchFile, saveFile } from "../../../../../store/files";
+import { fetchFile } from "../../../../../store/files";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
 
@@ -18,10 +18,7 @@ import { FileDrawer } from "../../../FileDrawer";
 import { LockedView } from "../../../LockedView";
 
 import styles from "./FileViewer.less";
-import {
-  tabLocationEquality,
-  unpinTab,
-} from "../../../../../../../../shell/store/ui";
+import { tabLocationEquality } from "../../../../../../../../shell/store/ui";
 import { LocalDirtyCodeModal } from "../../../LocalDirtyCodeModal";
 export const FileViewer = connect((state, props) => {
   const file = state.files.find(
@@ -58,7 +55,6 @@ export const FileViewer = connect((state, props) => {
 })(
   memo(function FileViewer(props) {
     const { match, location } = props;
-    console.log({ props });
     const [loading, setLoading] = useState(false);
 
     let lineNumber = 0;
