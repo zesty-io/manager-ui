@@ -12,9 +12,12 @@ export const Folder: React.FC<FolderProps> = ({ name, path }) => {
 
   return (
     <Button
+      fullWidth
       startIcon={<FolderIcon />}
       variant="outlined"
       sx={{
+        height: "100%",
+        justifyContent: "flex-start",
         color: "grey.500",
         borderColor: "grey.100",
       }}

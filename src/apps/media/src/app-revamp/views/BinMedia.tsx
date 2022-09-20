@@ -10,23 +10,25 @@ const HEADER_HEIGHT = 43;
 const SIDEBAR_COLLAPSED_WIDTH = 282;
 const SIDEBAR_WIDTH = 377;
 
-export const FolderMedia = () => {
+export const BinMedia = () => {
   const params = useParams<Params>();
   const { id } = params;
   const openNav = useSelector((state: any) => state.ui.openNav);
 
   // TODO potentially provide user feedback for an invalid id
-  const { data: groupData, isFetching } =
-    mediaManagerApi.useGetGroupDataQuery(id);
+  const { data: binGroups, isFetching: isGroupsFetching } =
+    mediaManagerApi.useGetBinGroupsQuery(id);
+  const { data: binFiles, isFetching: isFilesFetching } =
+    mediaManagerApi.useGetBinFilesQuery(id);
 
-  if (isFetching) return <div>Loading...</div>;
+  if (isGroupsFetching || isFilesFetching) return <div>Loading...</div>;
 
-  if (!isFetching && !groupData.files?.length) return <EmptyState />;
+  if (!isFilesFetching && !binFiles?.length) return <EmptyState />;
 
   return (
     <MediaGrid
-      files={groupData.files}
-      groups={groupData.groups}
+      files={binFiles}
+      groups={binGroups}
       heightOffset={HEADER_HEIGHT}
       widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
     />
