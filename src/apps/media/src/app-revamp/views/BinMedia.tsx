@@ -7,6 +7,7 @@ import {
 import { MediaGrid } from "../components/MediaGrid";
 import { useSelector } from "react-redux";
 import { Header } from "../components/Header";
+import { UploadModal } from "../components/UploadModal";
 
 type Params = { id: string };
 
@@ -32,7 +33,13 @@ export const BinMedia = () => {
   if (isBinDataFetching || isGroupsFetching || isFilesFetching)
     return <div>Loading...</div>;
 
-  if (!isFilesFetching && !binFiles?.length) return <EmptyState />;
+  if (!isFilesFetching && !binFiles?.length)
+    return (
+      <>
+        <UploadModal />
+        <EmptyState />;
+      </>
+    );
 
   console.log("bin data", binData);
 

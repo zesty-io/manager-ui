@@ -4,6 +4,7 @@ import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 import { MediaGrid } from "../components/MediaGrid";
 import { useSelector } from "react-redux";
 import { Header } from "../components/Header";
+import { UploadModal } from "../components/UploadModal";
 
 type Params = { id: string };
 
@@ -22,7 +23,13 @@ export const FolderMedia = () => {
 
   if (isFetching) return <div>Loading...</div>;
 
-  if (!isFetching && !groupData.files?.length) return <EmptyState />;
+  if (!isFetching && !groupData.files?.length)
+    return (
+      <>
+        <UploadModal />
+        <EmptyState />;
+      </>
+    );
 
   return (
     <main>
