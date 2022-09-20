@@ -95,7 +95,10 @@ export const MediaGrid = ({
         {gridItemType === "group" && (
           <Box sx={{ height: "44px", px: 1 }}>
             {/* TODO: Construct path folder should navigate to */}
-            <Folder name={groups[gridItemIndex].name} path="" />
+            <Folder
+              name={groups[gridItemIndex].name}
+              id={groups[gridItemIndex].id}
+            />
           </Box>
         )}
         {gridItemType === "files" && (
