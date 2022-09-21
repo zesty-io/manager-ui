@@ -5,7 +5,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 
 import { FieldTypeText } from "@zesty-io/material";
-import { formatName } from "utility/formatName";
 import { updateField } from "shell/store/fields";
 
 import styles from "./DropdownOptions.less";
@@ -32,7 +31,7 @@ export function DropdownOptions(props) {
     // Update internal state
     let newOptions = [...options];
     newOptions.splice(i, 1, {
-      key: formatName(val),
+      key: val,
       value: name === "key" ? option.value : val,
     });
     setOptions(newOptions);
