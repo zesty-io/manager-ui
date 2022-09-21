@@ -1,5 +1,6 @@
 import Cookies from "js-cookie";
 import { rest } from "lodash";
+import { ZUID_REGEX } from "./regex";
 // import { store } from "shell/store";
 // import { endSession } from "shell/store/auth";
 
@@ -49,8 +50,6 @@ export function request(url, opts = {}) {
 
   return fetch(url, opts)
     .then((res) => {
-      // console.log("Request:", res);
-
       //HTTP Code No Content 204
       if (res.status === 204) {
         return res;
@@ -58,7 +57,11 @@ export function request(url, opts = {}) {
 
       // Bad Request
       if (res.status === 400) {
-        throw new Error(`400:RequestError: ${res.url}`);
+        if (ZUID_REGEX.test(url.split("?")[0].split("/").pop())) {
+          return {};
+        } else {
+          return [];
+        }
       }
 
       // if (res.status === 401) {
