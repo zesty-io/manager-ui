@@ -30,7 +30,7 @@ const tabPaths = ["resources", "users", "timeline", "insights"];
 
 const filtersOnView = {
   resources: ["happenedAt", "resourceType", "actionByUserZUID"],
-  users: ["happenedAt", "userRole"],
+  users: ["sortByUsers", "userRole"],
   timeline: ["action", , "resourceType", "actionByUserZUID"],
   insights: ["action", "actionByUserZUID"],
 };
@@ -52,7 +52,7 @@ export const Home = () => {
       if API call is ready to be executed
     */
     setInitialized(true);
-  }, []);
+  }, [location.pathname]);
 
   const {
     data: actions,
@@ -207,6 +207,7 @@ export const Home = () => {
                 onReset={() => {
                   setParams("", "action");
                   setParams("", "actionByUserZUID");
+                  setParams("", "resourceType");
                   setDefaultDateParams();
                 }}
               />
@@ -321,7 +322,7 @@ export const Home = () => {
   return (
     <>
       <Box sx={{ px: 3, pt: 3, mb: 1 }}>
-        <Typography variant="h4" sx={{ mb: 0.5 }}>
+        <Typography variant="h4" fontWeight={600} sx={{ mb: 0.5 }}>
           Activity Log
         </Typography>
         <Typography variant="subtitle2" color="text.secondary">

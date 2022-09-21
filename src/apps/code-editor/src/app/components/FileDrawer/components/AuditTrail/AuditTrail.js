@@ -28,7 +28,7 @@ export default function AuditTrail(props) {
     >
       <CardHeader
         avatar={<HistoryIcon fontSize="small" />}
-        title="AuditTrail™"
+        title="Activity Log"
         sx={{ backgroundColor: "#272728" }}
       ></CardHeader>
 
