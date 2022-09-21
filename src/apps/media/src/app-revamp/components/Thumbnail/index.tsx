@@ -325,7 +325,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             <CardMedia
               component="div"
               sx={{
-                backgroundImage: `url("https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png")`,
+                backgroundImage: `url(${src})`,
                 backgroundPosition: "center",
                 backgroundSize: "100%",
                 height: "100%",
