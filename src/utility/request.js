@@ -57,6 +57,14 @@ export function request(url, opts = {}) {
 
       // Bad Request
       if (res.status === 400) {
+        /* 
+          On bad request we do not want to throw an error and reject the promise in order
+          to avoid disrupting the dispatch flow of the application. Instead we want to return
+          the empty response object or array that is expected by the application. In order to determine
+          if the expectation is an object or array we check the url for the presence of a ZUID. If
+          the ZUID is present we expect an single resource object, otherwise we expect an multi resource array.
+        */
+
         if (ZUID_REGEX.test(url.split("?")[0].split("/").pop())) {
           return {};
         } else {
