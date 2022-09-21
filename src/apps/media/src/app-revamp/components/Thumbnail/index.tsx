@@ -2,6 +2,7 @@ import { FC, useState, useRef } from "react";
 import { CardMedia, Card, Box } from "@mui/material";
 import { fileExtension } from "../../utils/fileUtils";
 import { ThumbnailContent } from "./ThumbnailContent";
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 
 // file icons import
 import wordImg from "../../../../../../../public/images/wordImg.png";
@@ -93,8 +94,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               image={src}
               loading="lazy"
               sx={{
-                objectFit:
-                  imageOrientation === "horizontal" ? "fill" : "contain",
+                objectFit: "contain",
                 overflow: "hidden",
                 height: "inherit",
                 display: "table-cell",
@@ -273,7 +273,6 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "mid":
     case "mp3":
     case "wav":
-    case "mp4":
       return (
         <Card sx={styledCard} elevation={0} onClick={onClick}>
           <Box
@@ -295,6 +294,58 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
           <ThumbnailContent
             extension={fileExtension(filename)}
+            filename={filename}
+            onFilenameChange={onFilenameChange}
+            isEditable={isEditable}
+            backgroundColor="purple.50"
+            color="purple.900"
+          />
+        </Card>
+      );
+    case "mp4":
+    case "mov":
+    case "avi":
+    case "wmv":
+    case "mkv":
+    case "webm":
+    case "flv":
+    case "f4v":
+    case "swf":
+    case "avchd":
+    case "html5":
+      return (
+        <Card sx={styledCard} elevation={0} onClick={onClick}>
+          <Box
+            sx={{
+              py: imageOrientation === "horizontal" && 1,
+              px: imageOrientation === "vertical" && "auto",
+              height: "160px",
+            }}
+          >
+            <CardMedia
+              component="div"
+              sx={{
+                backgroundImage: `url("https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png")`,
+                backgroundPosition: "center",
+                backgroundSize: "100%",
+                height: "100%",
+                backgroundRepeat: "no-repeat",
+                display: "flex",
+                alignItems: "center",
+                flexWrap: "wrap",
+              }}
+            >
+              <PlayCircleIcon
+                fontSize="large"
+                sx={{
+                  margin: "auto",
+                  color: "#FFF",
+                }}
+              />
+            </CardMedia>
+          </Box>
+          <ThumbnailContent
+            extension={fileExtension("qwrqwrqwr.mp4")}
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
