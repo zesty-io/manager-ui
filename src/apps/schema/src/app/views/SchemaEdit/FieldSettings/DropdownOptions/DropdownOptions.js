@@ -6,7 +6,6 @@ import AddIcon from "@mui/icons-material/Add";
 
 import { FieldTypeText } from "@zesty-io/material";
 import { updateField } from "shell/store/fields";
-import { validInput } from "utility/validInput";
 
 import styles from "./DropdownOptions.less";
 export function DropdownOptions(props) {
@@ -29,25 +28,23 @@ export function DropdownOptions(props) {
   const [options, setOptions] = useState(initialState);
 
   const updateOption = (option, i, name, val) => {
-    if (validInput(val)) {
-      // Update internal state
-      let newOptions = [...options];
-      newOptions.splice(i, 1, {
-        key: val,
-        value: name === "key" ? option.value : val,
-      });
-      setOptions(newOptions);
+    // Update internal state
+    let newOptions = [...options];
+    newOptions.splice(i, 1, {
+      key: val,
+      value: name === "key" ? option.value : val,
+    });
+    setOptions(newOptions);
 
-      // Notify store of new options
-      props.updateFieldSetting(
-        // convert to expected api shape
-        newOptions.reduce((acc, option) => {
-          acc[option.key] = option.value;
-          return acc;
-        }, {}),
-        "options"
-      );
-    }
+    // Notify store of new options
+    props.updateFieldSetting(
+      // convert to expected api shape
+      newOptions.reduce((acc, option) => {
+        acc[option.key] = option.value;
+        return acc;
+      }, {}),
+      "options"
+    );
   };
 
   const deleteOption = (optionIndex) => {
