@@ -3,7 +3,7 @@ import { FC } from "react";
 import { Box } from "@mui/material";
 
 interface Props {
-  progress: number;
+  progress?: number;
   src: string;
   filename: string;
   isEditable?: boolean;
