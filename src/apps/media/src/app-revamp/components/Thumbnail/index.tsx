@@ -93,8 +93,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               image={src}
               loading="lazy"
               sx={{
-                objectFit:
-                  imageOrientation === "horizontal" ? "fill" : "contain",
+                objectFit: "contain",
                 overflow: "hidden",
                 height: "inherit",
                 display: "table-cell",
