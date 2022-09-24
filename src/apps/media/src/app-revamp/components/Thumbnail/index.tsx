@@ -43,7 +43,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onClick={onRemove}
             sx={{
               right: 9,
-              top: "8px",
+              top: 8,
               position: "absolute",
               backgroundColor: "grey.100",
               width: "24px",
