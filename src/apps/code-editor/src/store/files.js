@@ -180,7 +180,6 @@ export function files(state = [], action) {
             (taking advantage of lazy evaluation)
           */
           const dirty = file.dirty || file.code !== action.payload.code;
-          console.log({ dirty });
           return {
             ...file,
             code: action.payload.code,
