@@ -4,6 +4,7 @@ import { fileExtension } from "../../utils/fileUtils";
 import { ThumbnailContent } from "./ThumbnailContent";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import { useTheme } from "@mui/material/styles";
 
 // file icons import
 import wordImg from "../../../../../../../public/images/wordImg.png";
@@ -35,6 +36,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   onFilenameChange,
   onClick,
 }) => {
+  const theme = useTheme();
   const imageEl = useRef<HTMLImageElement>();
   const [imageOrientation, setImageOrientation] = useState<string>("");
 
@@ -75,6 +77,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     borderWidth: "1px",
     borderColor: "grey.100",
     borderStyle: "solid",
+    borderRadius: "6px",
     cursor: onClick ? "pointer" : "default",
   };
 
@@ -85,6 +88,15 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     m: "auto",
     display: "table-cell",
     verticalAlign: "bottom",
+  };
+
+  const styledCheckerBoard = {
+    backgroundImage:
+      fileExtension(filename) === "png" &&
+      `linear-gradient(45deg, ${theme.palette.grey[100]} 25%, transparent 25%), 
+      linear-gradient(135deg, ${theme.palette.grey[100]} 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, ${theme.palette.grey[100]} 75%),
+      linear-gradient(135deg, transparent 75%, ${theme.palette.grey[100]} 75%)`,
   };
 
   /**
@@ -115,14 +127,29 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         <Card sx={styledCard} elevation={0} onClick={onClick}>
           <Box
             sx={{
+              ...styledCheckerBoard,
               py: imageOrientation === "horizontal" && 1,
               px: imageOrientation === "vertical" && "auto",
-              boxSizing: "border-box",
               height: "160px",
               overflow: "hidden",
-              backgroundColor: "grey.100",
+              backgroundColor: fileExtension(filename) !== "png" && "grey.100",
+              position: "relative",
+              backgroundSize: `25px 25px`,
+              backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
             }}
           >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                },
+              }}
+            ></Box>
             <RemoveIcon />
             <CardMedia
               component="img"
