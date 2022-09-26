@@ -1,9 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { Dispatch } from "redux";
 import { Location } from "history";
-// TODO why do I have to use relative paths here?
 import idb from "../../utility/idb";
-import history from "../../utility/history";
 import { AppState } from "./types";
 import { isValid as zuidIsValid } from "zuid";
 
