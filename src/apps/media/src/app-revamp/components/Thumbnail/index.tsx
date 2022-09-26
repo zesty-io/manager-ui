@@ -3,6 +3,7 @@ import { CardMedia, Card, Box } from "@mui/material";
 import { fileExtension } from "../../utils/fileUtils";
 import { ThumbnailContent } from "./ThumbnailContent";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import { useTheme } from "@mui/material/styles";
 
 // file icons import
@@ -20,6 +21,7 @@ interface ThumbnailProps {
   src?: string;
   filename?: string;
   isEditable?: boolean;
+  showVideo?: boolean;
   onRemove?: () => void;
   onFilenameChange?: (value: string) => void;
   onClick?: () => void;
@@ -29,6 +31,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   src,
   filename,
   isEditable,
+  showVideo,
   onRemove,
   onFilenameChange,
   onClick,
@@ -129,6 +132,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               px: imageOrientation === "vertical" && "auto",
               height: "160px",
               overflow: "hidden",
+              backgroundColor: fileExtension(filename) !== "png" && "grey.100",
               position: "relative",
               backgroundSize: `25px 25px`,
               backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
@@ -157,7 +161,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               sx={{
                 objectFit: "contain",
                 overflow: "hidden",
-                height: "inherit",
+                height: "100%",
                 display: "table-cell",
                 verticalAlign: "bottom",
               }}
@@ -339,7 +343,6 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "mid":
     case "mp3":
     case "wav":
-    case "mp4":
       return (
         <Card sx={styledCard} elevation={0} onClick={onClick}>
           <Box
@@ -358,6 +361,68 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               image={mpImg}
               loading="lazy"
               sx={styledDocfileThumbnail}
+            />
+          </Box>
+          <ThumbnailContent
+            extension={fileExtension(filename)}
+            filename={filename}
+            onFilenameChange={onFilenameChange}
+            isEditable={isEditable}
+            backgroundColor="purple.50"
+            color="purple.900"
+          />
+        </Card>
+      );
+    case "mp4":
+    case "mov":
+    case "avi":
+    case "wmv":
+    case "mkv":
+    case "webm":
+    case "flv":
+    case "f4v":
+    case "swf":
+    case "avchd":
+    case "html5":
+      return (
+        <Card sx={styledCard} elevation={0} onClick={onClick}>
+          <Box
+            sx={{
+              boxSizing: "border-box",
+              height: "160px",
+              overflow: "hidden",
+              position: "relative",
+              display: "flex",
+              backgroundColor: "#000",
+            }}
+          >
+            <RemoveIcon />
+            {showVideo && (
+              <CardMedia
+                component="video"
+                controls={false}
+                src={src}
+                sx={{
+                  backgroundColor: "#000",
+                  display: "flex",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  py: 1,
+                }}
+              />
+            )}
+            <PlayCircleIcon
+              fontSize="large"
+              sx={{
+                top: 0,
+                bottom: 0,
+                right: 0,
+                left: 0,
+                m: "auto",
+                color: "#FFF",
+                position: "absolute",
+                textAlign: "center",
+              }}
             />
           </Box>
           <ThumbnailContent
@@ -507,4 +572,5 @@ export const Thumbnail: FC<ThumbnailProps> = ({
 
 Thumbnail.defaultProps = {
   isEditable: false,
+  showVideo: true,
 };
