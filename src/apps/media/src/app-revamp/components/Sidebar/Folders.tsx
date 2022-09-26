@@ -4,6 +4,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import LanguageIcon from "@mui/icons-material/Language";
 import FolderIcon from "@mui/icons-material/Folder";
+import AddIcon from "@mui/icons-material/Add";
 import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
 import { useSelector } from "react-redux";
 import {
@@ -14,6 +15,7 @@ import {
   useState,
 } from "react";
 import { useHistory, useLocation } from "react-router";
+import { NewFolderDialog } from "../NewFolderDialog";
 
 /**
  * It takes an array of items, an id, and a link, and returns a new array of items with the children of
@@ -40,6 +42,7 @@ export const Folders = () => {
   const open = Boolean(anchorEl);
   const history = useHistory();
   const location = useLocation();
+  const [openNewFolderDialog, setOpenNewFolderDialog] = useState(false);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const { data: bins } = mediaManagerApi.useGetSiteBinsQuery(instanceId);
@@ -171,32 +174,43 @@ export const Folders = () => {
   return (
     <>
       <Box
-        sx={{ display: "flex", alignItems: "center", gap: 0.25, px: 2, py: 1 }}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          px: 2,
+          py: 1,
+        }}
       >
-        <Typography variant="overline" color="text.secondary">
-          FOLDERS
-        </Typography>
-        <IconButton size="small" onClick={openMenu}>
-          <ArrowDropDownIcon fontSize="small" />
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.25 }}>
+          <Typography variant="overline" color="text.secondary">
+            FOLDERS
+          </Typography>
+          <IconButton size="small" onClick={openMenu}>
+            <ArrowDropDownIcon fontSize="small" />
+          </IconButton>
+          <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
+            <MenuItem
+              onClick={() => {
+                closeMenu();
+                setSort("asc");
+              }}
+            >
+              Name (A to Z)
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                closeMenu();
+                setSort("desc");
+              }}
+            >
+              Name (Z to A)
+            </MenuItem>
+          </Menu>
+        </Box>
+        <IconButton size="small" onClick={() => setOpenNewFolderDialog(true)}>
+          <AddIcon fontSize="small" />
         </IconButton>
-        <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
-          <MenuItem
-            onClick={() => {
-              closeMenu();
-              setSort("asc");
-            }}
-          >
-            Name (A to Z)
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              closeMenu();
-              setSort("desc");
-            }}
-          >
-            Name (Z to A)
-          </MenuItem>
-        </Menu>
       </Box>
       {!isLoading ? (
         <TreeView
@@ -215,6 +229,11 @@ export const Folders = () => {
           {trees.map((tree: any) => renderTree(tree))}
         </TreeView>
       ) : null}
+      <NewFolderDialog
+        open={openNewFolderDialog}
+        onClose={() => setOpenNewFolderDialog(false)}
+        binId={bins?.find((bin) => bin.default)?.id}
+      />
     </>
   );
 };

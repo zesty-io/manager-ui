@@ -17,7 +17,7 @@ import { Group } from "../../../../../shell/services/types";
 interface Props {
   open: boolean;
   onClose: () => void;
-  id: string;
+  id?: string;
   binId: string;
 }
 
