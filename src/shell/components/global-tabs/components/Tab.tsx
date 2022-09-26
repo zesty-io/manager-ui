@@ -61,7 +61,6 @@ const BaseTab: FC<BaseTab> = ({
         boxSizing: "border-box",
         padding: "0 12px 0 12px",
         alignItems: "center",
-        //TODO make sure this is right
         filter: "drop-shadow(0px 4px 4px #000000)",
         "&hover": {
           border: "none",
