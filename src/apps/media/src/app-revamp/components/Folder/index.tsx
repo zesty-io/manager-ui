@@ -15,11 +15,13 @@ export const Folder: React.FC<FolderProps> = ({ name, id }) => {
       fullWidth
       startIcon={<FolderIcon />}
       variant="outlined"
+      color="inherit"
       sx={{
         height: "100%",
         justifyContent: "flex-start",
         color: "grey.500",
         borderColor: "grey.100",
+        textTransform: "none",
       }}
       onClick={() => {
         history.push("/media/" + id);

@@ -9,3 +9,6 @@ export const prepareHeaders = (headers) => {
   }
   return headers;
 };
+
+export const generateThumbnail = (file) =>
+  `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${file.id}/getimage?w=200&h=200&type=fit`;

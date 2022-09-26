@@ -1,13 +1,21 @@
-import { Box, Typography, IconButton } from "@mui/material";
+import { Box, Typography, IconButton, Menu, MenuItem } from "@mui/material";
 import { TreeView, TreeItem } from "@mui/lab";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import LanguageIcon from "@mui/icons-material/Language";
 import FolderIcon from "@mui/icons-material/Folder";
+import AddIcon from "@mui/icons-material/Add";
 import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
 import { useSelector } from "react-redux";
-import { SyntheticEvent, useEffect, useMemo } from "react";
+import {
+  MouseEvent,
+  SyntheticEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useHistory, useLocation } from "react-router";
+import { NewFolderDialog } from "../NewFolderDialog";
 
 /**
  * It takes an array of items, an id, and a link, and returns a new array of items with the children of
@@ -16,21 +24,39 @@ import { useHistory, useLocation } from "react-router";
  * @param {string} id - The id of the group you want to nest
  * @param [link=group_id] - The name of the property that links the items together.
  */
-const nest = (items: any, id: string, link = "group_id") =>
+const nest = (items: any, id: string, link: string, sort: string) =>
   items
     .filter((item: any) => item[link] === id)
-    .sort((a: any, b: any) => a.name.localeCompare(b.name))
-    .map((item: any) => ({ ...item, children: nest(items, item.id) }));
+    .sort((a: any, b: any) =>
+      sort === "asc"
+        ? a.name.localeCompare(b.name)
+        : b.name.localeCompare(a.name)
+    )
+    .map((item: any) => ({
+      ...item,
+      children: nest(items, item.id, link, sort),
+    }));
 
 export const Folders = () => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
   const history = useHistory();
   const location = useLocation();
+  const [openNewFolderDialog, setOpenNewFolderDialog] = useState(false);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const { data: bins } = mediaManagerApi.useGetSiteBinsQuery(instanceId);
   const { data: ecoBins } = mediaManagerApi.useGetEcoBinsQuery(ecoId, {
     skip: !ecoId,
   });
+  const [sort, setSort] = useState("asc");
+
+  const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const closeMenu = () => {
+    setAnchorEl(null);
+  };
 
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
@@ -45,27 +71,29 @@ export const Folders = () => {
   /* Creating a tree structure from the data. */
   const trees = useMemo(() => {
     if (binGroups) {
-      console.log("testing binGroups", binGroups);
       return binGroups
         .map((binGroup, idx) => {
           if (!binGroup.length) {
             return { ...combinedBins[idx], children: [] };
           } else if (combinedBins[idx].eco_id || binGroups.length > 1) {
-            console.log("testing binGroup", binGroup);
             return {
               ...combinedBins[idx],
-              children: nest(binGroup, binGroup[0].bin_id),
+              children: nest(binGroup, binGroup[0].bin_id, "group_id", sort),
             };
           } else {
-            return nest(binGroup, binGroup[0].bin_id);
+            return nest(binGroup, binGroup[0].bin_id, "group_id", sort);
           }
         })
         .flat()
-        .sort((a, b) => a.name.localeCompare(b.name));
+        .sort((a, b) =>
+          sort === "asc"
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name)
+        );
     } else {
       return [];
     }
-  }, [binGroups]);
+  }, [combinedBins, binGroups]);
 
   /* Creating a path to the selected folder. */
   const selectedPath = useMemo(() => {
@@ -146,13 +174,42 @@ export const Folders = () => {
   return (
     <>
       <Box
-        sx={{ display: "flex", alignItems: "center", gap: 0.25, px: 2, py: 1 }}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          px: 2,
+          py: 1,
+        }}
       >
-        <Typography variant="overline" color="text.secondary">
-          FOLDERS
-        </Typography>
-        <IconButton size="small">
-          <ArrowDropDownIcon fontSize="small" />
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.25 }}>
+          <Typography variant="overline" color="text.secondary">
+            FOLDERS
+          </Typography>
+          <IconButton size="small" onClick={openMenu}>
+            <ArrowDropDownIcon fontSize="small" />
+          </IconButton>
+          <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
+            <MenuItem
+              onClick={() => {
+                closeMenu();
+                setSort("asc");
+              }}
+            >
+              Name (A to Z)
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                closeMenu();
+                setSort("desc");
+              }}
+            >
+              Name (Z to A)
+            </MenuItem>
+          </Menu>
+        </Box>
+        <IconButton size="small" onClick={() => setOpenNewFolderDialog(true)}>
+          <AddIcon fontSize="small" />
         </IconButton>
       </Box>
       {!isLoading ? (
@@ -172,6 +229,11 @@ export const Folders = () => {
           {trees.map((tree: any) => renderTree(tree))}
         </TreeView>
       ) : null}
+      <NewFolderDialog
+        open={openNewFolderDialog}
+        onClose={() => setOpenNewFolderDialog(false)}
+        binId={bins?.find((bin) => bin.default)?.id}
+      />
     </>
   );
 };

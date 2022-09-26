@@ -20,22 +20,18 @@ export const AllMedia = () => {
       { skip: !bins?.length }
     );
 
-  if (isFilesLoading || isBinsLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!files?.length) {
-    return <EmptyState />;
-  }
-
   return (
-    <main>
+    <Box component="main" sx={{ flex: 1 }}>
       <Header title="All Media" />
-      <MediaGrid
-        files={files}
-        heightOffset={HEADER_HEIGHT}
-        widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
-      />
-    </main>
+      {(isFilesLoading || isBinsLoading) && !files?.length ? (
+        <EmptyState />
+      ) : (
+        <MediaGrid
+          files={files}
+          heightOffset={HEADER_HEIGHT}
+          widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
+        />
+      )}
+    </Box>
   );
 };
