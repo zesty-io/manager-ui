@@ -5,6 +5,7 @@ import { Location } from "history";
 import idb from "../../utility/idb";
 import history from "../../utility/history";
 import { AppState } from "./types";
+import { isValid as zuidIsValid } from "zuid";
 
 import {
   faCode,
@@ -20,8 +21,6 @@ import {
   IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import { isEqual } from "lodash";
-
-const ZUID_REGEX = /[a-zA-Z0-9]{1,5}-[a-zA-Z0-9]{6,10}-[a-zA-Z0-9]{5,35}/;
 
 export type Tab = {
   pathname: string;
@@ -153,7 +152,7 @@ export function parsePath({ pathname: path, search }: TabLocation) {
     ) {
       contentSection = parts.pop();
     }
-    if (ZUID_REGEX.test(parts[parts.length - 1])) {
+    if (zuidIsValid(parts[parts.length - 1])) {
       zuid = parts.pop();
     }
   }

@@ -46,7 +46,9 @@ export const instanceApi = createApi({
       transformResponse: (response: { data: any[] }) => {
         return response.data.map((action) => {
           const normalizedAffectedZUID = action.affectedZUID?.startsWith("12")
-            ? action.meta?.uri?.split("/")[4]
+            ? // Obtain model ID via URI or via message for older audit items that to do not have URI field
+              action.meta?.uri?.split("/")[4] ||
+              action.meta?.message?.split(" ")[5]?.replaceAll("`", "")
             : action.action === 5
             ? action.meta?.uri?.split("/")[6]
             : action.affectedZUID;

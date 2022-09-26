@@ -77,8 +77,6 @@ module.exports = async (env) => {
       extensions: [".ts", ".tsx", ".js"],
     },
     plugins: [
-      /*
-      TODO re-add this
       new SentryCliPlugin({
         include: "./build",
         ignoreFile: ".sentrycliignore",
@@ -89,7 +87,6 @@ module.exports = async (env) => {
         org: "zestyio",
         dryRun: process.env.NODE_ENV === "development" ? true : false,
       }),
-      */
       new NodePolyfillPlugin({
         excludeAliases: ["console"],
       }),
