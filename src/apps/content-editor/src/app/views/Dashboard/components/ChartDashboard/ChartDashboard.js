@@ -102,7 +102,7 @@ export function ChartDashboard(props) {
           />
         </CardContent>
         <CardActions>
-          There were <strong>{total} actions</strong> in the past{" "}
+          There were <strong>&nbsp;{total} actions&nbsp;</strong> in the past{" "}
           <strong>30 days</strong>
         </CardActions>
       </Card>

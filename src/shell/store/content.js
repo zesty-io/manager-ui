@@ -3,6 +3,7 @@ import cloneDeep from "lodash/cloneDeep";
 
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
+import { fetchNav, navContent } from "apps/content-editor/src/store/navContent";
 
 export function content(state = {}, action) {
   const item = state[action.itemZUID];
@@ -404,6 +405,14 @@ export function saveItem(itemZUID, action = "") {
 
     if (item.web.metaDescription) {
       item.web.metaDescription = item.web.metaDescription.slice(0, 160);
+    }
+
+    // fetch nav only when metaLinkText is updated
+    const navItem = state.navContent.raw.find(
+      (nav) => nav.ZUID === item.meta.ZUID
+    );
+    if (item.web.metaLinkText !== navItem.label) {
+      dispatch(fetchNav());
     }
 
     return request(

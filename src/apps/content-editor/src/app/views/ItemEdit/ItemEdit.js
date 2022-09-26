@@ -202,6 +202,7 @@ export default function ItemEdit() {
         );
         return;
       }
+
       dispatch(
         notify({
           message: `Saved a new ${

@@ -8,6 +8,7 @@ import { createSelector } from "@reduxjs/toolkit";
 import Divider from "@mui/material/Divider";
 
 import { WithLoader } from "@zesty-io/core/WithLoader";
+import { NotFound } from "shell/components/NotFound";
 import { Header } from "./Header";
 import { Editor } from "../../components/Editor";
 import { ItemSettings } from "../ItemEdit/Meta/ItemSettings";
@@ -37,7 +38,6 @@ export default function ItemCreate() {
   const item = useSelector((state) => state.content[itemZUID]);
   const instance = useSelector((state) => state.instance);
   const content = useSelector((state) => state.content);
-  const platform = useSelector((state) => state.platform);
   const fields = useSelector((state) =>
     selectSortedModelFields(state, modelZUID)
   );
@@ -127,6 +127,10 @@ export default function ItemCreate() {
         setSaving(false);
       }
     }
+  }
+
+  if (!loading && !model) {
+    return <NotFound message={`Model "${modelZUID}" not found`} />;
   }
 
   return (
