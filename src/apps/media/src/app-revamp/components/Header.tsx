@@ -59,7 +59,6 @@ export const Header = ({ title, id, binId, groupId }: Props) => {
           {id ? (
             <IconButton
               size="small"
-              color="primary"
               onClick={handleClick}
               sx={{ height: "fit-content" }}
             >
