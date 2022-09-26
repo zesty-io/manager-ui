@@ -2,6 +2,7 @@ import { FC, useState, useRef } from "react";
 import { CardMedia, Card, Box } from "@mui/material";
 import { fileExtension } from "../../utils/fileUtils";
 import { ThumbnailContent } from "./ThumbnailContent";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
 // file icons import
 import wordImg from "../../../../../../../public/images/wordImg.png";
@@ -18,6 +19,7 @@ interface ThumbnailProps {
   src?: string;
   filename?: string;
   isEditable?: boolean;
+  onRemove?: () => void;
   onFilenameChange?: (value: string) => void;
   onClick?: () => void;
 }
@@ -26,11 +28,43 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   src,
   filename,
   isEditable,
+  onRemove,
   onFilenameChange,
   onClick,
 }) => {
   const imageEl = useRef<HTMLImageElement>();
   const [imageOrientation, setImageOrientation] = useState<string>("");
+
+  const RemoveIcon = () => {
+    return (
+      <>
+        {onRemove && (
+          <Box
+            onClick={onRemove}
+            sx={{
+              right: 9,
+              top: 8,
+              position: "absolute",
+              backgroundColor: "grey.100",
+              width: "24px",
+              height: "24px",
+              borderRadius: "100%",
+              cursor: "pointer",
+              textAlign: "center",
+            }}
+          >
+            <CloseRoundedIcon
+              fontSize="small"
+              sx={{
+                mt: 0.3,
+                color: "grey.400",
+              }}
+            />
+          </Box>
+        )}
+      </>
+    );
+  };
 
   const styledCard = {
     width: "100%",
@@ -85,6 +119,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               overflow: "hidden",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               ref={imageEl}
@@ -125,6 +160,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={excelImg}
@@ -155,6 +191,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={csvImg}
@@ -187,6 +224,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={wordImg}
@@ -217,6 +255,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={pdfImg}
@@ -249,6 +288,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={pptImg}
@@ -284,6 +324,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={mpImg}
@@ -317,6 +358,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={zipImg}
@@ -352,6 +394,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={defaultImg}
@@ -382,6 +425,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={numberImg}
@@ -412,6 +456,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={defaultImg}
