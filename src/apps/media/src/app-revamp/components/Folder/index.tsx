@@ -4,10 +4,10 @@ import FolderIcon from "@mui/icons-material/Folder";
 
 interface FolderProps {
   name: string;
-  path: string;
+  id: string;
 }
 
-export const Folder: React.FC<FolderProps> = ({ name, path }) => {
+export const Folder: React.FC<FolderProps> = ({ name, id }) => {
   const history = useHistory();
 
   return (
@@ -22,7 +22,7 @@ export const Folder: React.FC<FolderProps> = ({ name, path }) => {
         borderColor: "grey.100",
       }}
       onClick={() => {
-        history.push(path);
+        history.push("/media/" + id);
       }}
     >
       <Typography

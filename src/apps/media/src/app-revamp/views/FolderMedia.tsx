@@ -3,6 +3,7 @@ import { EmptyState } from "../components/EmptyState";
 import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 import { MediaGrid } from "../components/MediaGrid";
 import { useSelector } from "react-redux";
+import { Header } from "../components/Header";
 
 type Params = { id: string };
 
@@ -24,11 +25,14 @@ export const FolderMedia = () => {
   if (!isFetching && !groupData.files?.length) return <EmptyState />;
 
   return (
-    <MediaGrid
-      files={groupData.files}
-      groups={groupData.groups}
-      heightOffset={HEADER_HEIGHT}
-      widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
-    />
+    <main>
+      <Header title={groupData.name} />
+      <MediaGrid
+        files={groupData.files}
+        groups={groupData.groups}
+        heightOffset={HEADER_HEIGHT}
+        widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
+      />
+    </main>
   );
 };

@@ -11,7 +11,7 @@ export const EmptyState: FC<Props> = ({}) => {
       <Typography variant="body2">
         You can drag and drop files here or use the "Upload" button.
       </Typography>
-      <UploadButton onClick={() => console.log("Hello world")} />
+      <UploadButton />
     </Stack>
   );
 };

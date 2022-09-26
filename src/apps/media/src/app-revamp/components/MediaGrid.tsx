@@ -1,6 +1,6 @@
 import { useEffect, useRef, useMemo } from "react";
 import { VariableSizeGrid } from "react-window";
-import { Box, Card, CardContent, CardMedia, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useWindowSize } from "react-use";
 import { Folder } from "../components/Folder";
 import { File, Group } from "../../../../../shell/services/types";
@@ -58,7 +58,7 @@ export const MediaGrid = ({
     if (listRef.current) {
       listRef.current.resetAfterIndices({ columnIndex: 0, rowIndex: 0 });
     }
-  }, [width, widthOffset]);
+  }, [width, widthOffset, groups, files]);
 
   const getRowHeight = (index: number) => {
     const gridItem = grid[index * columns];
@@ -79,6 +79,9 @@ export const MediaGrid = ({
     const gridItemIndex = Number(
       grid[rowIndex * columns + columnIndex].split("-")[1]
     );
+    const isFirst = columnIndex === 0;
+    const isLast = columnIndex === columns - 1;
+
     return (
       <div style={style}>
         {gridItemType === "empty" && <div></div>}
@@ -87,15 +90,25 @@ export const MediaGrid = ({
             variant="h6"
             color="text.secondary"
             fontWeight={600}
-            sx={{ px: 1 }}
+            sx={{ pl: 3 }}
           >
             Folders
           </Typography>
         )}
         {gridItemType === "group" && (
-          <Box sx={{ height: "44px", px: 1 }}>
+          <Box
+            sx={{
+              height: "44px",
+              px: 1,
+              pl: isFirst ? 3 : 1,
+              pr: isLast ? "10px" : 1,
+            }}
+          >
             {/* TODO: Construct path folder should navigate to */}
-            <Folder name={groups[gridItemIndex].name} path="" />
+            <Folder
+              name={groups[gridItemIndex].name}
+              id={groups[gridItemIndex].id}
+            />
           </Box>
         )}
         {gridItemType === "files" && (
@@ -103,13 +116,19 @@ export const MediaGrid = ({
             variant="h6"
             color="text.secondary"
             fontWeight={600}
-            sx={{ px: 1 }}
+            sx={{ pl: 3 }}
           >
             Files
           </Typography>
         )}
         {gridItemType === "file" && (
-          <Box sx={{ height: "204px", px: 1 }}>
+          <Box
+            sx={{
+              height: "204px",
+              pl: isFirst ? 3 : 1,
+              pr: isLast ? "10px" : 1,
+            }}
+          >
             <Thumbnail
               src={files[gridItemIndex].thumbnail}
               filename={files[gridItemIndex].filename}

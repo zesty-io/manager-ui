@@ -27,6 +27,7 @@ import { notifications } from "./notifications";
 import { platform } from "./platform";
 import { headTags } from "./headTags";
 import media from "./media";
+import mediaRevamp from "./media-revamp";
 import { ui } from "./ui";
 import { users } from "./users";
 import { releases } from "./releases";
@@ -101,6 +102,7 @@ function createReducer(asyncReducers) {
     content,
     contentVersions,
     media,
+    mediaRevamp,
     logs,
     notifications,
     platform,

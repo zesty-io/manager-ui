@@ -19,6 +19,10 @@ export const mediaManagerApi = createApi({
   }),
   tagTypes: ["BinGroups", "BinFiles", "GroupData"],
   endpoints: (builder) => ({
+    getBin: builder.query<Bin[], string>({
+      query: (binId) => `bin/${binId}`,
+      transformResponse: getResponseData,
+    }),
     getSiteBins: builder.query<Bin[], number>({
       query: (instanceId) => `site/${instanceId}/bins`,
       transformResponse: getResponseData,
@@ -108,6 +112,7 @@ export const mediaManagerApi = createApi({
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
 export const {
+  useGetBinQuery,
   useGetSiteBinsQuery,
   useGetEcoBinsQuery,
   useGetAllBinFilesQuery,
