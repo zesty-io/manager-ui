@@ -9,12 +9,18 @@ import { useSelector } from "react-redux";
 import { SyntheticEvent, useEffect, useMemo } from "react";
 import { useHistory, useLocation } from "react-router";
 
+/**
+ * It takes an array of items, an id, and a link, and returns a new array of items with the children of
+ * the item with the given id nested under it
+ * @param {any} items - The array of items to nest.
+ * @param {string} id - The id of the group you want to nest
+ * @param [link=group_id] - The name of the property that links the items together.
+ */
 const nest = (items: any, id: string, link = "group_id") =>
   items
     .filter((item: any) => item[link] === id)
+    .sort((a: any, b: any) => a.name.localeCompare(b.name))
     .map((item: any) => ({ ...item, children: nest(items, item.id) }));
-
-type Params = { id: string };
 
 export const Folders = () => {
   const history = useHistory();
@@ -36,13 +42,16 @@ export const Folders = () => {
       }
     );
 
+  /* Creating a tree structure from the data. */
   const trees = useMemo(() => {
     if (binGroups) {
+      console.log("testing binGroups", binGroups);
       return binGroups
         .map((binGroup, idx) => {
           if (!binGroup.length) {
             return { ...combinedBins[idx], children: [] };
-          } else if (combinedBins[idx].eco_id) {
+          } else if (combinedBins[idx].eco_id || binGroups.length > 1) {
+            console.log("testing binGroup", binGroup);
             return {
               ...combinedBins[idx],
               children: nest(binGroup, binGroup[0].bin_id),
@@ -58,6 +67,7 @@ export const Folders = () => {
     }
   }, [binGroups]);
 
+  /* Creating a path to the selected folder. */
   const selectedPath = useMemo(() => {
     const id = location.pathname.split("/")[2];
     const path = [];
@@ -71,7 +81,7 @@ export const Folders = () => {
           path.push(node.id);
           currId = node.group_id;
         } else {
-          path.push(binGroups.flat().find((group) => group.id === id).bin_id);
+          path.push(binGroups.flat().find((group) => group.id === id)?.bin_id);
           done = true;
         }
       }
