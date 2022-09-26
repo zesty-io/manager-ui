@@ -24,11 +24,10 @@ interface Props {
   binId?: string;
   groupId?: string;
 }
+type Dialogs = "delete" | "rename" | "new" | null;
 
 export const Header = ({ title, id, binId, groupId }: Props) => {
-  const [openRenameDialog, setOpenRenameDialog] = useState(false);
-  const [openNewFolderDialog, setOpenNewFolderDialog] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openDialog, setOpenDialog] = useState<Dialogs>(null);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -70,7 +69,7 @@ export const Header = ({ title, id, binId, groupId }: Props) => {
               divider
               onClick={() => {
                 closeMenu();
-                setOpenNewFolderDialog(true);
+                setOpenDialog("new");
               }}
             >
               <ListItemIcon>
@@ -81,7 +80,7 @@ export const Header = ({ title, id, binId, groupId }: Props) => {
             <MenuItem
               onClick={() => {
                 closeMenu();
-                setOpenRenameDialog(true);
+                setOpenDialog("rename");
               }}
             >
               <ListItemIcon>
@@ -93,7 +92,7 @@ export const Header = ({ title, id, binId, groupId }: Props) => {
               <MenuItem
                 onClick={() => {
                   closeMenu();
-                  setOpenDeleteDialog(true);
+                  setOpenDialog("delete");
                 }}
               >
                 <ListItemIcon>
@@ -109,26 +108,26 @@ export const Header = ({ title, id, binId, groupId }: Props) => {
         </Button>
       </Box>
       <RenameFolderDialog
-        open={openRenameDialog}
+        open={openDialog === "rename"}
         onClose={() => {
-          setOpenRenameDialog(false);
+          setOpenDialog(null);
         }}
         id={id}
         name={title}
         groupId={groupId}
       />
       <NewFolderDialog
-        open={openNewFolderDialog}
+        open={openDialog === "new"}
         onClose={() => {
-          setOpenNewFolderDialog(false);
+          setOpenDialog(null);
         }}
         binId={binId}
         id={id}
       />
       <DeleteFolderDialog
-        open={openDeleteDialog}
+        open={openDialog === "delete"}
         onClose={() => {
-          setOpenDeleteDialog(false);
+          setOpenDialog(null);
         }}
         id={id}
         groupId={groupId}
