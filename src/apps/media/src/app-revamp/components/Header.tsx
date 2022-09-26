@@ -32,7 +32,7 @@ export const Header = ({ title, id, binId, groupId }: Props) => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+  const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const closeMenu = () => {
@@ -59,7 +59,7 @@ export const Header = ({ title, id, binId, groupId }: Props) => {
           {id ? (
             <IconButton
               size="small"
-              onClick={handleClick}
+              onClick={openMenu}
               sx={{ height: "fit-content" }}
             >
               <ArrowDropDownIcon fontSize="small" />
