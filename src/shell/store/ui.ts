@@ -11,7 +11,6 @@ import {
   faChartLine,
   faDatabase,
   faEdit,
-  faFolder,
   faPlug,
   faBullseye,
   faImage,
@@ -355,7 +354,6 @@ export function pinTab({ pathname, search }: TabLocation) {
   };
 }
 
-// TODO this should probably be broken up, or have a name like "attempt unpin"
 export function unpinTab({ pathname, search }: TabLocation, force = false) {
   return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
@@ -363,7 +361,6 @@ export function unpinTab({ pathname, search }: TabLocation, force = false) {
     const tab = createTab(state, parsedPath);
     const { parts } = parsedPath;
     if (parts[0] === "code") {
-      // TODO fix me; account for fileType and maybe do tab equality different
       const fileType = parts[2];
       const dirtyFiles = state.files.filter(({ dirty }) => dirty);
       const dirtyFile = dirtyFiles.find(({ ZUID }) =>
