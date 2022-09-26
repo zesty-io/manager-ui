@@ -45,13 +45,11 @@ export const Folders = () => {
   /* Creating a tree structure from the data. */
   const trees = useMemo(() => {
     if (binGroups) {
-      console.log("testing binGroups", binGroups);
       return binGroups
         .map((binGroup, idx) => {
           if (!binGroup.length) {
             return { ...combinedBins[idx], children: [] };
           } else if (combinedBins[idx].eco_id || binGroups.length > 1) {
-            console.log("testing binGroup", binGroup);
             return {
               ...combinedBins[idx],
               children: nest(binGroup, binGroup[0].bin_id),
@@ -65,7 +63,7 @@ export const Folders = () => {
     } else {
       return [];
     }
-  }, [binGroups]);
+  }, [combinedBins, binGroups]);
 
   /* Creating a path to the selected folder. */
   const selectedPath = useMemo(() => {

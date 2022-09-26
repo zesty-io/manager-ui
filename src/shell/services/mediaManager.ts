@@ -4,7 +4,7 @@ import {
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
 import instanceZUID from "../../utility/instanceZUID";
-import { getResponseData, prepareHeaders } from "./util";
+import { generateThumbnail, getResponseData, prepareHeaders } from "./util";
 import { resolveResourceType } from "../../utility/resolveResourceType";
 import { Bin, File, Group, GroupData, Publishing } from "./types";
 import { QueryReturnValue } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
@@ -17,19 +17,29 @@ export const mediaManagerApi = createApi({
     baseUrl: `${__CONFIG__.SERVICE_MEDIA_MANAGER}`,
     prepareHeaders,
   }),
-  tagTypes: ["BinGroups", "BinFiles", "GroupData"],
+  tagTypes: [
+    "Bin",
+    "BinGroups",
+    "BinFiles",
+    "GroupData",
+    "SiteBins",
+    "EcoBins",
+  ],
   endpoints: (builder) => ({
     getBin: builder.query<Bin[], string>({
       query: (binId) => `bin/${binId}`,
       transformResponse: getResponseData,
+      providesTags: (result, error, binId) => [{ type: "Bin", id: binId }],
     }),
     getSiteBins: builder.query<Bin[], number>({
       query: (instanceId) => `site/${instanceId}/bins`,
       transformResponse: getResponseData,
+      providesTags: ["SiteBins"],
     }),
     getEcoBins: builder.query<Bin[], number>({
       query: (ecoId) => `eco/${ecoId}/bins`,
       transformResponse: getResponseData,
+      providesTags: ["EcoBins"],
     }),
     getAllBinFiles: builder.query<File[], string[]>({
       async queryFn(binIds, _queryApi, _extraOptions, fetchWithBQ) {
@@ -44,8 +54,7 @@ export const mediaManagerApi = createApi({
             .flat()
             .map((file) => ({
               ...file,
-              // @ts-expect-error Need to type window object
-              thumbnail: `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${file.id}/getimage?w=200&h=200&type=fit`,
+              thumbnail: generateThumbnail(file),
             })) as File[];
           return { data: files };
         } catch (error) {
@@ -71,8 +80,7 @@ export const mediaManagerApi = createApi({
           return { error };
         }
       },
-      providesTags: (result, error, binIds) =>
-        binIds.map((binId) => ({ type: "BinGroups", id: binId })),
+      providesTags: ["BinGroups"],
     }),
     getBinFiles: builder.query<File[], string>({
       query: (binId) => `bin/${binId}/files`,
@@ -80,8 +88,7 @@ export const mediaManagerApi = createApi({
       transformResponse: (response: { data: File[] }) =>
         response.data.map((file) => ({
           ...file,
-          // @ts-expect-error Need to type window object
-          thumbnail: `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${file.id}/getimage?w=200&h=200&type=fit`,
+          thumbnail: generateThumbnail(file),
         })),
     }),
     getBinGroups: builder.query<Group[], string>({
@@ -89,7 +96,8 @@ export const mediaManagerApi = createApi({
       providesTags: (result, error, binId) => [
         { type: "BinGroups", id: binId },
       ],
-      transformResponse: getResponseData,
+      transformResponse: (response: { data: Group[] }) =>
+        response.data.sort((a, b) => a.name.localeCompare(b.name)),
     }),
     getGroupData: builder.query<GroupData, string>({
       query: (groupId) => `group/${groupId}`,
@@ -98,13 +106,76 @@ export const mediaManagerApi = createApi({
       ],
       transformResponse: (response: { data: GroupData[] }) => ({
         ...response.data[0],
-
         files: response.data[0].files.map((file) => ({
           ...file,
-          // @ts-expect-error Need to type window object
-          thumbnail: `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${file.id}/getimage?w=200&h=200&type=fit`,
+          thumbnail: generateThumbnail(file),
         })),
+        groups: response.data[0].groups.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        ),
       }),
+    }),
+    updateBin: builder.mutation<
+      Bin,
+      {
+        id: string;
+        body: { name?: string };
+      }
+    >({
+      query: ({ id, body }) => ({
+        url: `/bin/${id}`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "Bin", id: arg.id },
+        "SiteBins",
+        "EcoBins",
+      ],
+    }),
+    updateGroup: builder.mutation<
+      GroupData,
+      {
+        id: string;
+        body: { name: string; group_id: string };
+      }
+    >({
+      query: ({ id, body }) => ({
+        url: `/group/${id}`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "GroupData", id: arg.id },
+        { type: "GroupData", id: arg.body.group_id },
+        "BinGroups",
+      ],
+    }),
+    createGroup: builder.mutation<
+      GroupData,
+      {
+        body: { name: string; bin_id: string; group_id: string };
+      }
+    >({
+      query: ({ body }) => ({
+        url: `/group`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "GroupData", id: arg.body.group_id },
+        "BinGroups",
+      ],
+    }),
+    deleteGroup: builder.mutation<GroupData, { id: string; groupId: string }>({
+      query: ({ id }) => ({
+        url: `/group/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "GroupData", id: arg.groupId },
+        "BinGroups",
+      ],
     }),
   }),
 });
@@ -120,4 +191,8 @@ export const {
   useGetBinFilesQuery,
   useGetBinGroupsQuery,
   useGetGroupDataQuery,
+  useUpdateBinMutation,
+  useUpdateGroupMutation,
+  useCreateGroupMutation,
+  useDeleteGroupMutation,
 } = mediaManagerApi;
