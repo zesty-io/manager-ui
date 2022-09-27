@@ -31,6 +31,7 @@ export const SearchBox = () => {
       onChange={(e) => setSearchTerm(e.target.value)}
       onKeyPress={(e: KeyboardEvent<HTMLInputElement>) =>
         e.key === "Enter" &&
+        (e.target as HTMLInputElement).value &&
         history.push(
           `/media/search?term=${(e.target as HTMLInputElement).value}`
         )
