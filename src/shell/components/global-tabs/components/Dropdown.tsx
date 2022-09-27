@@ -65,6 +65,7 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
           disableRipple
           disableElevation
           disableTouchRipple
+          data-cy="TabsDropdownButton"
           sx={{
             alignItems: "center",
             display: "flex",
@@ -96,6 +97,7 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
           open={open}
           onClose={handleClose}
           disableScrollLock
+          data-cy="TabsDropdownMenu"
           PaperProps={{ style: { maxHeight: ITEM_HEIGHT * 10 } }}
           MenuListProps={{
             "aria-labelledby": "basic-button",

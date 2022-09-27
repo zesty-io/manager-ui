@@ -47,6 +47,7 @@ const BaseTab: FC<BaseTab> = ({
   return (
     <Box
       component="li"
+      data-cy="ActiveTab"
       sx={{
         overflow: "hidden",
         width: `${tabWidth}px`,
