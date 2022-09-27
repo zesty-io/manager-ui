@@ -1,7 +1,12 @@
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Box } from "@mui/material";
-import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
+import {
+  useGetAllBinGroupsQuery,
+  useGetEcoBinsQuery,
+  useGetSiteBinsQuery,
+  useSearchBinFilesQuery,
+} from "../../../../../shell/services/mediaManager";
 import { MediaGrid } from "../components/MediaGrid";
 import { Header } from "../components/Header";
 import { useParams } from "../../../../../shell/hooks/useParams";
@@ -16,21 +21,27 @@ export const SearchMedia = () => {
   const openNav = useSelector((state: any) => state.ui.openNav);
   const [params] = useParams();
   const term = (params as URLSearchParams).get("term");
-
-  const { data: bins } = mediaManagerApi.useGetSiteBinsQuery(instanceId);
-  const { data: ecoBins } = mediaManagerApi.useGetEcoBinsQuery(ecoId, {
+  const { data: bins } = useGetSiteBinsQuery(instanceId);
+  const { data: ecoBins } = useGetEcoBinsQuery(ecoId, {
     skip: !ecoId,
   });
 
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
   const { data: binGroups, isLoading: isGroupsLoading } =
-    mediaManagerApi.useGetAllBinGroupsQuery(
+    useGetAllBinGroupsQuery(
       combinedBins?.map((bin) => bin.id),
       {
         skip: !bins?.length,
       }
     );
+
+  const { data: files, isLoading: isFilesLoading } = useSearchBinFilesQuery(
+    { binIds: combinedBins?.map((bin) => bin.id), term },
+    {
+      skip: !bins?.length,
+    }
+  );
 
   const filteredGroups = useMemo(() => {
     if (binGroups) {
@@ -48,6 +59,7 @@ export const SearchMedia = () => {
     <Box component="main" sx={{ flex: 1 }}>
       <Header title={`Search Results for "${term}"`} hideUpload />
       <MediaGrid
+        files={files}
         groups={filteredGroups}
         heightOffset={HEADER_HEIGHT}
         widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}

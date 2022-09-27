@@ -177,6 +177,17 @@ export const mediaManagerApi = createApi({
         "BinGroups",
       ],
     }),
+    searchBinFiles: builder.query<
+      File[],
+      {
+        binIds: string[];
+        term: string;
+      }
+    >({
+      query: ({ binIds, term }) =>
+        `/search/files?bins=${binIds.join(",")}&term=${term}`,
+      transformResponse: getResponseData,
+    }),
   }),
 });
 
@@ -195,4 +206,5 @@ export const {
   useUpdateGroupMutation,
   useCreateGroupMutation,
   useDeleteGroupMutation,
+  useSearchBinFilesQuery,
 } = mediaManagerApi;
