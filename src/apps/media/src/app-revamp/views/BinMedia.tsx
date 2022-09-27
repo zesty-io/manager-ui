@@ -1,13 +1,12 @@
 import { useParams } from "react-router";
 import { EmptyState } from "../components/EmptyState";
-import {
-  mediaManagerApi,
-  useGetBinQuery,
-} from "../../../../../shell/services/mediaManager";
+import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 import { MediaGrid } from "../components/MediaGrid";
 import { useSelector } from "react-redux";
+import { DnDProvider } from "../components/DnDProvider";
 import { Header } from "../components/Header";
 import { UploadModal } from "../components/UploadModal";
+import { Box } from "@mui/material";
 
 type Params = { id: string };
 
@@ -30,28 +29,28 @@ export const BinMedia = () => {
   const { data: binFiles, isFetching: isFilesFetching } =
     mediaManagerApi.useGetBinFilesQuery(id);
 
-  if (isBinDataFetching || isGroupsFetching || isFilesFetching)
-    return <div>Loading...</div>;
-
-  if (!isFilesFetching && !binFiles?.length)
-    return (
-      <>
-        <UploadModal />
-        <EmptyState />;
-      </>
-    );
-
-  console.log("bin data", binData);
-
   return (
-    <main>
-      <Header title={binData[0].name} />
-      <MediaGrid
-        files={binFiles}
-        groups={binGroups}
-        heightOffset={HEADER_HEIGHT}
-        widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
+    <Box component="main" sx={{ flex: 1 }}>
+      <Header
+        title={binData?.[0]?.name}
+        id={binData?.[0]?.id}
+        binId={binData?.[0]?.id}
       />
-    </main>
+      <DnDProvider>
+        {!isFilesFetching && !binFiles?.length ? (
+          <EmptyState />
+        ) : (
+          <>
+            <UploadModal />
+            <MediaGrid
+              files={binFiles}
+              groups={binGroups}
+              heightOffset={HEADER_HEIGHT}
+              widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
+            />
+          </>
+        )}
+      </DnDProvider>
+    </Box>
   );
 };
