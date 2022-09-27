@@ -1,68 +1,134 @@
-import { Box, Typography, IconButton } from "@mui/material";
+import { Box, Typography, IconButton, Menu, MenuItem } from "@mui/material";
 import { TreeView, TreeItem } from "@mui/lab";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import LanguageIcon from "@mui/icons-material/Language";
 import FolderIcon from "@mui/icons-material/Folder";
+import AddIcon from "@mui/icons-material/Add";
 import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
 import { useSelector } from "react-redux";
-import { SyntheticEvent, useMemo } from "react";
+import {
+  MouseEvent,
+  SyntheticEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useHistory, useLocation } from "react-router";
+import { NewFolderDialog } from "../NewFolderDialog";
 
-const nest = (items: any, id: string, link = "group_id") =>
+/**
+ * It takes an array of items, an id, and a link, and returns a new array of items with the children of
+ * the item with the given id nested under it
+ * @param {any} items - The array of items to nest.
+ * @param {string} id - The id of the group you want to nest
+ * @param [link=group_id] - The name of the property that links the items together.
+ */
+const nest = (items: any, id: string, link: string, sort: string) =>
   items
     .filter((item: any) => item[link] === id)
-    .map((item: any) => ({ ...item, children: nest(items, item.id) }));
-
-type Params = { id: string };
+    .sort((a: any, b: any) =>
+      sort === "asc"
+        ? a.name.localeCompare(b.name)
+        : b.name.localeCompare(a.name)
+    )
+    .map((item: any) => ({
+      ...item,
+      children: nest(items, item.id, link, sort),
+    }));
 
 export const Folders = () => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
   const history = useHistory();
   const location = useLocation();
+  const [openNewFolderDialog, setOpenNewFolderDialog] = useState(false);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const { data: bins } = mediaManagerApi.useGetSiteBinsQuery(instanceId);
   const { data: ecoBins } = mediaManagerApi.useGetEcoBinsQuery(ecoId, {
     skip: !ecoId,
   });
+  const [sort, setSort] = useState("asc");
+
+  const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const closeMenu = () => {
+    setAnchorEl(null);
+  };
 
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
-  const { data: binGroups } = mediaManagerApi.useGetAllBinGroupsQuery(
-    combinedBins?.map((bin) => bin.id),
-    {
-      skip: !bins?.length,
-    }
-  );
+  const { data: binGroups, isLoading } =
+    mediaManagerApi.useGetAllBinGroupsQuery(
+      combinedBins?.map((bin) => bin.id),
+      {
+        skip: !bins?.length,
+      }
+    );
 
+  /* Creating a tree structure from the data. */
   const trees = useMemo(() => {
     if (binGroups) {
       return binGroups
         .map((binGroup, idx) => {
           if (!binGroup.length) {
             return { ...combinedBins[idx], children: [] };
-          } else if (combinedBins[idx].eco_id) {
+          } else if (combinedBins[idx].eco_id || binGroups.length > 1) {
             return {
               ...combinedBins[idx],
-              children: nest(binGroup, binGroup[0].bin_id),
+              children: nest(binGroup, binGroup[0].bin_id, "group_id", sort),
             };
           } else {
-            return nest(binGroup, binGroup[0].bin_id);
+            return nest(binGroup, binGroup[0].bin_id, "group_id", sort);
           }
         })
-        .flat();
+        .flat()
+        .sort((a, b) =>
+          sort === "asc"
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name)
+        );
     } else {
       return [];
     }
-  }, [binGroups]);
+  }, [combinedBins, binGroups]);
+
+  /* Creating a path to the selected folder. */
+  const selectedPath = useMemo(() => {
+    const id = location.pathname.split("/")[2];
+    const path = [];
+    let done = false;
+
+    if (id && trees.length) {
+      let currId = id;
+      while (!done) {
+        const node = binGroups.flat().find((group) => group.id === currId);
+        if (node) {
+          path.push(node.id);
+          currId = node.group_id;
+        } else {
+          path.push(binGroups.flat().find((group) => group.id === id)?.bin_id);
+          done = true;
+        }
+      }
+      return path.reverse();
+    }
+
+    return [];
+  }, [trees]);
 
   const renderTree = (nodes: any) => (
     <TreeItem
       key={nodes.id}
       nodeId={nodes.id}
       sx={{
+        " .MuiTreeItem-content": {
+          width: "unset",
+        },
         ".Mui-selected": {
-          ".MuiSvgIcon-root": {
+          " .MuiTreeItem-label .MuiSvgIcon-root": {
             color: "primary.main",
           },
           ".MuiTypography-root": {
@@ -108,29 +174,66 @@ export const Folders = () => {
   return (
     <>
       <Box
-        sx={{ display: "flex", alignItems: "center", gap: 0.25, px: 2, py: 1 }}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          px: 2,
+          py: 1,
+        }}
       >
-        <Typography variant="overline" color="text.secondary">
-          FOLDERS
-        </Typography>
-        <IconButton size="small">
-          <ArrowDropDownIcon fontSize="small" />
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.25 }}>
+          <Typography variant="overline" color="text.secondary">
+            FOLDERS
+          </Typography>
+          <IconButton size="small" onClick={openMenu}>
+            <ArrowDropDownIcon fontSize="small" />
+          </IconButton>
+          <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
+            <MenuItem
+              onClick={() => {
+                closeMenu();
+                setSort("asc");
+              }}
+            >
+              Name (A to Z)
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                closeMenu();
+                setSort("desc");
+              }}
+            >
+              Name (Z to A)
+            </MenuItem>
+          </Menu>
+        </Box>
+        <IconButton size="small" onClick={() => setOpenNewFolderDialog(true)}>
+          <AddIcon fontSize="small" />
         </IconButton>
       </Box>
-      <TreeView
-        onNodeSelect={(
-          event: SyntheticEvent<Element, Event>,
-          nodeIds: string[]
-        ) => history.push(`/media/${nodeIds}`)}
-        defaultCollapseIcon={
-          <ArrowDropDownIcon sx={{ color: "action.active" }} />
-        }
-        defaultExpandIcon={<ArrowRightIcon sx={{ color: "action.active" }} />}
-        sx={{ height: "100%", width: "100%", overflowY: "auto" }}
-        selected={[location.pathname.split("/")[2]]}
-      >
-        {trees.map((tree: any) => renderTree(tree))}
-      </TreeView>
+      {!isLoading ? (
+        <TreeView
+          onNodeSelect={(
+            event: SyntheticEvent<Element, Event>,
+            nodeIds: string[]
+          ) => history.push(`/media/${nodeIds}`)}
+          defaultCollapseIcon={
+            <ArrowDropDownIcon sx={{ color: "action.active" }} />
+          }
+          defaultExpandIcon={<ArrowRightIcon sx={{ color: "action.active" }} />}
+          defaultExpanded={selectedPath}
+          sx={{ height: "100%", width: "100%", overflowY: "auto" }}
+          selected={[location.pathname.split("/")[2]]}
+        >
+          {trees.map((tree: any) => renderTree(tree))}
+        </TreeView>
+      ) : null}
+      <NewFolderDialog
+        open={openNewFolderDialog}
+        onClose={() => setOpenNewFolderDialog(false)}
+        binId={bins?.find((bin) => bin.default)?.id}
+      />
     </>
   );
 };

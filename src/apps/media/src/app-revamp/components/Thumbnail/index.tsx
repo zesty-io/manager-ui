@@ -2,6 +2,9 @@ import { FC, useState, useRef } from "react";
 import { CardMedia, Card, Box } from "@mui/material";
 import { fileExtension } from "../../utils/fileUtils";
 import { ThumbnailContent } from "./ThumbnailContent";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import { useTheme } from "@mui/material/styles";
 
 // file icons import
 import wordImg from "../../../../../../../public/images/wordImg.png";
@@ -18,6 +21,8 @@ interface ThumbnailProps {
   src?: string;
   filename?: string;
   isEditable?: boolean;
+  showVideo?: boolean;
+  onRemove?: () => void;
   onFilenameChange?: (value: string) => void;
   onClick?: () => void;
 }
@@ -26,11 +31,45 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   src,
   filename,
   isEditable,
+  showVideo,
+  onRemove,
   onFilenameChange,
   onClick,
 }) => {
+  const theme = useTheme();
   const imageEl = useRef<HTMLImageElement>();
   const [imageOrientation, setImageOrientation] = useState<string>("");
+
+  const RemoveIcon = () => {
+    return (
+      <>
+        {onRemove && (
+          <Box
+            onClick={onRemove}
+            sx={{
+              right: 9,
+              top: 8,
+              position: "absolute",
+              backgroundColor: "grey.100",
+              width: "24px",
+              height: "24px",
+              borderRadius: "100%",
+              cursor: "pointer",
+              textAlign: "center",
+            }}
+          >
+            <CloseRoundedIcon
+              fontSize="small"
+              sx={{
+                mt: 0.3,
+                color: "grey.400",
+              }}
+            />
+          </Box>
+        )}
+      </>
+    );
+  };
 
   const styledCard = {
     width: "100%",
@@ -38,6 +77,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     borderWidth: "1px",
     borderColor: "grey.100",
     borderStyle: "solid",
+    borderRadius: "6px",
     cursor: onClick ? "pointer" : "default",
   };
 
@@ -48,6 +88,15 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     m: "auto",
     display: "table-cell",
     verticalAlign: "bottom",
+  };
+
+  const styledCheckerBoard = {
+    backgroundImage:
+      fileExtension(filename) === "png" &&
+      `linear-gradient(45deg, ${theme.palette.grey[100]} 25%, transparent 25%), 
+      linear-gradient(135deg, ${theme.palette.grey[100]} 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, ${theme.palette.grey[100]} 75%),
+      linear-gradient(135deg, transparent 75%, ${theme.palette.grey[100]} 75%)`,
   };
 
   /**
@@ -78,13 +127,30 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         <Card sx={styledCard} elevation={0} onClick={onClick}>
           <Box
             sx={{
+              ...styledCheckerBoard,
               py: imageOrientation === "horizontal" && 1,
               px: imageOrientation === "vertical" && "auto",
-              boxSizing: "border-box",
               height: "160px",
               overflow: "hidden",
+              backgroundColor: fileExtension(filename) !== "png" && "grey.100",
+              position: "relative",
+              backgroundSize: `25px 25px`,
+              backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
             }}
           >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                },
+              }}
+            ></Box>
+            <RemoveIcon />
             <CardMedia
               component="img"
               ref={imageEl}
@@ -93,10 +159,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               image={src}
               loading="lazy"
               sx={{
-                objectFit:
-                  imageOrientation === "horizontal" ? "fill" : "contain",
+                objectFit: "contain",
                 overflow: "hidden",
-                height: "inherit",
+                height: "100%",
                 display: "table-cell",
                 verticalAlign: "bottom",
               }}
@@ -126,6 +191,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={excelImg}
@@ -156,6 +222,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={csvImg}
@@ -188,6 +255,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={wordImg}
@@ -218,6 +286,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={pdfImg}
@@ -250,6 +319,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={pptImg}
@@ -273,7 +343,6 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "mid":
     case "mp3":
     case "wav":
-    case "mp4":
       return (
         <Card sx={styledCard} elevation={0} onClick={onClick}>
           <Box
@@ -285,12 +354,75 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={mpImg}
               image={mpImg}
               loading="lazy"
               sx={styledDocfileThumbnail}
+            />
+          </Box>
+          <ThumbnailContent
+            extension={fileExtension(filename)}
+            filename={filename}
+            onFilenameChange={onFilenameChange}
+            isEditable={isEditable}
+            backgroundColor="purple.50"
+            color="purple.900"
+          />
+        </Card>
+      );
+    case "mp4":
+    case "mov":
+    case "avi":
+    case "wmv":
+    case "mkv":
+    case "webm":
+    case "flv":
+    case "f4v":
+    case "swf":
+    case "avchd":
+    case "html5":
+      return (
+        <Card sx={styledCard} elevation={0} onClick={onClick}>
+          <Box
+            sx={{
+              boxSizing: "border-box",
+              height: "160px",
+              overflow: "hidden",
+              position: "relative",
+              display: "flex",
+              backgroundColor: "#000",
+            }}
+          >
+            <RemoveIcon />
+            {showVideo && (
+              <CardMedia
+                component="video"
+                controls={false}
+                src={src}
+                sx={{
+                  backgroundColor: "#000",
+                  display: "flex",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  py: 1,
+                }}
+              />
+            )}
+            <PlayCircleIcon
+              fontSize="large"
+              sx={{
+                top: 0,
+                bottom: 0,
+                right: 0,
+                left: 0,
+                m: "auto",
+                color: "#FFF",
+                position: "absolute",
+                textAlign: "center",
+              }}
             />
           </Box>
           <ThumbnailContent
@@ -318,6 +450,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={zipImg}
@@ -353,6 +486,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={defaultImg}
@@ -383,6 +517,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={numberImg}
@@ -413,6 +548,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={defaultImg}
@@ -436,4 +572,5 @@ export const Thumbnail: FC<ThumbnailProps> = ({
 
 Thumbnail.defaultProps = {
   isEditable: false,
+  showVideo: true,
 };
