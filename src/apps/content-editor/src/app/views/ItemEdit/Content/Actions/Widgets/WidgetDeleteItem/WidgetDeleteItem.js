@@ -17,7 +17,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { ConfirmDialog } from "@zesty-io/material";
 
 import { deleteItem } from "shell/store/content";
-import { closeTab } from "shell/store/ui";
+import { unpinTab } from "shell/store/ui";
 
 export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
   const history = useHistory();
@@ -83,7 +83,8 @@ export const WidgetDeleteItem = memo(function WidgetDeleteItem(props) {
               .dispatch(deleteItem(props.modelZUID, props.itemZUID))
               .then((res) => {
                 if (res.status === 200) {
-                  props.dispatch(closeTab(history.location.pathname));
+                  const { pathname, search } = history.location;
+                  props.dispatch(unpinTab({ pathname, search }));
                   history.push("/content/" + props.modelZUID);
                 } else {
                   // if delete fails, component is still mounted, so we can set state
