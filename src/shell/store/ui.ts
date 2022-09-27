@@ -11,7 +11,6 @@ import {
   faChartLine,
   faDatabase,
   faEdit,
-  faFolder,
   faPlug,
   faBullseye,
   faImage,
@@ -31,6 +30,13 @@ export type CodeEditorPosition = Record<
   string,
   { lineNumber: number; column: number }
 >;
+
+type CodeChangesModalInfo = {
+  ZUID: string;
+  status: string;
+  fileType: string;
+};
+
 export type UIState = {
   loadedTabs: boolean;
   pinnedTabs: Tab[];
@@ -41,6 +47,7 @@ export type UIState = {
   contentActionsHover: boolean;
   duoMode: boolean;
   codeEditorPosition: null | CodeEditorPosition;
+  codeChangesModal: null | CodeChangesModalInfo;
 };
 export const ui = createSlice({
   name: "ui",
@@ -55,6 +62,7 @@ export const ui = createSlice({
     contentActionsHover: false,
     duoMode: false,
     codeEditorPosition: null,
+    codeChangesModal: null,
   },
   reducers: {
     loadTabsSuccess(
@@ -107,6 +115,15 @@ export const ui = createSlice({
       action: { payload: CodeEditorPosition }
     ) {
       state.codeEditorPosition = action.payload;
+    },
+    openCodeChangesModal(
+      state: UIState,
+      action: { payload: { ZUID: string; fileType: string; status: string } }
+    ) {
+      state.codeChangesModal = action.payload;
+    },
+    closeCodeChangesModal(state: UIState) {
+      state.codeChangesModal = null;
     },
   },
 });
@@ -269,7 +286,12 @@ export function createTab(state: AppState, parsedPath: ParsedPath) {
           (file: any) => file.ZUID === zuid
         );
         if (selectedFile) {
-          tab.name = selectedFile.fileName;
+          let name = selectedFile.fileName;
+          // Trim leading slash
+          if (name.charAt(0) === "/") name = name.slice(1);
+          // prepend asterix to unsaved file
+          if (selectedFile.dirty) name = `*${name}`;
+          tab.name = name;
         }
       }
       break;
@@ -332,11 +354,28 @@ export function pinTab({ pathname, search }: TabLocation) {
   };
 }
 
-export function unpinTab({ pathname, search }: TabLocation) {
+export function unpinTab({ pathname, search }: TabLocation, force = false) {
   return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const parsedPath = parsePath({ pathname, search });
     const tab = createTab(state, parsedPath);
+    const { parts } = parsedPath;
+    if (parts[0] === "code") {
+      const fileType = parts[2];
+      const dirtyFiles = state.files.filter(({ dirty }) => dirty);
+      const dirtyFile = dirtyFiles.find(({ ZUID }) =>
+        tabLocationEquality(tab, {
+          pathname: `/code/file/${fileType}/${ZUID}`,
+          search: "",
+        })
+      );
+      if (dirtyFile && !force) {
+        const { ZUID, status } = dirtyFile;
+        dispatch(actions.openCodeChangesModal({ ZUID, fileType, status }));
+        return;
+      }
+    }
+    //
     const newTabs = state.ui.pinnedTabs.filter(
       (t) => t.pathname !== tab.pathname
     );
