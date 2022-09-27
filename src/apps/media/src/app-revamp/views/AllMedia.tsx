@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 import { Box } from "@mui/material";
 import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
+import { DnDProvider } from "../components/DnDProvider";
 import { EmptyState } from "../components/EmptyState";
 import { MediaGrid } from "../components/MediaGrid";
 import { Header } from "../components/Header";
@@ -23,15 +24,17 @@ export const AllMedia = () => {
   return (
     <Box component="main" sx={{ flex: 1 }}>
       <Header title="All Media" />
-      {(isFilesLoading || isBinsLoading) && !files?.length ? (
-        <EmptyState />
-      ) : (
-        <MediaGrid
-          files={files}
-          heightOffset={HEADER_HEIGHT}
-          widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
-        />
-      )}
+      <DnDProvider>
+        {(isFilesLoading || isBinsLoading) && !files?.length ? (
+          <EmptyState />
+        ) : (
+          <MediaGrid
+            files={files}
+            heightOffset={HEADER_HEIGHT}
+            widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
+          />
+        )}
+      </DnDProvider>
     </Box>
   );
 };

@@ -3,6 +3,7 @@ import { EmptyState } from "../components/EmptyState";
 import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 import { MediaGrid } from "../components/MediaGrid";
 import { useSelector } from "react-redux";
+import { DnDProvider } from "../components/DnDProvider";
 import { Header } from "../components/Header";
 import { Box } from "@mui/material";
 
@@ -29,16 +30,18 @@ export const FolderMedia = () => {
         binId={groupData?.bin_id}
         groupId={groupData?.group_id}
       />
-      {!isFetching && !groupData.files?.length ? (
-        <EmptyState />
-      ) : (
-        <MediaGrid
-          files={groupData?.files}
-          groups={groupData?.groups}
-          heightOffset={HEADER_HEIGHT}
-          widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
-        />
-      )}
+      <DnDProvider>
+        {!isFetching && !groupData.files?.length ? (
+          <EmptyState />
+        ) : (
+          <MediaGrid
+            files={groupData?.files}
+            groups={groupData?.groups}
+            heightOffset={HEADER_HEIGHT}
+            widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
+          />
+        )}
+      </DnDProvider>
     </Box>
   );
 };
