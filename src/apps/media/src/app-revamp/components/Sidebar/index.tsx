@@ -1,18 +1,11 @@
-import {
-  Box,
-  Typography,
-  TextField,
-  InputAdornment,
-  Divider,
-} from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import { useLocation } from "react-router";
+import { Box, Typography, Divider } from "@mui/material";
 import { Folders } from "./Folders";
 import { Menu } from "./Menu";
+import { KeyboardEvent, useState } from "react";
+import { useParams } from "../../../../../../shell/hooks/useParams";
+import { SearchBox } from "./Searchbox";
 
 export const Sidebar = () => {
-  const location = useLocation();
-
   return (
     <Box
       sx={{
@@ -33,20 +26,7 @@ export const Sidebar = () => {
         }}
       >
         <Typography variant="h4">Media</Typography>
-        <TextField
-          sx={{ mt: 1.5 }}
-          placeholder="Search Media"
-          variant="filled"
-          hiddenLabel
-          size="small"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
+        <SearchBox />
       </Box>
       <Menu />
       <Divider />

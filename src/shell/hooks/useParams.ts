@@ -13,7 +13,7 @@ export const useParams = () => {
     [location.search]
   );
 
-  const setParams = (val, name) => {
+  const setParams = (val: string, name: string) => {
     if (val) {
       params.set(name, val);
     } else {
