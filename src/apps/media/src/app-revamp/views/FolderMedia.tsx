@@ -31,7 +31,7 @@ export const FolderMedia = () => {
         binId={groupData?.bin_id}
         groupId={groupData?.group_id}
       />
-      <DnDProvider>
+      <DnDProvider currentGroup={groupData}>
         {!isFetching && !groupData.files?.length ? (
           <EmptyState />
         ) : (
