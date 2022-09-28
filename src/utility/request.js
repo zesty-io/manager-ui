@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 import { rest } from "lodash";
-import { ZUID_REGEX } from "./regex";
+import zuid from "zuid";
 // import { store } from "shell/store";
 // import { endSession } from "shell/store/auth";
 
@@ -65,7 +65,7 @@ export function request(url, opts = {}) {
           the ZUID is present we expect an single resource object, otherwise we expect an multi resource array.
         */
 
-        if (ZUID_REGEX.test(url.split("?")[0].split("/").pop())) {
+        if (zuid.isValid(url.split("?")[0].split("/").pop())) {
           return {};
         } else {
           return [];
