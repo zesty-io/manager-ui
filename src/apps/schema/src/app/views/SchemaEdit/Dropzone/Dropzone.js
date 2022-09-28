@@ -1,4 +1,4 @@
-import { Children, cloneElement, useState, useEffect } from "react";
+import { Children, cloneElement, useState, useEffect, useRef } from "react";
 import cx from "classnames";
 
 import styles from "./Dropzone.less";
@@ -18,14 +18,12 @@ export function Dropzone(props) {
    * A props.onDrop is required. This forces the Dropzone consumer
    * to describe what happens when the children are sorted.
    */
-
-  const [children, setChildren] = useState(Children.toArray(props.children));
+  const children = useRef(Children.toArray(props.children));
 
   // Update state when props change
-  useEffect(
-    () => setChildren(Children.toArray(props.children)),
-    [props.children]
-  );
+  useEffect(() => {
+    children.current = Children.toArray(props.children);
+  }, [props.children]);
 
   const arrayMove = (array, from, to) => {
     const arr = [...array];
@@ -37,7 +35,7 @@ export function Dropzone(props) {
   const onDragEnd = (evt) => {
     // Reset
     setSourceIndex(null);
-    setChildren(Children.toArray(props.children));
+    children.current = Children.toArray(props.children);
   };
 
   const onDragEnter = (evt) => {
@@ -51,7 +49,7 @@ export function Dropzone(props) {
   };
 
   const onOver = (index) => {
-    setChildren(arrayMove(children, sourceIndex, index));
+    children.current = arrayMove(children.current, sourceIndex, index);
     setSourceIndex(index);
   };
 
@@ -60,7 +58,7 @@ export function Dropzone(props) {
     evt.preventDefault();
 
     if (props.onDrop) {
-      props.onDrop(children);
+      props.onDrop(children.current);
     }
   };
 
@@ -72,7 +70,7 @@ export function Dropzone(props) {
       onDragOver={onDragOver}
       onDrop={onDrop}
     >
-      {children.map((child, index) => {
+      {children.current.map((child, index) => {
         return cloneElement(child, {
           index,
           onOver,
