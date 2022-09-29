@@ -19,13 +19,17 @@ export const MediaHeader = memo(function MediaHeader(props) {
 
   return (
     <header className={styles.WorkspaceHeader}>
-      <h1 className={cx(styles.subheadline, styles.Title)}>
-        <small className={styles.NumFiles}>({props.numFiles})</small>
-        {props.searchTerm
-          ? `Search Results "${props.searchTerm}"`
-          : props.currentGroup.name}
-      </h1>
-
+      <div>
+        <h1 className={cx(styles.subheadline, styles.Title)}>
+          <small className={styles.NumFiles}>({props.numFiles})</small>
+          {props.searchTerm
+            ? `Search Results "${props.searchTerm}"`
+            : props.currentGroup.name}
+        </h1>
+        <h5 className={styles.subTitle}>
+          <em>Drag and drop files to upload</em>
+        </h5>
+      </div>
       {!props.searchTerm && (
         <div className={styles.Actions}>
           <Button
