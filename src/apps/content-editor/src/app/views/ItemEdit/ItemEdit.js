@@ -216,6 +216,7 @@ export default function ItemEdit() {
       // fetch new draft history
       dispatch(fetchAuditTrailDrafting(itemZUID));
     } catch (err) {
+      console.error(err);
       // we need to set the item to dirty again because the save failed
       dispatch({
         type: "MARK_ITEM_DIRTY",
