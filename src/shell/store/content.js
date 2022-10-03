@@ -407,11 +407,16 @@ export function saveItem(itemZUID, action = "") {
       item.web.metaDescription = item.web.metaDescription.slice(0, 160);
     }
 
-    // fetch nav only when metaLinkText is updated
+    /* 
+      Nav item will not be found if item does exist in the nav such is the case
+      when the item is in a dataset
+    */
     const navItem = state.navContent.raw.find(
       (nav) => nav.ZUID === item.meta.ZUID
     );
-    if (item.web.metaLinkText !== navItem.label) {
+
+    // fetch nav only when metaLinkText is updated
+    if (item.web.metaLinkText !== navItem?.label) {
       dispatch(fetchNav());
     }
 
