@@ -5,11 +5,11 @@ import { MediaGrid } from "../components/MediaGrid";
 import { useSelector } from "react-redux";
 import { DnDProvider } from "../components/DnDProvider";
 import { Header } from "../components/Header";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 
 type Params = { id: string };
 
-const HEADER_HEIGHT = 43;
+const HEADER_HEIGHT = 140;
 const SIDEBAR_COLLAPSED_WIDTH = 282;
 const SIDEBAR_WIDTH = 377;
 
@@ -23,25 +23,39 @@ export const FolderMedia = () => {
     mediaManagerApi.useGetGroupDataQuery(id);
 
   return (
-    <Box component="main" sx={{ flex: 1 }}>
+    <Box
+      component="main"
+      sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
+    >
       <Header
         title={groupData?.name}
         id={groupData?.id}
         binId={groupData?.bin_id}
         groupId={groupData?.group_id}
       />
-      <DnDProvider>
-        {!isFetching && !groupData.files?.length ? (
-          <EmptyState />
-        ) : (
-          <MediaGrid
-            files={groupData?.files}
-            groups={groupData?.groups}
-            heightOffset={HEADER_HEIGHT}
-            widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
-          />
-        )}
-      </DnDProvider>
+      {isFetching ? (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <DnDProvider>
+          {!isFetching && !groupData.files?.length ? (
+            <EmptyState />
+          ) : (
+            <MediaGrid
+              files={groupData?.files}
+              groups={groupData?.groups}
+              heightOffset={HEADER_HEIGHT}
+              widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
+            />
+          )}
+        </DnDProvider>
+      )}
     </Box>
   );
 };

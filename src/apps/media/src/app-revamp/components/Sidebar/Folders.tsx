@@ -2,18 +2,12 @@ import { Box, Typography, IconButton, Menu, MenuItem } from "@mui/material";
 import { TreeView, TreeItem } from "@mui/lab";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import LanguageIcon from "@mui/icons-material/Language";
+import { FolderGlobal } from "@zesty-io/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import AddIcon from "@mui/icons-material/Add";
 import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
 import { useSelector } from "react-redux";
-import {
-  MouseEvent,
-  SyntheticEvent,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { MouseEvent, SyntheticEvent, useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { NewFolderDialog } from "../NewFolderDialog";
 
@@ -139,7 +133,7 @@ export const Folders = () => {
       label={
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Box
-            component={nodes.eco_id ? LanguageIcon : FolderIcon}
+            component={nodes.eco_id ? FolderGlobal : FolderIcon}
             sx={{
               mr: 1,
               ".Mui-selected": {
