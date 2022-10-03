@@ -1,13 +1,30 @@
-import { Box, Typography, IconButton, Menu, MenuItem } from "@mui/material";
+import {
+  Box,
+  Typography,
+  IconButton,
+  Menu,
+  MenuItem,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from "@mui/material";
 import { TreeView, TreeItem } from "@mui/lab";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import { FolderGlobal } from "@zesty-io/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import AddIcon from "@mui/icons-material/Add";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
 import { useSelector } from "react-redux";
-import { MouseEvent, SyntheticEvent, useMemo, useState } from "react";
+import {
+  MouseEvent,
+  SyntheticEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useHistory, useLocation } from "react-router";
 import { NewFolderDialog } from "../NewFolderDialog";
 
@@ -36,6 +53,8 @@ export const Folders = () => {
   const open = Boolean(anchorEl);
   const history = useHistory();
   const location = useLocation();
+  const hiddenGroups = localStorage.getItem("zesty:navMedia:hidden");
+  const [value, setValue] = useState(0);
   const [openNewFolderDialog, setOpenNewFolderDialog] = useState(false);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
@@ -51,6 +70,18 @@ export const Folders = () => {
   const closeMenu = () => {
     setAnchorEl(null);
   };
+
+  useEffect(() => {
+    window.addEventListener("storage", (evt) =>
+      setValue((prevCount) => prevCount + 1)
+    );
+
+    return () => {
+      window.removeEventListener("storage", (evt) =>
+        setValue((prevCount) => prevCount + 1)
+      );
+    };
+  }, []);
 
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
@@ -89,6 +120,35 @@ export const Folders = () => {
     }
   }, [combinedBins, binGroups]);
 
+  /* Creating a tree structure from the data. */
+  // const hiddenTrees = useMemo(() => {
+  //   if (binGroups) {
+  //     return binGroups
+  //       .map((binGroup, idx) => {
+  //         const binGroupFiltered = binGroup.filter((binGroup) =>
+  //           hiddenGroups?.includes(binGroup.id)
+  //         );
+
+  //         if (!binGroupFiltered.length) return []
+
+  //         return nest(
+  //           binGroupFiltered,
+  //           binGroupFiltered[0].bin_id,
+  //           "group_id",
+  //           sort
+  //         );
+  //       })
+  //       .flat()
+  //       .sort((a, b) =>
+  //         sort === "asc"
+  //           ? a.name.localeCompare(b.name)
+  //           : b.name.localeCompare(a.name)
+  //       );
+  //   } else {
+  //     return [];
+  //   }
+  // }, [combinedBins, binGroups, hiddenGroups]);
+
   /* Creating a path to the selected folder. */
   const selectedPath = useMemo(() => {
     const id = location.pathname.split("/")[2];
@@ -113,57 +173,61 @@ export const Folders = () => {
     return [];
   }, [trees]);
 
-  const renderTree = (nodes: any) => (
-    <TreeItem
-      key={nodes.id}
-      nodeId={nodes.id}
-      sx={{
-        " .MuiTreeItem-content": {
-          width: "unset",
-        },
-        ".Mui-selected": {
-          " .MuiTreeItem-label .MuiSvgIcon-root": {
-            color: "primary.main",
+  const renderTree = (nodes: any, isHiddenTree = false) => {
+    if (!isHiddenTree && hiddenGroups.includes(nodes.id)) return null;
+    if (isHiddenTree && !hiddenGroups.includes(nodes.id)) return null;
+    return (
+      <TreeItem
+        key={nodes.id}
+        nodeId={nodes.id}
+        sx={{
+          " .MuiTreeItem-content": {
+            width: "unset",
           },
-          ".MuiTypography-root": {
-            color: "primary.dark",
+          ".Mui-selected": {
+            " .MuiTreeItem-label .MuiSvgIcon-root": {
+              color: "primary.main",
+            },
+            ".MuiTypography-root": {
+              color: "primary.dark",
+            },
           },
-        },
-      }}
-      label={
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Box
-            component={nodes.eco_id ? FolderGlobal : FolderIcon}
-            sx={{
-              mr: 1,
-              ".Mui-selected": {
-                color: "primary.main",
-              },
-            }}
-            color="action.active"
-          />
-          <Typography
-            // @ts-expect-error body3 additional variant is not on Typography augmentation
-            variant="body3"
-            color="text.secondary"
-            fontWeight={500}
-            sx={{
-              wordBreak: "break-all",
-              ".Mui-selected": {
-                color: "primary.dark",
-              },
-            }}
-          >
-            {nodes.name}
-          </Typography>
-        </Box>
-      }
-    >
-      {Array.isArray(nodes.children)
-        ? nodes.children.map((node: any) => renderTree(node))
-        : null}
-    </TreeItem>
-  );
+        }}
+        label={
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Box
+              component={nodes.eco_id ? FolderGlobal : FolderIcon}
+              sx={{
+                mr: 1,
+                ".Mui-selected": {
+                  color: "primary.main",
+                },
+              }}
+              color="action.active"
+            />
+            <Typography
+              // @ts-expect-error body3 additional variant is not on Typography augmentation
+              variant="body3"
+              color="text.secondary"
+              fontWeight={500}
+              sx={{
+                wordBreak: "break-all",
+                ".Mui-selected": {
+                  color: "primary.dark",
+                },
+              }}
+            >
+              {nodes.name}
+            </Typography>
+          </Box>
+        }
+      >
+        {Array.isArray(nodes.children)
+          ? nodes.children.map((node: any) => renderTree(node))
+          : null}
+      </TreeItem>
+    );
+  };
 
   return (
     <>
@@ -207,21 +271,55 @@ export const Folders = () => {
         </IconButton>
       </Box>
       {!isLoading ? (
-        <TreeView
-          onNodeSelect={(
-            event: SyntheticEvent<Element, Event>,
-            nodeIds: string[]
-          ) => history.push(`/media/${nodeIds}`)}
-          defaultCollapseIcon={
-            <ArrowDropDownIcon sx={{ color: "action.active" }} />
-          }
-          defaultExpandIcon={<ArrowRightIcon sx={{ color: "action.active" }} />}
-          defaultExpanded={selectedPath}
-          sx={{ height: "100%", width: "100%", overflowY: "auto" }}
-          selected={[location.pathname.split("/")[2]]}
-        >
-          {trees.map((tree: any) => renderTree(tree))}
-        </TreeView>
+        <>
+          <TreeView
+            onNodeSelect={(
+              event: SyntheticEvent<Element, Event>,
+              nodeIds: string[]
+            ) => history.push(`/media/${nodeIds}`)}
+            defaultCollapseIcon={
+              <ArrowDropDownIcon sx={{ color: "action.active" }} />
+            }
+            defaultExpandIcon={
+              <ArrowRightIcon sx={{ color: "action.active" }} />
+            }
+            defaultExpanded={selectedPath}
+            sx={{ height: "100%", width: "100%", overflowY: "auto" }}
+            selected={[location.pathname.split("/")[2]]}
+          >
+            {trees.map((tree: any) => renderTree(tree))}
+          </TreeView>
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Box display="flex" alignItems="center" gap={1}>
+                <VisibilityIcon sx={{ color: "action.active" }} />
+                {/** @ts-expect-error body3 variant needs to be typed */}
+                <Typography color="text.disabled" variant="body3">
+                  Hidden Items
+                </Typography>
+              </Box>
+            </AccordionSummary>
+            <AccordionDetails>
+              <TreeView
+                onNodeSelect={(
+                  event: SyntheticEvent<Element, Event>,
+                  nodeIds: string[]
+                ) => history.push(`/media/${nodeIds}`)}
+                defaultCollapseIcon={
+                  <ArrowDropDownIcon sx={{ color: "action.active" }} />
+                }
+                defaultExpandIcon={
+                  <ArrowRightIcon sx={{ color: "action.active" }} />
+                }
+                defaultExpanded={selectedPath}
+                sx={{ height: "100%", width: "100%", overflowY: "auto" }}
+                selected={[location.pathname.split("/")[2]]}
+              >
+                {trees.map((tree: any) => renderTree(tree, true))}
+              </TreeView>
+            </AccordionDetails>
+          </Accordion>
+        </>
       ) : null}
       <NewFolderDialog
         open={openNewFolderDialog}
