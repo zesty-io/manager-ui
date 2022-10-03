@@ -23,10 +23,11 @@ interface Props {
   id?: string;
   binId?: string;
   groupId?: string;
+  hideUpload?: boolean;
 }
 type Dialogs = "delete" | "rename" | "new" | null;
 
-export const Header = ({ title, id, binId, groupId }: Props) => {
+export const Header = ({ title, id, binId, groupId, hideUpload }: Props) => {
   const [openDialog, setOpenDialog] = useState<Dialogs>(null);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -103,9 +104,11 @@ export const Header = ({ title, id, binId, groupId }: Props) => {
             ) : null}
           </Menu>
         </Box>
-        <Button startIcon={<FileUploadIcon />} variant="contained">
-          Upload
-        </Button>
+        {hideUpload ? null : (
+          <Button startIcon={<FileUploadIcon />} variant="contained">
+            Upload
+          </Button>
+        )}
       </Box>
       <RenameFolderDialog
         open={openDialog === "rename"}

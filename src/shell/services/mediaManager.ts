@@ -56,7 +56,7 @@ export const mediaManagerApi = createApi({
               ...file,
               thumbnail: generateThumbnail(file),
             })) as File[];
-          return { data: files };
+          return { data: files.reverse() };
         } catch (error) {
           return { error };
         }
@@ -86,10 +86,12 @@ export const mediaManagerApi = createApi({
       query: (binId) => `bin/${binId}/files`,
       providesTags: (result, error, binId) => [{ type: "BinFiles", id: binId }],
       transformResponse: (response: { data: File[] }) =>
-        response.data.map((file) => ({
-          ...file,
-          thumbnail: generateThumbnail(file),
-        })),
+        response.data
+          .map((file) => ({
+            ...file,
+            thumbnail: generateThumbnail(file),
+          }))
+          .reverse(),
     }),
     getBinGroups: builder.query<Group[], string>({
       query: (binId) => `bin/${binId}/groups`,
@@ -106,10 +108,12 @@ export const mediaManagerApi = createApi({
       ],
       transformResponse: (response: { data: GroupData[] }) => ({
         ...response.data[0],
-        files: response.data[0].files.map((file) => ({
-          ...file,
-          thumbnail: generateThumbnail(file),
-        })),
+        files: response.data[0].files
+          .map((file) => ({
+            ...file,
+            thumbnail: generateThumbnail(file),
+          }))
+          .reverse(),
         groups: response.data[0].groups.sort((a, b) =>
           a.name.localeCompare(b.name)
         ),
@@ -177,6 +181,17 @@ export const mediaManagerApi = createApi({
         "BinGroups",
       ],
     }),
+    searchBinFiles: builder.query<
+      File[],
+      {
+        binIds: string[];
+        term: string;
+      }
+    >({
+      query: ({ binIds, term }) =>
+        `/search/files?bins=${binIds.join(",")}&term=${term}`,
+      transformResponse: getResponseData,
+    }),
   }),
 });
 
@@ -195,4 +210,5 @@ export const {
   useUpdateGroupMutation,
   useCreateGroupMutation,
   useDeleteGroupMutation,
+  useSearchBinFilesQuery,
 } = mediaManagerApi;

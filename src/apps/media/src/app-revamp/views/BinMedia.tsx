@@ -3,6 +3,7 @@ import { EmptyState } from "../components/EmptyState";
 import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 import { MediaGrid } from "../components/MediaGrid";
 import { useSelector } from "react-redux";
+import { DnDProvider } from "../components/DnDProvider";
 import { Header } from "../components/Header";
 import { Box } from "@mui/material";
 
@@ -34,16 +35,18 @@ export const BinMedia = () => {
         id={binData?.[0]?.id}
         binId={binData?.[0]?.id}
       />
-      {!isFilesFetching && !binFiles?.length ? (
-        <EmptyState />
-      ) : (
-        <MediaGrid
-          files={binFiles}
-          groups={binGroups}
-          heightOffset={HEADER_HEIGHT}
-          widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
-        />
-      )}
+      <DnDProvider>
+        {!isFilesFetching && !binFiles?.length ? (
+          <EmptyState />
+        ) : (
+          <MediaGrid
+            files={binFiles}
+            groups={binGroups}
+            heightOffset={HEADER_HEIGHT}
+            widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
+          />
+        )}
+      </DnDProvider>
     </Box>
   );
 };
