@@ -21,7 +21,7 @@ import { FieldTypeText, FieldTypeUrl } from "@zesty-io/material";
 
 import { ConfirmDialog } from "@zesty-io/material";
 
-import { closeTab } from "shell/store/ui";
+import { unpinTab } from "shell/store/ui";
 import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
@@ -218,7 +218,7 @@ export default function LinkEdit() {
         type: "REMOVE_LINK",
       });
       dispatch(notify({ message: "Deleted Link", kind: "save" }));
-      dispatch(closeTab(`/content/link/${linkZUID}`));
+      dispatch(unpinTab({ pathname: `/content/link/${linkZUID}`, search: "" }));
     });
   }
 
