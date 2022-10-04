@@ -74,8 +74,8 @@ export const FileTypePreview: FC<Props> = ({ src, filename }) => {
         >
           <CardMedia
             component="img"
-            data-src={src || defaultImg}
-            image={src || defaultImg}
+            data-src={src}
+            image={src}
             loading="lazy"
             sx={{
               objectFit: "contain",
