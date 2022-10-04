@@ -13,6 +13,12 @@ import GlobalMenu from "shell/components/global-menu";
 import GlobalCustomApps from "shell/components/global-custom-apps";
 import GlobalActions from "shell/components/global-actions";
 
+import { theme } from "@zesty-io/material";
+
+const globalSideBarThemeStyles = {
+  backgroundColor: theme.palette.grey[900],
+};
+
 export default connect((state) => {
   return {
     ui: state.ui,
@@ -20,7 +26,7 @@ export default connect((state) => {
   };
 })(function GlobalSidebar(props) {
   return (
-    <aside className={styles.GlobalSidebar}>
+    <aside className={styles.GlobalSidebar} style={globalSideBarThemeStyles}>
       <div
         className={cx(
           styles.topMenu,

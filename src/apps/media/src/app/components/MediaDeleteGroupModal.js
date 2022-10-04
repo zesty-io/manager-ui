@@ -19,7 +19,7 @@ import {
 } from "@zesty-io/core/Modal";
 
 import { deleteGroup } from "shell/store/media";
-import { closeTab } from "shell/store/ui";
+import { unpinTab } from "shell/store/ui";
 
 import styles from "./MediaDeleteGroupModal.less";
 export function MediaDeleteGroupModal(props) {
@@ -54,7 +54,12 @@ export function MediaDeleteGroupModal(props) {
           onClick={() => {
             dispatch(deleteGroup(props.currentGroup)).then(() => {
               props.onClose();
-              dispatch(closeTab(`/media/${props.currentGroup.id}`));
+              dispatch(
+                unpinTab({
+                  pathname: `/media/${props.currentGroup.id}`,
+                  search: "",
+                })
+              );
             });
           }}
           startIcon={<DeleteIcon />}

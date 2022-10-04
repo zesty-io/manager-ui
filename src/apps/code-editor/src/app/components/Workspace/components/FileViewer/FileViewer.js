@@ -18,6 +18,8 @@ import { FileDrawer } from "../../../FileDrawer";
 import { LockedView } from "../../../LockedView";
 
 import styles from "./FileViewer.less";
+import { tabLocationEquality } from "../../../../../../../../shell/store/ui";
+import { LocalDirtyCodeModal } from "../../../LocalDirtyCodeModal";
 export const FileViewer = connect((state, props) => {
   const file = state.files.find(
     (file) => file.ZUID === props.match.params.fileZUID
@@ -35,9 +37,20 @@ export const FileViewer = connect((state, props) => {
           }, [])
       : [];
 
+  const fileType = props.match.params.fileType;
+  const pinnedTabs = state.ui.pinnedTabs;
+  const fileIsPinned = Boolean(
+    pinnedTabs.find((tab) =>
+      tabLocationEquality(tab, {
+        search: "",
+        pathname: `/code/file/${fileType}/${file.ZUID}`,
+      })
+    )
+  );
   return {
     file: file ? file : {},
     fields,
+    fileIsPinned,
   };
 })(
   memo(function FileViewer(props) {
@@ -91,6 +104,15 @@ export const FileViewer = connect((state, props) => {
           {props.file && props.file.ZUID ? (
             <Fragment>
               <LockedView ZUID={props.file.ZUID} name={props.file.fileName} />
+              <LocalDirtyCodeModal
+                show={props.file.dirty && !props.fileIsPinned}
+                title="Unsaved Changes"
+                content="You have unsaved changes that will be lost if you leave this page."
+                dirtyCodeFileType={match.params.fileType}
+                dirtyCodeZuid={match.params.fileZUID}
+                dirtyCodeStatus={props.status}
+              />
+
               <Switch>
                 <Route path={`${match.url}/diff`}>
                   <Differ
