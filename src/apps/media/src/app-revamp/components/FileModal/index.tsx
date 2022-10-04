@@ -2,6 +2,7 @@ import { FC, useState } from "react";
 import { Modal, Box, Card, CardMedia } from "@mui/material";
 import { FileModalHeader } from "./FileModalHeader";
 import { FileModalContent } from "./FileModalContent";
+import { FileTypePreview } from "./FileTypePreview";
 
 const styledModal = {
   position: "absolute",
@@ -63,18 +64,7 @@ export const FileModal: FC<Props> = ({
               overflow: "hidden",
             }}
           >
-            <CardMedia
-              component="img"
-              data-src={src}
-              image={src}
-              loading="lazy"
-              sx={{
-                objectFit: "contain",
-                overflow: "hidden",
-                height: "100%",
-                m: "auto",
-              }}
-            />
+            <FileTypePreview src={src} filename={filename} />
           </Box>
         </Card>
 
