@@ -22,7 +22,7 @@ export interface Bin {
   storage_base_url: string;
   cdn_driver: string;
   cdn_base_url: string;
-  created_at: Date;
+  created_at: string;
   deleted_at?: Date;
   deleted_from_storage_at?: Date;
   default: boolean;

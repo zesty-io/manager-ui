@@ -6,6 +6,7 @@ import { Sidebar } from "./components/Sidebar";
 import { AllMedia } from "./views/AllMedia";
 import { Media } from "./views/Media";
 import { SearchMedia } from "./views/SearchMedia";
+import { useEffect } from "react";
 
 export const MediaApp = () => {
   return (

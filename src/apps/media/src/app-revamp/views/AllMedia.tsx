@@ -5,6 +5,7 @@ import { DnDProvider } from "../components/DnDProvider";
 import { EmptyState } from "../components/EmptyState";
 import { MediaGrid } from "../components/MediaGrid";
 import { Header } from "../components/Header";
+import { useEffect } from "react";
 
 const HEADER_HEIGHT = 140;
 const SIDEBAR_COLLAPSED_WIDTH = 282;
@@ -24,7 +25,8 @@ export const AllMedia = () => {
   return (
     <Box component="main" sx={{ flex: 1 }}>
       <Header title="All Media" />
-      <DnDProvider>
+      {/* TODO Fix this */}
+      <DnDProvider currentBin={null} currentGroup={null}>
         {(isFilesLoading || isBinsLoading) && !files?.length ? (
           <EmptyState />
         ) : (

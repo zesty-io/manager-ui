@@ -36,7 +36,8 @@ export const BinMedia = () => {
         id={binData?.[0]?.id}
         binId={binData?.[0]?.id}
       />
-      <DnDProvider>
+      {/* TODO FIX THIS */}
+      <DnDProvider currentBin={null} currentGroup={null}>
         {!isFilesFetching && !binFiles?.length ? (
           <EmptyState />
         ) : (

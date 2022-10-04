@@ -12,7 +12,7 @@ import { Thumbnail } from "./Thumbnail";
 export const UploadModal: FC = () => {
   const dispatch = useDispatch();
   const filesToUpload: File[] = useSelector(
-    (state: any) => state.mediaRevamp.filesToUpload
+    (state: any) => state.mediaRevamp.files
   );
 
   return (
@@ -22,12 +22,13 @@ export const UploadModal: FC = () => {
           {filesToUpload.length} Files Selected for Upload
         </DialogTitle>
         <DialogContent>
-          {filesToUpload.map((f) => (
+          INSERT THUMBNAILS HERE
+          {/*filesToUpload.map((f) => (
             <Thumbnail
               filename={f.name}
               src="https://placekitten.com/g/200/200"
             />
-          ))}
+          ))*/}
         </DialogContent>
         <DialogActions>
           <Button color="secondary" variant="text">

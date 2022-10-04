@@ -20,8 +20,16 @@ export const FolderMedia = () => {
   const openNav = useSelector((state: any) => state.ui.openNav);
 
   // TODO potentially provide user feedback for an invalid id
-  const { data: groupData, isFetching } =
+  const { data: groupData, isFetching: groupIsFetching } =
     mediaManagerApi.useGetGroupDataQuery(id);
+
+  /*
+  if(groupData) {
+    const { data: binData, isFetching: binIsFetching } =
+      mediaManagerApi.useGetBinQuery(groupData.bin_id)
+      console.log({binData})
+  }
+  */
 
   return (
     <Box component="main" sx={{ flex: 1 }}>
@@ -31,8 +39,9 @@ export const FolderMedia = () => {
         binId={groupData?.bin_id}
         groupId={groupData?.group_id}
       />
-      <DnDProvider currentGroup={groupData}>
-        {!isFetching && !groupData.files?.length ? (
+      {/* TODO FIX THIS */}
+      <DnDProvider currentBin={null} currentGroup={groupData}>
+        {!groupIsFetching && !groupData.files?.length ? (
           <EmptyState />
         ) : (
           <>

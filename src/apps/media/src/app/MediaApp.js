@@ -178,6 +178,7 @@ export default connect((state) => {
     workspaceProps.toggleSelected = toggleSelected;
     workspaceProps.selected = selected;
   }
+  console.log({ currentBin, currentGroup, currentFile });
 
   return (
     <main
