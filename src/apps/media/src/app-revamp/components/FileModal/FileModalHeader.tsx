@@ -25,9 +25,9 @@ export const FileModalHeader: FC<Props> = ({ filename }) => {
         </Typography>
       </Box>
       <Box>
-        <EditIcon sx={{ mr: 1 }} />
-        <DeleteIcon sx={{ mr: 1 }} />
-        <MoreVertIcon />
+        <EditIcon sx={{ mr: 1, cursor: "pointer" }} />
+        <DeleteIcon sx={{ mr: 1, cursor: "pointer" }} />
+        <MoreVertIcon sx={{ cursor: "pointer" }} />
       </Box>
     </Box>
   );

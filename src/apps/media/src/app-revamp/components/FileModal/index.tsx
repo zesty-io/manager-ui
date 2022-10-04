@@ -18,25 +18,27 @@ interface Props {
   id?: string;
   src?: string;
   filename?: string;
-  altText?: string;
-  onEdit?: boolean;
-  onCloseModal?: () => void;
+  title?: string;
+  handleCloseModal?: any;
 }
 
 export const FileModal: FC<Props> = ({
   id,
   src,
   filename,
-  altText,
-  onEdit,
-  onCloseModal,
+  title,
+  handleCloseModal,
 }) => {
   const [open, setOpen] = useState(true);
+  const handleClose = () => {
+    setOpen(false);
+    handleCloseModal();
+  };
 
   return (
     <Modal
       open={open}
-      onClose={onCloseModal}
+      onClose={handleClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
@@ -58,6 +60,7 @@ export const FileModal: FC<Props> = ({
             sx={{
               backgroundColor: "grey.200",
               height: "100%",
+              overflow: "hidden",
             }}
           >
             <CardMedia
@@ -81,8 +84,7 @@ export const FileModal: FC<Props> = ({
             id={id}
             src={src}
             filename={filename}
-            altText={altText}
-            onEdit={onEdit}
+            title={title}
           />
         </Box>
       </Box>

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams } from "react-router";
 import { EmptyState } from "../components/EmptyState";
 import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
@@ -6,6 +7,7 @@ import { useSelector } from "react-redux";
 import { DnDProvider } from "../components/DnDProvider";
 import { Header } from "../components/Header";
 import { Box } from "@mui/material";
+import { FileModal } from "../components/FileModal";
 
 type Params = { id: string };
 
@@ -17,6 +19,20 @@ export const FolderMedia = () => {
   const params = useParams<Params>();
   const { id } = params;
   const openNav = useSelector((state: any) => state.ui.openNav);
+
+  // current file details used for file modal
+  const [currentFile, setCurrentFile] = useState<any>({
+    id: "",
+    src: "",
+    filename: "",
+  });
+
+  const handleCloseModal = () => {
+    setCurrentFile((prev: any) => ({
+      ...prev,
+      id: "",
+    }));
+  };
 
   // TODO potentially provide user feedback for an invalid id
   const { data: groupData, isFetching } =
@@ -39,9 +55,19 @@ export const FolderMedia = () => {
             groups={groupData?.groups}
             heightOffset={HEADER_HEIGHT}
             widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
+            onSetCurrentFile={setCurrentFile}
           />
         )}
       </DnDProvider>
+      {currentFile.id && (
+        <FileModal
+          id={currentFile.id}
+          src={currentFile.src}
+          filename={currentFile.filename}
+          title={currentFile.filename}
+          handleCloseModal={handleCloseModal}
+        />
+      )}
     </Box>
   );
 };

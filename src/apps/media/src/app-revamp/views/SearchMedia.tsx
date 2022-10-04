@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { Box } from "@mui/material";
 import {
@@ -10,6 +10,7 @@ import {
 import { MediaGrid } from "../components/MediaGrid";
 import { Header } from "../components/Header";
 import { useParams } from "../../../../../shell/hooks/useParams";
+import { FileModal } from "../components/FileModal";
 
 const HEADER_HEIGHT = 140;
 const SIDEBAR_COLLAPSED_WIDTH = 282;
@@ -25,6 +26,20 @@ export const SearchMedia = () => {
   const { data: ecoBins } = useGetEcoBinsQuery(ecoId, {
     skip: !ecoId,
   });
+
+  // current file details used for file modal
+  const [currentFile, setCurrentFile] = useState<any>({
+    id: "",
+    src: "",
+    filename: "",
+  });
+
+  const handleCloseModal = () => {
+    setCurrentFile((prev: any) => ({
+      ...prev,
+      id: "",
+    }));
+  };
 
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
@@ -63,7 +78,17 @@ export const SearchMedia = () => {
         groups={filteredGroups}
         heightOffset={HEADER_HEIGHT}
         widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
+        onSetCurrentFile={setCurrentFile}
       />
+      {currentFile.id && (
+        <FileModal
+          id={currentFile.id}
+          src={currentFile.src}
+          filename={currentFile.filename}
+          title={currentFile.filename}
+          handleCloseModal={handleCloseModal}
+        />
+      )}
     </Box>
   );
 };

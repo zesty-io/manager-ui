@@ -5,27 +5,37 @@ import {
   TextField,
   InputAdornment,
   Avatar,
+  TextareaAutosize,
 } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
 import { Textarea } from "@zesty-io/core/Textarea";
 import { useTheme } from "@mui/material/styles";
+import { MD5 } from "../../../../../../utility/md5";
 
 interface Props {
   id?: string;
   src?: string;
   filename?: string;
-  altText?: string;
-  onEdit?: boolean;
+  title?: string;
+  user?: {
+    email?: string;
+    role?: string;
+  };
+  logs?: {
+    dateUploaded?: string;
+    timeUploaded?: string;
+  };
 }
 
 export const FileModalContent: FC<Props> = ({
   id,
   src,
   filename,
-  altText,
-  onEdit,
+  title,
+  user,
+  logs,
 }) => {
   const theme = useTheme();
   const [isFileUrlCopied, setIsFileUrlCopied] = useState(false);
@@ -50,7 +60,7 @@ export const FileModalContent: FC<Props> = ({
         <Typography color="text.primary">File URL</Typography>
         <TextField
           sx={{ mt: 1, width: "100%" }}
-          value={src}
+          value={filename}
           variant="standard"
           InputProps={{
             readOnly: true,
@@ -77,22 +87,22 @@ export const FileModalContent: FC<Props> = ({
       </Box>
       <Box sx={{ mt: 3 }}>
         <Typography color="text.primary">Alt Text</Typography>
-        {!onEdit ? (
-          <Typography>{altText}</Typography>
-        ) : (
-          <Textarea
-            style={{
-              width: "100%",
-              height: 82,
-              marginTop: "4px",
-              padding: "7px 12px",
-              border: `1px solid ${theme.palette.grey[200]}`,
-              borderRadius: "8px",
-              fontSize: "14px",
-            }}
-            value={altText}
-          />
-        )}
+        <TextareaAutosize
+          aria-label="empty textarea"
+          placeholder="Empty"
+          value={title}
+          style={{
+            width: "100%",
+            height: 82,
+            marginTop: "4px",
+            padding: "7px 12px",
+            boxSizing: "border-box",
+            border: `1px solid ${theme.palette.grey[200]}`,
+            borderRadius: "8px",
+            outline: "none",
+            fontSize: "14px",
+          }}
+        />
       </Box>
       <Box sx={{ mt: 2 }}>
         <Typography color="text.secondary">UPLOADED BY</Typography>
@@ -100,10 +110,10 @@ export const FileModalContent: FC<Props> = ({
           <Avatar
             sx={{ bgcolor: "grey.300", width: 40, height: 40 }}
             alt="Remy Sharp"
-            src="/broken-image.jpg"
-          >
-            B
-          </Avatar>
+            src={`https://www.gravatar.com/avatar/${MD5(
+              "testemail@gmail.com"
+            )}.jpg?s=40`}
+          ></Avatar>
           <Box sx={{ pl: 2 }}>
             <Typography variant="body1">Name</Typography>
             <Typography variant="body1">Role</Typography>
@@ -115,10 +125,18 @@ export const FileModalContent: FC<Props> = ({
           UPLOADED ON
         </Typography>
         <Box sx={{ display: "flex", mt: 1 }}>
-          <CalendarTodayIcon />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <CalendarTodayIcon />
+          </Box>
           <Box sx={{ pl: 3 }}>
-            <Typography>Date</Typography>
-            <Typography>Time</Typography>
+            <Typography>{logs?.dateUploaded}</Typography>
+            <Typography>{logs?.timeUploaded}</Typography>
           </Box>
         </Box>
       </Box>
