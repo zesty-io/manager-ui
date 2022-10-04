@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { useDropzone } from "react-dropzone";
 import { useCallback } from "react";
 import { uploadFile } from "../../../../../shell/store/media-revamp";
