@@ -57,7 +57,6 @@ export const FileViewer = connect((state, props) => {
   };
 })(
   memo(function FileViewer(props) {
-    console.log({ props });
     const { match, location } = props;
     const [loading, setLoading] = useState(false);
 
