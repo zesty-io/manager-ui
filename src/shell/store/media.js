@@ -433,8 +433,9 @@ export function fetchAllGroups() {
     return Promise.all(binIDs.map((id) => dispatch(fetchGroups(id)))).then(
       (groups) => {
         /*
-          If a fetchGroup call gets duplicated it will return undefined, so if
-          we are in a dispatch that is the duplicate we can ignore it
+          If a fetchGroup call gets duplicated it will return undefined, so
+          here we check if the current execution is coming from the duplicate 
+          in order to ignore it
         */
         if (groups.some((group) => group === undefined)) return;
         return dispatch(fetchGroupsSuccess(groups.flat()));
