@@ -14,7 +14,10 @@ export const DnDProvider: FC = ({ children }) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   return (
-    <Box sx={{ display: "flex" }} {...getRootProps()}>
+    <Box
+      sx={{ display: "flex" }}
+      {...getRootProps({ onClick: (e) => e.stopPropagation() })}
+    >
       <input {...getInputProps()} />
       {isDragActive ? "DROP FILES HERE" : children}
     </Box>
