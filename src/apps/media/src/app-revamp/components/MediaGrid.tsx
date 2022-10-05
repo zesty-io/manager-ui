@@ -47,7 +47,7 @@ export const MediaGrid = ({
       tmp = tmp.concat(new Array(mod ? columns - mod : 0).fill("empty"));
     }
     // Adds file section if there are files
-    if (files?.length) {
+    if (files?.length && columns) {
       tmp = tmp.concat(["files"]).concat(new Array(columns - 1).fill("empty"));
       files.forEach((file, i) => tmp.push(`file-${i}`));
       const mod = files.length % columns;
