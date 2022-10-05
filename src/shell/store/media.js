@@ -432,6 +432,11 @@ export function fetchAllGroups() {
     const binIDs = groups[0].children.concat(groups[1].children);
     return Promise.all(binIDs.map((id) => dispatch(fetchGroups(id)))).then(
       (groups) => {
+        /*
+          If a fetchGroup call gets duplicated it will return undefined, so if
+          we are in a dispatch that is the duplicate we can ignore it
+        */
+        if (groups.some((group) => group === undefined)) return;
         return dispatch(fetchGroupsSuccess(groups.flat()));
       }
     );
