@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef, useMemo, Dispatch } from "react";
 import { VariableSizeGrid } from "react-window";
 import { Box, Typography } from "@mui/material";
 import { useWindowSize } from "react-use";
@@ -14,13 +14,16 @@ interface Props {
   files?: File[];
   heightOffset?: number;
   widthOffset?: number;
+  onSetCurrentFile?: Dispatch<any>;
 }
 
+// test
 export const MediaGrid = ({
   groups,
   files,
   heightOffset = 0,
   widthOffset = 0,
+  onSetCurrentFile,
 }: Props) => {
   const { width, height } = useWindowSize();
 
@@ -132,6 +135,13 @@ export const MediaGrid = ({
             <Thumbnail
               src={files[gridItemIndex].thumbnail}
               filename={files[gridItemIndex].filename}
+              onClick={() =>
+                onSetCurrentFile(() => ({
+                  id: files[gridItemIndex].id,
+                  src: files[gridItemIndex].thumbnail,
+                  filename: files[gridItemIndex].filename,
+                }))
+              }
             />
           </Box>
         )}

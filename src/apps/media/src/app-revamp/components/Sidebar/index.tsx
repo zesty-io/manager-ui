@@ -1,8 +1,6 @@
 import { Box, Typography, Divider } from "@mui/material";
 import { Folders } from "./Folders";
 import { Menu } from "./Menu";
-import { KeyboardEvent, useState } from "react";
-import { useParams } from "../../../../../../shell/hooks/useParams";
 import { SearchBox } from "./Searchbox";
 
 export const Sidebar = () => {

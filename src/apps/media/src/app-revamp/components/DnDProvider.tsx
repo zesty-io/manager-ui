@@ -15,7 +15,7 @@ export const DnDProvider: FC = ({ children }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   return (
     <Box
-      sx={{ display: "flex" }}
+      sx={{ height: "100%" }}
       {...getRootProps({ onClick: (e) => e.stopPropagation() })}
     >
       <input {...getInputProps()} />

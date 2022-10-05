@@ -13,10 +13,13 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { RenameFolderDialog } from "./RenameFolderDialog";
 import { NewFolderDialog } from "./NewFolderDialog";
 import { DeleteFolderDialog } from "./DeleteFolderDialog";
+import { useLocalStorage } from "react-use";
 
 interface Props {
   title: string;
@@ -29,8 +32,11 @@ type Dialogs = "delete" | "rename" | "new" | null;
 
 export const Header = ({ title, id, binId, groupId, hideUpload }: Props) => {
   const [openDialog, setOpenDialog] = useState<Dialogs>(null);
-
   const [anchorEl, setAnchorEl] = useState(null);
+  const [hiddenGroups, setHiddenGroups] = useLocalStorage(
+    "zesty:navMedia:hidden",
+    []
+  );
   const open = Boolean(anchorEl);
   const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -38,6 +44,7 @@ export const Header = ({ title, id, binId, groupId, hideUpload }: Props) => {
   const closeMenu = () => {
     setAnchorEl(null);
   };
+
   return (
     <>
       <Box
@@ -100,6 +107,33 @@ export const Header = ({ title, id, binId, groupId, hideUpload }: Props) => {
                   <DeleteIcon fontSize="small" />
                 </ListItemIcon>
                 <ListItemText>Delete</ListItemText>
+              </MenuItem>
+            ) : null}
+            {id ? (
+              <MenuItem
+                onClick={() => {
+                  closeMenu();
+                  if (hiddenGroups.includes(id)) {
+                    setHiddenGroups(
+                      hiddenGroups.filter((group) => group !== id)
+                    );
+                  } else {
+                    setHiddenGroups([...(hiddenGroups as String[]), id]);
+                  }
+                  // dispatches storage event for components to listen to
+                  window.dispatchEvent(new StorageEvent("storage"));
+                }}
+              >
+                <ListItemIcon>
+                  {hiddenGroups.includes(id) ? (
+                    <VisibilityIcon fontSize="small" />
+                  ) : (
+                    <VisibilityOffIcon fontSize="small" />
+                  )}
+                </ListItemIcon>
+                <ListItemText>
+                  {hiddenGroups.includes(id) ? "Show" : "Hide"}
+                </ListItemText>
               </MenuItem>
             ) : null}
           </Menu>
