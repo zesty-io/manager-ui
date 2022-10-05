@@ -37,7 +37,7 @@ export const MediaGrid = ({
   const grid = useMemo(() => {
     let tmp: string[] = [];
     // Adds group section if there are groups
-    if (groups?.length) {
+    if (groups?.length && columns) {
       // Add header cell and fill remaining column
       tmp = ["groups"].concat(new Array(columns - 1).fill("empty"));
       // Add item cells
