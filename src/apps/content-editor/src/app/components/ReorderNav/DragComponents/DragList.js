@@ -32,9 +32,13 @@ export default class DragList extends Component {
                 event.preventDefault();
               }}
               onDragEnd={(evt) => {
-                this.props.handleMove(evt.target.id, this.state.target);
+                evt.preventDefault();
+                this.props.handleMove(evt.currentTarget.id, this.state.target);
               }}
-              onDragEnter={(evt) => this.setState({ target: evt.target.id })}
+              onDragEnter={(evt) => {
+                evt.preventDefault();
+                this.setState({ target: evt.currentTarget.id });
+              }}
               onDrop={this.drop}
               handleNestChange={this.props.handleNestChange}
             />
