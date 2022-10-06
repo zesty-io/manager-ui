@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef, useMemo, Dispatch } from "react";
 import { VariableSizeGrid } from "react-window";
 import { Box, Typography } from "@mui/material";
 import { useWindowSize } from "react-use";
@@ -14,13 +14,16 @@ interface Props {
   files?: File[];
   heightOffset?: number;
   widthOffset?: number;
+  onSetCurrentFile?: Dispatch<any>;
 }
 
+// test
 export const MediaGrid = ({
   groups,
   files,
   heightOffset = 0,
   widthOffset = 0,
+  onSetCurrentFile,
 }: Props) => {
   const { width, height } = useWindowSize();
 
@@ -34,7 +37,7 @@ export const MediaGrid = ({
   const grid = useMemo(() => {
     let tmp: string[] = [];
     // Adds group section if there are groups
-    if (groups?.length) {
+    if (groups?.length && columns) {
       // Add header cell and fill remaining column
       tmp = ["groups"].concat(new Array(columns - 1).fill("empty"));
       // Add item cells
@@ -44,7 +47,7 @@ export const MediaGrid = ({
       tmp = tmp.concat(new Array(mod ? columns - mod : 0).fill("empty"));
     }
     // Adds file section if there are files
-    if (files?.length) {
+    if (files?.length && columns) {
       tmp = tmp.concat(["files"]).concat(new Array(columns - 1).fill("empty"));
       files.forEach((file, i) => tmp.push(`file-${i}`));
       const mod = files.length % columns;
@@ -132,6 +135,13 @@ export const MediaGrid = ({
             <Thumbnail
               src={files[gridItemIndex].thumbnail}
               filename={files[gridItemIndex].filename}
+              onClick={() =>
+                onSetCurrentFile(() => ({
+                  id: files[gridItemIndex].id,
+                  src: files[gridItemIndex].thumbnail,
+                  filename: files[gridItemIndex].filename,
+                }))
+              }
             />
           </Box>
         )}

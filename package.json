@@ -110,6 +110,8 @@
     "@foreachbe/cypress-tinymce": "^1.0.0",
     "@sentry/cli": "^2.2.0",
     "@sentry/webpack-plugin": "^1.18.9",
+    "@types/history": "^4.7.11",
+    "@types/lodash": "^4.14.182",
     "@types/react-router-dom": "^5.3.3",
     "@types/react-window": "^1.8.5",
     "@types/uuid": "^8.3.4",

@@ -1,6 +1,6 @@
+import { UIState } from "./ui";
 /*
   TODO
-rjpals marked this conversation as resolved.
   The UI state is well typed but the rest of the application state is entirely
   untyped (i.e. any). Ideally AppState would be completely specified, but that
   would require typing the entire redux store of the app just for this one
@@ -9,7 +9,7 @@ rjpals marked this conversation as resolved.
   with an AppState that has the proper types
 */
 export type AppState = {
-  ui: any;
+  ui: UIState;
   apps: any;
   auth: any;
   user: any;
@@ -35,7 +35,8 @@ export type AppState = {
   modal: any;
   listFilters: any;
   logsInView: any;
-  files: any;
+  // TODO: complete files
+  files: { dirty: boolean; ZUID: string; fileName: string; status: string }[];
   status: any;
   auditTrail: any;
   headers: any;

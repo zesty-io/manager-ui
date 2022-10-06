@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams } from "react-router";
 import { EmptyState } from "../components/EmptyState";
 import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
@@ -6,11 +7,12 @@ import { useSelector } from "react-redux";
 import { DnDProvider } from "../components/DnDProvider";
 import { Header } from "../components/Header";
 import { UploadModal } from "../components/UploadModal";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
+import { FileModal } from "../components/FileModal";
 
 type Params = { id: string };
 
-const HEADER_HEIGHT = 43;
+const HEADER_HEIGHT = 140;
 const SIDEBAR_COLLAPSED_WIDTH = 282;
 const SIDEBAR_WIDTH = 377;
 
@@ -18,6 +20,13 @@ export const BinMedia = () => {
   const params = useParams<Params>();
   const { id } = params;
   const openNav = useSelector((state: any) => state.ui.openNav);
+
+  // current file details used for file modal
+  const [currentFile, setCurrentFile] = useState<any>({
+    id: "",
+    src: "",
+    filename: "",
+  });
 
   const { data: binData, isFetching: isBinDataFetching } =
     mediaManagerApi.useGetBinQuery(id);
@@ -29,29 +38,57 @@ export const BinMedia = () => {
   const { data: binFiles, isFetching: isFilesFetching } =
     mediaManagerApi.useGetBinFilesQuery(id);
 
+  const handleCloseModal = () => {
+    setCurrentFile((prev: any) => ({
+      ...prev,
+      id: "",
+    }));
+  };
+
   return (
-    <Box component="main" sx={{ flex: 1 }}>
+    <Box
+      component="main"
+      sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
+    >
       <Header
         title={binData?.[0]?.name}
         id={binData?.[0]?.id}
         binId={binData?.[0]?.id}
       />
-      {/* TODO FIX THIS */}
-      <DnDProvider currentBin={null} currentGroup={null}>
-        {!isFilesFetching && !binFiles?.length ? (
-          <EmptyState />
-        ) : (
-          <>
-            <UploadModal />
+      {isGroupsFetching || isFilesFetching ? (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        /* TODO FIX THIS */
+        <DnDProvider currentBin={null} currentGroup={null}>
+          {!isFilesFetching && !binFiles?.length ? (
+            <EmptyState />
+          ) : (
             <MediaGrid
               files={binFiles}
               groups={binGroups}
               heightOffset={HEADER_HEIGHT}
               widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
+              onSetCurrentFile={setCurrentFile}
             />
-          </>
-        )}
-      </DnDProvider>
+          )}
+        </DnDProvider>
+      )}
+      {currentFile.id && (
+        <FileModal
+          id={currentFile.id}
+          src={currentFile.src}
+          filename={currentFile.filename}
+          title={currentFile.filename}
+          handleCloseModal={handleCloseModal}
+        />
+      )}
     </Box>
   );
 };
