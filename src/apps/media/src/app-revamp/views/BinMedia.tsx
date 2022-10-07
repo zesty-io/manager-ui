@@ -25,6 +25,7 @@ export const BinMedia = () => {
     id: "",
     src: "",
     filename: "",
+    groupId: "",
   });
 
   const { data: binData, isFetching: isBinDataFetching } =
@@ -84,6 +85,7 @@ export const BinMedia = () => {
           src={currentFile.src}
           filename={currentFile.filename}
           title={currentFile.filename}
+          groupId={currentFile.groupId}
           handleCloseModal={handleCloseModal}
         />
       )}

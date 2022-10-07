@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState, useRef } from "react";
 import {
   Typography,
   Box,
@@ -12,12 +12,20 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
 import { Textarea } from "@zesty-io/core/Textarea";
 import { useTheme } from "@mui/material/styles";
+import { debounce } from "lodash";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ImageIcon from "@mui/icons-material/Image";
 import { MD5 } from "../../../../../../utility/md5";
+import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
+import { fileExtension } from "../../utils/fileUtils";
 
 interface Props {
   id?: string;
   src?: string;
   filename?: string;
+  groupId?: string;
   title?: string;
   user?: {
     email?: string;
@@ -33,12 +41,25 @@ export const FileModalContent: FC<Props> = ({
   id,
   src,
   filename,
+  groupId,
   title,
   user,
   logs,
 }) => {
   const theme = useTheme();
-  const [isFileUrlCopied, setIsFileUrlCopied] = useState(false);
+  const newTitle = useRef<any>("");
+  const newFilename = useRef<any>("");
+  const [isFileUrlCopied, setIsFileUrlCopied] = useState<boolean>(false);
+  const [isUpdateFilename, setIsUpdateFilename] = useState<boolean>(false);
+  const [updateFile, { isLoading: updateFileIsLoading }] =
+    mediaManagerApi.useUpdateFileMutation();
+
+  const isLoading = updateFileIsLoading;
+
+  useEffect(() => {
+    newTitle.current.value = title;
+    newFilename.current.value = filename;
+  }, [title, filename, newFilename.current]);
 
   const handleCopyClick = () => {
     navigator?.clipboard
@@ -54,14 +75,74 @@ export const FileModalContent: FC<Props> = ({
       });
   };
 
+  const handleUpdateMutation = () => {
+    const debouncedTitle = debounce(async () => {
+      updateFile({
+        id,
+        body: {
+          group_id: groupId,
+          title: newTitle.current.value,
+          filename: newFilename.current.value,
+        },
+      });
+    }, 300);
+
+    // invoke debounced function
+    debouncedTitle();
+  };
+
   return (
     <Box>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          pb: 4,
+        }}
+      >
+        <Box sx={{ display: "flex" }}>
+          <ImageIcon />
+          <TextField
+            sx={{
+              ml: 1,
+              mt: -0.3,
+              width: "100%",
+              "& .MuiInputBase-input": {
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              },
+            }}
+            variant="standard"
+            inputRef={newFilename}
+            onChange={() => handleUpdateMutation()}
+            InputProps={{
+              readOnly: !isUpdateFilename,
+              disableUnderline: true,
+              style: {
+                borderRadius: "8px",
+                padding: "0 12px",
+                border:
+                  isUpdateFilename && `1px solid ${theme.palette.grey[200]}`,
+              },
+            }}
+          />
+        </Box>
+        <Box>
+          <EditIcon
+            sx={{ mr: 1, cursor: "pointer" }}
+            onClick={() => setIsUpdateFilename(!isUpdateFilename)}
+          />
+          <DeleteIcon sx={{ mr: 1, cursor: "pointer" }} />
+          <MoreVertIcon sx={{ cursor: "pointer" }} />
+        </Box>
+      </Box>
+
       <Box>
         <Typography color="text.primary">File URL</Typography>
         <TextField
           sx={{ mt: 1, width: "100%" }}
-          value={filename}
           variant="standard"
+          value={src}
           InputProps={{
             readOnly: true,
             disableUnderline: true,
@@ -90,7 +171,8 @@ export const FileModalContent: FC<Props> = ({
         <TextareaAutosize
           aria-label="empty textarea"
           placeholder="Empty"
-          value={title}
+          ref={newTitle}
+          onChange={() => handleUpdateMutation()}
           style={{
             width: "100%",
             height: 82,

@@ -21,6 +21,7 @@ export const mediaManagerApi = createApi({
     "Bin",
     "BinGroups",
     "BinFiles",
+    "File",
     "GroupData",
     "SiteBins",
     "EcoBins",
@@ -137,6 +138,27 @@ export const mediaManagerApi = createApi({
         "EcoBins",
       ],
     }),
+    updateFile: builder.mutation<
+      File,
+      {
+        id: string;
+        body: {
+          group_id?: string;
+          filename?: string;
+          title?: string;
+        };
+      }
+    >({
+      query: ({ id, body }) => ({
+        url: `/file/${id}`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "GroupData", id: arg.id },
+        { type: "GroupData", id: arg.body.group_id },
+      ],
+    }),
     updateGroup: builder.mutation<
       GroupData,
       {
@@ -207,6 +229,7 @@ export const {
   useGetBinGroupsQuery,
   useGetGroupDataQuery,
   useUpdateBinMutation,
+  useUpdateFileMutation,
   useUpdateGroupMutation,
   useCreateGroupMutation,
   useDeleteGroupMutation,

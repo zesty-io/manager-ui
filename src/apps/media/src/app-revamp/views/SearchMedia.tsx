@@ -32,6 +32,7 @@ export const SearchMedia = () => {
     id: "",
     src: "",
     filename: "",
+    groupId: "",
   });
 
   const handleCloseModal = () => {
@@ -100,6 +101,7 @@ export const SearchMedia = () => {
           src={currentFile.src}
           filename={currentFile.filename}
           title={currentFile.filename}
+          groupId={currentFile.groupId}
           handleCloseModal={handleCloseModal}
         />
       )}

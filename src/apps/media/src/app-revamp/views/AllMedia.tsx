@@ -22,6 +22,7 @@ export const AllMedia = () => {
     id: "",
     src: "",
     filename: "",
+    groupId: "",
   });
 
   const instanceId = useSelector((state: any) => state.instance.ID);
@@ -82,6 +83,7 @@ export const AllMedia = () => {
           src={currentFile.src}
           filename={currentFile.filename}
           title={currentFile.filename}
+          groupId={currentFile.groupId}
           handleCloseModal={handleCloseModal}
         />
       )}

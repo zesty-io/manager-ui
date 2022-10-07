@@ -1,6 +1,5 @@
 import { FC, useState } from "react";
 import { Modal, Box, Card, CardMedia } from "@mui/material";
-import { FileModalHeader } from "./FileModalHeader";
 import { FileModalContent } from "./FileModalContent";
 import { FileTypePreview } from "./FileTypePreview";
 
@@ -20,6 +19,7 @@ interface Props {
   src?: string;
   filename?: string;
   title?: string;
+  groupId?: string;
   handleCloseModal?: any;
 }
 
@@ -27,6 +27,7 @@ export const FileModal: FC<Props> = ({
   id,
   src,
   filename,
+  groupId,
   title,
   handleCloseModal,
 }) => {
@@ -69,12 +70,12 @@ export const FileModal: FC<Props> = ({
         </Card>
 
         <Box sx={{ p: 4, width: "400px" }}>
-          <FileModalHeader filename={filename} />
           <FileModalContent
             id={id}
             src={src}
             filename={filename}
             title={title}
+            groupId={groupId}
           />
         </Box>
       </Box>
