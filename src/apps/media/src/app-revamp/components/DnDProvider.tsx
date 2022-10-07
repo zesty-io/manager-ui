@@ -1,11 +1,15 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { useDropzone } from "react-dropzone";
 import { useCallback } from "react";
 import { uploadFile } from "../../../../../shell/store/media-revamp";
 import { useDispatch } from "react-redux";
 import Box from "@mui/material/Box";
 
-export const DnDProvider: FC = ({ children }) => {
+interface Props {
+  children: React.ReactNode;
+}
+
+export const DnDProvider = ({ children }: Props) => {
   const dispatch = useDispatch();
   const onDrop = useCallback((acceptedFiles: File[]) => {
     console.log({ acceptedFiles });
