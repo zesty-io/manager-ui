@@ -172,8 +172,6 @@ export function createTab(
   const { path, parts, zuid, prefix, search } = parsedPath;
   const tab: Tab = { pathname: path, search };
 
-  console.log("testing", path, parts, zuid, prefix, search);
-
   const appNameMap = {
     seo: {
       name: "SEO",
