@@ -5,7 +5,7 @@ import { notify } from "../../shell/store/notifications";
 import { v4 as uuidv4 } from "uuid";
 import { request } from "../../utility/request";
 
-type StoreFile = {
+export type StoreFile = {
   uploadID: string;
   progress: number;
   loading: boolean;
@@ -117,6 +117,7 @@ type UploadFile = {
   group_id?: string;
 };
 export function uploadFile(fileArg: UploadFile, bin: Bin) {
+  console.log({ fileArg, bin });
   return async (dispatch: Dispatch, getState: () => AppState) => {
     const userZUID = getState().user.ZUID;
     const data = new FormData();
@@ -151,6 +152,9 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
     });
 
     function handleError() {
+      /*
+       TODO this needs to be updated in the ticket that handles error states
+      */
       dispatch(fileUploadError(file));
       dispatch(
         notify({
