@@ -27,7 +27,7 @@ export const DnDProvider: FC<DnDProvider> = ({ children, currentGroup }) => {
         const fileToUpload = {
           file,
           bin_id: currentBin.id,
-          group_id: currentGroup.group_id,
+          group_id: currentGroup.id,
         };
         dispatch(uploadFile(fileToUpload, currentBin));
       });
