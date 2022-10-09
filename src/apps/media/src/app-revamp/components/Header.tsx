@@ -20,6 +20,7 @@ import { RenameFolderDialog } from "./RenameFolderDialog";
 import { NewFolderDialog } from "./NewFolderDialog";
 import { DeleteFolderDialog } from "./DeleteFolderDialog";
 import { useLocalStorage } from "react-use";
+import { UploadButton } from "./UploadButton";
 
 interface Props {
   title: string;
@@ -139,9 +140,7 @@ export const Header = ({ title, id, binId, groupId, hideUpload }: Props) => {
           </Menu>
         </Box>
         {hideUpload ? null : (
-          <Button startIcon={<FileUploadIcon />} variant="contained">
-            Upload
-          </Button>
+          <UploadButton currentBinId={binId} currentGroupId={id} />
         )}
       </Box>
       <RenameFolderDialog

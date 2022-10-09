@@ -64,9 +64,10 @@ export const AllMedia = () => {
         </Box>
       ) : (
         /* TODO Fix this */
-        <DnDProvider currentBin={null} currentGroup={null}>
+        <DnDProvider currentBinId="" currentGroupId="">
           {!isFilesFetching && !isBinsFetching && !files?.length ? (
-            <EmptyState />
+            /* TODO Fix this */
+            <EmptyState currentBinId="" currentGroupId="" />
           ) : (
             <MediaGrid
               files={files}

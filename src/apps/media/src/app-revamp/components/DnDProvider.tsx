@@ -5,23 +5,38 @@ import { uploadFile } from "../../../../../shell/store/media-revamp";
 import { useDispatch } from "react-redux";
 import Box from "@mui/material/Box";
 import { Bin, Group } from "../../../../../shell/services/types";
-import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
+import {
+  useGetBinQuery,
+  useGetGroupDataQuery,
+} from "../../../../../shell/services/mediaManager";
 
 export type DnDProvider = {
   children: ReactNode;
-  currentBin: Bin;
-  currentGroup: Group;
+  currentBinId: string;
+  currentGroupId: string;
 };
 
-export const DnDProvider: FC<DnDProvider> = ({ children, currentGroup }) => {
+export const DnDProvider: FC<DnDProvider> = ({
+  children,
+  currentGroupId,
+  currentBinId,
+}) => {
   const dispatch = useDispatch();
+  const { data: currentGroup, isFetching: groupIsFetching } =
+    useGetGroupDataQuery(currentGroupId);
+  const { data: binData, isFetching: binIsFetching } =
+    useGetBinQuery(currentBinId);
+  const loading = binIsFetching || groupIsFetching;
+  /*
   const { data: binData, isFetching } = mediaManagerApi.useGetBinQuery(
     currentGroup?.bin_id
   );
-  console.log({ binData });
+  */
+  console.log({ binData, currentGroup });
   const currentBin = binData?.[0];
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
+      if (loading) return;
       console.log({ acceptedFiles });
       acceptedFiles.forEach((file) => {
         const fileToUpload = {
@@ -32,7 +47,7 @@ export const DnDProvider: FC<DnDProvider> = ({ children, currentGroup }) => {
         dispatch(uploadFile(fileToUpload, currentBin));
       });
     },
-    [currentBin, currentGroup]
+    [currentBin, currentGroup, loading]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });

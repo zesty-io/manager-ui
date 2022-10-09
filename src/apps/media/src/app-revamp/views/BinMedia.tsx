@@ -66,9 +66,10 @@ export const BinMedia = () => {
         </Box>
       ) : (
         /* TODO FIX THIS */
-        <DnDProvider currentBin={null} currentGroup={null}>
+        <DnDProvider currentBinId={id} currentGroupId="">
           {!isFilesFetching && !binFiles?.length ? (
-            <EmptyState />
+            /*TODO fix this*/
+            <EmptyState currentBinId={id} currentGroupId="" />
           ) : (
             <MediaGrid
               files={binFiles}

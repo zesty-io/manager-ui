@@ -39,6 +39,8 @@ export const FolderMedia = () => {
   const { data: groupData, isFetching } =
     mediaManagerApi.useGetGroupDataQuery(id);
 
+  console.log({ groupData });
+
   /*
   if(groupData) {
     const { data: binData, isFetching: binIsFetching } =
@@ -68,10 +70,15 @@ export const FolderMedia = () => {
           <CircularProgress />
         </Box>
       ) : (
-        /* TODO FIX THIS */
-        <DnDProvider currentBin={null} currentGroup={groupData}>
+        <DnDProvider
+          currentBinId={groupData.bin_id}
+          currentGroupId={groupData.id}
+        >
           {!isFetching && !groupData.files?.length ? (
-            <EmptyState />
+            <EmptyState
+              currentBinId={groupData.bin_id}
+              currentGroupId={groupData.id}
+            />
           ) : (
             <>
               <UploadModal />

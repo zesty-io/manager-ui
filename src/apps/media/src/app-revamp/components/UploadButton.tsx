@@ -6,31 +6,44 @@ import { uploadFile } from "../../../../../shell/store/media-revamp";
 import { useDispatch } from "react-redux";
 import { ChangeEventHandler } from "react";
 import { Bin, Group } from "../../../../../shell/services/types";
+import {
+  useGetBinQuery,
+  useGetGroupDataQuery,
+} from "../../../../../shell/services/mediaManager";
 
 export type UploadButton = {
-  currentGroup: Group;
-  currentBin: Bin;
+  currentGroupId?: string;
+  currentBinId: string;
 };
 
 export const UploadButton: FC<UploadButton> = ({
-  currentBin,
-  currentGroup,
+  currentBinId,
+  currentGroupId,
 }) => {
   const dispatch = useDispatch();
   const hiddenFileInput = useRef(null);
+  const { data: currentGroup, isFetching: groupIsFetching } =
+    useGetGroupDataQuery(currentGroupId);
+  const { data: binData, isFetching: binIsFetching } =
+    useGetBinQuery(currentBinId);
+  const loading = binIsFetching || groupIsFetching;
+  console.log({ binData, currentGroup });
   const handleFileInputChange: ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
+    if (loading) return;
+    const currentBin = binData[0];
     Array.from(event.target.files).forEach((file) => {
       const fileToUpload = {
         file,
         bin_id: currentBin.id,
-        group_id: currentGroup.group_id,
+        group_id: currentGroup.id,
       };
       dispatch(uploadFile(fileToUpload, currentBin));
     });
   };
   const handleUploadButtonClick = () => {
+    console.log("click");
     hiddenFileInput.current.click();
   };
   return (
