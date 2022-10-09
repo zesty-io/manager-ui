@@ -15,6 +15,7 @@ interface Props {
   heightOffset?: number;
   widthOffset?: number;
   onSetCurrentFile?: Dispatch<any>;
+  hideHeaders?: boolean;
 }
 
 // test
@@ -24,6 +25,7 @@ export const MediaGrid = ({
   heightOffset = 0,
   widthOffset = 0,
   onSetCurrentFile,
+  hideHeaders = false,
 }: Props) => {
   const { width, height } = useWindowSize();
 
@@ -38,8 +40,10 @@ export const MediaGrid = ({
     let tmp: string[] = [];
     // Adds group section if there are groups
     if (groups?.length && columns) {
-      // Add header cell and fill remaining column
-      tmp = ["groups"].concat(new Array(columns - 1).fill("empty"));
+      if (!hideHeaders) {
+        // Add header cell and fill remaining column
+        tmp = ["groups"].concat(new Array(columns - 1).fill("empty"));
+      }
       // Add item cells
       groups.forEach((group, i) => tmp.push(`group-${i}`));
       // Fill remaining columns
@@ -48,7 +52,11 @@ export const MediaGrid = ({
     }
     // Adds file section if there are files
     if (files?.length && columns) {
-      tmp = tmp.concat(["files"]).concat(new Array(columns - 1).fill("empty"));
+      if (!hideHeaders) {
+        tmp = tmp
+          .concat(["files"])
+          .concat(new Array(columns - 1).fill("empty"));
+      }
       files.forEach((file, i) => tmp.push(`file-${i}`));
       const mod = files.length % columns;
       tmp = tmp.concat(new Array(mod ? columns - mod : 0).fill("empty"));

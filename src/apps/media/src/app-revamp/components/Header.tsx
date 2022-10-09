@@ -54,9 +54,12 @@ export const Header = ({ title, id, binId, groupId, hideUpload }: Props) => {
           py: 2,
           px: 3,
           borderStyle: "solid",
-          borderWidth: "1px",
-          borderColor: "grey.100",
+          borderWidth: "0px",
+          borderBottomWidth: "1px",
+          borderColor: "border",
           mb: 2,
+          // Height specified to make border inset
+          height: "64px",
         }}
       >
         <Box sx={{ display: "flex", gap: "2px", alignItems: "center" }}>
@@ -139,7 +142,11 @@ export const Header = ({ title, id, binId, groupId, hideUpload }: Props) => {
           </Menu>
         </Box>
         {hideUpload ? null : (
-          <Button startIcon={<FileUploadIcon />} variant="contained">
+          <Button
+            startIcon={<FileUploadIcon />}
+            variant="contained"
+            size="small"
+          >
             Upload
           </Button>
         )}

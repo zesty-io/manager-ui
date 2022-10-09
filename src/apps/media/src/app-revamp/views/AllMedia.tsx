@@ -72,6 +72,7 @@ export const AllMedia = () => {
               heightOffset={HEADER_HEIGHT}
               widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
               onSetCurrentFile={setCurrentFile}
+              hideHeaders
             />
           )}
         </DnDProvider>
