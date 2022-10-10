@@ -8,6 +8,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Thumbnail } from "./Thumbnail";
 import { StoreFile } from "../../../../../shell/store/media-revamp";
+import { Typography } from "@mui/material";
 
 export const UploadModal: FC = () => {
   const dispatch = useDispatch();
@@ -19,7 +20,9 @@ export const UploadModal: FC = () => {
     <>
       <Dialog open={Boolean(filesToUpload?.length)} maxWidth="lg" fullWidth>
         <DialogTitle>
-          {filesToUpload.length} Files Selected for Upload
+          <Typography variant="h5">
+            {filesToUpload.length} Files Selected for Upload
+          </Typography>
         </DialogTitle>
         <DialogContent sx={{ display: "flex" }}>
           {filesToUpload.map((f) => {
