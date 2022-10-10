@@ -339,6 +339,11 @@ export function createTab(
       tab.name = toCapitalCase(parts[1]) + " Settings";
     }
   }
+
+  if (parts[1] === "search" && parts[0] in appNameMap) {
+    const name = parts[0] as keyof typeof appNameMap;
+    tab.name = `${appNameMap[name].name} Search Results`;
+  }
   return tab;
 }
 
