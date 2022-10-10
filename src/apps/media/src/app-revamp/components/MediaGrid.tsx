@@ -140,8 +140,11 @@ export const MediaGrid = ({
             }}
           >
             <Thumbnail
+              id={files[gridItemIndex].id}
               src={files[gridItemIndex].thumbnail}
               filename={files[gridItemIndex].filename}
+              group_id={files[gridItemIndex].group_id}
+              bin_id={files[gridItemIndex].bin_id}
               onClick={() =>
                 onSetCurrentFile(() => ({
                   id: files[gridItemIndex].id,

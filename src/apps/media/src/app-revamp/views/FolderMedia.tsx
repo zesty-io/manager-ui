@@ -9,6 +9,7 @@ import { Header } from "../components/Header";
 import { UploadModal } from "../components/UploadModal";
 import { Box, CircularProgress } from "@mui/material";
 import { FileModal } from "../components/FileModal";
+import { NotFoundState } from "../components/NotFoundState";
 
 type Params = { id: string };
 
@@ -33,8 +34,11 @@ export const FolderMedia = () => {
   };
 
   // TODO potentially provide user feedback for an invalid id
-  const { data: groupData, isFetching } =
-    mediaManagerApi.useGetGroupDataQuery(id);
+  const {
+    data: groupData,
+    isFetching,
+    isError,
+  } = mediaManagerApi.useGetGroupDataQuery(id);
 
   console.log({ groupData });
 
@@ -51,53 +55,59 @@ export const FolderMedia = () => {
       component="main"
       sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
     >
-      <Header
-        title={groupData?.name}
-        id={groupData?.id}
-        binId={groupData?.bin_id}
-        groupId={groupData?.group_id}
-      />
-      {isFetching ? (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height="100%"
-        >
-          <CircularProgress />
-        </Box>
+      {isError ? (
+        <NotFoundState />
       ) : (
-        <DnDProvider
-          currentBinId={groupData.bin_id}
-          currentGroupId={groupData.id}
-        >
-          {!isFetching && !groupData.files?.length ? (
-            <EmptyState
+        <>
+          <Header
+            title={groupData?.name}
+            id={groupData?.id}
+            binId={groupData?.bin_id}
+            groupId={groupData?.group_id}
+          />
+          {isFetching ? (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              height="100%"
+            >
+              <CircularProgress />
+            </Box>
+          ) : (
+            <DnDProvider
               currentBinId={groupData.bin_id}
               currentGroupId={groupData.id}
-            />
-          ) : (
-            <>
-              <UploadModal />
-              <MediaGrid
-                files={groupData?.files}
-                groups={groupData?.groups}
-                heightOffset={headerHeight + 64}
-                widthOffset={sidebarWidth + 220}
-                onSetCurrentFile={setCurrentFile}
-              />
-            </>
+            >
+              {!isFetching && !groupData.files?.length ? (
+                <EmptyState
+                  currentBinId={groupData.bin_id}
+                  currentGroupId={groupData.id}
+                />
+              ) : (
+                <>
+                  <UploadModal />
+                  <MediaGrid
+                    files={groupData?.files}
+                    groups={groupData?.groups}
+                    heightOffset={headerHeight + 64}
+                    widthOffset={sidebarWidth + 220}
+                    onSetCurrentFile={setCurrentFile}
+                  />
+                </>
+              )}
+            </DnDProvider>
           )}
-        </DnDProvider>
-      )}
-      {currentFile.id && (
-        <FileModal
-          id={currentFile.id}
-          src={currentFile.src}
-          filename={currentFile.filename}
-          title={currentFile.filename}
-          handleCloseModal={handleCloseModal}
-        />
+          {currentFile.id && (
+            <FileModal
+              id={currentFile.id}
+              src={currentFile.src}
+              filename={currentFile.filename}
+              title={currentFile.filename}
+              handleCloseModal={handleCloseModal}
+            />
+          )}
+        </>
       )}
     </Box>
   );

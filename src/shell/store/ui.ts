@@ -97,7 +97,7 @@ export const ui = createSlice({
     ) {
       if (action.payload) {
         state.openNav = action.payload.openNav;
-        state.sidebarWidth = action.payload
+        state.sidebarWidth = action.payload.openNav
           ? SIDEBAR_WIDTH.UNCOLLAPSED
           : SIDEBAR_WIDTH.COLLAPSED;
         state.contentNav = action.payload.contentNav;
@@ -338,6 +338,11 @@ export function createTab(
     } else if (parts[1] === "styles") {
       tab.name = toCapitalCase(parts[1]) + " Settings";
     }
+  }
+
+  if (parts[1] === "search" && parts[0] in appNameMap) {
+    const name = parts[0] as keyof typeof appNameMap;
+    tab.name = `${appNameMap[name].name} Search Results`;
   }
   return tab;
 }

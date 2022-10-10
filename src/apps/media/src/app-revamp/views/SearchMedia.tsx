@@ -11,15 +11,13 @@ import { MediaGrid } from "../components/MediaGrid";
 import { Header } from "../components/Header";
 import { useParams } from "../../../../../shell/hooks/useParams";
 import { FileModal } from "../components/FileModal";
-
-const HEADER_HEIGHT = 140;
-const SIDEBAR_COLLAPSED_WIDTH = 282;
-const SIDEBAR_WIDTH = 377;
+import { SearchEmptyState } from "../components/SearchEmptyState";
 
 export const SearchMedia = () => {
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
-  const openNav = useSelector((state: any) => state.ui.openNav);
+  const headerHeight = useSelector((state: any) => state.ui.headerHeight);
+  const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
   const [params] = useParams();
   const term = (params as URLSearchParams).get("term");
   const { data: bins } = useGetSiteBinsQuery(instanceId);
@@ -43,15 +41,22 @@ export const SearchMedia = () => {
 
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
-  const { data: binGroups, isFetching: isGroupsFetching } =
-    useGetAllBinGroupsQuery(
-      combinedBins?.map((bin) => bin.id),
-      {
-        skip: !bins?.length,
-      }
-    );
+  const {
+    data: binGroups,
+    isFetching: isGroupsFetching,
+    isUninitialized: isGroupsUninitialized,
+  } = useGetAllBinGroupsQuery(
+    combinedBins?.map((bin) => bin.id),
+    {
+      skip: !bins?.length,
+    }
+  );
 
-  const { data: files, isFetching: isFilesFetching } = useSearchBinFilesQuery(
+  const {
+    data: files,
+    isFetching: isFilesFetching,
+    isUninitialized: isFilesUninitialized,
+  } = useSearchBinFilesQuery(
     { binIds: combinedBins?.map((bin) => bin.id), term },
     {
       skip: !bins?.length,
@@ -75,8 +80,10 @@ export const SearchMedia = () => {
       component="main"
       sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
     >
-      <Header title={`Search Results for "${term}"`} hideUpload />
-      {isGroupsFetching || isFilesFetching ? (
+      {isGroupsFetching ||
+      isFilesFetching ||
+      isGroupsUninitialized ||
+      isFilesUninitialized ? (
         <Box
           display="flex"
           justifyContent="center"
@@ -85,14 +92,19 @@ export const SearchMedia = () => {
         >
           <CircularProgress />
         </Box>
+      ) : filteredGroups?.length || files?.length ? (
+        <>
+          <Header title={`Search Results for "${term}"`} hideUpload />
+          <MediaGrid
+            files={files}
+            groups={filteredGroups}
+            heightOffset={headerHeight + 64}
+            widthOffset={sidebarWidth + 220}
+            onSetCurrentFile={setCurrentFile}
+          />
+        </>
       ) : (
-        <MediaGrid
-          files={files}
-          groups={filteredGroups}
-          heightOffset={HEADER_HEIGHT}
-          widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
-          onSetCurrentFile={setCurrentFile}
-        />
+        <SearchEmptyState searchTerm={term} />
       )}
       {currentFile.id && (
         <FileModal
