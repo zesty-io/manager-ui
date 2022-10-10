@@ -29,7 +29,7 @@ export const UploadButton: FC<UploadButton> = ({}) => {
         size="small"
       >
         <FileUpload />
-        <Typography color="white">Upload</Typography>
+        Upload
       </Button>
       <input
         type="file"
