@@ -53,9 +53,8 @@ export const Folders = () => {
   const open = Boolean(anchorEl);
   const history = useHistory();
   const location = useLocation();
-  const hiddenGroups = JSON.parse(
-    localStorage.getItem("zesty:navMedia:hidden")
-  );
+  const hiddenGroups =
+    JSON.parse(localStorage.getItem("zesty:navMedia:hidden")) || [];
   const [value, setValue] = useState(0);
   const [openNewFolderDialog, setOpenNewFolderDialog] = useState(false);
   const instanceId = useSelector((state: any) => state.instance.ID);
@@ -126,10 +125,17 @@ export const Folders = () => {
   const hiddenTrees = useMemo(() => {
     if (binGroups && hiddenGroups.length) {
       return hiddenGroups.map((id: string) => {
-        const rootGroup = binGroups?.filter((groups) =>
-          groups?.some((group) => group.id === id)
-        )?.[0];
-        const rootNode = rootGroup?.find((group) => group.id === id);
+        let rootGroup = [];
+        let rootNode = {};
+        if (id.startsWith("1")) {
+          rootGroup = binGroups.find((group: any) => group[0].bin_id === id);
+          rootNode = combinedBins.find((bin: any) => bin.id === id);
+        } else {
+          rootGroup = binGroups?.filter((groups) =>
+            groups?.some((group) => group.id === id)
+          )?.[0];
+          rootNode = rootGroup?.find((group) => group.id === id);
+        }
         return { ...rootNode, children: nest(rootGroup, id, "group_id", sort) };
       });
     } else {
