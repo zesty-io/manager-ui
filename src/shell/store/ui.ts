@@ -97,7 +97,7 @@ export const ui = createSlice({
     ) {
       if (action.payload) {
         state.openNav = action.payload.openNav;
-        state.sidebarWidth = action.payload
+        state.sidebarWidth = action.payload.openNav
           ? SIDEBAR_WIDTH.UNCOLLAPSED
           : SIDEBAR_WIDTH.COLLAPSED;
         state.contentNav = action.payload.contentNav;
