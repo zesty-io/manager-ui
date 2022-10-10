@@ -13,6 +13,7 @@ export type StoreFile = {
   title?: string;
   filename?: string;
   url?: string;
+  preview?: string;
 };
 
 type State = {
@@ -21,6 +22,7 @@ type State = {
 type FileUploadStart = StoreFile & { file: File };
 type FileUploadSuccess = StoreFile & FileBase;
 type FileUploadProgress = { uploadID: string; progress: number };
+type FileUploadSetPreview = { uploadID: string; preview: string };
 const initialState: State = {
   files: [],
 };
@@ -32,6 +34,14 @@ const mediaSlice = createSlice({
     fileUploadStart(state, action: { payload: FileUploadStart }) {
       const { file, ...data } = action.payload;
       state.files.push(data);
+    },
+    fileUploadSetPreview(state, action: { payload: FileUploadSetPreview }) {
+      const uploadingFile = state.files.find(
+        (file) => file.uploadID === action.payload.uploadID
+      );
+      if (uploadingFile) {
+        uploadingFile.preview = action.payload.preview;
+      }
     },
     fileUploadProgress(state, action: { payload: FileUploadProgress }) {
       const uploadingFile = state.files.find(
@@ -67,6 +77,7 @@ const mediaSlice = createSlice({
 export const {
   fileUploadStart,
   fileUploadProgress,
+  fileUploadSetPreview,
   fileUploadSuccess,
   fileUploadError,
 } = mediaSlice.actions;
@@ -263,6 +274,18 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
     }
 
     dispatch(fileUploadStart(file));
+    if (file.file) {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file.file);
+      fileReader.addEventListener("load", function () {
+        dispatch(
+          fileUploadSetPreview({
+            uploadID: file.uploadID,
+            preview: this.result as string,
+          })
+        );
+      });
+    }
   };
 }
 export default mediaSlice.reducer;

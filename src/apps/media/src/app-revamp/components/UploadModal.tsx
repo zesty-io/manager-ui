@@ -24,10 +24,9 @@ export const UploadModal: FC = () => {
         <DialogContent sx={{ display: "flex" }}>
           {filesToUpload.map((f) => {
             console.log(f);
-            // TODO fix this styling
+            // TODO add placeholder for undefined file
             return (
-              f &&
-              f.filename && (
+              f && (
                 <Box
                   sx={{
                     height: "204px",
@@ -39,8 +38,7 @@ export const UploadModal: FC = () => {
                   <Thumbnail
                     key={f.uploadID}
                     filename={f.filename || "Uploading..."}
-                    // Is this acceptable?
-                    src={f.url}
+                    src={f.preview}
                   />
                 </Box>
               )
