@@ -1,4 +1,4 @@
-import { FC, useState, useRef } from "react";
+import { FC, useState, useRef, useEffect, DragEvent } from "react";
 import { CardMedia, Card, Box } from "@mui/material";
 import { fileExtension } from "../../utils/fileUtils";
 import { ThumbnailContent } from "./ThumbnailContent";
@@ -22,6 +22,9 @@ interface ThumbnailProps {
   filename?: string;
   isEditable?: boolean;
   showVideo?: boolean;
+  id?: string;
+  group_id?: string;
+  bin_id?: string;
   onRemove?: () => void;
   onFilenameChange?: (value: string) => void;
   onClick?: () => void;
@@ -35,10 +38,22 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   onRemove,
   onFilenameChange,
   onClick,
+  id,
+  group_id,
+  bin_id,
 }) => {
   const theme = useTheme();
   const imageEl = useRef<HTMLImageElement>();
   const [imageOrientation, setImageOrientation] = useState<string>("");
+  const thumbnailRef = useRef<HTMLDivElement>();
+
+  const onDragStart = (event: DragEvent) => {
+    event.dataTransfer.setData(
+      "text/plain",
+      JSON.stringify({ id, filename, group_id, bin_id })
+    );
+    event.dataTransfer.effectAllowed = "move";
+  };
 
   const RemoveIcon = () => {
     return (
@@ -124,7 +139,14 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "svg":
     case "webp":
       return (
-        <Card sx={styledCard} elevation={0} onClick={onClick}>
+        <Card
+          ref={thumbnailRef}
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable
+          onDragStart={(evt) => onDragStart(evt)}
+        >
           <Box
             sx={{
               ...styledCheckerBoard,

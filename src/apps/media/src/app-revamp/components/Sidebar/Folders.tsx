@@ -16,7 +16,10 @@ import FolderIcon from "@mui/icons-material/Folder";
 import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
+import {
+  mediaManagerApi,
+  useUpdateFileMutation,
+} from "../../../../../../shell/services/mediaManager";
 import { useSelector } from "react-redux";
 import {
   MouseEvent,
@@ -63,6 +66,7 @@ export const Folders = () => {
   const { data: ecoBins } = mediaManagerApi.useGetEcoBinsQuery(ecoId, {
     skip: !ecoId,
   });
+  const [updateFile] = useUpdateFileMutation();
   const [sort, setSort] = useState("asc");
 
   const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
@@ -173,6 +177,21 @@ export const Folders = () => {
       <TreeItem
         key={nodes.id}
         nodeId={nodes.id}
+        onDrop={(event) => {
+          const draggedItem = JSON.parse(
+            event.dataTransfer.getData("text/plain")
+          );
+          if (draggedItem.bin_id === nodes.bin_id) {
+            updateFile({
+              id: draggedItem.id,
+              previousGroupId: draggedItem.group_id,
+              body: {
+                group_id: nodes.id,
+                filename: draggedItem.filename,
+              },
+            });
+          }
+        }}
         // TODO: Move all styling to theme
         sx={{
           " .MuiTreeItem-content": {
