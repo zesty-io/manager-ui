@@ -75,18 +75,18 @@ export const FolderMedia = () => {
               <CircularProgress />
             </Box>
           ) : (
-            <DnDProvider
-              currentBinId={groupData.bin_id}
-              currentGroupId={groupData.id}
-            >
-              {!isFetching && !groupData.files?.length ? (
-                <EmptyState
-                  currentBinId={groupData.bin_id}
-                  currentGroupId={groupData.id}
-                />
-              ) : (
-                <>
-                  <UploadModal />
+            <>
+              <UploadModal />
+              <DnDProvider
+                currentBinId={groupData.bin_id}
+                currentGroupId={groupData.id}
+              >
+                {!isFetching && !groupData.files?.length ? (
+                  <EmptyState
+                    currentBinId={groupData.bin_id}
+                    currentGroupId={groupData.id}
+                  />
+                ) : (
                   <MediaGrid
                     files={groupData?.files}
                     groups={groupData?.groups}
@@ -94,9 +94,9 @@ export const FolderMedia = () => {
                     widthOffset={sidebarWidth + 220}
                     onSetCurrentFile={setCurrentFile}
                   />
-                </>
-              )}
-            </DnDProvider>
+                )}
+              </DnDProvider>
+            </>
           )}
           {currentFile.id && (
             <FileModal

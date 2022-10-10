@@ -69,21 +69,24 @@ export const BinMedia = () => {
               <CircularProgress />
             </Box>
           ) : (
-            /* TODO FIX THIS */
-            <DnDProvider currentBinId={id} currentGroupId="">
-              {!isFilesFetching && !binFiles?.length ? (
-                /*TODO fix this*/
-                <EmptyState currentBinId={id} currentGroupId="" />
-              ) : (
-                <MediaGrid
-                  files={binFiles}
-                  groups={binGroups}
-                  heightOffset={headerHeight + 64}
-                  widthOffset={sidebarWidth + 220}
-                  onSetCurrentFile={setCurrentFile}
-                />
-              )}
-            </DnDProvider>
+            <>
+              <UploadModal />
+              /* TODO FIX THIS */
+              <DnDProvider currentBinId={id} currentGroupId="">
+                {!isFilesFetching && !binFiles?.length ? (
+                  /*TODO fix this*/
+                  <EmptyState currentBinId={id} currentGroupId="" />
+                ) : (
+                  <MediaGrid
+                    files={binFiles}
+                    groups={binGroups}
+                    heightOffset={headerHeight + 64}
+                    widthOffset={sidebarWidth + 220}
+                    onSetCurrentFile={setCurrentFile}
+                  />
+                )}
+              </DnDProvider>
+            </>
           )}
           {currentFile.id && (
             <FileModal
