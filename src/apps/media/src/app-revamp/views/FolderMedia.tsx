@@ -40,7 +40,7 @@ export const FolderMedia = () => {
     isError,
   } = mediaManagerApi.useGetGroupDataQuery(id);
 
-  console.log({ groupData });
+  // console.log({ groupData });
 
   /*
   if(groupData) {

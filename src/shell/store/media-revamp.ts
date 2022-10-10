@@ -16,21 +16,37 @@ export type StoreFile = {
   preview?: string;
 };
 
-type State = {
-  files: StoreFile[];
-};
 type FileUploadStart = StoreFile & { file: File };
 type FileUploadSuccess = StoreFile & FileBase;
 type FileUploadProgress = { uploadID: string; progress: number };
 type FileUploadSetPreview = { uploadID: string; preview: string };
+
+type State = {
+  files: StoreFile[];
+  temp: UploadFile[];
+};
 const initialState: State = {
   files: [],
+  temp: [],
 };
 
 const mediaSlice = createSlice({
   name: "mediaRevamp",
   initialState,
   reducers: {
+    fileUploadObjects(state, action: { payload: any[] }) {
+      state.temp = action.payload.map((file) => {
+        file.uploadID = uuidv4();
+        file.url = URL.createObjectURL(file.file);
+        file.filename = file.file.name;
+        return file;
+      });
+    },
+
+    // fileUploadObjectRemove(state, action: { payload: any }) {
+    //   state.temp = state.temp.filter(file => file.uploadID !== action.payload.uploadID)
+    // },
+
     fileUploadStart(state, action: { payload: FileUploadStart }) {
       const { file, ...data } = action.payload;
       state.files.push(data);
@@ -52,15 +68,18 @@ const mediaSlice = createSlice({
       }
     },
     fileUploadSuccess(state, action: { payload: FileUploadSuccess }) {
-      const uploadingFile = state.files.find(
+      const uploadingFile = state.temp.find(
         (file) => file.uploadID === action.payload.uploadID
       );
       if (uploadingFile) {
         uploadingFile.loading = false;
-        uploadingFile.id = action.payload.id;
-        uploadingFile.title = action.payload.title;
+        // uploadingFile.id = action.payload.id;
+        // uploadingFile.title = action.payload.title;
         uploadingFile.filename = action.payload.filename;
         uploadingFile.url = action.payload.url;
+
+        // drop in-memory file object
+        delete uploadingFile.file;
       }
     },
     fileUploadError(state, action) {
@@ -74,7 +93,11 @@ const mediaSlice = createSlice({
   },
 });
 
+// export mediaSlice;
+
 export const {
+  fileUploadObjects,
+  // fileUploadObjectRemove,
   fileUploadStart,
   fileUploadProgress,
   fileUploadSetPreview,
@@ -117,10 +140,10 @@ async function getSignedUrl(file: any, bin: Bin) {
 }
 
 //type FileMonstrosity = {file: File } & FileAugmentation & FileBase
-type UploadFile = {
+export type UploadFile = {
   file: File;
   filename?: string;
-  uploadID?: string;
+  uploadID: string;
   url?: string;
   progress?: number;
   loading?: boolean;
@@ -128,20 +151,14 @@ type UploadFile = {
   group_id?: string;
 };
 export function uploadFile(fileArg: UploadFile, bin: Bin) {
-  console.log({ fileArg, bin });
   return async (dispatch: Dispatch, getState: () => AppState) => {
     const userZUID = getState().user.ZUID;
     const data = new FormData();
     const req = new XMLHttpRequest();
 
     const file = {
-      // TODO why do I need to do this?
-      //@ts-expect-error
-      filename: fileArg.file.filename,
-      uploadID: uuidv4(),
       progress: 0,
       loading: true,
-      url: URL.createObjectURL(fileArg.file),
       ...fileArg,
     };
     /*
@@ -176,6 +193,11 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
     }
     req.addEventListener("abort", handleError);
     req.addEventListener("error", handleError);
+
+    // req.addEventListener('load', () => {
+    //   console.log('DONE');
+    //   dispatch(fileUploadObjectRemove(file));
+    // })
 
     if (file.file.size > 32000000) {
       /**
@@ -274,18 +296,19 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
     }
 
     dispatch(fileUploadStart(file));
-    if (file.file) {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file.file);
-      fileReader.addEventListener("load", function () {
-        dispatch(
-          fileUploadSetPreview({
-            uploadID: file.uploadID,
-            preview: this.result as string,
-          })
-        );
-      });
-    }
+
+    // if (file.file) {
+    //   const fileReader = new FileReader();
+    //   fileReader.readAsDataURL(file.file);
+    //   fileReader.addEventListener("load", function () {
+    //     dispatch(
+    //       fileUploadSetPreview({
+    //         uploadID: file.uploadID,
+    //         preview: this.result as string,
+    //       })
+    //     );
+    //   });
+    // }
   };
 }
 export default mediaSlice.reducer;

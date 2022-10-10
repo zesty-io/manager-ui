@@ -2,7 +2,7 @@ import { FC, useRef } from "react";
 import Button from "@mui/material/Button";
 import FileUpload from "@mui/icons-material/FileUpload";
 import { Typography } from "@mui/material";
-import { uploadFile } from "../../../../../shell/store/media-revamp";
+import { fileUploadObjects } from "../../../../../shell/store/media-revamp";
 import { useDispatch } from "react-redux";
 import { ChangeEventHandler } from "react";
 import { Bin, Group } from "../../../../../shell/services/types";
@@ -33,14 +33,18 @@ export const UploadButton: FC<UploadButton> = ({
   ) => {
     if (loading) return;
     const currentBin = binData[0];
-    Array.from(event.target.files).forEach((file) => {
-      const fileToUpload = {
-        file,
-        bin_id: currentBin.id,
-        group_id: currentGroup.id,
-      };
-      dispatch(uploadFile(fileToUpload, currentBin));
-    });
+
+    dispatch(
+      fileUploadObjects(
+        Array.from(event.target.files).map((file) => {
+          return {
+            file,
+            bin_id: currentBin.id,
+            group_id: currentGroup.id,
+          };
+        })
+      )
+    );
   };
   const handleUploadButtonClick = () => {
     console.log("click");

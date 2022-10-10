@@ -1,20 +1,32 @@
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router";
+
 import { Thumbnail } from "./Thumbnail";
 import { FC } from "react";
 import { Box } from "@mui/material";
 
+import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
+import {
+  uploadFile,
+  UploadFile,
+} from "../../../../../shell/store/media-revamp";
+
 interface Props {
-  progress?: number;
-  src: string;
-  filename: string;
-  isEditable?: boolean;
+  file: UploadFile;
 }
 
-export const UploadThumbnail: FC<Props> = ({
-  progress,
-  src,
-  filename,
-  isEditable,
-}) => {
+export const UploadThumbnail: FC<Props> = ({ file }) => {
+  const dispatch = useDispatch();
+
+  const params = useParams<any>();
+  const { data: group } = mediaManagerApi.useGetGroupDataQuery(params.id);
+  const { data: bin } = mediaManagerApi.useGetBinQuery(group.bin_id);
+
+  useEffect(() => {
+    dispatch(uploadFile(file, bin[0]));
+  }, []);
+
   return (
     <>
       <Box
@@ -24,10 +36,10 @@ export const UploadThumbnail: FC<Props> = ({
           height: "100%",
           position: "absolute",
           left: "0",
-          transform: `translateX(${progress}%)`,
+          transform: `translateX(${file.progress}%)`,
         }}
       ></Box>
-      <Thumbnail src={src} filename={filename} isEditable={isEditable} />
+      <Thumbnail src={file.url} filename={file.filename} isEditable={true} />
     </>
   );
 };

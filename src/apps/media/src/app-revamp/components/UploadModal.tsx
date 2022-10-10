@@ -6,15 +6,16 @@ import Button from "@mui/material/Button";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Thumbnail } from "./Thumbnail";
-import { StoreFile } from "../../../../../shell/store/media-revamp";
+import { UploadThumbnail } from "./UploadThumbnail";
+import { UploadFile } from "../../../../../shell/store/media-revamp";
 import { Typography } from "@mui/material";
 
 export const UploadModal: FC = () => {
-  const dispatch = useDispatch();
-  const filesToUpload: StoreFile[] = useSelector(
-    (state: any) => state.mediaRevamp.files
+  const filesToUpload: UploadFile[] = useSelector(
+    (state: any) => state.mediaRevamp.temp
   );
+
+  console.log(filesToUpload);
 
   return (
     <>
@@ -24,27 +25,23 @@ export const UploadModal: FC = () => {
             {filesToUpload.length} Files Selected for Upload
           </Typography>
         </DialogTitle>
-        <DialogContent sx={{ display: "flex" }}>
-          {filesToUpload.map((f) => {
-            console.log(f);
-            // TODO add placeholder for undefined file
+        <DialogContent
+          sx={{ display: "flex", height: "60vh", flexWrap: "wrap" }}
+        >
+          {filesToUpload.map((file, idx) => {
             return (
-              f && (
-                <Box
-                  sx={{
-                    height: "204px",
-                    pl: "8px",
-                    pr: "8px",
-                    position: "relative",
-                  }}
-                >
-                  <Thumbnail
-                    key={f.uploadID}
-                    filename={f.filename || "Uploading..."}
-                    src={f.preview}
-                  />
-                </Box>
-              )
+              <Box
+                key={idx}
+                sx={{
+                  width: "204px",
+                  height: "204px",
+                  pl: "8px",
+                  pr: "8px",
+                  position: "relative",
+                }}
+              >
+                <UploadThumbnail file={file} />
+              </Box>
             );
           })}
         </DialogContent>
