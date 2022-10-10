@@ -2,18 +2,27 @@ import { TextField, InputAdornment, IconButton } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import { useHistory } from "react-router";
-import { KeyboardEvent, useEffect, useState } from "react";
+import { KeyboardEvent, useEffect, useState, useRef } from "react";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 
 export const SearchBox = () => {
   const history = useHistory();
   const [params] = useParams();
+  const inputRef = useRef<HTMLInputElement>();
   const term = (params as URLSearchParams).get("term");
+  const clearAndFocus = (params as URLSearchParams).get("cf");
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     setSearchTerm(term || "");
   }, [term]);
+
+  useEffect(() => {
+    if (clearAndFocus && inputRef.current) {
+      setSearchTerm("");
+      inputRef.current?.focus();
+    }
+  }, [clearAndFocus]);
 
   return (
     <TextField
@@ -22,6 +31,7 @@ export const SearchBox = () => {
       hiddenLabel
       size="small"
       value={searchTerm}
+      inputProps={{ ref: inputRef }}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">

@@ -11,6 +11,7 @@ import { MediaGrid } from "../components/MediaGrid";
 import { Header } from "../components/Header";
 import { useParams } from "../../../../../shell/hooks/useParams";
 import { FileModal } from "../components/FileModal";
+import { SearchEmptyState } from "../components/SearchEmptyState";
 
 export const SearchMedia = () => {
   const instanceId = useSelector((state: any) => state.instance.ID);
@@ -72,7 +73,6 @@ export const SearchMedia = () => {
       component="main"
       sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
     >
-      <Header title={`Search Results for "${term}"`} hideUpload />
       {isGroupsFetching || isFilesFetching ? (
         <Box
           display="flex"
@@ -82,14 +82,19 @@ export const SearchMedia = () => {
         >
           <CircularProgress />
         </Box>
+      ) : filteredGroups?.length || files?.length ? (
+        <>
+          <Header title={`Search Results for "${term}"`} hideUpload />
+          <MediaGrid
+            files={files}
+            groups={filteredGroups}
+            heightOffset={headerHeight + 64}
+            widthOffset={sidebarWidth + 220}
+            onSetCurrentFile={setCurrentFile}
+          />
+        </>
       ) : (
-        <MediaGrid
-          files={files}
-          groups={filteredGroups}
-          heightOffset={headerHeight + 64}
-          widthOffset={sidebarWidth + 220}
-          onSetCurrentFile={setCurrentFile}
-        />
+        <SearchEmptyState searchTerm={term} />
       )}
       {currentFile.id && (
         <FileModal
