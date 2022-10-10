@@ -32,8 +32,8 @@ export const MediaGrid = ({
   const listRef = useRef<VariableSizeGrid>();
 
   const columns = useMemo(() => {
-    // 258 px is the amount of extra space required to add a new column
-    return Math.floor(width / 258);
+    // 266 px is the amount of space required to add a new column
+    return Math.floor(width / 266);
   }, [width]);
 
   const grid = useMemo(() => {
@@ -90,8 +90,6 @@ export const MediaGrid = ({
     const gridItemIndex = Number(
       grid[rowIndex * columns + columnIndex].split("-")[1]
     );
-    const isFirst = columnIndex === 0;
-    const isLast = columnIndex === columns - 1;
 
     return (
       <div style={style}>
@@ -101,7 +99,9 @@ export const MediaGrid = ({
             variant="h6"
             color="text.secondary"
             fontWeight={600}
-            sx={{ pl: 3 }}
+            sx={{
+              px: 1,
+            }}
           >
             Folders
           </Typography>
@@ -111,8 +111,6 @@ export const MediaGrid = ({
             sx={{
               height: "44px",
               px: 1,
-              pl: isFirst ? 3 : 1,
-              pr: isLast ? "10px" : 1,
             }}
           >
             {/* TODO: Construct path folder should navigate to */}
@@ -127,7 +125,9 @@ export const MediaGrid = ({
             variant="h6"
             color="text.secondary"
             fontWeight={600}
-            sx={{ pl: 3 }}
+            sx={{
+              px: 1,
+            }}
           >
             Files
           </Typography>
@@ -136,8 +136,7 @@ export const MediaGrid = ({
           <Box
             sx={{
               height: "204px",
-              pl: isFirst ? 3 : 1,
-              pr: isLast ? "10px" : 1,
+              px: 1,
             }}
           >
             <Thumbnail
@@ -158,16 +157,20 @@ export const MediaGrid = ({
   };
 
   return (
-    <VariableSizeGrid
-      height={height - heightOffset}
-      ref={listRef}
-      columnCount={columns}
-      columnWidth={(index) => (width - (widthOffset + 15)) / columns}
-      rowHeight={(index) => getRowHeight(index)}
-      rowCount={grid.length / columns}
-      width={width - widthOffset}
-    >
-      {Row}
-    </VariableSizeGrid>
+    <Box sx={{ pl: 2 }}>
+      <VariableSizeGrid
+        // Remove 16px to account for top  margin
+        height={height - heightOffset - 16}
+        ref={listRef}
+        columnCount={columns}
+        columnWidth={(index) => (width - widthOffset - 32) / columns}
+        rowHeight={(index) => getRowHeight(index)}
+        rowCount={grid.length / columns}
+        // Remove 16px to account for left and right padding
+        width={width - widthOffset - 16}
+      >
+        {Row}
+      </VariableSizeGrid>
+    </Box>
   );
 };

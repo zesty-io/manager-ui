@@ -11,14 +11,11 @@ import { FileModal } from "../components/FileModal";
 
 type Params = { id: string };
 
-const HEADER_HEIGHT = 140;
-const SIDEBAR_COLLAPSED_WIDTH = 282;
-const SIDEBAR_WIDTH = 377;
-
 export const FolderMedia = () => {
   const params = useParams<Params>();
   const { id } = params;
-  const openNav = useSelector((state: any) => state.ui.openNav);
+  const headerHeight = useSelector((state: any) => state.ui.headerHeight);
+  const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
 
   // current file details used for file modal
   const [currentFile, setCurrentFile] = useState<any>({
@@ -66,8 +63,8 @@ export const FolderMedia = () => {
             <MediaGrid
               files={groupData?.files}
               groups={groupData?.groups}
-              heightOffset={HEADER_HEIGHT}
-              widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
+              heightOffset={headerHeight + 64}
+              widthOffset={sidebarWidth + 220}
               onSetCurrentFile={setCurrentFile}
             />
           )}
