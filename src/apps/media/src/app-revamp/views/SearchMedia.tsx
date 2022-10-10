@@ -41,15 +41,22 @@ export const SearchMedia = () => {
 
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
-  const { data: binGroups, isFetching: isGroupsFetching } =
-    useGetAllBinGroupsQuery(
-      combinedBins?.map((bin) => bin.id),
-      {
-        skip: !bins?.length,
-      }
-    );
+  const {
+    data: binGroups,
+    isFetching: isGroupsFetching,
+    isUninitialized: isGroupsUninitialized,
+  } = useGetAllBinGroupsQuery(
+    combinedBins?.map((bin) => bin.id),
+    {
+      skip: !bins?.length,
+    }
+  );
 
-  const { data: files, isFetching: isFilesFetching } = useSearchBinFilesQuery(
+  const {
+    data: files,
+    isFetching: isFilesFetching,
+    isUninitialized: isFilesUninitialized,
+  } = useSearchBinFilesQuery(
     { binIds: combinedBins?.map((bin) => bin.id), term },
     {
       skip: !bins?.length,
@@ -73,7 +80,10 @@ export const SearchMedia = () => {
       component="main"
       sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
     >
-      {isGroupsFetching || isFilesFetching ? (
+      {isGroupsFetching ||
+      isFilesFetching ||
+      isGroupsUninitialized ||
+      isFilesUninitialized ? (
         <Box
           display="flex"
           justifyContent="center"
