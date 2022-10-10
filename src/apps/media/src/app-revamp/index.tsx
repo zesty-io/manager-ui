@@ -1,6 +1,5 @@
 import { Box, ThemeProvider } from "@mui/material";
 import { theme } from "@zesty-io/material";
-import { EmptyState } from "./components/EmptyState";
 import { Redirect, Route, Switch } from "react-router";
 import { Sidebar } from "./components/Sidebar";
 import { AllMedia } from "./views/AllMedia";
@@ -17,6 +16,9 @@ export const MediaApp = () => {
           backgroundColor: "background.paper",
           height: "100%",
           display: "flex",
+          "*": {
+            boxSizing: "border-box",
+          },
         }}
       >
         <Sidebar />

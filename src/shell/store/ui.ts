@@ -18,6 +18,7 @@ import {
   IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import { isEqual } from "lodash";
+import { Group } from "../services/types";
 
 export type Tab = {
   pathname: string;
@@ -37,6 +38,11 @@ type CodeChangesModalInfo = {
   fileType: string;
 };
 
+enum SIDEBAR_WIDTH {
+  UNCOLLAPSED = 155,
+  COLLAPSED = 60,
+}
+
 export type UIState = {
   loadedTabs: boolean;
   pinnedTabs: Tab[];
@@ -48,6 +54,8 @@ export type UIState = {
   duoMode: boolean;
   codeEditorPosition: null | CodeEditorPosition;
   codeChangesModal: null | CodeChangesModalInfo;
+  headerHeight: number;
+  sidebarWidth: number;
 };
 export const ui = createSlice({
   name: "ui",
@@ -63,6 +71,8 @@ export const ui = createSlice({
     duoMode: false,
     codeEditorPosition: null,
     codeChangesModal: null,
+    headerHeight: 54,
+    sidebarWidth: 155,
   },
   reducers: {
     loadTabsSuccess(
@@ -87,6 +97,9 @@ export const ui = createSlice({
     ) {
       if (action.payload) {
         state.openNav = action.payload.openNav;
+        state.sidebarWidth = action.payload
+          ? SIDEBAR_WIDTH.UNCOLLAPSED
+          : SIDEBAR_WIDTH.COLLAPSED;
         state.contentNav = action.payload.contentNav;
         state.contentActions = action.payload.contentActions;
         state.duoMode = action.payload.duoMode;
@@ -94,6 +107,9 @@ export const ui = createSlice({
     },
     setGlobalNav(state: UIState, action: { payload: boolean }) {
       state.openNav = action.payload;
+      state.sidebarWidth = action.payload
+        ? SIDEBAR_WIDTH.UNCOLLAPSED
+        : SIDEBAR_WIDTH.COLLAPSED;
     },
     setContentNav(state: UIState, action: { payload: boolean }) {
       state.contentNav = action.payload;
@@ -163,7 +179,11 @@ export function parsePath({ pathname: path, search }: TabLocation) {
 
 export type ParsedPath = ReturnType<typeof parsePath>;
 
-export function createTab(state: AppState, parsedPath: ParsedPath) {
+export function createTab(
+  state: AppState,
+  parsedPath: ParsedPath,
+  queryData?: any
+) {
   const { path, parts, zuid, prefix, search } = parsedPath;
   const tab: Tab = { pathname: path, search };
 
@@ -177,7 +197,7 @@ export function createTab(state: AppState, parsedPath: ParsedPath) {
       icon: faEdit,
     },
     media: {
-      name: "Media",
+      name: "All Media",
       icon: faImage,
     },
     schema: {
@@ -258,7 +278,9 @@ export function createTab(state: AppState, parsedPath: ParsedPath) {
   switch (prefix) {
     case "1":
     case "2":
-      const group = state.media.groups[zuid];
+      const group = queryData?.mediaManager?.binGroups?.find(
+        (group: any) => group.id === zuid
+      );
       if (group) {
         tab.name = group.name;
       }
@@ -332,11 +354,11 @@ export function loadTabs(instanceZUID: string) {
   };
 }
 
-export function pinTab({ pathname, search }: TabLocation) {
+export function pinTab({ pathname, search }: TabLocation, queryData: any) {
   return async (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const parsedPath = parsePath({ pathname, search });
-    const tab = createTab(state, parsedPath);
+    const tab = createTab(state, parsedPath, queryData);
     let newTabs = state.ui.pinnedTabs;
     const tabIndex = state.ui.pinnedTabs.findIndex((t) =>
       tabLocationEquality(t, tab)
@@ -354,11 +376,15 @@ export function pinTab({ pathname, search }: TabLocation) {
   };
 }
 
-export function unpinTab({ pathname, search }: TabLocation, force = false) {
+export function unpinTab(
+  { pathname, search }: TabLocation,
+  force = false,
+  queryData?: any
+) {
   return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const parsedPath = parsePath({ pathname, search });
-    const tab = createTab(state, parsedPath);
+    const tab = createTab(state, parsedPath, queryData);
     const { parts } = parsedPath;
     if (parts[0] === "code") {
       const fileType = parts[2];
@@ -398,11 +424,11 @@ export function unpinManyTabs(tabs: TabLocation[]) {
   };
 }
 
-export function rebuildTabs() {
+export function rebuildTabs(queryData: any) {
   return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const newTabs = state.ui.pinnedTabs.map((tab: Tab) =>
-      createTab(state, parsePath(tab))
+      createTab(state, parsePath(tab), queryData)
     );
     /* 
       This function is called on every slice update so
@@ -416,14 +442,14 @@ export function rebuildTabs() {
   };
 }
 
-export function setDocumentTitle(location: TabLocation) {
+export function setDocumentTitle(location: TabLocation, queryData: any) {
   return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const instanceName = state.instance.name;
 
     const { pathname, search } = location;
     const parsedPath = parsePath({ pathname, search });
-    const t = createTab(state, parsedPath);
+    const t = createTab(state, parsedPath, queryData);
     const { app } = t;
     const item = t.name || t.pathname;
     const title = `${app} - ${item} - Zesty.io - ${instanceName} - Manager`;

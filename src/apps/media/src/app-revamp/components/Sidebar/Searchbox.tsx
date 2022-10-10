@@ -24,7 +24,7 @@ export const SearchBox = () => {
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
-            <SearchIcon />
+            <SearchIcon fontSize="small" />
           </InputAdornment>
         ),
       }}

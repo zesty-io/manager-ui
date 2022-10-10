@@ -9,7 +9,7 @@ import {
   AccordionDetails,
 } from "@mui/material";
 import { TreeView, TreeItem } from "@mui/lab";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import { FolderGlobal } from "@zesty-io/material";
 import FolderIcon from "@mui/icons-material/Folder";
@@ -245,7 +245,7 @@ export const Folders = () => {
             FOLDERS
           </Typography>
           <IconButton size="small" onClick={openMenu}>
-            <ArrowDropDownIcon fontSize="small" />
+            <ArrowDropDownRoundedIcon fontSize="small" />
           </IconButton>
           <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
             <MenuItem
@@ -278,7 +278,7 @@ export const Folders = () => {
               nodeIds: string[]
             ) => history.push(`/media/${nodeIds}`)}
             defaultCollapseIcon={
-              <ArrowDropDownIcon sx={{ color: "action.active" }} />
+              <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />
             }
             defaultExpandIcon={
               <ArrowRightIcon sx={{ color: "action.active" }} />
@@ -306,7 +306,7 @@ export const Folders = () => {
                   nodeIds: string[]
                 ) => history.push(`/media/${nodeIds}`)}
                 defaultCollapseIcon={
-                  <ArrowDropDownIcon sx={{ color: "action.active" }} />
+                  <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />
                 }
                 defaultExpandIcon={
                   <ArrowRightIcon sx={{ color: "action.active" }} />

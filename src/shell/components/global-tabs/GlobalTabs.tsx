@@ -1,4 +1,12 @@
-import { memo, useEffect, useLayoutEffect, useRef, useState, FC } from "react";
+import {
+  memo,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  FC,
+  useMemo,
+} from "react";
 import { createDispatchHook, useDispatch, useSelector } from "react-redux";
 import { useLocation, Link as Link } from "react-router-dom";
 import { debounce } from "lodash";
@@ -19,6 +27,11 @@ import {
   setDocumentTitle,
 } from "../../../shell/store/ui";
 import { AppState } from "../../store/types";
+import {
+  useGetAllBinGroupsQuery,
+  useGetEcoBinsQuery,
+  useGetSiteBinsQuery,
+} from "../../services/mediaManager";
 
 const MIN_TAB_WIDTH = 250;
 const MAX_TAB_WIDTH = 300;
@@ -27,7 +40,8 @@ const TAB_BORDER = 1;
 
 export default memo(function GlobalTabs() {
   const location = useLocation();
-
+  const instanceId = useSelector((state: any) => state.instance.ID);
+  const ecoId = useSelector((state: any) => state.instance.ecoID);
   const dispatch = useDispatch();
   const pinnedTabs = useSelector((state: AppState) => state.ui.pinnedTabs);
 
@@ -40,8 +54,26 @@ export default memo(function GlobalTabs() {
   const content = useSelector((state: AppState) => state.content);
   const files = useSelector((state: AppState) => state.files);
   const users = useSelector((state: AppState) => state.users);
-  const mediaGroups = useSelector((state: AppState) => state.media.groups);
   const [tabBarWidth, setTabBarWidth] = useState(0);
+
+  // RTK QUERY FOR HOOKING INTO ALL MEDIA BIN GROUPS
+  const { data: bins } = useGetSiteBinsQuery(instanceId);
+  const { data: ecoBins } = useGetEcoBinsQuery(ecoId, {
+    skip: !ecoId,
+  });
+  const { data: binGroups } = useGetAllBinGroupsQuery(
+    [...(ecoBins || []), ...(bins || [])]?.map((bin) => bin.id),
+    {
+      skip: !bins?.length,
+    }
+  );
+  const queryData = useMemo(() => {
+    return {
+      mediaManager: {
+        binGroups: binGroups?.flat(),
+      },
+    };
+  }, [binGroups]);
 
   // update state if window is resized (debounced)
   useEffect(() => {
@@ -59,16 +91,16 @@ export default memo(function GlobalTabs() {
   }, [instanceZUID]);
 
   useEffect(() => {
-    dispatch(setDocumentTitle(location));
+    dispatch(setDocumentTitle(location, queryData));
   }, [location.pathname, location.search]);
 
   // rebuild tabs if any of the store slices changes
   // slices could include tab.name updates
   useEffect(() => {
     if (loadedTabs) {
-      dispatch(rebuildTabs());
+      dispatch(rebuildTabs(queryData));
     }
-  }, [loadedTabs, models, content, files, mediaGroups, apps, users]);
+  }, [loadedTabs, models, content, files, queryData, apps, users]);
 
   // measure the tab bar width and set state
   // to trigger a synchronous re-render before paint
@@ -131,7 +163,7 @@ export default memo(function GlobalTabs() {
           tabs={dropDownTabs}
           tabWidth={tabWidth}
           removeOne={(tab) => {
-            dispatch(unpinTab(tab));
+            dispatch(unpinTab(tab, false, queryData));
           }}
           removeMany={(tabs) => {
             dispatch(unpinManyTabs(tabs));

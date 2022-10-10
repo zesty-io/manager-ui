@@ -10,17 +10,17 @@ import {
   useGetGroupDataQuery,
 } from "../../../../../shell/services/mediaManager";
 
-export type DnDProvider = {
-  children: ReactNode;
+interface Props {
+  children: React.ReactNode;
   currentBinId: string;
   currentGroupId: string;
-};
+}
 
-export const DnDProvider: FC<DnDProvider> = ({
+export const DnDProvider = ({
   children,
   currentGroupId,
   currentBinId,
-}) => {
+}: Props) => {
   const dispatch = useDispatch();
   const { data: currentGroup, isFetching: groupIsFetching } =
     useGetGroupDataQuery(currentGroupId);

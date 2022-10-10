@@ -12,10 +12,6 @@ import { MediaGrid } from "../components/MediaGrid";
 import { Header } from "../components/Header";
 import { FileModal } from "../components/FileModal";
 
-const HEADER_HEIGHT = 140;
-const SIDEBAR_COLLAPSED_WIDTH = 282;
-const SIDEBAR_WIDTH = 377;
-
 export const AllMedia = () => {
   // current file details used for file modal
   const [currentFile, setCurrentFile] = useState<any>({
@@ -26,7 +22,8 @@ export const AllMedia = () => {
 
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
-  const openNav = useSelector((state: any) => state.ui.openNav);
+  const headerHeight = useSelector((state: any) => state.ui.headerHeight);
+  const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
   const { data: bins, isFetching: isBinsFetching } =
     useGetSiteBinsQuery(instanceId);
   const { data: ecoBins } = useGetEcoBinsQuery(ecoId, {
@@ -71,9 +68,10 @@ export const AllMedia = () => {
           ) : (
             <MediaGrid
               files={files}
-              heightOffset={HEADER_HEIGHT}
-              widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
+              heightOffset={headerHeight + 64}
+              widthOffset={sidebarWidth + 220}
               onSetCurrentFile={setCurrentFile}
+              hideHeaders
             />
           )}
         </DnDProvider>
