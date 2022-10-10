@@ -53,7 +53,9 @@ export const Folders = () => {
   const open = Boolean(anchorEl);
   const history = useHistory();
   const location = useLocation();
-  const hiddenGroups = localStorage.getItem("zesty:navMedia:hidden");
+  const hiddenGroups = JSON.parse(
+    localStorage.getItem("zesty:navMedia:hidden")
+  );
   const [value, setValue] = useState(0);
   const [openNewFolderDialog, setOpenNewFolderDialog] = useState(false);
   const instanceId = useSelector((state: any) => state.instance.ID);
@@ -118,36 +120,22 @@ export const Folders = () => {
     } else {
       return [];
     }
-  }, [combinedBins, binGroups]);
+  }, [binGroups]);
 
-  /* Creating a tree structure from the data. */
-  // const hiddenTrees = useMemo(() => {
-  //   if (binGroups) {
-  //     return binGroups
-  //       .map((binGroup, idx) => {
-  //         const binGroupFiltered = binGroup.filter((binGroup) =>
-  //           hiddenGroups?.includes(binGroup.id)
-  //         );
-
-  //         if (!binGroupFiltered.length) return []
-
-  //         return nest(
-  //           binGroupFiltered,
-  //           binGroupFiltered[0].bin_id,
-  //           "group_id",
-  //           sort
-  //         );
-  //       })
-  //       .flat()
-  //       .sort((a, b) =>
-  //         sort === "asc"
-  //           ? a.name.localeCompare(b.name)
-  //           : b.name.localeCompare(a.name)
-  //       );
-  //   } else {
-  //     return [];
-  //   }
-  // }, [combinedBins, binGroups, hiddenGroups]);
+  /* Creating a tree structure based on the hidden items. */
+  const hiddenTrees = useMemo(() => {
+    if (binGroups && hiddenGroups.length) {
+      return hiddenGroups.map((id: string) => {
+        const rootGroup = binGroups?.filter((groups) =>
+          groups?.some((group) => group.id === id)
+        )?.[0];
+        const rootNode = rootGroup?.find((group) => group.id === id);
+        return { ...rootNode, children: nest(rootGroup, id, "group_id", sort) };
+      });
+    } else {
+      return [];
+    }
+  }, [binGroups, hiddenGroups]);
 
   /* Creating a path to the selected folder. */
   const selectedPath = useMemo(() => {
@@ -175,11 +163,11 @@ export const Folders = () => {
 
   const renderTree = (nodes: any, isHiddenTree = false) => {
     if (!isHiddenTree && hiddenGroups.includes(nodes.id)) return null;
-    if (isHiddenTree && !hiddenGroups.includes(nodes.id)) return null;
     return (
       <TreeItem
         key={nodes.id}
         nodeId={nodes.id}
+        // TODO: Move all styling to theme
         sx={{
           " .MuiTreeItem-content": {
             width: "unset",
@@ -284,7 +272,7 @@ export const Folders = () => {
               <ArrowRightIcon sx={{ color: "action.active" }} />
             }
             defaultExpanded={selectedPath}
-            sx={{ height: "100%", width: "100%", overflowY: "auto" }}
+            sx={{ height: "100%", width: "100%", overflowY: "auto", px: 1 }}
             selected={[location.pathname.split("/")[2]]}
           >
             {trees.map((tree: any) => renderTree(tree))}
@@ -294,8 +282,8 @@ export const Folders = () => {
               <Box display="flex" alignItems="center" gap={1}>
                 <VisibilityIcon sx={{ color: "action.active" }} />
                 {/** @ts-expect-error body3 variant needs to be typed */}
-                <Typography color="text.disabled" variant="body3">
-                  Hidden Items
+                <Typography color="text.secondary" variant="body3">
+                  Hidden Folders
                 </Typography>
               </Box>
             </AccordionSummary>
@@ -315,7 +303,7 @@ export const Folders = () => {
                 sx={{ height: "100%", width: "100%", overflowY: "auto" }}
                 selected={[location.pathname.split("/")[2]]}
               >
-                {trees.map((tree: any) => renderTree(tree, true))}
+                {hiddenTrees.map((tree: any) => renderTree(tree, true))}
               </TreeView>
             </AccordionDetails>
           </Accordion>
