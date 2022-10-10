@@ -72,11 +72,13 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
         />
         <InputLabel>Folder Name</InputLabel>
         <TextField
+          autoFocus
           value={name}
           hiddenLabel
           size="small"
           fullWidth
           onChange={(evt) => setName(evt.target.value)}
+          onFocus={(evt) => evt.target.select()}
         />
       </DialogContent>
       <DialogActions>
