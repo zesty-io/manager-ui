@@ -12,14 +12,11 @@ import { Header } from "../components/Header";
 import { useParams } from "../../../../../shell/hooks/useParams";
 import { FileModal } from "../components/FileModal";
 
-const HEADER_HEIGHT = 140;
-const SIDEBAR_COLLAPSED_WIDTH = 282;
-const SIDEBAR_WIDTH = 377;
-
 export const SearchMedia = () => {
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
-  const openNav = useSelector((state: any) => state.ui.openNav);
+  const headerHeight = useSelector((state: any) => state.ui.headerHeight);
+  const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
   const [params] = useParams();
   const term = (params as URLSearchParams).get("term");
   const { data: bins } = useGetSiteBinsQuery(instanceId);
@@ -89,8 +86,8 @@ export const SearchMedia = () => {
         <MediaGrid
           files={files}
           groups={filteredGroups}
-          heightOffset={HEADER_HEIGHT}
-          widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
+          heightOffset={headerHeight + 64}
+          widthOffset={sidebarWidth + 220}
           onSetCurrentFile={setCurrentFile}
         />
       )}

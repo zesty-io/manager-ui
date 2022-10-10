@@ -1,5 +1,6 @@
-import { TextField, InputAdornment } from "@mui/material";
+import { TextField, InputAdornment, IconButton } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import CloseIcon from "@mui/icons-material/Close";
 import { useHistory } from "react-router";
 import { KeyboardEvent, useEffect, useState } from "react";
 import { useParams } from "../../../../../../shell/hooks/useParams";
@@ -27,6 +28,13 @@ export const SearchBox = () => {
             <SearchIcon fontSize="small" />
           </InputAdornment>
         ),
+        endAdornment: searchTerm ? (
+          <InputAdornment position="end">
+            <IconButton size="small" onClick={() => setSearchTerm("")}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </InputAdornment>
+        ) : null,
       }}
       onChange={(e) => setSearchTerm(e.target.value)}
       onKeyPress={(e: KeyboardEvent<HTMLInputElement>) =>
