@@ -212,7 +212,13 @@ export const mediaManagerApi = createApi({
     >({
       query: ({ binIds, term }) =>
         `/search/files?bins=${binIds.join(",")}&term=${term}`,
-      transformResponse: getResponseData,
+      transformResponse: (response: { data: File[] }) =>
+        response.data
+          .map((file) => ({
+            ...file,
+            thumbnail: generateThumbnail(file),
+          }))
+          .reverse(),
     }),
   }),
 });
