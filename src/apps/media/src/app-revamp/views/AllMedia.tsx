@@ -64,7 +64,7 @@ export const AllMedia = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <DnDProvider>
+        <>
           {!isFilesFetching && !isBinsFetching && !files?.length ? (
             <EmptyState />
           ) : (
@@ -75,7 +75,7 @@ export const AllMedia = () => {
               onSetCurrentFile={setCurrentFile}
             />
           )}
-        </DnDProvider>
+        </>
       )}
       {currentFile.id && (
         <FileModal

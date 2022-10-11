@@ -60,7 +60,7 @@ export const FolderMedia = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <DnDProvider>
+        <>
           {!isFetching && !groupData.files?.length ? (
             <EmptyState />
           ) : (
@@ -72,7 +72,7 @@ export const FolderMedia = () => {
               onSetCurrentFile={setCurrentFile}
             />
           )}
-        </DnDProvider>
+        </>
       )}
       {currentFile.id && (
         <FileModal
