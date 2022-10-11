@@ -19,13 +19,18 @@ interface Props {
 export const UploadThumbnail: FC<Props> = ({ file }) => {
   const dispatch = useDispatch();
 
-  const params = useParams<any>();
-  const { data: group } = mediaManagerApi.useGetGroupDataQuery(params.id);
-  const { data: bin } = mediaManagerApi.useGetBinQuery(group.bin_id);
+  //const params = useParams<any>();
+  //const { data: group } = mediaManagerApi.useGetGroupDataQuery(params.id);
+  const { data: bin } = mediaManagerApi.useGetBinQuery(file.bin_id, {
+    skip: !file.bin_id,
+  });
+  console.log(file);
 
   useEffect(() => {
-    dispatch(uploadFile(file, bin[0]));
-  }, []);
+    if (bin) {
+      dispatch(uploadFile(file, bin[0]));
+    }
+  }, [bin]);
 
   return (
     <>
