@@ -29,6 +29,14 @@ interface Props {
   title?: string;
   groupId?: string;
   handleCloseModal?: any;
+  user?: {
+    email?: string;
+    role?: string;
+  };
+  logs?: {
+    createdAt?: string;
+    timeUploaded?: string;
+  };
 }
 
 export const FileModal: FC<Props> = ({
@@ -38,6 +46,8 @@ export const FileModal: FC<Props> = ({
   groupId,
   title,
   handleCloseModal,
+  user,
+  logs,
 }) => {
   const [open, setOpen] = useState(true);
   const handleClose = () => {
@@ -46,71 +56,56 @@ export const FileModal: FC<Props> = ({
   };
 
   return (
-    <Modal open={open} onClose={handleClose}>
-      <>
-        {/* <Box 
+    <Modal open={open}>
+      <Box
+        sx={{
+          ...styledModal,
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <IconButton
+          onClick={() => handleCloseModal()}
           sx={{
             position: "absolute",
-            top: "16%",
-            left: "52%",
-            transform: "translate(-50%, -50%)",
-            width: 1100,
-            overflow: "hidden",
-            outline: "none",
+            zIndex: 999,
+            right: -30,
+            top: -35,
           }}
         >
-          <IconButton onClick={() => handleCloseModal()} sx={{ float: "right" }}>
-            <CloseRoundedIcon sx={{ color: "#FFF" }} />
-          </IconButton>
-        </Box> */}
-        <Box
+          <CloseRoundedIcon sx={{ color: "#FFF" }} />
+        </IconButton>
+        <Card
+          elevation={0}
           sx={{
-            ...styledModal,
-            display: "flex",
-            justifyContent: "space-between",
+            width: "700px",
+            overflow: "hidden",
           }}
         >
-          <IconButton
-            onClick={() => handleCloseModal()}
+          <Box
             sx={{
-              position: "absolute",
-              zIndex: 999,
-              right: -30,
-              top: -35,
-            }}
-          >
-            <CloseRoundedIcon sx={{ color: "#FFF" }} />
-          </IconButton>
-          <Card
-            elevation={0}
-            sx={{
-              width: "700px",
+              backgroundColor: "grey.200",
+              height: "100%",
               overflow: "hidden",
             }}
           >
-            <Box
-              sx={{
-                backgroundColor: "grey.200",
-                height: "100%",
-                overflow: "hidden",
-              }}
-            >
-              <FileTypePreview src={src} filename={filename} />
-            </Box>
-          </Card>
-
-          <Box sx={{ p: 4, width: "400px" }}>
-            <FileModalContent
-              id={id}
-              src={src}
-              filename={filename}
-              title={title}
-              groupId={groupId}
-              handleCloseModal={handleCloseModal}
-            />
+            <FileTypePreview src={src} filename={filename} />
           </Box>
+        </Card>
+
+        <Box sx={{ p: 4, width: "400px" }}>
+          <FileModalContent
+            id={id}
+            src={src}
+            filename={filename}
+            title={title}
+            groupId={groupId}
+            handleCloseModal={handleCloseModal}
+            user={user}
+            logs={logs}
+          />
         </Box>
-      </>
+      </Box>
     </Modal>
   );
 };

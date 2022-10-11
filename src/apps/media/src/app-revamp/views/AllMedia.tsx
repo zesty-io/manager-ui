@@ -23,6 +23,7 @@ export const AllMedia = () => {
     src: "",
     filename: "",
     groupId: "",
+    createdAt: "",
   });
 
   const instanceId = useSelector((state: any) => state.instance.ID);
@@ -81,6 +82,9 @@ export const AllMedia = () => {
         <FileModal
           id={currentFile.id}
           src={currentFile.src}
+          logs={{
+            createdAt: currentFile.createdAt,
+          }}
           filename={currentFile.filename}
           title={currentFile.filename}
           groupId={currentFile.groupId}

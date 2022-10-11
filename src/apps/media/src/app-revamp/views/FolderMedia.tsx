@@ -26,6 +26,7 @@ export const FolderMedia = () => {
     src: "",
     filename: "",
     groupId: "",
+    createdAt: "",
   });
 
   const handleCloseModal = () => {
@@ -78,6 +79,9 @@ export const FolderMedia = () => {
         <FileModal
           id={currentFile.id}
           src={currentFile.src}
+          logs={{
+            createdAt: currentFile.createdAt,
+          }}
           filename={currentFile.filename}
           title={currentFile.filename}
           groupId={currentFile.groupId}

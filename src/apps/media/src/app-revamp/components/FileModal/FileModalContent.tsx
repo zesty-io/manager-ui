@@ -5,7 +5,6 @@ import {
   TextField,
   InputAdornment,
   Avatar,
-  TextareaAutosize,
   IconButton,
   Menu,
   MenuItem,
@@ -15,7 +14,6 @@ import {
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
-import { Textarea } from "@zesty-io/core/Textarea";
 import { useTheme } from "@mui/material/styles";
 import { debounce } from "lodash";
 import EditIcon from "@mui/icons-material/Edit";
@@ -26,6 +24,7 @@ import { MD5 } from "../../../../../../utility/md5";
 import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
 import { fileExtension } from "../../utils/fileUtils";
 import { RenameFileModal } from "./RenameFileModal";
+import moment from "moment";
 
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
@@ -44,7 +43,7 @@ interface Props {
     role?: string;
   };
   logs?: {
-    dateUploaded?: string;
+    createdAt?: string;
     timeUploaded?: string;
   };
   handleCloseModal: any;
@@ -79,7 +78,9 @@ export const FileModalContent: FC<Props> = ({
    * @description Set initial values for the fields
    */
   useEffect(() => {
-    newTitle.current.value = title;
+    if (newTitle.current) {
+      newTitle.current.value = "setnewtitle";
+    }
   }, [title, filename]);
 
   useEffect(() => {
@@ -234,7 +235,7 @@ export const FileModalContent: FC<Props> = ({
                   <CheckIcon />
                 ) : (
                   <ContentCopyIcon
-                    onClick={handleCopyClick}
+                    onClick={() => handleCopyClick()}
                     sx={{ cursor: "pointer" }}
                   />
                 )}
@@ -249,7 +250,7 @@ export const FileModalContent: FC<Props> = ({
           sx={{ mt: 0.5 }}
           aria-label="empty textarea"
           placeholder="Empty"
-          ref={newTitle}
+          inputRef={newTitle}
           onChange={() => handleUpdateMutation()}
           multiline
           rows={3}
@@ -287,8 +288,10 @@ export const FileModalContent: FC<Props> = ({
             <CalendarTodayIcon />
           </Box>
           <Box sx={{ pl: 3 }}>
-            <Typography>{logs?.dateUploaded}</Typography>
-            <Typography>{logs?.timeUploaded}</Typography>
+            <Typography>{moment(logs?.createdAt).format("LL")}</Typography>
+            <Typography>
+              {moment(logs?.createdAt).add(3, "days").calendar()}
+            </Typography>
           </Box>
         </Box>
       </Box>
