@@ -13,13 +13,7 @@ import { Header } from "../components/Header";
 import { FileModal } from "../components/FileModal";
 
 export const AllMedia = () => {
-  // current file details used for file modal
-  const [currentFile, setCurrentFile] = useState<any>({
-    id: "",
-    src: "",
-    filename: "",
-  });
-
+  const [toggleFileModal, setToggleFileModal] = useState<boolean>(false);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const headerHeight = useSelector((state: any) => state.ui.headerHeight);
@@ -37,13 +31,7 @@ export const AllMedia = () => {
     { skip: !bins?.length }
   );
 
-  const handleCloseModal = () => {
-    setCurrentFile((prev: any) => ({
-      ...prev,
-      id: "",
-    }));
-  };
-
+  // test
   return (
     <Box
       component="main"
@@ -66,23 +54,16 @@ export const AllMedia = () => {
           ) : (
             <MediaGrid
               files={files}
+              toggleFileModal={toggleFileModal}
+              setToggleFileModal={setToggleFileModal}
               heightOffset={headerHeight + 64}
               widthOffset={sidebarWidth + 220}
-              onSetCurrentFile={setCurrentFile}
               hideHeaders
             />
           )}
         </DnDProvider>
       )}
-      {currentFile.id && (
-        <FileModal
-          id={currentFile.id}
-          src={currentFile.src}
-          filename={currentFile.filename}
-          title={currentFile.filename}
-          handleCloseModal={handleCloseModal}
-        />
-      )}
+      <FileModal files={files} toggleFileModal={toggleFileModal} />
     </Box>
   );
 };

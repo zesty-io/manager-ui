@@ -24,20 +24,7 @@ export const SearchMedia = () => {
   const { data: ecoBins } = useGetEcoBinsQuery(ecoId, {
     skip: !ecoId,
   });
-
-  // current file details used for file modal
-  const [currentFile, setCurrentFile] = useState<any>({
-    id: "",
-    src: "",
-    filename: "",
-  });
-
-  const handleCloseModal = () => {
-    setCurrentFile((prev: any) => ({
-      ...prev,
-      id: "",
-    }));
-  };
+  const [toggleFileModal, setToggleFileModal] = useState<boolean>(false);
 
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
@@ -99,23 +86,16 @@ export const SearchMedia = () => {
           <MediaGrid
             files={files}
             groups={filteredGroups}
+            toggleFileModal={toggleFileModal}
+            setToggleFileModal={setToggleFileModal}
             heightOffset={headerHeight + 64}
             widthOffset={sidebarWidth + 220}
-            onSetCurrentFile={setCurrentFile}
           />
         </>
       ) : (
         <SearchEmptyState searchTerm={term} />
       )}
-      {currentFile.id && (
-        <FileModal
-          id={currentFile.id}
-          src={currentFile.src}
-          filename={currentFile.filename}
-          title={currentFile.filename}
-          handleCloseModal={handleCloseModal}
-        />
-      )}
+      <FileModal files={files} toggleFileModal={toggleFileModal} />
     </Box>
   );
 };
