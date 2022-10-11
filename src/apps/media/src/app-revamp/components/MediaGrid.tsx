@@ -15,8 +15,6 @@ interface Props {
   files?: File[];
   heightOffset?: number;
   widthOffset?: number;
-  toggleFileModal?: boolean;
-  setToggleFileModal?: Dispatch<boolean>;
   hideHeaders?: boolean;
 }
 
@@ -26,8 +24,6 @@ export const MediaGrid = ({
   files,
   heightOffset = 0,
   widthOffset = 0,
-  toggleFileModal,
-  setToggleFileModal,
   hideHeaders = false,
 }: Props) => {
   const location = useRouteMatch();
@@ -154,7 +150,6 @@ export const MediaGrid = ({
                 history.replace(
                   `${location.url}?file_id=${files[gridItemIndex].id}`
                 );
-                setToggleFileModal(!toggleFileModal);
               }}
             />
           </Box>

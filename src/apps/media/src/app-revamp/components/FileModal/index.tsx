@@ -13,6 +13,7 @@ import { FileTypePreview } from "./FileTypePreview";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { File } from "../../../../../../shell/services/types";
 import { useLocation } from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
 
 const styledModal = {
   position: "absolute",
@@ -26,14 +27,15 @@ const styledModal = {
 
 interface Props {
   files: File[];
-  toggleFileModal: boolean;
 }
 
-export const FileModal: FC<Props> = ({ files, toggleFileModal }) => {
+export const FileModal: FC<Props> = ({ files }) => {
   const search = useLocation().search;
   const fileIdParams = new URLSearchParams(search).get("file_id");
   const currentFile = useRef<any>();
   const [showFileModal, setShowFileModal] = useState<boolean>(false);
+  const location = useRouteMatch();
+  const history = useHistory();
 
   useEffect(() => {
     try {
@@ -53,7 +55,7 @@ export const FileModal: FC<Props> = ({ files, toggleFileModal }) => {
     } catch (err) {
       console.log(err);
     }
-  }, [files, fileIdParams, toggleFileModal]);
+  }, [files, fileIdParams]);
 
   const handleCloseModal = () => {
     currentFile.current.id = "";
@@ -61,7 +63,7 @@ export const FileModal: FC<Props> = ({ files, toggleFileModal }) => {
   };
 
   const handleClose = () => {
-    // setOpen(false);
+    history.replace(location.path);
     handleCloseModal();
   };
 
@@ -79,7 +81,7 @@ export const FileModal: FC<Props> = ({ files, toggleFileModal }) => {
                 }}
               >
                 <IconButton
-                  onClick={() => handleCloseModal()}
+                  onClick={() => handleClose()}
                   sx={{
                     position: "absolute",
                     zIndex: 999,

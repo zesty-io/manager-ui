@@ -17,7 +17,6 @@ export const FolderMedia = () => {
   const { id } = params;
   const headerHeight = useSelector((state: any) => state.ui.headerHeight);
   const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
-  const [toggleFileModal, setToggleFileModal] = useState<boolean>(false);
 
   // TODO potentially provide user feedback for an invalid id
   const {
@@ -58,8 +57,6 @@ export const FolderMedia = () => {
                 <MediaGrid
                   files={groupData?.files}
                   groups={groupData?.groups}
-                  toggleFileModal={toggleFileModal}
-                  setToggleFileModal={setToggleFileModal}
                   heightOffset={headerHeight + 64}
                   widthOffset={sidebarWidth + 220}
                 />
@@ -68,7 +65,7 @@ export const FolderMedia = () => {
           )}
         </>
       )}
-      <FileModal files={groupData?.files} toggleFileModal={toggleFileModal} />
+      <FileModal files={groupData?.files} />
     </Box>
   );
 };

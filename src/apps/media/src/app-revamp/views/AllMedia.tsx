@@ -13,7 +13,6 @@ import { Header } from "../components/Header";
 import { FileModal } from "../components/FileModal";
 
 export const AllMedia = () => {
-  const [toggleFileModal, setToggleFileModal] = useState<boolean>(false);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const headerHeight = useSelector((state: any) => state.ui.headerHeight);
@@ -54,8 +53,6 @@ export const AllMedia = () => {
           ) : (
             <MediaGrid
               files={files}
-              toggleFileModal={toggleFileModal}
-              setToggleFileModal={setToggleFileModal}
               heightOffset={headerHeight + 64}
               widthOffset={sidebarWidth + 220}
               hideHeaders
@@ -63,7 +60,7 @@ export const AllMedia = () => {
           )}
         </DnDProvider>
       )}
-      <FileModal files={files} toggleFileModal={toggleFileModal} />
+      <FileModal files={files} />
     </Box>
   );
 };

@@ -11,7 +11,7 @@ import {
 import { TreeView, TreeItem } from "@mui/lab";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import { FolderGlobal } from "@zesty-io/material";
+// import { FolderGlobal } from "@zesty-io/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -215,7 +215,7 @@ export const Folders = () => {
         }}
         label={
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Box
+            {/* <Box
               component={nodes.eco_id ? FolderGlobal : FolderIcon}
               sx={{
                 mr: 1,
@@ -224,7 +224,7 @@ export const Folders = () => {
                 },
               }}
               color="action.active"
-            />
+            /> */}
             <Typography
               // @ts-expect-error body3 additional variant is not on Typography augmentation
               variant="body3"
@@ -249,125 +249,5 @@ export const Folders = () => {
     );
   };
 
-  return (
-    <>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          px: 2,
-          py: 1,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.25 }}>
-          <Typography variant="overline" color="text.secondary">
-            FOLDERS
-          </Typography>
-          <IconButton size="small" onClick={openMenu}>
-            <ArrowDropDownRoundedIcon fontSize="small" />
-          </IconButton>
-          <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
-            <MenuItem
-              onClick={() => {
-                closeMenu();
-                setSort("asc");
-              }}
-            >
-              Name (A to Z)
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                closeMenu();
-                setSort("desc");
-              }}
-            >
-              Name (Z to A)
-            </MenuItem>
-          </Menu>
-        </Box>
-        <IconButton size="small" onClick={() => setOpenNewFolderDialog(true)}>
-          <AddIcon fontSize="small" />
-        </IconButton>
-      </Box>
-      {!isLoading ? (
-        <>
-          <TreeView
-            onNodeSelect={(
-              event: SyntheticEvent<Element, Event>,
-              nodeIds: string[]
-            ) => history.push(`/media/${nodeIds}`)}
-            defaultCollapseIcon={
-              <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />
-            }
-            defaultExpandIcon={
-              <ArrowRightIcon sx={{ color: "action.active" }} />
-            }
-            onNodeToggle={(event, nodeIds) => {
-              // @ts-ignore
-              if (
-                event.target.tagName === "svg" ||
-                event.target.parentElement.getAttribute("data-testid") ===
-                  "ArrowDropDownRoundedIcon" ||
-                event.target.parentElement.getAttribute("data-testid") ===
-                  "ArrowRightIcon"
-              )
-                setExpanded(nodeIds);
-            }}
-            expanded={expanded}
-            sx={{ height: "100%", width: "100%", overflowY: "auto", px: 1 }}
-            selected={[location.pathname.split("/")[2]]}
-          >
-            {trees.map((tree: any) => renderTree(tree))}
-          </TreeView>
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Box display="flex" alignItems="center" gap={1}>
-                <VisibilityIcon sx={{ color: "action.active" }} />
-                {/** @ts-expect-error body3 variant needs to be typed */}
-                <Typography color="text.secondary" variant="body3">
-                  Hidden Folders
-                </Typography>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
-              <TreeView
-                onNodeSelect={(
-                  event: SyntheticEvent<Element, Event>,
-                  nodeIds: string[]
-                ) => history.push(`/media/${nodeIds}`)}
-                defaultCollapseIcon={
-                  <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />
-                }
-                defaultExpandIcon={
-                  <ArrowRightIcon sx={{ color: "action.active" }} />
-                }
-                onNodeToggle={(event, nodeIds) => {
-                  // @ts-ignore
-                  if (
-                    event.target.tagName === "svg" ||
-                    event.target.parentElement.getAttribute("data-testid") ===
-                      "ArrowDropDownRoundedIcon" ||
-                    event.target.parentElement.getAttribute("data-testid") ===
-                      "ArrowRightIcon"
-                  )
-                    setHiddenExpanded(nodeIds);
-                }}
-                expanded={hiddenExpanded}
-                sx={{ height: "100%", width: "100%", overflowY: "auto" }}
-                selected={[location.pathname.split("/")[2]]}
-              >
-                {hiddenTrees.map((tree: any) => renderTree(tree, true))}
-              </TreeView>
-            </AccordionDetails>
-          </Accordion>
-        </>
-      ) : null}
-      <NewFolderDialog
-        open={openNewFolderDialog}
-        onClose={() => setOpenNewFolderDialog(false)}
-        binId={bins?.find((bin) => bin.default)?.id}
-      />
-    </>
-  );
+  return <></>;
 };

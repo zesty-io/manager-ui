@@ -24,7 +24,6 @@ export const SearchMedia = () => {
   const { data: ecoBins } = useGetEcoBinsQuery(ecoId, {
     skip: !ecoId,
   });
-  const [toggleFileModal, setToggleFileModal] = useState<boolean>(false);
 
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
@@ -86,8 +85,6 @@ export const SearchMedia = () => {
           <MediaGrid
             files={files}
             groups={filteredGroups}
-            toggleFileModal={toggleFileModal}
-            setToggleFileModal={setToggleFileModal}
             heightOffset={headerHeight + 64}
             widthOffset={sidebarWidth + 220}
           />
@@ -95,7 +92,7 @@ export const SearchMedia = () => {
       ) : (
         <SearchEmptyState searchTerm={term} />
       )}
-      <FileModal files={files} toggleFileModal={toggleFileModal} />
+      <FileModal files={files} />
     </Box>
   );
 };

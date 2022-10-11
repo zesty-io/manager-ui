@@ -18,8 +18,6 @@ export const BinMedia = () => {
   const headerHeight = useSelector((state: any) => state.ui.headerHeight);
   const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
 
-  const [toggleFileModal, setToggleFileModal] = useState<boolean>(false);
-
   const {
     data: binData,
     isFetching: isBinDataFetching,
@@ -63,15 +61,13 @@ export const BinMedia = () => {
                 <MediaGrid
                   files={binFiles}
                   groups={binGroups}
-                  toggleFileModal={toggleFileModal}
-                  setToggleFileModal={setToggleFileModal}
                   heightOffset={headerHeight + 64}
                   widthOffset={sidebarWidth + 220}
                 />
               )}
             </DnDProvider>
           )}
-          <FileModal files={binFiles} toggleFileModal={toggleFileModal} />
+          <FileModal files={binFiles} />
         </>
       )}
     </Box>
