@@ -18,7 +18,6 @@ interface Props {
   hideHeaders?: boolean;
 }
 
-// test
 export const MediaGrid = ({
   groups,
   files,
