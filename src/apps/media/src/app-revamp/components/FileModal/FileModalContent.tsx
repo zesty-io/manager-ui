@@ -9,6 +9,8 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -45,6 +47,7 @@ interface Props {
     dateUploaded?: string;
     timeUploaded?: string;
   };
+  handleCloseModal: any;
 }
 
 export const FileModalContent: FC<Props> = ({
@@ -55,6 +58,7 @@ export const FileModalContent: FC<Props> = ({
   title,
   user,
   logs,
+  handleCloseModal,
 }) => {
   const theme = useTheme();
   const newTitle = useRef<any>("");
@@ -66,6 +70,7 @@ export const FileModalContent: FC<Props> = ({
   const [showSettingsDropdown, setShowSettingsDropdown] = useState(null);
   const openSettings = Boolean(showSettingsDropdown);
 
+  const [deleteFile] = mediaManagerApi.useDeleteFileMutation();
   const [updateFile, { isLoading: updateFileIsLoading }] =
     mediaManagerApi.useUpdateFileMutation();
   const isLoading = updateFileIsLoading;
@@ -76,6 +81,10 @@ export const FileModalContent: FC<Props> = ({
   useEffect(() => {
     newTitle.current.value = title;
   }, [title, filename]);
+
+  useEffect(() => {
+    handleUpdateMutation();
+  }, [newFilename]);
 
   /**
    * @description Used for copying the alttext's value
@@ -130,7 +139,7 @@ export const FileModalContent: FC<Props> = ({
           }}
         >
           <ImageIcon />
-          <Typography variant="body2" noWrap sx={{ width: "200px", mt: 0.3 }}>
+          <Typography variant="body2" noWrap sx={{ width: "200px", ml: 0.5 }}>
             {newFilename}
           </Typography>
           {showRenameFileModal && (
@@ -144,7 +153,17 @@ export const FileModalContent: FC<Props> = ({
           )}
         </Box>
         <Box>
-          <IconButton>
+          <IconButton
+            onClick={() => {
+              deleteFile({
+                id,
+                body: {
+                  group_id: groupId,
+                },
+              });
+              handleCloseModal();
+            }}
+          >
             <DeleteIcon />
           </IconButton>
           <IconButton
@@ -161,92 +180,50 @@ export const FileModalContent: FC<Props> = ({
             open={Boolean(showSettingsDropdown)}
             onClose={() => setShowSettingsDropdown(null)}
             sx={{
-              width: "240px",
+              minWidth: "240px",
             }}
           >
             <MenuItem
-              sx={{
-                p: 1,
-                display: "flex",
-                alignItems: "center",
-                alignSelf: "stretch",
-              }}
               onClick={() => {
                 setShowRenameFileModal(true);
                 setShowSettingsDropdown(null);
               }}
             >
-              <DriveFileRenameOutlineRoundedIcon sx={{ width: "36px" }} />
-              Rename
+              <ListItemIcon>
+                <DriveFileRenameOutlineRoundedIcon />
+              </ListItemIcon>
+              <ListItemText>Rename</ListItemText>
+            </MenuItem>
+            <MenuItem>
+              <ListItemIcon>
+                <WidgetsRoundedIcon />
+              </ListItemIcon>
+              <ListItemText>Copy ZUID</ListItemText>
             </MenuItem>
             <MenuItem
-              sx={{
-                p: 1,
-                display: "flex",
-                alignItems: "center",
-                alignSelf: "stretch",
+              onClick={() => {
+                deleteFile({
+                  id,
+                  body: {
+                    group_id: groupId,
+                  },
+                });
+                handleCloseModal();
               }}
-              onClick={() => setShowRenameFileModal(true)}
             >
-              <WidgetsRoundedIcon sx={{ width: "36px" }} />
-              Copy ZUID
-            </MenuItem>
-            <MenuItem
-              sx={{
-                p: 1,
-                display: "flex",
-                alignItems: "center",
-                alignSelf: "stretch",
-              }}
-              onClick={() => setShowRenameFileModal(true)}
-            >
-              <ContentCopyRoundedIcon sx={{ width: "36px" }} />
-              Duplicate
-            </MenuItem>
-            <MenuItem
-              sx={{
-                p: 1,
-                display: "flex",
-                alignItems: "center",
-                alignSelf: "stretch",
-              }}
-              onClick={() => setShowRenameFileModal(true)}
-            >
-              <DriveFolderUploadRoundedIcon sx={{ width: "36px" }} />
-              Move to
-            </MenuItem>
-            <MenuItem
-              sx={{
-                p: 1,
-                display: "flex",
-                alignItems: "center",
-                alignSelf: "stretch",
-              }}
-              onClick={() => setShowRenameFileModal(true)}
-            >
-              <FolderRoundedIcon sx={{ width: "36px" }} />
-              Show file location
-            </MenuItem>
-            <MenuItem
-              sx={{
-                p: 1,
-                display: "flex",
-                alignItems: "center",
-                alignSelf: "stretch",
-              }}
-              onClick={() => setShowRenameFileModal(true)}
-            >
-              <DeleteRoundedIcon sx={{ width: "36px" }} />
-              Delete
+              <ListItemIcon>
+                <DeleteRoundedIcon sx={{ width: "36px" }} />
+              </ListItemIcon>
+              <ListItemText>Delete</ListItemText>
             </MenuItem>
           </Menu>
         </Box>
       </Box>
 
       <Box>
-        <Typography color="text.primary">File URL</Typography>
+        <Typography>File URL</Typography>
         <TextField
-          sx={{ mt: 1, width: "100%" }}
+          sx={{ mt: 0.5, width: "100%" }}
           value={src}
           InputProps={{
             readOnly: true,
@@ -269,6 +246,7 @@ export const FileModalContent: FC<Props> = ({
       <Box sx={{ mt: 3 }}>
         <Typography>Alt Text</Typography>
         <TextField
+          sx={{ mt: 0.5 }}
           aria-label="empty textarea"
           placeholder="Empty"
           ref={newTitle}

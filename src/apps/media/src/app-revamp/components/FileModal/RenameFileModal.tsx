@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +31,7 @@ export const RenameFileModal: FC<Props> = ({
   const [renamedFilename, setRenamedFilename] = useState<string>(
     newFilename.substring(0, newFilename.lastIndexOf("."))
   );
+
   return (
     <Dialog open={true} fullWidth maxWidth={"xs"}>
       <DialogTitle>
@@ -56,7 +57,7 @@ export const RenameFileModal: FC<Props> = ({
           }}
         />
       </DialogContent>
-      <DialogActions sx={{ p: 2 }}>
+      <DialogActions sx={{ px: 3, py: 2 }}>
         <Button color="inherit" onClick={() => onClose()}>
           Cancel
         </Button>
@@ -64,7 +65,6 @@ export const RenameFileModal: FC<Props> = ({
           variant="contained"
           onClick={() => {
             onSetNewFilename(`${renamedFilename}.${fileType}`);
-            handleUpdateMutation();
             onClose();
           }}
         >
