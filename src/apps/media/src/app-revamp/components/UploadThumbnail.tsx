@@ -37,11 +37,13 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
       <Box
         sx={{
           backgroundColor: "rgba(255,255,255,.5)",
-          width: "100%",
+          width: `${100 - file.progress}%`,
           height: "100%",
           position: "absolute",
-          left: "0",
-          transform: `translateX(${file.progress}%)`,
+          right: "0",
+          // TODO what should this be? Doesn't show up without z-index
+          zIndex: 100,
+          //transform: `translateX(${file.progress || 0}%)`,
         }}
       ></Box>
       <Thumbnail src={file.url} filename={file.filename} isEditable={true} />

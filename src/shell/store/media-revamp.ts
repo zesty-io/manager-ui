@@ -35,12 +35,13 @@ const mediaSlice = createSlice({
   initialState,
   reducers: {
     fileUploadObjects(state, action: { payload: any[] }) {
-      state.temp = action.payload.map((file) => {
+      const newObjects = action.payload.map((file) => {
         file.uploadID = uuidv4();
         file.url = URL.createObjectURL(file.file);
         file.filename = file.file.name;
         return file;
       });
+      state.temp = [...state.temp, ...newObjects];
     },
 
     // fileUploadObjectRemove(state, action: { payload: any }) {
@@ -60,7 +61,7 @@ const mediaSlice = createSlice({
       }
     },
     fileUploadProgress(state, action: { payload: FileUploadProgress }) {
-      const uploadingFile = state.files.find(
+      const uploadingFile = state.temp.find(
         (file) => file.uploadID === action.payload.uploadID
       );
       if (uploadingFile) {
