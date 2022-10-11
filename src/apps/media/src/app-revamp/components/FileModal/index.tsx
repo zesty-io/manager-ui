@@ -30,7 +30,6 @@ interface Props {
 }
 
 export const FileModal: FC<Props> = ({ files, toggleFileModal }) => {
-  // const [open, setOpen] = useState(true);
   const search = useLocation().search;
   const fileIdParams = new URLSearchParams(search).get("file_id");
   const currentFile = useRef<any>();
@@ -40,19 +39,16 @@ export const FileModal: FC<Props> = ({ files, toggleFileModal }) => {
     try {
       if (!fileIdParams) throw 400;
       if (files.length) {
-        files.forEach((file: any) => {
-          if (file.id == fileIdParams) {
-            currentFile.current = {
-              id: file.id,
-              src: file.url,
-              filename: file.filename,
-              groupId: file.group_id,
-              createdAt: file.created_at,
-              user: file.created_by,
-            };
-            setShowFileModal(true);
-          }
-        });
+        const filteredFile = files.find((file) => file.id === fileIdParams);
+        currentFile.current = {
+          id: filteredFile.id,
+          src: filteredFile.url,
+          filename: filteredFile.filename,
+          groupId: filteredFile.group_id,
+          createdAt: filteredFile.created_at,
+          user: filteredFile.created_by,
+        };
+        setShowFileModal(true);
       }
     } catch (err) {
       console.log(err);
