@@ -12,17 +12,20 @@ import {
   useGetBinQuery,
   useGetGroupDataQuery,
 } from "../../../../../shell/services/mediaManager";
+import { SxProps } from "@mui/system";
 
 interface Props {
   children: React.ReactNode;
   currentBinId: string;
   currentGroupId: string;
+  sx?: SxProps;
 }
 
 export const DnDProvider = ({
   children,
   currentGroupId,
   currentBinId,
+  sx,
 }: Props) => {
   const dispatch = useDispatch();
   const { data: currentGroup, isFetching: groupIsFetching } =
@@ -70,7 +73,11 @@ export const DnDProvider = ({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   return (
     <Box
-      sx={{ display: "flex", flex: 1 }}
+      sx={{
+        display: "flex",
+        flex: 1,
+        ...sx,
+      }}
       {...getRootProps({ onClick: (evt) => evt.stopPropagation() })}
     >
       <input {...getInputProps()} />

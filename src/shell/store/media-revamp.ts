@@ -93,6 +93,12 @@ const mediaSlice = createSlice({
         const failedFile = state.files.splice(fileIndex, 1);
         state.failedUploads = [...failedFile, ...state.failedUploads];
       }
+      const tempFileIndex = state.temp.findIndex(
+        (file) => file.uploadID === action.payload.uploadID
+      );
+      if (tempFileIndex !== -1) {
+        state.temp.splice(fileIndex, 1);
+      }
     },
   },
 });
@@ -277,7 +283,7 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
       req.open(
         "POST",
         //@ts-expect-error
-        `${CONFIG.SERVICE_MEDIA_STORAGE}/uploadasdf/${bin.storage_driver}/${bin.storage_name}`
+        `${CONFIG.SERVICE_MEDIA_STORAGE}/upload/${bin.storage_driver}/${bin.storage_name}`
       );
       req.addEventListener("load", () => {
         if (req.status === 201) {
