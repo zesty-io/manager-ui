@@ -69,7 +69,8 @@ export const SearchMedia = () => {
         .flat()
         .filter((group) =>
           group.name.toLowerCase().includes(term.toLowerCase())
-        );
+        )
+        .sort((a, b) => a.name.localeCompare(b.name));
     } else {
       return [];
     }
