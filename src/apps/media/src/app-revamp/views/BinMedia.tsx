@@ -19,15 +19,7 @@ export const BinMedia = () => {
   const params = useParams<Params>();
   const { id } = params;
   const openNav = useSelector((state: any) => state.ui.openNav);
-
-  // current file details used for file modal
-  const [currentFile, setCurrentFile] = useState<any>({
-    id: "",
-    src: "",
-    filename: "",
-    groupId: "",
-    createdAt: "",
-  });
+  const [toggleFileModal, setToggleFileModal] = useState<boolean>(false);
 
   const { data: binData, isFetching: isBinDataFetching } =
     mediaManagerApi.useGetBinQuery(id);
@@ -38,13 +30,6 @@ export const BinMedia = () => {
 
   const { data: binFiles, isFetching: isFilesFetching } =
     mediaManagerApi.useGetBinFilesQuery(id);
-
-  const handleCloseModal = () => {
-    setCurrentFile((prev: any) => ({
-      ...prev,
-      id: "",
-    }));
-  };
 
   return (
     <Box
@@ -73,26 +58,14 @@ export const BinMedia = () => {
             <MediaGrid
               files={binFiles}
               groups={binGroups}
+              setToggleFileModal={setToggleFileModal}
               heightOffset={HEADER_HEIGHT}
               widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
-              onSetCurrentFile={setCurrentFile}
             />
           )}
         </>
       )}
-      {currentFile.id && (
-        <FileModal
-          id={currentFile.id}
-          src={currentFile.src}
-          logs={{
-            createdAt: currentFile.createdAt,
-          }}
-          filename={currentFile.filename}
-          title={currentFile.filename}
-          groupId={currentFile.groupId}
-          handleCloseModal={handleCloseModal}
-        />
-      )}
+      <FileModal files={binFiles} toggleFileModal={toggleFileModal} />
     </Box>
   );
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { Box, CircularProgress } from "@mui/material";
 import {
@@ -18,14 +18,6 @@ const SIDEBAR_WIDTH = 377;
 
 export const AllMedia = () => {
   // current file details used for file modal
-  const [currentFile, setCurrentFile] = useState<any>({
-    id: "",
-    src: "",
-    filename: "",
-    groupId: "",
-    createdAt: "",
-  });
-
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const openNav = useSelector((state: any) => state.ui.openNav);
@@ -34,6 +26,7 @@ export const AllMedia = () => {
   const { data: ecoBins } = useGetEcoBinsQuery(ecoId, {
     skip: !ecoId,
   });
+  const [toggleFileModal, setToggleFileModal] = useState<boolean>(false);
 
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
@@ -41,13 +34,6 @@ export const AllMedia = () => {
     combinedBins?.map((bin) => bin.id),
     { skip: !bins?.length }
   );
-
-  const handleCloseModal = () => {
-    setCurrentFile((prev: any) => ({
-      ...prev,
-      id: "",
-    }));
-  };
 
   return (
     <Box
@@ -71,26 +57,15 @@ export const AllMedia = () => {
           ) : (
             <MediaGrid
               files={files}
+              toggleFileModal={toggleFileModal}
+              setToggleFileModal={setToggleFileModal}
               heightOffset={HEADER_HEIGHT}
               widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
-              onSetCurrentFile={setCurrentFile}
             />
           )}
         </>
       )}
-      {currentFile.id && (
-        <FileModal
-          id={currentFile.id}
-          src={currentFile.src}
-          logs={{
-            createdAt: currentFile.createdAt,
-          }}
-          filename={currentFile.filename}
-          title={currentFile.filename}
-          groupId={currentFile.groupId}
-          handleCloseModal={handleCloseModal}
-        />
-      )}
+      <FileModal files={files} toggleFileModal={toggleFileModal} />
     </Box>
   );
 };

@@ -19,22 +19,7 @@ export const FolderMedia = () => {
   const params = useParams<Params>();
   const { id } = params;
   const openNav = useSelector((state: any) => state.ui.openNav);
-
-  // current file details used for file modal
-  const [currentFile, setCurrentFile] = useState<any>({
-    id: "",
-    src: "",
-    filename: "",
-    groupId: "",
-    createdAt: "",
-  });
-
-  const handleCloseModal = () => {
-    setCurrentFile((prev: any) => ({
-      ...prev,
-      id: "",
-    }));
-  };
+  const [toggleFileModal, setToggleFileModal] = useState<boolean>(false);
 
   // TODO potentially provide user feedback for an invalid id
   const { data: groupData, isFetching } =
@@ -68,26 +53,14 @@ export const FolderMedia = () => {
             <MediaGrid
               files={groupData?.files}
               groups={groupData?.groups}
+              setToggleFileModal={setToggleFileModal}
               heightOffset={HEADER_HEIGHT}
               widthOffset={openNav ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
-              onSetCurrentFile={setCurrentFile}
             />
           )}
         </>
       )}
-      {currentFile.id && (
-        <FileModal
-          id={currentFile.id}
-          src={currentFile.src}
-          logs={{
-            createdAt: currentFile.createdAt,
-          }}
-          filename={currentFile.filename}
-          title={currentFile.filename}
-          groupId={currentFile.groupId}
-          handleCloseModal={handleCloseModal}
-        />
-      )}
+      <FileModal files={groupData?.files} toggleFileModal={toggleFileModal} />
     </Box>
   );
 };

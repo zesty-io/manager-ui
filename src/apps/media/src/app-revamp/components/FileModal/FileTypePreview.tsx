@@ -64,11 +64,13 @@ export const FileTypePreview: FC<Props> = ({ src, filename }) => {
             ...styledCheckerBoard,
             py: imageOrientation === "horizontal" && 1,
             px: imageOrientation === "vertical" && "auto",
-            height: "100%",
             overflow: "hidden",
             backgroundColor: fileExtension(filename) !== "png" && "grey.100",
             position: "relative",
+            width: "600px",
+            height: "700px",
             backgroundSize: `25px 25px`,
+            m: "auto",
             backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
           }}
         >
@@ -80,9 +82,10 @@ export const FileTypePreview: FC<Props> = ({ src, filename }) => {
             sx={{
               objectFit: "contain",
               overflow: "hidden",
-              width: "inherit",
-              m: "auto",
               height: "100%",
+              display: "table-cell",
+              verticalAlign: "bottom",
+              backgroundColor: fileExtension(filename) !== "png" && "grey.100",
             }}
           />
         </Box>

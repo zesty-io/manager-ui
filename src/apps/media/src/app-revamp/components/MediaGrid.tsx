@@ -5,6 +5,7 @@ import { useWindowSize } from "react-use";
 import { Folder } from "../components/Folder";
 import { File, Group } from "../../../../../shell/services/types";
 import { Thumbnail } from "./Thumbnail";
+import { useHistory, useRouteMatch } from "react-router-dom";
 
 const FILE_HEIGHT = 204;
 const FOLDER_HEIGHT = 44;
@@ -15,20 +16,24 @@ interface Props {
   heightOffset?: number;
   widthOffset?: number;
   onSetCurrentFile?: Dispatch<any>;
+  toggleFileModal?: boolean;
+  setToggleFileModal?: Dispatch<boolean>;
 }
 
-// test
 export const MediaGrid = ({
   groups,
   files,
   heightOffset = 0,
   widthOffset = 0,
   onSetCurrentFile,
+  toggleFileModal,
+  setToggleFileModal,
 }: Props) => {
   const { width, height } = useWindowSize();
+  const location = useRouteMatch();
+  const history = useHistory();
 
   const listRef = useRef<VariableSizeGrid>();
-
   const columns = useMemo(() => {
     // 258 px is the amount of extra space required to add a new column
     return Math.floor(width / 258);
@@ -135,15 +140,12 @@ export const MediaGrid = ({
             <Thumbnail
               src={files[gridItemIndex].thumbnail}
               filename={files[gridItemIndex].filename}
-              onClick={() =>
-                onSetCurrentFile(() => ({
-                  id: files[gridItemIndex].id,
-                  src: files[gridItemIndex].thumbnail,
-                  filename: files[gridItemIndex].filename,
-                  groupId: files[gridItemIndex].group_id,
-                  createdAt: files[gridItemIndex].created_at,
-                }))
-              }
+              onClick={() => {
+                history.replace(
+                  `${location.url}?file_id=${files[gridItemIndex].id}`
+                );
+                setToggleFileModal(!toggleFileModal);
+              }}
             />
           </Box>
         )}
