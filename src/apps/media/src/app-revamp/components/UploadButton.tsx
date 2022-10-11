@@ -26,9 +26,10 @@ export const UploadButton: FC<UploadButton> = ({}) => {
         onClick={handleUploadButtonClick}
         variant="contained"
         color="primary"
+        size="small"
       >
         <FileUpload />
-        <Typography color="white">Upload</Typography>
+        Upload
       </Button>
       <input
         type="file"

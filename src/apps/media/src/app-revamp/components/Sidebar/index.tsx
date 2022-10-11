@@ -7,8 +7,9 @@ export const Sidebar = () => {
   return (
     <Box
       sx={{
-        borderWidth: "1px",
-        borderColor: "grey.100",
+        borderWidth: "0px",
+        borderRightWidth: "1px",
+        borderColor: "border",
         borderStyle: "solid",
         width: "220px",
         height: "100%",

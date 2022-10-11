@@ -9,14 +9,17 @@ import {
   AccordionDetails,
 } from "@mui/material";
 import { TreeView, TreeItem } from "@mui/lab";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import { FolderGlobal } from "@zesty-io/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
+import {
+  mediaManagerApi,
+  useUpdateFileMutation,
+} from "../../../../../../shell/services/mediaManager";
 import { useSelector } from "react-redux";
 import {
   MouseEvent,
@@ -53,7 +56,8 @@ export const Folders = () => {
   const open = Boolean(anchorEl);
   const history = useHistory();
   const location = useLocation();
-  const hiddenGroups = localStorage.getItem("zesty:navMedia:hidden");
+  const hiddenGroups =
+    JSON.parse(localStorage.getItem("zesty:navMedia:hidden")) || [];
   const [value, setValue] = useState(0);
   const [openNewFolderDialog, setOpenNewFolderDialog] = useState(false);
   const instanceId = useSelector((state: any) => state.instance.ID);
@@ -62,7 +66,10 @@ export const Folders = () => {
   const { data: ecoBins } = mediaManagerApi.useGetEcoBinsQuery(ecoId, {
     skip: !ecoId,
   });
+  const [updateFile] = useUpdateFileMutation();
   const [sort, setSort] = useState("asc");
+  const [expanded, setExpanded] = useState([]);
+  const [hiddenExpanded, setHiddenExpanded] = useState([]);
 
   const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -118,36 +125,29 @@ export const Folders = () => {
     } else {
       return [];
     }
-  }, [combinedBins, binGroups]);
+  }, [binGroups, sort]);
 
-  /* Creating a tree structure from the data. */
-  // const hiddenTrees = useMemo(() => {
-  //   if (binGroups) {
-  //     return binGroups
-  //       .map((binGroup, idx) => {
-  //         const binGroupFiltered = binGroup.filter((binGroup) =>
-  //           hiddenGroups?.includes(binGroup.id)
-  //         );
-
-  //         if (!binGroupFiltered.length) return []
-
-  //         return nest(
-  //           binGroupFiltered,
-  //           binGroupFiltered[0].bin_id,
-  //           "group_id",
-  //           sort
-  //         );
-  //       })
-  //       .flat()
-  //       .sort((a, b) =>
-  //         sort === "asc"
-  //           ? a.name.localeCompare(b.name)
-  //           : b.name.localeCompare(a.name)
-  //       );
-  //   } else {
-  //     return [];
-  //   }
-  // }, [combinedBins, binGroups, hiddenGroups]);
+  /* Creating a tree structure based on the hidden items. */
+  const hiddenTrees = useMemo(() => {
+    if (binGroups && hiddenGroups.length) {
+      return hiddenGroups.map((id: string) => {
+        let rootGroup = [];
+        let rootNode = {};
+        if (id.startsWith("1")) {
+          rootGroup = binGroups.find((group: any) => group[0].bin_id === id);
+          rootNode = combinedBins.find((bin: any) => bin.id === id);
+        } else {
+          rootGroup = binGroups?.filter((groups) =>
+            groups?.some((group) => group.id === id)
+          )?.[0];
+          rootNode = rootGroup?.find((group) => group.id === id);
+        }
+        return { ...rootNode, children: nest(rootGroup, id, "group_id", sort) };
+      });
+    } else {
+      return [];
+    }
+  }, [binGroups, hiddenGroups, sort]);
 
   /* Creating a path to the selected folder. */
   const selectedPath = useMemo(() => {
@@ -173,13 +173,33 @@ export const Folders = () => {
     return [];
   }, [trees]);
 
+  useEffect(() => {
+    setExpanded([...expanded, ...selectedPath]);
+    setHiddenExpanded([...hiddenExpanded, ...selectedPath]);
+  }, [selectedPath]);
+
   const renderTree = (nodes: any, isHiddenTree = false) => {
     if (!isHiddenTree && hiddenGroups.includes(nodes.id)) return null;
-    if (isHiddenTree && !hiddenGroups.includes(nodes.id)) return null;
     return (
       <TreeItem
         key={nodes.id}
         nodeId={nodes.id}
+        onDrop={(event) => {
+          const draggedItem = JSON.parse(
+            event.dataTransfer.getData("text/plain")
+          );
+          if (draggedItem.bin_id === nodes.bin_id) {
+            updateFile({
+              id: draggedItem.id,
+              previousGroupId: draggedItem.group_id,
+              body: {
+                group_id: nodes.id,
+                filename: draggedItem.filename,
+              },
+            });
+          }
+        }}
+        // TODO: Move all styling to theme
         sx={{
           " .MuiTreeItem-content": {
             width: "unset",
@@ -245,7 +265,7 @@ export const Folders = () => {
             FOLDERS
           </Typography>
           <IconButton size="small" onClick={openMenu}>
-            <ArrowDropDownIcon fontSize="small" />
+            <ArrowDropDownRoundedIcon fontSize="small" />
           </IconButton>
           <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
             <MenuItem
@@ -278,13 +298,23 @@ export const Folders = () => {
               nodeIds: string[]
             ) => history.push(`/media/${nodeIds}`)}
             defaultCollapseIcon={
-              <ArrowDropDownIcon sx={{ color: "action.active" }} />
+              <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />
             }
             defaultExpandIcon={
               <ArrowRightIcon sx={{ color: "action.active" }} />
             }
-            defaultExpanded={selectedPath}
-            sx={{ height: "100%", width: "100%", overflowY: "auto" }}
+            onNodeToggle={(event: any, nodeIds) => {
+              if (
+                event.target.tagName === "svg" ||
+                event.target.parentElement.getAttribute("data-testid") ===
+                  "ArrowDropDownRoundedIcon" ||
+                event.target.parentElement.getAttribute("data-testid") ===
+                  "ArrowRightIcon"
+              )
+                setExpanded(nodeIds);
+            }}
+            expanded={expanded}
+            sx={{ height: "100%", width: "100%", overflowY: "auto", px: 1 }}
             selected={[location.pathname.split("/")[2]]}
           >
             {trees.map((tree: any) => renderTree(tree))}
@@ -294,8 +324,8 @@ export const Folders = () => {
               <Box display="flex" alignItems="center" gap={1}>
                 <VisibilityIcon sx={{ color: "action.active" }} />
                 {/** @ts-expect-error body3 variant needs to be typed */}
-                <Typography color="text.disabled" variant="body3">
-                  Hidden Items
+                <Typography color="text.secondary" variant="body3">
+                  Hidden Folders
                 </Typography>
               </Box>
             </AccordionSummary>
@@ -306,16 +336,26 @@ export const Folders = () => {
                   nodeIds: string[]
                 ) => history.push(`/media/${nodeIds}`)}
                 defaultCollapseIcon={
-                  <ArrowDropDownIcon sx={{ color: "action.active" }} />
+                  <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />
                 }
                 defaultExpandIcon={
                   <ArrowRightIcon sx={{ color: "action.active" }} />
                 }
-                defaultExpanded={selectedPath}
+                onNodeToggle={(event: any, nodeIds) => {
+                  if (
+                    event.target.tagName === "svg" ||
+                    event.target.parentElement.getAttribute("data-testid") ===
+                      "ArrowDropDownRoundedIcon" ||
+                    event.target.parentElement.getAttribute("data-testid") ===
+                      "ArrowRightIcon"
+                  )
+                    setHiddenExpanded(nodeIds);
+                }}
+                expanded={hiddenExpanded}
                 sx={{ height: "100%", width: "100%", overflowY: "auto" }}
                 selected={[location.pathname.split("/")[2]]}
               >
-                {trees.map((tree: any) => renderTree(tree, true))}
+                {hiddenTrees.map((tree: any) => renderTree(tree, true))}
               </TreeView>
             </AccordionDetails>
           </Accordion>
