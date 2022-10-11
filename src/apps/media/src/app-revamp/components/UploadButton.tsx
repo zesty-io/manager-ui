@@ -14,11 +14,13 @@ import {
 export type UploadButton = {
   currentGroupId?: string;
   currentBinId: string;
+  text?: string;
 };
 
 export const UploadButton: FC<UploadButton> = ({
   currentBinId,
   currentGroupId,
+  text,
 }) => {
   const dispatch = useDispatch();
   const hiddenFileInput = useRef(null);
@@ -56,9 +58,9 @@ export const UploadButton: FC<UploadButton> = ({
         onClick={handleUploadButtonClick}
         variant="contained"
         color="primary"
+        startIcon={<FileUpload />}
       >
-        <FileUpload />
-        <Typography color="white">Upload</Typography>
+        <Typography color="white">{text || "Upload"}</Typography>
       </Button>
       <input
         type="file"

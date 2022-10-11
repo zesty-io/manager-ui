@@ -39,6 +39,7 @@ export const DnDProvider = ({
   const currentBin = binData?.[0];
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
+      console.log("onDrop");
       if (loading) return;
       // console.log({ acceptedFiles });
 
@@ -69,7 +70,7 @@ export const DnDProvider = ({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   return (
     <Box
-      sx={{ height: "100%" }}
+      sx={{ display: "flex", flex: 1 }}
       {...getRootProps({ onClick: (evt) => evt.stopPropagation() })}
     >
       <input {...getInputProps()} />
