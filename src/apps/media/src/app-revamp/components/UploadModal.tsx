@@ -7,13 +7,17 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { UploadThumbnail } from "./UploadThumbnail";
-import { UploadFile, StoreFile } from "../../../../../shell/store/media-revamp";
+import {
+  UploadFile,
+  StoreFile,
+  dismissFileUploads,
+} from "../../../../../shell/store/media-revamp";
 import { Typography } from "@mui/material";
 import { DnDProvider } from "./DnDProvider";
-import { files } from "../../../../code-editor/src/store/files";
 import { UploadButton } from "./UploadButton";
 
 export const UploadModal: FC = () => {
+  const dispatch = useDispatch();
   const filesToUpload: UploadFile[] = useSelector(
     (state: any) => state.mediaRevamp.temp
   );
@@ -74,13 +78,16 @@ export const UploadModal: FC = () => {
           </DnDProvider>
         </DialogContent>
         <DialogActions>
-          <Button color="secondary" variant="text">
+          <Button color="secondary" variant="text" disabled>
             Cancel
           </Button>
           <Button
             color="primary"
             variant="contained"
             disabled={filesToUpload.some((file) => file.progress !== 100)}
+            onClick={() => {
+              dispatch(dismissFileUploads());
+            }}
           >
             Done
           </Button>

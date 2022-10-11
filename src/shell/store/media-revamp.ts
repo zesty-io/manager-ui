@@ -21,7 +21,7 @@ type FileUploadSuccess = StoreFile & FileBase;
 type FileUploadProgress = { uploadID: string; progress: number };
 type FileUploadSetPreview = { uploadID: string; preview: string };
 
-type State = {
+export type State = {
   files: StoreFile[];
   temp: UploadFile[];
   failedUploads: StoreFile[];
@@ -61,6 +61,11 @@ const mediaSlice = createSlice({
       if (uploadingFile) {
         uploadingFile.preview = action.payload.preview;
       }
+    },
+    fileUploadReset(state) {
+      state.files = [];
+      state.temp = [];
+      state.failedUploads = [];
     },
     fileUploadProgress(state, action: { payload: FileUploadProgress }) {
       const uploadingFile = state.temp.find(
@@ -107,6 +112,7 @@ const mediaSlice = createSlice({
 
 export const {
   fileUploadObjects,
+  fileUploadReset,
   // fileUploadObjectRemove,
   fileUploadStart,
   fileUploadProgress,
@@ -321,4 +327,31 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
     // }
   };
 }
+export function dismissFileUploads() {
+  return async (dispatch: Dispatch, getState: () => AppState) => {
+    const state: State = getState().mediaRevamp;
+    if (state.temp.some((file) => file.progress !== 100)) return;
+    const successfulUploads = state.temp.length;
+    const failedUploads = state.failedUploads.length;
+    console.log({ successfulUploads, failedUploads });
+    if (successfulUploads) {
+      dispatch(
+        notify({
+          message: `Successfully uploaded ${successfulUploads} files`,
+          kind: "success",
+        })
+      );
+    }
+    if (failedUploads) {
+      dispatch(
+        notify({
+          message: `Failed to upload ${failedUploads} files`,
+          kind: "warn",
+        })
+      );
+    }
+    dispatch(fileUploadReset());
+  };
+}
+
 export default mediaSlice.reducer;

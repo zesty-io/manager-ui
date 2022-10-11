@@ -1,4 +1,5 @@
 import { UIState } from "./ui";
+import { State as MediaRevampState } from "./media-revamp";
 /*
   TODO
   The UI state is well typed but the rest of the application state is entirely
@@ -25,6 +26,7 @@ export type AppState = {
   fields: any;
   content: any;
   contentVersions: any;
+  mediaRevamp: MediaRevampState;
   media: any;
   logs: any;
   notifications: any;
