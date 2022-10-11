@@ -341,8 +341,7 @@ export const Folders = () => {
                 defaultExpandIcon={
                   <ArrowRightIcon sx={{ color: "action.active" }} />
                 }
-                onNodeToggle={(event, nodeIds) => {
-                  // @ts-ignore
+                onNodeToggle={(event: any, nodeIds) => {
                   if (
                     event.target.tagName === "svg" ||
                     event.target.parentElement.getAttribute("data-testid") ===
