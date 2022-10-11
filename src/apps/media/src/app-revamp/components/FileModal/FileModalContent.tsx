@@ -213,7 +213,7 @@ export const FileModalContent: FC<Props> = ({
               }}
             >
               <ListItemIcon>
-                <DeleteRoundedIcon sx={{ width: "36px" }} />
+                <DeleteRoundedIcon />
               </ListItemIcon>
               <ListItemText>Delete</ListItemText>
             </MenuItem>
@@ -234,10 +234,9 @@ export const FileModalContent: FC<Props> = ({
                 {isFileUrlCopied ? (
                   <CheckIcon />
                 ) : (
-                  <ContentCopyIcon
-                    onClick={() => handleCopyClick()}
-                    sx={{ cursor: "pointer" }}
-                  />
+                  <IconButton onClick={() => handleCopyClick()}>
+                    <ContentCopyIcon />
+                  </IconButton>
                 )}
               </InputAdornment>
             ),

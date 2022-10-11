@@ -66,7 +66,7 @@ export const BinMedia = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <>
+        <DnDProvider>
           {!isFilesFetching && !binFiles?.length ? (
             <EmptyState />
           ) : (
@@ -78,7 +78,7 @@ export const BinMedia = () => {
               onSetCurrentFile={setCurrentFile}
             />
           )}
-        </>
+        </DnDProvider>
       )}
       {currentFile.id && (
         <FileModal
