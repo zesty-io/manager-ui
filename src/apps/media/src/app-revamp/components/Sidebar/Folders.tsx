@@ -123,7 +123,7 @@ export const Folders = () => {
     } else {
       return [];
     }
-  }, [binGroups]);
+  }, [binGroups, sort]);
 
   /* Creating a tree structure based on the hidden items. */
   const hiddenTrees = useMemo(() => {
@@ -145,7 +145,7 @@ export const Folders = () => {
     } else {
       return [];
     }
-  }, [binGroups, hiddenGroups]);
+  }, [binGroups, hiddenGroups, sort]);
 
   /* Creating a path to the selected folder. */
   const selectedPath = useMemo(() => {
