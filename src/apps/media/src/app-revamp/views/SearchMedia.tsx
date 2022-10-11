@@ -30,6 +30,8 @@ export const SearchMedia = () => {
     id: "",
     src: "",
     filename: "",
+    groupId: "",
+    createdAt: "",
   });
 
   const handleCloseModal = () => {
@@ -111,8 +113,12 @@ export const SearchMedia = () => {
         <FileModal
           id={currentFile.id}
           src={currentFile.src}
+          logs={{
+            createdAt: currentFile.createdAt,
+          }}
           filename={currentFile.filename}
           title={currentFile.filename}
+          groupId={currentFile.groupId}
           handleCloseModal={handleCloseModal}
         />
       )}

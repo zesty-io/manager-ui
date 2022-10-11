@@ -1,8 +1,16 @@
 import { FC, useState } from "react";
-import { Modal, Box, Card, CardMedia } from "@mui/material";
-import { FileModalHeader } from "./FileModalHeader";
+import {
+  Modal,
+  Box,
+  Card,
+  CardMedia,
+  Button,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import { FileModalContent } from "./FileModalContent";
 import { FileTypePreview } from "./FileTypePreview";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
 const styledModal = {
   position: "absolute",
@@ -11,7 +19,6 @@ const styledModal = {
   transform: "translate(-50%, -50%)",
   width: 1100,
   bgcolor: "background.paper",
-  overflow: "hidden",
   outline: "none",
 };
 
@@ -20,15 +27,27 @@ interface Props {
   src?: string;
   filename?: string;
   title?: string;
+  groupId?: string;
   handleCloseModal?: any;
+  user?: {
+    email?: string;
+    role?: string;
+  };
+  logs?: {
+    createdAt?: string;
+    timeUploaded?: string;
+  };
 }
 
 export const FileModal: FC<Props> = ({
   id,
   src,
   filename,
+  groupId,
   title,
   handleCloseModal,
+  user,
+  logs,
 }) => {
   const [open, setOpen] = useState(true);
   const handleClose = () => {
@@ -37,12 +56,7 @@ export const FileModal: FC<Props> = ({
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
+    <Modal open={open}>
       <Box
         sx={{
           ...styledModal,
@@ -50,6 +64,17 @@ export const FileModal: FC<Props> = ({
           justifyContent: "space-between",
         }}
       >
+        <IconButton
+          onClick={() => handleCloseModal()}
+          sx={{
+            position: "absolute",
+            zIndex: 999,
+            right: -30,
+            top: -35,
+          }}
+        >
+          <CloseRoundedIcon sx={{ color: "#FFF" }} />
+        </IconButton>
         <Card
           elevation={0}
           sx={{
@@ -69,12 +94,15 @@ export const FileModal: FC<Props> = ({
         </Card>
 
         <Box sx={{ p: 4, width: "400px" }}>
-          <FileModalHeader filename={filename} />
           <FileModalContent
             id={id}
             src={src}
             filename={filename}
             title={title}
+            groupId={groupId}
+            handleCloseModal={handleCloseModal}
+            user={user}
+            logs={logs}
           />
         </Box>
       </Box>

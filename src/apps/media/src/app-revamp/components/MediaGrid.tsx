@@ -150,6 +150,8 @@ export const MediaGrid = ({
                   id: files[gridItemIndex].id,
                   src: files[gridItemIndex].thumbnail,
                   filename: files[gridItemIndex].filename,
+                  groupId: files[gridItemIndex].group_id,
+                  createdAt: files[gridItemIndex].created_at,
                 }))
               }
             />

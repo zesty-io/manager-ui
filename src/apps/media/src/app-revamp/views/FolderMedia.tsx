@@ -23,6 +23,8 @@ export const FolderMedia = () => {
     id: "",
     src: "",
     filename: "",
+    groupId: "",
+    createdAt: "",
   });
 
   const handleCloseModal = () => {

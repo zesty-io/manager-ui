@@ -23,6 +23,8 @@ export const BinMedia = () => {
     id: "",
     src: "",
     filename: "",
+    groupId: "",
+    createdAt: "",
   });
 
   const {
