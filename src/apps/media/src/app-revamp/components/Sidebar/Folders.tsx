@@ -69,6 +69,8 @@ export const Folders = () => {
   });
   const [updateFile] = useUpdateFileMutation();
   const [sort, setSort] = useState("asc");
+  const [expanded, setExpanded] = useState([]);
+  const [hiddenExpanded, setHiddenExpanded] = useState([]);
 
   const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -124,7 +126,7 @@ export const Folders = () => {
     } else {
       return [];
     }
-  }, [binGroups]);
+  }, [binGroups, sort]);
 
   /* Creating a tree structure based on the hidden items. */
   const hiddenTrees = useMemo(() => {
@@ -146,7 +148,7 @@ export const Folders = () => {
     } else {
       return [];
     }
-  }, [binGroups, hiddenGroups]);
+  }, [binGroups, hiddenGroups, sort]);
 
   /* Creating a path to the selected folder. */
   const selectedPath = useMemo(() => {
@@ -171,6 +173,11 @@ export const Folders = () => {
 
     return [];
   }, [trees]);
+
+  useEffect(() => {
+    setExpanded([...expanded, ...selectedPath]);
+    setHiddenExpanded([...hiddenExpanded, ...selectedPath]);
+  }, [selectedPath]);
 
   const renderTree = (nodes: any, isHiddenTree = false) => {
     if (!isHiddenTree && hiddenGroups.includes(nodes.id)) return null;
@@ -299,7 +306,21 @@ export const Folders = () => {
             defaultExpandIcon={
               <ArrowRightIcon sx={{ color: "action.active" }} />
             }
-            defaultExpanded={selectedPath}
+            onNodeToggle={(event, nodeIds) => {
+              // @ts-ignore
+              if (
+                // @ts-ignore
+                event.target.tagName === "svg" ||
+                // @ts-ignore
+                event.target.parentElement.getAttribute("data-testid") ===
+                  "ArrowDropDownRoundedIcon" ||
+                // @ts-ignore
+                event.target.parentElement.getAttribute("data-testid") ===
+                  "ArrowRightIcon"
+              )
+                setExpanded(nodeIds);
+            }}
+            expanded={expanded}
             sx={{ height: "100%", width: "100%", overflowY: "auto", px: 1 }}
             selected={[location.pathname.split("/")[2]]}
           >
@@ -327,7 +348,22 @@ export const Folders = () => {
                 defaultExpandIcon={
                   <ArrowRightIcon sx={{ color: "action.active" }} />
                 }
-                defaultExpanded={selectedPath}
+                onNodeToggle={(event, nodeIds) => {
+                  // @ts-ignore
+                  if (
+                    // @ts-ignore
+                    event.target.tagName === "svg" ||
+                    // @ts-ignore
+                    event.target.parentElement.getAttribute("data-testid") ===
+                      // @ts-ignore
+                      "ArrowDropDownRoundedIcon" ||
+                    // @ts-ignore
+                    event.target.parentElement.getAttribute("data-testid") ===
+                      "ArrowRightIcon"
+                  )
+                    setHiddenExpanded(nodeIds);
+                }}
+                expanded={hiddenExpanded}
                 sx={{ height: "100%", width: "100%", overflowY: "auto" }}
                 selected={[location.pathname.split("/")[2]]}
               >

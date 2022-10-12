@@ -19,13 +19,6 @@ export const BinMedia = () => {
   const headerHeight = useSelector((state: any) => state.ui.headerHeight);
   const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
 
-  // current file details used for file modal
-  const [currentFile, setCurrentFile] = useState<any>({
-    id: "",
-    src: "",
-    filename: "",
-  });
-
   const {
     data: binData,
     isFetching: isBinDataFetching,
@@ -37,13 +30,6 @@ export const BinMedia = () => {
 
   const { data: binFiles, isFetching: isFilesFetching } =
     mediaManagerApi.useGetBinFilesQuery(id);
-
-  const handleCloseModal = () => {
-    setCurrentFile((prev: any) => ({
-      ...prev,
-      id: "",
-    }));
-  };
 
   return (
     <Box
@@ -82,21 +68,12 @@ export const BinMedia = () => {
                     groups={binGroups}
                     heightOffset={headerHeight + 64}
                     widthOffset={sidebarWidth + 220}
-                    onSetCurrentFile={setCurrentFile}
                   />
                 )}
               </DnDProvider>
             </>
           )}
-          {currentFile.id && (
-            <FileModal
-              id={currentFile.id}
-              src={currentFile.src}
-              filename={currentFile.filename}
-              title={currentFile.filename}
-              handleCloseModal={handleCloseModal}
-            />
-          )}
+          <FileModal files={binFiles} />
         </>
       )}
     </Box>

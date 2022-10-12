@@ -61,6 +61,7 @@ export const UploadButton: FC<UploadButton> = ({
         startIcon={<FileUpload />}
       >
         <Typography color="white">{text || "Upload"}</Typography>
+        Upload
       </Button>
       <input
         type="file"
