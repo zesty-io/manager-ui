@@ -24,6 +24,11 @@ export const SearchMedia = () => {
   const { data: ecoBins } = useGetEcoBinsQuery(ecoId, {
     skip: !ecoId,
   });
+  const [isInvalidFileId, setIsInvalidFileId] = useState<boolean>(false);
+
+  // not found state
+  const [notFoundTitle, setNotFoundTitle] = useState<string>("");
+  const [notFoundMessage, setNotFoundMessage] = useState<string>("");
 
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
@@ -92,7 +97,12 @@ export const SearchMedia = () => {
       ) : (
         <SearchEmptyState searchTerm={term} />
       )}
-      <FileModal files={files} />
+      <FileModal
+        files={files}
+        setIsInvalidFileId={setIsInvalidFileId}
+        onSetNotFoundTitle={setNotFoundTitle}
+        onSetNotFoundMessage={setNotFoundMessage}
+      />
     </Box>
   );
 };

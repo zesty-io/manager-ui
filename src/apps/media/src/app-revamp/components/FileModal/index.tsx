@@ -1,4 +1,4 @@
-import { FC, useEffect, useState, useRef } from "react";
+import { FC, useEffect, useState, useRef, Dispatch } from "react";
 import {
   Modal,
   Box,
@@ -27,9 +27,17 @@ const styledModal = {
 
 interface Props {
   files: File[];
+  setIsInvalidFileId?: Dispatch<boolean>;
+  onSetNotFoundTitle?: Dispatch<string>;
+  onSetNotFoundMessage?: Dispatch<string>;
 }
 
-export const FileModal: FC<Props> = ({ files }) => {
+export const FileModal: FC<Props> = ({
+  files,
+  setIsInvalidFileId,
+  onSetNotFoundTitle,
+  onSetNotFoundMessage,
+}) => {
   const search = useLocation().search;
   const fileIdParams = new URLSearchParams(search).get("file_id");
   const currentFile = useRef<any>();
@@ -42,6 +50,13 @@ export const FileModal: FC<Props> = ({ files }) => {
       if (!fileIdParams) throw 400;
       if (files.length) {
         const filteredFile = files.find((file) => file.id === fileIdParams);
+        if (!filteredFile) {
+          setIsInvalidFileId(true);
+          onSetNotFoundTitle("File Not Found");
+          onSetNotFoundMessage(
+            "We’re sorry the file you requested could not be found. Please go back to the all media page."
+          );
+        }
         currentFile.current = {
           id: filteredFile.id,
           src: filteredFile.url,
