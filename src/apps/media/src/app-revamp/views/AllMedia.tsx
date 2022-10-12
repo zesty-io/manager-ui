@@ -24,16 +24,17 @@ export const AllMedia = () => {
     skip: !ecoId,
   });
   const [isInvalidFileId, setIsInvalidFileId] = useState<boolean>(false);
+
+  // not found state
+  const [notFoundTitle, setNotFoundTitle] = useState<string>("");
+  const [notFoundMessage, setNotFoundMessage] = useState<string>("");
+
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
   const { data: files, isFetching: isFilesFetching } = useGetAllBinFilesQuery(
     combinedBins?.map((bin) => bin.id),
     { skip: !bins?.length }
   );
-
-  // not found state
-  const [notFoundTitle, setNotFoundTitle] = useState<string>("");
-  const [notFoundMessage, setNotFoundMessage] = useState<string>("");
 
   return (
     <Box
@@ -55,9 +56,11 @@ export const AllMedia = () => {
               <CircularProgress />
             </Box>
           ) : (
-            <DnDProvider>
+            /* TODO Fix this */
+            <DnDProvider currentBinId="" currentGroupId="">
               {!isFilesFetching && !isBinsFetching && !files?.length ? (
-                <EmptyState />
+                /* TODO Fix this */
+                <EmptyState currentBinId="" currentGroupId="" />
               ) : (
                 <MediaGrid
                   files={files}
