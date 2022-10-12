@@ -11,8 +11,7 @@ import {
 import { TreeView, TreeItem } from "@mui/lab";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-// TODO fix this before merge
-// import { FolderGlobal } from "@zesty-io/material";
+import { FolderGlobal } from "@zesty-io/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -217,9 +216,7 @@ export const Folders = () => {
         label={
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box
-              component={
-                FolderIcon /*nodes.eco_id ? FolderGlobal : FolderIcon*/
-              }
+              component={nodes.eco_id ? FolderGlobal : FolderIcon}
               sx={{
                 mr: 1,
                 ".Mui-selected": {
