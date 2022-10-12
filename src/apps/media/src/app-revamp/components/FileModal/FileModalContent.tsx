@@ -42,11 +42,8 @@ interface Props {
     email?: string;
     role?: string;
   };
-  logs?: {
-    createdAt?: string;
-    timeUploaded?: string;
-  };
-  handleCloseModal: any;
+  createdAt?: string;
+  handleCloseModal: () => void;
 }
 
 export const FileModalContent: FC<Props> = ({
@@ -56,7 +53,7 @@ export const FileModalContent: FC<Props> = ({
   groupId,
   title,
   user,
-  logs,
+  createdAt,
   handleCloseModal,
 }) => {
   const theme = useTheme();
@@ -83,10 +80,6 @@ export const FileModalContent: FC<Props> = ({
     }
   }, [title, filename]);
 
-  useEffect(() => {
-    handleUpdateMutation();
-  }, [newFilename]);
-
   /**
    * @description Used for copying the alttext's value
    */
@@ -108,14 +101,14 @@ export const FileModalContent: FC<Props> = ({
    * @description Used to call api everytime the filename and alttext is updated
    * @note fileType will be appended on the filename payload
    */
-  const handleUpdateMutation = () => {
+  const handleUpdateMutation = (renamedFilename?: string) => {
     const debouncedTitle = debounce(async () => {
       updateFile({
         id,
         body: {
           group_id: groupId,
           title: newTitle.current.value,
-          filename: newFilename,
+          filename: renamedFilename || newFilename,
         },
       });
     }, 500);
@@ -287,9 +280,9 @@ export const FileModalContent: FC<Props> = ({
             <CalendarTodayIcon />
           </Box>
           <Box sx={{ pl: 3 }}>
-            <Typography>{moment(logs?.createdAt).format("LL")}</Typography>
+            <Typography>{moment(createdAt).format("LL")}</Typography>
             <Typography>
-              {moment(logs?.createdAt).add(3, "days").calendar()}
+              {moment(createdAt).add(3, "days").calendar()}
             </Typography>
           </Box>
         </Box>

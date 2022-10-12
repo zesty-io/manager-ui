@@ -303,7 +303,8 @@ export const Folders = () => {
             defaultExpandIcon={
               <ArrowRightIcon sx={{ color: "action.active" }} />
             }
-            onNodeToggle={(event: any, nodeIds) => {
+            onNodeToggle={(event, nodeIds) => {
+              // @ts-ignore
               if (
                 event.target.tagName === "svg" ||
                 event.target.parentElement.getAttribute("data-testid") ===
@@ -341,7 +342,8 @@ export const Folders = () => {
                 defaultExpandIcon={
                   <ArrowRightIcon sx={{ color: "action.active" }} />
                 }
-                onNodeToggle={(event: any, nodeIds) => {
+                onNodeToggle={(event, nodeIds) => {
+                  // @ts-ignore
                   if (
                     event.target.tagName === "svg" ||
                     event.target.parentElement.getAttribute("data-testid") ===

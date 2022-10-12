@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, Dispatch } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,9 +12,9 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 
 interface Props {
-  handleUpdateMutation: any;
-  onClose?: any;
-  onSetNewFilename: any;
+  handleUpdateMutation: (renamedFilename: string) => void;
+  onClose?: () => void;
+  onSetNewFilename: Dispatch<string>;
   fileType: string;
   newFilename: string;
 }
@@ -65,6 +65,7 @@ export const RenameFileModal: FC<Props> = ({
           variant="contained"
           onClick={() => {
             onSetNewFilename(`${renamedFilename}.${fileType}`);
+            handleUpdateMutation(`${renamedFilename}.${fileType}`);
             onClose();
           }}
         >

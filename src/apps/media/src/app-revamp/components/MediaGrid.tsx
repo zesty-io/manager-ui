@@ -5,6 +5,7 @@ import { useWindowSize } from "react-use";
 import { Folder } from "../components/Folder";
 import { File, Group } from "../../../../../shell/services/types";
 import { Thumbnail } from "./Thumbnail";
+import { useHistory, useRouteMatch } from "react-router-dom";
 
 const FILE_HEIGHT = 204;
 const FOLDER_HEIGHT = 44;
@@ -14,19 +15,18 @@ interface Props {
   files?: File[];
   heightOffset?: number;
   widthOffset?: number;
-  onSetCurrentFile?: Dispatch<any>;
   hideHeaders?: boolean;
 }
 
-// test
 export const MediaGrid = ({
   groups,
   files,
   heightOffset = 0,
   widthOffset = 0,
-  onSetCurrentFile,
   hideHeaders = false,
 }: Props) => {
+  const location = useRouteMatch();
+  const history = useHistory();
   const { width, height } = useWindowSize();
 
   const listRef = useRef<VariableSizeGrid>();
@@ -145,15 +145,11 @@ export const MediaGrid = ({
               filename={files[gridItemIndex].filename}
               group_id={files[gridItemIndex].group_id}
               bin_id={files[gridItemIndex].bin_id}
-              onClick={() =>
-                onSetCurrentFile(() => ({
-                  id: files[gridItemIndex].id,
-                  src: files[gridItemIndex].thumbnail,
-                  filename: files[gridItemIndex].filename,
-                  groupId: files[gridItemIndex].group_id,
-                  createdAt: files[gridItemIndex].created_at,
-                }))
-              }
+              onClick={() => {
+                history.replace(
+                  `${location.url}?file_id=${files[gridItemIndex].id}`
+                );
+              }}
             />
           </Box>
         )}

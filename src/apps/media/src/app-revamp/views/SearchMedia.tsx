@@ -25,22 +25,6 @@ export const SearchMedia = () => {
     skip: !ecoId,
   });
 
-  // current file details used for file modal
-  const [currentFile, setCurrentFile] = useState<any>({
-    id: "",
-    src: "",
-    filename: "",
-    groupId: "",
-    createdAt: "",
-  });
-
-  const handleCloseModal = () => {
-    setCurrentFile((prev: any) => ({
-      ...prev,
-      id: "",
-    }));
-  };
-
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
   const {
@@ -103,25 +87,12 @@ export const SearchMedia = () => {
             groups={filteredGroups}
             heightOffset={headerHeight + 64}
             widthOffset={sidebarWidth + 220}
-            onSetCurrentFile={setCurrentFile}
           />
         </>
       ) : (
         <SearchEmptyState searchTerm={term} />
       )}
-      {currentFile.id && (
-        <FileModal
-          id={currentFile.id}
-          src={currentFile.src}
-          logs={{
-            createdAt: currentFile.createdAt,
-          }}
-          filename={currentFile.filename}
-          title={currentFile.filename}
-          groupId={currentFile.groupId}
-          handleCloseModal={handleCloseModal}
-        />
-      )}
+      <FileModal files={files} />
     </Box>
   );
 };

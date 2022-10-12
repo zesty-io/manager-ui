@@ -64,10 +64,11 @@ export const FileTypePreview: FC<Props> = ({ src, filename }) => {
             ...styledCheckerBoard,
             py: imageOrientation === "horizontal" && 1,
             px: imageOrientation === "vertical" && "auto",
-            height: "100%",
             overflow: "hidden",
             backgroundColor: fileExtension(filename) !== "png" && "grey.100",
             position: "relative",
+            height: "600px",
+            width: "100%",
             backgroundSize: `25px 25px`,
             backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
           }}
