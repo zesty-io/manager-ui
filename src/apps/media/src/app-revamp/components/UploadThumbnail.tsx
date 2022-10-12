@@ -19,8 +19,6 @@ interface Props {
 export const UploadThumbnail: FC<Props> = ({ file }) => {
   const dispatch = useDispatch();
 
-  //const params = useParams<any>();
-  //const { data: group } = mediaManagerApi.useGetGroupDataQuery(params.id);
   const { data: bin } = mediaManagerApi.useGetBinQuery(file.bin_id, {
     skip: !file.bin_id,
   });

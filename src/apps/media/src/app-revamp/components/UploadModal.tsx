@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { AppState } from "../../../../../shell/store/types";
 import Dialog from "@mui/material/Dialog";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -19,11 +20,11 @@ import { UploadButton } from "./UploadButton";
 export const UploadModal: FC = () => {
   const dispatch = useDispatch();
   const filesToUpload: UploadFile[] = useSelector(
-    (state: any) => state.mediaRevamp.temp
+    (state: AppState) => state.mediaRevamp.initiatedUploads
   );
 
   const failedUploads: StoreFile[] = useSelector(
-    (state: any) => state.mediaRevamp.failedUploads
+    (state: AppState) => state.mediaRevamp.failedUploads
   );
   console.log(filesToUpload);
   const ids = filesToUpload.length && {
@@ -99,7 +100,7 @@ export const UploadModal: FC = () => {
 
 const UploadErrors = () => {
   const failedUploads: StoreFile[] = useSelector(
-    (state: any) => state.mediaRevamp.failedUploads
+    (state: AppState) => state.mediaRevamp.failedUploads
   );
   console.log({ failedUploads });
   if (failedUploads.length === 0) return null;

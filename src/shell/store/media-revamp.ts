@@ -20,15 +20,16 @@ type FileUploadStart = StoreFile & { file: File };
 type FileUploadSuccess = StoreFile & FileBase;
 type FileUploadProgress = { uploadID: string; progress: number };
 type FileUploadSetPreview = { uploadID: string; preview: string };
+type FileUploadInitiate = { file: File; bin_id: string; group_id: string };
 
 export type State = {
-  files: StoreFile[];
-  temp: UploadFile[];
+  inProgressUploads: StoreFile[];
+  initiatedUploads: UploadFile[];
   failedUploads: StoreFile[];
 };
 const initialState: State = {
-  files: [],
-  temp: [],
+  inProgressUploads: [],
+  initiatedUploads: [],
   failedUploads: [],
 };
 
@@ -36,14 +37,16 @@ const mediaSlice = createSlice({
   name: "mediaRevamp",
   initialState,
   reducers: {
-    fileUploadObjects(state, action: { payload: any[] }) {
+    fileUploadInitiate(state, action: { payload: FileUploadInitiate[] }) {
       const newObjects = action.payload.map((file) => {
-        file.uploadID = uuidv4();
-        file.url = URL.createObjectURL(file.file);
-        file.filename = file.file.name;
-        return file;
+        return {
+          uploadID: uuidv4(),
+          url: URL.createObjectURL(file.file),
+          filename: file.file.name,
+          file: file.file,
+        };
       });
-      state.temp = [...state.temp, ...newObjects];
+      state.initiatedUploads = [...state.initiatedUploads, ...newObjects];
     },
 
     // fileUploadObjectRemove(state, action: { payload: any }) {
@@ -52,10 +55,10 @@ const mediaSlice = createSlice({
 
     fileUploadStart(state, action: { payload: FileUploadStart }) {
       const { file, ...data } = action.payload;
-      state.files.push(data);
+      state.inProgressUploads.push(data);
     },
     fileUploadSetPreview(state, action: { payload: FileUploadSetPreview }) {
-      const uploadingFile = state.files.find(
+      const uploadingFile = state.inProgressUploads.find(
         (file) => file.uploadID === action.payload.uploadID
       );
       if (uploadingFile) {
@@ -63,12 +66,12 @@ const mediaSlice = createSlice({
       }
     },
     fileUploadReset(state) {
-      state.files = [];
-      state.temp = [];
+      state.inProgressUploads = [];
+      state.initiatedUploads = [];
       state.failedUploads = [];
     },
     fileUploadProgress(state, action: { payload: FileUploadProgress }) {
-      const uploadingFile = state.temp.find(
+      const uploadingFile = state.initiatedUploads.find(
         (file) => file.uploadID === action.payload.uploadID
       );
       if (uploadingFile) {
@@ -76,7 +79,7 @@ const mediaSlice = createSlice({
       }
     },
     fileUploadSuccess(state, action: { payload: FileUploadSuccess }) {
-      const uploadingFile = state.temp.find(
+      const uploadingFile = state.initiatedUploads.find(
         (file) => file.uploadID === action.payload.uploadID
       );
       if (uploadingFile) {
@@ -91,18 +94,18 @@ const mediaSlice = createSlice({
       }
     },
     fileUploadError(state, action) {
-      const fileIndex = state.files.findIndex(
+      const fileIndex = state.inProgressUploads.findIndex(
         (file) => file.uploadID === action.payload.uploadID
       );
       if (fileIndex !== -1) {
-        const failedFile = state.files.splice(fileIndex, 1);
+        const failedFile = state.inProgressUploads.splice(fileIndex, 1);
         state.failedUploads = [...failedFile, ...state.failedUploads];
       }
-      const tempFileIndex = state.temp.findIndex(
+      const tempFileIndex = state.initiatedUploads.findIndex(
         (file) => file.uploadID === action.payload.uploadID
       );
       if (tempFileIndex !== -1) {
-        state.temp.splice(fileIndex, 1);
+        state.initiatedUploads.splice(fileIndex, 1);
       }
     },
   },
@@ -111,7 +114,7 @@ const mediaSlice = createSlice({
 // export mediaSlice;
 
 export const {
-  fileUploadObjects,
+  fileUploadInitiate,
   fileUploadReset,
   // fileUploadObjectRemove,
   fileUploadStart,
@@ -312,26 +315,13 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
     }
 
     dispatch(fileUploadStart(file));
-
-    // if (file.file) {
-    //   const fileReader = new FileReader();
-    //   fileReader.readAsDataURL(file.file);
-    //   fileReader.addEventListener("load", function () {
-    //     dispatch(
-    //       fileUploadSetPreview({
-    //         uploadID: file.uploadID,
-    //         preview: this.result as string,
-    //       })
-    //     );
-    //   });
-    // }
   };
 }
 export function dismissFileUploads() {
   return async (dispatch: Dispatch, getState: () => AppState) => {
     const state: State = getState().mediaRevamp;
-    if (state.temp.some((file) => file.progress !== 100)) return;
-    const successfulUploads = state.temp.length;
+    if (state.initiatedUploads.some((file) => file.progress !== 100)) return;
+    const successfulUploads = state.initiatedUploads.length;
     const failedUploads = state.failedUploads.length;
     console.log({ successfulUploads, failedUploads });
     if (successfulUploads) {
