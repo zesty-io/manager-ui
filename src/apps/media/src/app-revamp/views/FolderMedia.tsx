@@ -18,6 +18,11 @@ export const FolderMedia = () => {
   const { id } = params;
   const headerHeight = useSelector((state: any) => state.ui.headerHeight);
   const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
+  const [isInvalidFileId, setIsInvalidFileId] = useState<boolean>(false);
+
+  // not found state
+  const [notFoundTitle, setNotFoundTitle] = useState<string>("");
+  const [notFoundMessage, setNotFoundMessage] = useState<string>("");
 
   // TODO potentially provide user feedback for an invalid id
   const {
@@ -41,8 +46,8 @@ export const FolderMedia = () => {
       component="main"
       sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
     >
-      {isError ? (
-        <NotFoundState />
+      {isError || isInvalidFileId ? (
+        <NotFoundState title={notFoundTitle} message={notFoundMessage} />
       ) : (
         <>
           <Header
@@ -85,7 +90,12 @@ export const FolderMedia = () => {
           )}
         </>
       )}
-      <FileModal files={groupData?.files} />
+      <FileModal
+        files={groupData?.files}
+        setIsInvalidFileId={setIsInvalidFileId}
+        onSetNotFoundTitle={setNotFoundTitle}
+        onSetNotFoundMessage={setNotFoundMessage}
+      />
     </Box>
   );
 };

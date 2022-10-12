@@ -18,6 +18,7 @@ export const BinMedia = () => {
   const { id } = params;
   const headerHeight = useSelector((state: any) => state.ui.headerHeight);
   const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
+  const [isInvalidFileId, setIsInvalidFileId] = useState<boolean>(false);
 
   const {
     data: binData,
@@ -31,13 +32,17 @@ export const BinMedia = () => {
   const { data: binFiles, isFetching: isFilesFetching } =
     mediaManagerApi.useGetBinFilesQuery(id);
 
+  // not found state
+  const [notFoundTitle, setNotFoundTitle] = useState<string>("");
+  const [notFoundMessage, setNotFoundMessage] = useState<string>("");
+
   return (
     <Box
       component="main"
       sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
     >
-      {isError ? (
-        <NotFoundState />
+      {isError || isInvalidFileId ? (
+        <NotFoundState title={notFoundTitle} message={notFoundMessage} />
       ) : (
         <>
           <Header
@@ -73,7 +78,12 @@ export const BinMedia = () => {
               </DnDProvider>
             </>
           )}
-          <FileModal files={binFiles} />
+          <FileModal
+            files={binFiles}
+            setIsInvalidFileId={setIsInvalidFileId}
+            onSetNotFoundTitle={setNotFoundTitle}
+            onSetNotFoundMessage={setNotFoundMessage}
+          />
         </>
       )}
     </Box>

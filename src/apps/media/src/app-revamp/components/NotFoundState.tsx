@@ -1,9 +1,15 @@
+import { FC } from "react";
 import { Box, Typography, Stack, Button } from "@mui/material";
 import { useHistory } from "react-router";
 import notFound from "../../../../../../public/images/notFound.png";
 import BackupTableRoundedIcon from "@mui/icons-material/BackupTableRounded";
 
-export const NotFoundState = () => {
+interface Props {
+  title?: string;
+  message?: string;
+}
+
+export const NotFoundState: FC<Props> = ({ title, message }) => {
   const history = useHistory();
   return (
     <Box
@@ -16,15 +22,14 @@ export const NotFoundState = () => {
       <Box width="400px">
         <img src={notFound} width="400px" />
         <Typography sx={{ mt: 8 }} variant="h4" fontWeight={600}>
-          Folder Not Found
+          {title}
         </Typography>
         <Typography
           sx={{ mt: 1, mb: 3 }}
           variant="body2"
           color="text.secondary"
         >
-          We’re sorry the folder you requested could not be found. Please go
-          back to the all media page.
+          {message}
         </Typography>
         <Button
           size="small"
@@ -37,4 +42,10 @@ export const NotFoundState = () => {
       </Box>
     </Box>
   );
+};
+
+NotFoundState.defaultProps = {
+  title: "Folder Not Found",
+  message:
+    "We’re sorry the folder you requested could not be found. Please go back to the all media page.",
 };
