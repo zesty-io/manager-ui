@@ -1,4 +1,4 @@
-import { Box, ThemeProvider, Dialog } from "@mui/material";
+import { Box, ThemeProvider } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { useEffect } from "react";
 import { Redirect, Route, Switch, useHistory } from "react-router";
@@ -6,7 +6,6 @@ import { Sidebar } from "./components/Sidebar";
 import { AllMedia } from "./views/AllMedia";
 import { Media } from "./views/Media";
 import { SearchMedia } from "./views/SearchMedia";
-import { useEffect } from "react";
 
 interface Props {
   limitSelected?: number;
