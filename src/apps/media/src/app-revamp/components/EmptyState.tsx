@@ -2,7 +2,11 @@ import { Box, Stack, Typography } from "@mui/material";
 import uploadImage from "../../../../../../public/images/uploadImage.png";
 import { UploadButton } from "./UploadButton";
 
-export const EmptyState = () => {
+type Props = {
+  currentBinId: string;
+  currentGroupId: string;
+};
+export const EmptyState = (ids: Props) => {
   return (
     <Box
       display="flex"
@@ -19,7 +23,7 @@ export const EmptyState = () => {
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             You can drag and drop files here or use the "Upload" button.
           </Typography>
-          <UploadButton />
+          <UploadButton {...ids} />
         </Box>
         <Box>
           <img src={uploadImage} width={440} />

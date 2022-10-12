@@ -47,9 +47,11 @@ export const AllMedia = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <DnDProvider>
+        /* TODO Fix this */
+        <DnDProvider currentBinId="" currentGroupId="">
           {!isFilesFetching && !isBinsFetching && !files?.length ? (
-            <EmptyState />
+            /* TODO Fix this */
+            <EmptyState currentBinId="" currentGroupId="" />
           ) : (
             <MediaGrid
               files={files}

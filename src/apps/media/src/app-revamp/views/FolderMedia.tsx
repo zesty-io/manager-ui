@@ -6,6 +6,7 @@ import { MediaGrid } from "../components/MediaGrid";
 import { useSelector } from "react-redux";
 import { DnDProvider } from "../components/DnDProvider";
 import { Header } from "../components/Header";
+import { UploadModal } from "../components/UploadModal";
 import { Box, CircularProgress } from "@mui/material";
 import { FileModal } from "../components/FileModal";
 import { NotFoundState } from "../components/NotFoundState";
@@ -24,6 +25,16 @@ export const FolderMedia = () => {
     isFetching,
     isError,
   } = mediaManagerApi.useGetGroupDataQuery(id);
+
+  // console.log({ groupData });
+
+  /*
+  if(groupData) {
+    const { data: binData, isFetching: binIsFetching } =
+      mediaManagerApi.useGetBinQuery(groupData.bin_id)
+      console.log({binData})
+  }
+  */
 
   return (
     <Box
@@ -50,18 +61,27 @@ export const FolderMedia = () => {
               <CircularProgress />
             </Box>
           ) : (
-            <DnDProvider>
-              {!isFetching && !groupData.files?.length ? (
-                <EmptyState />
-              ) : (
-                <MediaGrid
-                  files={groupData?.files}
-                  groups={groupData?.groups}
-                  heightOffset={headerHeight + 64}
-                  widthOffset={sidebarWidth + 220}
-                />
-              )}
-            </DnDProvider>
+            <>
+              <UploadModal />
+              <DnDProvider
+                currentBinId={groupData.bin_id}
+                currentGroupId={groupData.id}
+              >
+                {!isFetching && !groupData.files?.length ? (
+                  <EmptyState
+                    currentBinId={groupData.bin_id}
+                    currentGroupId={groupData.id}
+                  />
+                ) : (
+                  <MediaGrid
+                    files={groupData?.files}
+                    groups={groupData?.groups}
+                    heightOffset={headerHeight + 64}
+                    widthOffset={sidebarWidth + 220}
+                  />
+                )}
+              </DnDProvider>
+            </>
           )}
         </>
       )}

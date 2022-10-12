@@ -306,9 +306,12 @@ export const Folders = () => {
             onNodeToggle={(event, nodeIds) => {
               // @ts-ignore
               if (
+                // @ts-ignore
                 event.target.tagName === "svg" ||
+                // @ts-ignore
                 event.target.parentElement.getAttribute("data-testid") ===
                   "ArrowDropDownRoundedIcon" ||
+                // @ts-ignore
                 event.target.parentElement.getAttribute("data-testid") ===
                   "ArrowRightIcon"
               )
@@ -345,9 +348,13 @@ export const Folders = () => {
                 onNodeToggle={(event, nodeIds) => {
                   // @ts-ignore
                   if (
+                    // @ts-ignore
                     event.target.tagName === "svg" ||
+                    // @ts-ignore
                     event.target.parentElement.getAttribute("data-testid") ===
+                      // @ts-ignore
                       "ArrowDropDownRoundedIcon" ||
+                    // @ts-ignore
                     event.target.parentElement.getAttribute("data-testid") ===
                       "ArrowRightIcon"
                   )

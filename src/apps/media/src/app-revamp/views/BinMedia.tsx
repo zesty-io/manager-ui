@@ -6,6 +6,7 @@ import { MediaGrid } from "../components/MediaGrid";
 import { useSelector } from "react-redux";
 import { DnDProvider } from "../components/DnDProvider";
 import { Header } from "../components/Header";
+import { UploadModal } from "../components/UploadModal";
 import { Box, CircularProgress } from "@mui/material";
 import { FileModal } from "../components/FileModal";
 import { NotFoundState } from "../components/NotFoundState";
@@ -54,18 +55,23 @@ export const BinMedia = () => {
               <CircularProgress />
             </Box>
           ) : (
-            <DnDProvider>
-              {!isFilesFetching && !binFiles?.length ? (
-                <EmptyState />
-              ) : (
-                <MediaGrid
-                  files={binFiles}
-                  groups={binGroups}
-                  heightOffset={headerHeight + 64}
-                  widthOffset={sidebarWidth + 220}
-                />
-              )}
-            </DnDProvider>
+            <>
+              <UploadModal />
+              /* TODO FIX THIS */
+              <DnDProvider currentBinId={id} currentGroupId="">
+                {!isFilesFetching && !binFiles?.length ? (
+                  /*TODO fix this*/
+                  <EmptyState currentBinId={id} currentGroupId="" />
+                ) : (
+                  <MediaGrid
+                    files={binFiles}
+                    groups={binGroups}
+                    heightOffset={headerHeight + 64}
+                    widthOffset={sidebarWidth + 220}
+                  />
+                )}
+              </DnDProvider>
+            </>
           )}
           <FileModal files={binFiles} />
         </>
