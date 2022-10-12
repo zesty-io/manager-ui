@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -70,9 +70,7 @@ export default function FieldSettings(props) {
             className={styles.Setting}
             name="label"
             label="Field Label"
-            {...(props.new
-              ? { value: props.field.label }
-              : { defaultValue: props.field.label })}
+            value={props.field.label}
             maxLength="200"
             onChange={(evt) => {
               const val = evt.target.value;
@@ -92,9 +90,7 @@ export default function FieldSettings(props) {
             name="name"
             label="Field Name (Parsley Code Reference)"
             helperText="Can not contain spaces, uppercase or special characters."
-            {...(props.new
-              ? { value: props.field.name }
-              : { defaultValue: props.field.name })}
+            value={props.field.name}
             maxLength="50"
             onChange={(evt) => {
               props.updateValue(formatName(evt.target.value), "name");
@@ -161,7 +157,7 @@ export default function FieldSettings(props) {
             className={styles.Setting}
             name="description"
             label="Description displayed to content editors"
-            defaultValue={props.field.description || ""}
+            value={props.field.description || ""}
             maxLength="250"
             onChange={(evt) =>
               props.updateValue(evt.target.value, "description")

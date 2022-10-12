@@ -1,9 +1,17 @@
-import { Children, cloneElement, useState, useEffect } from "react";
+import {
+  Children,
+  cloneElement,
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import cx from "classnames";
 
 import styles from "./Dropzone.less";
 export function Dropzone(props) {
   const [sourceIndex, setSourceIndex] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   /**
    * !Both onDragEnter and onDragOver MUST to have their
@@ -33,9 +41,14 @@ export function Dropzone(props) {
     return arr;
   };
 
+  const onDragStart = (evt) => {
+    setIsDragging(true);
+  };
+
   // NOTE: this function seems uneccessary
   const onDragEnd = (evt) => {
     // Reset
+    setIsDragging(false);
     setSourceIndex(null);
     setChildren(Children.toArray(props.children));
   };
@@ -64,6 +77,22 @@ export function Dropzone(props) {
     }
   };
 
+  /* 
+    Memoizing children to not clone children on every render. This was causing
+    issues when using controlled components like <input> where they would be
+    cloned with previous props and then re-cloned with correct props causing loss of DOM state (cursor position).
+  */
+  const memoizedChildren = useMemo(() => {
+    const childrenNodes = Children.toArray(props.children);
+    return childrenNodes.map((child, index) => {
+      return cloneElement(child, {
+        index,
+        onOver,
+        drag: setSourceIndex,
+      });
+    });
+  }, [children, onOver, setSourceIndex, isDragging]);
+
   return (
     <div
       className={cx("Dropzone", styles.Dropzone)}
@@ -71,14 +100,17 @@ export function Dropzone(props) {
       onDragEnter={onDragEnter}
       onDragOver={onDragOver}
       onDrop={onDrop}
+      onDragStart={onDragStart}
     >
-      {children.map((child, index) => {
-        return cloneElement(child, {
-          index,
-          onOver,
-          drag: setSourceIndex,
-        });
-      })}
+      {isDragging
+        ? children.map((child, index) => {
+            return cloneElement(child, {
+              index,
+              onOver,
+              drag: setSourceIndex,
+            });
+          })
+        : memoizedChildren}
     </div>
   );
 }

@@ -50,7 +50,13 @@ export default function Settings(props) {
 
           <FieldTypeText
             name="name"
-            label="Parsley reference name (no spaces)"
+            label={
+              <>
+                Parsley reference name
+                <br />
+                (no spaces)
+              </>
+            }
             value={props.model.name}
             onChange={(evt) => update(evt.target.value, "name")}
           />
