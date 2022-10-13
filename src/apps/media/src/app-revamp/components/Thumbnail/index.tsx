@@ -219,25 +219,24 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
                 },
               }}
-            >
-              <RemoveIcon />
-              {isSelectDialog && <Checkbox />}
-              <CardMedia
-                component="img"
-                ref={imageEl}
-                onLoad={handleImageLoad}
-                data-src={src}
-                image={src}
-                loading="lazy"
-                sx={{
-                  objectFit: "contain",
-                  overflow: "hidden",
-                  height: "100%",
-                  display: "table-cell",
-                  verticalAlign: "bottom",
-                }}
-              />
-            </Box>
+            ></Box>
+            <RemoveIcon />
+            {isSelectDialog && <Checkbox />}
+            <CardMedia
+              component="img"
+              ref={imageEl}
+              onLoad={handleImageLoad}
+              data-src={src}
+              image={src}
+              loading="lazy"
+              sx={{
+                objectFit: "contain",
+                overflow: "hidden",
+                height: "100%",
+                display: "table-cell",
+                verticalAlign: "bottom",
+              }}
+            />
           </Box>
           <ThumbnailContent
             extension={fileExtension(filename)}
