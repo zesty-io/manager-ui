@@ -8,7 +8,6 @@ import { DnDProvider } from "../components/DnDProvider";
 import { Header } from "../components/Header";
 import { UploadModal } from "../components/UploadModal";
 import { Box, CircularProgress } from "@mui/material";
-import { FileModal } from "../components/FileModal";
 import { NotFoundState } from "../components/NotFoundState";
 
 type Params = { id: string };
@@ -31,13 +30,10 @@ export const FolderMedia = () => {
     isError,
   } = mediaManagerApi.useGetGroupDataQuery(id);
 
-  // console.log({ groupData });
-
   /*
   if(groupData) {
     const { data: binData, isFetching: binIsFetching } =
       mediaManagerApi.useGetBinQuery(groupData.bin_id)
-      console.log({binData})
   }
   */
 
@@ -90,12 +86,6 @@ export const FolderMedia = () => {
           )}
         </>
       )}
-      <FileModal
-        files={groupData?.files}
-        setIsInvalidFileId={setIsInvalidFileId}
-        onSetNotFoundTitle={setNotFoundTitle}
-        onSetNotFoundMessage={setNotFoundMessage}
-      />
     </Box>
   );
 };

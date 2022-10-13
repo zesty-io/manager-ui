@@ -8,10 +8,13 @@ import {
   setIsSelectDialog,
   clearSelectedFiles,
 } from "../../../../shell/store/media-revamp";
-import { Sidebar } from "./components/Sidebar";
+
 import { AllMedia } from "./views/AllMedia";
 import { Media } from "./views/Media";
 import { SearchMedia } from "./views/SearchMedia";
+
+import { Sidebar } from "./components/Sidebar";
+import { FileModal } from "./components/FileModal";
 
 interface Props {
   limitSelected?: number;
@@ -65,13 +68,28 @@ export const MediaApp = ({
           isSelectDialog={isSelectDialog}
           lockedToGroupId={lockedToGroupId}
         />
+
+        {/* If a fileId is present render preview modal */}
+        <Route
+          path="/media"
+          render={({ location }) => {
+            const fileId = new URLSearchParams(location.search).get("fileId");
+
+            if (fileId) {
+              return <FileModal fileId={fileId} />;
+            } else {
+              return null;
+            }
+          }}
+        />
+
         <Switch>
           <Route exact path="/media" component={AllMedia} />
           <Route
             path="/media/search"
             render={() => <SearchMedia lockedToGroupId={lockedToGroupId} />}
           />
-          <Route exact path="/media/:id" component={Media} />
+          <Route path="/media/:id" component={Media} />
           <Redirect to="/media" />
         </Switch>
       </Box>

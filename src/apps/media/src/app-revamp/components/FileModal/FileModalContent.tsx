@@ -46,7 +46,7 @@ interface Props {
     email?: string;
     role?: string;
   };
-  createdAt?: string;
+  createdAt?: Date;
   handleCloseModal: () => void;
 }
 
@@ -101,7 +101,7 @@ export const FileModalContent: FC<Props> = ({
         }, 1500);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   };
 
@@ -132,7 +132,7 @@ export const FileModalContent: FC<Props> = ({
       },
     });
     handleCloseModal();
-    history.replace(location.path);
+    // history.replace(location.path);
   };
 
   return (

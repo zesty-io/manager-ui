@@ -137,6 +137,17 @@ export const mediaManagerApi = createApi({
         "EcoBins",
       ],
     }),
+    getFile: builder.query<File, string>({
+      query: (id) => `/file/${id}`,
+      transformResponse: (res) => getResponseData(res)[0], // HACK this is probably not the best way to do this.
+
+      // NOTE: skipping until I learn rtk-query invalidation
+      // invalidatesTags: (result, error, arg) => [
+      //   { type: "GroupData", id: arg.body?.group_id },
+      //   "BinFiles",
+      //   { type: "GroupData", id: arg?.previousGroupId },
+      // ],
+    }),
     updateFile: builder.mutation<
       File,
       {
@@ -246,6 +257,7 @@ export const mediaManagerApi = createApi({
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
 export const {
+  useGetFileQuery,
   useGetBinQuery,
   useGetSiteBinsQuery,
   useGetEcoBinsQuery,
