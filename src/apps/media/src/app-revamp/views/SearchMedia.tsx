@@ -13,7 +13,11 @@ import { useParams } from "../../../../../shell/hooks/useParams";
 import { FileModal } from "../components/FileModal";
 import { SearchEmptyState } from "../components/SearchEmptyState";
 
-export const SearchMedia = () => {
+interface Props {
+  lockedToGroupId?: string;
+}
+
+export const SearchMedia = ({ lockedToGroupId }: Props) => {
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const headerHeight = useSelector((state: any) => state.ui.headerHeight);
@@ -24,6 +28,11 @@ export const SearchMedia = () => {
   const { data: ecoBins } = useGetEcoBinsQuery(ecoId, {
     skip: !ecoId,
   });
+  const [isInvalidFileId, setIsInvalidFileId] = useState<boolean>(false);
+
+  // not found state
+  const [notFoundTitle, setNotFoundTitle] = useState<string>("");
+  const [notFoundMessage, setNotFoundMessage] = useState<string>("");
 
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
@@ -54,13 +63,24 @@ export const SearchMedia = () => {
       return binGroups
         .flat()
         .filter((group) =>
-          group.name.toLowerCase().includes(term.toLowerCase())
+          !lockedToGroupId
+            ? group.name.toLowerCase().includes(term.toLowerCase())
+            : group.name.toLowerCase().includes(term.toLowerCase()) &&
+              group.group_id === lockedToGroupId
         )
         .sort((a, b) => a.name.localeCompare(b.name));
     } else {
       return [];
     }
   }, [binGroups, params]);
+
+  const filteredFiles = useMemo(() => {
+    if (files && lockedToGroupId) {
+      return files.filter((file) => file.group_id === lockedToGroupId);
+    } else {
+      return files;
+    }
+  }, [files, params]);
 
   return (
     <Box
@@ -79,11 +99,11 @@ export const SearchMedia = () => {
         >
           <CircularProgress />
         </Box>
-      ) : filteredGroups?.length || files?.length ? (
+      ) : filteredGroups?.length || filteredFiles?.length ? (
         <>
           <Header title={`Search Results for "${term}"`} hideUpload />
           <MediaGrid
-            files={files}
+            files={filteredFiles}
             groups={filteredGroups}
             heightOffset={headerHeight + 64}
             widthOffset={sidebarWidth + 220}
@@ -92,7 +112,12 @@ export const SearchMedia = () => {
       ) : (
         <SearchEmptyState searchTerm={term} />
       )}
-      <FileModal files={files} />
+      <FileModal
+        files={files}
+        setIsInvalidFileId={setIsInvalidFileId}
+        onSetNotFoundTitle={setNotFoundTitle}
+        onSetNotFoundMessage={setNotFoundMessage}
+      />
     </Box>
   );
 };

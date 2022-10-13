@@ -1,5 +1,5 @@
 import { createSlice, current, Dispatch } from "@reduxjs/toolkit";
-import { File as FileBase, Bin, Group } from "../services/types";
+import { File as FileBase, Bin } from "../services/types";
 import { AppState } from "./types";
 import { notify } from "../../shell/store/notifications";
 import { v4 as uuidv4 } from "uuid";
@@ -26,11 +26,17 @@ export type State = {
   inProgressUploads: StoreFile[];
   stagedUploads: UploadFile[];
   failedUploads: StoreFile[];
+  lockedToGroupId: string;
+  isSelectDialog: boolean;
+  selectedFiles: FileBase[];
 };
 const initialState: State = {
   inProgressUploads: [],
   stagedUploads: [],
   failedUploads: [],
+  lockedToGroupId: "",
+  isSelectDialog: false,
+  selectedFiles: [],
 };
 
 const mediaSlice = createSlice({
@@ -108,6 +114,26 @@ const mediaSlice = createSlice({
         state.stagedUploads.splice(fileIndex, 1);
       }
     },
+    setLockedToGroupId(state, action: { payload: string }) {
+      state.lockedToGroupId = action.payload;
+    },
+    setIsSelectDialog(state, action: { payload: boolean }) {
+      state.isSelectDialog = action.payload;
+    },
+    selectFile(state, action: { payload: FileBase }) {
+      state.selectedFiles.push(action.payload);
+    },
+    deselectFile(state, action: { payload: FileBase }) {
+      const index = state.selectedFiles.findIndex(
+        (file) => file.id === action.payload.id
+      );
+      if (index !== -1) {
+        state.selectedFiles.splice(index, 1);
+      }
+    },
+    clearSelectedFiles(state) {
+      state.selectedFiles = [];
+    },
   },
 });
 
@@ -122,6 +148,11 @@ export const {
   fileUploadSetPreview,
   fileUploadSuccess,
   fileUploadError,
+  setLockedToGroupId,
+  setIsSelectDialog,
+  selectFile,
+  deselectFile,
+  clearSelectedFiles,
 } = mediaSlice.actions;
 
 /*

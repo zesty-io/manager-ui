@@ -3,7 +3,12 @@ import { Folders } from "./Folders";
 import { Menu } from "./Menu";
 import { SearchBox } from "./Searchbox";
 
-export const Sidebar = () => {
+interface Props {
+  lockedToGroupId?: string;
+  isSelectDialog?: boolean;
+}
+
+export const Sidebar = ({ lockedToGroupId, isSelectDialog }: Props) => {
   return (
     <Box
       sx={{
@@ -24,12 +29,14 @@ export const Sidebar = () => {
           pb: 1,
         }}
       >
-        <Typography variant="h4">Media</Typography>
+        <Typography variant="h4">
+          {isSelectDialog && "Insert from"} Media
+        </Typography>
         <SearchBox />
       </Box>
-      <Menu />
+      {lockedToGroupId ? null : <Menu />}
       <Divider />
-      <Folders />
+      <Folders lockedToGroupId={lockedToGroupId} />
     </Box>
   );
 };

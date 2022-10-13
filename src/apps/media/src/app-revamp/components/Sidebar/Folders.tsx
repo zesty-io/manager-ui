@@ -10,8 +10,8 @@ import {
 } from "@mui/material";
 import { TreeView, TreeItem } from "@mui/lab";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
-import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-//import { FolderGlobal } from "@zesty-io/material";
+import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
+import { FolderGlobal } from "@zesty-io/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -51,11 +51,16 @@ const nest = (items: any, id: string, link: string, sort: string) =>
       children: nest(items, item.id, link, sort),
     }));
 
-export const Folders = () => {
+interface Props {
+  lockedToGroupId?: string;
+}
+
+export const Folders = ({ lockedToGroupId }: Props) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const history = useHistory();
   const location = useLocation();
+  const id = location.pathname.split("/")[2];
   const hiddenGroups =
     JSON.parse(localStorage.getItem("zesty:navMedia:hidden")) || [];
   const [value, setValue] = useState(0);
@@ -103,25 +108,40 @@ export const Folders = () => {
   /* Creating a tree structure from the data. */
   const trees = useMemo(() => {
     if (binGroups) {
-      return binGroups
-        .map((binGroup, idx) => {
-          if (!binGroup.length) {
-            return { ...combinedBins[idx], children: [] };
-          } else if (combinedBins[idx].eco_id || binGroups.length > 1) {
-            return {
-              ...combinedBins[idx],
-              children: nest(binGroup, binGroup[0].bin_id, "group_id", sort),
-            };
-          } else {
-            return nest(binGroup, binGroup[0].bin_id, "group_id", sort);
-          }
-        })
-        .flat()
-        .sort((a, b) =>
-          sort === "asc"
-            ? a.name.localeCompare(b.name)
-            : b.name.localeCompare(a.name)
-        );
+      if (lockedToGroupId) {
+        let rootGroup = [];
+        let rootNode = {};
+        rootGroup = binGroups?.filter((groups) =>
+          groups?.some((group) => group.id === lockedToGroupId)
+        )?.[0];
+        rootNode = rootGroup?.find((group) => group.id === lockedToGroupId);
+        return [
+          {
+            ...rootNode,
+            children: nest(rootGroup, lockedToGroupId, "group_id", sort),
+          },
+        ];
+      } else {
+        return binGroups
+          .map((binGroup, idx) => {
+            if (!binGroup.length) {
+              return { ...combinedBins[idx], children: [] };
+            } else if (combinedBins[idx].eco_id || binGroups.length > 1) {
+              return {
+                ...combinedBins[idx],
+                children: nest(binGroup, binGroup[0].bin_id, "group_id", sort),
+              };
+            } else {
+              return nest(binGroup, binGroup[0].bin_id, "group_id", sort);
+            }
+          })
+          .flat()
+          .sort((a, b) =>
+            sort === "asc"
+              ? a.name.localeCompare(b.name)
+              : b.name.localeCompare(a.name)
+          );
+      }
     } else {
       return [];
     }
@@ -151,7 +171,6 @@ export const Folders = () => {
 
   /* Creating a path to the selected folder. */
   const selectedPath = useMemo(() => {
-    const id = location.pathname.split("/")[2];
     const path = [];
     let done = false;
 
@@ -171,15 +190,16 @@ export const Folders = () => {
     }
 
     return [];
-  }, [trees]);
+  }, [trees, id]);
 
   useEffect(() => {
-    setExpanded([...expanded, ...selectedPath]);
-    setHiddenExpanded([...hiddenExpanded, ...selectedPath]);
+    setExpanded([...new Set([...expanded, ...selectedPath])]);
+    setHiddenExpanded([...new Set([...hiddenExpanded, ...selectedPath])]);
   }, [selectedPath]);
 
   const renderTree = (nodes: any, isHiddenTree = false) => {
-    if (!isHiddenTree && hiddenGroups.includes(nodes.id)) return null;
+    if (!isHiddenTree && hiddenGroups.includes(nodes.id) && !lockedToGroupId)
+      return null;
     return (
       <TreeItem
         key={nodes.id}
@@ -199,31 +219,12 @@ export const Folders = () => {
             });
           }
         }}
-        // TODO: Move all styling to theme
-        sx={{
-          " .MuiTreeItem-content": {
-            width: "unset",
-          },
-          ".Mui-selected": {
-            " .MuiTreeItem-label .MuiSvgIcon-root": {
-              color: "primary.main",
-            },
-            ".MuiTypography-root": {
-              color: "primary.dark",
-            },
-          },
-        }}
         label={
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box
-              component={
-                FolderIcon /*nodes.eco_id ? FolderGlobal : FolderIcon*/
-              }
+              component={nodes.eco_id ? FolderGlobal : FolderIcon}
               sx={{
                 mr: 1,
-                ".Mui-selected": {
-                  color: "primary.main",
-                },
               }}
               color="action.active"
             />
@@ -234,9 +235,6 @@ export const Folders = () => {
               fontWeight={500}
               sx={{
                 wordBreak: "break-all",
-                ".Mui-selected": {
-                  color: "primary.dark",
-                },
               }}
             >
               {nodes.name}
@@ -295,15 +293,21 @@ export const Folders = () => {
       {!isLoading ? (
         <>
           <TreeView
-            onNodeSelect={(
-              event: SyntheticEvent<Element, Event>,
-              nodeIds: string[]
-            ) => history.push(`/media/${nodeIds}`)}
+            onNodeSelect={(event: any, nodeIds: string[]) => {
+              if (
+                event.target.tagName !== "svg" &&
+                event.target.parentElement.getAttribute("data-testid") !==
+                  "ArrowDropDownRoundedIcon" &&
+                event.target.parentElement.getAttribute("data-testid") !==
+                  "ArrowRightRoundedIcon"
+              )
+                history.push(`/media/${nodeIds}`);
+            }}
             defaultCollapseIcon={
               <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />
             }
             defaultExpandIcon={
-              <ArrowRightIcon sx={{ color: "action.active" }} />
+              <ArrowRightRoundedIcon sx={{ color: "action.active" }} />
             }
             onNodeToggle={(event, nodeIds) => {
               // @ts-ignore
@@ -315,7 +319,7 @@ export const Folders = () => {
                   "ArrowDropDownRoundedIcon" ||
                 // @ts-ignore
                 event.target.parentElement.getAttribute("data-testid") ===
-                  "ArrowRightIcon"
+                  "ArrowRightRoundedIcon"
               )
                 setExpanded(nodeIds);
             }}
@@ -325,51 +329,54 @@ export const Folders = () => {
           >
             {trees.map((tree: any) => renderTree(tree))}
           </TreeView>
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Box display="flex" alignItems="center" gap={1}>
-                <VisibilityIcon sx={{ color: "action.active" }} />
-                {/** @ts-expect-error body3 variant needs to be typed */}
-                <Typography color="text.secondary" variant="body3">
-                  Hidden Folders
-                </Typography>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
-              <TreeView
-                onNodeSelect={(
-                  event: SyntheticEvent<Element, Event>,
-                  nodeIds: string[]
-                ) => history.push(`/media/${nodeIds}`)}
-                defaultCollapseIcon={
-                  <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />
-                }
-                defaultExpandIcon={
-                  <ArrowRightIcon sx={{ color: "action.active" }} />
-                }
-                onNodeToggle={(event, nodeIds) => {
-                  // @ts-ignore
-                  if (
-                    // @ts-ignore
-                    event.target.tagName === "svg" ||
-                    // @ts-ignore
-                    event.target.parentElement.getAttribute("data-testid") ===
-                      // @ts-ignore
-                      "ArrowDropDownRoundedIcon" ||
-                    // @ts-ignore
-                    event.target.parentElement.getAttribute("data-testid") ===
-                      "ArrowRightIcon"
-                  )
-                    setHiddenExpanded(nodeIds);
-                }}
-                expanded={hiddenExpanded}
-                sx={{ height: "100%", width: "100%", overflowY: "auto" }}
-                selected={[location.pathname.split("/")[2]]}
-              >
-                {hiddenTrees.map((tree: any) => renderTree(tree, true))}
-              </TreeView>
-            </AccordionDetails>
-          </Accordion>
+          {lockedToGroupId ? null : (
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <VisibilityIcon sx={{ color: "action.active" }} />
+                  {/** @ts-expect-error body3 variant needs to be typed */}
+                  <Typography color="text.secondary" variant="body3">
+                    Hidden Folders
+                  </Typography>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <TreeView
+                  onNodeSelect={(event: any, nodeIds: string[]) => {
+                    if (
+                      event.target.tagName !== "svg" &&
+                      event.target.parentElement.getAttribute("data-testid") !==
+                        "ArrowDropDownRoundedIcon" &&
+                      event.target.parentElement.getAttribute("data-testid") !==
+                        "ArrowRightRoundedIcon"
+                    )
+                      history.push(`/media/${nodeIds}`);
+                  }}
+                  defaultCollapseIcon={
+                    <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />
+                  }
+                  defaultExpandIcon={
+                    <ArrowRightRoundedIcon sx={{ color: "action.active" }} />
+                  }
+                  onNodeToggle={(event: any, nodeIds) => {
+                    if (
+                      event.target.tagName === "svg" ||
+                      event.target.parentElement.getAttribute("data-testid") ===
+                        "ArrowDropDownRoundedIcon" ||
+                      event.target.parentElement.getAttribute("data-testid") ===
+                        "ArrowRightRoundedIcon"
+                    )
+                      setHiddenExpanded(nodeIds);
+                  }}
+                  expanded={hiddenExpanded}
+                  sx={{ height: "100%", width: "100%", overflowY: "auto" }}
+                  selected={[location.pathname.split("/")[2]]}
+                >
+                  {hiddenTrees.map((tree: any) => renderTree(tree, true))}
+                </TreeView>
+              </AccordionDetails>
+            </Accordion>
+          )}
         </>
       ) : null}
       <NewFolderDialog

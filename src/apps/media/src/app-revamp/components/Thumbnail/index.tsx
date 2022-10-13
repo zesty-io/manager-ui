@@ -1,9 +1,10 @@
 import { FC, useState, useRef, useEffect, DragEvent } from "react";
-import { CardMedia, Card, Box } from "@mui/material";
+import { CardMedia, Card, Box, Checkbox as MuiCheckbox } from "@mui/material";
 import { fileExtension } from "../../utils/fileUtils";
 import { ThumbnailContent } from "./ThumbnailContent";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useTheme } from "@mui/material/styles";
 
 // file icons import
@@ -16,6 +17,13 @@ import csvImg from "../../../../../../../public/images/csvImg.png";
 import zipImg from "../../../../../../../public/images/zipImg.png";
 import numberImg from "../../../../../../../public/images/numberImg.png";
 import defaultImg from "../../../../../../../public/images/defaultImg.png";
+import { File } from "../../../../../../shell/services/types";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deselectFile,
+  selectFile,
+  State,
+} from "../../../../../../shell/store/media-revamp";
 
 interface ThumbnailProps {
   src?: string;
@@ -25,6 +33,7 @@ interface ThumbnailProps {
   id?: string;
   group_id?: string;
   bin_id?: string;
+  file?: File;
   onRemove?: () => void;
   onFilenameChange?: (value: string) => void;
   onClick?: () => void;
@@ -41,11 +50,19 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   id,
   group_id,
   bin_id,
+  file,
 }) => {
   const theme = useTheme();
   const imageEl = useRef<HTMLImageElement>();
   const [imageOrientation, setImageOrientation] = useState<string>("");
   const thumbnailRef = useRef<HTMLDivElement>();
+  const selectedFiles = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
+  );
+  const dispatch = useDispatch();
+  const isSelectDialog = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.isSelectDialog
+  );
 
   const onDragStart = (event: DragEvent) => {
     event.dataTransfer.setData(
@@ -83,6 +100,32 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           </Box>
         )}
       </>
+    );
+  };
+
+  const Checkbox = () => {
+    const checked = selectedFiles.some((file) => file.id === id);
+    return (
+      <MuiCheckbox
+        sx={{
+          display: checked ? "block" : "none",
+          position: "absolute",
+          top: 8,
+          right: 8,
+          padding: 0,
+        }}
+        checked={checked}
+        icon={<CheckCircleIcon sx={{ color: "common.white" }} />}
+        checkedIcon={<CheckCircleIcon color="primary" />}
+        onChange={(evt, checked) => {
+          if (checked) {
+            dispatch(selectFile(file));
+          } else {
+            dispatch(deselectFile(file));
+          }
+        }}
+        onClick={(evt) => evt.stopPropagation()}
+      />
     );
   };
 
@@ -158,6 +201,11 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               position: "relative",
               backgroundSize: `25px 25px`,
               backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
+              "&:hover": {
+                "& .MuiCheckbox-root": {
+                  display: "block",
+                },
+              },
             }}
           >
             <Box
@@ -173,6 +221,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               }}
             ></Box>
             <RemoveIcon />
+            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               ref={imageEl}
@@ -214,6 +263,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             }}
           >
             <RemoveIcon />
+            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={excelImg}
@@ -245,6 +295,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             }}
           >
             <RemoveIcon />
+            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={csvImg}
@@ -278,6 +329,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             }}
           >
             <RemoveIcon />
+            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={wordImg}
@@ -309,6 +361,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             }}
           >
             <RemoveIcon />
+            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={pdfImg}
@@ -342,6 +395,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             }}
           >
             <RemoveIcon />
+            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={pptImg}
@@ -377,6 +431,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             }}
           >
             <RemoveIcon />
+            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={mpImg}
@@ -419,6 +474,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             }}
           >
             <RemoveIcon />
+            {isSelectDialog && <Checkbox />}
             {showVideo && (
               <CardMedia
                 component="video"
@@ -473,6 +529,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             }}
           >
             <RemoveIcon />
+            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={zipImg}
@@ -509,6 +566,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             }}
           >
             <RemoveIcon />
+            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={defaultImg}
@@ -540,6 +598,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             }}
           >
             <RemoveIcon />
+            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={numberImg}
@@ -571,6 +630,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             }}
           >
             <RemoveIcon />
+            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={defaultImg}

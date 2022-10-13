@@ -26,12 +26,16 @@ import { fileExtension } from "../../utils/fileUtils";
 import { RenameFileModal } from "./RenameFileModal";
 import moment from "moment";
 
+import { useLocation } from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
+
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import DriveFolderUploadRoundedIcon from "@mui/icons-material/DriveFolderUploadRounded";
 import FolderRoundedIcon from "@mui/icons-material/FolderRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+import DeleteFileModal from "./DeleteFileModal";
 interface Props {
   id?: string;
   src?: string;
@@ -57,6 +61,8 @@ export const FileModalContent: FC<Props> = ({
   handleCloseModal,
 }) => {
   const theme = useTheme();
+  const location = useRouteMatch();
+  const history = useHistory();
   const newTitle = useRef<any>("");
   const [isFileUrlCopied, setIsFileUrlCopied] = useState<boolean>(false);
   const [newFilename, setNewFilename] = useState<string>(filename);
@@ -70,6 +76,8 @@ export const FileModalContent: FC<Props> = ({
   const [updateFile, { isLoading: updateFileIsLoading }] =
     mediaManagerApi.useUpdateFileMutation();
   const isLoading = updateFileIsLoading;
+  const [showDeleteFileModal, setShowDeleteFileModal] =
+    useState<boolean>(false);
 
   /**
    * @description Set initial values for the fields
@@ -116,8 +124,29 @@ export const FileModalContent: FC<Props> = ({
     debouncedTitle();
   };
 
+  const onDeleteFile = () => {
+    deleteFile({
+      id,
+      body: {
+        group_id: groupId,
+      },
+    });
+    handleCloseModal();
+    history.replace(location.path);
+  };
+
   return (
     <Box>
+      {/* Delete File Modal */}
+      {showDeleteFileModal && (
+        <DeleteFileModal
+          onDeleteFile={onDeleteFile}
+          filename={newFilename}
+          onClose={() => setShowDeleteFileModal(false)}
+        />
+      )}
+
+      {/* Content */}
       <Box
         sx={{
           display: "flex",
@@ -147,17 +176,7 @@ export const FileModalContent: FC<Props> = ({
           )}
         </Box>
         <Box>
-          <IconButton
-            onClick={() => {
-              deleteFile({
-                id,
-                body: {
-                  group_id: groupId,
-                },
-              });
-              handleCloseModal();
-            }}
-          >
+          <IconButton onClick={() => setShowDeleteFileModal(true)}>
             <DeleteIcon />
           </IconButton>
           <IconButton
@@ -194,17 +213,7 @@ export const FileModalContent: FC<Props> = ({
               </ListItemIcon>
               <ListItemText>Copy ZUID</ListItemText>
             </MenuItem>
-            <MenuItem
-              onClick={() => {
-                deleteFile({
-                  id,
-                  body: {
-                    group_id: groupId,
-                  },
-                });
-                handleCloseModal();
-              }}
-            >
+            <MenuItem onClick={() => setShowDeleteFileModal(true)}>
               <ListItemIcon>
                 <DeleteRoundedIcon />
               </ListItemIcon>
