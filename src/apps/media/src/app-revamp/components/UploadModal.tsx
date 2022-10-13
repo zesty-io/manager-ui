@@ -90,8 +90,10 @@ export const UploadModal: FC = () => {
             onClick={() => {
               dispatch(dismissFileUploads());
               dispatch(
+                // TODO only invalidate whats absolutely necessary
                 mediaManagerApi.util.invalidateTags([
                   { type: "GroupData", id: ids.currentGroupId },
+                  { type: "BinFiles", id: ids.currentBinId },
                 ])
               );
             }}
