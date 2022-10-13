@@ -145,6 +145,7 @@ export const MediaGrid = ({
               filename={files[gridItemIndex].filename}
               group_id={files[gridItemIndex].group_id}
               bin_id={files[gridItemIndex].bin_id}
+              file={files[gridItemIndex]}
               onClick={() => {
                 history.replace(
                   `${location.url}?file_id=${files[gridItemIndex].id}`

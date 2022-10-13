@@ -20,6 +20,7 @@ import {
   Stack,
   Chip,
   TextField,
+  Dialog,
 } from "@mui/material";
 
 import InfoIcon from "@mui/icons-material/InfoOutlined";
@@ -33,7 +34,7 @@ import {
 // instead of individually importing
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Modal } from "@zesty-io/core/Modal";
-import MediaApp from "../../../../../../media/src/app/MediaApp";
+import { MediaApp } from "../../../../../../media/src/app-revamp";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
 import { FieldTypeCurrency } from "@zesty-io/core/FieldTypeCurrency";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
@@ -52,6 +53,7 @@ import {
 
 import styles from "./Field.less";
 import MediaStyles from "../../../../../../media/src/app/MediaAppModal.less";
+import { MemoryRouter } from "react-router";
 
 const FieldLabel = memo((props) => {
   return (
@@ -401,22 +403,24 @@ export default function Field({
             }}
           />
           {imageModal && (
-            <Modal
-              open={true}
-              type="global"
-              onClose={() => setImageModal()}
-              className={MediaStyles.MediaAppModal}
-            >
-              <MediaApp
-                {...mediaAppProps}
-                limitSelected={imageModal.limit - images.length}
-                modal={true}
-                addImages={(images) => {
-                  imageModal.callback(images);
-                  setImageModal();
-                }}
-              />
-            </Modal>
+            <MemoryRouter>
+              <Dialog
+                open
+                fullScreen
+                sx={{ my: 3.3, mx: 4 }}
+                onClose={() => setImageModal()}
+              >
+                <MediaApp
+                  limitSelected={imageModal.limit - images.length}
+                  isSelectDialog={true}
+                  lockedToGroupId={settings.group_id}
+                  addImagesCallback={(images) => {
+                    imageModal.callback(images);
+                    setImageModal();
+                  }}
+                />
+              </Dialog>
+            </MemoryRouter>
           )}
         </>
       );

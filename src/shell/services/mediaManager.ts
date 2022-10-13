@@ -5,8 +5,7 @@ import {
 } from "@reduxjs/toolkit/query/react";
 import instanceZUID from "../../utility/instanceZUID";
 import { generateThumbnail, getResponseData, prepareHeaders } from "./util";
-import { resolveResourceType } from "../../utility/resolveResourceType";
-import { Bin, File, Group, GroupData, Publishing } from "./types";
+import { Bin, File, Group, GroupData } from "./types";
 import { QueryReturnValue } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
 
 // Define a service using a base URL and expected endpoints

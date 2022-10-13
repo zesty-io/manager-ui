@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { TreeView, TreeItem } from "@mui/lab";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
-import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
 import { FolderGlobal } from "@zesty-io/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import AddIcon from "@mui/icons-material/Add";
@@ -219,29 +219,12 @@ export const Folders = ({ lockedToGroupId }: Props) => {
             });
           }
         }}
-        // TODO: Move all styling to theme
-        sx={{
-          " .MuiTreeItem-content": {
-            width: "unset",
-          },
-          ".Mui-selected": {
-            " .MuiTreeItem-label .MuiSvgIcon-root": {
-              color: "primary.main",
-            },
-            ".MuiTypography-root": {
-              color: "primary.dark",
-            },
-          },
-        }}
         label={
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box
               component={nodes.eco_id ? FolderGlobal : FolderIcon}
               sx={{
                 mr: 1,
-                ".Mui-selected": {
-                  color: "primary.main",
-                },
               }}
               color="action.active"
             />
@@ -252,9 +235,6 @@ export const Folders = ({ lockedToGroupId }: Props) => {
               fontWeight={500}
               sx={{
                 wordBreak: "break-all",
-                ".Mui-selected": {
-                  color: "primary.dark",
-                },
               }}
             >
               {nodes.name}
@@ -319,7 +299,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                 event.target.parentElement.getAttribute("data-testid") !==
                   "ArrowDropDownRoundedIcon" &&
                 event.target.parentElement.getAttribute("data-testid") !==
-                  "ArrowRightIcon"
+                  "ArrowRightRoundedIcon"
               )
                 history.push(`/media/${nodeIds}`);
             }}
@@ -327,7 +307,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
               <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />
             }
             defaultExpandIcon={
-              <ArrowRightIcon sx={{ color: "action.active" }} />
+              <ArrowRightRoundedIcon sx={{ color: "action.active" }} />
             }
             onNodeToggle={(event, nodeIds) => {
               // @ts-ignore
@@ -339,7 +319,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                   "ArrowDropDownRoundedIcon" ||
                 // @ts-ignore
                 event.target.parentElement.getAttribute("data-testid") ===
-                  "ArrowRightIcon"
+                  "ArrowRightRoundedIcon"
               )
                 setExpanded(nodeIds);
             }}
@@ -368,7 +348,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                       event.target.parentElement.getAttribute("data-testid") !==
                         "ArrowDropDownRoundedIcon" &&
                       event.target.parentElement.getAttribute("data-testid") !==
-                        "ArrowRightIcon"
+                        "ArrowRightRoundedIcon"
                     )
                       history.push(`/media/${nodeIds}`);
                   }}
@@ -376,7 +356,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                     <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />
                   }
                   defaultExpandIcon={
-                    <ArrowRightIcon sx={{ color: "action.active" }} />
+                    <ArrowRightRoundedIcon sx={{ color: "action.active" }} />
                   }
                   onNodeToggle={(event: any, nodeIds) => {
                     if (
@@ -384,7 +364,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                       event.target.parentElement.getAttribute("data-testid") ===
                         "ArrowDropDownRoundedIcon" ||
                       event.target.parentElement.getAttribute("data-testid") ===
-                        "ArrowRightIcon"
+                        "ArrowRightRoundedIcon"
                     )
                       setHiddenExpanded(nodeIds);
                   }}
