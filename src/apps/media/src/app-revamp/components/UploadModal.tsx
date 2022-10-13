@@ -16,6 +16,7 @@ import {
 import { Typography } from "@mui/material";
 import { DnDProvider } from "./DnDProvider";
 import { UploadButton } from "./UploadButton";
+import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 
 export const UploadModal: FC = () => {
   const dispatch = useDispatch();
@@ -88,6 +89,11 @@ export const UploadModal: FC = () => {
             disabled={filesToUpload.some((file) => file.progress !== 100)}
             onClick={() => {
               dispatch(dismissFileUploads());
+              dispatch(
+                mediaManagerApi.util.invalidateTags([
+                  { type: "GroupData", id: ids.currentGroupId },
+                ])
+              );
             }}
           >
             Done
