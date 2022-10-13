@@ -43,7 +43,7 @@ const mediaSlice = createSlice({
           uploadID: uuidv4(),
           url: URL.createObjectURL(file.file),
           filename: file.file.name,
-          file: file.file,
+          ...file,
         };
       });
       state.initiatedUploads = [...state.initiatedUploads, ...newObjects];

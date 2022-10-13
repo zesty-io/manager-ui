@@ -59,7 +59,7 @@ export const UploadModal: FC = () => {
             gap: 3,
           }}
         >
-          <UploadErrors></UploadErrors>
+          <UploadErrors />
           <DnDProvider {...ids} sx={{ flexWrap: "wrap" }}>
             {filesToUpload.map((file, idx) => {
               return (
