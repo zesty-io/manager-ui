@@ -10,7 +10,6 @@ import {
 import { MediaGrid } from "../components/MediaGrid";
 import { Header } from "../components/Header";
 import { useParams } from "../../../../../shell/hooks/useParams";
-import { FileModal } from "../components/FileModal";
 import { SearchEmptyState } from "../components/SearchEmptyState";
 
 interface Props {
@@ -23,7 +22,7 @@ export const SearchMedia = ({ lockedToGroupId }: Props) => {
   const headerHeight = useSelector((state: any) => state.ui.headerHeight);
   const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
   const [params] = useParams();
-  const term = (params as URLSearchParams).get("term");
+  const term = (params as URLSearchParams).get("term") || "";
   const { data: bins } = useGetSiteBinsQuery(instanceId);
   const { data: ecoBins } = useGetEcoBinsQuery(ecoId, {
     skip: !ecoId,
@@ -112,12 +111,6 @@ export const SearchMedia = ({ lockedToGroupId }: Props) => {
       ) : (
         <SearchEmptyState searchTerm={term} />
       )}
-      <FileModal
-        files={files}
-        setIsInvalidFileId={setIsInvalidFileId}
-        onSetNotFoundTitle={setNotFoundTitle}
-        onSetNotFoundMessage={setNotFoundMessage}
-      />
     </Box>
   );
 };

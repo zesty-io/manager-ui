@@ -31,13 +31,10 @@ export const FolderMedia = () => {
     isError,
   } = mediaManagerApi.useGetGroupDataQuery(id);
 
-  // console.log({ groupData });
-
   /*
   if(groupData) {
     const { data: binData, isFetching: binIsFetching } =
       mediaManagerApi.useGetBinQuery(groupData.bin_id)
-      console.log({binData})
   }
   */
 
@@ -90,12 +87,12 @@ export const FolderMedia = () => {
           )}
         </>
       )}
-      <FileModal
+      {/* <FileModal
         files={groupData?.files}
         setIsInvalidFileId={setIsInvalidFileId}
         onSetNotFoundTitle={setNotFoundTitle}
         onSetNotFoundMessage={setNotFoundMessage}
-      />
+      /> */}
     </Box>
   );
 };

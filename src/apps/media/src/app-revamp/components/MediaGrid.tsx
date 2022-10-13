@@ -148,7 +148,7 @@ export const MediaGrid = ({
               file={files[gridItemIndex]}
               onClick={() => {
                 history.replace(
-                  `${location.url}?file_id=${files[gridItemIndex].id}`
+                  `${location.url}?fileId=${files[gridItemIndex].id}`
                 );
               }}
             />

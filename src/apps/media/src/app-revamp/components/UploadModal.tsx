@@ -25,7 +25,6 @@ export const UploadModal: FC = () => {
   const failedUploads: StoreFile[] = useSelector(
     (state: any) => state.mediaRevamp.failedUploads
   );
-  console.log(filesToUpload);
   const ids = filesToUpload.length && {
     currentBinId: filesToUpload[0].bin_id,
     currentGroupId: filesToUpload[0].group_id,
@@ -101,7 +100,6 @@ const UploadErrors = () => {
   const failedUploads: StoreFile[] = useSelector(
     (state: any) => state.mediaRevamp.failedUploads
   );
-  console.log({ failedUploads });
   if (failedUploads.length === 0) return null;
   return (
     <Box sx={{ backgroundColor: "error" }}>

@@ -8,7 +8,6 @@ import { DnDProvider } from "../components/DnDProvider";
 import { Header } from "../components/Header";
 import { UploadModal } from "../components/UploadModal";
 import { Box, CircularProgress } from "@mui/material";
-import { FileModal } from "../components/FileModal";
 import { NotFoundState } from "../components/NotFoundState";
 
 type Params = { id: string };
@@ -78,12 +77,6 @@ export const BinMedia = () => {
               </DnDProvider>
             </>
           )}
-          <FileModal
-            files={binFiles}
-            setIsInvalidFileId={setIsInvalidFileId}
-            onSetNotFoundTitle={setNotFoundTitle}
-            onSetNotFoundMessage={setNotFoundMessage}
-          />
         </>
       )}
     </Box>

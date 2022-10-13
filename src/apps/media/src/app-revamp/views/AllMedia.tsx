@@ -10,7 +10,6 @@ import { DnDProvider } from "../components/DnDProvider";
 import { EmptyState } from "../components/EmptyState";
 import { MediaGrid } from "../components/MediaGrid";
 import { Header } from "../components/Header";
-import { FileModal } from "../components/FileModal";
 import { NotFoundState } from "../components/NotFoundState";
 
 export const AllMedia = () => {
@@ -71,12 +70,6 @@ export const AllMedia = () => {
               )}
             </DnDProvider>
           )}
-          <FileModal
-            files={files}
-            setIsInvalidFileId={setIsInvalidFileId}
-            onSetNotFoundTitle={setNotFoundTitle}
-            onSetNotFoundMessage={setNotFoundMessage}
-          />
         </>
       )}
     </Box>
