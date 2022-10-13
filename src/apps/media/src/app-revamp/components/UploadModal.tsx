@@ -20,7 +20,7 @@ import { UploadButton } from "./UploadButton";
 export const UploadModal: FC = () => {
   const dispatch = useDispatch();
   const filesToUpload: UploadFile[] = useSelector(
-    (state: AppState) => state.mediaRevamp.initiatedUploads
+    (state: AppState) => state.mediaRevamp.stagedUploads
   );
 
   const failedUploads: StoreFile[] = useSelector(

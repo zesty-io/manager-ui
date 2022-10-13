@@ -3,7 +3,7 @@ import { useDropzone } from "react-dropzone";
 import { useCallback } from "react";
 import {
   uploadFile,
-  fileUploadInitiate,
+  fileUploadStage,
 } from "../../../../../shell/store/media-revamp";
 import { useDispatch } from "react-redux";
 import Box from "@mui/material/Box";
@@ -46,7 +46,7 @@ export const DnDProvider = ({
       // console.log({ acceptedFiles });
 
       dispatch(
-        fileUploadInitiate(
+        fileUploadStage(
           acceptedFiles.map((file) => {
             return {
               file,

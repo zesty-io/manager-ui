@@ -20,16 +20,16 @@ type FileUploadStart = StoreFile & { file: File };
 type FileUploadSuccess = StoreFile & FileBase;
 type FileUploadProgress = { uploadID: string; progress: number };
 type FileUploadSetPreview = { uploadID: string; preview: string };
-type FileUploadInitiate = { file: File; bin_id: string; group_id: string };
+type FileUploadStage = { file: File; bin_id: string; group_id: string };
 
 export type State = {
   inProgressUploads: StoreFile[];
-  initiatedUploads: UploadFile[];
+  stagedUploads: UploadFile[];
   failedUploads: StoreFile[];
 };
 const initialState: State = {
   inProgressUploads: [],
-  initiatedUploads: [],
+  stagedUploads: [],
   failedUploads: [],
 };
 
@@ -37,7 +37,7 @@ const mediaSlice = createSlice({
   name: "mediaRevamp",
   initialState,
   reducers: {
-    fileUploadInitiate(state, action: { payload: FileUploadInitiate[] }) {
+    fileUploadStage(state, action: { payload: FileUploadStage[] }) {
       const newObjects = action.payload.map((file) => {
         return {
           uploadID: uuidv4(),
@@ -46,7 +46,7 @@ const mediaSlice = createSlice({
           ...file,
         };
       });
-      state.initiatedUploads = [...state.initiatedUploads, ...newObjects];
+      state.stagedUploads = [...state.stagedUploads, ...newObjects];
     },
 
     // fileUploadObjectRemove(state, action: { payload: any }) {
@@ -67,11 +67,11 @@ const mediaSlice = createSlice({
     },
     fileUploadReset(state) {
       state.inProgressUploads = [];
-      state.initiatedUploads = [];
+      state.stagedUploads = [];
       state.failedUploads = [];
     },
     fileUploadProgress(state, action: { payload: FileUploadProgress }) {
-      const uploadingFile = state.initiatedUploads.find(
+      const uploadingFile = state.stagedUploads.find(
         (file) => file.uploadID === action.payload.uploadID
       );
       if (uploadingFile) {
@@ -79,7 +79,7 @@ const mediaSlice = createSlice({
       }
     },
     fileUploadSuccess(state, action: { payload: FileUploadSuccess }) {
-      const uploadingFile = state.initiatedUploads.find(
+      const uploadingFile = state.stagedUploads.find(
         (file) => file.uploadID === action.payload.uploadID
       );
       if (uploadingFile) {
@@ -101,11 +101,11 @@ const mediaSlice = createSlice({
         const failedFile = state.inProgressUploads.splice(fileIndex, 1);
         state.failedUploads = [...failedFile, ...state.failedUploads];
       }
-      const tempFileIndex = state.initiatedUploads.findIndex(
+      const tempFileIndex = state.stagedUploads.findIndex(
         (file) => file.uploadID === action.payload.uploadID
       );
       if (tempFileIndex !== -1) {
-        state.initiatedUploads.splice(fileIndex, 1);
+        state.stagedUploads.splice(fileIndex, 1);
       }
     },
   },
@@ -114,7 +114,7 @@ const mediaSlice = createSlice({
 // export mediaSlice;
 
 export const {
-  fileUploadInitiate,
+  fileUploadStage,
   fileUploadReset,
   // fileUploadObjectRemove,
   fileUploadStart,
@@ -320,8 +320,8 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
 export function dismissFileUploads() {
   return async (dispatch: Dispatch, getState: () => AppState) => {
     const state: State = getState().mediaRevamp;
-    if (state.initiatedUploads.some((file) => file.progress !== 100)) return;
-    const successfulUploads = state.initiatedUploads.length;
+    if (state.stagedUploads.some((file) => file.progress !== 100)) return;
+    const successfulUploads = state.stagedUploads.length;
     const failedUploads = state.failedUploads.length;
     console.log({ successfulUploads, failedUploads });
     if (successfulUploads) {
