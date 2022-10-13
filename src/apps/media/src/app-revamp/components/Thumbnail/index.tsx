@@ -1,11 +1,4 @@
-import {
-  FC,
-  useState,
-  useRef,
-  useEffect,
-  DragEvent,
-  ChangeEventHandler,
-} from "react";
+import { FC, useState, useRef, useEffect, DragEvent } from "react";
 import { CardMedia, Card, Box, Checkbox as MuiCheckbox } from "@mui/material";
 import { fileExtension } from "../../utils/fileUtils";
 import { ThumbnailContent } from "./ThumbnailContent";
@@ -40,7 +33,6 @@ interface ThumbnailProps {
   id?: string;
   group_id?: string;
   bin_id?: string;
-  file?: File;
   file?: File;
   onRemove?: () => void;
   onFilenameChange?: (value: string) => void;
