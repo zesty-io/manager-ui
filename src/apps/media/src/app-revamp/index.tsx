@@ -20,24 +20,27 @@ interface Props {
   addImagesCallback?: () => void;
 }
 
-export const MediaApp = ({ lockedToGroupId, isSelectDialog }: Props) => {
+export const MediaApp = ({
+  lockedToGroupId,
+  isSelectDialog = false,
+}: Props) => {
   const history = useHistory();
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (lockedToGroupId) {
       history.push(`/media/${lockedToGroupId}`);
-      // dispatch(setLockedToGroupId(lockedToGroupId));
-      dispatch(setIsSelectDialog(true));
-      //set limit to store
+      //set select limit to store
     }
+    dispatch(setIsSelectDialog(isSelectDialog));
+  }, [lockedToGroupId, isSelectDialog]);
 
-    () => {
-      // dispatch(setLockedToGroupId(''));
+  useEffect(() => {
+    return () => {
       dispatch(setIsSelectDialog(false));
       dispatch(clearSelectedFiles());
     };
-  }, [lockedToGroupId]);
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>

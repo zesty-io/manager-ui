@@ -120,6 +120,14 @@ const mediaSlice = createSlice({
     selectFile(state, action: { payload: FileBase }) {
       state.selectedFiles.push(action.payload);
     },
+    deselectFile(state, action: { payload: FileBase }) {
+      const index = state.selectedFiles.findIndex(
+        (file) => file.id === action.payload.id
+      );
+      if (index !== -1) {
+        state.selectedFiles.splice(index, 1);
+      }
+    },
     clearSelectedFiles(state) {
       state.selectedFiles = [];
     },
@@ -140,6 +148,7 @@ export const {
   setLockedToGroupId,
   setIsSelectDialog,
   selectFile,
+  deselectFile,
   clearSelectedFiles,
 } = mediaSlice.actions;
 
