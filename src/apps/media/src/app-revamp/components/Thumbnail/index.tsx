@@ -41,6 +41,7 @@ interface ThumbnailProps {
   group_id?: string;
   bin_id?: string;
   file?: File;
+  file?: File;
   onRemove?: () => void;
   onFilenameChange?: (value: string) => void;
   onClick?: () => void;

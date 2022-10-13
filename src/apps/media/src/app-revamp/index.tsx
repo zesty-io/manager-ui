@@ -2,7 +2,14 @@ import { Box, ThemeProvider } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Redirect, Route, Switch, useHistory } from "react-router";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { Redirect, Route, Switch, useHistory, useHistory } from "react-router";
+import {
+  setLockedToGroupId,
+  setIsSelectDialog,
+  clearSelectedFiles,
+} from "../../../../shell/store/media-revamp";
 import {
   setLockedToGroupId,
   setIsSelectDialog,
