@@ -2,7 +2,6 @@ import { MouseEvent, useState } from "react";
 import {
   Box,
   Typography,
-  Button,
   IconButton,
   Menu,
   MenuItem,
@@ -10,7 +9,7 @@ import {
   ListItemIcon,
 } from "@mui/material";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -73,7 +72,7 @@ export const Header = ({ title, id, binId, groupId, hideUpload }: Props) => {
               onClick={openMenu}
               sx={{ height: "fit-content" }}
             >
-              <ArrowDropDownIcon fontSize="small" />
+              <ArrowDropDownRoundedIcon fontSize="small" />
             </IconButton>
           ) : null}
           <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>

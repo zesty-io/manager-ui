@@ -16,6 +16,8 @@ import csvImg from "../../../../../../../public/images/csvImg.png";
 import zipImg from "../../../../../../../public/images/zipImg.png";
 import numberImg from "../../../../../../../public/images/numberImg.png";
 import defaultImg from "../../../../../../../public/images/defaultImg.png";
+import { File } from "../../../../../../shell/services/types";
+import { useSelector } from "react-redux";
 
 interface ThumbnailProps {
   src?: string;
@@ -25,6 +27,7 @@ interface ThumbnailProps {
   id?: string;
   group_id?: string;
   bin_id?: string;
+  file?: File;
   onRemove?: () => void;
   onFilenameChange?: (value: string) => void;
   onClick?: () => void;
@@ -41,11 +44,15 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   id,
   group_id,
   bin_id,
+  file,
 }) => {
   const theme = useTheme();
   const imageEl = useRef<HTMLImageElement>();
   const [imageOrientation, setImageOrientation] = useState<string>("");
   const thumbnailRef = useRef<HTMLDivElement>();
+  const isSelectDialog = useSelector(
+    (state: any) => state.media.isSelectDialog
+  );
 
   const onDragStart = (event: DragEvent) => {
     event.dataTransfer.setData(

@@ -13,7 +13,7 @@ export const Folder: React.FC<FolderProps> = ({ name, id }) => {
   return (
     <Button
       fullWidth
-      startIcon={<FolderIcon />}
+      startIcon={<FolderIcon sx={{ color: "action.active" }} />}
       variant="outlined"
       color="inherit"
       sx={{
