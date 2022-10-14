@@ -115,8 +115,7 @@ export const FileModalContent: FC<Props> = ({
         body: {
           group_id: groupId,
           title: newTitle.current.value,
-          // filename: renamedFilename || newFilename,
-          filename: "testerror",
+          filename: renamedFilename || newFilename,
         },
       });
     }, 500);
