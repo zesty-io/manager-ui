@@ -1,5 +1,10 @@
 export function fileExtension(url: string) {
-  return url.split(".").pop().toLowerCase();
+  let extension = "No Extension";
+  if (url.includes(".")) {
+    extension =
+      url.substring(url.lastIndexOf(".") + 1, url.length) || "No Extension";
+  }
+  return extension;
 }
 
 export function isImage(file: any) {

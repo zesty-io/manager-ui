@@ -107,7 +107,6 @@ export const FileModalContent: FC<Props> = ({
 
   /**
    * @description Used to call api everytime the filename and alttext is updated
-   * @note fileType will be appended on the filename payload
    */
   const handleUpdateMutation = (renamedFilename?: string) => {
     const debouncedTitle = debounce(async () => {
@@ -116,7 +115,8 @@ export const FileModalContent: FC<Props> = ({
         body: {
           group_id: groupId,
           title: newTitle.current.value,
-          filename: renamedFilename || newFilename,
+          // filename: renamedFilename || newFilename,
+          filename: "testerror",
         },
       });
     }, 500);
