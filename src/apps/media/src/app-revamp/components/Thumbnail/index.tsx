@@ -362,7 +362,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         <Card sx={styledCard} elevation={0} onClick={onClick}>
           <Box
             sx={{
-              backgroundColor: "red.50",
+              backgroundColor: "grey.200",
               boxSizing: "border-box",
               height: "160px",
               overflow: "hidden",
