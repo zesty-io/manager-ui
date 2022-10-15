@@ -65,7 +65,9 @@ export const FileModalContent: FC<Props> = ({
   const history = useHistory();
   const newTitle = useRef<any>("");
   const [isFileUrlCopied, setIsFileUrlCopied] = useState<boolean>(false);
-  const [newFilename, setNewFilename] = useState<string>(filename);
+  const [newFilename, setNewFilename] = useState<string>(
+    filename.substring(0, filename.lastIndexOf(".")) || filename
+  );
   const [fileType, setFileType] = useState<string>(fileExtension(filename));
   const [showRenameFileModal, setShowRenameFileModal] =
     useState<boolean>(false);
@@ -115,7 +117,8 @@ export const FileModalContent: FC<Props> = ({
         body: {
           group_id: groupId,
           title: newTitle.current.value,
-          filename: renamedFilename || newFilename,
+          filename:
+            `${renamedFilename}.${fileType}` || `${newFilename}.${fileType}`,
         },
       });
     }, 500);
@@ -168,7 +171,6 @@ export const FileModalContent: FC<Props> = ({
             <RenameFileModal
               handleUpdateMutation={handleUpdateMutation}
               onSetNewFilename={setNewFilename}
-              fileType={fileType}
               onClose={() => setShowRenameFileModal(null)}
               newFilename={newFilename}
             />
