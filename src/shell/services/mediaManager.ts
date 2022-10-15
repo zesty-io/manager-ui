@@ -152,6 +152,7 @@ export const mediaManagerApi = createApi({
       File,
       {
         id: string;
+        loadBinFiles?: boolean;
         previousGroupId?: string;
         body: {
           group_id?: string;
@@ -167,7 +168,7 @@ export const mediaManagerApi = createApi({
       }),
       invalidatesTags: (result, error, arg) => [
         { type: "GroupData", id: arg.body?.group_id },
-        "BinFiles",
+        arg?.loadBinFiles ? "BinFiles" : "File",
         { type: "GroupData", id: arg?.previousGroupId },
       ],
     }),

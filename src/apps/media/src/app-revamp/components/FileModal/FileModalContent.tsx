@@ -110,10 +110,14 @@ export const FileModalContent: FC<Props> = ({
   /**
    * @description Used to call api everytime the filename and alttext is updated
    */
-  const handleUpdateMutation = (renamedFilename?: string) => {
+  const handleUpdateMutation = (
+    renamedFilename?: string,
+    loadBinFiles?: boolean
+  ) => {
     const debouncedTitle = debounce(async () => {
       updateFile({
         id,
+        loadBinFiles,
         body: {
           group_id: groupId,
           title: newTitle.current.value,
@@ -253,7 +257,7 @@ export const FileModalContent: FC<Props> = ({
           aria-label="empty textarea"
           placeholder="Empty"
           inputRef={newTitle}
-          onChange={() => handleUpdateMutation()}
+          onChange={() => handleUpdateMutation(newFilename, false)}
           multiline
           rows={3}
           fullWidth

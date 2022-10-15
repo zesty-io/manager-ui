@@ -12,7 +12,10 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 
 interface Props {
-  handleUpdateMutation: (renamedFilename: string) => void;
+  handleUpdateMutation: (
+    renamedFilename: string,
+    loadBinFiles: boolean
+  ) => void;
   onClose?: () => void;
   onSetNewFilename: Dispatch<string>;
   newFilename: string;
@@ -26,9 +29,7 @@ export const RenameFileModal: FC<Props> = ({
 }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const [renamedFilename, setRenamedFilename] = useState<string>(
-    newFilename.substring(0, newFilename.lastIndexOf("."))
-  );
+  const [renamedFilename, setRenamedFilename] = useState<string>(newFilename);
 
   return (
     <Dialog open={true} fullWidth maxWidth={"xs"}>
@@ -63,7 +64,7 @@ export const RenameFileModal: FC<Props> = ({
           variant="contained"
           onClick={() => {
             onSetNewFilename(renamedFilename);
-            handleUpdateMutation(renamedFilename);
+            handleUpdateMutation(renamedFilename, true);
             onClose();
           }}
         >
