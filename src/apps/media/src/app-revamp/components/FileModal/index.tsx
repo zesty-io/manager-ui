@@ -1,7 +1,14 @@
 import { FC } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 
-import { Modal, Box, Card, IconButton } from "@mui/material";
+import {
+  Modal,
+  Box,
+  Card,
+  IconButton,
+  CircularProgress,
+  Dialog,
+} from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 // import { WithLoader } from "@zesty-io/core";
 
@@ -39,7 +46,7 @@ export const FileModal: FC<Props> = ({ fileId }) => {
 
   return (
     <>
-      {data && (
+      {data ? (
         <Modal open={data.url && !isLoading}>
           <Box
             sx={{
@@ -94,6 +101,22 @@ export const FileModal: FC<Props> = ({ fileId }) => {
             {/* </WithLoader> */}
           </Box>
         </Modal>
+      ) : (
+        <Dialog
+          open={true}
+          PaperProps={{
+            style: {
+              backgroundColor: "transparent",
+              boxShadow: "none",
+              overflow: "hidden",
+              display: "flex",
+              alignItems: "center",
+              textAlign: "center",
+            },
+          }}
+        >
+          <CircularProgress color="info" />
+        </Dialog>
       )}
     </>
   );

@@ -15,7 +15,6 @@ interface Props {
   handleUpdateMutation: (renamedFilename: string) => void;
   onClose?: () => void;
   onSetNewFilename: Dispatch<string>;
-  fileType: string;
   newFilename: string;
 }
 
@@ -23,7 +22,6 @@ export const RenameFileModal: FC<Props> = ({
   handleUpdateMutation,
   onClose,
   onSetNewFilename,
-  fileType,
   newFilename,
 }) => {
   const theme = useTheme();
@@ -64,8 +62,8 @@ export const RenameFileModal: FC<Props> = ({
         <Button
           variant="contained"
           onClick={() => {
-            onSetNewFilename(`${renamedFilename}.${fileType}`);
-            handleUpdateMutation(`${renamedFilename}.${fileType}`);
+            onSetNewFilename(renamedFilename);
+            handleUpdateMutation(renamedFilename);
             onClose();
           }}
         >
