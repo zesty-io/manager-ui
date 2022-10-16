@@ -22,7 +22,6 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
   const { id } = params;
   const headerHeight = useSelector((state: any) => state.ui.headerHeight);
   const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
-  const [isInvalidFileId, setIsInvalidFileId] = useState<boolean>(false);
 
   const {
     data: groupData,
@@ -35,7 +34,7 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
       component="main"
       sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
     >
-      {isError || isInvalidFileId ? (
+      {isError ? (
         <NotFoundState />
       ) : (
         <>
