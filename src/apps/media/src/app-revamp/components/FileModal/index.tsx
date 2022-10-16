@@ -93,7 +93,7 @@ export const FileModal: FC<Props> = ({ fileId }) => {
                 id={data.id}
                 src={data.url}
                 filename={data.filename}
-                title={data.filename}
+                title={data.title}
                 groupId={data.group_id}
                 createdAt={data.created_at}
               />

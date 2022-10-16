@@ -140,19 +140,12 @@ export const mediaManagerApi = createApi({
     getFile: builder.query<File, string>({
       query: (id) => `/file/${id}`,
       transformResponse: (res) => getResponseData(res)[0], // HACK this is probably not the best way to do this.
-
-      // NOTE: skipping until I learn rtk-query invalidation
-      // invalidatesTags: (result, error, arg) => [
-      //   { type: "GroupData", id: arg.body?.group_id },
-      //   "BinFiles",
-      //   { type: "GroupData", id: arg?.previousGroupId },
-      // ],
+      providesTags: (result, error, id) => [{ type: "File", id }],
     }),
     updateFile: builder.mutation<
       File,
       {
         id: string;
-        loadBinFiles?: boolean;
         previousGroupId?: string;
         body: {
           group_id?: string;
@@ -167,10 +160,29 @@ export const mediaManagerApi = createApi({
         body,
       }),
       invalidatesTags: (result, error, arg) => [
+        { type: "File", id: arg?.id },
         { type: "GroupData", id: arg.body?.group_id },
-        arg?.loadBinFiles ? "BinFiles" : "File",
+        "BinFiles",
         { type: "GroupData", id: arg?.previousGroupId },
       ],
+    }),
+    updateFileAltText: builder.mutation<
+      File,
+      {
+        id: string;
+        body: {
+          group_id?: string;
+          filename?: string;
+          title?: string;
+        };
+      }
+    >({
+      query: ({ id, body }) => ({
+        url: `/file/${id}`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: "File", id: arg?.id }],
     }),
     deleteFile: builder.mutation<
       File,
@@ -269,6 +281,7 @@ export const {
   useGetGroupDataQuery,
   useUpdateBinMutation,
   useUpdateFileMutation,
+  useUpdateFileAltTextMutation,
   useUpdateGroupMutation,
   useCreateGroupMutation,
   useDeleteFileMutation,

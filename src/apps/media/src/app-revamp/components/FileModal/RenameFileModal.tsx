@@ -12,10 +12,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 
 interface Props {
-  handleUpdateMutation: (
-    renamedFilename: string,
-    loadBinFiles: boolean
-  ) => void;
+  handleUpdateMutation: (renamedFilename: string) => void;
   onClose?: () => void;
   onSetNewFilename: Dispatch<string>;
   newFilename: string;
@@ -64,7 +61,7 @@ export const RenameFileModal: FC<Props> = ({
           variant="contained"
           onClick={() => {
             onSetNewFilename(renamedFilename);
-            handleUpdateMutation(renamedFilename, true);
+            handleUpdateMutation(renamedFilename);
             onClose();
           }}
         >
