@@ -11,12 +11,14 @@ import { MediaGrid } from "../components/MediaGrid";
 import { Header } from "../components/Header";
 import { useParams } from "../../../../../shell/hooks/useParams";
 import { SearchEmptyState } from "../components/SearchEmptyState";
+import { File } from "../../../../../shell/services/types";
 
 interface Props {
   lockedToGroupId?: string;
+  addImagesCallback?: (selectedFiles: File[]) => void;
 }
 
-export const SearchMedia = ({ lockedToGroupId }: Props) => {
+export const SearchMedia = ({ lockedToGroupId, addImagesCallback }: Props) => {
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const headerHeight = useSelector((state: any) => state.ui.headerHeight);
@@ -27,11 +29,6 @@ export const SearchMedia = ({ lockedToGroupId }: Props) => {
   const { data: ecoBins } = useGetEcoBinsQuery(ecoId, {
     skip: !ecoId,
   });
-  const [isInvalidFileId, setIsInvalidFileId] = useState<boolean>(false);
-
-  // not found state
-  const [notFoundTitle, setNotFoundTitle] = useState<string>("");
-  const [notFoundMessage, setNotFoundMessage] = useState<string>("");
 
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
@@ -100,7 +97,11 @@ export const SearchMedia = ({ lockedToGroupId }: Props) => {
         </Box>
       ) : filteredGroups?.length || filteredFiles?.length ? (
         <>
-          <Header title={`Search Results for "${term}"`} hideUpload />
+          <Header
+            title={`Search Results for "${term}"`}
+            hideUpload
+            addImagesCallback={addImagesCallback}
+          />
           <MediaGrid
             files={filteredFiles}
             groups={filteredGroups}

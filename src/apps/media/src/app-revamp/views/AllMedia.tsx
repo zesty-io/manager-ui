@@ -11,8 +11,13 @@ import { EmptyState } from "../components/EmptyState";
 import { MediaGrid } from "../components/MediaGrid";
 import { Header } from "../components/Header";
 import { NotFoundState } from "../components/NotFoundState";
+import { File } from "../../../../../shell/services/types";
 
-export const AllMedia = () => {
+interface Props {
+  addImagesCallback?: (selectedFiles: File[]) => void;
+}
+
+export const AllMedia = ({ addImagesCallback }: Props) => {
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const headerHeight = useSelector((state: any) => state.ui.headerHeight);
@@ -22,11 +27,6 @@ export const AllMedia = () => {
   const { data: ecoBins } = useGetEcoBinsQuery(ecoId, {
     skip: !ecoId,
   });
-  const [isInvalidFileId, setIsInvalidFileId] = useState<boolean>(false);
-
-  // not found state
-  const [notFoundTitle, setNotFoundTitle] = useState<string>("");
-  const [notFoundMessage, setNotFoundMessage] = useState<string>("");
 
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
@@ -40,37 +40,31 @@ export const AllMedia = () => {
       component="main"
       sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
     >
-      {isInvalidFileId ? (
-        <NotFoundState title={notFoundTitle} message={notFoundMessage} />
+      <Header title="All Media" addImagesCallback={addImagesCallback} />
+      {isFilesFetching || isBinsFetching ? (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+        >
+          <CircularProgress />
+        </Box>
       ) : (
-        <>
-          <Header title="All Media" />
-          {isFilesFetching || isBinsFetching ? (
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              height="100%"
-            >
-              <CircularProgress />
-            </Box>
-          ) : (
+        /* TODO Fix this */
+        <DnDProvider currentBinId="" currentGroupId="">
+          {!isFilesFetching && !isBinsFetching && !files?.length ? (
             /* TODO Fix this */
-            <DnDProvider currentBinId="" currentGroupId="">
-              {!isFilesFetching && !isBinsFetching && !files?.length ? (
-                /* TODO Fix this */
-                <EmptyState currentBinId="" currentGroupId="" />
-              ) : (
-                <MediaGrid
-                  files={files}
-                  heightOffset={headerHeight + 64}
-                  widthOffset={sidebarWidth + 220}
-                  hideHeaders
-                />
-              )}
-            </DnDProvider>
+            <EmptyState currentBinId="" currentGroupId="" />
+          ) : (
+            <MediaGrid
+              files={files}
+              heightOffset={headerHeight + 64}
+              widthOffset={sidebarWidth + 220}
+              hideHeaders
+            />
           )}
-        </>
+        </DnDProvider>
       )}
     </Box>
   );

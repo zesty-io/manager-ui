@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, Dispatch } from "react";
+import { useEffect, useRef, useMemo, Dispatch, useCallback } from "react";
 import { VariableSizeGrid } from "react-window";
 import { Box, Typography } from "@mui/material";
 import { useWindowSize } from "react-use";
@@ -85,78 +85,81 @@ export const MediaGrid = ({
     }
   };
 
-  const Row = ({ columnIndex, rowIndex, style }: any) => {
-    const gridItemType = grid[rowIndex * columns + columnIndex].split("-")[0];
-    const gridItemIndex = Number(
-      grid[rowIndex * columns + columnIndex].split("-")[1]
-    );
+  const Row = useCallback(
+    ({ columnIndex, rowIndex, style }: any) => {
+      const gridItemType = grid[rowIndex * columns + columnIndex].split("-")[0];
+      const gridItemIndex = Number(
+        grid[rowIndex * columns + columnIndex].split("-")[1]
+      );
 
-    return (
-      <div style={style}>
-        {gridItemType === "empty" && <div></div>}
-        {gridItemType === "groups" && (
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            fontWeight={600}
-            sx={{
-              px: 1,
-            }}
-          >
-            Folders
-          </Typography>
-        )}
-        {gridItemType === "group" && (
-          <Box
-            sx={{
-              height: "44px",
-              px: 1,
-            }}
-          >
-            {/* TODO: Construct path folder should navigate to */}
-            <Folder
-              name={groups[gridItemIndex].name}
-              id={groups[gridItemIndex].id}
-            />
-          </Box>
-        )}
-        {gridItemType === "files" && (
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            fontWeight={600}
-            sx={{
-              px: 1,
-            }}
-          >
-            Files
-          </Typography>
-        )}
-        {gridItemType === "file" && (
-          <Box
-            sx={{
-              height: "204px",
-              px: 1,
-            }}
-          >
-            <Thumbnail
-              id={files[gridItemIndex].id}
-              src={files[gridItemIndex].thumbnail}
-              filename={files[gridItemIndex].filename}
-              group_id={files[gridItemIndex].group_id}
-              bin_id={files[gridItemIndex].bin_id}
-              file={files[gridItemIndex]}
-              onClick={() => {
-                history.replace(
-                  `${location.url}?fileId=${files[gridItemIndex].id}`
-                );
+      return (
+        <div style={style}>
+          {gridItemType === "empty" && <div></div>}
+          {gridItemType === "groups" && (
+            <Typography
+              variant="h6"
+              color="text.secondary"
+              fontWeight={600}
+              sx={{
+                px: 1,
               }}
-            />
-          </Box>
-        )}
-      </div>
-    );
-  };
+            >
+              Folders
+            </Typography>
+          )}
+          {gridItemType === "group" && (
+            <Box
+              sx={{
+                height: "44px",
+                px: 1,
+              }}
+            >
+              {/* TODO: Construct path folder should navigate to */}
+              <Folder
+                name={groups[gridItemIndex].name}
+                id={groups[gridItemIndex].id}
+              />
+            </Box>
+          )}
+          {gridItemType === "files" && (
+            <Typography
+              variant="h6"
+              color="text.secondary"
+              fontWeight={600}
+              sx={{
+                px: 1,
+              }}
+            >
+              Files
+            </Typography>
+          )}
+          {gridItemType === "file" && (
+            <Box
+              sx={{
+                height: "204px",
+                px: 1,
+              }}
+            >
+              <Thumbnail
+                id={files[gridItemIndex].id}
+                src={files[gridItemIndex].thumbnail}
+                filename={files[gridItemIndex].filename}
+                group_id={files[gridItemIndex].group_id}
+                bin_id={files[gridItemIndex].bin_id}
+                file={files[gridItemIndex]}
+                onClick={() => {
+                  history.replace(
+                    `${location.url}?fileId=${files[gridItemIndex].id}`
+                  );
+                }}
+              />
+            </Box>
+          )}
+        </div>
+      );
+    },
+    [grid]
+  );
 
   return (
     <Box sx={{ pl: 2 }}>

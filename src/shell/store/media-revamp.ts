@@ -28,6 +28,7 @@ export type State = {
   lockedToGroupId: string;
   isSelectDialog: boolean;
   selectedFiles: FileBase[];
+  limitSelected: number | null;
 };
 const initialState: State = {
   files: [],
@@ -36,6 +37,7 @@ const initialState: State = {
   lockedToGroupId: "",
   isSelectDialog: false,
   selectedFiles: [],
+  limitSelected: null,
 };
 
 const mediaSlice = createSlice({
@@ -111,13 +113,18 @@ const mediaSlice = createSlice({
         state.temp.splice(fileIndex, 1);
       }
     },
-    setLockedToGroupId(state, action: { payload: string }) {
-      state.lockedToGroupId = action.payload;
-    },
     setIsSelectDialog(state, action: { payload: boolean }) {
       state.isSelectDialog = action.payload;
     },
+    setLimitSelected(state, action: { payload: number }) {
+      state.limitSelected = action.payload;
+    },
     selectFile(state, action: { payload: FileBase }) {
+      if (
+        state.limitSelected &&
+        state.selectedFiles.length >= state.limitSelected
+      )
+        return;
       state.selectedFiles.push(action.payload);
     },
     deselectFile(state, action: { payload: FileBase }) {
@@ -145,11 +152,11 @@ export const {
   fileUploadSetPreview,
   fileUploadSuccess,
   fileUploadError,
-  setLockedToGroupId,
   setIsSelectDialog,
   selectFile,
   deselectFile,
   clearSelectedFiles,
+  setLimitSelected,
 } = mediaSlice.actions;
 
 /*

@@ -3,6 +3,8 @@ import { useHistory } from "react-router";
 import noSearchResults from "../../../../../../public/images/noSearchResults.png";
 import BackupTableRoundedIcon from "@mui/icons-material/BackupTableRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import { useSelector } from "react-redux";
+import { State } from "../../../../../shell/store/media-revamp";
 
 interface Props {
   searchTerm: string;
@@ -10,6 +12,9 @@ interface Props {
 
 export const SearchEmptyState = ({ searchTerm }: Props) => {
   const history = useHistory();
+  const isSelectDialog = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.isSelectDialog
+  );
   return (
     <Box
       display="flex"
@@ -32,15 +37,17 @@ export const SearchEmptyState = ({ searchTerm }: Props) => {
           correctly or try using different keywords.
         </Typography>
         <Stack direction="row" spacing={2} justifyContent="center">
-          <Button
-            size="small"
-            color="inherit"
-            variant="contained"
-            startIcon={<BackupTableRoundedIcon />}
-            onClick={() => history.push("/media")}
-          >
-            Go to All Media
-          </Button>
+          {!isSelectDialog && (
+            <Button
+              size="small"
+              color="inherit"
+              variant="contained"
+              startIcon={<BackupTableRoundedIcon />}
+              onClick={() => history.push("/media")}
+            >
+              Go to All Media
+            </Button>
+          )}
           <Button
             size="small"
             variant="contained"

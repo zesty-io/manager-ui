@@ -125,7 +125,12 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         }}
         checked={checked}
         icon={<CheckCircleIcon sx={{ color: "common.white" }} />}
-        checkedIcon={<CheckCircleIcon color="primary" />}
+        checkedIcon={
+          <CheckCircleIcon
+            sx={{ backgroundColor: "common.white", borderRadius: "100%" }}
+            color="primary"
+          />
+        }
         onChange={(evt, checked) => {
           if (checked) {
             dispatch(selectFile(file));
