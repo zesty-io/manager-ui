@@ -1,4 +1,4 @@
-import { FC, useEffect, useState, useRef } from "react";
+import { FC, useEffect, useState, useRef, useCallback } from "react";
 import {
   Typography,
   Box,
@@ -21,7 +21,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ImageIcon from "@mui/icons-material/Image";
 import { MD5 } from "../../../../../../utility/md5";
-import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
+import {
+  mediaManagerApi,
+  useUpdateFileAltTextMutation,
+} from "../../../../../../shell/services/mediaManager";
 import { fileExtension } from "../../utils/fileUtils";
 import { RenameFileModal } from "./RenameFileModal";
 import moment from "moment";
@@ -60,9 +63,6 @@ export const FileModalContent: FC<Props> = ({
   createdAt,
   handleCloseModal,
 }) => {
-  const theme = useTheme();
-  const location = useRouteMatch();
-  const history = useHistory();
   const newTitle = useRef<any>("");
   const [isFileUrlCopied, setIsFileUrlCopied] = useState<boolean>(false);
   const [newFilename, setNewFilename] = useState<string>(
@@ -75,9 +75,8 @@ export const FileModalContent: FC<Props> = ({
   const openSettings = Boolean(showSettingsDropdown);
 
   const [deleteFile] = mediaManagerApi.useDeleteFileMutation();
-  const [updateFile, { isLoading: updateFileIsLoading }] =
-    mediaManagerApi.useUpdateFileMutation();
-  const isLoading = updateFileIsLoading;
+  const [updateFile] = mediaManagerApi.useUpdateFileMutation();
+  const [updateFileAltTextMutation] = useUpdateFileAltTextMutation();
   const [showDeleteFileModal, setShowDeleteFileModal] =
     useState<boolean>(false);
 
@@ -86,7 +85,7 @@ export const FileModalContent: FC<Props> = ({
    */
   useEffect(() => {
     if (newTitle.current) {
-      newTitle.current.value = "setnewtitle";
+      newTitle.current.value = title;
     }
   }, [title, filename]);
 
@@ -110,8 +109,21 @@ export const FileModalContent: FC<Props> = ({
   /**
    * @description Used to call api everytime the filename and alttext is updated
    */
-  const handleUpdateMutation = (renamedFilename?: string) => {
-    const debouncedTitle = debounce(async () => {
+  const handleUpdateMutation = (
+    renamedFilename?: string,
+    isAltTextUpdate?: boolean
+  ) => {
+    if (isAltTextUpdate) {
+      updateFileAltTextMutation({
+        id,
+        body: {
+          group_id: groupId,
+          title: newTitle.current.value,
+          filename:
+            `${renamedFilename}.${fileType}` || `${newFilename}.${fileType}`,
+        },
+      });
+    } else {
       updateFile({
         id,
         body: {
@@ -121,10 +133,10 @@ export const FileModalContent: FC<Props> = ({
             `${renamedFilename}.${fileType}` || `${newFilename}.${fileType}`,
         },
       });
-    }, 500);
-
-    debouncedTitle();
+    }
   };
+
+  const debouncedHandleUpdateMutation = debounce(handleUpdateMutation, 500);
 
   const onDeleteFile = () => {
     deleteFile({
@@ -253,7 +265,7 @@ export const FileModalContent: FC<Props> = ({
           aria-label="empty textarea"
           placeholder="Empty"
           inputRef={newTitle}
-          onChange={() => handleUpdateMutation()}
+          onChange={() => debouncedHandleUpdateMutation(newFilename, true)}
           multiline
           rows={3}
           fullWidth

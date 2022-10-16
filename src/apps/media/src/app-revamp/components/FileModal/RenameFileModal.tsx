@@ -26,9 +26,7 @@ export const RenameFileModal: FC<Props> = ({
 }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const [renamedFilename, setRenamedFilename] = useState<string>(
-    newFilename.substring(0, newFilename.lastIndexOf("."))
-  );
+  const [renamedFilename, setRenamedFilename] = useState<string>(newFilename);
 
   return (
     <Dialog open={true} fullWidth maxWidth={"xs"}>
