@@ -215,11 +215,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               position: "relative",
               backgroundSize: `25px 25px`,
               backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
-              "&:hover": {
-                "& .MuiCheckbox-root": {
-                  display: "block",
-                },
-              },
+              "&:hover": {},
             }}
           >
             <Box
@@ -231,11 +227,16 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 bottom: 0,
                 "&:hover": {
                   background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
                 },
               }}
-            ></Box>
+            >
+              {isSelectDialog && <Checkbox />}
+            </Box>
             <RemoveIcon />
-            {isSelectDialog && <Checkbox />}
+
             <CardMedia
               component="img"
               ref={imageEl}
@@ -276,8 +277,24 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
+                },
+              }}
+            >
+              {isSelectDialog && <Checkbox />}
+            </Box>
             <RemoveIcon />
-            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={excelImg}
@@ -308,8 +325,24 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
+                },
+              }}
+            >
+              {isSelectDialog && <Checkbox />}
+            </Box>
             <RemoveIcon />
-            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={csvImg}
@@ -342,8 +375,24 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
+                },
+              }}
+            >
+              {isSelectDialog && <Checkbox />}
+            </Box>
             <RemoveIcon />
-            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={wordImg}
@@ -374,8 +423,24 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
+                },
+              }}
+            >
+              {isSelectDialog && <Checkbox />}
+            </Box>
             <RemoveIcon />
-            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={pdfImg}
@@ -408,8 +473,24 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
+                },
+              }}
+            >
+              {isSelectDialog && <Checkbox />}
+            </Box>
             <RemoveIcon />
-            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={pptImg}
@@ -444,8 +525,24 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
+                },
+              }}
+            >
+              {isSelectDialog && <Checkbox />}
+            </Box>
             <RemoveIcon />
-            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={mpImg}
@@ -487,8 +584,24 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               backgroundColor: "#000",
             }}
           >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
+                },
+              }}
+            >
+              {isSelectDialog && <Checkbox />}
+            </Box>
             <RemoveIcon />
-            {isSelectDialog && <Checkbox />}
             {showVideo && (
               <CardMedia
                 component="video"
@@ -542,8 +655,24 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
+                },
+              }}
+            >
+              {isSelectDialog && <Checkbox />}
+            </Box>
             <RemoveIcon />
-            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={zipImg}
@@ -579,8 +708,24 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
+                },
+              }}
+            >
+              {isSelectDialog && <Checkbox />}
+            </Box>
             <RemoveIcon />
-            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={defaultImg}
@@ -611,8 +756,24 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
+                },
+              }}
+            >
+              {isSelectDialog && <Checkbox />}
+            </Box>
             <RemoveIcon />
-            {isSelectDialog && <Checkbox />}
             <CardMedia
               component="img"
               data-src={numberImg}
@@ -643,8 +804,24 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
+                },
+              }}
+            >
+              {isSelectDialog && <Checkbox />}
+            </Box>
             <RemoveIcon />
-            {isSelectDialog && <Checkbox />}
             <Box
               sx={{
                 display: "flex",
@@ -682,8 +859,24 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
+                },
+              }}
+            >
+              {isSelectDialog && <Checkbox />}
+            </Box>
             <RemoveIcon />
-            {isSelectDialog && <Checkbox />}
             <Box
               sx={{
                 display: "flex",
