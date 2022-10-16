@@ -36,17 +36,13 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
   const { data: binFiles, isFetching: isFilesFetching } =
     mediaManagerApi.useGetBinFilesQuery(id);
 
-  // not found state
-  const [notFoundTitle, setNotFoundTitle] = useState<string>("");
-  const [notFoundMessage, setNotFoundMessage] = useState<string>("");
-
   return (
     <Box
       component="main"
       sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
     >
       {isError || isInvalidFileId ? (
-        <NotFoundState title={notFoundTitle} message={notFoundMessage} />
+        <NotFoundState />
       ) : (
         <>
           <Header

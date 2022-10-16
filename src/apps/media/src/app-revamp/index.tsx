@@ -95,7 +95,12 @@ export const MediaApp = ({
           />
           <Route
             path="/media/search"
-            render={() => <SearchMedia lockedToGroupId={lockedToGroupId} />}
+            render={() => (
+              <SearchMedia
+                lockedToGroupId={lockedToGroupId}
+                addImagesCallback={addImagesCallback}
+              />
+            )}
           />
           <Route
             path="/media/:id"
