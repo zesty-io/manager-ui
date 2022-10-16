@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Redirect, Route, Switch, useHistory } from "react-router";
 import {
-  setLockedToGroupId,
+  setLimitSelected,
   setIsSelectDialog,
   clearSelectedFiles,
 } from "../../../../shell/store/media-revamp";
@@ -15,17 +15,20 @@ import { SearchMedia } from "./views/SearchMedia";
 
 import { Sidebar } from "./components/Sidebar";
 import { FileModal } from "./components/FileModal";
+import { File } from "../../../../shell/services/types";
 
 interface Props {
   limitSelected?: number;
   lockedToGroupId?: string;
   isSelectDialog?: boolean;
-  addImagesCallback?: () => void;
+  addImagesCallback?: (selectedFiles: File[]) => void;
 }
 
 export const MediaApp = ({
   lockedToGroupId,
   isSelectDialog = false,
+  addImagesCallback,
+  limitSelected = null,
 }: Props) => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -33,15 +36,16 @@ export const MediaApp = ({
   useEffect(() => {
     if (lockedToGroupId) {
       history.push(`/media/${lockedToGroupId}`);
-      //set select limit to store
     }
     dispatch(setIsSelectDialog(isSelectDialog));
+    dispatch(setLimitSelected(limitSelected));
   }, [lockedToGroupId, isSelectDialog]);
 
   useEffect(() => {
     return () => {
       dispatch(setIsSelectDialog(false));
       dispatch(clearSelectedFiles());
+      dispatch(setLimitSelected(null));
     };
   }, []);
 
@@ -84,12 +88,19 @@ export const MediaApp = ({
         />
 
         <Switch>
-          <Route exact path="/media" component={AllMedia} />
+          <Route
+            exact
+            path="/media"
+            render={() => <AllMedia addImagesCallback={addImagesCallback} />}
+          />
           <Route
             path="/media/search"
             render={() => <SearchMedia lockedToGroupId={lockedToGroupId} />}
           />
-          <Route path="/media/:id" component={Media} />
+          <Route
+            path="/media/:id"
+            render={() => <Media addImagesCallback={addImagesCallback} />}
+          />
           <Redirect to="/media" />
         </Switch>
       </Box>

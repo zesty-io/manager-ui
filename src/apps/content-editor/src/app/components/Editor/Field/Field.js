@@ -380,6 +380,7 @@ export default function Field({
       if (settings && settings.group_id && settings.group_id !== "0") {
         mediaAppProps.groupID = settings.group_id;
       }
+      const openNav = useSelector((state) => state.ui.openNav);
       return (
         <>
           <FieldTypeImage
@@ -407,7 +408,7 @@ export default function Field({
               <Dialog
                 open
                 fullScreen
-                sx={{ my: 3.3, mx: 4 }}
+                sx={{ my: 3.3, mx: openNav ? 9.6 : 3.6 }}
                 onClose={() => setImageModal()}
               >
                 <MediaApp

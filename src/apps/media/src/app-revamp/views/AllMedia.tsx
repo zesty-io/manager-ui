@@ -11,8 +11,13 @@ import { EmptyState } from "../components/EmptyState";
 import { MediaGrid } from "../components/MediaGrid";
 import { Header } from "../components/Header";
 import { NotFoundState } from "../components/NotFoundState";
+import { File } from "../../../../../shell/services/types";
 
-export const AllMedia = () => {
+interface Props {
+  addImagesCallback?: (selectedFiles: File[]) => void;
+}
+
+export const AllMedia = ({ addImagesCallback }: Props) => {
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const headerHeight = useSelector((state: any) => state.ui.headerHeight);
@@ -44,7 +49,7 @@ export const AllMedia = () => {
         <NotFoundState title={notFoundTitle} message={notFoundMessage} />
       ) : (
         <>
-          <Header title="All Media" />
+          <Header title="All Media" addImagesCallback={addImagesCallback} />
           {isFilesFetching || isBinsFetching ? (
             <Box
               display="flex"
