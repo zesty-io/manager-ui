@@ -24,6 +24,8 @@ import { MD5 } from "../../../../../../utility/md5";
 import {
   mediaManagerApi,
   useUpdateFileAltTextMutation,
+  useUpdateFileMutation,
+  useDeleteFileMutation,
 } from "../../../../../../shell/services/mediaManager";
 import { fileExtension } from "../../utils/fileUtils";
 import { RenameFileModal } from "./RenameFileModal";
@@ -68,14 +70,14 @@ export const FileModalContent: FC<Props> = ({
   const [newFilename, setNewFilename] = useState<string>(
     filename.substring(0, filename.lastIndexOf(".")) || filename
   );
-  const [fileType, setFileType] = useState<string>(fileExtension(filename));
+  const [fileType, setFileType] = useState<string>();
   const [showRenameFileModal, setShowRenameFileModal] =
     useState<boolean>(false);
   const [showSettingsDropdown, setShowSettingsDropdown] = useState(null);
   const openSettings = Boolean(showSettingsDropdown);
 
-  const [deleteFile] = mediaManagerApi.useDeleteFileMutation();
-  const [updateFile] = mediaManagerApi.useUpdateFileMutation();
+  const [deleteFile] = useDeleteFileMutation();
+  const [updateFile] = useUpdateFileMutation();
   const [updateFileAltTextMutation] = useUpdateFileAltTextMutation();
   const [showDeleteFileModal, setShowDeleteFileModal] =
     useState<boolean>(false);
@@ -86,6 +88,9 @@ export const FileModalContent: FC<Props> = ({
   useEffect(() => {
     if (newTitle.current) {
       newTitle.current.value = title;
+    }
+    if (fileExtension(filename) !== "No Extension") {
+      setFileType(fileExtension(filename));
     }
   }, [title, filename]);
 
@@ -113,26 +118,34 @@ export const FileModalContent: FC<Props> = ({
     renamedFilename?: string,
     isAltTextUpdate?: boolean
   ) => {
+    // construct file type
+    let constructedFileType = "";
+    if (fileType) constructedFileType = `.${fileType}`;
+
     if (isAltTextUpdate) {
-      updateFileAltTextMutation({
+      const res = updateFileAltTextMutation({
         id,
         body: {
           group_id: groupId,
           title: newTitle.current.value,
           filename:
-            `${renamedFilename}.${fileType}` || `${newFilename}.${fileType}`,
+            `${renamedFilename}${constructedFileType}` ||
+            `${newFilename}${constructedFileType}`,
         },
       });
+      console.log(1, res);
     } else {
-      updateFile({
+      const res = updateFile({
         id,
         body: {
           group_id: groupId,
           title: newTitle.current.value,
           filename:
-            `${renamedFilename}.${fileType}` || `${newFilename}.${fileType}`,
+            `${renamedFilename}${constructedFileType}` ||
+            `${newFilename}${constructedFileType}`,
         },
       });
+      console.log(2, res);
     }
   };
 

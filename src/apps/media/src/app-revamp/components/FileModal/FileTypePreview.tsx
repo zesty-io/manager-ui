@@ -27,7 +27,8 @@ export const FileTypePreview: FC<Props> = ({ src, filename }) => {
 
   const styledCheckerBoard = {
     backgroundImage:
-      fileExtension(filename) === "png" &&
+      (fileExtension(filename) === "png" ||
+        fileExtension(filename) === "svg") &&
       `linear-gradient(45deg, ${theme.palette.grey[100]} 25%, transparent 25%), 
       linear-gradient(135deg, ${theme.palette.grey[100]} 25%, transparent 25%),
       linear-gradient(45deg, transparent 75%, ${theme.palette.grey[100]} 75%),
@@ -67,7 +68,10 @@ export const FileTypePreview: FC<Props> = ({ src, filename }) => {
             py: imageOrientation === "horizontal" && 1,
             px: imageOrientation === "vertical" && "auto",
             overflow: "hidden",
-            backgroundColor: fileExtension(filename) !== "png" && "grey.100",
+            backgroundColor:
+              fileExtension(filename) !== "png" &&
+              fileExtension(filename) !== "svg" &&
+              "grey.100",
             position: "relative",
             height: "600px",
             width: "100%",
@@ -81,6 +85,7 @@ export const FileTypePreview: FC<Props> = ({ src, filename }) => {
             image={src}
             loading="lazy"
             sx={{
+              objectFit: "contain",
               m: "auto",
               width: "100%",
               height: "100%",

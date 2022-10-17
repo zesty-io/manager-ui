@@ -11,7 +11,7 @@ import {
 import { TreeView, TreeItem } from "@mui/lab";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
-import { FolderGlobal } from "@zesty-io/material";
+// import { FolderGlobal } from "@zesty-io/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -216,13 +216,13 @@ export const Folders = ({ lockedToGroupId }: Props) => {
         }}
         label={
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Box
+            {/* <Box
               component={nodes.eco_id ? FolderGlobal : FolderIcon}
               sx={{
                 mr: 1,
               }}
               color="action.active"
-            />
+            /> */}
             <Typography
               // @ts-expect-error body3 additional variant is not on Typography augmentation
               variant="body3"

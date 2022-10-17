@@ -159,6 +159,7 @@ export const mediaManagerApi = createApi({
         method: "PATCH",
         body,
       }),
+      transformResponse: (res) => getResponseData(res),
       invalidatesTags: (result, error, arg) => [
         { type: "File", id: arg?.id },
         { type: "GroupData", id: arg.body?.group_id },
