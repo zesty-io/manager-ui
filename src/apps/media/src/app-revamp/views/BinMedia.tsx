@@ -63,7 +63,7 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
           ) : (
             <>
               <UploadModal />
-              /* TODO FIX THIS */
+              {/* /* TODO FIX THIS */}
               <DnDProvider currentBinId={id} currentGroupId="">
                 {!isFilesFetching && !binFiles?.length ? (
                   /*TODO fix this*/

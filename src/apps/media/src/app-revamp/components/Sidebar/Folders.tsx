@@ -118,6 +118,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
         ];
       } else {
         return binGroups
+          .filter((binGroup) => (ecoBins?.length ? true : binGroup?.length))
           .map((binGroup, idx) => {
             if (!binGroup.length) {
               return { ...combinedBins[idx], children: [] };
