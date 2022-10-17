@@ -22,6 +22,10 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
   const { data: bin } = mediaManagerApi.useGetBinQuery(file.bin_id, {
     skip: !file.bin_id,
   });
+
+  const [deleteFile] = mediaManagerApi.useDeleteFileMutation();
+
+  //const delete
   console.log(file);
 
   useEffect(() => {
@@ -29,6 +33,19 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
       dispatch(uploadFile(file, bin[0]));
     }
   }, [bin]);
+
+  const onRemove =
+    file.progress !== 100
+      ? undefined
+      : async () => {
+          const promise = deleteFile({
+            id: file.uploadID,
+            body: { group_id: file.group_id },
+          });
+          console.log({ promise });
+          const res = await promise;
+          console.log({ res });
+        };
 
   return (
     <>
@@ -44,7 +61,12 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
           //transform: `translateX(${file.progress || 0}%)`,
         }}
       ></Box>
-      <Thumbnail src={file.url} filename={file.filename} isEditable={true} />
+      <Thumbnail
+        src={file.url}
+        filename={file.filename}
+        isEditable={true}
+        onRemove={onRemove}
+      />
     </>
   );
 };

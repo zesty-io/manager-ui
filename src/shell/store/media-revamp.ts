@@ -244,10 +244,12 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
     req.addEventListener("abort", handleError);
     req.addEventListener("error", handleError);
 
-    // req.addEventListener('load', () => {
-    //   console.log('DONE');
-    //   dispatch(fileUploadObjectRemove(file));
-    // })
+    req.addEventListener("load", (data) => {
+      console.log("DONE");
+      console.log(data);
+
+      //   dispatch(fileUploadObjectRemove(file));
+    });
 
     if (file.file.size > 32000000) {
       /**
@@ -327,6 +329,7 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
       );
       req.addEventListener("load", () => {
         if (req.status === 201) {
+          console.log(req);
           const response = JSON.parse(req.response);
           const uploadedFile = response.data[0];
           uploadedFile.uploadID = file.uploadID;
