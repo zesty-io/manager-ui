@@ -15,7 +15,10 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { FileModalContent } from "./FileModalContent";
 import { FileTypePreview } from "./FileTypePreview";
 
-import { useGetFileQuery } from "../../../../../../shell/services/mediaManager";
+import {
+  useGetFileQuery,
+  useGetBinFilesQuery,
+} from "../../../../../../shell/services/mediaManager";
 
 const styledModal = {
   position: "absolute",
@@ -29,9 +32,10 @@ const styledModal = {
 
 interface Props {
   fileId: string;
+  binId: string;
 }
 
-export const FileModal: FC<Props> = ({ fileId }) => {
+export const FileModal: FC<Props> = ({ fileId, binId }) => {
   const history = useHistory();
   const location = useLocation();
   const { data, isLoading } = useGetFileQuery(fileId);
@@ -93,7 +97,7 @@ export const FileModal: FC<Props> = ({ fileId }) => {
                 id={data.id}
                 src={data.url}
                 filename={data.filename}
-                title={data.filename}
+                title={data.title}
                 groupId={data.group_id}
                 createdAt={data.created_at}
               />

@@ -86,7 +86,7 @@ export const FileModalContent: FC<Props> = ({
    */
   useEffect(() => {
     if (newTitle.current) {
-      newTitle.current.value = "setnewtitle";
+      newTitle.current.value = title;
     }
   }, [title, filename]);
 

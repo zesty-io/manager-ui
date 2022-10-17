@@ -139,6 +139,7 @@ export const mediaManagerApi = createApi({
     }),
     getFile: builder.query<File, string>({
       query: (id) => `/file/${id}`,
+      providesTags: (result, error, fileId) => [{ type: "File", id: fileId }],
       transformResponse: (res) => getResponseData(res)[0], // HACK this is probably not the best way to do this.
 
       // NOTE: skipping until I learn rtk-query invalidation
@@ -167,8 +168,11 @@ export const mediaManagerApi = createApi({
         body,
       }),
       invalidatesTags: (result, error, arg) => [
+        { type: "File", id: arg?.id },
         { type: "GroupData", id: arg.body?.group_id },
-        arg?.loadBinFiles ? "BinFiles" : "File",
+        arg?.loadBinFiles
+          ? { type: "BinFiles" }
+          : { type: "File", id: arg?.id },
         { type: "GroupData", id: arg?.previousGroupId },
       ],
     }),

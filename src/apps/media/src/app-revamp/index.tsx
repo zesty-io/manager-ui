@@ -2,7 +2,7 @@ import { Box, ThemeProvider } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Redirect, Route, Switch, useHistory } from "react-router";
+import { Redirect, Route, Switch, useHistory, useParams } from "react-router";
 import {
   setLockedToGroupId,
   setIsSelectDialog,
@@ -23,12 +23,16 @@ interface Props {
   addImagesCallback?: () => void;
 }
 
+type Params = { id: string };
+
 export const MediaApp = ({
   lockedToGroupId,
   isSelectDialog = false,
 }: Props) => {
   const history = useHistory();
   const dispatch = useDispatch();
+  const params = useParams<Params>();
+  const { id } = params;
 
   useEffect(() => {
     if (lockedToGroupId) {
@@ -76,7 +80,7 @@ export const MediaApp = ({
             const fileId = new URLSearchParams(location.search).get("fileId");
 
             if (fileId) {
-              return <FileModal fileId={fileId} />;
+              return <FileModal fileId={fileId} binId={id} />;
             } else {
               return null;
             }
