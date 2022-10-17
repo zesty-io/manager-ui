@@ -8,6 +8,7 @@ import {
   DialogActions,
   Button,
   CircularProgress,
+  InputLabel,
 } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
@@ -48,7 +49,7 @@ export const RenameFileModal: FC<Props> = ({
         <Typography variant="h5">Rename File</Typography>
       </DialogTitle>
       <DialogContent>
-        <Typography>New File Name</Typography>
+        <InputLabel>New File Name</InputLabel>
         <TextField
           sx={{
             mt: 1,

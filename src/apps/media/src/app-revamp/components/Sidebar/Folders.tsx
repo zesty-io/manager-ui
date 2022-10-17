@@ -118,6 +118,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
         ];
       } else {
         return binGroups
+          .filter((binGroup) => (ecoBins?.length ? true : binGroup?.length))
           .map((binGroup, idx) => {
             if (!binGroup.length) {
               return { ...combinedBins[idx], children: [] };
@@ -281,7 +282,11 @@ export const Folders = ({ lockedToGroupId }: Props) => {
             </MenuItem>
           </Menu>
         </Box>
-        <IconButton size="small" onClick={() => setOpenNewFolderDialog(true)}>
+        <IconButton
+          aria-label="Create new folder"
+          size="small"
+          onClick={() => setOpenNewFolderDialog(true)}
+        >
           <AddIcon fontSize="small" />
         </IconButton>
       </Box>
@@ -374,11 +379,13 @@ export const Folders = ({ lockedToGroupId }: Props) => {
           )}
         </>
       ) : null}
-      <NewFolderDialog
-        open={openNewFolderDialog}
-        onClose={() => setOpenNewFolderDialog(false)}
-        binId={bins?.find((bin) => bin.default)?.id}
-      />
+      {openNewFolderDialog ? (
+        <NewFolderDialog
+          open
+          onClose={() => setOpenNewFolderDialog(false)}
+          binId={bins?.find((bin) => bin.default)?.id}
+        />
+      ) : null}
     </>
   );
 };

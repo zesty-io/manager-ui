@@ -29,9 +29,11 @@ export const DnDProvider = ({
 }: Props) => {
   const dispatch = useDispatch();
   const { data: currentGroup, isFetching: groupIsFetching } =
-    useGetGroupDataQuery(currentGroupId);
-  const { data: binData, isFetching: binIsFetching } =
-    useGetBinQuery(currentBinId);
+    useGetGroupDataQuery(currentGroupId, { skip: !currentGroupId });
+  const { data: binData, isFetching: binIsFetching } = useGetBinQuery(
+    currentBinId,
+    { skip: !currentBinId }
+  );
   const loading = binIsFetching || groupIsFetching;
   /*
   const { data: binData, isFetching } = mediaManagerApi.useGetBinQuery(

@@ -104,6 +104,7 @@ export const FileModal: FC<Props> = ({ fileId, onSetIsFileModalError }) => {
                 title={data.title}
                 groupId={data.group_id}
                 createdAt={data.created_at}
+                binId={data.bin_id}
               />
             </Box>
             {/* </WithLoader> */}

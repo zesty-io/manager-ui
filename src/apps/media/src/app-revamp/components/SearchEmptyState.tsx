@@ -42,7 +42,7 @@ export const SearchEmptyState = ({ searchTerm }: Props) => {
               size="small"
               color="inherit"
               variant="contained"
-              startIcon={<BackupTableRoundedIcon />}
+              startIcon={<BackupTableRoundedIcon color="action" />}
               onClick={() => history.push("/media")}
             >
               Go to All Media
