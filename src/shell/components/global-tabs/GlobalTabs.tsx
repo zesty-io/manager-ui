@@ -70,6 +70,8 @@ export default memo(function GlobalTabs() {
   const queryData = useMemo(() => {
     return {
       mediaManager: {
+        bins,
+        ecoBins,
         binGroups: binGroups?.flat(),
       },
     };

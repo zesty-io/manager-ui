@@ -277,6 +277,15 @@ export function createTab(
   // resolve ZUID from store to determine display information
   switch (prefix) {
     case "1":
+      const allBins = [
+        ...(queryData?.mediaManager?.ecoBins || []),
+        ...(queryData?.mediaManager?.bins || []),
+      ];
+      const bin = allBins?.find((bin: any) => bin.id === zuid);
+      if (bin) {
+        tab.name = bin.name;
+      }
+      break;
     case "2":
       const group = queryData?.mediaManager?.binGroups?.find(
         (group: any) => group.id === zuid
