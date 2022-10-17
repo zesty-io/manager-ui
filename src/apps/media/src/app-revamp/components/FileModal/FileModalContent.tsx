@@ -39,11 +39,13 @@ import DriveFolderUploadRoundedIcon from "@mui/icons-material/DriveFolderUploadR
 import FolderRoundedIcon from "@mui/icons-material/FolderRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import DeleteFileModal from "./DeleteFileModal";
+import { MoveFileDialog } from "./MoveFileDialog";
 interface Props {
   id?: string;
   src?: string;
   filename?: string;
   groupId?: string;
+  binId?: string;
   title?: string;
   user?: {
     email?: string;
@@ -55,6 +57,7 @@ interface Props {
 
 export const FileModalContent: FC<Props> = ({
   id,
+  binId,
   src,
   filename,
   groupId,
@@ -72,6 +75,7 @@ export const FileModalContent: FC<Props> = ({
   const [showRenameFileModal, setShowRenameFileModal] =
     useState<boolean>(false);
   const [showSettingsDropdown, setShowSettingsDropdown] = useState(null);
+  const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
   const openSettings = Boolean(showSettingsDropdown);
 
   const [deleteFile] = mediaManagerApi.useDeleteFileMutation();
@@ -111,13 +115,14 @@ export const FileModalContent: FC<Props> = ({
    */
   const handleUpdateMutation = (
     renamedFilename?: string,
-    isAltTextUpdate?: boolean
+    isAltTextUpdate?: boolean,
+    newGroupId = groupId
   ) => {
     if (isAltTextUpdate) {
       updateFileAltTextMutation({
         id,
         body: {
-          group_id: groupId,
+          group_id: newGroupId,
           title: newTitle.current.value,
           filename:
             `${renamedFilename}.${fileType}` || `${newFilename}.${fileType}`,
@@ -126,8 +131,9 @@ export const FileModalContent: FC<Props> = ({
     } else {
       updateFile({
         id,
+        previousGroupId: groupId,
         body: {
-          group_id: groupId,
+          group_id: newGroupId,
           title: newTitle.current.value,
           filename:
             `${renamedFilename}.${fileType}` || `${newFilename}.${fileType}`,
@@ -157,6 +163,19 @@ export const FileModalContent: FC<Props> = ({
           onDeleteFile={onDeleteFile}
           filename={newFilename}
           onClose={() => setShowDeleteFileModal(false)}
+        />
+      )}
+
+      {showMoveFileDialog && (
+        <MoveFileDialog
+          handleGroupChange={(newGroupId: string) =>
+            handleUpdateMutation(filename, false, newGroupId)
+          }
+          binId={binId}
+          onClose={() => {
+            setShowMoveFileDialog(false);
+            handleCloseModal();
+          }}
         />
       )}
 
@@ -225,6 +244,12 @@ export const FileModalContent: FC<Props> = ({
                 <WidgetsRoundedIcon />
               </ListItemIcon>
               <ListItemText>Copy ZUID</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={() => setShowMoveFileDialog(true)}>
+              <ListItemIcon>
+                <DriveFolderUploadRoundedIcon />
+              </ListItemIcon>
+              <ListItemText>Move to</ListItemText>
             </MenuItem>
             <MenuItem onClick={() => setShowDeleteFileModal(true)}>
               <ListItemIcon>
