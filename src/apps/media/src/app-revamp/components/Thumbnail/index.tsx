@@ -1,16 +1,8 @@
 import { FC, useState, useRef, useEffect, DragEvent } from "react";
-import {
-  CardMedia,
-  Typography,
-  Card,
-  Box,
-  Checkbox as MuiCheckbox,
-} from "@mui/material";
+import { CardMedia, Typography, Card, Box } from "@mui/material";
 import { fileExtension } from "../../utils/fileUtils";
 import { ThumbnailContent } from "./ThumbnailContent";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useTheme } from "@mui/material/styles";
 
 // file icons import
@@ -27,12 +19,10 @@ import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 
 import { File } from "../../../../../../shell/services/types";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  deselectFile,
-  selectFile,
-  State,
-} from "../../../../../../shell/store/media-revamp";
+
+import { ThumbnailHover } from "./ThumbnailHover";
+import { ThumbnailSelect } from "./ThumbnailSelect";
+import { ThumbnailExtensionChip } from "./ThumbnailExtensionChip";
 
 interface ThumbnailProps {
   src?: string;
@@ -64,14 +54,6 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   const theme = useTheme();
   const imageEl = useRef<HTMLImageElement>();
   const [imageOrientation, setImageOrientation] = useState<string>("");
-  const thumbnailRef = useRef<HTMLDivElement>();
-  const selectedFiles = useSelector(
-    (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
-  );
-  const dispatch = useDispatch();
-  const isSelectDialog = useSelector(
-    (state: { mediaRevamp: State }) => state.mediaRevamp.isSelectDialog
-  );
 
   const onDragStart = (event: DragEvent) => {
     event.dataTransfer.setData(
@@ -79,68 +61,6 @@ export const Thumbnail: FC<ThumbnailProps> = ({
       JSON.stringify({ id, filename, group_id, bin_id })
     );
     event.dataTransfer.effectAllowed = "move";
-  };
-
-  const RemoveIcon = () => {
-    return (
-      <>
-        {onRemove && (
-          <Box
-            onClick={onRemove}
-            sx={{
-              right: 9,
-              top: 8,
-              position: "absolute",
-              backgroundColor: "grey.100",
-              width: "24px",
-              height: "24px",
-              borderRadius: "100%",
-              cursor: "pointer",
-              textAlign: "center",
-            }}
-          >
-            <CloseRoundedIcon
-              fontSize="small"
-              sx={{
-                mt: 0.3,
-                color: "grey.400",
-              }}
-            />
-          </Box>
-        )}
-      </>
-    );
-  };
-
-  const Checkbox = () => {
-    const checked = selectedFiles.some((file) => file.id === id);
-    return (
-      <MuiCheckbox
-        sx={{
-          display: checked ? "block" : "none",
-          position: "absolute",
-          top: 8,
-          right: 8,
-          padding: 0,
-        }}
-        checked={checked}
-        icon={<CheckCircleIcon sx={{ color: "common.white" }} />}
-        checkedIcon={
-          <CheckCircleIcon
-            sx={{ backgroundColor: "common.white", borderRadius: "100%" }}
-            color="primary"
-          />
-        }
-        onChange={(evt, checked) => {
-          if (checked) {
-            dispatch(selectFile(file));
-          } else {
-            dispatch(deselectFile(file));
-          }
-        }}
-        onClick={(evt) => evt.stopPropagation()}
-      />
-    );
   };
 
   const styledCard = {
@@ -185,10 +105,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     }
   };
 
-  /**
-   * @description Main Thumbnail component display
-   */
-  switch (fileExtension(filename)) {
+  const ext = fileExtension(filename);
+
+  switch (ext) {
     case "jpg":
     case "jpeg":
     case "png":
@@ -197,7 +116,6 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "webp":
       return (
         <Card
-          ref={thumbnailRef}
           sx={styledCard}
           elevation={0}
           onClick={onClick}
@@ -218,25 +136,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               "&:hover": {},
             }}
           >
-            <Box
-              sx={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
-                  "& .MuiCheckbox-root": {
-                    display: "block",
-                  },
-                },
-              }}
-            >
-              {isSelectDialog && <Checkbox />}
-            </Box>
-            <RemoveIcon />
-
+            <ThumbnailHover />
+            <ThumbnailSelect file={file} />
+            <ThumbnailExtensionChip ext={ext} />
             <CardMedia
               component="img"
               ref={imageEl}
@@ -254,12 +156,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
-            backgroundColor="blue.100"
-            color="blue.600"
           />
         </Card>
       );
@@ -277,24 +176,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
-            <Box
-              sx={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
-                  "& .MuiCheckbox-root": {
-                    display: "block",
-                  },
-                },
-              }}
-            >
-              {isSelectDialog && <Checkbox />}
-            </Box>
-            <RemoveIcon />
+            <ThumbnailHover />
+            <ThumbnailSelect file={file} />
             <CardMedia
               component="img"
               data-src={excelImg}
@@ -304,12 +187,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
-            backgroundColor="green.50"
-            color="green.600"
           />
         </Card>
       );
@@ -325,24 +205,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
-            <Box
-              sx={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
-                  "& .MuiCheckbox-root": {
-                    display: "block",
-                  },
-                },
-              }}
-            >
-              {isSelectDialog && <Checkbox />}
-            </Box>
-            <RemoveIcon />
+            <ThumbnailHover />
+            <ThumbnailSelect file={file} />
             <CardMedia
               component="img"
               data-src={csvImg}
@@ -352,12 +216,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
-            backgroundColor="green.50"
-            color="green.600"
           />
         </Card>
       );
@@ -375,24 +236,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
-            <Box
-              sx={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
-                  "& .MuiCheckbox-root": {
-                    display: "block",
-                  },
-                },
-              }}
-            >
-              {isSelectDialog && <Checkbox />}
-            </Box>
-            <RemoveIcon />
+            <ThumbnailHover />
+            <ThumbnailSelect file={file} />
             <CardMedia
               component="img"
               data-src={wordImg}
@@ -402,12 +247,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
-            backgroundColor="blue.100"
-            color="blue.600"
           />
         </Card>
       );
@@ -423,24 +265,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
-            <Box
-              sx={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
-                  "& .MuiCheckbox-root": {
-                    display: "block",
-                  },
-                },
-              }}
-            >
-              {isSelectDialog && <Checkbox />}
-            </Box>
-            <RemoveIcon />
+            <ThumbnailHover />
+            <ThumbnailSelect file={file} />
             <CardMedia
               component="img"
               data-src={pdfImg}
@@ -450,12 +276,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
-            backgroundColor="red.100"
-            color="red.600"
           />
         </Card>
       );
@@ -473,24 +296,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
-            <Box
-              sx={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
-                  "& .MuiCheckbox-root": {
-                    display: "block",
-                  },
-                },
-              }}
-            >
-              {isSelectDialog && <Checkbox />}
-            </Box>
-            <RemoveIcon />
+            <ThumbnailHover />
+            <ThumbnailSelect file={file} />
             <CardMedia
               component="img"
               data-src={pptImg}
@@ -500,12 +307,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
-            backgroundColor="red.100"
-            color="red.600"
           />
         </Card>
       );
@@ -525,24 +329,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
-            <Box
-              sx={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
-                  "& .MuiCheckbox-root": {
-                    display: "block",
-                  },
-                },
-              }}
-            >
-              {isSelectDialog && <Checkbox />}
-            </Box>
-            <RemoveIcon />
+            <ThumbnailHover />
+            <ThumbnailSelect file={file} />
             <CardMedia
               component="img"
               data-src={mpImg}
@@ -552,12 +340,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
-            backgroundColor="purple.50"
-            color="purple.900"
           />
         </Card>
       );
@@ -584,24 +369,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               backgroundColor: "#000",
             }}
           >
-            <Box
-              sx={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
-                  "& .MuiCheckbox-root": {
-                    display: "block",
-                  },
-                },
-              }}
-            >
-              {isSelectDialog && <Checkbox />}
-            </Box>
-            <RemoveIcon />
+            <ThumbnailHover />
+            <ThumbnailSelect file={file} />
             {showVideo && (
               <CardMedia
                 component="video"
@@ -631,12 +400,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
-            backgroundColor="purple.50"
-            color="purple.900"
           />
         </Card>
       );
@@ -655,24 +421,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
-            <Box
-              sx={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
-                  "& .MuiCheckbox-root": {
-                    display: "block",
-                  },
-                },
-              }}
-            >
-              {isSelectDialog && <Checkbox />}
-            </Box>
-            <RemoveIcon />
+            <ThumbnailHover />
+            <ThumbnailSelect file={file} />
             <CardMedia
               component="img"
               data-src={zipImg}
@@ -682,12 +432,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
-            backgroundColor="grey.50"
-            color="grey.900"
           />
         </Card>
       );
@@ -708,24 +455,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
-            <Box
-              sx={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
-                  "& .MuiCheckbox-root": {
-                    display: "block",
-                  },
-                },
-              }}
-            >
-              {isSelectDialog && <Checkbox />}
-            </Box>
-            <RemoveIcon />
+            <ThumbnailHover />
+            <ThumbnailSelect file={file} />
             <CardMedia
               component="img"
               data-src={defaultImg}
@@ -735,12 +466,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
-            backgroundColor="grey.50"
-            color="grey.900"
           />
         </Card>
       );
@@ -756,24 +484,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
-            <Box
-              sx={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
-                  "& .MuiCheckbox-root": {
-                    display: "block",
-                  },
-                },
-              }}
-            >
-              {isSelectDialog && <Checkbox />}
-            </Box>
-            <RemoveIcon />
+            <ThumbnailHover />
+            <ThumbnailSelect file={file} />
             <CardMedia
               component="img"
               data-src={numberImg}
@@ -783,12 +495,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
-            backgroundColor="green.50"
-            color="green.600"
           />
         </Card>
       );
@@ -804,24 +513,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
-            <Box
-              sx={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
-                  "& .MuiCheckbox-root": {
-                    display: "block",
-                  },
-                },
-              }}
-            >
-              {isSelectDialog && <Checkbox />}
-            </Box>
-            <RemoveIcon />
+            <ThumbnailHover />
+            <ThumbnailSelect file={file} />
             <Box
               sx={{
                 display: "flex",
@@ -838,12 +531,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             </Box>
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
-            backgroundColor="red.100"
-            color="red.600"
           />
         </Card>
       );
@@ -859,24 +549,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               display: "flex",
             }}
           >
-            <Box
-              sx={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
-                  "& .MuiCheckbox-root": {
-                    display: "block",
-                  },
-                },
-              }}
-            >
-              {isSelectDialog && <Checkbox />}
-            </Box>
-            <RemoveIcon />
+            <ThumbnailHover />
+            <ThumbnailSelect file={file} />
             <Box
               sx={{
                 display: "flex",
@@ -899,12 +573,9 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             </Box>
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
-            backgroundColor="grey.200"
-            color="black.600"
           />
         </Card>
       );
