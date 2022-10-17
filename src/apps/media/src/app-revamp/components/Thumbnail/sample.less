@@ -1,0 +1,90 @@
+@import "~@zesty-io/core/colors.less";
+@import "~@zesty-io/core/typography.less";
+
+.Load {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.Loading {
+  animation: shimmer 3s infinite linear;
+  background: linear-gradient(0.35turn, #eff1f3 25%, #e2e2e2 45%, #eff1f3 65%);
+  background-size: 1000px 100%;
+
+  // Perf: Hack to trigger hardware acceleration for animation performance
+  transform: translate3d(0, 0, 0);
+}
+
+.Card {
+  // Grid Image
+  img {
+    width: 100%;
+    height: 167px;
+    min-height: 167px;
+    object-fit: contain;
+    display: block;
+  }
+
+  &.CardTop {
+    width: 100px;
+    flex-shrink: 0;
+
+    // Preview Strip Image
+    img {
+      width: 100%;
+      height: 100px;
+      object-fit: contain;
+      display: block;
+    }
+  }
+
+  //Loading Shimmer
+  .Load {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+  }
+
+  .Loading {
+    animation: shimmer 3s infinite linear;
+    background: linear-gradient(
+      0.35turn,
+      #eff1f3 25%,
+      #e2e2e2 45%,
+      #eff1f3 65%
+    );
+    background-size: 1000px 100%;
+
+    // Perf: Hack to trigger hardware acceleration for animation performance
+    transform: translate3d(0, 0, 0);
+  }
+
+  @keyframes shimmer {
+    100% {
+      background-position: -1000px 0;
+    }
+    0% {
+      background-position: 1000px 0;
+    }
+  }
+
+  .ProgressBar {
+    position: absolute;
+    height: 100%;
+    background-color: @zesty-orange;
+    opacity: 0.5;
+  }
+
+  .Preview {
+    overflow: hidden;
+    flex: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+}

@@ -5,6 +5,7 @@ import {
   Card,
   Box,
   Checkbox as MuiCheckbox,
+  Skeleton,
 } from "@mui/material";
 import { fileExtension } from "../../utils/fileUtils";
 import { ThumbnailContent } from "./ThumbnailContent";
@@ -12,6 +13,8 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useTheme } from "@mui/material/styles";
+import styles from "./sample.less";
+import cx from "classnames";
 
 // file icons import
 import wordImg from "../../../../../../../public/images/wordImg.png";
@@ -25,6 +28,7 @@ import numberImg from "../../../../../../../public/images/numberImg.png";
 import defaultImg from "../../../../../../../public/images/defaultImg.png";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
+import { isImage } from "../../utils/fileUtils";
 
 import { File } from "../../../../../../shell/services/types";
 import { useDispatch, useSelector } from "react-redux";
@@ -63,8 +67,10 @@ export const Thumbnail: FC<ThumbnailProps> = ({
 }) => {
   const theme = useTheme();
   const imageEl = useRef<HTMLImageElement>();
+  const [lazyLoading, setLazyLoading] = useState(true);
   const [imageOrientation, setImageOrientation] = useState<string>("");
   const thumbnailRef = useRef<HTMLDivElement>();
+  const [isLoadingImage, setIsLoadingImage] = useState<boolean>(true);
   const selectedFiles = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
   );
@@ -176,6 +182,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
    * @note imageOrientation will be placed as a condition in the Image's parent component
    */
   const handleImageLoad = () => {
+    setLazyLoading(false);
     const naturalHeight = imageEl.current.naturalHeight;
     const naturalWidth = imageEl.current.naturalWidth;
     if (naturalHeight > naturalWidth) {
@@ -248,10 +255,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 objectFit: "contain",
                 overflow: "hidden",
                 height: "100%",
-                display: "table-cell",
                 verticalAlign: "bottom",
               }}
             />
+
+            {isImage(file) && lazyLoading ? (
+              <div className={cx(styles.Load, styles.Loading)}></div>
+            ) : null}
           </Box>
           <ThumbnailContent
             extension={fileExtension(filename)}
