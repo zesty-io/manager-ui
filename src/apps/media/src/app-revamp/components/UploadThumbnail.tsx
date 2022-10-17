@@ -10,10 +10,11 @@ import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 import {
   uploadFile,
   UploadFile,
+  Upload,
 } from "../../../../../shell/store/media-revamp";
 
 interface Props {
-  file: UploadFile;
+  file: Upload;
 }
 
 export const UploadThumbnail: FC<Props> = ({ file }) => {
@@ -29,17 +30,17 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
   console.log(file);
 
   useEffect(() => {
-    if (bin) {
+    if (bin && file.status === "staged") {
       dispatch(uploadFile(file, bin[0]));
     }
   }, [bin]);
 
   const onRemove =
-    file.progress !== 100
+    file.status !== "success"
       ? undefined
       : async () => {
           const promise = deleteFile({
-            id: file.uploadID,
+            id: file.id,
             body: { group_id: file.group_id },
           });
           console.log({ promise });
@@ -47,12 +48,18 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
           console.log({ res });
         };
 
+  const getProgress = () => {
+    if (file.status === "success") return 100;
+    if (file.status === "inProgress") return file.progress;
+    return 0;
+  };
+
   return (
     <>
       <Box
         sx={{
           backgroundColor: "rgba(255,255,255,.5)",
-          width: `${100 - file.progress}%`,
+          width: `${100 - getProgress()}%`,
           height: "100%",
           position: "absolute",
           right: "0",

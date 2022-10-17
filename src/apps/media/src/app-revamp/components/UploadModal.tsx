@@ -81,7 +81,9 @@ export const UploadModal: FC = () => {
           <Button
             color="primary"
             variant="contained"
-            disabled={filesToUpload.some((file) => file.progress !== 100)}
+            disabled={filesToUpload.some(
+              (file) => file.status === "inProgress" || file.status === "staged"
+            )}
             onClick={() => {
               dispatch(dismissFileUploads());
               dispatch(

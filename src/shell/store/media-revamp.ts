@@ -16,14 +16,28 @@ export type StoreFile = {
   preview?: string;
 };
 
+export type UploadFile = {
+  file: File;
+  filename?: string;
+  uploadID: string;
+  url?: string;
+  progress?: number;
+  loading?: boolean;
+  bin_id?: string;
+  group_id?: string;
+};
+
 type FileUploadStart = StoreFile & { file: File };
-type FileUploadSuccess = StoreFile & FileBase;
+type FileUploadSuccess = StoreFile & FileBase & { id: string };
 type FileUploadProgress = { uploadID: string; progress: number };
-type FileUploadStage = { file: File; bin_id: string; group_id: string };
+type FileUploadStageArg = { file: File; bin_id: string; group_id: string };
 
 type StagedUpload = {
   status: "staged";
-} & UploadFile;
+  uploadID: string;
+  url: string;
+  filename: string;
+} & FileUploadStageArg;
 type InProgressUpload = {
   status: "inProgress";
   progress: number;
@@ -31,11 +45,19 @@ type InProgressUpload = {
 type FailedUpload = {
   status: "failed";
 } & UploadFile;
-type SuccessfulUpload = {
-  status: "success";
-} & UploadFile;
+type SuccessfulUpload = Omit<
+  {
+    status: "success";
+    id: string;
+  } & UploadFile,
+  "file"
+>;
 
-type Upload = StagedUpload | InProgressUpload | FailedUpload | SuccessfulUpload;
+export type Upload =
+  | StagedUpload
+  | InProgressUpload
+  | FailedUpload
+  | SuccessfulUpload;
 export type State = {
   uploads: Upload[];
   lockedToGroupId: string;
@@ -55,7 +77,7 @@ const mediaSlice = createSlice({
   name: "mediaRevamp",
   initialState,
   reducers: {
-    fileUploadStage(state, action: { payload: FileUploadStage[] }) {
+    fileUploadStage(state, action: { payload: FileUploadStageArg[] }) {
       const newUploads = action.payload.map((file) => {
         return {
           status: "staged" as const,
@@ -73,6 +95,7 @@ const mediaSlice = createSlice({
     // },
 
     fileUploadStart(state, action: { payload: FileUploadStart }) {
+      console.log("fileUploadStart()");
       const index = state.uploads.findIndex(
         (upload) =>
           upload.status === "staged" &&
@@ -81,11 +104,15 @@ const mediaSlice = createSlice({
       if (index !== -1) {
         const oldData = state.uploads[index];
         if (oldData.status === "staged") {
+          console.log("hello");
           const { file, ...data } = action.payload;
+          const uploads = [...state.uploads];
 
-          state.uploads[index] = { ...oldData, status: "inProgress", ...data };
+          uploads[index] = { ...oldData, ...data, status: "inProgress" };
+          return { ...state, uploads };
         }
       }
+      return state;
     },
     fileUploadReset(state) {
       state.uploads = [];
@@ -94,24 +121,42 @@ const mediaSlice = createSlice({
       const uploadingFile = state.uploads.find(
         (file) => file.uploadID === action.payload.uploadID
       );
-      if (uploadingFile) {
+      if (uploadingFile && uploadingFile.status === "inProgress") {
         uploadingFile.progress = action.payload.progress;
       }
     },
     fileUploadSuccess(state, action: { payload: FileUploadSuccess }) {
-      const uploadingFile = state.uploads.find(
+      const index = state.uploads.findIndex(
         (file) => file.uploadID === action.payload.uploadID
       );
-      if (uploadingFile) {
-        uploadingFile.loading = false;
-        // uploadingFile.id = action.payload.id;
-        // uploadingFile.title = action.payload.title;
-        uploadingFile.filename = action.payload.filename;
-        uploadingFile.url = action.payload.url;
+      if (index !== -1) {
+        const uploadingFile = state.uploads[index];
+        if (uploadingFile.status === "inProgress") {
+          const { file, ...rest } = uploadingFile;
+          const newUploadingFile = {
+            ...rest,
+            loading: false,
+            filename: action.payload.filename,
+            url: action.payload.url,
+            status: "success" as const,
+            id: action.payload.id,
+          };
+          const uploads = [...state.uploads];
+          uploads[index] = newUploadingFile;
+          return { ...state, uploads };
 
-        // drop in-memory file object
-        // delete uploadingFile.file;
+          //uploadingFile.loading = false;
+          // uploadingFile.id = action.payload.id;
+          // uploadingFile.title = action.payload.title;
+          //uploadingFile.filename = action.payload.filename;
+          //uploadingFile.url = action.payload.url;
+          //uploadingFile.status = 'success'
+
+          // drop in-memory file object
+          // delete uploadingFile.file;
+        }
       }
+      return state;
     },
     fileUploadError(state, action) {
       const fileIndex = state.uploads.findIndex(
@@ -204,16 +249,6 @@ async function getSignedUrl(file: any, bin: Bin) {
 }
 
 //type FileMonstrosity = {file: File } & FileAugmentation & FileBase
-export type UploadFile = {
-  file: File;
-  filename?: string;
-  uploadID: string;
-  url?: string;
-  progress?: number;
-  loading?: boolean;
-  bin_id?: string;
-  group_id?: string;
-};
 export function uploadFile(fileArg: UploadFile, bin: Bin) {
   return async (dispatch: Dispatch, getState: () => AppState) => {
     const userZUID = getState().user.ZUID;
@@ -370,14 +405,19 @@ export function dismissFileUploads() {
     const state: State = getState().mediaRevamp;
     const stagedUploads = state.uploads.filter(
       (upload) => upload.status === "staged"
-    );
+    ) as StagedUpload[];
     const failedUploads = state.uploads.filter(
       (upload) => upload.status === "failed"
-    );
+    ) as FailedUpload[];
     const successfulUploads = state.uploads.filter(
       (upload) => upload.status === "success"
-    );
-    if (stagedUploads.some((file) => file.progress !== 100)) return;
+    ) as SuccessfulUpload[];
+    if (
+      state.uploads.some(
+        (file) => file.status === "staged" || file.status === "inProgress"
+      )
+    )
+      return;
     //const successfulUploads = state.stagedUploads.length;
     //const failedUploads = state.failedUploads.length;
     console.log({ successfulUploads, failedUploads, stagedUploads });
