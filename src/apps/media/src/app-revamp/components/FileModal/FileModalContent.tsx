@@ -69,7 +69,7 @@ export const FileModalContent: FC<Props> = ({
   handleCloseModal,
 }) => {
   const newTitle = useRef<any>("");
-  const [isFileUrlCopied, setIsFileUrlCopied] = useState<boolean>(false);
+  const [isCopied, setIsCopied] = useState<boolean>(false);
   const [newFilename, setNewFilename] = useState<string>(
     filename.substring(0, filename.lastIndexOf(".")) || filename
   );
@@ -115,13 +115,13 @@ export const FileModalContent: FC<Props> = ({
   /**
    * @description Used for copying the alttext's value
    */
-  const handleCopyClick = () => {
+  const handleCopyClick = (data: string) => {
     navigator?.clipboard
-      ?.writeText(src)
+      ?.writeText(data)
       .then(() => {
-        setIsFileUrlCopied(true);
+        setIsCopied(true);
         setTimeout(() => {
-          setIsFileUrlCopied(false);
+          setIsCopied(false);
         }, 1500);
       })
       .catch((err) => {
@@ -269,9 +269,9 @@ export const FileModalContent: FC<Props> = ({
               </ListItemIcon>
               <ListItemText>Rename</ListItemText>
             </MenuItem>
-            <MenuItem>
+            <MenuItem onClick={() => handleCopyClick(id)}>
               <ListItemIcon>
-                <WidgetsRoundedIcon />
+                {isCopied ? <CheckIcon /> : <WidgetsRoundedIcon />}
               </ListItemIcon>
               <ListItemText>Copy ZUID</ListItemText>
             </MenuItem>
@@ -301,10 +301,10 @@ export const FileModalContent: FC<Props> = ({
             disableUnderline: true,
             endAdornment: (
               <InputAdornment position="end">
-                {isFileUrlCopied ? (
+                {isCopied ? (
                   <CheckIcon />
                 ) : (
-                  <IconButton onClick={() => handleCopyClick()}>
+                  <IconButton onClick={() => handleCopyClick(src)}>
                     <ContentCopyIcon />
                   </IconButton>
                 )}
