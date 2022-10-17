@@ -20,13 +20,13 @@ import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 
 export const UploadModal: FC = () => {
   const dispatch = useDispatch();
-  const filesToUpload: UploadFile[] = useSelector(
-    (state: AppState) => state.mediaRevamp.stagedUploads
+
+  const uploads = useSelector((state: AppState) => state.mediaRevamp.uploads);
+
+  const filesToUpload = useSelector((state: AppState) =>
+    state.mediaRevamp.uploads.filter((upload) => upload.status !== "failed")
   );
 
-  const failedUploads: StoreFile[] = useSelector(
-    (state: AppState) => state.mediaRevamp.failedUploads
-  );
   const ids = filesToUpload.length && {
     currentBinId: filesToUpload[0].bin_id,
     currentGroupId: filesToUpload[0].group_id,
@@ -34,11 +34,7 @@ export const UploadModal: FC = () => {
 
   return (
     <>
-      <Dialog
-        open={Boolean(filesToUpload?.length || failedUploads?.length)}
-        maxWidth="lg"
-        fullWidth
-      >
+      <Dialog open={Boolean(uploads.length)} maxWidth="lg" fullWidth>
         <DialogTitle
           sx={{
             display: "flex",
@@ -106,9 +102,8 @@ export const UploadModal: FC = () => {
 };
 
 const UploadErrors = () => {
-  const failedUploads: StoreFile[] = useSelector(
-    (state: AppState) => state.mediaRevamp.failedUploads
-  );
+  const uploads = useSelector((state: AppState) => state.mediaRevamp.uploads);
+  const failedUploads = uploads.filter((upload) => upload.status === "failed");
   if (failedUploads.length === 0) return null;
   return (
     <Box sx={{ backgroundColor: "error" }}>

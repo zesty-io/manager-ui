@@ -19,22 +19,32 @@ export type StoreFile = {
 type FileUploadStart = StoreFile & { file: File };
 type FileUploadSuccess = StoreFile & FileBase;
 type FileUploadProgress = { uploadID: string; progress: number };
-type FileUploadSetPreview = { uploadID: string; preview: string };
 type FileUploadStage = { file: File; bin_id: string; group_id: string };
 
+type StagedUpload = {
+  status: "staged";
+} & UploadFile;
+type InProgressUpload = {
+  status: "inProgress";
+  progress: number;
+} & UploadFile;
+type FailedUpload = {
+  status: "failed";
+} & UploadFile;
+type SuccessfulUpload = {
+  status: "success";
+} & UploadFile;
+
+type Upload = StagedUpload | InProgressUpload | FailedUpload | SuccessfulUpload;
 export type State = {
-  inProgressUploads: StoreFile[];
-  stagedUploads: UploadFile[];
-  failedUploads: StoreFile[];
+  uploads: Upload[];
   lockedToGroupId: string;
   isSelectDialog: boolean;
   selectedFiles: FileBase[];
   limitSelected: number | null;
 };
 const initialState: State = {
-  inProgressUploads: [],
-  stagedUploads: [],
-  failedUploads: [],
+  uploads: [],
   lockedToGroupId: "",
   isSelectDialog: false,
   selectedFiles: [],
@@ -46,15 +56,16 @@ const mediaSlice = createSlice({
   initialState,
   reducers: {
     fileUploadStage(state, action: { payload: FileUploadStage[] }) {
-      const newObjects = action.payload.map((file) => {
+      const newUploads = action.payload.map((file) => {
         return {
+          status: "staged" as const,
           uploadID: uuidv4(),
           url: URL.createObjectURL(file.file),
           filename: file.file.name,
           ...file,
         };
       });
-      state.stagedUploads = [...state.stagedUploads, ...newObjects];
+      state.uploads = [...state.uploads, ...newUploads];
     },
 
     // fileUploadObjectRemove(state, action: { payload: any }) {
@@ -62,24 +73,25 @@ const mediaSlice = createSlice({
     // },
 
     fileUploadStart(state, action: { payload: FileUploadStart }) {
-      const { file, ...data } = action.payload;
-      state.inProgressUploads.push(data);
-    },
-    fileUploadSetPreview(state, action: { payload: FileUploadSetPreview }) {
-      const uploadingFile = state.inProgressUploads.find(
-        (file) => file.uploadID === action.payload.uploadID
+      const index = state.uploads.findIndex(
+        (upload) =>
+          upload.status === "staged" &&
+          upload.uploadID === action.payload.uploadID
       );
-      if (uploadingFile) {
-        uploadingFile.preview = action.payload.preview;
+      if (index !== -1) {
+        const oldData = state.uploads[index];
+        if (oldData.status === "staged") {
+          const { file, ...data } = action.payload;
+
+          state.uploads[index] = { ...oldData, status: "inProgress", ...data };
+        }
       }
     },
     fileUploadReset(state) {
-      state.inProgressUploads = [];
-      state.stagedUploads = [];
-      state.failedUploads = [];
+      state.uploads = [];
     },
     fileUploadProgress(state, action: { payload: FileUploadProgress }) {
-      const uploadingFile = state.stagedUploads.find(
+      const uploadingFile = state.uploads.find(
         (file) => file.uploadID === action.payload.uploadID
       );
       if (uploadingFile) {
@@ -87,7 +99,7 @@ const mediaSlice = createSlice({
       }
     },
     fileUploadSuccess(state, action: { payload: FileUploadSuccess }) {
-      const uploadingFile = state.stagedUploads.find(
+      const uploadingFile = state.uploads.find(
         (file) => file.uploadID === action.payload.uploadID
       );
       if (uploadingFile) {
@@ -98,22 +110,18 @@ const mediaSlice = createSlice({
         uploadingFile.url = action.payload.url;
 
         // drop in-memory file object
-        delete uploadingFile.file;
+        // delete uploadingFile.file;
       }
     },
     fileUploadError(state, action) {
-      const fileIndex = state.inProgressUploads.findIndex(
+      const fileIndex = state.uploads.findIndex(
         (file) => file.uploadID === action.payload.uploadID
       );
       if (fileIndex !== -1) {
-        const failedFile = state.inProgressUploads.splice(fileIndex, 1);
-        state.failedUploads = [...failedFile, ...state.failedUploads];
-      }
-      const tempFileIndex = state.stagedUploads.findIndex(
-        (file) => file.uploadID === action.payload.uploadID
-      );
-      if (tempFileIndex !== -1) {
-        state.stagedUploads.splice(fileIndex, 1);
+        const { status, ...restFile } = state.uploads[
+          fileIndex
+        ] as InProgressUpload;
+        state.uploads[fileIndex] = { status: "failed", ...restFile };
       }
     },
     setIsSelectDialog(state, action: { payload: boolean }) {
@@ -152,7 +160,6 @@ export const {
   // fileUploadObjectRemove,
   fileUploadStart,
   fileUploadProgress,
-  fileUploadSetPreview,
   fileUploadSuccess,
   fileUploadError,
   setIsSelectDialog,
@@ -361,14 +368,23 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
 export function dismissFileUploads() {
   return async (dispatch: Dispatch, getState: () => AppState) => {
     const state: State = getState().mediaRevamp;
-    if (state.stagedUploads.some((file) => file.progress !== 100)) return;
-    const successfulUploads = state.stagedUploads.length;
-    const failedUploads = state.failedUploads.length;
-    console.log({ successfulUploads, failedUploads });
+    const stagedUploads = state.uploads.filter(
+      (upload) => upload.status === "staged"
+    );
+    const failedUploads = state.uploads.filter(
+      (upload) => upload.status === "failed"
+    );
+    const successfulUploads = state.uploads.filter(
+      (upload) => upload.status === "success"
+    );
+    if (stagedUploads.some((file) => file.progress !== 100)) return;
+    //const successfulUploads = state.stagedUploads.length;
+    //const failedUploads = state.failedUploads.length;
+    console.log({ successfulUploads, failedUploads, stagedUploads });
     if (successfulUploads) {
       dispatch(
         notify({
-          message: `Successfully uploaded ${successfulUploads} files`,
+          message: `Successfully uploaded ${successfulUploads.length} files`,
           kind: "success",
         })
       );
@@ -376,7 +392,7 @@ export function dismissFileUploads() {
     if (failedUploads) {
       dispatch(
         notify({
-          message: `Failed to upload ${failedUploads} files`,
+          message: `Failed to upload ${failedUploads.length} files`,
           kind: "warn",
         })
       );
