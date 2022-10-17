@@ -132,7 +132,7 @@ export const FileModalContent: FC<Props> = ({
   /**
    * @description Used to call api everytime the filename and alttext is updated
    */
-  const handleUpdateMutation = async (
+  const handleUpdateMutation = (
     renamedFilename?: string,
     isAltTextUpdate?: boolean,
     newGroupId = groupId
@@ -142,7 +142,7 @@ export const FileModalContent: FC<Props> = ({
     if (fileType) constructedFileType = `.${fileType}`;
 
     if (isAltTextUpdate) {
-      const res = await updateFileAltTextMutation({
+      updateFileAltTextMutation({
         id,
         body: {
           group_id: newGroupId,
@@ -153,7 +153,7 @@ export const FileModalContent: FC<Props> = ({
         },
       });
     } else {
-      const res = await updateFile({
+      updateFile({
         id,
         previousGroupId: groupId,
         body: {
