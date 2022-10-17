@@ -89,7 +89,10 @@ export const Folders = ({ lockedToGroupId }: Props) => {
     };
   }, []);
 
-  const combinedBins = [...(ecoBins || []), ...(bins || [])];
+  const combinedBins = useMemo(
+    () => [...(ecoBins || []), ...(bins || [])],
+    [ecoBins, bins]
+  );
 
   const { data: binGroups, isLoading } =
     mediaManagerApi.useGetAllBinGroupsQuery(
@@ -118,7 +121,9 @@ export const Folders = ({ lockedToGroupId }: Props) => {
         ];
       } else {
         return binGroups
-          .filter((binGroup) => (ecoBins?.length ? true : binGroup?.length))
+          .filter((binGroup) =>
+            combinedBins.length > 1 ? true : binGroup?.length
+          )
           .map((binGroup, idx) => {
             if (!binGroup.length) {
               return { ...combinedBins[idx], children: [] };
@@ -141,7 +146,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
     } else {
       return [];
     }
-  }, [binGroups, sort]);
+  }, [binGroups, sort, combinedBins]);
 
   /* Creating a tree structure based on the hidden items. */
   const hiddenTrees = useMemo(() => {
