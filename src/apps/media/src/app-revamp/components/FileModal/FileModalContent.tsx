@@ -1,4 +1,4 @@
-import { FC, useEffect, useState, useRef } from "react";
+import { FC, useEffect, useState, useRef, useCallback } from "react";
 import {
   Typography,
   Box,
@@ -21,7 +21,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ImageIcon from "@mui/icons-material/Image";
 import { MD5 } from "../../../../../../utility/md5";
-import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
+import {
+  mediaManagerApi,
+  useUpdateFileAltTextMutation,
+} from "../../../../../../shell/services/mediaManager";
 import { fileExtension } from "../../utils/fileUtils";
 import { RenameFileModal } from "./RenameFileModal";
 import moment from "moment";
@@ -36,22 +39,25 @@ import DriveFolderUploadRoundedIcon from "@mui/icons-material/DriveFolderUploadR
 import FolderRoundedIcon from "@mui/icons-material/FolderRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import DeleteFileModal from "./DeleteFileModal";
+import { MoveFileDialog } from "./MoveFileDialog";
 interface Props {
   id?: string;
   src?: string;
   filename?: string;
   groupId?: string;
+  binId?: string;
   title?: string;
   user?: {
     email?: string;
     role?: string;
   };
-  createdAt?: string;
+  createdAt?: Date;
   handleCloseModal: () => void;
 }
 
 export const FileModalContent: FC<Props> = ({
   id,
+  binId,
   src,
   filename,
   groupId,
@@ -60,22 +66,21 @@ export const FileModalContent: FC<Props> = ({
   createdAt,
   handleCloseModal,
 }) => {
-  const theme = useTheme();
-  const location = useRouteMatch();
-  const history = useHistory();
   const newTitle = useRef<any>("");
   const [isFileUrlCopied, setIsFileUrlCopied] = useState<boolean>(false);
-  const [newFilename, setNewFilename] = useState<string>(filename);
+  const [newFilename, setNewFilename] = useState<string>(
+    filename.substring(0, filename.lastIndexOf(".")) || filename
+  );
   const [fileType, setFileType] = useState<string>(fileExtension(filename));
   const [showRenameFileModal, setShowRenameFileModal] =
     useState<boolean>(false);
   const [showSettingsDropdown, setShowSettingsDropdown] = useState(null);
+  const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
   const openSettings = Boolean(showSettingsDropdown);
 
   const [deleteFile] = mediaManagerApi.useDeleteFileMutation();
-  const [updateFile, { isLoading: updateFileIsLoading }] =
-    mediaManagerApi.useUpdateFileMutation();
-  const isLoading = updateFileIsLoading;
+  const [updateFile] = mediaManagerApi.useUpdateFileMutation();
+  const [updateFileAltTextMutation] = useUpdateFileAltTextMutation();
   const [showDeleteFileModal, setShowDeleteFileModal] =
     useState<boolean>(false);
 
@@ -84,7 +89,7 @@ export const FileModalContent: FC<Props> = ({
    */
   useEffect(() => {
     if (newTitle.current) {
-      newTitle.current.value = "setnewtitle";
+      newTitle.current.value = title;
     }
   }, [title, filename]);
 
@@ -101,28 +106,43 @@ export const FileModalContent: FC<Props> = ({
         }, 1500);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   };
 
   /**
    * @description Used to call api everytime the filename and alttext is updated
-   * @note fileType will be appended on the filename payload
    */
-  const handleUpdateMutation = (renamedFilename?: string) => {
-    const debouncedTitle = debounce(async () => {
-      updateFile({
+  const handleUpdateMutation = (
+    renamedFilename?: string,
+    isAltTextUpdate?: boolean,
+    newGroupId = groupId
+  ) => {
+    if (isAltTextUpdate) {
+      updateFileAltTextMutation({
         id,
         body: {
-          group_id: groupId,
+          group_id: newGroupId,
           title: newTitle.current.value,
-          filename: renamedFilename || newFilename,
+          filename:
+            `${renamedFilename}.${fileType}` || `${newFilename}.${fileType}`,
         },
       });
-    }, 500);
-
-    debouncedTitle();
+    } else {
+      updateFile({
+        id,
+        previousGroupId: groupId,
+        body: {
+          group_id: newGroupId,
+          title: newTitle.current.value,
+          filename:
+            `${renamedFilename}.${fileType}` || `${newFilename}.${fileType}`,
+        },
+      });
+    }
   };
+
+  const debouncedHandleUpdateMutation = debounce(handleUpdateMutation, 500);
 
   const onDeleteFile = () => {
     deleteFile({
@@ -132,7 +152,7 @@ export const FileModalContent: FC<Props> = ({
       },
     });
     handleCloseModal();
-    history.replace(location.path);
+    // history.replace(location.path);
   };
 
   return (
@@ -143,6 +163,19 @@ export const FileModalContent: FC<Props> = ({
           onDeleteFile={onDeleteFile}
           filename={newFilename}
           onClose={() => setShowDeleteFileModal(false)}
+        />
+      )}
+
+      {showMoveFileDialog && (
+        <MoveFileDialog
+          handleGroupChange={(newGroupId: string) =>
+            handleUpdateMutation(filename, false, newGroupId)
+          }
+          binId={binId}
+          onClose={() => {
+            setShowMoveFileDialog(false);
+            handleCloseModal();
+          }}
         />
       )}
 
@@ -169,7 +202,6 @@ export const FileModalContent: FC<Props> = ({
             <RenameFileModal
               handleUpdateMutation={handleUpdateMutation}
               onSetNewFilename={setNewFilename}
-              fileType={fileType}
               onClose={() => setShowRenameFileModal(null)}
               newFilename={newFilename}
             />
@@ -213,6 +245,12 @@ export const FileModalContent: FC<Props> = ({
               </ListItemIcon>
               <ListItemText>Copy ZUID</ListItemText>
             </MenuItem>
+            <MenuItem onClick={() => setShowMoveFileDialog(true)}>
+              <ListItemIcon>
+                <DriveFolderUploadRoundedIcon />
+              </ListItemIcon>
+              <ListItemText>Move to</ListItemText>
+            </MenuItem>
             <MenuItem onClick={() => setShowDeleteFileModal(true)}>
               <ListItemIcon>
                 <DeleteRoundedIcon />
@@ -252,7 +290,7 @@ export const FileModalContent: FC<Props> = ({
           aria-label="empty textarea"
           placeholder="Empty"
           inputRef={newTitle}
-          onChange={() => handleUpdateMutation()}
+          onChange={() => debouncedHandleUpdateMutation(newFilename, true)}
           multiline
           rows={3}
           fullWidth

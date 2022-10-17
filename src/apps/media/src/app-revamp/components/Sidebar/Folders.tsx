@@ -21,13 +21,7 @@ import {
   useUpdateFileMutation,
 } from "../../../../../../shell/services/mediaManager";
 import { useSelector } from "react-redux";
-import {
-  MouseEvent,
-  SyntheticEvent,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { MouseEvent, useEffect, useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { NewFolderDialog } from "../NewFolderDialog";
 
@@ -114,6 +108,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
         rootGroup = binGroups?.filter((groups) =>
           groups?.some((group) => group.id === lockedToGroupId)
         )?.[0];
+        if (!rootGroup) return [];
         rootNode = rootGroup?.find((group) => group.id === lockedToGroupId);
         return [
           {

@@ -29,7 +29,6 @@ export const UploadButton: FC<UploadButton> = ({
   const { data: binData, isFetching: binIsFetching } =
     useGetBinQuery(currentBinId);
   const loading = binIsFetching || groupIsFetching;
-  console.log({ binData, currentGroup });
   const handleFileInputChange: ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
@@ -49,7 +48,6 @@ export const UploadButton: FC<UploadButton> = ({
     );
   };
   const handleUploadButtonClick = () => {
-    console.log("click");
     hiddenFileInput.current.click();
   };
   return (

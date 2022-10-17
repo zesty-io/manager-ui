@@ -8,12 +8,16 @@ import { DnDProvider } from "../components/DnDProvider";
 import { Header } from "../components/Header";
 import { UploadModal } from "../components/UploadModal";
 import { Box, CircularProgress } from "@mui/material";
-import { FileModal } from "../components/FileModal";
 import { NotFoundState } from "../components/NotFoundState";
+import { File } from "../../../../../shell/services/types";
 
 type Params = { id: string };
 
-export const BinMedia = () => {
+interface Props {
+  addImagesCallback?: (selectedFiles: File[]) => void;
+}
+
+export const BinMedia = ({ addImagesCallback }: Props) => {
   const params = useParams<Params>();
   const { id } = params;
   const headerHeight = useSelector((state: any) => state.ui.headerHeight);
@@ -32,23 +36,20 @@ export const BinMedia = () => {
   const { data: binFiles, isFetching: isFilesFetching } =
     mediaManagerApi.useGetBinFilesQuery(id);
 
-  // not found state
-  const [notFoundTitle, setNotFoundTitle] = useState<string>("");
-  const [notFoundMessage, setNotFoundMessage] = useState<string>("");
-
   return (
     <Box
       component="main"
       sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
     >
       {isError || isInvalidFileId ? (
-        <NotFoundState title={notFoundTitle} message={notFoundMessage} />
+        <NotFoundState />
       ) : (
         <>
           <Header
             title={binData?.[0]?.name}
             id={binData?.[0]?.id}
             binId={binData?.[0]?.id}
+            addImagesCallback={addImagesCallback}
           />
           {isGroupsFetching || isFilesFetching ? (
             <Box
@@ -78,12 +79,6 @@ export const BinMedia = () => {
               </DnDProvider>
             </>
           )}
-          <FileModal
-            files={binFiles}
-            setIsInvalidFileId={setIsInvalidFileId}
-            onSetNotFoundTitle={setNotFoundTitle}
-            onSetNotFoundMessage={setNotFoundMessage}
-          />
         </>
       )}
     </Box>

@@ -17,6 +17,7 @@ export const Sidebar = ({ lockedToGroupId, isSelectDialog }: Props) => {
         borderColor: "border",
         borderStyle: "solid",
         width: "220px",
+        minWidth: "220px",
         height: "100%",
         display: "flex",
         flexDirection: "column",

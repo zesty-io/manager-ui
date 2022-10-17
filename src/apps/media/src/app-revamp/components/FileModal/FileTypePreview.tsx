@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { fileExtension } from "../../utils/fileUtils";
-import { Box, CardMedia } from "@mui/material";
+import { Box, CardMedia, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 // file icons import
@@ -13,6 +13,8 @@ import csvImg from "../../../../../../../public/images/csvImg.png";
 import zipImg from "../../../../../../../public/images/zipImg.png";
 import numberImg from "../../../../../../../public/images/numberImg.png";
 import defaultImg from "../../../../../../../public/images/defaultImg.png";
+import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
+import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 
 interface Props {
   src: string;
@@ -79,10 +81,8 @@ export const FileTypePreview: FC<Props> = ({ src, filename }) => {
             image={src}
             loading="lazy"
             sx={{
-              objectFit: "contain",
-              overflow: "hidden",
-              width: "inherit",
               m: "auto",
+              width: "100%",
               height: "100%",
             }}
           />
@@ -106,8 +106,8 @@ export const FileTypePreview: FC<Props> = ({ src, filename }) => {
         >
           <CardMedia
             component="img"
-            data-src={csvImg}
-            image={csvImg}
+            data-src={excelImg}
+            image={excelImg}
             loading="lazy"
             sx={styledDocfileThumbnail}
           />
@@ -117,21 +117,22 @@ export const FileTypePreview: FC<Props> = ({ src, filename }) => {
       return (
         <Box
           sx={{
-            backgroundColor: "grey.100",
-            ...styledBox,
+            backgroundColor: "green.200",
+            height: "100%",
+            margin: "auto",
+            boxSizing: "border-box",
+            overflow: "hidden",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
           <CardMedia
             component="img"
-            data-src={src}
-            image={src}
+            data-src={csvImg}
+            image={csvImg}
             loading="lazy"
-            sx={{
-              objectFit: "contain",
-              overflow: "hidden",
-              height: "100%",
-              m: "auto",
-            }}
+            sx={styledDocfileThumbnail}
           />
         </Box>
       );
@@ -149,6 +150,23 @@ export const FileTypePreview: FC<Props> = ({ src, filename }) => {
             component="img"
             data-src={wordImg}
             image={wordImg}
+            loading="lazy"
+            sx={styledDocfileThumbnail}
+          />
+        </Box>
+      );
+    case "pptm":
+      return (
+        <Box
+          sx={{
+            backgroundColor: "grey.200",
+            ...styledBox,
+          }}
+        >
+          <CardMedia
+            component="img"
+            data-src={pdfImg}
+            image={pdfImg}
             loading="lazy"
             sx={styledDocfileThumbnail}
           />
@@ -226,6 +244,26 @@ export const FileTypePreview: FC<Props> = ({ src, filename }) => {
           />
         </Box>
       );
+    case "iso":
+    case "rar":
+    case "tgz":
+    case "zip":
+      return (
+        <Box
+          sx={{
+            backgroundColor: "grey.100",
+            ...styledBox,
+          }}
+        >
+          <CardMedia
+            component="img"
+            data-src={zipImg}
+            image={zipImg}
+            loading="lazy"
+            sx={styledDocfileThumbnail}
+          />
+        </Box>
+      );
     case "ai":
     case "bmp":
     case "eps":
@@ -265,26 +303,58 @@ export const FileTypePreview: FC<Props> = ({ src, filename }) => {
           />
         </Box>
       );
+    case "No Extension":
+      return (
+        <Box
+          sx={{
+            backgroundColor: "red.50",
+            ...styledBox,
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+              width: "100%",
+              my: "auto",
+            }}
+          >
+            <ReportGmailerrorredIcon
+              fontSize="large"
+              sx={{ color: "red.600" }}
+            />
+          </Box>
+        </Box>
+      );
     default:
       return (
         <Box
           sx={{
-            backgroundColor: "grey.200",
+            backgroundColor: "grey.100",
             ...styledBox,
           }}
         >
-          <CardMedia
-            component="img"
-            data-src={defaultImg}
-            image={defaultImg}
-            loading="lazy"
+          <Box
             sx={{
-              objectFit: "contain",
-              overflow: "hidden",
-              height: "100%",
-              m: "auto",
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+              width: "100%",
+              my: "auto",
             }}
-          />
+          >
+            <WarningAmberRoundedIcon
+              fontSize="large"
+              sx={{ color: "grey.500" }}
+            />
+            <Typography
+              variant="body2"
+              sx={{ textAlign: "center", color: "grey.500" }}
+            >
+              File type not recognized
+            </Typography>
+          </Box>
         </Box>
       );
   }

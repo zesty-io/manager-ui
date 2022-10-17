@@ -14,6 +14,7 @@ export const EmptyState = (ids: Props) => {
       height="100%"
       sx={{ px: 4 }}
       justifyContent="center"
+      width="100%"
     >
       <Stack direction="row" spacing={8} alignItems="center">
         <Box>

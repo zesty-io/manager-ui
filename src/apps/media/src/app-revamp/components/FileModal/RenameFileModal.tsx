@@ -7,6 +7,7 @@ import {
   TextField,
   DialogActions,
   Button,
+  InputLabel,
 } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
@@ -15,7 +16,6 @@ interface Props {
   handleUpdateMutation: (renamedFilename: string) => void;
   onClose?: () => void;
   onSetNewFilename: Dispatch<string>;
-  fileType: string;
   newFilename: string;
 }
 
@@ -23,14 +23,11 @@ export const RenameFileModal: FC<Props> = ({
   handleUpdateMutation,
   onClose,
   onSetNewFilename,
-  fileType,
   newFilename,
 }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const [renamedFilename, setRenamedFilename] = useState<string>(
-    newFilename.substring(0, newFilename.lastIndexOf("."))
-  );
+  const [renamedFilename, setRenamedFilename] = useState<string>(newFilename);
 
   return (
     <Dialog open={true} fullWidth maxWidth={"xs"}>
@@ -38,7 +35,7 @@ export const RenameFileModal: FC<Props> = ({
         <Typography variant="h5">Rename File</Typography>
       </DialogTitle>
       <DialogContent>
-        <Typography>New File Name</Typography>
+        <InputLabel>New File Name</InputLabel>
         <TextField
           sx={{
             mt: 1,
@@ -64,8 +61,8 @@ export const RenameFileModal: FC<Props> = ({
         <Button
           variant="contained"
           onClick={() => {
-            onSetNewFilename(`${renamedFilename}.${fileType}`);
-            handleUpdateMutation(`${renamedFilename}.${fileType}`);
+            onSetNewFilename(renamedFilename);
+            handleUpdateMutation(renamedFilename);
             onClose();
           }}
         >

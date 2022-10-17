@@ -21,9 +21,12 @@ import {
   Chip,
   TextField,
   Dialog,
+  IconButton,
+  DialogTitle,
 } from "@mui/material";
 
 import InfoIcon from "@mui/icons-material/InfoOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -222,23 +225,30 @@ export default function Field({
     }
   }, []);
 
-  function renderMediaModal() {
+  function renderMediaModal(openNav) {
     return ReactDOM.createPortal(
-      <Modal
-        open={true}
-        type="global"
-        onClose={() => setImageModal()}
-        className={MediaStyles.MediaAppModal}
-      >
-        <MediaApp
-          limitSelected={imageModal.limit}
-          modal={true}
-          addImages={(images) => {
-            imageModal.callback(images);
-            setImageModal();
-          }}
-        />
-      </Modal>,
+      <MemoryRouter>
+        <Dialog open fullScreen sx={{ my: 3.3, mx: openNav ? 9.6 : 3.6 }}>
+          <IconButton
+            sx={{
+              position: "fixed",
+              right: 15,
+              top: 10,
+            }}
+            onClick={() => setImageModal()}
+          >
+            <CloseIcon sx={{ color: "common.white" }} />
+          </IconButton>
+          <MediaApp
+            limitSelected={imageModal.limit}
+            isSelectDialog={true}
+            addImagesCallback={(images) => {
+              imageModal.callback(images);
+              setImageModal();
+            }}
+          />
+        </Dialog>
+      </MemoryRouter>,
       document.getElementById("modalMount")
     );
   }
@@ -248,6 +258,8 @@ export default function Field({
     () => <FieldLabel label={label} name={name} datatype={datatype} />,
     [label, name, datatype]
   );
+
+  const openNav = useSelector((state) => state.ui.openNav);
 
   switch (datatype) {
     case "text":
@@ -343,7 +355,7 @@ export default function Field({
               setImageModal(opts);
             }}
           />
-          {imageModal && renderMediaModal()}
+          {imageModal && renderMediaModal(openNav)}
         </div>
       );
 
@@ -404,12 +416,17 @@ export default function Field({
           />
           {imageModal && (
             <MemoryRouter>
-              <Dialog
-                open
-                fullScreen
-                sx={{ my: 3.3, mx: 4 }}
-                onClose={() => setImageModal()}
-              >
+              <Dialog open fullScreen sx={{ my: 3.3, mx: openNav ? 9.6 : 3.6 }}>
+                <IconButton
+                  sx={{
+                    position: "fixed",
+                    right: 15,
+                    top: 10,
+                  }}
+                  onClick={() => setImageModal()}
+                >
+                  <CloseIcon sx={{ color: "common.white" }} />
+                </IconButton>
                 <MediaApp
                   limitSelected={imageModal.limit - images.length}
                   isSelectDialog={true}

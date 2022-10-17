@@ -1,19 +1,21 @@
-import { FC, useEffect, useState, useRef, Dispatch } from "react";
+import { FC } from "react";
+import { useHistory, useLocation } from "react-router-dom";
+
 import {
   Modal,
   Box,
   Card,
-  CardMedia,
-  Button,
   IconButton,
-  Typography,
+  CircularProgress,
+  Dialog,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+// import { WithLoader } from "@zesty-io/core";
+
 import { FileModalContent } from "./FileModalContent";
 import { FileTypePreview } from "./FileTypePreview";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import { File } from "../../../../../../shell/services/types";
-import { useLocation } from "react-router-dom";
-import { useHistory, useRouteMatch } from "react-router-dom";
+
+import { useGetFileQuery } from "../../../../../../shell/services/mediaManager";
 
 const styledModal = {
   position: "absolute",
@@ -26,123 +28,96 @@ const styledModal = {
 };
 
 interface Props {
-  files: File[];
-  setIsInvalidFileId?: Dispatch<boolean>;
-  onSetNotFoundTitle?: Dispatch<string>;
-  onSetNotFoundMessage?: Dispatch<string>;
+  fileId: string;
 }
 
-export const FileModal: FC<Props> = ({
-  files,
-  setIsInvalidFileId,
-  onSetNotFoundTitle,
-  onSetNotFoundMessage,
-}) => {
-  const search = useLocation().search;
-  const fileIdParams = new URLSearchParams(search).get("file_id");
-  const currentFile = useRef<any>();
-  const [showFileModal, setShowFileModal] = useState<boolean>(false);
-  const location = useRouteMatch();
+export const FileModal: FC<Props> = ({ fileId }) => {
   const history = useHistory();
-
-  useEffect(() => {
-    try {
-      if (!fileIdParams) throw 400;
-      if (files.length) {
-        const filteredFile = files.find((file) => file.id === fileIdParams);
-        if (!filteredFile) {
-          setIsInvalidFileId(true);
-          onSetNotFoundTitle("File Not Found");
-          onSetNotFoundMessage(
-            "We’re sorry the file you requested could not be found. Please go back to the all media page."
-          );
-        }
-        currentFile.current = {
-          id: filteredFile.id,
-          src: filteredFile.url,
-          filename: filteredFile.filename,
-          groupId: filteredFile.group_id,
-          createdAt: filteredFile.created_at,
-          user: filteredFile.created_by,
-        };
-        setShowFileModal(true);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  }, [files, fileIdParams]);
+  const location = useLocation();
+  const { data, isLoading } = useGetFileQuery(fileId);
 
   const handleCloseModal = () => {
-    currentFile.current.id = "";
-    setShowFileModal(!showFileModal);
-  };
-
-  const handleClose = () => {
-    history.replace(location.path);
-    handleCloseModal();
+    const queryParams = new URLSearchParams(location.search);
+    queryParams.delete("fileId");
+    history.replace({
+      search: queryParams.toString(),
+    });
   };
 
   return (
     <>
-      {currentFile.current && (
-        <>
-          {currentFile.current.id && showFileModal && (
-            <Modal open={true}>
+      {data ? (
+        <Modal open={data.url && !isLoading}>
+          <Box
+            sx={{
+              ...styledModal,
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <IconButton
+              onClick={() => handleCloseModal()}
+              sx={{
+                position: "absolute",
+                zIndex: 999,
+                right: -30,
+                top: -35,
+              }}
+            >
+              <CloseIcon sx={{ color: "common.white" }} />
+            </IconButton>
+
+            {/* <WithLoader condition={isLoading}> */}
+            <Card
+              elevation={0}
+              sx={{
+                width: "700px",
+                overflow: "hidden",
+              }}
+            >
               <Box
                 sx={{
-                  ...styledModal,
-                  display: "flex",
-                  justifyContent: "space-between",
+                  backgroundColor: "grey.200",
+                  height: "100%",
+                  overflow: "hidden",
+                  width: "100%",
                 }}
               >
-                <IconButton
-                  onClick={() => handleClose()}
-                  sx={{
-                    position: "absolute",
-                    zIndex: 999,
-                    right: -30,
-                    top: -35,
-                  }}
-                >
-                  <CloseRoundedIcon sx={{ color: "#FFF" }} />
-                </IconButton>
-                <Card
-                  elevation={0}
-                  sx={{
-                    width: "700px",
-                    overflow: "hidden",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      backgroundColor: "grey.200",
-                      height: "100%",
-                      overflow: "hidden",
-                      width: "100%",
-                    }}
-                  >
-                    <FileTypePreview
-                      src={currentFile.current.src}
-                      filename={currentFile.current.filename}
-                    />
-                  </Box>
-                </Card>
-
-                <Box sx={{ p: 4, width: "400px" }}>
-                  <FileModalContent
-                    id={currentFile.current.id}
-                    src={currentFile.current.src}
-                    filename={currentFile.current.filename}
-                    title={currentFile.current.filename}
-                    groupId={currentFile.current.groupId}
-                    handleCloseModal={handleCloseModal}
-                    createdAt={currentFile.current.createdAt}
-                  />
-                </Box>
+                <FileTypePreview src={data.url} filename={data.filename} />
               </Box>
-            </Modal>
-          )}
-        </>
+            </Card>
+
+            <Box sx={{ p: 4, width: "400px" }}>
+              <FileModalContent
+                handleCloseModal={handleCloseModal}
+                id={data.id}
+                src={data.url}
+                filename={data.filename}
+                title={data.title}
+                groupId={data.group_id}
+                createdAt={data.created_at}
+                binId={data.bin_id}
+              />
+            </Box>
+            {/* </WithLoader> */}
+          </Box>
+        </Modal>
+      ) : (
+        <Dialog
+          open={true}
+          PaperProps={{
+            style: {
+              backgroundColor: "transparent",
+              boxShadow: "none",
+              overflow: "hidden",
+              display: "flex",
+              alignItems: "center",
+              textAlign: "center",
+            },
+          }}
+        >
+          <CircularProgress color="info" />
+        </Dialog>
       )}
     </>
   );

@@ -38,7 +38,6 @@ export const DnDProvider = ({
     currentGroup?.bin_id
   );
   */
-  // console.log({ binData, currentGroup });
   const currentBin = binData?.[0];
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
