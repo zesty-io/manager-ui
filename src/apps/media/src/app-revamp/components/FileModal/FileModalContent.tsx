@@ -24,6 +24,8 @@ import { MD5 } from "../../../../../../utility/md5";
 import {
   mediaManagerApi,
   useUpdateFileAltTextMutation,
+  useUpdateFileMutation,
+  useDeleteFileMutation,
 } from "../../../../../../shell/services/mediaManager";
 import { fileExtension } from "../../utils/fileUtils";
 import { RenameFileModal } from "./RenameFileModal";
@@ -71,16 +73,30 @@ export const FileModalContent: FC<Props> = ({
   const [newFilename, setNewFilename] = useState<string>(
     filename.substring(0, filename.lastIndexOf(".")) || filename
   );
-  const [fileType, setFileType] = useState<string>(fileExtension(filename));
+  const [fileType, setFileType] = useState<string>();
   const [showRenameFileModal, setShowRenameFileModal] =
     useState<boolean>(false);
   const [showSettingsDropdown, setShowSettingsDropdown] = useState(null);
   const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
   const openSettings = Boolean(showSettingsDropdown);
 
-  const [deleteFile] = mediaManagerApi.useDeleteFileMutation();
-  const [updateFile] = mediaManagerApi.useUpdateFileMutation();
-  const [updateFileAltTextMutation] = useUpdateFileAltTextMutation();
+  const [deleteFile] = useDeleteFileMutation();
+  const [
+    updateFile,
+    {
+      reset: resetUpdate,
+      isSuccess: isSuccessUpdate,
+      isLoading: isLoadingUpdate,
+    },
+  ] = useUpdateFileMutation();
+  const [
+    updateFileAltTextMutation,
+    {
+      reset: resetUpdateAltText,
+      isSuccess: isSuccessUpdateAltText,
+      isLoading: isLoadingUpdateAltText,
+    },
+  ] = useUpdateFileAltTextMutation();
   const [showDeleteFileModal, setShowDeleteFileModal] =
     useState<boolean>(false);
 
@@ -90,6 +106,9 @@ export const FileModalContent: FC<Props> = ({
   useEffect(() => {
     if (newTitle.current) {
       newTitle.current.value = title;
+    }
+    if (fileExtension(filename) !== "No Extension") {
+      setFileType(fileExtension(filename));
     }
   }, [title, filename]);
 
@@ -118,6 +137,10 @@ export const FileModalContent: FC<Props> = ({
     isAltTextUpdate?: boolean,
     newGroupId = groupId
   ) => {
+    // construct file type
+    let constructedFileType = "";
+    if (fileType) constructedFileType = `.${fileType}`;
+
     if (isAltTextUpdate) {
       updateFileAltTextMutation({
         id,
@@ -125,7 +148,8 @@ export const FileModalContent: FC<Props> = ({
           group_id: newGroupId,
           title: newTitle.current.value,
           filename:
-            `${renamedFilename}.${fileType}` || `${newFilename}.${fileType}`,
+            `${renamedFilename}${constructedFileType}` ||
+            `${newFilename}${constructedFileType}`,
         },
       });
     } else {
@@ -136,7 +160,8 @@ export const FileModalContent: FC<Props> = ({
           group_id: newGroupId,
           title: newTitle.current.value,
           filename:
-            `${renamedFilename}.${fileType}` || `${newFilename}.${fileType}`,
+            `${renamedFilename}${constructedFileType}` ||
+            `${newFilename}${constructedFileType}`,
         },
       });
     }
@@ -163,6 +188,19 @@ export const FileModalContent: FC<Props> = ({
           onDeleteFile={onDeleteFile}
           filename={newFilename}
           onClose={() => setShowDeleteFileModal(false)}
+        />
+      )}
+
+      {/* Rename File Modal */}
+      {showRenameFileModal && (
+        <RenameFileModal
+          handleUpdateMutation={handleUpdateMutation}
+          onSetNewFilename={setNewFilename}
+          onClose={() => setShowRenameFileModal(false)}
+          newFilename={newFilename}
+          isSuccessUpdate={isSuccessUpdate}
+          isLoadingUpdate={isLoadingUpdate}
+          resetUpdate={resetUpdate}
         />
       )}
 
@@ -198,14 +236,6 @@ export const FileModalContent: FC<Props> = ({
           <Typography variant="body2" noWrap sx={{ width: "200px", ml: 0.5 }}>
             {newFilename}
           </Typography>
-          {showRenameFileModal && (
-            <RenameFileModal
-              handleUpdateMutation={handleUpdateMutation}
-              onSetNewFilename={setNewFilename}
-              onClose={() => setShowRenameFileModal(null)}
-              newFilename={newFilename}
-            />
-          )}
         </Box>
         <Box>
           <IconButton onClick={() => setShowDeleteFileModal(true)}>

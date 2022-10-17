@@ -7,6 +7,7 @@ import {
   TextField,
   DialogActions,
   Button,
+  CircularProgress,
   InputLabel,
 } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -17,6 +18,9 @@ interface Props {
   onClose?: () => void;
   onSetNewFilename: Dispatch<string>;
   newFilename: string;
+  isSuccessUpdate: boolean;
+  isLoadingUpdate: boolean;
+  resetUpdate: any;
 }
 
 export const RenameFileModal: FC<Props> = ({
@@ -24,10 +28,20 @@ export const RenameFileModal: FC<Props> = ({
   onClose,
   onSetNewFilename,
   newFilename,
+  isSuccessUpdate,
+  isLoadingUpdate,
+  resetUpdate,
 }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [renamedFilename, setRenamedFilename] = useState<string>(newFilename);
+
+  useEffect(() => {
+    if (!isLoadingUpdate && isSuccessUpdate) {
+      resetUpdate();
+      onClose();
+    }
+  }, [isLoadingUpdate, isSuccessUpdate]);
 
   return (
     <Dialog open={true} fullWidth maxWidth={"xs"}>
@@ -63,8 +77,13 @@ export const RenameFileModal: FC<Props> = ({
           onClick={() => {
             onSetNewFilename(renamedFilename);
             handleUpdateMutation(renamedFilename);
-            onClose();
           }}
+          disabled={isLoadingUpdate}
+          startIcon={
+            isLoadingUpdate && (
+              <CircularProgress size="20px" sx={{ color: "text.primary" }} />
+            )
+          }
         >
           Update
         </Button>

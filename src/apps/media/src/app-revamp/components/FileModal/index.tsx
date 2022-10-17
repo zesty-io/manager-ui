@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect, Dispatch } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 
 import {
@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 // import { WithLoader } from "@zesty-io/core";
+import { NotFoundState } from "../NotFoundState";
 
 import { FileModalContent } from "./FileModalContent";
 import { FileTypePreview } from "./FileTypePreview";
@@ -29,12 +30,13 @@ const styledModal = {
 
 interface Props {
   fileId: string;
+  onSetIsFileModalError: Dispatch<boolean>;
 }
 
-export const FileModal: FC<Props> = ({ fileId }) => {
+export const FileModal: FC<Props> = ({ fileId, onSetIsFileModalError }) => {
   const history = useHistory();
   const location = useLocation();
-  const { data, isLoading } = useGetFileQuery(fileId);
+  const { data, isLoading, isError } = useGetFileQuery(fileId);
 
   const handleCloseModal = () => {
     const queryParams = new URLSearchParams(location.search);
@@ -44,9 +46,15 @@ export const FileModal: FC<Props> = ({ fileId }) => {
     });
   };
 
+  useEffect(() => {
+    if (isError) {
+      onSetIsFileModalError(true);
+    }
+  }, [isError]);
+
   return (
     <>
-      {data ? (
+      {data && !isError ? (
         <Modal open={data.url && !isLoading}>
           <Box
             sx={{
@@ -102,7 +110,7 @@ export const FileModal: FC<Props> = ({ fileId }) => {
             {/* </WithLoader> */}
           </Box>
         </Modal>
-      ) : (
+      ) : !data && !isError ? (
         <Dialog
           open={true}
           PaperProps={{
@@ -118,6 +126,8 @@ export const FileModal: FC<Props> = ({ fileId }) => {
         >
           <CircularProgress color="info" />
         </Dialog>
+      ) : (
+        <></>
       )}
     </>
   );

@@ -159,6 +159,7 @@ export const mediaManagerApi = createApi({
         method: "PATCH",
         body,
       }),
+      transformResponse: (res: any) => res,
       invalidatesTags: (result, error, arg) => [
         { type: "File", id: arg?.id },
         { type: "GroupData", id: arg.body?.group_id },
@@ -182,6 +183,7 @@ export const mediaManagerApi = createApi({
         method: "PATCH",
         body,
       }),
+      transformResponse: (res: any) => res,
       invalidatesTags: (result, error, arg) => [{ type: "File", id: arg?.id }],
     }),
     deleteFile: builder.mutation<
