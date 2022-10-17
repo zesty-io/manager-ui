@@ -209,31 +209,37 @@ export const Header = ({
           </>
         )}
       </Box>
-      <RenameFolderDialog
-        open={openDialog === "rename"}
-        onClose={() => {
-          setOpenDialog(null);
-        }}
-        id={id}
-        name={title}
-        groupId={groupId}
-      />
-      <NewFolderDialog
-        open={openDialog === "new"}
-        onClose={() => {
-          setOpenDialog(null);
-        }}
-        binId={binId}
-        id={id}
-      />
-      <DeleteFolderDialog
-        open={openDialog === "delete"}
-        onClose={() => {
-          setOpenDialog(null);
-        }}
-        id={id}
-        groupId={groupId}
-      />
+      {openDialog === "rename" ? (
+        <RenameFolderDialog
+          open
+          onClose={() => {
+            setOpenDialog(null);
+          }}
+          id={id}
+          name={title}
+          groupId={groupId}
+        />
+      ) : null}
+      {openDialog === "new" ? (
+        <NewFolderDialog
+          open
+          onClose={() => {
+            setOpenDialog(null);
+          }}
+          binId={binId}
+          id={id}
+        />
+      ) : null}
+      {openDialog === "delete" ? (
+        <DeleteFolderDialog
+          open
+          onClose={() => {
+            setOpenDialog(null);
+          }}
+          id={id}
+          groupId={groupId}
+        />
+      ) : null}
     </>
   );
 };

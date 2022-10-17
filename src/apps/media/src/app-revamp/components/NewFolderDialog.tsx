@@ -8,6 +8,7 @@ import {
   InputLabel,
   TextField,
   Autocomplete,
+  createFilterOptions,
 } from "@mui/material";
 import {
   useGetBinGroupsQuery,
@@ -56,17 +57,30 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
           fullWidth
           value={selectedGroup}
           disableClearable
-          options={[
-            {
-              name: "None",
-              bin_id: binId,
-              group_id: binId,
-              id: binId,
-            },
-            ...(binGroups ? binGroups : []),
-          ]}
+          options={
+            binGroups
+              ? [
+                  {
+                    name: "None",
+                    bin_id: binId,
+                    group_id: binId,
+                    id: binId,
+                  },
+                  ...binGroups,
+                ]
+              : []
+          }
           renderInput={(params) => <TextField {...params} hiddenLabel />}
-          getOptionLabel={(option: Group) => option.name}
+          renderOption={(props, option) => (
+            <li {...props} key={option.id}>
+              {option.name}
+            </li>
+          )}
+          getOptionLabel={(option: any) => option.name}
+          filterOptions={createFilterOptions({
+            stringify: (option) => option.name,
+          })}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
           onChange={(event, newValue) => setSelectedGroup(newValue as Group)}
           sx={{ mb: 3 }}
         />
