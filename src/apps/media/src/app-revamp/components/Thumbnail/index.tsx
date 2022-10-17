@@ -13,7 +13,7 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useTheme } from "@mui/material/styles";
-import styles from "./sample.less";
+import styles from "./Loading.less";
 import cx from "classnames";
 
 // file icons import
