@@ -9,7 +9,7 @@ import {
   CircularProgress,
   Dialog,
 } from "@mui/material";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import CloseIcon from "@mui/icons-material/Close";
 // import { WithLoader } from "@zesty-io/core";
 
 import { FileModalContent } from "./FileModalContent";
@@ -64,7 +64,7 @@ export const FileModal: FC<Props> = ({ fileId }) => {
                 top: -35,
               }}
             >
-              <CloseRoundedIcon sx={{ color: "#FFF" }} />
+              <CloseIcon sx={{ color: "common.white" }} />
             </IconButton>
 
             {/* <WithLoader condition={isLoading}> */}
