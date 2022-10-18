@@ -35,18 +35,18 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
     }
   }, [bin]);
 
-  const onRemove =
-    file.status !== "success"
-      ? undefined
-      : async () => {
-          const promise = deleteFile({
-            id: file.id,
-            body: { group_id: file.group_id },
-          });
-          console.log({ promise });
-          const res = await promise;
-          console.log({ res });
-        };
+  // const onRemove =
+  //   file.status !== "success"
+  //     ? undefined
+  //     : async () => {
+  //         const promise = deleteFile({
+  //           id: file.id,
+  //           body: { group_id: file.group_id },
+  //         });
+  //         console.log({ promise });
+  //         const res = await promise;
+  //         console.log({ res });
+  //       };
 
   const getProgress = () => {
     if (file.status === "success") return 100;
@@ -70,9 +70,8 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
       ></Box>
       <Thumbnail
         src={file.url}
-        filename={file.filename}
         isEditable={true}
-        onRemove={onRemove}
+        // onRemove={onRemove}
       />
     </>
   );

@@ -23,8 +23,6 @@ export function ThumbnailSelect({ file }: { file: File }) {
     (state: { mediaRevamp: State }) => state.mediaRevamp.isSelectDialog
   );
 
-  console.log("selection", isSelectDialog);
-
   return isSelectDialog ? (
     <Checkbox
       sx={{
