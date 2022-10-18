@@ -6,8 +6,8 @@ const base = {
   borderRadius: "4px",
   textTransform: "uppercase",
   position: "absolute",
-  bottom: 0,
-  right: 15,
+  bottom: "-26px",
+  right: 0,
   transform: "translateY(-120%)",
   backgroundColor: "grey.200",
   color: "black.600",
@@ -50,14 +50,12 @@ export function ThumbnailExtensionChip({ ext }: { ext: string }) {
     case "doc":
     case "rtf":
       return <Box sx={blue}>{ext}</Box>;
-
     case "ots":
     case "xls":
     case "xlsx":
     case "csv":
     case "numbers":
       return <Box sx={green}>{ext}</Box>;
-
     case "pdf":
     case "ppt":
     case "pptx":
@@ -92,7 +90,6 @@ export function ThumbnailExtensionChip({ ext }: { ext: string }) {
     case "tiff":
     case "tif":
       return <Box sx={grey}>{ext}</Box>;
-
     default:
       return <Box sx={base}>{ext}</Box>;
   }

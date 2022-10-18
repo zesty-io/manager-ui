@@ -7,20 +7,20 @@ interface Props {
   isEditable?: boolean;
 }
 
-export const ThumbnailContent: FC<Props> = ({
+export const ThumbnailFilename: FC<Props> = ({
   filename,
   onFilenameChange,
   isEditable,
 }) => {
-  const styledCardContent = {
-    px: 1,
-    overflow: "hidden",
-    whiteSpace: "nowrap",
-    textOverflow: "ellipsis",
-  };
-
   return (
-    <CardContent sx={styledCardContent}>
+    <CardContent
+      sx={{
+        px: 1,
+        overflow: "hidden",
+        whiteSpace: "nowrap",
+        textOverflow: "ellipsis",
+      }}
+    >
       {isEditable ? (
         <TextField
           value={filename}
@@ -29,7 +29,7 @@ export const ThumbnailContent: FC<Props> = ({
           color="primary"
           InputProps={{ sx: { flex: 1 } }}
           fullWidth
-          onChange={(e) => onFilenameChange(e.target.value)}
+          onChange={(evt) => onFilenameChange(evt.target.value)}
         />
       ) : (
         <Typography variant="caption">{filename}</Typography>

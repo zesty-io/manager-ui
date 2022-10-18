@@ -1,7 +1,7 @@
-import { FC, useState, useRef, useEffect, DragEvent } from "react";
+import { FC, useState, useRef, DragEvent } from "react";
 import { CardMedia, Typography, Card, Box } from "@mui/material";
 import { fileExtension } from "../../utils/fileUtils";
-import { ThumbnailContent } from "./ThumbnailContent";
+import { ThumbnailFilename } from "./ThumbnailFilename";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import { useTheme } from "@mui/material/styles";
 
@@ -23,6 +23,7 @@ import { File } from "../../../../../../shell/services/types";
 import { ThumbnailHover } from "./ThumbnailHover";
 import { ThumbnailSelect } from "./ThumbnailSelect";
 import { ThumbnailExtensionChip } from "./ThumbnailExtensionChip";
+import { ThumbnailBackground } from "./ThumbnailBackground";
 
 interface ThumbnailProps {
   src?: string;
@@ -33,7 +34,6 @@ interface ThumbnailProps {
   group_id?: string;
   bin_id?: string;
   file?: File;
-  onRemove?: () => void;
   onFilenameChange?: (value: string) => void;
   onClick?: () => void;
 }
@@ -43,14 +43,15 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   filename,
   isEditable,
   showVideo,
-  onRemove,
-  onFilenameChange,
-  onClick,
   id,
   group_id,
   bin_id,
   file,
+  onFilenameChange,
+  onClick,
 }) => {
+  const ext = fileExtension(filename);
+
   const theme = useTheme();
   const imageEl = useRef<HTMLImageElement>();
   const [imageOrientation, setImageOrientation] = useState<string>("");
@@ -84,7 +85,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
 
   const styledCheckerBoard = {
     backgroundImage:
-      fileExtension(filename) === "png" &&
+      ext === "png" &&
       `linear-gradient(45deg, ${theme.palette.grey[100]} 25%, transparent 25%), 
       linear-gradient(135deg, ${theme.palette.grey[100]} 25%, transparent 25%),
       linear-gradient(45deg, transparent 75%, ${theme.palette.grey[100]} 75%),
@@ -104,8 +105,6 @@ export const Thumbnail: FC<ThumbnailProps> = ({
       setImageOrientation("horizontal");
     }
   };
-
-  const ext = fileExtension(filename);
 
   switch (ext) {
     case "jpg":
@@ -129,7 +128,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               px: imageOrientation === "vertical" && "auto",
               height: "160px",
               overflow: "hidden",
-              backgroundColor: fileExtension(filename) !== "png" && "grey.100",
+              backgroundColor: ext !== "png" && "grey.100",
               position: "relative",
               backgroundSize: `25px 25px`,
               backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
@@ -155,7 +154,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               }}
             />
           </Box>
-          <ThumbnailContent
+          <ThumbnailFilename
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
@@ -167,17 +166,10 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "xlsx":
       return (
         <Card sx={styledCard} elevation={0} onClick={onClick}>
-          <Box
-            sx={{
-              backgroundColor: "green.100",
-              boxSizing: "border-box",
-              height: "160px",
-              overflow: "hidden",
-              display: "flex",
-            }}
-          >
+          <ThumbnailBackground color="green">
             <ThumbnailHover />
             <ThumbnailSelect file={file} />
+            <ThumbnailExtensionChip ext={ext} />
             <CardMedia
               component="img"
               data-src={excelImg}
@@ -185,8 +177,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
-          </Box>
-          <ThumbnailContent
+          </ThumbnailBackground>
+          <ThumbnailFilename
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
@@ -196,17 +188,10 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "csv":
       return (
         <Card sx={styledCard} elevation={0} onClick={onClick}>
-          <Box
-            sx={{
-              backgroundColor: "green.100",
-              boxSizing: "border-box",
-              height: "160px",
-              overflow: "hidden",
-              display: "flex",
-            }}
-          >
+          <ThumbnailBackground color="green">
             <ThumbnailHover />
             <ThumbnailSelect file={file} />
+            <ThumbnailExtensionChip ext={ext} />
             <CardMedia
               component="img"
               data-src={csvImg}
@@ -214,8 +199,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
-          </Box>
-          <ThumbnailContent
+          </ThumbnailBackground>
+          <ThumbnailFilename
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
@@ -227,17 +212,10 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "rtf":
       return (
         <Card sx={styledCard} elevation={0} onClick={onClick}>
-          <Box
-            sx={{
-              backgroundColor: "blue.50",
-              boxSizing: "border-box",
-              height: "160px",
-              overflow: "hidden",
-              display: "flex",
-            }}
-          >
+          <ThumbnailBackground color="blue">
             <ThumbnailHover />
             <ThumbnailSelect file={file} />
+            <ThumbnailExtensionChip ext={ext} />
             <CardMedia
               component="img"
               data-src={wordImg}
@@ -245,8 +223,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
-          </Box>
-          <ThumbnailContent
+          </ThumbnailBackground>
+          <ThumbnailFilename
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
@@ -267,6 +245,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           >
             <ThumbnailHover />
             <ThumbnailSelect file={file} />
+            <ThumbnailExtensionChip ext={ext} />
             <CardMedia
               component="img"
               data-src={pdfImg}
@@ -275,7 +254,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               sx={styledDocfileThumbnail}
             />
           </Box>
-          <ThumbnailContent
+          <ThumbnailFilename
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
@@ -287,17 +266,10 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "pptm":
       return (
         <Card sx={styledCard} elevation={0} onClick={onClick}>
-          <Box
-            sx={{
-              backgroundColor: "red.50",
-              boxSizing: "border-box",
-              height: "160px",
-              overflow: "hidden",
-              display: "flex",
-            }}
-          >
+          <ThumbnailBackground color="red">
             <ThumbnailHover />
             <ThumbnailSelect file={file} />
+            <ThumbnailExtensionChip ext={ext} />
             <CardMedia
               component="img"
               data-src={pptImg}
@@ -305,8 +277,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
-          </Box>
-          <ThumbnailContent
+          </ThumbnailBackground>
+          <ThumbnailFilename
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
@@ -320,17 +292,10 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "wav":
       return (
         <Card sx={styledCard} elevation={0} onClick={onClick}>
-          <Box
-            sx={{
-              backgroundColor: "purple.100",
-              boxSizing: "border-box",
-              height: "160px",
-              overflow: "hidden",
-              display: "flex",
-            }}
-          >
+          <ThumbnailBackground color="red">
             <ThumbnailHover />
             <ThumbnailSelect file={file} />
+            <ThumbnailExtensionChip ext={ext} />
             <CardMedia
               component="img"
               data-src={mpImg}
@@ -338,8 +303,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
-          </Box>
-          <ThumbnailContent
+          </ThumbnailBackground>
+          <ThumbnailFilename
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
@@ -359,18 +324,10 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "html5":
       return (
         <Card sx={styledCard} elevation={0} onClick={onClick}>
-          <Box
-            sx={{
-              boxSizing: "border-box",
-              height: "160px",
-              overflow: "hidden",
-              position: "relative",
-              display: "flex",
-              backgroundColor: "#000",
-            }}
-          >
+          <ThumbnailBackground color="black">
             <ThumbnailHover />
             <ThumbnailSelect file={file} />
+            <ThumbnailExtensionChip ext={ext} />
             {showVideo && (
               <CardMedia
                 component="video"
@@ -398,8 +355,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 textAlign: "center",
               }}
             />
-          </Box>
-          <ThumbnailContent
+          </ThumbnailBackground>
+          <ThumbnailFilename
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
@@ -412,17 +369,10 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "zip":
       return (
         <Card sx={styledCard} elevation={0} onClick={onClick}>
-          <Box
-            sx={{
-              backgroundColor: "grey.100",
-              boxSizing: "border-box",
-              height: "160px",
-              overflow: "hidden",
-              display: "flex",
-            }}
-          >
+          <ThumbnailBackground>
             <ThumbnailHover />
             <ThumbnailSelect file={file} />
+            <ThumbnailExtensionChip ext={ext} />
             <CardMedia
               component="img"
               data-src={zipImg}
@@ -430,8 +380,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
-          </Box>
-          <ThumbnailContent
+          </ThumbnailBackground>
+          <ThumbnailFilename
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
@@ -446,17 +396,10 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "tif":
       return (
         <Card sx={styledCard} elevation={0} onClick={onClick}>
-          <Box
-            sx={{
-              backgroundColor: "grey.100",
-              boxSizing: "border-box",
-              height: "160px",
-              overflow: "hidden",
-              display: "flex",
-            }}
-          >
+          <ThumbnailBackground>
             <ThumbnailHover />
             <ThumbnailSelect file={file} />
+            <ThumbnailExtensionChip ext={ext} />
             <CardMedia
               component="img"
               data-src={defaultImg}
@@ -464,8 +407,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
-          </Box>
-          <ThumbnailContent
+          </ThumbnailBackground>
+          <ThumbnailFilename
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
@@ -475,17 +418,10 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "numbers":
       return (
         <Card sx={styledCard} elevation={0} onClick={onClick}>
-          <Box
-            sx={{
-              backgroundColor: "green.100",
-              boxSizing: "border-box",
-              height: "160px",
-              overflow: "hidden",
-              display: "flex",
-            }}
-          >
+          <ThumbnailBackground color="green">
             <ThumbnailHover />
             <ThumbnailSelect file={file} />
+            <ThumbnailExtensionChip ext={ext} />
             <CardMedia
               component="img"
               data-src={numberImg}
@@ -493,8 +429,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
-          </Box>
-          <ThumbnailContent
+          </ThumbnailBackground>
+          <ThumbnailFilename
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
@@ -504,17 +440,10 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "No Extension":
       return (
         <Card sx={styledCard} elevation={0} onClick={onClick}>
-          <Box
-            sx={{
-              backgroundColor: "red.50",
-              boxSizing: "border-box",
-              height: "160px",
-              overflow: "hidden",
-              display: "flex",
-            }}
-          >
+          <ThumbnailBackground color="red">
             <ThumbnailHover />
             <ThumbnailSelect file={file} />
+            <ThumbnailExtensionChip ext={ext} />
             <Box
               sx={{
                 display: "flex",
@@ -529,8 +458,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 sx={{ color: "red.600" }}
               />
             </Box>
-          </Box>
-          <ThumbnailContent
+          </ThumbnailBackground>
+          <ThumbnailFilename
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
@@ -540,17 +469,10 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     default:
       return (
         <Card sx={styledCard} elevation={0} onClick={onClick}>
-          <Box
-            sx={{
-              backgroundColor: "grey.100",
-              boxSizing: "border-box",
-              height: "160px",
-              overflow: "hidden",
-              display: "flex",
-            }}
-          >
+          <ThumbnailBackground>
             <ThumbnailHover />
             <ThumbnailSelect file={file} />
+            <ThumbnailExtensionChip ext={ext} />
             <Box
               sx={{
                 display: "flex",
@@ -571,8 +493,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 File type not recognized
               </Typography>
             </Box>
-          </Box>
-          <ThumbnailContent
+          </ThumbnailBackground>
+          <ThumbnailFilename
             filename={filename}
             onFilenameChange={onFilenameChange}
             isEditable={isEditable}
@@ -586,3 +508,35 @@ Thumbnail.defaultProps = {
   isEditable: false,
   showVideo: true,
 };
+
+// const ThumbnailWorkspace = () => {
+//   return ( <Card
+//     sx={styledCard}
+//     elevation={0}
+//     onClick={onClick}
+//     draggable
+//     onDragStart={(evt) => onDragStart(evt)}
+//   >
+//     <Box
+//       sx={{
+//         ...styledCheckerBoard,
+//         py: imageOrientation === "horizontal" && 1,
+//         px: imageOrientation === "vertical" && "auto",
+//         height: "160px",
+//         overflow: "hidden",
+//         backgroundColor: fileExtension(filename) !== "png" && "grey.100",
+//         position: "relative",
+//         backgroundSize: `25px 25px`,
+//         backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
+//         "&:hover": {},
+//       }}
+//     >
+
+//     </Box>
+//     <ThumbnailFilename
+//       filename={filename}
+//       onFilenameChange={onFilenameChange}
+//       isEditable={isEditable}
+//     />
+//   </Card>)
+// }
