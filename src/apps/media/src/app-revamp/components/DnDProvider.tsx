@@ -13,6 +13,7 @@ import {
   useGetGroupDataQuery,
 } from "../../../../../shell/services/mediaManager";
 import { SxProps } from "@mui/system";
+import { DropArea } from "./DropArea";
 
 interface Props {
   children: React.ReactNode;
@@ -29,9 +30,11 @@ export const DnDProvider = ({
 }: Props) => {
   const dispatch = useDispatch();
   const { data: currentGroup, isFetching: groupIsFetching } =
-    useGetGroupDataQuery(currentGroupId);
-  const { data: binData, isFetching: binIsFetching } =
-    useGetBinQuery(currentBinId);
+    useGetGroupDataQuery(currentGroupId, { skip: !currentGroupId });
+  const { data: binData, isFetching: binIsFetching } = useGetBinQuery(
+    currentBinId,
+    { skip: !currentBinId }
+  );
   const loading = binIsFetching || groupIsFetching;
   /*
   const { data: binData, isFetching } = mediaManagerApi.useGetBinQuery(
@@ -50,7 +53,7 @@ export const DnDProvider = ({
             return {
               file,
               bin_id: currentBin.id,
-              group_id: currentGroup.id,
+              group_id: currentGroup?.id || currentBin.id,
             };
           })
         )
@@ -79,7 +82,11 @@ export const DnDProvider = ({
       {...getRootProps({ onClick: (evt) => evt.stopPropagation() })}
     >
       <input {...getInputProps()} />
-      {isDragActive ? "DROP FILES HERE" : children}
+      {isDragActive ? (
+        <DropArea currentGroup={currentGroup} currentBin={currentBin} />
+      ) : (
+        children
+      )}
     </Box>
   );
 };

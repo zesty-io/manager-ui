@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { fileExtension } from "../../utils/fileUtils";
 import { Box, CardMedia, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
@@ -25,9 +25,18 @@ export const FileTypePreview: FC<Props> = ({ src, filename }) => {
   const theme = useTheme();
   const [imageOrientation, setImageOrientation] = useState<string>("");
 
+  // state for image settings
+  const [imageSettings, setImageSettings] = useState<any>({
+    width: 0,
+    height: 0,
+    optimize: "none",
+    fit: "none",
+  });
+
   const styledCheckerBoard = {
     backgroundImage:
-      fileExtension(filename) === "png" &&
+      (fileExtension(filename) === "png" ||
+        fileExtension(filename) === "svg") &&
       `linear-gradient(45deg, ${theme.palette.grey[100]} 25%, transparent 25%), 
       linear-gradient(135deg, ${theme.palette.grey[100]} 25%, transparent 25%),
       linear-gradient(45deg, transparent 75%, ${theme.palette.grey[100]} 75%),
@@ -53,6 +62,33 @@ export const FileTypePreview: FC<Props> = ({ src, filename }) => {
     alignItems: "center",
   };
 
+  const imageTypes = ["jpg", "jpeg", "png", "webp"];
+
+  const genImageURL = () => {
+    const params = `${Object.keys(imageSettings)
+      .filter((key: any) => imageSettings[key] && imageSettings[key] !== "none")
+      .map((key: any) => `${key}=${imageSettings[key]}`)
+      .join("&")}`;
+
+    return params ? `${src}?${params}` : src;
+  };
+
+  useEffect(() => {
+    // Get image dimensions for support types
+    if (imageTypes.includes(filename.split(".").pop())) {
+      const img = new Image();
+      img.src = src;
+
+      img.onload = () => {
+        setImageSettings({
+          ...imageSettings,
+          height: img.height,
+          width: img.width,
+        });
+      };
+    }
+  }, [src]);
+
   switch (fileExtension(filename)) {
     case "jpg":
     case "jpeg":
@@ -62,28 +98,34 @@ export const FileTypePreview: FC<Props> = ({ src, filename }) => {
     case "webp":
       return (
         <Box
+          className="img-box"
           sx={{
             ...styledCheckerBoard,
             py: imageOrientation === "horizontal" && 1,
             px: imageOrientation === "vertical" && "auto",
             overflow: "hidden",
-            backgroundColor: fileExtension(filename) !== "png" && "grey.100",
-            position: "relative",
-            height: "600px",
-            width: "100%",
+            backgroundColor:
+              fileExtension(filename) !== "png" &&
+              fileExtension(filename) !== "svg" &&
+              "grey.100",
+            height: "100%",
+            m: "auto",
             backgroundSize: `25px 25px`,
+            display: "flex",
+            alignItems: "center",
             backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
           }}
         >
           <CardMedia
             component="img"
-            data-src={src}
-            image={src}
+            data-src={`${genImageURL()}`}
+            image={`${genImageURL()}`}
             loading="lazy"
             sx={{
+              objectFit: "contain",
               m: "auto",
-              width: "100%",
-              height: "100%",
+              width: "inherit",
+              maxWidth: "100%", // used to avoid displaying full size of extra large images
             }}
           />
         </Box>

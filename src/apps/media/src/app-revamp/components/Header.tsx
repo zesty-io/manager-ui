@@ -133,6 +133,7 @@ export const Header = ({
                   size="small"
                   onClick={openMenu}
                   sx={{ height: "fit-content" }}
+                  aria-label="Open folder menu"
                 >
                   <ArrowDropDownRoundedIcon fontSize="small" />
                 </IconButton>

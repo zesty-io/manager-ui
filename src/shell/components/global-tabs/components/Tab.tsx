@@ -174,6 +174,8 @@ export const InactiveTab: FC<InactiveTab> = ({ tab, tabWidth, sx }) => {
   const queryData = useMemo(() => {
     return {
       mediaManager: {
+        bins,
+        ecoBins,
         binGroups: binGroups?.flat(),
       },
     };
@@ -219,6 +221,8 @@ export const ActiveTab: FC<ActiveTab> = ({ tabWidth }) => {
   const queryData = useMemo(() => {
     return {
       mediaManager: {
+        bins,
+        ecoBins,
         binGroups: binGroups?.flat(),
       },
     };

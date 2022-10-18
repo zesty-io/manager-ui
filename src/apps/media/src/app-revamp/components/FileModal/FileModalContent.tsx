@@ -24,6 +24,8 @@ import { MD5 } from "../../../../../../utility/md5";
 import {
   mediaManagerApi,
   useUpdateFileAltTextMutation,
+  useUpdateFileMutation,
+  useDeleteFileMutation,
 } from "../../../../../../shell/services/mediaManager";
 import { fileExtension } from "../../utils/fileUtils";
 import { RenameFileModal } from "./RenameFileModal";
@@ -67,20 +69,34 @@ export const FileModalContent: FC<Props> = ({
   handleCloseModal,
 }) => {
   const newTitle = useRef<any>("");
-  const [isFileUrlCopied, setIsFileUrlCopied] = useState<boolean>(false);
+  const [isCopied, setIsCopied] = useState<boolean>(false);
   const [newFilename, setNewFilename] = useState<string>(
     filename.substring(0, filename.lastIndexOf(".")) || filename
   );
-  const [fileType, setFileType] = useState<string>(fileExtension(filename));
+  const [fileType, setFileType] = useState<string>();
   const [showRenameFileModal, setShowRenameFileModal] =
     useState<boolean>(false);
   const [showSettingsDropdown, setShowSettingsDropdown] = useState(null);
   const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
   const openSettings = Boolean(showSettingsDropdown);
 
-  const [deleteFile] = mediaManagerApi.useDeleteFileMutation();
-  const [updateFile] = mediaManagerApi.useUpdateFileMutation();
-  const [updateFileAltTextMutation] = useUpdateFileAltTextMutation();
+  const [deleteFile] = useDeleteFileMutation();
+  const [
+    updateFile,
+    {
+      reset: resetUpdate,
+      isSuccess: isSuccessUpdate,
+      isLoading: isLoadingUpdate,
+    },
+  ] = useUpdateFileMutation();
+  const [
+    updateFileAltTextMutation,
+    {
+      reset: resetUpdateAltText,
+      isSuccess: isSuccessUpdateAltText,
+      isLoading: isLoadingUpdateAltText,
+    },
+  ] = useUpdateFileAltTextMutation();
   const [showDeleteFileModal, setShowDeleteFileModal] =
     useState<boolean>(false);
 
@@ -91,18 +107,21 @@ export const FileModalContent: FC<Props> = ({
     if (newTitle.current) {
       newTitle.current.value = title;
     }
+    if (fileExtension(filename) !== "No Extension") {
+      setFileType(fileExtension(filename));
+    }
   }, [title, filename]);
 
   /**
    * @description Used for copying the alttext's value
    */
-  const handleCopyClick = () => {
+  const handleCopyClick = (data: string) => {
     navigator?.clipboard
-      ?.writeText(src)
+      ?.writeText(data)
       .then(() => {
-        setIsFileUrlCopied(true);
+        setIsCopied(true);
         setTimeout(() => {
-          setIsFileUrlCopied(false);
+          setIsCopied(false);
         }, 1500);
       })
       .catch((err) => {
@@ -118,6 +137,10 @@ export const FileModalContent: FC<Props> = ({
     isAltTextUpdate?: boolean,
     newGroupId = groupId
   ) => {
+    // construct file type
+    let constructedFileType = "";
+    if (fileType) constructedFileType = `.${fileType}`;
+
     if (isAltTextUpdate) {
       updateFileAltTextMutation({
         id,
@@ -125,7 +148,8 @@ export const FileModalContent: FC<Props> = ({
           group_id: newGroupId,
           title: newTitle.current.value,
           filename:
-            `${renamedFilename}.${fileType}` || `${newFilename}.${fileType}`,
+            `${renamedFilename}${constructedFileType}` ||
+            `${newFilename}${constructedFileType}`,
         },
       });
     } else {
@@ -136,7 +160,8 @@ export const FileModalContent: FC<Props> = ({
           group_id: newGroupId,
           title: newTitle.current.value,
           filename:
-            `${renamedFilename}.${fileType}` || `${newFilename}.${fileType}`,
+            `${renamedFilename}${constructedFileType}` ||
+            `${newFilename}${constructedFileType}`,
         },
       });
     }
@@ -163,6 +188,19 @@ export const FileModalContent: FC<Props> = ({
           onDeleteFile={onDeleteFile}
           filename={newFilename}
           onClose={() => setShowDeleteFileModal(false)}
+        />
+      )}
+
+      {/* Rename File Modal */}
+      {showRenameFileModal && (
+        <RenameFileModal
+          handleUpdateMutation={handleUpdateMutation}
+          onSetNewFilename={setNewFilename}
+          onClose={() => setShowRenameFileModal(false)}
+          newFilename={newFilename}
+          isSuccessUpdate={isSuccessUpdate}
+          isLoadingUpdate={isLoadingUpdate}
+          resetUpdate={resetUpdate}
         />
       )}
 
@@ -195,17 +233,9 @@ export const FileModalContent: FC<Props> = ({
           }}
         >
           <ImageIcon />
-          <Typography variant="body2" noWrap sx={{ width: "200px", ml: 0.5 }}>
+          <Typography variant="body2" noWrap sx={{ width: "250px", ml: 0.8 }}>
             {newFilename}
           </Typography>
-          {showRenameFileModal && (
-            <RenameFileModal
-              handleUpdateMutation={handleUpdateMutation}
-              onSetNewFilename={setNewFilename}
-              onClose={() => setShowRenameFileModal(null)}
-              newFilename={newFilename}
-            />
-          )}
         </Box>
         <Box>
           <IconButton onClick={() => setShowDeleteFileModal(true)}>
@@ -219,6 +249,8 @@ export const FileModalContent: FC<Props> = ({
           >
             <MoreVertIcon />
           </IconButton>
+
+          {/* Settings Dropdown Menu */}
           <Menu
             id="settingsMenu"
             anchorEl={showSettingsDropdown}
@@ -239,9 +271,9 @@ export const FileModalContent: FC<Props> = ({
               </ListItemIcon>
               <ListItemText>Rename</ListItemText>
             </MenuItem>
-            <MenuItem>
+            <MenuItem onClick={() => handleCopyClick(id)}>
               <ListItemIcon>
-                <WidgetsRoundedIcon />
+                {isCopied ? <CheckIcon /> : <WidgetsRoundedIcon />}
               </ListItemIcon>
               <ListItemText>Copy ZUID</ListItemText>
             </MenuItem>
@@ -271,10 +303,10 @@ export const FileModalContent: FC<Props> = ({
             disableUnderline: true,
             endAdornment: (
               <InputAdornment position="end">
-                {isFileUrlCopied ? (
+                {isCopied ? (
                   <CheckIcon />
                 ) : (
-                  <IconButton onClick={() => handleCopyClick()}>
+                  <IconButton onClick={() => handleCopyClick(src)}>
                     <ContentCopyIcon />
                   </IconButton>
                 )}
@@ -296,23 +328,27 @@ export const FileModalContent: FC<Props> = ({
           fullWidth
         />
       </Box>
-      <Box sx={{ mt: 2 }}>
-        <Typography color="text.secondary">UPLOADED BY</Typography>
-        <Box sx={{ display: "flex", mt: 1 }}>
-          <Avatar
-            sx={{ bgcolor: "grey.300", width: 40, height: 40 }}
-            alt={user?.email || ""}
-            src={`https://www.gravatar.com/avatar/${MD5(
-              user?.email || ""
-            )}.jpg?s=40`}
-          ></Avatar>
-          <Box sx={{ pl: 2 }}>
-            <Typography>{user?.email}</Typography>
-            <Typography>{user?.role}</Typography>
+      {user?.email && (
+        <Box sx={{ mt: 3 }}>
+          <Typography color="text.secondary">UPLOADED BY</Typography>
+          <Box sx={{ display: "flex", mt: 1 }}>
+            <Avatar
+              sx={{ bgcolor: "grey.300", width: 40, height: 40 }}
+              alt={user?.email || ""}
+              src={`https://www.gravatar.com/avatar/${MD5(
+                user?.email || ""
+              )}.jpg?s=40`}
+            ></Avatar>
+            <Box sx={{ pl: 2 }}>
+              <Typography>{user?.email}</Typography>
+              <Typography sx={{ color: "text.secondary" }}>
+                {user?.role}
+              </Typography>
+            </Box>
           </Box>
         </Box>
-      </Box>
-      <Box sx={{ mt: 2 }}>
+      )}
+      <Box sx={{ mt: 3 }}>
         <Typography color="text.secondary" sx={{ mt: 1 }}>
           UPLOADED ON
         </Typography>
@@ -328,7 +364,7 @@ export const FileModalContent: FC<Props> = ({
           </Box>
           <Box sx={{ pl: 3 }}>
             <Typography>{moment(createdAt).format("LL")}</Typography>
-            <Typography>
+            <Typography sx={{ color: "text.secondary" }}>
               {moment(createdAt).add(3, "days").calendar()}
             </Typography>
           </Box>

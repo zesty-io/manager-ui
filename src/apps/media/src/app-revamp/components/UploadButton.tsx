@@ -25,9 +25,11 @@ export const UploadButton: FC<UploadButton> = ({
   const dispatch = useDispatch();
   const hiddenFileInput = useRef(null);
   const { data: currentGroup, isFetching: groupIsFetching } =
-    useGetGroupDataQuery(currentGroupId);
-  const { data: binData, isFetching: binIsFetching } =
-    useGetBinQuery(currentBinId);
+    useGetGroupDataQuery(currentGroupId, { skip: !currentGroupId });
+  const { data: binData, isFetching: binIsFetching } = useGetBinQuery(
+    currentBinId,
+    { skip: !currentBinId }
+  );
   const loading = binIsFetching || groupIsFetching;
   const handleFileInputChange: ChangeEventHandler<HTMLInputElement> = (
     event
@@ -41,7 +43,7 @@ export const UploadButton: FC<UploadButton> = ({
           return {
             file,
             bin_id: currentBin.id,
-            group_id: currentGroup.id,
+            group_id: currentGroup?.id || currentBin.id,
           };
         })
       )

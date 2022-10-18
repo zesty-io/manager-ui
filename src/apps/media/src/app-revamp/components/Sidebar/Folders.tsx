@@ -89,7 +89,10 @@ export const Folders = ({ lockedToGroupId }: Props) => {
     };
   }, []);
 
-  const combinedBins = [...(ecoBins || []), ...(bins || [])];
+  const combinedBins = useMemo(
+    () => [...(ecoBins || []), ...(bins || [])],
+    [ecoBins, bins]
+  );
 
   const { data: binGroups, isLoading } =
     mediaManagerApi.useGetAllBinGroupsQuery(
@@ -118,6 +121,9 @@ export const Folders = ({ lockedToGroupId }: Props) => {
         ];
       } else {
         return binGroups
+          .filter((binGroup) =>
+            combinedBins.length > 1 ? true : binGroup?.length
+          )
           .map((binGroup, idx) => {
             if (!binGroup.length) {
               return { ...combinedBins[idx], children: [] };
@@ -140,7 +146,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
     } else {
       return [];
     }
-  }, [binGroups, sort]);
+  }, [binGroups, sort, combinedBins]);
 
   /* Creating a tree structure based on the hidden items. */
   const hiddenTrees = useMemo(() => {
@@ -281,7 +287,11 @@ export const Folders = ({ lockedToGroupId }: Props) => {
             </MenuItem>
           </Menu>
         </Box>
-        <IconButton size="small" onClick={() => setOpenNewFolderDialog(true)}>
+        <IconButton
+          aria-label="Create new folder"
+          size="small"
+          onClick={() => setOpenNewFolderDialog(true)}
+        >
           <AddIcon fontSize="small" />
         </IconButton>
       </Box>
@@ -374,11 +384,13 @@ export const Folders = ({ lockedToGroupId }: Props) => {
           )}
         </>
       ) : null}
-      <NewFolderDialog
-        open={openNewFolderDialog}
-        onClose={() => setOpenNewFolderDialog(false)}
-        binId={bins?.find((bin) => bin.default)?.id}
-      />
+      {openNewFolderDialog ? (
+        <NewFolderDialog
+          open
+          onClose={() => setOpenNewFolderDialog(false)}
+          binId={bins?.find((bin) => bin.default)?.id}
+        />
+      ) : null}
     </>
   );
 };

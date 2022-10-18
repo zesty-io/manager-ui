@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect, Dispatch, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 
 import {
@@ -8,9 +8,11 @@ import {
   IconButton,
   CircularProgress,
   Dialog,
+  DialogContent,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 // import { WithLoader } from "@zesty-io/core";
+import { NotFoundState } from "../NotFoundState";
 
 import { FileModalContent } from "./FileModalContent";
 import { FileTypePreview } from "./FileTypePreview";
@@ -29,12 +31,14 @@ const styledModal = {
 
 interface Props {
   fileId: string;
+  onSetIsFileModalError: Dispatch<boolean>;
 }
 
-export const FileModal: FC<Props> = ({ fileId }) => {
+export const FileModal: FC<Props> = ({ fileId, onSetIsFileModalError }) => {
   const history = useHistory();
   const location = useLocation();
-  const { data, isLoading } = useGetFileQuery(fileId);
+  const { data, isLoading, isError } = useGetFileQuery(fileId);
+  const [showFileModal, setShowFileModal] = useState<boolean>(true);
 
   const handleCloseModal = () => {
     const queryParams = new URLSearchParams(location.search);
@@ -44,50 +48,64 @@ export const FileModal: FC<Props> = ({ fileId }) => {
     });
   };
 
+  useEffect(() => {
+    if (isError) {
+      onSetIsFileModalError(true);
+    }
+  }, [isError]);
+
   return (
     <>
-      {data ? (
-        <Modal open={data.url && !isLoading}>
-          <Box
-            sx={{
-              ...styledModal,
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
+      {data && !isError ? (
+        <Dialog
+          open={data.url && !isLoading}
+          fullWidth
+          maxWidth={false}
+          onClose={handleCloseModal}
+          PaperProps={{
+            style: {
+              height: "950px",
+              maxWidth: "1300px",
+            },
+          }}
+        >
+          <Box>
             <IconButton
               onClick={() => handleCloseModal()}
               sx={{
-                position: "absolute",
+                position: "fixed",
                 zIndex: 999,
-                right: -30,
-                top: -35,
+                right: 5,
+                top: 0,
               }}
             >
               <CloseIcon sx={{ color: "common.white" }} />
             </IconButton>
-
+          </Box>
+          <DialogContent
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              p: 0,
+              overflow: "hidden",
+            }}
+          >
             {/* <WithLoader condition={isLoading}> */}
             <Card
               elevation={0}
               sx={{
-                width: "700px",
+                width: "1000px",
                 overflow: "hidden",
+
+                "@media screen and (max-width: 1440px)": {
+                  width: "1440px",
+                },
               }}
             >
-              <Box
-                sx={{
-                  backgroundColor: "grey.200",
-                  height: "100%",
-                  overflow: "hidden",
-                  width: "100%",
-                }}
-              >
-                <FileTypePreview src={data.url} filename={data.filename} />
-              </Box>
+              <FileTypePreview src={data.url} filename={data.filename} />
             </Card>
 
-            <Box sx={{ p: 4, width: "400px" }}>
+            <Box sx={{ p: 3, width: "500px" }}>
               <FileModalContent
                 handleCloseModal={handleCloseModal}
                 id={data.id}
@@ -100,9 +118,9 @@ export const FileModal: FC<Props> = ({ fileId }) => {
               />
             </Box>
             {/* </WithLoader> */}
-          </Box>
-        </Modal>
-      ) : (
+          </DialogContent>
+        </Dialog>
+      ) : !data && !isError ? (
         <Dialog
           open={true}
           PaperProps={{
@@ -118,6 +136,8 @@ export const FileModal: FC<Props> = ({ fileId }) => {
         >
           <CircularProgress color="info" />
         </Dialog>
+      ) : (
+        <></>
       )}
     </>
   );

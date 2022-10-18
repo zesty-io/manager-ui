@@ -42,7 +42,7 @@ export const DeleteFolderDialog = ({ open, onClose, id, groupId }: Props) => {
             mb: 2,
           }}
         />
-        Delete Group?
+        Delete Folder?
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
@@ -57,11 +57,12 @@ export const DeleteFolderDialog = ({ open, onClose, id, groupId }: Props) => {
         <Button
           disabled={isLoading}
           variant="contained"
+          color="error"
           onClick={() => {
             deleteGroup({ id, groupId });
           }}
         >
-          Delete
+          Delete Folder
         </Button>
       </DialogActions>
     </Dialog>
