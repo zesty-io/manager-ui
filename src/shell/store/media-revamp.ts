@@ -503,7 +503,7 @@ export function dismissFileUploads() {
     if (failedTitleUpdates) {
       dispatch(
         notify({
-          message: `Failed to update metadata of ${failedUploads.length} files`,
+          message: `Failed to update metadata of ${failedTitleUpdates} files`,
           kind: "warn",
         })
       );
