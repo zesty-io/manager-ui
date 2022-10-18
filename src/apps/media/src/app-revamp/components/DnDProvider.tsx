@@ -13,6 +13,7 @@ import {
   useGetGroupDataQuery,
 } from "../../../../../shell/services/mediaManager";
 import { SxProps } from "@mui/system";
+import { DropArea } from "./DropArea";
 
 interface Props {
   children: React.ReactNode;
@@ -80,7 +81,11 @@ export const DnDProvider = ({
       {...getRootProps({ onClick: (evt) => evt.stopPropagation() })}
     >
       <input {...getInputProps()} />
-      {isDragActive ? "DROP FILES HERE" : children}
+      {isDragActive ? (
+        <DropArea currentGroup={currentGroup} currentBin={currentBin} />
+      ) : (
+        children
+      )}
     </Box>
   );
 };
