@@ -1,7 +1,6 @@
 import { useState, useRef } from "react";
 import { CardMedia, Skeleton } from "@mui/material";
 
-import { isImage } from "../../utils/fileUtils";
 import { File } from "../../../../../../shell/services/types";
 
 export function ThumbnailImage({
