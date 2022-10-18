@@ -3,7 +3,7 @@ import { useDropzone } from "react-dropzone";
 import { useCallback } from "react";
 import {
   uploadFile,
-  fileUploadObjects,
+  fileUploadStage,
 } from "../../../../../shell/store/media-revamp";
 import { useDispatch } from "react-redux";
 import Box from "@mui/material/Box";
@@ -44,10 +44,11 @@ export const DnDProvider = ({
   const currentBin = binData?.[0];
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      if (loading || !currentBin?.id) return;
+      if (loading || !currentBin?.id || !currentGroup?.id) return;
       // console.log({ acceptedFiles });
+
       dispatch(
-        fileUploadObjects(
+        fileUploadStage(
           acceptedFiles.map((file) => {
             return {
               file,

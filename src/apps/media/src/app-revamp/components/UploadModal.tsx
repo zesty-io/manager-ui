@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { AppState } from "../../../../../shell/store/types";
 import Dialog from "@mui/material/Dialog";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -15,16 +16,17 @@ import {
 import { Typography } from "@mui/material";
 import { DnDProvider } from "./DnDProvider";
 import { UploadButton } from "./UploadButton";
+import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 
 export const UploadModal: FC = () => {
   const dispatch = useDispatch();
-  const filesToUpload: UploadFile[] = useSelector(
-    (state: any) => state.mediaRevamp.temp
+
+  const uploads = useSelector((state: AppState) => state.mediaRevamp.uploads);
+
+  const filesToUpload = useSelector((state: AppState) =>
+    state.mediaRevamp.uploads.filter((upload) => upload.status !== "failed")
   );
 
-  const failedUploads: StoreFile[] = useSelector(
-    (state: any) => state.mediaRevamp.failedUploads
-  );
   const ids = filesToUpload.length && {
     currentBinId: filesToUpload[0].bin_id,
     currentGroupId: filesToUpload[0].group_id,
@@ -32,11 +34,7 @@ export const UploadModal: FC = () => {
 
   return (
     <>
-      <Dialog
-        open={Boolean(filesToUpload?.length || failedUploads?.length)}
-        maxWidth="lg"
-        fullWidth
-      >
+      <Dialog open={Boolean(uploads.length)} maxWidth="lg" fullWidth>
         <DialogTitle
           sx={{
             display: "flex",
@@ -57,7 +55,7 @@ export const UploadModal: FC = () => {
             gap: 3,
           }}
         >
-          <UploadErrors></UploadErrors>
+          <UploadErrors />
           <DnDProvider {...ids} sx={{ flexWrap: "wrap" }}>
             {filesToUpload.map((file, idx) => {
               return (
@@ -83,9 +81,18 @@ export const UploadModal: FC = () => {
           <Button
             color="primary"
             variant="contained"
-            disabled={filesToUpload.some((file) => file.progress !== 100)}
+            disabled={filesToUpload.some(
+              (file) => file.status === "inProgress" || file.status === "staged"
+            )}
             onClick={() => {
               dispatch(dismissFileUploads());
+              dispatch(
+                // TODO only invalidate whats absolutely necessary
+                mediaManagerApi.util.invalidateTags([
+                  { type: "GroupData", id: ids.currentGroupId },
+                  { type: "BinFiles", id: ids.currentBinId },
+                ])
+              );
             }}
           >
             Done
@@ -97,9 +104,8 @@ export const UploadModal: FC = () => {
 };
 
 const UploadErrors = () => {
-  const failedUploads: StoreFile[] = useSelector(
-    (state: any) => state.mediaRevamp.failedUploads
-  );
+  const uploads = useSelector((state: AppState) => state.mediaRevamp.uploads);
+  const failedUploads = uploads.filter((upload) => upload.status === "failed");
   if (failedUploads.length === 0) return null;
   return (
     <Box sx={{ backgroundColor: "error" }}>

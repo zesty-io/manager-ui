@@ -10,33 +10,56 @@ import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 import {
   uploadFile,
   UploadFile,
+  Upload,
 } from "../../../../../shell/store/media-revamp";
 
 interface Props {
-  file: UploadFile;
+  file: Upload;
 }
 
 export const UploadThumbnail: FC<Props> = ({ file }) => {
   const dispatch = useDispatch();
 
-  //const params = useParams<any>();
-  //const { data: group } = mediaManagerApi.useGetGroupDataQuery(params.id);
   const { data: bin } = mediaManagerApi.useGetBinQuery(file.bin_id, {
     skip: !file.bin_id,
   });
 
+  const [deleteFile] = mediaManagerApi.useDeleteFileMutation();
+
+  //const delete
+  console.log(file);
+
   useEffect(() => {
-    if (bin) {
+    if (bin && file.status === "staged") {
       dispatch(uploadFile(file, bin[0]));
     }
   }, [bin]);
+
+  const onRemove =
+    file.status !== "success"
+      ? undefined
+      : async () => {
+          const promise = deleteFile({
+            id: file.id,
+            body: { group_id: file.group_id },
+          });
+          console.log({ promise });
+          const res = await promise;
+          console.log({ res });
+        };
+
+  const getProgress = () => {
+    if (file.status === "success") return 100;
+    if (file.status === "inProgress") return file.progress;
+    return 0;
+  };
 
   return (
     <>
       <Box
         sx={{
           backgroundColor: "rgba(255,255,255,.5)",
-          width: `${100 - file.progress}%`,
+          width: `${100 - getProgress()}%`,
           height: "100%",
           position: "absolute",
           right: "0",
@@ -45,7 +68,12 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
           //transform: `translateX(${file.progress || 0}%)`,
         }}
       ></Box>
-      <Thumbnail src={file.url} filename={file.filename} isEditable={true} />
+      <Thumbnail
+        src={file.url}
+        filename={file.filename}
+        isEditable={true}
+        onRemove={onRemove}
+      />
     </>
   );
 };
