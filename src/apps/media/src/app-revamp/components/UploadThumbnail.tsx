@@ -70,7 +70,6 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
         isEditable={file.status === "success"}
         onRemove={onRemove}
         onFilenameChange={(filename) => {
-          console.log({ filename, file });
           if (file.status === "success") {
             dispatch(fileUploadSetFilename({ upload: file, filename }));
           }

@@ -96,7 +96,6 @@ const mediaSlice = createSlice({
     // },
 
     fileUploadStart(state, action: { payload: FileUploadStart }) {
-      console.log("fileUploadStart()");
       const index = state.uploads.findIndex(
         (upload) =>
           upload.status === "staged" &&
@@ -105,7 +104,6 @@ const mediaSlice = createSlice({
       if (index !== -1) {
         const oldData = state.uploads[index];
         if (oldData.status === "staged") {
-          console.log("hello");
           const { file, ...data } = action.payload;
           const uploads = [...state.uploads];
 
@@ -485,6 +483,7 @@ export function dismissFileUploads() {
     const res = await Promise.all(reqs);
     console.log(res);
     console.log({ successfulUploads, failedUploads, stagedUploads });
+    const failedTitleUpdates = res.filter((r) => r.status !== 200).length;
     if (successfulUploads.length) {
       dispatch(
         notify({
@@ -497,6 +496,14 @@ export function dismissFileUploads() {
       dispatch(
         notify({
           message: `Failed to upload ${failedUploads.length} files`,
+          kind: "warn",
+        })
+      );
+    }
+    if (failedTitleUpdates) {
+      dispatch(
+        notify({
+          message: `Failed to update metadata of ${failedUploads.length} files`,
           kind: "warn",
         })
       );
