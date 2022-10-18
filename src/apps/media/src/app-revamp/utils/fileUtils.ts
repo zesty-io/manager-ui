@@ -1,3 +1,4 @@
+import { File } from "../../../../../shell/services/types";
 export function fileExtension(url: string) {
   let extension = "No Extension";
   if (url.includes(".")) {
@@ -7,7 +8,8 @@ export function fileExtension(url: string) {
   return extension;
 }
 
-export function isImage(file: any) {
+export function isImage(file: File) {
+  if (!file) return false;
   if (file.url && file.url.indexOf("blob:") !== -1) {
     return true;
   }

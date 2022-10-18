@@ -233,7 +233,7 @@ export const FileModalContent: FC<Props> = ({
           }}
         >
           <ImageIcon />
-          <Typography variant="body2" noWrap sx={{ width: "200px", ml: 0.5 }}>
+          <Typography variant="body2" noWrap sx={{ width: "250px", ml: 0.8 }}>
             {newFilename}
           </Typography>
         </Box>
@@ -249,6 +249,8 @@ export const FileModalContent: FC<Props> = ({
           >
             <MoreVertIcon />
           </IconButton>
+
+          {/* Settings Dropdown Menu */}
           <Menu
             id="settingsMenu"
             anchorEl={showSettingsDropdown}
@@ -326,23 +328,27 @@ export const FileModalContent: FC<Props> = ({
           fullWidth
         />
       </Box>
-      <Box sx={{ mt: 2 }}>
-        <Typography color="text.secondary">UPLOADED BY</Typography>
-        <Box sx={{ display: "flex", mt: 1 }}>
-          <Avatar
-            sx={{ bgcolor: "grey.300", width: 40, height: 40 }}
-            alt={user?.email || ""}
-            src={`https://www.gravatar.com/avatar/${MD5(
-              user?.email || ""
-            )}.jpg?s=40`}
-          ></Avatar>
-          <Box sx={{ pl: 2 }}>
-            <Typography>{user?.email}</Typography>
-            <Typography>{user?.role}</Typography>
+      {user?.email && (
+        <Box sx={{ mt: 3 }}>
+          <Typography color="text.secondary">UPLOADED BY</Typography>
+          <Box sx={{ display: "flex", mt: 1 }}>
+            <Avatar
+              sx={{ bgcolor: "grey.300", width: 40, height: 40 }}
+              alt={user?.email || ""}
+              src={`https://www.gravatar.com/avatar/${MD5(
+                user?.email || ""
+              )}.jpg?s=40`}
+            ></Avatar>
+            <Box sx={{ pl: 2 }}>
+              <Typography>{user?.email}</Typography>
+              <Typography sx={{ color: "text.secondary" }}>
+                {user?.role}
+              </Typography>
+            </Box>
           </Box>
         </Box>
-      </Box>
-      <Box sx={{ mt: 2 }}>
+      )}
+      <Box sx={{ mt: 3 }}>
         <Typography color="text.secondary" sx={{ mt: 1 }}>
           UPLOADED ON
         </Typography>
@@ -358,7 +364,7 @@ export const FileModalContent: FC<Props> = ({
           </Box>
           <Box sx={{ pl: 3 }}>
             <Typography>{moment(createdAt).format("LL")}</Typography>
-            <Typography>
+            <Typography sx={{ color: "text.secondary" }}>
               {moment(createdAt).add(3, "days").calendar()}
             </Typography>
           </Box>

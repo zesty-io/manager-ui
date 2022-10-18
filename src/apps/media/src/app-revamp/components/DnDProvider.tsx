@@ -3,7 +3,7 @@ import { useDropzone } from "react-dropzone";
 import { useCallback } from "react";
 import {
   uploadFile,
-  fileUploadObjects,
+  fileUploadStage,
 } from "../../../../../shell/store/media-revamp";
 import { useDispatch } from "react-redux";
 import Box from "@mui/material/Box";
@@ -13,6 +13,7 @@ import {
   useGetGroupDataQuery,
 } from "../../../../../shell/services/mediaManager";
 import { SxProps } from "@mui/system";
+import { DropArea } from "./DropArea";
 
 interface Props {
   children: React.ReactNode;
@@ -43,15 +44,16 @@ export const DnDProvider = ({
   const currentBin = binData?.[0];
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      if (loading) return;
+      if (loading || !currentBin?.id || !currentGroup?.id) return;
+      // console.log({ acceptedFiles });
 
       dispatch(
-        fileUploadObjects(
+        fileUploadStage(
           acceptedFiles.map((file) => {
             return {
               file,
               bin_id: currentBin.id,
-              group_id: currentGroup.id,
+              group_id: currentGroup?.id || currentBin.id,
             };
           })
         )
@@ -80,7 +82,11 @@ export const DnDProvider = ({
       {...getRootProps({ onClick: (evt) => evt.stopPropagation() })}
     >
       <input {...getInputProps()} />
-      {isDragActive ? "DROP FILES HERE" : children}
+      {isDragActive ? (
+        <DropArea currentGroup={currentGroup} currentBin={currentBin} />
+      ) : (
+        children
+      )}
     </Box>
   );
 };

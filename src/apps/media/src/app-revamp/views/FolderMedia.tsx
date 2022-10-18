@@ -22,6 +22,23 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
   const { id } = params;
   const headerHeight = useSelector((state: any) => state.ui.headerHeight);
   const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
+  const instanceId = useSelector((state: any) => state.instance.ID);
+  const ecoId = useSelector((state: any) => state.instance.ecoID);
+
+  const { data: bins } = mediaManagerApi.useGetSiteBinsQuery(instanceId);
+  const { data: ecoBins } = mediaManagerApi.useGetEcoBinsQuery(ecoId, {
+    skip: !ecoId,
+  });
+
+  const { data: binGroups } = mediaManagerApi.useGetAllBinGroupsQuery(
+    [...(ecoBins || []), ...(bins || [])]?.map((bin) => bin.id),
+    {
+      skip: !bins?.length,
+    }
+  );
+
+  // Grabbing some group info from binGroups since this is most likely to already be in cache
+  const currentGroup = binGroups?.flat()?.find((group) => group.id === id);
 
   const {
     data: groupData,
@@ -39,10 +56,10 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
       ) : (
         <>
           <Header
-            title={groupData?.name}
-            id={groupData?.id}
-            binId={groupData?.bin_id}
-            groupId={groupData?.group_id}
+            title={currentGroup?.name || groupData?.name}
+            id={currentGroup?.id || groupData?.id}
+            binId={currentGroup?.bin_id || groupData?.bin_id}
+            groupId={currentGroup?.group_id || groupData?.group_id}
             addImagesCallback={addImagesCallback}
           />
           {isFetching ? (

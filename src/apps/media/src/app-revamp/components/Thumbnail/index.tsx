@@ -1,9 +1,12 @@
 import { FC, useState, useRef, DragEvent } from "react";
 import { CardMedia, Typography, Card, Box } from "@mui/material";
+
 import { fileExtension } from "../../utils/fileUtils";
 import { ThumbnailFilename } from "./ThumbnailFilename";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import { useTheme } from "@mui/material/styles";
+import styles from "./Loading.less";
+import cx from "classnames";
 
 // file icons import
 import wordImg from "../../../../../../../public/images/wordImg.png";
@@ -17,6 +20,7 @@ import numberImg from "../../../../../../../public/images/numberImg.png";
 import defaultImg from "../../../../../../../public/images/defaultImg.png";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
+import { isImage } from "../../utils/fileUtils";
 
 import { File } from "../../../../../../shell/services/types";
 
@@ -54,6 +58,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
 
   const theme = useTheme();
   const imageEl = useRef<HTMLImageElement>();
+  const [lazyLoading, setLazyLoading] = useState(true);
   const [imageOrientation, setImageOrientation] = useState<string>("");
 
   const onDragStart = (event: DragEvent) => {
@@ -97,6 +102,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
    * @note imageOrientation will be placed as a condition in the Image's parent component
    */
   const handleImageLoad = () => {
+    setLazyLoading(false);
     const naturalHeight = imageEl.current.naturalHeight;
     const naturalWidth = imageEl.current.naturalWidth;
     if (naturalHeight > naturalWidth) {
@@ -149,10 +155,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 objectFit: "contain",
                 overflow: "hidden",
                 height: "100%",
-                display: "table-cell",
                 verticalAlign: "bottom",
               }}
             />
+
+            {file && isImage(file) && lazyLoading ? (
+              <div className={cx(styles.Load, styles.Loading)}></div>
+            ) : null}
           </Box>
           <ThumbnailFilename
             filename={filename}
