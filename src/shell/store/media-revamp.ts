@@ -49,6 +49,7 @@ type SuccessfulUpload = Omit<
   {
     status: "success";
     id: string;
+    filenameDirty: boolean;
   } & UploadFile,
   "file"
 >;
@@ -95,7 +96,6 @@ const mediaSlice = createSlice({
     // },
 
     fileUploadStart(state, action: { payload: FileUploadStart }) {
-      console.log("fileUploadStart()");
       const index = state.uploads.findIndex(
         (upload) =>
           upload.status === "staged" &&
@@ -104,7 +104,6 @@ const mediaSlice = createSlice({
       if (index !== -1) {
         const oldData = state.uploads[index];
         if (oldData.status === "staged") {
-          console.log("hello");
           const { file, ...data } = action.payload;
           const uploads = [...state.uploads];
 
@@ -113,6 +112,13 @@ const mediaSlice = createSlice({
         }
       }
       return state;
+    },
+    fileUploadDelete(state, action: { payload: SuccessfulUpload }) {
+      const uploads = state.uploads.filter(
+        (upload) =>
+          upload.status !== "success" || action.payload.id !== upload.id
+      );
+      return { ...state, uploads };
     },
     fileUploadReset(state) {
       state.uploads = [];
@@ -123,6 +129,23 @@ const mediaSlice = createSlice({
       );
       if (uploadingFile && uploadingFile.status === "inProgress") {
         uploadingFile.progress = action.payload.progress;
+      }
+    },
+    fileUploadSetFilename(
+      state,
+      action: { payload: { upload: SuccessfulUpload; filename: string } }
+    ) {
+      const uploadIndex = state.uploads.findIndex(
+        (upload) =>
+          upload.status === "success" &&
+          upload.uploadID === action.payload.upload.uploadID
+      );
+      if (uploadIndex !== -1) {
+        const upload = state.uploads[uploadIndex];
+        if (upload.status === "success") {
+          upload.filename = action.payload.filename;
+          upload.filenameDirty = true;
+        }
       }
     },
     fileUploadSuccess(state, action: { payload: FileUploadSuccess }) {
@@ -137,6 +160,7 @@ const mediaSlice = createSlice({
             ...rest,
             loading: false,
             filename: action.payload.filename,
+            filenameDirty: false,
             url: action.payload.url,
             status: "success" as const,
             id: action.payload.id,
@@ -202,9 +226,10 @@ const mediaSlice = createSlice({
 export const {
   fileUploadStage,
   fileUploadReset,
-  // fileUploadObjectRemove,
+  fileUploadDelete,
   fileUploadStart,
   fileUploadProgress,
+  fileUploadSetFilename,
   fileUploadSuccess,
   fileUploadError,
   setIsSelectDialog,
@@ -400,6 +425,25 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
     dispatch(fileUploadStart(file));
   };
 }
+export function deleteUpload(upload: SuccessfulUpload) {
+  console.log({ upload });
+  return async (dispatch: Dispatch) => {
+    console.log("Hello!");
+    const res = await request(
+      //@ts-expect-error
+      `${CONFIG.SERVICE_MEDIA_MANAGER}/file/${upload.id}`,
+      {
+        method: "DELETE",
+      }
+    );
+    if (res.status === 200) {
+      dispatch(fileUploadDelete(upload));
+    } else {
+      dispatch(notify({ message: "Failed cancel upload", kind: "error" }));
+      throw res;
+    }
+  };
+}
 export function dismissFileUploads() {
   return async (dispatch: Dispatch, getState: () => AppState) => {
     const state: State = getState().mediaRevamp;
@@ -420,8 +464,27 @@ export function dismissFileUploads() {
       return;
     //const successfulUploads = state.stagedUploads.length;
     //const failedUploads = state.failedUploads.length;
+    const reqs = successfulUploads
+      .filter((upload) => upload.status === "success" && upload.filenameDirty)
+      .map((upload) => {
+        return request(
+          //@ts-expect-error
+          `${CONFIG.SERVICE_MEDIA_MANAGER}/file/${upload.id}`,
+          {
+            method: "PATCH",
+            body: {
+              id: upload.id,
+              group_id: upload.group_id,
+              filename: upload.filename,
+            },
+          }
+        );
+      });
+    const res = await Promise.all(reqs);
+    console.log(res);
     console.log({ successfulUploads, failedUploads, stagedUploads });
-    if (successfulUploads) {
+    const failedTitleUpdates = res.filter((r) => r.status !== 200).length;
+    if (successfulUploads.length) {
       dispatch(
         notify({
           message: `Successfully uploaded ${successfulUploads.length} files`,
@@ -429,10 +492,18 @@ export function dismissFileUploads() {
         })
       );
     }
-    if (failedUploads) {
+    if (failedUploads.length) {
       dispatch(
         notify({
           message: `Failed to upload ${failedUploads.length} files`,
+          kind: "warn",
+        })
+      );
+    }
+    if (failedTitleUpdates) {
+      dispatch(
+        notify({
+          message: `Failed to update metadata of ${failedTitleUpdates} files`,
           kind: "warn",
         })
       );

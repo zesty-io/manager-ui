@@ -11,6 +11,8 @@ import {
   uploadFile,
   UploadFile,
   Upload,
+  fileUploadSetFilename,
+  deleteUpload,
 } from "../../../../../shell/store/media-revamp";
 
 interface Props {
@@ -39,13 +41,7 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
     file.status !== "success"
       ? undefined
       : async () => {
-          const promise = deleteFile({
-            id: file.id,
-            body: { group_id: file.group_id },
-          });
-          console.log({ promise });
-          const res = await promise;
-          console.log({ res });
+          dispatch(deleteUpload(file));
         };
 
   const getProgress = () => {
@@ -71,8 +67,13 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
       <Thumbnail
         src={file.url}
         filename={file.filename}
-        isEditable={true}
+        isEditable={file.status === "success"}
         onRemove={onRemove}
+        onFilenameChange={(filename) => {
+          if (file.status === "success") {
+            dispatch(fileUploadSetFilename({ upload: file, filename }));
+          }
+        }}
       />
     </>
   );
