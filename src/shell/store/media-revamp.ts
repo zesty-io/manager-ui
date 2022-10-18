@@ -49,6 +49,7 @@ type SuccessfulUpload = Omit<
   {
     status: "success";
     id: string;
+    filenameDirty: boolean;
   } & UploadFile,
   "file"
 >;
@@ -132,6 +133,23 @@ const mediaSlice = createSlice({
         uploadingFile.progress = action.payload.progress;
       }
     },
+    fileUploadSetFilename(
+      state,
+      action: { payload: { upload: SuccessfulUpload; filename: string } }
+    ) {
+      const uploadIndex = state.uploads.findIndex(
+        (upload) =>
+          upload.status === "success" &&
+          upload.uploadID === action.payload.upload.uploadID
+      );
+      if (uploadIndex !== -1) {
+        const upload = state.uploads[uploadIndex];
+        if (upload.status === "success") {
+          upload.filename = action.payload.filename;
+          upload.filenameDirty = true;
+        }
+      }
+    },
     fileUploadSuccess(state, action: { payload: FileUploadSuccess }) {
       const index = state.uploads.findIndex(
         (file) => file.uploadID === action.payload.uploadID
@@ -144,6 +162,7 @@ const mediaSlice = createSlice({
             ...rest,
             loading: false,
             filename: action.payload.filename,
+            filenameDirty: false,
             url: action.payload.url,
             status: "success" as const,
             id: action.payload.id,
@@ -212,6 +231,7 @@ export const {
   fileUploadDelete,
   fileUploadStart,
   fileUploadProgress,
+  fileUploadSetFilename,
   fileUploadSuccess,
   fileUploadError,
   setIsSelectDialog,
@@ -446,6 +466,24 @@ export function dismissFileUploads() {
       return;
     //const successfulUploads = state.stagedUploads.length;
     //const failedUploads = state.failedUploads.length;
+    const reqs = successfulUploads
+      .filter((upload) => upload.status === "success" && upload.filenameDirty)
+      .map((upload) => {
+        return request(
+          //@ts-expect-error
+          `${CONFIG.SERVICE_MEDIA_MANAGER}/file/${upload.id}`,
+          {
+            method: "PATCH",
+            body: {
+              id: upload.id,
+              group_id: upload.group_id,
+              filename: upload.filename,
+            },
+          }
+        );
+      });
+    const res = await Promise.all(reqs);
+    console.log(res);
     console.log({ successfulUploads, failedUploads, stagedUploads });
     if (successfulUploads.length) {
       dispatch(

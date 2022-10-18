@@ -11,6 +11,7 @@ import {
   uploadFile,
   UploadFile,
   Upload,
+  fileUploadSetFilename,
   deleteUpload,
 } from "../../../../../shell/store/media-revamp";
 
@@ -66,8 +67,14 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
       <Thumbnail
         src={file.url}
         filename={file.filename}
-        isEditable={true}
+        isEditable={file.status === "success"}
         onRemove={onRemove}
+        onFilenameChange={(filename) => {
+          console.log({ filename, file });
+          if (file.status === "success") {
+            dispatch(fileUploadSetFilename({ upload: file, filename }));
+          }
+        }}
       />
     </>
   );
