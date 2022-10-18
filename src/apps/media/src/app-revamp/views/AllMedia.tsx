@@ -12,6 +12,7 @@ import { MediaGrid } from "../components/MediaGrid";
 import { Header } from "../components/Header";
 import { NotFoundState } from "../components/NotFoundState";
 import { File } from "../../../../../shell/services/types";
+import { UploadModal } from "../components/UploadModal";
 
 interface Props {
   addImagesCallback?: (selectedFiles: File[]) => void;
@@ -30,6 +31,8 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
 
   const combinedBins = [...(ecoBins || []), ...(bins || [])];
 
+  const defaultBin = combinedBins.find((bin) => bin.default);
+
   const { data: files, isFetching: isFilesFetching } = useGetAllBinFilesQuery(
     combinedBins?.map((bin) => bin.id),
     { skip: !bins?.length }
@@ -40,7 +43,11 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
       component="main"
       sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
     >
-      <Header title="All Media" addImagesCallback={addImagesCallback} />
+      <Header
+        title="All Media"
+        addImagesCallback={addImagesCallback}
+        binId={defaultBin?.id}
+      />
       {isFilesFetching || isBinsFetching ? (
         <Box
           display="flex"
@@ -51,20 +58,22 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
           <CircularProgress />
         </Box>
       ) : (
-        /* TODO Fix this */
-        <DnDProvider currentBinId="" currentGroupId="">
-          {!isFilesFetching && !isBinsFetching && !files?.length ? (
-            /* TODO Fix this */
-            <EmptyState currentBinId="" currentGroupId="" />
-          ) : (
-            <MediaGrid
-              files={files}
-              heightOffset={headerHeight + 64}
-              widthOffset={sidebarWidth + 220}
-              hideHeaders
-            />
-          )}
-        </DnDProvider>
+        <>
+          <UploadModal />
+          <DnDProvider currentBinId={defaultBin?.id} currentGroupId="">
+            {!isFilesFetching && !isBinsFetching && !files?.length ? (
+              /* TODO Fix this */
+              <EmptyState currentBinId={defaultBin?.id} currentGroupId="" />
+            ) : (
+              <MediaGrid
+                files={files}
+                heightOffset={headerHeight + 64}
+                widthOffset={sidebarWidth + 220}
+                hideHeaders
+              />
+            )}
+          </DnDProvider>
+        </>
       )}
     </Box>
   );

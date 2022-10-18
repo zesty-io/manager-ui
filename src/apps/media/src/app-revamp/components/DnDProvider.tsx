@@ -44,15 +44,15 @@ export const DnDProvider = ({
   const currentBin = binData?.[0];
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      if (loading) return;
-
+      if (loading || !currentBin?.id) return;
+      // console.log({ acceptedFiles });
       dispatch(
         fileUploadObjects(
           acceptedFiles.map((file) => {
             return {
               file,
               bin_id: currentBin.id,
-              group_id: currentGroup.id,
+              group_id: currentGroup?.id || currentBin.id,
             };
           })
         )

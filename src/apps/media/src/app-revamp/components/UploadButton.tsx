@@ -43,7 +43,7 @@ export const UploadButton: FC<UploadButton> = ({
           return {
             file,
             bin_id: currentBin.id,
-            group_id: currentGroup.id,
+            group_id: currentGroup?.id || currentBin.id,
           };
         })
       )
