@@ -114,6 +114,13 @@ const mediaSlice = createSlice({
       }
       return state;
     },
+    fileUploadDelete(state, action: { payload: SuccessfulUpload }) {
+      const uploads = state.uploads.filter(
+        (upload) =>
+          upload.status !== "success" || action.payload.id !== upload.id
+      );
+      return { ...state, uploads };
+    },
     fileUploadReset(state) {
       state.uploads = [];
     },
@@ -202,7 +209,7 @@ const mediaSlice = createSlice({
 export const {
   fileUploadStage,
   fileUploadReset,
-  // fileUploadObjectRemove,
+  fileUploadDelete,
   fileUploadStart,
   fileUploadProgress,
   fileUploadSuccess,
@@ -400,6 +407,25 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
     dispatch(fileUploadStart(file));
   };
 }
+export function deleteUpload(upload: SuccessfulUpload) {
+  console.log({ upload });
+  return async (dispatch: Dispatch) => {
+    console.log("Hello!");
+    const res = await request(
+      //@ts-expect-error
+      `${CONFIG.SERVICE_MEDIA_MANAGER}/file/${upload.id}`,
+      {
+        method: "DELETE",
+      }
+    );
+    if (res.status === 200) {
+      dispatch(fileUploadDelete(upload));
+    } else {
+      dispatch(notify({ message: "Failed cancel upload", kind: "error" }));
+      throw res;
+    }
+  };
+}
 export function dismissFileUploads() {
   return async (dispatch: Dispatch, getState: () => AppState) => {
     const state: State = getState().mediaRevamp;
@@ -421,7 +447,7 @@ export function dismissFileUploads() {
     //const successfulUploads = state.stagedUploads.length;
     //const failedUploads = state.failedUploads.length;
     console.log({ successfulUploads, failedUploads, stagedUploads });
-    if (successfulUploads) {
+    if (successfulUploads.length) {
       dispatch(
         notify({
           message: `Successfully uploaded ${successfulUploads.length} files`,
@@ -429,7 +455,7 @@ export function dismissFileUploads() {
         })
       );
     }
-    if (failedUploads) {
+    if (failedUploads.length) {
       dispatch(
         notify({
           message: `Failed to upload ${failedUploads.length} files`,

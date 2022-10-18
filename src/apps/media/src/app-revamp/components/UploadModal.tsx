@@ -57,10 +57,10 @@ export const UploadModal: FC = () => {
         >
           <UploadErrors />
           <DnDProvider {...ids} sx={{ flexWrap: "wrap" }}>
-            {filesToUpload.map((file, idx) => {
+            {filesToUpload.map((file) => {
               return (
                 <Box
-                  key={idx}
+                  key={file.uploadID}
                   sx={{
                     height: "300px",
                     pl: "8px",
