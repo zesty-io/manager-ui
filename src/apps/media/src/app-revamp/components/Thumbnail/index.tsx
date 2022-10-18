@@ -259,7 +259,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               }}
             />
 
-            {isImage(file) && lazyLoading ? (
+            {file && isImage(file) && lazyLoading ? (
               <div className={cx(styles.Load, styles.Loading)}></div>
             ) : null}
           </Box>
