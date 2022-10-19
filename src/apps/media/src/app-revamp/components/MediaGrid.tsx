@@ -4,7 +4,7 @@ import { Box, Typography } from "@mui/material";
 import { Folder } from "../components/Folder";
 import { File, Group } from "../../../../../shell/services/types";
 import { Thumbnail } from "./Thumbnail";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 
 const FILE_HEIGHT = 204;
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
-  const location = useRouteMatch();
+  const location = useLocation();
   const history = useHistory();
   const [columns, setColumns] = useState(4);
   const listRef = useRef<VariableSizeGrid>();
@@ -141,9 +141,12 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
                 bin_id={files[gridItemIndex].bin_id}
                 file={files[gridItemIndex]}
                 onClick={() => {
-                  history.replace(
-                    `${location.url}?fileId=${files[gridItemIndex].id}`
-                  );
+                  const params = new URLSearchParams(location.search);
+                  params.set("fileId", files[gridItemIndex]?.id);
+                  history.replace({
+                    pathname: location.pathname,
+                    search: params.toString(),
+                  });
                 }}
               />
             </Box>

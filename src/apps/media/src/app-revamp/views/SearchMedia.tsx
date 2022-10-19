@@ -57,7 +57,7 @@ export const SearchMedia = ({ lockedToGroupId, addImagesCallback }: Props) => {
     } else {
       return [];
     }
-  }, [binGroups, params]);
+  }, [binGroups, term]);
 
   const filteredFiles = useMemo(() => {
     if (files && lockedToGroupId) {
@@ -65,7 +65,7 @@ export const SearchMedia = ({ lockedToGroupId, addImagesCallback }: Props) => {
     } else {
       return files;
     }
-  }, [files, params]);
+  }, [files, term]);
 
   return (
     <Box
