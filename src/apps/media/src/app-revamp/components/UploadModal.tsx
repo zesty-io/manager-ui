@@ -85,14 +85,14 @@ export const UploadModal: FC = () => {
           </DnDProvider>
         </DialogContent>
         <DialogActions>
-          <Button
+          {/* <Button
             color="inherit"
             variant="text"
             disabled={loading}
             onClick={handleDismiss}
           >
             Close
-          </Button>
+          </Button> */}
           <Button
             color="primary"
             variant="contained"

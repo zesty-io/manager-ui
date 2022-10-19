@@ -512,6 +512,14 @@ export function dismissFileUploads() {
       });
     const res = await Promise.all(reqs);
     const failedTitleUpdates = res.filter((r) => r.status !== 200).length;
+    if (inProgressUploads.length) {
+      dispatch(
+        notify({
+          message: `${inProgressUploads.length} files still in progress`,
+          kind: "success",
+        })
+      );
+    }
     if (successfulUploads.length) {
       dispatch(
         notify({
