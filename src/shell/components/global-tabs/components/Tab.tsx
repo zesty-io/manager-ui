@@ -22,8 +22,7 @@ import {
 import { AppState } from "../../../store/types";
 import {
   useGetAllBinGroupsQuery,
-  useGetEcoBinsQuery,
-  useGetSiteBinsQuery,
+  useGetBinsQuery,
 } from "../../../services/mediaManager";
 
 /*
@@ -161,12 +160,9 @@ export const InactiveTab: FC<InactiveTab> = ({ tab, tabWidth, sx }) => {
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   // RTK QUERY FOR HOOKING INTO ALL MEDIA BIN GROUPS
-  const { data: bins } = useGetSiteBinsQuery(instanceId);
-  const { data: ecoBins } = useGetEcoBinsQuery(ecoId, {
-    skip: !ecoId,
-  });
+  const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const { data: binGroups } = useGetAllBinGroupsQuery(
-    [...(ecoBins || []), ...(bins || [])]?.map((bin) => bin.id),
+    bins?.map((bin) => bin.id),
     {
       skip: !bins?.length,
     }
@@ -175,7 +171,6 @@ export const InactiveTab: FC<InactiveTab> = ({ tab, tabWidth, sx }) => {
     return {
       mediaManager: {
         bins,
-        ecoBins,
         binGroups: binGroups?.flat(),
       },
     };
@@ -208,12 +203,9 @@ export const ActiveTab: FC<ActiveTab> = ({ tabWidth }) => {
   const state = useSelector((state: AppState) => state);
   const location = useLocation();
   // RTK QUERY FOR HOOKING INTO ALL MEDIA BIN GROUPS
-  const { data: bins } = useGetSiteBinsQuery(instanceId);
-  const { data: ecoBins } = useGetEcoBinsQuery(ecoId, {
-    skip: !ecoId,
-  });
+  const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const { data: binGroups } = useGetAllBinGroupsQuery(
-    [...(ecoBins || []), ...(bins || [])]?.map((bin) => bin.id),
+    bins?.map((bin) => bin.id),
     {
       skip: !bins?.length,
     }
@@ -222,7 +214,6 @@ export const ActiveTab: FC<ActiveTab> = ({ tabWidth }) => {
     return {
       mediaManager: {
         bins,
-        ecoBins,
         binGroups: binGroups?.flat(),
       },
     };

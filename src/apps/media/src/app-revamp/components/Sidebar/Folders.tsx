@@ -18,6 +18,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
   mediaManagerApi,
+  useGetBinsQuery,
   useUpdateFileMutation,
 } from "../../../../../../shell/services/mediaManager";
 import { useSelector } from "react-redux";
@@ -61,10 +62,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
   const [openNewFolderDialog, setOpenNewFolderDialog] = useState(false);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
-  const { data: bins } = mediaManagerApi.useGetSiteBinsQuery(instanceId);
-  const { data: ecoBins } = mediaManagerApi.useGetEcoBinsQuery(ecoId, {
-    skip: !ecoId,
-  });
+  const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const [updateFile] = useUpdateFileMutation();
   const [sort, setSort] = useState("asc");
   const [expanded, setExpanded] = useState([]);
@@ -89,14 +87,9 @@ export const Folders = ({ lockedToGroupId }: Props) => {
     };
   }, []);
 
-  const combinedBins = useMemo(
-    () => [...(ecoBins || []), ...(bins || [])],
-    [ecoBins, bins]
-  );
-
   const { data: binGroups, isLoading } =
     mediaManagerApi.useGetAllBinGroupsQuery(
-      combinedBins?.map((bin) => bin.id),
+      bins?.map((bin) => bin.id),
       {
         skip: !bins?.length,
       }
@@ -121,15 +114,13 @@ export const Folders = ({ lockedToGroupId }: Props) => {
         ];
       } else {
         return binGroups
-          .filter((binGroup) =>
-            combinedBins.length > 1 ? true : binGroup?.length
-          )
+          .filter((binGroup) => (bins.length > 1 ? true : binGroup?.length))
           .map((binGroup, idx) => {
             if (!binGroup.length) {
-              return { ...combinedBins[idx], children: [] };
-            } else if (combinedBins[idx].eco_id || binGroups.length > 1) {
+              return { ...bins[idx], children: [] };
+            } else if (bins[idx].eco_id || binGroups.length > 1) {
               return {
-                ...combinedBins[idx],
+                ...bins[idx],
                 children: nest(binGroup, binGroup[0].bin_id, "group_id", sort),
               };
             } else {
@@ -146,7 +137,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
     } else {
       return [];
     }
-  }, [binGroups, sort, combinedBins]);
+  }, [binGroups, sort, bins]);
 
   /* Creating a tree structure based on the hidden items. */
   const hiddenTrees = useMemo(() => {
@@ -156,7 +147,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
         let rootNode = {};
         if (id.startsWith("1")) {
           rootGroup = binGroups.find((group: any) => group[0].bin_id === id);
-          rootNode = combinedBins.find((bin: any) => bin.id === id);
+          rootNode = bins.find((bin: any) => bin.id === id);
         } else {
           rootGroup = binGroups?.filter((groups) =>
             groups?.some((group) => group.id === id)

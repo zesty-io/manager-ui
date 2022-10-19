@@ -3,8 +3,7 @@ import { useSelector } from "react-redux";
 import { Box, CircularProgress } from "@mui/material";
 import {
   useGetAllBinGroupsQuery,
-  useGetEcoBinsQuery,
-  useGetSiteBinsQuery,
+  useGetBinsQuery,
   useSearchBinFilesQuery,
 } from "../../../../../shell/services/mediaManager";
 import { MediaGrid } from "../components/MediaGrid";
@@ -25,35 +24,27 @@ export const SearchMedia = ({ lockedToGroupId, addImagesCallback }: Props) => {
   const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
   const [params] = useParams();
   const term = (params as URLSearchParams).get("term") || "";
-  const { data: bins } = useGetSiteBinsQuery(instanceId);
-  const { data: ecoBins } = useGetEcoBinsQuery(ecoId, {
-    skip: !ecoId,
-  });
-
-  const combinedBins = [...(ecoBins || []), ...(bins || [])];
-
+  const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const {
     data: binGroups,
     isFetching: isGroupsFetching,
     isUninitialized: isGroupsUninitialized,
   } = useGetAllBinGroupsQuery(
-    combinedBins?.map((bin) => bin.id),
+    bins?.map((bin) => bin.id),
     {
       skip: !bins?.length,
     }
   );
-
   const {
     data: files,
     isFetching: isFilesFetching,
     isUninitialized: isFilesUninitialized,
   } = useSearchBinFilesQuery(
-    { binIds: combinedBins?.map((bin) => bin.id), term },
+    { binIds: bins?.map((bin) => bin.id), term },
     {
       skip: !bins?.length,
     }
   );
-
   const filteredGroups = useMemo(() => {
     if (binGroups) {
       return binGroups

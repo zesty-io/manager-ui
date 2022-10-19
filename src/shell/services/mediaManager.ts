@@ -16,30 +16,39 @@ export const mediaManagerApi = createApi({
     baseUrl: `${__CONFIG__.SERVICE_MEDIA_MANAGER}`,
     prepareHeaders,
   }),
-  tagTypes: [
-    "Bin",
-    "BinGroups",
-    "BinFiles",
-    "File",
-    "GroupData",
-    "SiteBins",
-    "EcoBins",
-  ],
+  tagTypes: ["Bin", "Bins", "BinGroups", "BinFiles", "File", "GroupData"],
   endpoints: (builder) => ({
     getBin: builder.query<Bin[], string>({
       query: (binId) => `bin/${binId}`,
       transformResponse: getResponseData,
       providesTags: (result, error, binId) => [{ type: "Bin", id: binId }],
     }),
-    getSiteBins: builder.query<Bin[], number>({
-      query: (instanceId) => `site/${instanceId}/bins`,
-      transformResponse: getResponseData,
-      providesTags: ["SiteBins"],
-    }),
-    getEcoBins: builder.query<Bin[], number>({
-      query: (ecoId) => `eco/${ecoId}/bins`,
-      transformResponse: getResponseData,
-      providesTags: ["EcoBins"],
+    getBins: builder.query<Bin[], { instanceId: number; ecoId: number }>({
+      async queryFn(
+        { instanceId, ecoId },
+        _queryApi,
+        _extraOptions,
+        fetchWithBQ
+      ) {
+        try {
+          const binResponses = (
+            await Promise.all([
+              fetchWithBQ(`site/${instanceId}/bins`),
+              fetchWithBQ(`eco/${ecoId}/bins`),
+            ])
+          )
+            .filter((response) => !response.error)
+            .map(
+              (response: QueryReturnValue<any, FetchBaseQueryError>) =>
+                response.data.data
+            )
+            .flat();
+          return { data: binResponses };
+        } catch (error) {
+          return { error };
+        }
+      },
+      providesTags: ["Bins"],
     }),
     getAllBinFiles: builder.query<File[], string[]>({
       async queryFn(binIds, _queryApi, _extraOptions, fetchWithBQ) {
@@ -133,8 +142,7 @@ export const mediaManagerApi = createApi({
       }),
       invalidatesTags: (result, error, arg) => [
         { type: "Bin", id: arg.id },
-        "SiteBins",
-        "EcoBins",
+        "Bins",
       ],
     }),
     getFile: builder.query<File, string>({
@@ -274,8 +282,7 @@ export const mediaManagerApi = createApi({
 export const {
   useGetFileQuery,
   useGetBinQuery,
-  useGetSiteBinsQuery,
-  useGetEcoBinsQuery,
+  useGetBinsQuery,
   useGetAllBinFilesQuery,
   useGetAllBinGroupsQuery,
   useGetBinFilesQuery,

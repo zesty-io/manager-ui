@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Box, CircularProgress } from "@mui/material";
 import {
-  useGetSiteBinsQuery,
-  useGetEcoBinsQuery,
   useGetAllBinFilesQuery,
+  useGetBinsQuery,
 } from "../../../../../shell/services/mediaManager";
 import { DnDProvider } from "../components/DnDProvider";
 import { EmptyState } from "../components/EmptyState";
@@ -23,18 +21,13 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const headerHeight = useSelector((state: any) => state.ui.headerHeight);
   const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
-  const { data: bins, isFetching: isBinsFetching } =
-    useGetSiteBinsQuery(instanceId);
-  const { data: ecoBins } = useGetEcoBinsQuery(ecoId, {
-    skip: !ecoId,
+  const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
+    instanceId,
+    ecoId,
   });
-
-  const combinedBins = [...(ecoBins || []), ...(bins || [])];
-
-  const defaultBin = combinedBins.find((bin) => bin.default);
-
+  const defaultBin = bins?.find((bin) => bin.default);
   const { data: files, isFetching: isFilesFetching } = useGetAllBinFilesQuery(
-    combinedBins?.map((bin) => bin.id),
+    bins?.map((bin) => bin.id),
     { skip: !bins?.length }
   );
 

@@ -29,8 +29,7 @@ import {
 import { AppState } from "../../store/types";
 import {
   useGetAllBinGroupsQuery,
-  useGetEcoBinsQuery,
-  useGetSiteBinsQuery,
+  useGetBinsQuery,
 } from "../../services/mediaManager";
 
 const MIN_TAB_WIDTH = 250;
@@ -57,12 +56,9 @@ export default memo(function GlobalTabs() {
   const [tabBarWidth, setTabBarWidth] = useState(0);
 
   // RTK QUERY FOR HOOKING INTO ALL MEDIA BIN GROUPS
-  const { data: bins } = useGetSiteBinsQuery(instanceId);
-  const { data: ecoBins } = useGetEcoBinsQuery(ecoId, {
-    skip: !ecoId,
-  });
+  const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const { data: binGroups } = useGetAllBinGroupsQuery(
-    [...(ecoBins || []), ...(bins || [])]?.map((bin) => bin.id),
+    bins?.map((bin) => bin.id),
     {
       skip: !bins?.length,
     }
@@ -71,7 +67,6 @@ export default memo(function GlobalTabs() {
     return {
       mediaManager: {
         bins,
-        ecoBins,
         binGroups: binGroups?.flat(),
       },
     };

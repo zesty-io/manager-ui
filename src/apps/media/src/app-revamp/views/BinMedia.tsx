@@ -1,7 +1,9 @@
-import { useState } from "react";
 import { useParams } from "react-router";
 import { EmptyState } from "../components/EmptyState";
-import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
+import {
+  mediaManagerApi,
+  useGetBinsQuery,
+} from "../../../../../shell/services/mediaManager";
 import { MediaGrid } from "../components/MediaGrid";
 import { useSelector } from "react-redux";
 import { DnDProvider } from "../components/DnDProvider";
@@ -18,17 +20,21 @@ interface Props {
 }
 
 export const BinMedia = ({ addImagesCallback }: Props) => {
+  const instanceId = useSelector((state: any) => state.instance.ID);
+  const ecoId = useSelector((state: any) => state.instance.ecoID);
   const params = useParams<Params>();
   const { id } = params;
   const headerHeight = useSelector((state: any) => state.ui.headerHeight);
   const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
-  const [isInvalidFileId, setIsInvalidFileId] = useState<boolean>(false);
+  const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
+    instanceId,
+    ecoId,
+  });
+  const isValidId = bins?.some((bin) => bin.id === id);
 
-  const {
-    data: binData,
-    isFetching: isBinDataFetching,
-    isError,
-  } = mediaManagerApi.useGetBinQuery(id);
+  const { data: binData, isError } = mediaManagerApi.useGetBinQuery(id, {
+    skip: !isValidId,
+  });
 
   const { data: binGroups, isFetching: isGroupsFetching } =
     mediaManagerApi.useGetBinGroupsQuery(id);
@@ -41,7 +47,7 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
       component="main"
       sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
     >
-      {isError || isInvalidFileId ? (
+      {isError || (!isBinsFetching && !isValidId) ? (
         <NotFoundState />
       ) : (
         <>

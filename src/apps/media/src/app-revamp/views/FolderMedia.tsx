@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useParams } from "react-router";
 import { EmptyState } from "../components/EmptyState";
-import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
+import {
+  mediaManagerApi,
+  useGetBinsQuery,
+} from "../../../../../shell/services/mediaManager";
 import { MediaGrid } from "../components/MediaGrid";
 import { useSelector } from "react-redux";
 import { DnDProvider } from "../components/DnDProvider";
@@ -24,14 +27,9 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
   const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
-
-  const { data: bins } = mediaManagerApi.useGetSiteBinsQuery(instanceId);
-  const { data: ecoBins } = mediaManagerApi.useGetEcoBinsQuery(ecoId, {
-    skip: !ecoId,
-  });
-
+  const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const { data: binGroups } = mediaManagerApi.useGetAllBinGroupsQuery(
-    [...(ecoBins || []), ...(bins || [])]?.map((bin) => bin.id),
+    bins?.map((bin) => bin.id),
     {
       skip: !bins?.length,
     }
