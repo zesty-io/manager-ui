@@ -17,7 +17,7 @@ export function ThumbnailHover() {
         top: 0,
         bottom: 0,
         "&:hover": {
-          background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+          background: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
           "& .MuiCheckbox-root": {
             display: "block",
           },
