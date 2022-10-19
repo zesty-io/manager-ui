@@ -157,22 +157,19 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
   return (
     <Box sx={{ pl: 2, width: "100%" }}>
       <AutoSizer onResize={onResize}>
-        {({ width, height }) => {
-          console.log("testing", width, height);
-          return (
-            <VariableSizeGrid
-              height={height}
-              ref={listRef}
-              columnCount={columns}
-              columnWidth={(index) => (width - 16) / columns}
-              rowHeight={(index) => getRowHeight(index)}
-              rowCount={grid.length / columns}
-              width={width}
-            >
-              {Row}
-            </VariableSizeGrid>
-          );
-        }}
+        {({ width, height }) => (
+          <VariableSizeGrid
+            height={height}
+            ref={listRef}
+            columnCount={columns}
+            columnWidth={(index) => (width - 16) / columns}
+            rowHeight={(index) => getRowHeight(index)}
+            rowCount={grid.length / columns}
+            width={width}
+          >
+            {Row}
+          </VariableSizeGrid>
+        )}
       </AutoSizer>
     </Box>
   );

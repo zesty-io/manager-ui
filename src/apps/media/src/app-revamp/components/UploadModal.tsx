@@ -32,6 +32,18 @@ export const UploadModal: FC = () => {
     currentGroupId: filesToUpload[0].group_id,
   };
 
+  const handleDismiss = () => {
+    dispatch(dismissFileUploads());
+    if (filesToUpload.length) {
+      dispatch(
+        mediaManagerApi.util.invalidateTags([
+          { type: "GroupData", id: ids.currentGroupId },
+          { type: "BinFiles", id: ids.currentBinId },
+        ])
+      );
+    }
+  };
+
   return (
     <>
       <Dialog open={Boolean(uploads.length)} maxWidth="lg" fullWidth>
@@ -75,7 +87,7 @@ export const UploadModal: FC = () => {
           </DnDProvider>
         </DialogContent>
         <DialogActions>
-          <Button color="secondary" variant="text" disabled>
+          <Button color="inherit" variant="text" onClick={handleDismiss}>
             Cancel
           </Button>
           <Button
@@ -84,16 +96,7 @@ export const UploadModal: FC = () => {
             disabled={filesToUpload.some(
               (file) => file.status === "inProgress" || file.status === "staged"
             )}
-            onClick={() => {
-              dispatch(dismissFileUploads());
-              dispatch(
-                // TODO only invalidate whats absolutely necessary
-                mediaManagerApi.util.invalidateTags([
-                  { type: "GroupData", id: ids.currentGroupId },
-                  { type: "BinFiles", id: ids.currentBinId },
-                ])
-              );
-            }}
+            onClick={handleDismiss}
           >
             Done
           </Button>
