@@ -68,7 +68,7 @@ export const RenameFileModal: FC<Props> = ({
           }}
         />
       </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2 }}>
+      <DialogActions>
         <Button color="inherit" onClick={() => onClose()}>
           Cancel
         </Button>

@@ -259,6 +259,10 @@ export const Folders = ({ lockedToGroupId }: Props) => {
           alignItems: "center",
           px: 2,
           py: 1,
+          borderColor: "border",
+          borderStyle: "solid",
+          borderWidth: "0px",
+          borderTopWidth: "1px",
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.25 }}>

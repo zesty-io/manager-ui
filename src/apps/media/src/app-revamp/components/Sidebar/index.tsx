@@ -36,7 +36,6 @@ export const Sidebar = ({ lockedToGroupId, isSelectDialog }: Props) => {
         <SearchBox />
       </Box>
       {lockedToGroupId ? null : <Menu />}
-      <Divider />
       <Folders lockedToGroupId={lockedToGroupId} />
     </Box>
   );
