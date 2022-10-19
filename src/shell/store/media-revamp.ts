@@ -4,6 +4,7 @@ import { AppState } from "./types";
 import { notify } from "../../shell/store/notifications";
 import { v4 as uuidv4 } from "uuid";
 import { request } from "../../utility/request";
+import { mediaManagerApi } from "../services/mediaManager";
 
 export type StoreFile = {
   uploadID: string;
@@ -320,10 +321,21 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
     req.addEventListener("error", handleError);
 
     req.addEventListener("load", (data) => {
-      console.log("DONE");
-      console.log(data);
-
-      //   dispatch(fileUploadObjectRemove(file));
+      const state: State = getState().mediaRevamp;
+      if (!state.uploads.length) {
+        dispatch(
+          notify({
+            message: `Successfully uploaded file`,
+            kind: "success",
+          })
+        );
+        dispatch(
+          mediaManagerApi.util.invalidateTags([
+            { type: "GroupData", id: file.group_id },
+            { type: "BinFiles", id: file.bin_id },
+          ])
+        );
+      }
     });
 
     if (file.file.size > 32000000) {
@@ -356,12 +368,28 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
           })
             .then((res) => {
               if (res.status === 201) {
-                dispatch(
-                  fileUploadSuccess({
-                    ...res.data,
-                    uploadID: file.uploadID,
-                  })
-                );
+                const state: State = getState().mediaRevamp;
+                if (state.uploads.length) {
+                  dispatch(
+                    fileUploadSuccess({
+                      ...res.data,
+                      uploadID: file.uploadID,
+                    })
+                  );
+                } else {
+                  dispatch(
+                    notify({
+                      message: `Successfully uploaded file`,
+                      kind: "success",
+                    })
+                  );
+                  dispatch(
+                    mediaManagerApi.util.invalidateTags([
+                      { type: "GroupData", id: file.group_id },
+                      { type: "BinFiles", id: file.bin_id },
+                    ])
+                  );
+                }
               } else {
                 throw res;
               }
@@ -429,7 +457,6 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
 export function deleteUpload(upload: SuccessfulUpload) {
   console.log({ upload });
   return async (dispatch: Dispatch) => {
-    console.log("Hello!");
     const res = await request(
       //@ts-expect-error
       `${CONFIG.SERVICE_MEDIA_MANAGER}/file/${upload.id}`,
@@ -448,8 +475,8 @@ export function deleteUpload(upload: SuccessfulUpload) {
 export function dismissFileUploads() {
   return async (dispatch: Dispatch, getState: () => AppState) => {
     const state: State = getState().mediaRevamp;
-    const stagedUploads = state.uploads.filter(
-      (upload) => upload.status === "staged"
+    const inProgressUploads = state.uploads.filter(
+      (upload) => upload.status === "inProgress"
     ) as StagedUpload[];
     const failedUploads = state.uploads.filter(
       (upload) => upload.status === "failed"
@@ -457,6 +484,7 @@ export function dismissFileUploads() {
     const successfulUploads = state.uploads.filter(
       (upload) => upload.status === "success"
     ) as SuccessfulUpload[];
+
     // if (
     //   block &&
     //   state.uploads.some(
@@ -487,7 +515,11 @@ export function dismissFileUploads() {
     if (successfulUploads.length) {
       dispatch(
         notify({
-          message: `Successfully uploaded ${successfulUploads.length} files`,
+          message: `Successfully uploaded ${successfulUploads.length} files${
+            inProgressUploads.length
+              ? `...${inProgressUploads.length} files still in progress`
+              : ""
+          }`,
           kind: "success",
         })
       );
