@@ -85,14 +85,19 @@ export const SearchMedia = ({ lockedToGroupId, addImagesCallback }: Props) => {
           <CircularProgress />
         </Box>
       ) : filteredGroups?.length || filteredFiles?.length ? (
-        <>
+        <Box
+          sx={{
+            height: "100%",
+            width: "100%",
+          }}
+        >
           <Header
             title={`Search Results for "${term}"`}
             hideUpload
             addImagesCallback={addImagesCallback}
           />
           <MediaGrid files={filteredFiles} groups={filteredGroups} />
-        </>
+        </Box>
       ) : (
         <SearchEmptyState searchTerm={term} />
       )}
