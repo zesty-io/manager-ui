@@ -315,6 +315,7 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
         })
       );
     }
+
     req.addEventListener("abort", handleError);
     req.addEventListener("error", handleError);
 
@@ -456,12 +457,13 @@ export function dismissFileUploads() {
     const successfulUploads = state.uploads.filter(
       (upload) => upload.status === "success"
     ) as SuccessfulUpload[];
-    if (
-      state.uploads.some(
-        (file) => file.status === "staged" || file.status === "inProgress"
-      )
-    )
-      return;
+    // if (
+    //   block &&
+    //   state.uploads.some(
+    //     (file) => file.status === "staged" || file.status === "inProgress"
+    //   )
+    // )
+    //   return;
     //const successfulUploads = state.stagedUploads.length;
     //const failedUploads = state.failedUploads.length;
     const reqs = successfulUploads
@@ -481,8 +483,6 @@ export function dismissFileUploads() {
         );
       });
     const res = await Promise.all(reqs);
-    console.log(res);
-    console.log({ successfulUploads, failedUploads, stagedUploads });
     const failedTitleUpdates = res.filter((r) => r.status !== 200).length;
     if (successfulUploads.length) {
       dispatch(

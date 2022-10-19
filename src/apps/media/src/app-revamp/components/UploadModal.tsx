@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../shell/store/types";
 import Dialog from "@mui/material/Dialog";
@@ -8,11 +8,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { UploadThumbnail } from "./UploadThumbnail";
-import {
-  UploadFile,
-  StoreFile,
-  dismissFileUploads,
-} from "../../../../../shell/store/media-revamp";
+import { dismissFileUploads } from "../../../../../shell/store/media-revamp";
 import { Typography } from "@mui/material";
 import { DnDProvider } from "./DnDProvider";
 import { UploadButton } from "./UploadButton";
@@ -20,20 +16,22 @@ import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 
 export const UploadModal: FC = () => {
   const dispatch = useDispatch();
-
-  const uploads = useSelector((state: AppState) => state.mediaRevamp.uploads);
-
   const filesToUpload = useSelector((state: AppState) =>
     state.mediaRevamp.uploads.filter((upload) => upload.status !== "failed")
   );
-
   const ids = filesToUpload.length && {
     currentBinId: filesToUpload[0].bin_id,
     currentGroupId: filesToUpload[0].group_id,
   };
+  const [loading, setLoading] = useState(false);
 
-  const handleDismiss = () => {
-    dispatch(dismissFileUploads());
+  const handleDismiss = async () => {
+    setLoading(true);
+    try {
+      await dispatch(dismissFileUploads());
+    } finally {
+      setLoading(false);
+    }
     if (filesToUpload.length) {
       dispatch(
         mediaManagerApi.util.invalidateTags([
@@ -46,7 +44,7 @@ export const UploadModal: FC = () => {
 
   return (
     <>
-      <Dialog open={Boolean(uploads.length)} maxWidth="lg" fullWidth>
+      <Dialog open={Boolean(filesToUpload.length)} maxWidth="lg" fullWidth>
         <DialogTitle
           sx={{
             display: "flex",
@@ -87,15 +85,18 @@ export const UploadModal: FC = () => {
           </DnDProvider>
         </DialogContent>
         <DialogActions>
-          <Button color="inherit" variant="text" onClick={handleDismiss}>
+          <Button
+            color="inherit"
+            variant="text"
+            disabled={loading}
+            onClick={handleDismiss}
+          >
             Close
           </Button>
           <Button
             color="primary"
             variant="contained"
-            disabled={filesToUpload.some(
-              (file) => file.status === "inProgress" || file.status === "staged"
-            )}
+            disabled={loading}
             onClick={handleDismiss}
           >
             Done

@@ -26,11 +26,6 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
     skip: !file.bin_id,
   });
 
-  const [deleteFile] = mediaManagerApi.useDeleteFileMutation();
-
-  //const delete
-  console.log(file);
-
   useEffect(() => {
     if (bin && file.status === "staged") {
       dispatch(uploadFile(file, bin[0]));
