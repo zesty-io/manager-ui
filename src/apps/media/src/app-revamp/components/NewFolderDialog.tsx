@@ -37,7 +37,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
   useEffect(() => {
     if (binGroups) {
       setSelectedGroup(
-        binGroups.find((group) => group.id === id) || {
+        binGroups?.find((group) => group.id === id) || {
           name: "None",
           bin_id: binId,
           group_id: binId,
@@ -106,7 +106,6 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
             createGroup({
               body: { name, group_id: selectedGroup?.id, bin_id: binId },
             });
-            setName("Untitled");
           }}
         >
           Create

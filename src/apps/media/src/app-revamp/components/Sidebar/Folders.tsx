@@ -383,7 +383,12 @@ export const Folders = ({ lockedToGroupId }: Props) => {
         <NewFolderDialog
           open
           onClose={() => setOpenNewFolderDialog(false)}
-          binId={bins?.find((bin) => bin.default)?.id}
+          id={id}
+          binId={
+            (id?.startsWith("1") ? id : null) ||
+            binGroups?.flat()?.find((binGroup) => binGroup.id === id)?.bin_id ||
+            bins?.find((bin) => bin.default)?.id
+          }
         />
       ) : null}
     </>
