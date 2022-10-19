@@ -66,7 +66,24 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
         onRemove={onRemove}
         onFilenameChange={(filename) => {
           if (file.status === "success") {
-            dispatch(fileUploadSetFilename({ upload: file, filename }));
+            dispatch(
+              fileUploadSetFilename({
+                upload: file,
+                filename,
+                title: file.title,
+              })
+            );
+          }
+        }}
+        onTitleChange={(title) => {
+          if (file.status === "success") {
+            dispatch(
+              fileUploadSetFilename({
+                upload: file,
+                filename: file.filename,
+                title: title,
+              })
+            );
           }
         }}
       />

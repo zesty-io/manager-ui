@@ -20,6 +20,7 @@ export type StoreFile = {
 export type UploadFile = {
   file: File;
   filename?: string;
+  title?: string;
   uploadID: string;
   url?: string;
   progress?: number;
@@ -134,7 +135,9 @@ const mediaSlice = createSlice({
     },
     fileUploadSetFilename(
       state,
-      action: { payload: { upload: SuccessfulUpload; filename: string } }
+      action: {
+        payload: { upload: SuccessfulUpload; filename: string; title: string };
+      }
     ) {
       const uploadIndex = state.uploads.findIndex(
         (upload) =>
@@ -145,6 +148,7 @@ const mediaSlice = createSlice({
         const upload = state.uploads[uploadIndex];
         if (upload.status === "success") {
           upload.filename = action.payload.filename;
+          upload.title = action.payload.title;
           upload.filenameDirty = true;
         }
       }
@@ -506,6 +510,7 @@ export function dismissFileUploads() {
               id: upload.id,
               group_id: upload.group_id,
               filename: upload.filename,
+              ...(upload?.title ? { title: upload.title } : {}),
             },
           }
         );
