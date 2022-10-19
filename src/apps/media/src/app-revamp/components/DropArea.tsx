@@ -32,6 +32,7 @@ export const DropArea = ({ currentGroup, currentBin }: Props) => {
           alignItems: "center",
           flexDirection: "column",
           gap: 4,
+          textAlign: "center",
         }}
       >
         <Box>
