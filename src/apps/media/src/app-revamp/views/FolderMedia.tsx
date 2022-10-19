@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useParams } from "react-router";
 import { EmptyState } from "../components/EmptyState";
 import {
@@ -25,29 +24,32 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
   const { id } = params;
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
-  const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
-  const { data: binGroups } = mediaManagerApi.useGetAllBinGroupsQuery(
-    bins?.map((bin) => bin.id),
-    {
-      skip: !bins?.length,
-    }
-  );
-
-  // Grabbing some group info from binGroups since this is most likely to already be in cache
+  const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
+    instanceId,
+    ecoId,
+  });
+  const { data: binGroups, isFetching: isBinGroupsFetching } =
+    mediaManagerApi.useGetAllBinGroupsQuery(
+      bins?.map((bin) => bin.id),
+      {
+        skip: !bins?.length,
+      }
+    );
   const currentGroup = binGroups?.flat()?.find((group) => group.id === id);
-
   const {
     data: groupData,
     isFetching,
     isError,
-  } = mediaManagerApi.useGetGroupDataQuery(id);
+  } = mediaManagerApi.useGetGroupDataQuery(id, {
+    skip: !currentGroup,
+  });
 
   return (
     <Box
       component="main"
       sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}
     >
-      {isError ? (
+      {isError || (!isBinsFetching && !isBinGroupsFetching && !currentGroup) ? (
         <NotFoundState />
       ) : (
         <>
@@ -58,7 +60,7 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
             groupId={currentGroup?.group_id || groupData?.group_id}
             addImagesCallback={addImagesCallback}
           />
-          {isFetching ? (
+          {isBinsFetching || isBinGroupsFetching || isFetching ? (
             <Box
               display="flex"
               justifyContent="center"
@@ -71,13 +73,13 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
             <>
               <UploadModal />
               <DnDProvider
-                currentBinId={groupData.bin_id}
-                currentGroupId={groupData.id}
+                currentBinId={groupData?.bin_id}
+                currentGroupId={groupData?.id}
               >
-                {!isFetching && !groupData.files?.length ? (
+                {!isFetching && !groupData?.files?.length ? (
                   <EmptyState
-                    currentBinId={groupData.bin_id}
-                    currentGroupId={groupData.id}
+                    currentBinId={groupData?.bin_id}
+                    currentGroupId={groupData?.id}
                   />
                 ) : (
                   <MediaGrid

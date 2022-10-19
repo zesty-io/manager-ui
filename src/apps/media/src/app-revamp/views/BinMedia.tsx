@@ -35,10 +35,14 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
   });
 
   const { data: binGroups, isFetching: isGroupsFetching } =
-    mediaManagerApi.useGetBinGroupsQuery(id);
+    mediaManagerApi.useGetBinGroupsQuery(id, {
+      skip: !isValidId,
+    });
 
   const { data: binFiles, isFetching: isFilesFetching } =
-    mediaManagerApi.useGetBinFilesQuery(id);
+    mediaManagerApi.useGetBinFilesQuery(id, {
+      skip: !isValidId,
+    });
 
   return (
     <Box
