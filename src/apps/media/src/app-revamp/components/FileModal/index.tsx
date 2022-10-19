@@ -105,7 +105,7 @@ export const FileModal: FC<Props> = ({ fileId, onSetIsFileModalError }) => {
               <FileTypePreview src={data.url} filename={data.filename} />
             </Card>
 
-            <Box sx={{ p: 3, width: "500px" }}>
+            <Box sx={{ py: 2, width: "500px" }}>
               <FileModalContent
                 handleCloseModal={handleCloseModal}
                 id={data.id}

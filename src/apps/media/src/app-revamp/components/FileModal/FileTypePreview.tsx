@@ -125,6 +125,7 @@ export const FileTypePreview: FC<Props> = ({ src, filename }) => {
               objectFit: "contain",
               m: "auto",
               width: "inherit",
+              maxHeight: "100%", // used to avoid displaying full size of extra large images
               maxWidth: "100%", // used to avoid displaying full size of extra large images
             }}
           />

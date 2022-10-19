@@ -5,6 +5,7 @@ import {
   TextField,
   InputAdornment,
   Avatar,
+  InputLabel,
   IconButton,
   Menu,
   MenuItem,
@@ -217,12 +218,18 @@ export const FileModalContent: FC<Props> = ({
         />
       )}
 
-      {/* Content */}
+      {/* Content Header */}
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          pb: 4,
+          pb: 2,
+          px: 1.3,
+          mb: 3,
+          borderColor: "grey.200",
+          borderWidth: "0px",
+          borderBottomWidth: "0.5px",
+          borderStyle: "solid",
         }}
       >
         <Box
@@ -230,14 +237,15 @@ export const FileModalContent: FC<Props> = ({
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            width: "250px",
           }}
         >
-          <ImageIcon />
-          <Typography variant="body2" noWrap sx={{ width: "250px", ml: 0.8 }}>
+          <ImageIcon sx={{ ml: 0.8, color: "info.main" }} />
+          <Typography variant="body2" noWrap sx={{ ml: 0.8 }}>
             {newFilename}
           </Typography>
         </Box>
-        <Box>
+        <Box sx={{ display: "flex", flexDirection: "row" }}>
           <IconButton onClick={() => setShowDeleteFileModal(true)}>
             <DeleteIcon />
           </IconButton>
@@ -256,8 +264,19 @@ export const FileModalContent: FC<Props> = ({
             anchorEl={showSettingsDropdown}
             open={Boolean(showSettingsDropdown)}
             onClose={() => setShowSettingsDropdown(null)}
-            sx={{
-              minWidth: "240px",
+            PaperProps={{
+              style: {
+                width: "240px",
+                marginLeft: "-50px",
+              },
+            }}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "left",
             }}
           >
             <MenuItem
@@ -293,80 +312,87 @@ export const FileModalContent: FC<Props> = ({
         </Box>
       </Box>
 
-      <Box>
-        <Typography>File URL</Typography>
-        <TextField
-          sx={{ mt: 0.5, width: "100%" }}
-          value={src}
-          InputProps={{
-            readOnly: true,
-            disableUnderline: true,
-            endAdornment: (
-              <InputAdornment position="end">
-                {isCopied ? (
-                  <CheckIcon />
-                ) : (
-                  <IconButton onClick={() => handleCopyClick(src)}>
-                    <ContentCopyIcon />
-                  </IconButton>
-                )}
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Box>
-      <Box sx={{ mt: 3 }}>
-        <Typography>Alt Text</Typography>
-        <TextField
-          sx={{ mt: 0.5 }}
-          aria-label="empty textarea"
-          placeholder="Empty"
-          inputRef={newTitle}
-          onChange={() => debouncedHandleUpdateMutation(newFilename, true)}
-          multiline
-          rows={3}
-          fullWidth
-        />
-      </Box>
-      {user?.email && (
+      {/* Content Form */}
+      <Box sx={{ px: 2.3 }}>
+        <Box>
+          <InputLabel>File URL</InputLabel>
+          <TextField
+            sx={{ width: "100%" }}
+            value={src}
+            InputProps={{
+              readOnly: true,
+              disableUnderline: true,
+              endAdornment: (
+                <InputAdornment position="end">
+                  {isCopied ? (
+                    <CheckIcon />
+                  ) : (
+                    <IconButton onClick={() => handleCopyClick(src)}>
+                      <ContentCopyIcon />
+                    </IconButton>
+                  )}
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Box>
         <Box sx={{ mt: 3 }}>
-          <Typography color="text.secondary">UPLOADED BY</Typography>
-          <Box sx={{ display: "flex", mt: 1 }}>
-            <Avatar
-              sx={{ bgcolor: "grey.300", width: 40, height: 40 }}
-              alt={user?.email || ""}
-              src={`https://www.gravatar.com/avatar/${MD5(
-                user?.email || ""
-              )}.jpg?s=40`}
-            ></Avatar>
-            <Box sx={{ pl: 2 }}>
-              <Typography>{user?.email}</Typography>
-              <Typography sx={{ color: "text.secondary" }}>
-                {user?.role}
-              </Typography>
+          <InputLabel>Alt Text</InputLabel>
+          <TextField
+            placeholder="Empty"
+            inputRef={newTitle}
+            onChange={() => debouncedHandleUpdateMutation(newFilename, true)}
+            multiline
+            rows={3}
+            fullWidth
+          />
+        </Box>
+        {user?.email && (
+          <Box sx={{ mt: 3 }}>
+            {/* @ts-expect-error body3 is not defined */}
+            <Typography color="text.secondary" variant="body3">
+              UPLOADED BY
+            </Typography>
+            <Box sx={{ display: "flex", mt: 1 }}>
+              <Avatar
+                sx={{ bgcolor: "grey.300", width: 40, height: 40 }}
+                alt={user?.email || ""}
+                src={`https://www.gravatar.com/avatar/${MD5(
+                  user?.email || ""
+                )}.jpg?s=40`}
+              ></Avatar>
+              <Box sx={{ pl: 2 }}>
+                <Typography>{user?.email}</Typography>
+                <Typography sx={{ color: "text.secondary" }}>
+                  {user?.role}
+                </Typography>
+              </Box>
             </Box>
           </Box>
-        </Box>
-      )}
-      <Box sx={{ mt: 3 }}>
-        <Typography color="text.secondary" sx={{ mt: 1 }}>
-          UPLOADED ON
-        </Typography>
-        <Box sx={{ display: "flex", mt: 1 }}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <CalendarTodayIcon />
-          </Box>
-          <Box sx={{ pl: 3 }}>
-            <Typography>{moment(createdAt).format("LL")}</Typography>
-            <Typography sx={{ color: "text.secondary" }}>
-              {moment(createdAt).add(3, "days").calendar()}
-            </Typography>
+        )}
+        <Box sx={{ mt: 3 }}>
+          {/* @ts-expect-error body3 is not defined */}
+          <Typography color="text.secondary" sx={{ mt: 1 }} variant="body3">
+            UPLOADED ON
+          </Typography>
+          <Box sx={{ display: "flex", mt: 1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <CalendarTodayIcon sx={{ color: "#101828", opacity: "0.4" }} />
+            </Box>
+            <Box sx={{ pl: 3 }}>
+              <Typography variant="body2">
+                {moment(createdAt).format("LL")}
+              </Typography>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                {moment(createdAt).add(3, "days").calendar()}
+              </Typography>
+            </Box>
           </Box>
         </Box>
       </Box>
