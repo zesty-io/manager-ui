@@ -88,7 +88,7 @@ export const UploadModal: FC = () => {
         </DialogContent>
         <DialogActions>
           <Button color="inherit" variant="text" onClick={handleDismiss}>
-            Cancel
+            Close
           </Button>
           <Button
             color="primary"

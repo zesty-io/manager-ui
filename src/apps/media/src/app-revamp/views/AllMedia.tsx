@@ -53,7 +53,6 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
           <UploadModal />
           <DnDProvider currentBinId={defaultBin?.id} currentGroupId="">
             {!isFilesFetching && !isBinsFetching && !files?.length ? (
-              /* TODO Fix this */
               <EmptyState currentBinId={defaultBin?.id} currentGroupId="" />
             ) : (
               <MediaGrid files={files} hideHeaders />

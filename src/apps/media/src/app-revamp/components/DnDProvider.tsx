@@ -36,16 +36,11 @@ export const DnDProvider = ({
     { skip: !currentBinId }
   );
   const loading = binIsFetching || groupIsFetching;
-  /*
-  const { data: binData, isFetching } = mediaManagerApi.useGetBinQuery(
-    currentGroup?.bin_id
-  );
-  */
+
   const currentBin = binData?.[0];
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      if (loading || !currentBin?.id || !currentGroup?.id) return;
-      // console.log({ acceptedFiles });
+      if (loading || !currentBin?.id) return;
 
       dispatch(
         fileUploadStage(
@@ -58,15 +53,6 @@ export const DnDProvider = ({
           })
         )
       );
-
-      // acceptedFiles.forEach((file) => {
-      //   const fileToUpload = {
-      //     file,
-      //     bin_id: currentBin.id,
-      //     group_id: currentGroup.id,
-      //   };
-      //   dispatch(uploadFile(fileToUpload, currentBin));
-      // });
     },
     [currentBin, currentGroup, loading]
   );
