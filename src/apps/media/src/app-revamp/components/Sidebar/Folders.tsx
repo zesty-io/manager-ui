@@ -25,6 +25,7 @@ import { useSelector } from "react-redux";
 import { MouseEvent, useEffect, useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { NewFolderDialog } from "../NewFolderDialog";
+import { useLocalStorage } from "react-use";
 
 /**
  * It takes an array of items, an id, and a link, and returns a new array of items with the children of
@@ -65,8 +66,8 @@ export const Folders = ({ lockedToGroupId }: Props) => {
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const [updateFile] = useUpdateFileMutation();
   const [sort, setSort] = useState("asc");
-  const [expanded, setExpanded] = useState([]);
   const [hiddenExpanded, setHiddenExpanded] = useState([]);
+  const [expanded, setExpanded] = useLocalStorage("zesty:navMedia:open", []);
 
   const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
