@@ -277,7 +277,7 @@ export function createTab(
   // resolve ZUID from store to determine display information
   switch (prefix) {
     case "1":
-      const bin = queryData?.mediaManager?.bins.find(
+      const bin = queryData?.mediaManager?.bins?.find(
         (bin: any) => bin.id === zuid
       );
       if (bin) {
