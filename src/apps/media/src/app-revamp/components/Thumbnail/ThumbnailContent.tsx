@@ -20,6 +20,8 @@ export const ThumbnailContent: FC<Props> = ({
 }) => {
   const styledCardContent = {
     px: 1,
+    py: 1.5,
+    paddingBottom: "12px !important",
     overflow: "hidden",
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",
