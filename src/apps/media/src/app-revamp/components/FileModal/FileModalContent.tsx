@@ -5,6 +5,7 @@ import {
   TextField,
   InputAdornment,
   Avatar,
+  InputLabel,
   IconButton,
   Menu,
   MenuItem,
@@ -314,9 +315,9 @@ export const FileModalContent: FC<Props> = ({
       {/* Content Form */}
       <Box sx={{ px: 2.3 }}>
         <Box>
-          <Typography variant="body2">File URL</Typography>
+          <InputLabel>File URL</InputLabel>
           <TextField
-            sx={{ mt: 0.5, width: "100%" }}
+            sx={{ width: "100%" }}
             value={src}
             InputProps={{
               readOnly: true,
@@ -336,13 +337,8 @@ export const FileModalContent: FC<Props> = ({
           />
         </Box>
         <Box sx={{ mt: 3 }}>
-          <Typography variant="body2">Alt Text</Typography>
+          <InputLabel>Alt Text</InputLabel>
           <TextField
-            sx={{
-              mt: 0.5,
-              fontSize: "12px",
-            }}
-            aria-label="empty textarea"
             placeholder="Empty"
             inputRef={newTitle}
             onChange={() => debouncedHandleUpdateMutation(newFilename, true)}

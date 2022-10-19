@@ -68,12 +68,6 @@ export const FileModal: FC<Props> = ({ fileId, onSetIsFileModalError }) => {
               maxWidth: "1300px",
             },
           }}
-          BackdropProps={{
-            style: {
-              backgroundColor: "text.primary",
-              opacity: 0.5,
-            },
-          }}
         >
           <Box>
             <IconButton
