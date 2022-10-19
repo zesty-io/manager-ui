@@ -198,9 +198,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   switch (fileExtension(filename)) {
     case "jpg":
     case "jpeg":
-    case "png":
     case "gif":
-    case "svg":
     case "webp":
       return (
         <Card
@@ -214,8 +212,81 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           <Box
             sx={{
               ...styledCheckerBoard,
-              py: imageOrientation === "horizontal" && 1,
-              px: imageOrientation === "vertical" && "auto",
+              // py: imageOrientation === "horizontal" && 1,
+              // px: imageOrientation === "vertical" && "auto",
+              height: "160px",
+              overflow: "hidden",
+              backgroundColor: fileExtension(filename) !== "png" && "grey.100",
+              position: "relative",
+              backgroundSize: `25px 25px`,
+              backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
+              "&:hover": {},
+            }}
+          >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
+                },
+              }}
+            >
+              {isSelectDialog && <Checkbox />}
+            </Box>
+            <RemoveIcon />
+
+            <CardMedia
+              component="img"
+              ref={imageEl}
+              onLoad={handleImageLoad}
+              data-src={src}
+              image={src}
+              loading="lazy"
+              sx={{
+                objectFit: "contain",
+                overflow: "hidden",
+                height: "100%",
+                verticalAlign: "bottom",
+              }}
+            />
+
+            {file && isImage(file) && lazyLoading ? (
+              <div className={cx(styles.Load, styles.Loading)}></div>
+            ) : null}
+          </Box>
+          <ThumbnailContent
+            extension={fileExtension(filename)}
+            filename={filename}
+            onFilenameChange={onFilenameChange}
+            isEditable={isEditable}
+            backgroundColor="blue.100"
+            color="blue.600"
+          />
+        </Card>
+      );
+
+    case "png":
+    case "svg":
+      return (
+        <Card
+          ref={thumbnailRef}
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable
+          onDragStart={(evt) => onDragStart(evt)}
+        >
+          <Box
+            sx={{
+              ...styledCheckerBoard,
+              p: 1,
               height: "160px",
               overflow: "hidden",
               backgroundColor: fileExtension(filename) !== "png" && "grey.100",
