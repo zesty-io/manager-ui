@@ -18,7 +18,6 @@ import {
   IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import { isEqual } from "lodash";
-import { Group } from "../services/types";
 
 export type Tab = {
   pathname: string;
@@ -38,11 +37,6 @@ type CodeChangesModalInfo = {
   fileType: string;
 };
 
-enum SIDEBAR_WIDTH {
-  UNCOLLAPSED = 155,
-  COLLAPSED = 60,
-}
-
 export type UIState = {
   loadedTabs: boolean;
   pinnedTabs: Tab[];
@@ -54,8 +48,6 @@ export type UIState = {
   duoMode: boolean;
   codeEditorPosition: null | CodeEditorPosition;
   codeChangesModal: null | CodeChangesModalInfo;
-  headerHeight: number;
-  sidebarWidth: number;
 };
 export const ui = createSlice({
   name: "ui",
@@ -71,8 +63,6 @@ export const ui = createSlice({
     duoMode: false,
     codeEditorPosition: null,
     codeChangesModal: null,
-    headerHeight: 54,
-    sidebarWidth: 155,
   },
   reducers: {
     loadTabsSuccess(
@@ -97,9 +87,6 @@ export const ui = createSlice({
     ) {
       if (action.payload) {
         state.openNav = action.payload.openNav;
-        state.sidebarWidth = action.payload.openNav
-          ? SIDEBAR_WIDTH.UNCOLLAPSED
-          : SIDEBAR_WIDTH.COLLAPSED;
         state.contentNav = action.payload.contentNav;
         state.contentActions = action.payload.contentActions;
         state.duoMode = action.payload.duoMode;
@@ -107,9 +94,6 @@ export const ui = createSlice({
     },
     setGlobalNav(state: UIState, action: { payload: boolean }) {
       state.openNav = action.payload;
-      state.sidebarWidth = action.payload
-        ? SIDEBAR_WIDTH.UNCOLLAPSED
-        : SIDEBAR_WIDTH.COLLAPSED;
     },
     setContentNav(state: UIState, action: { payload: boolean }) {
       state.contentNav = action.payload;

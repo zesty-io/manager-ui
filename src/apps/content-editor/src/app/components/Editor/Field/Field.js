@@ -225,10 +225,10 @@ export default function Field({
     }
   }, []);
 
-  function renderMediaModal(openNav) {
+  function renderMediaModal() {
     return ReactDOM.createPortal(
       <MemoryRouter>
-        <Dialog open fullScreen sx={{ my: 3.3, mx: openNav ? 9.6 : 3.6 }}>
+        <Dialog open fullScreen sx={{ my: 2.5, mx: 10 }}>
           <IconButton
             sx={{
               position: "fixed",
@@ -258,8 +258,6 @@ export default function Field({
     () => <FieldLabel label={label} name={name} datatype={datatype} />,
     [label, name, datatype]
   );
-
-  const openNav = useSelector((state) => state.ui.openNav);
 
   switch (datatype) {
     case "text":
@@ -355,7 +353,7 @@ export default function Field({
               setImageModal(opts);
             }}
           />
-          {imageModal && renderMediaModal(openNav)}
+          {imageModal && renderMediaModal()}
         </div>
       );
 
@@ -416,12 +414,12 @@ export default function Field({
           />
           {imageModal && (
             <MemoryRouter>
-              <Dialog open fullScreen sx={{ my: 3.3, mx: openNav ? 9.6 : 3.6 }}>
+              <Dialog open fullScreen sx={{ my: 2.5, mx: 10 }}>
                 <IconButton
                   sx={{
                     position: "fixed",
-                    right: 15,
-                    top: 10,
+                    right: 5,
+                    top: 0,
                   }}
                   onClick={() => setImageModal()}
                 >

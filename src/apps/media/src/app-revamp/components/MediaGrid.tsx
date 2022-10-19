@@ -1,11 +1,11 @@
-import { useEffect, useRef, useMemo, Dispatch, useCallback } from "react";
+import { useEffect, useRef, useMemo, useCallback, useState } from "react";
 import { VariableSizeGrid } from "react-window";
 import { Box, Typography } from "@mui/material";
-import { useWindowSize } from "react-use";
 import { Folder } from "../components/Folder";
 import { File, Group } from "../../../../../shell/services/types";
 import { Thumbnail } from "./Thumbnail";
 import { useHistory, useRouteMatch } from "react-router-dom";
+import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 
 const FILE_HEIGHT = 204;
 const FOLDER_HEIGHT = 44;
@@ -13,28 +13,27 @@ const FOLDER_HEIGHT = 44;
 interface Props {
   groups?: Group[];
   files?: File[];
-  heightOffset?: number;
-  widthOffset?: number;
   hideHeaders?: boolean;
 }
 
-export const MediaGrid = ({
-  groups,
-  files,
-  heightOffset = 0,
-  widthOffset = 0,
-  hideHeaders = false,
-}: Props) => {
+export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
   const location = useRouteMatch();
   const history = useHistory();
-  const { width, height } = useWindowSize();
-
+  const [columns, setColumns] = useState(4);
   const listRef = useRef<VariableSizeGrid>();
 
-  const columns = useMemo(() => {
-    // 266 px is the amount of space required to add a new column
-    return Math.floor(width / 266);
-  }, [width]);
+  const onResize = (size: Size) => {
+    setColumns(Math.floor(size.width / (225 + 16)));
+    if (listRef.current != null) {
+      listRef.current.resetAfterIndices({ columnIndex: 0, rowIndex: 0 });
+    }
+  };
+
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.resetAfterIndices({ columnIndex: 0, rowIndex: 0 });
+    }
+  }, [groups, files]);
 
   const grid = useMemo(() => {
     let tmp: string[] = [];
@@ -64,12 +63,6 @@ export const MediaGrid = ({
 
     return tmp;
   }, [groups, files, columns]);
-
-  useEffect(() => {
-    if (listRef.current) {
-      listRef.current.resetAfterIndices({ columnIndex: 0, rowIndex: 0 });
-    }
-  }, [width, widthOffset, groups, files]);
 
   const getRowHeight = (index: number) => {
     const gridItem = grid[index * columns];
@@ -162,20 +155,25 @@ export const MediaGrid = ({
   );
 
   return (
-    <Box sx={{ pl: 2 }}>
-      <VariableSizeGrid
-        // Remove 16px to account for top  margin
-        height={height - heightOffset - 16}
-        ref={listRef}
-        columnCount={columns}
-        columnWidth={(index) => (width - widthOffset - 32) / columns}
-        rowHeight={(index) => getRowHeight(index)}
-        rowCount={grid.length / columns}
-        // Remove 16px to account for left and right padding
-        width={width - widthOffset - 16}
-      >
-        {Row}
-      </VariableSizeGrid>
+    <Box sx={{ pl: 2, width: "100%" }}>
+      <AutoSizer onResize={onResize}>
+        {({ width, height }) => {
+          console.log("testing", width, height);
+          return (
+            <VariableSizeGrid
+              height={height}
+              ref={listRef}
+              columnCount={columns}
+              columnWidth={(index) => (width - 16) / columns}
+              rowHeight={(index) => getRowHeight(index)}
+              rowCount={grid.length / columns}
+              width={width}
+            >
+              {Row}
+            </VariableSizeGrid>
+          );
+        }}
+      </AutoSizer>
     </Box>
   );
 };

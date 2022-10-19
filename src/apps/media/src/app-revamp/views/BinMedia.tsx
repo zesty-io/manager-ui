@@ -24,8 +24,6 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const params = useParams<Params>();
   const { id } = params;
-  const headerHeight = useSelector((state: any) => state.ui.headerHeight);
-  const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
   const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
     instanceId,
     ecoId,
@@ -75,12 +73,7 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
                   /*TODO fix this*/
                   <EmptyState currentBinId={id} currentGroupId="" />
                 ) : (
-                  <MediaGrid
-                    files={binFiles}
-                    groups={binGroups}
-                    heightOffset={headerHeight + 64}
-                    widthOffset={sidebarWidth + 220}
-                  />
+                  <MediaGrid files={binFiles} groups={binGroups} />
                 )}
               </DnDProvider>
             </>

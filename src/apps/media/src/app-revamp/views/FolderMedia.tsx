@@ -23,8 +23,6 @@ interface Props {
 export const FolderMedia = ({ addImagesCallback }: Props) => {
   const params = useParams<Params>();
   const { id } = params;
-  const headerHeight = useSelector((state: any) => state.ui.headerHeight);
-  const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
@@ -85,8 +83,6 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
                   <MediaGrid
                     files={groupData?.files}
                     groups={groupData?.groups}
-                    heightOffset={headerHeight + 64}
-                    widthOffset={sidebarWidth + 220}
                   />
                 )}
               </DnDProvider>

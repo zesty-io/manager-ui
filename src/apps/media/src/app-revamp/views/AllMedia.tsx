@@ -19,8 +19,6 @@ interface Props {
 export const AllMedia = ({ addImagesCallback }: Props) => {
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
-  const headerHeight = useSelector((state: any) => state.ui.headerHeight);
-  const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
   const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
     instanceId,
     ecoId,
@@ -58,12 +56,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
               /* TODO Fix this */
               <EmptyState currentBinId={defaultBin?.id} currentGroupId="" />
             ) : (
-              <MediaGrid
-                files={files}
-                heightOffset={headerHeight + 64}
-                widthOffset={sidebarWidth + 220}
-                hideHeaders
-              />
+              <MediaGrid files={files} hideHeaders />
             )}
           </DnDProvider>
         </>

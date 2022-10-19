@@ -20,8 +20,6 @@ interface Props {
 export const SearchMedia = ({ lockedToGroupId, addImagesCallback }: Props) => {
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
-  const headerHeight = useSelector((state: any) => state.ui.headerHeight);
-  const sidebarWidth = useSelector((state: any) => state.ui.sidebarWidth);
   const [params] = useParams();
   const term = (params as URLSearchParams).get("term") || "";
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
@@ -93,12 +91,7 @@ export const SearchMedia = ({ lockedToGroupId, addImagesCallback }: Props) => {
             hideUpload
             addImagesCallback={addImagesCallback}
           />
-          <MediaGrid
-            files={filteredFiles}
-            groups={filteredGroups}
-            heightOffset={headerHeight + 64}
-            widthOffset={sidebarWidth + 220}
-          />
+          <MediaGrid files={filteredFiles} groups={filteredGroups} />
         </>
       ) : (
         <SearchEmptyState searchTerm={term} />
