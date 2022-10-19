@@ -231,7 +231,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 top: 0,
                 bottom: 0,
                 "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
@@ -304,7 +305,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 top: 0,
                 bottom: 0,
                 "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
@@ -366,7 +368,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 top: 0,
                 bottom: 0,
                 "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
@@ -414,7 +417,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 top: 0,
                 bottom: 0,
                 "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
@@ -464,7 +468,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 top: 0,
                 bottom: 0,
                 "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
@@ -512,7 +517,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 top: 0,
                 bottom: 0,
                 "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
@@ -562,7 +568,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 top: 0,
                 bottom: 0,
                 "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
@@ -614,7 +621,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 top: 0,
                 bottom: 0,
                 "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
@@ -673,7 +681,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 top: 0,
                 bottom: 0,
                 "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
@@ -744,7 +753,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 top: 0,
                 bottom: 0,
                 "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
@@ -797,7 +807,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 top: 0,
                 bottom: 0,
                 "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
@@ -845,7 +856,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 top: 0,
                 bottom: 0,
                 "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
@@ -893,7 +905,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 top: 0,
                 bottom: 0,
                 "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
@@ -948,7 +961,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 top: 0,
                 bottom: 0,
                 "&:hover": {
-                  background: `linear-gradient(180deg, ${theme.palette.grey[900]} 0%, rgba(29, 41, 57, 0) 24.17%)`,
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
