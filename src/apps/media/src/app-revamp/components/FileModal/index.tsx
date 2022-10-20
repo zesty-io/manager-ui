@@ -1,6 +1,6 @@
 import { FC, useEffect, Dispatch, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-
+import CheckIcon from "@mui/icons-material/Check";
 import {
   Modal,
   Box,
@@ -18,6 +18,7 @@ import { FileModalContent } from "./FileModalContent";
 import { FileTypePreview } from "./FileTypePreview";
 
 import { useGetFileQuery } from "../../../../../../shell/services/mediaManager";
+import { OTFEditor } from "./OTFEditor";
 
 const styledModal = {
   position: "absolute",
@@ -38,7 +39,9 @@ export const FileModal: FC<Props> = ({ fileId, onSetIsFileModalError }) => {
   const history = useHistory();
   const location = useLocation();
   const { data, isLoading, isError } = useGetFileQuery(fileId);
-  const [showFileModal, setShowFileModal] = useState<boolean>(true);
+  const [showEdit, setShowEdit] = useState(false);
+
+  const [imageSettings, setImageSettings] = useState<any>(null);
 
   const handleCloseModal = () => {
     const queryParams = new URLSearchParams(location.search);
@@ -97,25 +100,38 @@ export const FileModal: FC<Props> = ({ fileId, onSetIsFileModalError }) => {
                 width: "1000px",
                 overflow: "hidden",
 
-                "@media screen and (max-width: 1440px)": {
-                  width: "1440px",
-                },
+                // "@media screen and (max-width: 1440px)": {
+                //   width: "1440px",
+                // },
               }}
             >
-              <FileTypePreview src={data.url} filename={data.filename} />
-            </Card>
-
-            <Box sx={{ py: 2, width: "500px" }}>
-              <FileModalContent
-                handleCloseModal={handleCloseModal}
-                id={data.id}
+              <FileTypePreview
                 src={data.url}
                 filename={data.filename}
-                title={data.title}
-                groupId={data.group_id}
-                createdAt={data.created_at}
-                binId={data.bin_id}
+                imageSettings={imageSettings}
               />
+            </Card>
+
+            <Box sx={{ minWidth: "420px", maxWidth: "420px" }}>
+              {showEdit ? (
+                <OTFEditor
+                  url={data.url}
+                  setShowEdit={setShowEdit}
+                  imageSettings={imageSettings}
+                  setImageSettings={setImageSettings}
+                />
+              ) : (
+                <FileModalContent
+                  handleCloseModal={handleCloseModal}
+                  id={data.id}
+                  src={data.url}
+                  filename={data.filename}
+                  title={data.title}
+                  groupId={data.group_id}
+                  createdAt={data.created_at}
+                  binId={data.bin_id}
+                />
+              )}
             </Box>
             {/* </WithLoader> */}
           </DialogContent>

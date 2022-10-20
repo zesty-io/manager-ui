@@ -223,7 +223,7 @@ export const FileModalContent: FC<Props> = ({
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          pb: 2,
+          py: 2,
           px: 1.3,
           mb: 3,
           borderColor: "grey.200",
