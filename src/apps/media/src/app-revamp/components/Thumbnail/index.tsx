@@ -354,7 +354,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "xls":
     case "xlsx":
       return (
-        <Card sx={styledCard} elevation={0} onClick={onClick}>
+        <Card
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable
+          onDragStart={(evt) => onDragStart(evt)}
+        >
           <Box
             sx={{
               backgroundColor: "green.100",
@@ -403,7 +409,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
       );
     case "csv":
       return (
-        <Card sx={styledCard} elevation={0} onClick={onClick}>
+        <Card
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable
+          onDragStart={(evt) => onDragStart(evt)}
+        >
           <Box
             sx={{
               backgroundColor: "green.100",
@@ -454,7 +466,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "doc":
     case "rtf":
       return (
-        <Card sx={styledCard} elevation={0} onClick={onClick}>
+        <Card
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable
+          onDragStart={(evt) => onDragStart(evt)}
+        >
           <Box
             sx={{
               backgroundColor: "blue.50",
@@ -503,7 +521,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
       );
     case "pdf":
       return (
-        <Card sx={styledCard} elevation={0} onClick={onClick}>
+        <Card
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable
+          onDragStart={(evt) => onDragStart(evt)}
+        >
           <Box
             sx={{
               backgroundColor: "grey.200",
@@ -554,7 +578,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "pptx":
     case "pptm":
       return (
-        <Card sx={styledCard} elevation={0} onClick={onClick}>
+        <Card
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable
+          onDragStart={(evt) => onDragStart(evt)}
+        >
           <Box
             sx={{
               backgroundColor: "red.50",
@@ -607,7 +637,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "mp3":
     case "wav":
       return (
-        <Card sx={styledCard} elevation={0} onClick={onClick}>
+        <Card
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable
+          onDragStart={(evt) => onDragStart(evt)}
+        >
           <Box
             sx={{
               backgroundColor: "purple.100",
@@ -666,7 +702,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "avchd":
     case "html5":
       return (
-        <Card sx={styledCard} elevation={0} onClick={onClick}>
+        <Card
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable
+          onDragStart={(evt) => onDragStart(evt)}
+        >
           <Box
             sx={{
               boxSizing: "border-box",
@@ -739,7 +781,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "tgz":
     case "zip":
       return (
-        <Card sx={styledCard} elevation={0} onClick={onClick}>
+        <Card
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable
+          onDragStart={(evt) => onDragStart(evt)}
+        >
           <Box
             sx={{
               backgroundColor: "grey.100",
@@ -793,7 +841,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "tiff":
     case "tif":
       return (
-        <Card sx={styledCard} elevation={0} onClick={onClick}>
+        <Card
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable
+          onDragStart={(evt) => onDragStart(evt)}
+        >
           <Box
             sx={{
               backgroundColor: "grey.100",
@@ -842,7 +896,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
       );
     case "numbers":
       return (
-        <Card sx={styledCard} elevation={0} onClick={onClick}>
+        <Card
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable
+          onDragStart={(evt) => onDragStart(evt)}
+        >
           <Box
             sx={{
               backgroundColor: "green.100",
@@ -891,7 +951,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
       );
     case "No Extension":
       return (
-        <Card sx={styledCard} elevation={0} onClick={onClick}>
+        <Card
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable
+          onDragStart={(evt) => onDragStart(evt)}
+        >
           <Box
             sx={{
               backgroundColor: "red.50",
@@ -947,7 +1013,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
       );
     default:
       return (
-        <Card sx={styledCard} elevation={0} onClick={onClick}>
+        <Card
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable
+          onDragStart={(evt) => onDragStart(evt)}
+        >
           <Box
             sx={{
               backgroundColor: "grey.100",

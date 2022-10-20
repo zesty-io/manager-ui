@@ -241,7 +241,7 @@ export const OTFEditor = ({
           </Box>{" "}
           and will{" "}
           <Box component="strong" sx={{ color: "text.primary" }}>
-            temporary
+            disappear
           </Box>{" "}
           after you go back.
         </Alert>
