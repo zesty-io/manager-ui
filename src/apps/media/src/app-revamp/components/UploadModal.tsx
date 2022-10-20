@@ -10,7 +10,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import { UploadThumbnail } from "./UploadThumbnail";
 import { dismissFileUploads } from "../../../../../shell/store/media-revamp";
-import { Typography, IconButton, Grid } from "@mui/material";
+import { Typography, IconButton, Grid, Alert, AlertTitle } from "@mui/material";
 import { DnDProvider } from "./DnDProvider";
 import { UploadButton } from "./UploadButton";
 import CloseIcon from "@mui/icons-material/Close";
@@ -149,16 +149,21 @@ const UploadErrors = () => {
   const failedUploads = uploads.filter((upload) => upload.status === "failed");
   if (failedUploads.length === 0) return null;
   return (
-    <Box sx={{ backgroundColor: "error" }}>
-      <Typography variant="body2">
-        Unfortunately, we had trouble uploading the following files:
-      </Typography>
-      <Typography component="ul" variant="body2">
-        {failedUploads.map((file) => {
-          return <Box component="li">{file.filename}</Box>;
+    <Alert severity="error">
+      <AlertTitle>
+        Unfortunately, we had trouble uploading the {failedUploads.length}{" "}
+        files:
+      </AlertTitle>
+      <>
+        {failedUploads.map((file, idx) => {
+          return (
+            <Box>
+              {idx + 1}. {file.filename}
+            </Box>
+          );
         })}
-      </Typography>
-      <Typography variant="body2">Please try again</Typography>
-    </Box>
+        <Box sx={{ mt: 2 }}>Please check the file extensions and try again</Box>
+      </>
+    </Alert>
   );
 };

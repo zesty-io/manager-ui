@@ -309,9 +309,6 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
     });
 
     function handleError() {
-      /*
-       TODO this needs to be updated in the ticket that handles error states
-      */
       dispatch(fileUploadError(file));
       dispatch(
         notify({
