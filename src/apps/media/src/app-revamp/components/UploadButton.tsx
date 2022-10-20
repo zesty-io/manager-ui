@@ -15,12 +15,14 @@ export type UploadButton = {
   currentGroupId?: string;
   currentBinId: string;
   text?: string;
+  variant?: "text" | "outlined" | "contained";
 };
 
 export const UploadButton: FC<UploadButton> = ({
   currentBinId,
   currentGroupId,
   text,
+  variant = "contained",
 }) => {
   const dispatch = useDispatch();
   const hiddenFileInput = useRef(null);
@@ -50,13 +52,15 @@ export const UploadButton: FC<UploadButton> = ({
     );
   };
   const handleUploadButtonClick = () => {
+    //clears any previous file input value to allow for the same file to be uploaded again
+    hiddenFileInput.current.value = "";
     hiddenFileInput.current.click();
   };
   return (
     <>
       <Button
         onClick={handleUploadButtonClick}
-        variant="contained"
+        variant={variant}
         color="primary"
         startIcon={<FileUpload />}
       >

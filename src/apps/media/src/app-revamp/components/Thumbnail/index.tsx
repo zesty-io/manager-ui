@@ -47,6 +47,7 @@ interface ThumbnailProps {
   group_id?: string;
   bin_id?: string;
   file?: File;
+  imageHeight?: string;
   onRemove?: () => void;
   onFilenameChange?: (value: string) => void;
   onTitleChange?: (value: string) => void;
@@ -66,6 +67,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   bin_id,
   file,
   onTitleChange,
+  imageHeight,
 }) => {
   const theme = useTheme();
   const imageEl = useRef<HTMLImageElement>();
@@ -216,13 +218,14 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               ...styledCheckerBoard,
               // py: imageOrientation === "horizontal" && 1,
               // px: imageOrientation === "vertical" && "auto",
-              height: "160px",
+              height: imageHeight || "160px",
               overflow: "hidden",
               backgroundColor: fileExtension(filename) !== "png" && "grey.100",
               position: "relative",
               backgroundSize: `25px 25px`,
               backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
               "&:hover": {},
+              boxSizing: "border-box",
             }}
           >
             <Box
@@ -241,9 +244,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               }}
             >
               {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
             </Box>
-            <RemoveIcon />
-
             <CardMedia
               component="img"
               ref={imageEl}
@@ -290,13 +292,14 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             sx={{
               ...styledCheckerBoard,
               p: 1,
-              height: "160px",
+              height: imageHeight || "160px",
               overflow: "hidden",
               backgroundColor: fileExtension(filename) !== "png" && "grey.100",
               position: "relative",
               backgroundSize: `25px 25px`,
               backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
               "&:hover": {},
+              boxSizing: "border-box",
             }}
           >
             <Box
@@ -315,9 +318,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               }}
             >
               {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
             </Box>
-            <RemoveIcon />
-
             <CardMedia
               component="img"
               ref={imageEl}
@@ -357,7 +359,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             sx={{
               backgroundColor: "green.100",
               boxSizing: "border-box",
-              height: "160px",
+              height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
             }}
@@ -378,8 +380,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               }}
             >
               {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
             </Box>
-            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={excelImg}
@@ -406,7 +408,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             sx={{
               backgroundColor: "green.100",
               boxSizing: "border-box",
-              height: "160px",
+              height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
             }}
@@ -427,8 +429,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               }}
             >
               {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
             </Box>
-            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={csvImg}
@@ -457,7 +459,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             sx={{
               backgroundColor: "blue.50",
               boxSizing: "border-box",
-              height: "160px",
+              height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
             }}
@@ -478,8 +480,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               }}
             >
               {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
             </Box>
-            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={wordImg}
@@ -506,7 +508,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             sx={{
               backgroundColor: "grey.200",
               boxSizing: "border-box",
-              height: "160px",
+              height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
             }}
@@ -527,8 +529,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               }}
             >
               {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
             </Box>
-            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={pdfImg}
@@ -557,7 +559,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             sx={{
               backgroundColor: "red.50",
               boxSizing: "border-box",
-              height: "160px",
+              height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
             }}
@@ -578,8 +580,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               }}
             >
               {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
             </Box>
-            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={pptImg}
@@ -610,7 +612,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             sx={{
               backgroundColor: "purple.100",
               boxSizing: "border-box",
-              height: "160px",
+              height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
             }}
@@ -631,8 +633,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               }}
             >
               {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
             </Box>
-            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={mpImg}
@@ -668,7 +670,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           <Box
             sx={{
               boxSizing: "border-box",
-              height: "160px",
+              height: imageHeight || "160px",
               overflow: "hidden",
               position: "relative",
               display: "flex",
@@ -691,8 +693,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               }}
             >
               {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
             </Box>
-            <RemoveIcon />
             {showVideo && (
               <CardMedia
                 component="video"
@@ -742,7 +744,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             sx={{
               backgroundColor: "grey.100",
               boxSizing: "border-box",
-              height: "160px",
+              height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
             }}
@@ -763,8 +765,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               }}
             >
               {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
             </Box>
-            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={zipImg}
@@ -796,7 +798,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             sx={{
               backgroundColor: "grey.100",
               boxSizing: "border-box",
-              height: "160px",
+              height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
             }}
@@ -817,8 +819,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               }}
             >
               {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
             </Box>
-            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={defaultImg}
@@ -845,7 +847,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             sx={{
               backgroundColor: "green.100",
               boxSizing: "border-box",
-              height: "160px",
+              height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
             }}
@@ -866,8 +868,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               }}
             >
               {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
             </Box>
-            <RemoveIcon />
             <CardMedia
               component="img"
               data-src={numberImg}
@@ -894,7 +896,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             sx={{
               backgroundColor: "red.50",
               boxSizing: "border-box",
-              height: "160px",
+              height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
             }}
@@ -915,8 +917,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               }}
             >
               {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
             </Box>
-            <RemoveIcon />
             <Box
               sx={{
                 display: "flex",
@@ -950,7 +952,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             sx={{
               backgroundColor: "grey.100",
               boxSizing: "border-box",
-              height: "160px",
+              height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
             }}
@@ -971,8 +973,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               }}
             >
               {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
             </Box>
-            <RemoveIcon />
             <Box
               sx={{
                 display: "flex",

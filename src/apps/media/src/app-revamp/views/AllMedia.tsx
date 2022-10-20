@@ -51,7 +51,11 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
       ) : (
         <>
           <UploadModal />
-          <DnDProvider currentBinId={defaultBin?.id} currentGroupId="">
+          <DnDProvider
+            isDefaultBin
+            currentBinId={defaultBin?.id}
+            currentGroupId=""
+          >
             {!isFilesFetching && !isBinsFetching && !files?.length ? (
               <EmptyState currentBinId={defaultBin?.id} currentGroupId="" />
             ) : (

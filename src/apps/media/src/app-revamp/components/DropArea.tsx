@@ -5,16 +5,19 @@ import { GroupData, Bin } from "../../../../../shell/services/types";
 interface Props {
   currentGroup: GroupData;
   currentBin: Bin;
+  isDefaultBin?: boolean;
 }
 
-export const DropArea = ({ currentGroup, currentBin }: Props) => {
+export const DropArea = ({ currentGroup, currentBin, isDefaultBin }: Props) => {
   return (
     <Box
       sx={{
-        backgroundColor: "primary.main",
+        position: "absolute",
+        zIndex: 1,
+        backgroundColor: "rgba(16, 24, 40, 0.5)",
         mt: -2,
-        width: "100%",
-        height: "calc(100% + 16px)",
+        width: "calc(100% - 220px)",
+        height: "calc(100% - 64px)",
         display: "flex",
         flexDirection: "column",
       }}
@@ -42,11 +45,11 @@ export const DropArea = ({ currentGroup, currentBin }: Props) => {
         </Box>
         <Typography variant="h1" fontWeight="600" color="common.white">
           Upload files to{" "}
-          {currentGroup
+          {isDefaultBin
+            ? "All Media"
+            : currentGroup
             ? currentGroup.name
-            : currentBin
-            ? currentBin.name
-            : "All Media"}{" "}
+            : currentBin.name}
         </Typography>
       </Box>
     </Box>

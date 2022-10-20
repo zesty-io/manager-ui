@@ -62,6 +62,7 @@ export const UploadThumbnail: FC<Props> = ({ file }) => {
       <Thumbnail
         src={file.url}
         filename={file.filename}
+        imageHeight="300px"
         isEditable={file.status === "success"}
         onRemove={onRemove}
         onFilenameChange={(filename) => {

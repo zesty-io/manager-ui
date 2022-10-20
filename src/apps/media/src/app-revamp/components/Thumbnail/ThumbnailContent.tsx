@@ -21,7 +21,7 @@ export const ThumbnailContent: FC<Props> = ({
   isEditable,
 }) => {
   const styledCardContent = {
-    px: 1,
+    px: isEditable ? 0 : 1,
     py: 1.5,
     paddingBottom: "12px !important",
     overflow: "hidden",
@@ -48,7 +48,8 @@ export const ThumbnailContent: FC<Props> = ({
           color,
         }}
       >
-        {extension}
+        {/* @ts-expect-error body 3 not type */}
+        <Typography variant="body3">{extension}</Typography>
       </Box>
       <CardContent sx={styledCardContent}>
         {isEditable ? (
@@ -58,9 +59,22 @@ export const ThumbnailContent: FC<Props> = ({
                 value={filename}
                 size="small"
                 variant="outlined"
-                InputProps={{ sx: { flex: 1 } }}
                 fullWidth
                 onChange={(e) => onFilenameChange(e.target.value)}
+                InputProps={{
+                  sx: {
+                    borderRadius: 0,
+                    "&.Mui-focused": {
+                      fieldset: {
+                        borderWidth: "0 !important",
+                      },
+                    },
+                    fieldset: {
+                      borderRight: 0,
+                      borderLeft: 0,
+                    },
+                  },
+                }}
               />
             </Box>
             <Box>
@@ -68,9 +82,18 @@ export const ThumbnailContent: FC<Props> = ({
                 placeholder="Add Alt Text (optional)"
                 size="small"
                 variant="outlined"
-                InputProps={{ sx: { flex: 1 } }}
                 fullWidth
+                multiline
+                rows={3}
                 onChange={(e) => onTitleChange(e.target.value)}
+                InputProps={{
+                  sx: {
+                    borderRadius: 0,
+                    fieldset: {
+                      borderWidth: "0 !important",
+                    },
+                  },
+                }}
               />
             </Box>
           </Box>

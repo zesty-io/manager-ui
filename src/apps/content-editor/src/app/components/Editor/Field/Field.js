@@ -228,7 +228,12 @@ export default function Field({
   function renderMediaModal() {
     return ReactDOM.createPortal(
       <MemoryRouter>
-        <Dialog open fullScreen sx={{ my: 2.5, mx: 10 }}>
+        <Dialog
+          open
+          fullScreen
+          sx={{ my: 2.5, mx: 10 }}
+          onClose={() => setImageModal()}
+        >
           <IconButton
             sx={{
               position: "fixed",
@@ -414,7 +419,12 @@ export default function Field({
           />
           {imageModal && (
             <MemoryRouter>
-              <Dialog open fullScreen sx={{ my: 2.5, mx: 10 }}>
+              <Dialog
+                open
+                fullScreen
+                sx={{ my: 2.5, mx: 10 }}
+                onClose={() => setImageModal()}
+              >
                 <IconButton
                   sx={{
                     position: "fixed",

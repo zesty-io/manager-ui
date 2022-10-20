@@ -7,15 +7,18 @@ import Button from "@mui/material/Button";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import { UploadThumbnail } from "./UploadThumbnail";
 import { dismissFileUploads } from "../../../../../shell/store/media-revamp";
-import { Typography } from "@mui/material";
+import { Typography, IconButton, Grid } from "@mui/material";
 import { DnDProvider } from "./DnDProvider";
 import { UploadButton } from "./UploadButton";
+import CloseIcon from "@mui/icons-material/Close";
 import { mediaManagerApi } from "../../../../../shell/services/mediaManager";
 
 export const UploadModal: FC = () => {
   const dispatch = useDispatch();
+  const uploads = useSelector((state: AppState) => state.mediaRevamp.uploads);
   const filesToUpload = useSelector((state: AppState) =>
     state.mediaRevamp.uploads.filter((upload) => upload.status !== "failed")
   );
@@ -44,47 +47,81 @@ export const UploadModal: FC = () => {
 
   return (
     <>
-      <Dialog open={Boolean(filesToUpload.length)} maxWidth="lg" fullWidth>
+      <Dialog
+        open={Boolean(uploads.length)}
+        fullWidth
+        onClose={handleDismiss}
+        PaperProps={{
+          style: {
+            maxWidth: "1120px",
+          },
+        }}
+      >
+        <IconButton
+          onClick={handleDismiss}
+          sx={{
+            position: "fixed",
+            zIndex: 999,
+            right: 5,
+            top: 0,
+          }}
+        >
+          <CloseIcon sx={{ color: "common.white" }} />
+        </IconButton>
         <DialogTitle
           sx={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            borderBottom: (theme) => `1px solid ${theme.palette.border}`,
           }}
         >
-          <Typography variant="h5">
-            {filesToUpload.length} Files Selected for Upload
-          </Typography>
-          <UploadButton {...ids} text="Upload More" />
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <IconButton size="small" onClick={handleDismiss}>
+              <ArrowBackRoundedIcon fontSize="small" color="action" />
+            </IconButton>
+            <Typography variant="h5" color="text.secondary">
+              {filesToUpload.length} Files Selected for Upload
+            </Typography>
+          </Box>
+          <UploadButton {...ids} text="Upload More" variant="outlined" />
         </DialogTitle>
         <DialogContent
           sx={{
+            mt: 2,
             display: "flex",
-            height: "60vh",
+            height: "489px",
             flexDirection: "column",
-            gap: 3,
+            gap: 2,
           }}
         >
           <UploadErrors />
           <DnDProvider {...ids} sx={{ flexWrap: "wrap" }}>
-            {filesToUpload.map((file) => {
-              return (
-                <Box
-                  key={file.uploadID}
-                  sx={{
-                    height: "300px",
-                    pl: "8px",
-                    pr: "8px",
-                    position: "relative",
-                  }}
-                >
-                  <UploadThumbnail file={file} />
-                </Box>
-              );
-            })}
+            <Grid container spacing={3}>
+              {filesToUpload.map((file) => {
+                return (
+                  <Grid
+                    item
+                    xs={4}
+                    key={file.uploadID}
+                    sx={{
+                      position: "relative",
+                      height: "442px",
+                    }}
+                  >
+                    <UploadThumbnail file={file} />
+                  </Grid>
+                );
+              })}
+            </Grid>
           </DnDProvider>
         </DialogContent>
-        <DialogActions>
+        <DialogActions
+          sx={{
+            pt: 2.5,
+            borderTop: (theme) => `1px solid ${theme.palette.border}`,
+          }}
+        >
           {/* <Button
             color="inherit"
             variant="text"

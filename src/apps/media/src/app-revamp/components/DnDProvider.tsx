@@ -19,6 +19,7 @@ interface Props {
   children: React.ReactNode;
   currentBinId: string;
   currentGroupId: string;
+  isDefaultBin?: boolean;
   sx?: SxProps;
 }
 
@@ -26,6 +27,7 @@ export const DnDProvider = ({
   children,
   currentGroupId,
   currentBinId,
+  isDefaultBin,
   sx,
 }: Props) => {
   const dispatch = useDispatch();
@@ -69,7 +71,14 @@ export const DnDProvider = ({
     >
       <input {...getInputProps()} />
       {isDragActive ? (
-        <DropArea currentGroup={currentGroup} currentBin={currentBin} />
+        <>
+          <DropArea
+            isDefaultBin={isDefaultBin}
+            currentGroup={currentGroup}
+            currentBin={currentBin}
+          />
+          {children}
+        </>
       ) : (
         children
       )}
