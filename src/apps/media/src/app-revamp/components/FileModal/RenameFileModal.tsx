@@ -10,7 +10,6 @@ import {
   CircularProgress,
   InputLabel,
   Alert,
-  InputAdornment,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
@@ -66,7 +65,11 @@ export const RenameFileModal: FC<Props> = ({
           }}
           InputProps={{
             disableUnderline: true,
-            endAdornment: <div>.{extension}</div>,
+            endAdornment: (
+              <Typography variant="body2" color="text.secondary">
+                .{extension}
+              </Typography>
+            ),
           }}
         />
         <Alert severity="warning" sx={{ mt: 2.5 }}>

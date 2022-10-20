@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   InputLabel,
@@ -16,6 +16,8 @@ import {
 } from "@mui/material";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import RotateRightRoundedIcon from "@mui/icons-material/RotateRightRounded";
+import BlurOnRoundedIcon from "@mui/icons-material/BlurOnRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import { isEmpty, omitBy } from "lodash";
 
@@ -57,11 +59,13 @@ export const OTFEditor = ({
     setImageSettings(null);
   };
 
+  useEffect(() => setImageSettings({ ...imageSettings, fit: "cover" }), []);
+
   return (
     <Box>
       <Box
         sx={{
-          p: 3,
+          p: 2,
           borderBottom: (theme) => `1px solid ${theme.palette.border}`,
         }}
       >
@@ -85,9 +89,25 @@ export const OTFEditor = ({
           </Button>
         </Stack>
       </Box>
-      <Stack gap={3} sx={{ p: 3 }}>
-        <Stack direction="row" gap={3}>
-          <Box>
+      <Stack gap={2} sx={{ p: 2 }}>
+        <Box>
+          <InputLabel>Fit</InputLabel>
+          <Select
+            fullWidth
+            value={imageSettings?.fit || ""}
+            onChange={(evt) =>
+              setImageSettings({ ...imageSettings, fit: evt.target.value })
+            }
+            displayEmpty
+          >
+            <MenuItem value="">None</MenuItem>
+            <MenuItem value="bounds">Bounds</MenuItem>
+            <MenuItem value="cover">Cover</MenuItem>
+            <MenuItem value="crop">Crop</MenuItem>
+          </Select>
+        </Box>
+        <Stack direction="row" gap={2}>
+          <Box width="100%">
             <InputLabel>Width</InputLabel>
             <TextField
               fullWidth
@@ -98,7 +118,7 @@ export const OTFEditor = ({
               }
             />
           </Box>
-          <Box>
+          <Box width="100%">
             <InputLabel>Height</InputLabel>
             <TextField
               fullWidth
@@ -110,22 +130,59 @@ export const OTFEditor = ({
             />
           </Box>
         </Stack>
-        {/* <Box>
+        <Stack direction="row" gap={2}>
+          {/* <Box>
+            <InputLabel>Rotate</InputLabel>
+            <Button><RotateRightRoundedIcon /></Button>
+            <TextField
+              fullWidth
+              placeholder="Auto"
+              value={imageSettings?.width || ""}
+              onChange={(evt) =>
+                setImageSettings({ ...imageSettings, width: evt.target.value })
+              }
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box> */}
+          <Box sx={{ width: 186 }}>
+            <InputLabel>Blur</InputLabel>
+            <TextField
+              fullWidth
+              placeholder="0"
+              value={imageSettings?.blur || ""}
+              onChange={(evt) =>
+                setImageSettings({ ...imageSettings, blur: evt.target.value })
+              }
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <BlurOnRoundedIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
+        </Stack>
+        <Box>
           <InputLabel>Saturation</InputLabel>
           <Slider
             aria-label="Saturation"
             valueLabelDisplay="auto"
-            defaultValue={0}
+            value={Number(imageSettings?.saturation) || 0}
+            min={-100}
+            max={100}
+            onChange={(_, val) =>
+              setImageSettings({ ...imageSettings, saturation: String(val) })
+            }
+            size="small"
           />
         </Box>
-        <Box>
-          <InputLabel>Blur</InputLabel>
-          <Slider
-            aria-label="Saturation"
-            valueLabelDisplay="auto"
-            defaultValue={0}
-          />
-        </Box> */}
         <Box>
           <InputLabel>Optimize</InputLabel>
           <Select
@@ -145,62 +202,50 @@ export const OTFEditor = ({
             <MenuItem value="low">Low</MenuItem>
           </Select>
         </Box>
-        <Box>
-          <InputLabel>Fit</InputLabel>
-          <Select
-            fullWidth
-            value={imageSettings?.fit || ""}
-            onChange={(evt) =>
-              setImageSettings({ ...imageSettings, fit: evt.target.value })
-            }
-            displayEmpty
-          >
-            <MenuItem value="">None</MenuItem>
-            <MenuItem value="bounds">Bounds</MenuItem>
-            <MenuItem value="cover">Cover</MenuItem>
-            <MenuItem value="crop">Crop</MenuItem>
-          </Select>
-        </Box>
-        <Box>
-          <InputLabel>New Url</InputLabel>
-          <TextField
-            fullWidth
-            placeholder="Auto"
-            value={newUrl}
-            InputProps={{
-              readOnly: true,
-              disableUnderline: true,
-              endAdornment: (
-                <InputAdornment position="end">
-                  {isCopied ? (
-                    <CheckIcon />
-                  ) : (
-                    <IconButton onClick={() => handleCopyClick(newUrl)}>
-                      <ContentCopyIcon />
-                    </IconButton>
-                  )}
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Box>
-        <Alert severity="info">
-          <AlertTitle>Please note:</AlertTitle>
-          <ul>
-            <li>
-              These changes will not reflect in the image preview on the left or
-              the thumbnails.
-            </li>
-            <li>
-              This New URL is{" "}
-              <Box component="strong" sx={{ color: "text.primary" }}>
-                temporary
-              </Box>{" "}
-              and will disappear after you go back.
-            </li>
-          </ul>
-        </Alert>
       </Stack>
+      <Box
+        sx={{
+          position: "absolute",
+          bottom: 0,
+          p: 2,
+          backgroundColor: "grey.50",
+          borderTop: (theme) => `1px solid ${theme.palette.border}`,
+        }}
+      >
+        <InputLabel>✨New Url</InputLabel>
+        <TextField
+          fullWidth
+          placeholder="Auto"
+          value={newUrl}
+          InputProps={{
+            readOnly: true,
+            disableUnderline: true,
+            sx: { background: "white" },
+            endAdornment: (
+              <InputAdornment position="end">
+                {isCopied ? (
+                  <CheckIcon />
+                ) : (
+                  <IconButton onClick={() => handleCopyClick(newUrl)}>
+                    <ContentCopyIcon />
+                  </IconButton>
+                )}
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Alert severity="info" sx={{ mt: 2 }}>
+          This New URL is{" "}
+          <Box component="strong" sx={{ color: "text.primary" }}>
+            temporary
+          </Box>{" "}
+          and will{" "}
+          <Box component="strong" sx={{ color: "text.primary" }}>
+            temporary
+          </Box>{" "}
+          after you go back.
+        </Alert>
+      </Box>
     </Box>
   );
 };
