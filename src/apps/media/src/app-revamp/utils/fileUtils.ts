@@ -26,3 +26,48 @@ export function isImage(file: File) {
 
   return false;
 }
+
+export const fileTypeToColor = (extension: string) => {
+  switch (extension) {
+    case "jpg":
+    case "jpeg":
+    case "gif":
+    case "webp":
+    case "png":
+    case "svg":
+    case "docx":
+    case "doc":
+    case "rtf":
+      return "blue";
+    case "ots":
+    case "xls":
+    case "xlsx":
+    case "csv":
+    case "numbers":
+      return "green";
+    case "pdf":
+    case "ppt":
+    case "pptx":
+    case "pptm":
+      return "red";
+    case "aac":
+    case "aiff":
+    case "mid":
+    case "mp3":
+    case "wav":
+    case "mp4":
+    case "mov":
+    case "avi":
+    case "wmv":
+    case "mkv":
+    case "webm":
+    case "flv":
+    case "f4v":
+    case "swf":
+    case "avchd":
+    case "html5":
+      return "purple";
+    default:
+      return "grey";
+  }
+};

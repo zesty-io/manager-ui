@@ -11,6 +11,8 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  Chip,
+  Button,
 } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -31,9 +33,7 @@ import {
 import { fileExtension } from "../../utils/fileUtils";
 import { RenameFileModal } from "./RenameFileModal";
 import moment from "moment";
-
-import { useLocation } from "react-router-dom";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { fileTypeToColor } from "../../utils/fileUtils";
 
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
@@ -56,6 +56,7 @@ interface Props {
   };
   createdAt?: Date;
   handleCloseModal: () => void;
+  setShowEdit: (show: boolean) => void;
 }
 
 export const FileModalContent: FC<Props> = ({
@@ -68,9 +69,11 @@ export const FileModalContent: FC<Props> = ({
   user,
   createdAt,
   handleCloseModal,
+  setShowEdit,
 }) => {
   const newTitle = useRef<any>("");
   const [isCopied, setIsCopied] = useState<boolean>(false);
+  const [isCopiedZuid, setIsCopiedZuid] = useState<boolean>(false);
   const [newFilename, setNewFilename] = useState<string>(
     filename.substring(0, filename.lastIndexOf(".")) || filename
   );
@@ -116,13 +119,21 @@ export const FileModalContent: FC<Props> = ({
   /**
    * @description Used for copying the alttext's value
    */
-  const handleCopyClick = (data: string) => {
+  const handleCopyClick = (data: string, isZuid = false) => {
     navigator?.clipboard
       ?.writeText(data)
       .then(() => {
-        setIsCopied(true);
+        if (isZuid) {
+          setIsCopiedZuid(true);
+        } else {
+          setIsCopied(true);
+        }
         setTimeout(() => {
-          setIsCopied(false);
+          if (isZuid) {
+            setIsCopiedZuid(false);
+          } else {
+            setIsCopied(false);
+          }
         }, 1500);
       })
       .catch((err) => {
@@ -202,6 +213,7 @@ export const FileModalContent: FC<Props> = ({
           isSuccessUpdate={isSuccessUpdate}
           isLoadingUpdate={isLoadingUpdate}
           resetUpdate={resetUpdate}
+          extension={fileType}
         />
       )}
 
@@ -221,103 +233,134 @@ export const FileModalContent: FC<Props> = ({
       {/* Content Header */}
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          py: 2,
-          px: 1.3,
-          mb: 3,
-          borderColor: "grey.200",
+          p: 2,
+          borderColor: "border",
           borderWidth: "0px",
-          borderBottomWidth: "0.5px",
+          borderBottomWidth: "1px",
           borderStyle: "solid",
         }}
       >
         <Box
           sx={{
             display: "flex",
-            justifyContent: "center",
+            justifyContent: "space-between",
             alignItems: "center",
-            width: "250px",
           }}
         >
-          <ImageIcon sx={{ ml: 0.8, color: "info.main" }} />
-          <Typography variant="body2" noWrap sx={{ ml: 0.8 }}>
-            {newFilename}
-          </Typography>
-        </Box>
-        <Box sx={{ display: "flex", flexDirection: "row" }}>
-          <IconButton onClick={() => setShowDeleteFileModal(true)}>
-            <DeleteIcon />
-          </IconButton>
-          <IconButton
-            onClick={(evt) => setShowSettingsDropdown(evt.currentTarget)}
-            aria-controls={openSettings ? "settingsMenu" : undefined}
-            aria-haspopup="true"
-            aria-expanded={openSettings ? "true" : undefined}
+          <Box
+            sx={{
+              width: "300px",
+            }}
           >
-            <MoreVertIcon />
-          </IconButton>
+            <Typography variant="body1" noWrap>
+              {newFilename}
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", flexDirection: "row" }}>
+            <IconButton size="small" onClick={() => setShowEdit(true)}>
+              <EditIcon fontSize="small" />
+            </IconButton>
+            <IconButton
+              size="small"
+              onClick={() => setShowDeleteFileModal(true)}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+            <IconButton
+              onClick={(evt) => setShowSettingsDropdown(evt.currentTarget)}
+              aria-controls={openSettings ? "settingsMenu" : undefined}
+              aria-haspopup="true"
+              aria-expanded={openSettings ? "true" : undefined}
+              size="small"
+            >
+              <MoreVertIcon fontSize="small" />
+            </IconButton>
 
-          {/* Settings Dropdown Menu */}
-          <Menu
-            id="settingsMenu"
-            anchorEl={showSettingsDropdown}
-            open={Boolean(showSettingsDropdown)}
-            onClose={() => setShowSettingsDropdown(null)}
-            PaperProps={{
-              style: {
-                width: "240px",
-                marginLeft: "-50px",
-              },
-            }}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "left",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "left",
-            }}
-          >
-            <MenuItem
-              onClick={() => {
-                setShowRenameFileModal(true);
-                setShowSettingsDropdown(null);
+            {/* Settings Dropdown Menu */}
+            <Menu
+              id="settingsMenu"
+              anchorEl={showSettingsDropdown}
+              open={Boolean(showSettingsDropdown)}
+              onClose={() => setShowSettingsDropdown(null)}
+              PaperProps={{
+                style: {
+                  width: "240px",
+                  marginLeft: "-50px",
+                },
+              }}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "left",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "left",
               }}
             >
-              <ListItemIcon>
-                <DriveFileRenameOutlineRoundedIcon />
-              </ListItemIcon>
-              <ListItemText>Rename</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={() => handleCopyClick(id)}>
-              <ListItemIcon>
-                {isCopied ? <CheckIcon /> : <WidgetsRoundedIcon />}
-              </ListItemIcon>
-              <ListItemText>Copy ZUID</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={() => setShowMoveFileDialog(true)}>
-              <ListItemIcon>
-                <DriveFolderUploadRoundedIcon />
-              </ListItemIcon>
-              <ListItemText>Move to</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={() => setShowDeleteFileModal(true)}>
-              <ListItemIcon>
-                <DeleteRoundedIcon />
-              </ListItemIcon>
-              <ListItemText>Delete</ListItemText>
-            </MenuItem>
-          </Menu>
+              <MenuItem
+                onClick={() => {
+                  setShowRenameFileModal(true);
+                  setShowSettingsDropdown(null);
+                }}
+              >
+                <ListItemIcon>
+                  <DriveFileRenameOutlineRoundedIcon />
+                </ListItemIcon>
+                <ListItemText>Rename</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={() => handleCopyClick(id, true)}>
+                <ListItemIcon>
+                  {isCopied ? <CheckIcon /> : <WidgetsRoundedIcon />}
+                </ListItemIcon>
+                <ListItemText>Copy ZUID</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={() => setShowMoveFileDialog(true)}>
+                <ListItemIcon>
+                  <DriveFolderUploadRoundedIcon />
+                </ListItemIcon>
+                <ListItemText>Move to</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={() => setShowDeleteFileModal(true)}>
+                <ListItemIcon>
+                  <DeleteRoundedIcon />
+                </ListItemIcon>
+                <ListItemText>Delete</ListItemText>
+              </MenuItem>
+            </Menu>
+          </Box>
         </Box>
+        <Chip
+          label={fileType || "No Extension"}
+          sx={{
+            mt: 1,
+            textTransform: "uppercase",
+            backgroundColor: !fileType
+              ? "red.100"
+              : `${fileTypeToColor(fileType)}.100`,
+            color: !fileType ? "red.600" : `${fileTypeToColor(fileType)}.600`,
+          }}
+          size="small"
+        />
       </Box>
 
       {/* Content Form */}
-      <Box sx={{ px: 2.3 }}>
-        <Box>
+      <Box sx={{ px: 2 }}>
+        <Box sx={{ mt: 2 }}>
+          <InputLabel>Description</InputLabel>
+          <InputLabel>Can be used for alt-text and captions</InputLabel>
+          <TextField
+            placeholder="Enter description"
+            inputRef={newTitle}
+            onChange={() => debouncedHandleUpdateMutation(newFilename, true)}
+            multiline
+            rows={3}
+            fullWidth
+          />
+        </Box>
+        <Box sx={{ mt: 3 }}>
           <InputLabel>File URL</InputLabel>
           <TextField
-            sx={{ width: "100%" }}
+            fullWidth
             value={src}
             InputProps={{
               readOnly: true,
@@ -336,20 +379,17 @@ export const FileModalContent: FC<Props> = ({
             }}
           />
         </Box>
-        <Box sx={{ mt: 3 }}>
-          <InputLabel>Alt Text</InputLabel>
-          <TextField
-            placeholder="Empty"
-            inputRef={newTitle}
-            onChange={() => debouncedHandleUpdateMutation(newFilename, true)}
-            multiline
-            rows={3}
-            fullWidth
-          />
-        </Box>
-        {user?.email && (
+        <Button
+          sx={{ mt: 1.5 }}
+          onClick={() => setShowEdit(true)}
+          startIcon={<EditIcon color="action" />}
+          color="inherit"
+          variant="contained"
+        >
+          Launch On the Fly Editor
+        </Button>
+        {/* {user?.email && (
           <Box sx={{ mt: 3 }}>
-            {/* @ts-expect-error body3 is not defined */}
             <Typography color="text.secondary" variant="body3">
               UPLOADED BY
             </Typography>
@@ -369,7 +409,29 @@ export const FileModalContent: FC<Props> = ({
               </Box>
             </Box>
           </Box>
-        )}
+        )} */}
+        <Box sx={{ mt: 3 }}>
+          <InputLabel>ZUID</InputLabel>
+          <TextField
+            fullWidth
+            value={id}
+            InputProps={{
+              readOnly: true,
+              disableUnderline: true,
+              endAdornment: (
+                <InputAdornment position="end">
+                  {isCopiedZuid ? (
+                    <CheckIcon />
+                  ) : (
+                    <IconButton onClick={() => handleCopyClick(id, true)}>
+                      <ContentCopyIcon />
+                    </IconButton>
+                  )}
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Box>
         <Box sx={{ mt: 3 }}>
           {/* @ts-expect-error body3 is not defined */}
           <Typography color="text.secondary" sx={{ mt: 1 }} variant="body3">

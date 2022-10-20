@@ -67,7 +67,7 @@ export const FileModal: FC<Props> = ({ fileId, onSetIsFileModalError }) => {
           onClose={handleCloseModal}
           PaperProps={{
             style: {
-              height: "950px",
+              height: "680px",
               maxWidth: "1300px",
             },
           }}
@@ -130,6 +130,7 @@ export const FileModal: FC<Props> = ({ fileId, onSetIsFileModalError }) => {
                   groupId={data.group_id}
                   createdAt={data.created_at}
                   binId={data.bin_id}
+                  setShowEdit={setShowEdit}
                 />
               )}
             </Box>

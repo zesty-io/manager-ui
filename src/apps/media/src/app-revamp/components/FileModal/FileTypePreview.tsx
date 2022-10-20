@@ -215,7 +215,7 @@ export const FileTypePreview: FC<Props> = ({
           />
         </Box>
       );
-    case "pptm":
+    case "pdf":
       return (
         <Box
           sx={{

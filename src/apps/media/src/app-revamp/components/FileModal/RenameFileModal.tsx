@@ -9,8 +9,9 @@ import {
   Button,
   CircularProgress,
   InputLabel,
+  Alert,
+  InputAdornment,
 } from "@mui/material";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 
 interface Props {
@@ -21,6 +22,7 @@ interface Props {
   isSuccessUpdate: boolean;
   isLoadingUpdate: boolean;
   resetUpdate: any;
+  extension: string;
 }
 
 export const RenameFileModal: FC<Props> = ({
@@ -31,9 +33,8 @@ export const RenameFileModal: FC<Props> = ({
   isSuccessUpdate,
   isLoadingUpdate,
   resetUpdate,
+  extension,
 }) => {
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [renamedFilename, setRenamedFilename] = useState<string>(newFilename);
 
   useEffect(() => {
@@ -65,8 +66,13 @@ export const RenameFileModal: FC<Props> = ({
           }}
           InputProps={{
             disableUnderline: true,
+            endAdornment: <div>.{extension}</div>,
           }}
         />
+        <Alert severity="warning" sx={{ mt: 2.5 }}>
+          This will change the URL path and could break existing links
+          referenced in production after a period of time.
+        </Alert>
       </DialogContent>
       <DialogActions>
         <Button color="inherit" onClick={() => onClose()}>
