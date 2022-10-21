@@ -9,7 +9,6 @@ import {
   InputAdornment,
   IconButton,
   Alert,
-  AlertTitle,
   Button,
   Typography,
   Slider,
@@ -17,6 +16,7 @@ import {
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import RotateRightRoundedIcon from "@mui/icons-material/RotateRightRounded";
+import { FlipHorizontal, FlipVertical } from "@zesty-io/material";
 import BlurOnRoundedIcon from "@mui/icons-material/BlurOnRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import { isEmpty, omitBy } from "lodash";
@@ -61,6 +61,51 @@ export const OTFEditor = ({
 
   useEffect(() => setImageSettings({ ...imageSettings, fit: "cover" }), []);
 
+  const handleRotate = () => {
+    if (!imageSettings.orient) {
+      // TODO: Refactor and find patterns
+      setImageSettings({
+        ...imageSettings,
+        orient: "r",
+      });
+    } else if (imageSettings.orient === "r") {
+      setImageSettings({
+        ...imageSettings,
+        orient: "vh",
+      });
+    } else if (imageSettings.orient === "vh") {
+      setImageSettings({
+        ...imageSettings,
+        orient: "l",
+      });
+    } else if (imageSettings.orient === "l") {
+      setImageSettings({
+        ...imageSettings,
+        orient: "",
+      });
+    } else if (imageSettings.orient === "h") {
+      setImageSettings({
+        ...imageSettings,
+        orient: "lv",
+      });
+    } else if (imageSettings.orient === "lv") {
+      setImageSettings({
+        ...imageSettings,
+        orient: "v",
+      });
+    } else if (imageSettings.orient === "v") {
+      setImageSettings({
+        ...imageSettings,
+        orient: "rv",
+      });
+    } else if (imageSettings.orient === "rv") {
+      setImageSettings({
+        ...imageSettings,
+        orient: "h",
+      });
+    }
+  };
+
   return (
     <Box>
       <Box
@@ -74,7 +119,7 @@ export const OTFEditor = ({
           justifyContent="space-between"
           alignItems="center"
         >
-          <Stack direction="row" alignItems="center">
+          <Stack direction="row" alignItems="center" gap={1}>
             <IconButton
               size="small"
               sx={{ height: "fit-content" }}
@@ -131,26 +176,7 @@ export const OTFEditor = ({
           </Box>
         </Stack>
         <Stack direction="row" gap={2}>
-          {/* <Box>
-            <InputLabel>Rotate</InputLabel>
-            <Button><RotateRightRoundedIcon /></Button>
-            <TextField
-              fullWidth
-              placeholder="Auto"
-              value={imageSettings?.width || ""}
-              onChange={(evt) =>
-                setImageSettings({ ...imageSettings, width: evt.target.value })
-              }
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Box> */}
-          <Box sx={{ width: 186 }}>
+          <Box sx={{ maxWidth: "186px" }}>
             <InputLabel>Blur</InputLabel>
             <TextField
               fullWidth
@@ -168,6 +194,118 @@ export const OTFEditor = ({
               }}
             />
           </Box>
+          <Stack direction="row" gap={2} alignItems="flex-end">
+            <Button
+              sx={{ minWidth: "40px", width: "40px", height: "40px" }}
+              color="inherit"
+              variant="outlined"
+              onClick={handleRotate}
+            >
+              <RotateRightRoundedIcon color="action" />
+            </Button>
+            <Button
+              color="inherit"
+              variant="outlined"
+              sx={{ minWidth: "40px", width: "40px", height: "40px" }}
+              onClick={() => {
+                // TODO: Refactor and find patterns
+                if (!imageSettings.orient) {
+                  setImageSettings({
+                    ...imageSettings,
+                    orient: "h",
+                  });
+                } else if (imageSettings.orient === "h") {
+                  setImageSettings({
+                    ...imageSettings,
+                    orient: "",
+                  });
+                } else if (imageSettings.orient === "vh") {
+                  setImageSettings({
+                    ...imageSettings,
+                    orient: "v",
+                  });
+                } else if (imageSettings.orient === "v") {
+                  setImageSettings({
+                    ...imageSettings,
+                    orient: "vh",
+                  });
+                } else if (imageSettings.orient === "r") {
+                  setImageSettings({
+                    ...imageSettings,
+                    orient: "rv",
+                  });
+                } else if (imageSettings.orient === "l") {
+                  setImageSettings({
+                    ...imageSettings,
+                    orient: "lv",
+                  });
+                } else if (imageSettings.orient === "rv") {
+                  setImageSettings({
+                    ...imageSettings,
+                    orient: "r",
+                  });
+                } else if (imageSettings.orient === "lv") {
+                  setImageSettings({
+                    ...imageSettings,
+                    orient: "l",
+                  });
+                }
+              }}
+            >
+              <FlipHorizontal color="action" />
+            </Button>
+            <Button
+              color="inherit"
+              variant="outlined"
+              sx={{ minWidth: "40px", width: "40px", height: "40px" }}
+              onClick={() => {
+                // TODO: Refactor and find patterns
+                if (!imageSettings.orient) {
+                  setImageSettings({
+                    ...imageSettings,
+                    orient: "v",
+                  });
+                } else if (imageSettings.orient === "v") {
+                  setImageSettings({
+                    ...imageSettings,
+                    orient: "",
+                  });
+                } else if (imageSettings.orient === "vh") {
+                  setImageSettings({
+                    ...imageSettings,
+                    orient: "h",
+                  });
+                } else if (imageSettings.orient === "h") {
+                  setImageSettings({
+                    ...imageSettings,
+                    orient: "vh",
+                  });
+                } else if (imageSettings.orient === "r") {
+                  setImageSettings({
+                    ...imageSettings,
+                    orient: "lv",
+                  });
+                } else if (imageSettings.orient === "l") {
+                  setImageSettings({
+                    ...imageSettings,
+                    orient: "rv",
+                  });
+                } else if (imageSettings.orient === "rv") {
+                  setImageSettings({
+                    ...imageSettings,
+                    orient: "l",
+                  });
+                } else if (imageSettings.orient === "lv") {
+                  setImageSettings({
+                    ...imageSettings,
+                    orient: "r",
+                  });
+                }
+              }}
+            >
+              <FlipVertical color="action" />
+            </Button>
+          </Stack>
         </Stack>
         <Box>
           <InputLabel>Saturation</InputLabel>
