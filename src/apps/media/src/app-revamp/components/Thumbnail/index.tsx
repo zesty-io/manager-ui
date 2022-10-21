@@ -368,6 +368,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
+              position: "relative",
             }}
           >
             <Box
@@ -423,6 +424,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
+              position: "relative",
             }}
           >
             <Box
@@ -480,6 +482,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
+              position: "relative",
             }}
           >
             <Box
@@ -535,6 +538,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
+              position: "relative",
             }}
           >
             <Box
@@ -592,6 +596,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
+              position: "relative",
             }}
           >
             <Box
@@ -651,6 +656,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
+              position: "relative",
             }}
           >
             <Box
@@ -795,6 +801,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
+              position: "relative",
             }}
           >
             <Box
@@ -855,6 +862,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
+              position: "relative",
             }}
           >
             <Box
@@ -910,6 +918,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
+              position: "relative",
             }}
           >
             <Box
@@ -965,6 +974,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
+              position: "relative",
             }}
           >
             <Box
@@ -1027,6 +1037,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               height: imageHeight || "160px",
               overflow: "hidden",
               display: "flex",
+              position: "relative",
             }}
           >
             <Box

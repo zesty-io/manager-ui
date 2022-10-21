@@ -18,6 +18,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckIcon from "@mui/icons-material/Check";
+import CreateNewFolderRoundedIcon from "@mui/icons-material/CreateNewFolderRounded";
 import { RenameFolderDialog } from "./RenameFolderDialog";
 import { NewFolderDialog } from "./NewFolderDialog";
 import { DeleteFolderDialog } from "./DeleteFolderDialog";
@@ -36,6 +37,7 @@ interface Props {
   binId?: string;
   groupId?: string;
   hideUpload?: boolean;
+  hideFolderCreate?: boolean;
   addImagesCallback?: (selectedFiles: File[]) => void;
 }
 type Dialogs = "delete" | "rename" | "new" | null;
@@ -46,6 +48,7 @@ export const Header = ({
   binId,
   groupId,
   hideUpload,
+  hideFolderCreate,
   addImagesCallback,
 }: Props) => {
   const [openDialog, setOpenDialog] = useState<Dialogs>(null);
@@ -204,9 +207,22 @@ export const Header = ({
                 ) : null}
               </Menu>
             </Box>
-            {hideUpload ? null : (
-              <UploadButton currentBinId={binId} currentGroupId={id} />
-            )}
+            <Box>
+              {hideFolderCreate ? null : (
+                <Button
+                  sx={{ mr: 2 }}
+                  variant="outlined"
+                  color="inherit"
+                  startIcon={<CreateNewFolderRoundedIcon color="action" />}
+                  onClick={() => setOpenDialog("new")}
+                >
+                  Add Sub Folder
+                </Button>
+              )}
+              {hideUpload ? null : (
+                <UploadButton currentBinId={binId} currentGroupId={id} />
+              )}
+            </Box>
           </>
         )}
       </Box>
