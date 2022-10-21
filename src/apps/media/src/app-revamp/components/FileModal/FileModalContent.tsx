@@ -56,7 +56,6 @@ interface Props {
   };
   createdAt?: Date;
   handleCloseModal: () => void;
-  setShowEdit: (show: boolean) => void;
 }
 
 export const FileModalContent: FC<Props> = ({
@@ -257,7 +256,10 @@ export const FileModalContent: FC<Props> = ({
             </Typography>
           </Box>
           <Box sx={{ display: "flex", flexDirection: "row" }}>
-            <IconButton size="small" onClick={() => setShowEdit(true)}>
+            <IconButton
+              size="small"
+              onClick={() => setShowRenameFileModal(true)}
+            >
               <EditIcon fontSize="small" />
             </IconButton>
             <IconButton
