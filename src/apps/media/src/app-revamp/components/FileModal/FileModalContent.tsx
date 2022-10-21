@@ -56,6 +56,7 @@ interface Props {
   };
   createdAt?: Date;
   handleCloseModal: () => void;
+  setShowEdit: (show: boolean) => void;
 }
 
 export const FileModalContent: FC<Props> = ({
