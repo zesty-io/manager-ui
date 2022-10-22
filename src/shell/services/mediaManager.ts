@@ -255,6 +255,7 @@ export const mediaManagerApi = createApi({
       invalidatesTags: (result, error, arg) => [
         { type: "GroupData", id: arg.groupId },
         "BinGroups",
+        "BinFiles",
       ],
     }),
     searchBinFiles: builder.query<
