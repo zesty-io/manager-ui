@@ -49,6 +49,7 @@ export const fileTypeToColor = (extension: string) => {
     case "ppt":
     case "pptx":
     case "pptm":
+    case "No Extension":
       return "red";
     case "aac":
     case "aiff":

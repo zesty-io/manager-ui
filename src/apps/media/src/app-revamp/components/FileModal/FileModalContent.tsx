@@ -77,7 +77,6 @@ export const FileModalContent: FC<Props> = ({
   const [newFilename, setNewFilename] = useState<string>(
     filename.substring(0, filename.lastIndexOf(".")) || filename
   );
-  const [fileType, setFileType] = useState<string>();
   const [showRenameFileModal, setShowRenameFileModal] =
     useState<boolean>(false);
   const [showSettingsDropdown, setShowSettingsDropdown] = useState(null);
@@ -111,9 +110,9 @@ export const FileModalContent: FC<Props> = ({
     if (newTitle.current) {
       newTitle.current.value = title;
     }
-    if (fileExtension(filename) !== "No Extension") {
-      setFileType(fileExtension(filename));
-    }
+    // if (fileExtension(filename) !== "No Extension") {
+    //   setFileType(fileExtension(filename));
+    // }
   }, [title, filename]);
 
   /**
@@ -151,7 +150,8 @@ export const FileModalContent: FC<Props> = ({
   ) => {
     // construct file type
     let constructedFileType = "";
-    if (fileType) constructedFileType = `.${fileType}`;
+    if (fileExtension(filename))
+      constructedFileType = `.${fileExtension(filename)}`;
 
     if (isAltTextUpdate) {
       updateFileAltTextMutation({
@@ -213,7 +213,7 @@ export const FileModalContent: FC<Props> = ({
           isSuccessUpdate={isSuccessUpdate}
           isLoadingUpdate={isLoadingUpdate}
           resetUpdate={resetUpdate}
-          extension={fileType}
+          extension={fileExtension(filename)}
         />
       )}
 
@@ -333,14 +333,12 @@ export const FileModalContent: FC<Props> = ({
           </Box>
         </Box>
         <Chip
-          label={fileType || "No Extension"}
+          label={fileExtension(filename) || "No Extension"}
           sx={{
             mt: 1,
             textTransform: "uppercase",
-            backgroundColor: !fileType
-              ? "red.100"
-              : `${fileTypeToColor(fileType)}.100`,
-            color: !fileType ? "red.600" : `${fileTypeToColor(fileType)}.600`,
+            backgroundColor: `${fileTypeToColor(fileExtension(filename))}.100`,
+            color: `${fileTypeToColor(fileExtension(filename))}.600`,
           }}
           size="small"
         />

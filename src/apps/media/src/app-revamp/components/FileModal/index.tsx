@@ -151,7 +151,7 @@ export const FileModal: FC<Props> = ({ fileId, onSetIsFileModalError }) => {
             },
           }}
         >
-          <CircularProgress color="info" />
+          <CircularProgress color="primary" />
         </Dialog>
       ) : (
         <></>
