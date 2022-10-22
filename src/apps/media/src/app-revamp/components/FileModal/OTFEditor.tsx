@@ -182,9 +182,10 @@ export const OTFEditor = ({
               fullWidth
               placeholder="0"
               value={imageSettings?.blur || ""}
-              onChange={(evt) =>
-                setImageSettings({ ...imageSettings, blur: evt.target.value })
-              }
+              onChange={(evt) => {
+                if (evt.target.value === "0") return;
+                setImageSettings({ ...imageSettings, blur: evt.target.value });
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">

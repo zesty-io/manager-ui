@@ -8,9 +8,13 @@ import {
   DialogContentText,
   IconButton,
 } from "@mui/material";
-import { useDeleteGroupMutation } from "../../../../../shell/services/mediaManager";
+import {
+  useDeleteGroupMutation,
+  useGetBinsQuery,
+} from "../../../../../shell/services/mediaManager";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useHistory } from "react-router";
+import { useSelector } from "react-redux";
 
 interface Props {
   open: boolean;
@@ -21,11 +25,18 @@ interface Props {
 
 export const DeleteFolderDialog = ({ open, onClose, id, groupId }: Props) => {
   const [deleteGroup, { isLoading, isSuccess }] = useDeleteGroupMutation();
+  const instanceId = useSelector((state: any) => state.instance.ID);
+  const ecoId = useSelector((state: any) => state.instance.ecoID);
+  const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const history = useHistory();
   useEffect(() => {
     if (isSuccess) {
       onClose();
-      history.push(`/media/${groupId}`);
+      if (bins.length === 1) {
+        history.push(`/media`);
+      } else {
+        history.push(`/media/${groupId}`);
+      }
     }
   }, [isSuccess]);
 

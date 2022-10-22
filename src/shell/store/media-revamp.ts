@@ -458,19 +458,20 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
 export function deleteUpload(upload: SuccessfulUpload) {
   console.log({ upload });
   return async (dispatch: Dispatch) => {
-    const res = await request(
+    const res = request(
       //@ts-expect-error
       `${CONFIG.SERVICE_MEDIA_MANAGER}/file/${upload.id}`,
       {
         method: "DELETE",
       }
     );
-    if (res.status === 200) {
-      dispatch(fileUploadDelete(upload));
-    } else {
-      dispatch(notify({ message: "Failed cancel upload", kind: "error" }));
-      throw res;
-    }
+    dispatch(fileUploadDelete(upload));
+    // if (res.status === 200) {
+    //   dispatch(fileUploadDelete(upload));
+    // } else {
+    //   dispatch(notify({ message: "Failed cancel upload", kind: "error" }));
+    //   throw res;
+    // }
   };
 }
 export function dismissFileUploads() {
