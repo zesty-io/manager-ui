@@ -13,6 +13,7 @@ import {
   ListItemText,
   Chip,
   Button,
+  Tooltip,
 } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -247,15 +248,17 @@ export const FileModalContent: FC<Props> = ({
             alignItems: "center",
           }}
         >
-          <Box
-            sx={{
-              width: "300px",
-            }}
-          >
-            <Typography variant="body1" noWrap>
-              {newFilename}
-            </Typography>
-          </Box>
+          <Tooltip title={newFilename} placement="bottom-start">
+            <Box
+              sx={{
+                width: "300px",
+              }}
+            >
+              <Typography variant="body1" noWrap>
+                {newFilename}
+              </Typography>
+            </Box>
+          </Tooltip>
           <Box sx={{ display: "flex", flexDirection: "row" }}>
             <IconButton
               size="small"
