@@ -76,7 +76,9 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
                 currentBinId={groupData?.bin_id}
                 currentGroupId={groupData?.id}
               >
-                {!isFetching && !groupData?.files?.length ? (
+                {!isFetching &&
+                !groupData?.files?.length &&
+                !groupData?.groups?.length ? (
                   <EmptyState
                     currentBinId={groupData?.bin_id}
                     currentGroupId={groupData?.id}
