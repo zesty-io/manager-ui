@@ -70,8 +70,7 @@ export const mediaManagerApi = createApi({
           return { error };
         }
       },
-      providesTags: (result, error, binIds) =>
-        binIds.map((binId) => ({ type: "BinFiles", id: binId })),
+      providesTags: ["BinFiles"],
     }),
     getAllBinGroups: builder.query<Group[][], string[]>({
       async queryFn(binIds, _queryApi, _extraOptions, fetchWithBQ) {

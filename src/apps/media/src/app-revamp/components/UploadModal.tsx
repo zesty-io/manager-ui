@@ -39,7 +39,7 @@ export const UploadModal: FC = () => {
       dispatch(
         mediaManagerApi.util.invalidateTags([
           { type: "GroupData", id: ids.currentGroupId },
-          { type: "BinFiles", id: ids.currentBinId },
+          "BinFiles",
         ])
       );
     }

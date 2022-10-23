@@ -332,8 +332,8 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
         );
         dispatch(
           mediaManagerApi.util.invalidateTags([
+            "BinFiles",
             { type: "GroupData", id: file.group_id },
-            { type: "BinFiles", id: file.bin_id },
           ])
         );
       }
@@ -386,8 +386,8 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
                   );
                   dispatch(
                     mediaManagerApi.util.invalidateTags([
+                      "BinFiles",
                       { type: "GroupData", id: file.group_id },
-                      { type: "BinFiles", id: file.bin_id },
                     ])
                   );
                 }
