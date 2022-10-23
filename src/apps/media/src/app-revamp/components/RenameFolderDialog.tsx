@@ -53,6 +53,8 @@ export const RenameFolderDialog = ({
       <DialogContent>
         <InputLabel>New Folder Name</InputLabel>
         <TextField
+          autoFocus
+          onFocus={(evt) => evt.target.select()}
           value={newName}
           hiddenLabel
           size="small"

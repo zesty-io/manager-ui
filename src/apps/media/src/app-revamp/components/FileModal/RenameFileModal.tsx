@@ -59,6 +59,8 @@ export const RenameFileModal: FC<Props> = ({
               textOverflow: "ellipsis",
             },
           }}
+          autoFocus
+          onFocus={(evt) => evt.target.select()}
           value={renamedFilename}
           onChange={(evt) => {
             setRenamedFilename(evt.target.value);
