@@ -39,7 +39,6 @@ export const SearchEmptyState = ({ searchTerm }: Props) => {
         <Stack direction="row" spacing={2} justifyContent="center">
           {!isSelectDialog && (
             <Button
-              size="small"
               color="inherit"
               variant="contained"
               startIcon={<BackupTableRoundedIcon color="action" />}
@@ -49,7 +48,6 @@ export const SearchEmptyState = ({ searchTerm }: Props) => {
             </Button>
           )}
           <Button
-            size="small"
             variant="contained"
             startIcon={<SearchRoundedIcon />}
             onClick={() =>

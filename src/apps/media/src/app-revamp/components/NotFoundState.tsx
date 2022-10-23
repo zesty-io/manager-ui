@@ -39,7 +39,6 @@ export const NotFoundState: FC<Props> = ({ title, message }) => {
               {message}
             </Typography>
             <Button
-              size="small"
               variant="contained"
               startIcon={<BackupTableRoundedIcon />}
               onClick={() => history.push("/media")}
