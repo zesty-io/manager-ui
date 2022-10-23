@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from "react";
 import { fileExtension } from "../../utils/fileUtils";
-import { Box, CardMedia, Typography } from "@mui/material";
+import { Box, CardMedia, Typography, CircularProgress } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 import fileBroken from "../../../../../../../public/images/fileBroken.jpeg";
@@ -31,7 +31,12 @@ export const FileTypePreview: FC<Props> = ({
 }) => {
   const theme = useTheme();
 
+  const [isImageLoading, setIsImageLoading] = useState(false);
   const [isImageError, setIsImageError] = useState(false);
+
+  useEffect(() => {
+    setIsImageLoading(true);
+  }, [src, imageSettings]);
 
   const styledCheckerBoard = {
     backgroundImage:
@@ -78,6 +83,7 @@ export const FileTypePreview: FC<Props> = ({
 
   const handleImageError = () => {
     setIsImageError(true);
+    setIsImageLoading(false);
   };
 
   switch (fileExtension(filename)) {
@@ -103,13 +109,21 @@ export const FileTypePreview: FC<Props> = ({
             display: "flex",
             alignItems: "center",
             backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
+            position: "relative",
           }}
         >
+          {isImageLoading ? (
+            <CircularProgress
+              color="primary"
+              sx={{ position: "absolute", left: "50%" }}
+            />
+          ) : null}
           <CardMedia
             component="img"
             data-src={`${genImageURL()}`}
             image={isImageError ? fileBroken : `${genImageURL()}`}
             loading="lazy"
+            onLoad={() => setIsImageLoading(false)}
             onError={handleImageError}
             sx={{
               objectFit: "contain",
@@ -140,14 +154,22 @@ export const FileTypePreview: FC<Props> = ({
             display: "flex",
             alignItems: "center",
             backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
+            position: "relative",
           }}
         >
+          {isImageLoading ? (
+            <CircularProgress
+              color="primary"
+              sx={{ position: "absolute", left: "50%" }}
+            />
+          ) : null}
           <CardMedia
             component="img"
             data-src={`${genImageURL()}`}
             image={isImageError ? fileBroken : `${genImageURL()}`}
             loading="lazy"
             onError={handleImageError}
+            onLoad={() => setIsImageLoading(false)}
             sx={{
               objectFit: "contain",
               m: "auto",

@@ -383,15 +383,17 @@ export const FileModalContent: FC<Props> = ({
             }}
           />
         </Box>
-        <Button
-          sx={{ mt: 1.5 }}
-          onClick={() => setShowEdit(true)}
-          startIcon={<EditIcon color="action" />}
-          color="inherit"
-          variant="contained"
-        >
-          Launch On the Fly Editor
-        </Button>
+        {["jpg", "jpeg", "png", "webp"].includes(fileExtension(filename)) && (
+          <Button
+            sx={{ mt: 1.5 }}
+            onClick={() => setShowEdit(true)}
+            startIcon={<EditIcon color="action" />}
+            color="inherit"
+            variant="contained"
+          >
+            Launch On the Fly Editor
+          </Button>
+        )}
         {/* {user?.email && (
           <Box sx={{ mt: 3 }}>
             <Typography color="text.secondary" variant="body3">
