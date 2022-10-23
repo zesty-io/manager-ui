@@ -72,6 +72,10 @@ export const FileTypePreview: FC<Props> = ({
     return src;
   };
 
+  const handleImageError = (evt: any) => {
+    evt.target.src = "/fileBroken.jpeg";
+  };
+
   switch (fileExtension(filename)) {
     case "jpg":
     case "jpeg":
@@ -102,6 +106,7 @@ export const FileTypePreview: FC<Props> = ({
             data-src={`${genImageURL()}`}
             image={`${genImageURL()}`}
             loading="lazy"
+            onError={handleImageError}
             sx={{
               objectFit: "contain",
               m: "auto",
@@ -138,6 +143,7 @@ export const FileTypePreview: FC<Props> = ({
             data-src={`${genImageURL()}`}
             image={`${genImageURL()}`}
             loading="lazy"
+            onError={handleImageError}
             sx={{
               objectFit: "contain",
               m: "auto",

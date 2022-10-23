@@ -21,7 +21,7 @@ export const ThumbnailContent: FC<Props> = ({
   isEditable,
 }) => {
   const styledCardContent = {
-    px: isEditable ? 0 : 1,
+    px: onFilenameChange ? 0 : 1,
     py: 1.5,
     paddingBottom: "12px !important",
     overflow: "hidden",
@@ -52,7 +52,7 @@ export const ThumbnailContent: FC<Props> = ({
         <Typography variant="body3">{extension}</Typography>
       </Box>
       <CardContent sx={styledCardContent}>
-        {isEditable ? (
+        {onFilenameChange ? (
           <Box>
             <Box>
               <TextField
@@ -60,6 +60,7 @@ export const ThumbnailContent: FC<Props> = ({
                 size="small"
                 variant="outlined"
                 fullWidth
+                disabled={!isEditable}
                 onChange={(e) => onFilenameChange(e.target.value)}
                 InputProps={{
                   sx: {
@@ -79,7 +80,12 @@ export const ThumbnailContent: FC<Props> = ({
             </Box>
             <Box>
               <TextField
-                placeholder="Add Alt Text (optional)"
+                placeholder={
+                  isEditable
+                    ? "Add image description (for alt text)"
+                    : "Please wait to add image description"
+                }
+                disabled={!isEditable}
                 size="small"
                 variant="outlined"
                 fullWidth

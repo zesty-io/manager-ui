@@ -196,6 +196,11 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     }
   };
 
+  const handleImageError = () => {
+    setLazyLoading(false);
+    imageEl.current.src = "/fileBroken.jpeg";
+  };
+
   /**
    * @description Main Thumbnail component display
    */
@@ -210,7 +215,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={onClick}
-          draggable
+          draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -250,6 +255,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               component="img"
               ref={imageEl}
               onLoad={handleImageLoad}
+              onError={handleImageError}
               data-src={src}
               image={src}
               loading="lazy"
@@ -285,7 +291,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={onClick}
-          draggable
+          draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -324,6 +330,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               component="img"
               ref={imageEl}
               onLoad={handleImageLoad}
+              onError={handleImageError}
               data-src={src}
               image={src}
               loading="lazy"
@@ -358,7 +365,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={onClick}
-          draggable
+          draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -414,7 +421,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={onClick}
-          draggable
+          draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -472,7 +479,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={onClick}
-          draggable
+          draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -528,7 +535,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={onClick}
-          draggable
+          draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -586,7 +593,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={onClick}
-          draggable
+          draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -646,7 +653,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={onClick}
-          draggable
+          draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -712,7 +719,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={onClick}
-          draggable
+          draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -791,7 +798,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={onClick}
-          draggable
+          draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -852,7 +859,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={onClick}
-          draggable
+          draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -908,7 +915,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={onClick}
-          draggable
+          draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -964,7 +971,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={onClick}
-          draggable
+          draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -1027,7 +1034,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           onClick={onClick}
-          draggable
+          draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
