@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Box, Typography, Stack, Button } from "@mui/material";
 import { useHistory } from "react-router";
-import notFound from "../../../../../../public/images/notFound.png";
+import notFound from "../../../../../../public/images/notFound.jpeg";
 import BackupTableRoundedIcon from "@mui/icons-material/BackupTableRounded";
 import { useSelector } from "react-redux";
 import { State } from "../../../../../shell/store/media-revamp";
@@ -25,7 +25,7 @@ export const NotFoundState: FC<Props> = ({ title, message }) => {
       textAlign={"center"}
     >
       <Box width="400px">
-        <img src={notFound} width="400px" />
+        <img src={notFound} height="320px" />
         <Typography sx={{ mt: 8 }} variant="h4" fontWeight={600}>
           {title}
         </Typography>

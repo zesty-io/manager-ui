@@ -197,20 +197,31 @@ export const Folders = ({ lockedToGroupId }: Props) => {
       <TreeItem
         key={nodes.id}
         nodeId={nodes.id}
-        onDrop={(event) => {
-          const draggedItem = JSON.parse(
-            event.dataTransfer.getData("text/plain")
-          );
-          if (draggedItem.bin_id === nodes.bin_id) {
-            updateFile({
-              id: draggedItem.id,
-              previousGroupId: draggedItem.group_id,
-              body: {
-                group_id: nodes.id,
-                filename: draggedItem.filename,
-              },
-            });
-          }
+        ContentProps={{
+          onDragOver: (event) => {
+            event.preventDefault();
+            event.currentTarget.style.backgroundColor = "#f6f6f7";
+          },
+          onDragLeave: (event) => {
+            event.preventDefault();
+            event.currentTarget.style.backgroundColor = "";
+          },
+          onDrop: (event) => {
+            event.currentTarget.style.backgroundColor = "";
+            const draggedItem = JSON.parse(
+              event.dataTransfer.getData("text/plain")
+            );
+            if (draggedItem.bin_id === nodes.bin_id) {
+              updateFile({
+                id: draggedItem.id,
+                previousGroupId: draggedItem.group_id,
+                body: {
+                  group_id: nodes.id,
+                  filename: draggedItem.filename,
+                },
+              });
+            }
+          },
         }}
         label={
           <Box sx={{ display: "flex", alignItems: "center" }}>

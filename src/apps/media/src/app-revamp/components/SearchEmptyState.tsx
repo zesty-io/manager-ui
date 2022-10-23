@@ -1,6 +1,6 @@
 import { Box, Typography, Stack, Button } from "@mui/material";
 import { useHistory } from "react-router";
-import noSearchResults from "../../../../../../public/images/noSearchResults.png";
+import noSearchResults from "../../../../../../public/images/noSearchResults.jpeg";
 import BackupTableRoundedIcon from "@mui/icons-material/BackupTableRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { useSelector } from "react-redux";
@@ -24,7 +24,7 @@ export const SearchEmptyState = ({ searchTerm }: Props) => {
       textAlign={"center"}
     >
       <Box width="387px">
-        <img src={noSearchResults} width="387px" />
+        <img src={noSearchResults} height="200px" />
         <Typography sx={{ mt: 4 }} variant="h4" fontWeight={600}>
           Your search "{searchTerm}" could not find any results
         </Typography>

@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import uploadImage from "../../../../../../public/images/uploadImage.png";
+import uploadFiles from "../../../../../../public/images/uploadFiles.jpeg";
 import { UploadButton } from "./UploadButton";
 
 type Props = {
@@ -27,7 +27,7 @@ export const EmptyState = (ids: Props) => {
           <UploadButton {...ids} />
         </Box>
         <Box>
-          <img src={uploadImage} width={440} />
+          <img src={uploadFiles} height={280} />
         </Box>
       </Stack>
     </Box>
