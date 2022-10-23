@@ -27,6 +27,7 @@ export const EmptyState = (ids: Props) => {
           <UploadButton {...ids} />
         </Box>
         <Box>
+          {/* Illustration Attribution: Illustration from Storyset (a company owned by Flaticon) */}
           <img src={uploadFiles} height={280} />
         </Box>
       </Stack>

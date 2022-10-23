@@ -56,6 +56,14 @@ export const UploadModal: FC = () => {
             maxWidth: "1120px",
           },
         }}
+        sx={{
+          "*::-webkit-scrollbar-track-piece": {
+            backgroundColor: (theme) => `${theme.palette.grey[100]} !important`,
+          },
+          "*::-webkit-scrollbar-thumb": {
+            backgroundColor: (theme) => `${theme.palette.grey[300]} !important`,
+          },
+        }}
       >
         <IconButton
           onClick={handleDismiss}

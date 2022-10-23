@@ -199,7 +199,7 @@ export const FileModalContent: FC<Props> = ({
       {showDeleteFileModal && (
         <DeleteFileModal
           onDeleteFile={onDeleteFile}
-          filename={newFilename}
+          filename={filename}
           onClose={() => setShowDeleteFileModal(false)}
         />
       )}
@@ -456,7 +456,18 @@ export const FileModalContent: FC<Props> = ({
                 {moment(createdAt).format("LL")}
               </Typography>
               <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                {moment(createdAt).add(3, "days").calendar()}
+                {moment(createdAt).calendar(null, {
+                  lastDay: "[Yesterday] [at] h:mm A ",
+                  sameDay: "[Today] [at] h:mm A ",
+                  lastWeek: "dddd [at] h:mm A ",
+                  sameElse: "dddd [at] h:mm A ",
+                })}
+                {new Date(createdAt)
+                  .toLocaleDateString("en-US", {
+                    day: "2-digit",
+                    timeZoneName: "short",
+                  })
+                  .slice(4)}
               </Typography>
             </Box>
           </Box>
