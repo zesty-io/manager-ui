@@ -3,6 +3,8 @@ import { fileExtension } from "../../utils/fileUtils";
 import { Box, CardMedia, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
+import fileBroken from "../../../../../../../public/images/fileBroken.jpeg";
+
 // file icons import
 import wordImg from "../../../../../../../public/images/wordImg.png";
 import excelImg from "../../../../../../../public/images/excelImg.png";
@@ -28,6 +30,8 @@ export const FileTypePreview: FC<Props> = ({
   imageSettings,
 }) => {
   const theme = useTheme();
+
+  const [isImageError, setIsImageError] = useState(false);
 
   const styledCheckerBoard = {
     backgroundImage:
@@ -72,8 +76,8 @@ export const FileTypePreview: FC<Props> = ({
     return src;
   };
 
-  const handleImageError = (evt: any) => {
-    evt.target.src = "/fileBroken.jpeg";
+  const handleImageError = () => {
+    setIsImageError(true);
   };
 
   switch (fileExtension(filename)) {
@@ -104,7 +108,7 @@ export const FileTypePreview: FC<Props> = ({
           <CardMedia
             component="img"
             data-src={`${genImageURL()}`}
-            image={`${genImageURL()}`}
+            image={isImageError ? fileBroken : `${genImageURL()}`}
             loading="lazy"
             onError={handleImageError}
             sx={{
@@ -141,7 +145,7 @@ export const FileTypePreview: FC<Props> = ({
           <CardMedia
             component="img"
             data-src={`${genImageURL()}`}
-            image={`${genImageURL()}`}
+            image={isImageError ? fileBroken : `${genImageURL()}`}
             loading="lazy"
             onError={handleImageError}
             sx={{

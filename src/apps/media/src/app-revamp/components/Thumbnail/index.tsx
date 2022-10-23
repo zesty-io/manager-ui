@@ -16,6 +16,8 @@ import { useTheme } from "@mui/material/styles";
 import styles from "./Loading.less";
 import cx from "classnames";
 
+import fileBroken from "../../../../../../../public/images/fileBroken.jpeg";
+
 // file icons import
 import wordImg from "../../../../../../../public/images/wordImg.png";
 import excelImg from "../../../../../../../public/images/excelImg.png";
@@ -75,6 +77,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   const [imageOrientation, setImageOrientation] = useState<string>("");
   const thumbnailRef = useRef<HTMLDivElement>();
   const [isLoadingImage, setIsLoadingImage] = useState<boolean>(true);
+  const [isImageError, setIsImageError] = useState(false);
   const selectedFiles = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
   );
@@ -198,7 +201,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
 
   const handleImageError = () => {
     setLazyLoading(false);
-    imageEl.current.src = "/fileBroken.jpeg";
+    setIsImageError(true);
   };
 
   /**
@@ -257,7 +260,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               onLoad={handleImageLoad}
               onError={handleImageError}
               data-src={src}
-              image={src}
+              image={isImageError ? fileBroken : src}
               loading="lazy"
               sx={{
                 objectFit: "contain",
@@ -332,7 +335,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               onLoad={handleImageLoad}
               onError={handleImageError}
               data-src={src}
-              image={src}
+              image={isImageError ? fileBroken : src}
               loading="lazy"
               sx={{
                 objectFit: "contain",
