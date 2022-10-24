@@ -7,6 +7,7 @@ import instanceZUID from "../../utility/instanceZUID";
 import { generateThumbnail, getResponseData, prepareHeaders } from "./util";
 import { Bin, File, Group, GroupData } from "./types";
 import { QueryReturnValue } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
+import { uniqBy } from "lodash";
 
 // Define a service using a base URL and expected endpoints
 export const mediaManagerApi = createApi({
@@ -51,7 +52,7 @@ export const mediaManagerApi = createApi({
                 response.data.data
             )
             .flat();
-          return { data: binResponses };
+          return { data: uniqBy(binResponses, "id") };
         } catch (error) {
           return { error };
         }
