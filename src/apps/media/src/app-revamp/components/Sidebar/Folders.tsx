@@ -7,6 +7,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Tooltip,
 } from "@mui/material";
 import { TreeView, TreeItem } from "@mui/lab";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
@@ -294,13 +295,15 @@ export const Folders = ({ lockedToGroupId }: Props) => {
             </MenuItem>
           </Menu>
         </Box>
-        <IconButton
-          aria-label="Create new folder"
-          size="small"
-          onClick={() => setOpenNewFolderDialog(true)}
-        >
-          <AddIcon fontSize="small" />
-        </IconButton>
+        <Tooltip title="Add New Folder">
+          <IconButton
+            aria-label="Create New Folder"
+            size="small"
+            onClick={() => setOpenNewFolderDialog(true)}
+          >
+            <AddIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
       </Box>
       {!isLoading ? (
         <>

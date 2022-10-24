@@ -152,7 +152,7 @@ export const Header = ({
                   <ListItemIcon>
                     <CreateNewFolderIcon fontSize="small" />
                   </ListItemIcon>
-                  <ListItemText>New Folder</ListItemText>
+                  <ListItemText>Add Sub Folder</ListItemText>
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
