@@ -273,9 +273,11 @@ export const Folders = ({ lockedToGroupId }: Props) => {
           <Typography variant="overline" color="text.secondary">
             FOLDERS
           </Typography>
-          <IconButton size="small" onClick={openMenu}>
-            <ArrowDropDownRoundedIcon fontSize="small" />
-          </IconButton>
+          <Tooltip title="Sort Folders by">
+            <IconButton size="small" onClick={openMenu}>
+              <ArrowDropDownRoundedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
           <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
             <MenuItem
               onClick={() => {

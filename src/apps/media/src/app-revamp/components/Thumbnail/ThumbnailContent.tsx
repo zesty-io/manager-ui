@@ -1,5 +1,11 @@
 import { FC } from "react";
-import { TextField, Typography, CardContent, Box } from "@mui/material";
+import {
+  TextField,
+  Typography,
+  CardContent,
+  Box,
+  Tooltip,
+} from "@mui/material";
 
 interface Props {
   extension: string;
@@ -104,7 +110,9 @@ export const ThumbnailContent: FC<Props> = ({
             </Box>
           </Box>
         ) : (
-          <Typography variant="caption">{filename}</Typography>
+          <Tooltip title={filename}>
+            <Typography variant="caption">{filename}</Typography>
+          </Tooltip>
         )}
       </CardContent>
     </>
