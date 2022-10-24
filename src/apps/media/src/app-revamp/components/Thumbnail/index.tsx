@@ -1201,8 +1201,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="grey.100"
-            color="grey.600"
+            backgroundColor="grey.50"
+            color="grey.900"
           />
         </Card>
       );
