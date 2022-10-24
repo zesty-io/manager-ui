@@ -429,7 +429,7 @@ export const FileTypePreview: FC<Props> = ({
             data-src={cssIcon}
             image={cssIcon}
             loading="lazy"
-            sx={styledDocfileThumbnail}
+            sx={{ ...styledDocfileThumbnail, height: "80px" }}
           />
         </Box>
       );

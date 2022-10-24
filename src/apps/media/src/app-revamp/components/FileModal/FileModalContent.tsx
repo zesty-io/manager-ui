@@ -14,6 +14,7 @@ import {
   Chip,
   Button,
   Tooltip,
+  CircularProgress,
 } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -72,7 +73,7 @@ export const FileModalContent: FC<Props> = ({
   handleCloseModal,
   setShowEdit,
 }) => {
-  const newTitle = useRef<any>("");
+  const [newTitle, setNewTitle] = useState(title);
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [isCopiedZuid, setIsCopiedZuid] = useState<boolean>(false);
   const [newFilename, setNewFilename] = useState<string>(
@@ -107,14 +108,14 @@ export const FileModalContent: FC<Props> = ({
   /**
    * @description Set initial values for the fields
    */
-  useEffect(() => {
-    if (newTitle.current) {
-      newTitle.current.value = title;
-    }
-    // if (fileExtension(filename) !== "No Extension") {
-    //   setFileType(fileExtension(filename));
-    // }
-  }, [title, filename]);
+  // useEffect(() => {
+  //   if (newTitle.current) {
+  //     newTitle.current.value = title;
+  //   }
+  //   // if (fileExtension(filename) !== "No Extension") {
+  //   //   setFileType(fileExtension(filename));
+  //   // }
+  // }, [title, filename]);
 
   /**
    * @description Used for copying the alttext's value
@@ -159,7 +160,7 @@ export const FileModalContent: FC<Props> = ({
         id,
         body: {
           group_id: newGroupId,
-          title: newTitle.current.value,
+          title: newTitle,
           filename:
             `${renamedFilename}${constructedFileType}` ||
             `${newFilename}${constructedFileType}`,
@@ -171,7 +172,7 @@ export const FileModalContent: FC<Props> = ({
         previousGroupId: groupId,
         body: {
           group_id: newGroupId,
-          title: newTitle.current.value,
+          title: newTitle,
           filename:
             `${renamedFilename}${constructedFileType}` ||
             `${newFilename}${constructedFileType}`,
@@ -179,8 +180,6 @@ export const FileModalContent: FC<Props> = ({
       });
     }
   };
-
-  const debouncedHandleUpdateMutation = debounce(handleUpdateMutation, 500);
 
   const onDeleteFile = () => {
     deleteFile({
@@ -350,16 +349,31 @@ export const FileModalContent: FC<Props> = ({
       {/* Content Form */}
       <Box sx={{ px: 2 }}>
         <Box sx={{ mt: 2 }}>
-          <InputLabel>Description</InputLabel>
+          <InputLabel>Title</InputLabel>
           <InputLabel>Can be used for alt-text and captions</InputLabel>
           <TextField
-            placeholder="Enter description"
-            inputRef={newTitle}
-            onChange={() => debouncedHandleUpdateMutation(newFilename, true)}
+            placeholder="Enter title"
+            value={newTitle}
+            onChange={(event) => setNewTitle(event.target.value)}
             multiline
             rows={3}
             fullWidth
           />
+          {newTitle !== title && (
+            <Button
+              disabled={isLoadingUpdateAltText}
+              size="small"
+              sx={{ mt: 1 }}
+              variant="contained"
+              onClick={() => handleUpdateMutation(newFilename, true)}
+            >
+              {isLoadingUpdateAltText ? (
+                <CircularProgress size="24px" color="inherit" />
+              ) : (
+                "Save"
+              )}
+            </Button>
+          )}
         </Box>
         <Box sx={{ mt: 3 }}>
           <InputLabel>File URL</InputLabel>

@@ -57,8 +57,8 @@ export const DeleteFolderDialog = ({ open, onClose, id, groupId }: Props) => {
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Are you sure you want to delete this group? All the files within the
-          group will be lost.
+          Deleting your folder will NOT delete the files it. These files can
+          still be found in All Media.
         </DialogContentText>
       </DialogContent>
       <DialogActions>

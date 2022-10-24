@@ -90,13 +90,12 @@ export const RenameFileModal: FC<Props> = ({
             handleUpdateMutation(renamedFilename);
           }}
           disabled={isLoadingUpdate}
-          startIcon={
-            isLoadingUpdate && (
-              <CircularProgress size="20px" sx={{ color: "text.primary" }} />
-            )
-          }
         >
-          Update
+          {isLoadingUpdate ? (
+            <CircularProgress size="24px" color="inherit" />
+          ) : (
+            "Update"
+          )}
         </Button>
       </DialogActions>
     </Dialog>
