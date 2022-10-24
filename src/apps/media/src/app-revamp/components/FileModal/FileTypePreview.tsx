@@ -3,7 +3,7 @@ import { fileExtension } from "../../utils/fileUtils";
 import { Box, CardMedia, Typography, CircularProgress } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
-import fileBroken from "../../../../../../../public/images/fileBroken.jpeg";
+import fileBroken from "../../../../../../../public/images/fileBroken.jpg";
 
 // file icons import
 import wordImg from "../../../../../../../public/images/wordImg.png";

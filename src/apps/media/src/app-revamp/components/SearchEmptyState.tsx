@@ -1,6 +1,6 @@
 import { Box, Typography, Stack, Button } from "@mui/material";
 import { useHistory } from "react-router";
-import noSearchResults from "../../../../../../public/images/noSearchResults.jpeg";
+import noSearchResults from "../../../../../../public/images/noSearchResults.jpg";
 import BackupTableRoundedIcon from "@mui/icons-material/BackupTableRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { useSelector } from "react-redux";

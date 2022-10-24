@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import uploadFiles from "../../../../../../public/images/uploadFiles.jpeg";
+import uploadFiles from "../../../../../../public/images/uploadFiles.jpg";
 import { UploadButton } from "./UploadButton";
 
 type Props = {

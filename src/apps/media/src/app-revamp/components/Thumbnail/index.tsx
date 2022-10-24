@@ -16,7 +16,7 @@ import { useTheme } from "@mui/material/styles";
 import styles from "./Loading.less";
 import cx from "classnames";
 
-import fileBroken from "../../../../../../../public/images/fileBroken.jpeg";
+import fileBroken from "../../../../../../../public/images/fileBroken.jpg";
 
 // file icons import
 import wordImg from "../../../../../../../public/images/wordImg.png";

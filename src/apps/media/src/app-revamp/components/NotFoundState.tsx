@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Box, Typography, Stack, Button } from "@mui/material";
 import { useHistory } from "react-router";
-import notFound from "../../../../../../public/images/notFound.jpeg";
+import notFound from "../../../../../../public/images/notFound.jpg";
 import BackupTableRoundedIcon from "@mui/icons-material/BackupTableRounded";
 import { useSelector } from "react-redux";
 import { State } from "../../../../../shell/store/media-revamp";
