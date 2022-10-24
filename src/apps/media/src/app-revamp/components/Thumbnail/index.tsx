@@ -12,6 +12,7 @@ import { ThumbnailContent } from "./ThumbnailContent";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import FontDownloadRoundedIcon from "@mui/icons-material/FontDownloadRounded";
 import { useTheme } from "@mui/material/styles";
 import styles from "./Loading.less";
 import cx from "classnames";
@@ -28,6 +29,9 @@ import csvImg from "../../../../../../../public/images/csvImg.png";
 import zipImg from "../../../../../../../public/images/zipImg.png";
 import numberImg from "../../../../../../../public/images/numberImg.png";
 import defaultImg from "../../../../../../../public/images/defaultImg.png";
+import jsIcon from "../../../../../../../public/images/jsIcon.svg";
+import htmlIcon from "../../../../../../../public/images/htmlIcon.svg";
+import cssIcon from "../../../../../../../public/images/cssIcon.svg";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 import { isImage } from "../../utils/fileUtils";
@@ -965,6 +969,240 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             isEditable={isEditable}
             backgroundColor="green.50"
             color="green.600"
+          />
+        </Card>
+      );
+    case "js":
+      return (
+        <Card
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable={!isEditable}
+          onDragStart={(evt) => onDragStart(evt)}
+        >
+          <Box
+            sx={{
+              backgroundColor: "blue.50",
+              boxSizing: "border-box",
+              height: imageHeight || "160px",
+              overflow: "hidden",
+              display: "flex",
+              position: "relative",
+            }}
+          >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
+                },
+              }}
+            >
+              {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
+            </Box>
+            <CardMedia
+              component="img"
+              data-src={jsIcon}
+              image={jsIcon}
+              loading="lazy"
+              sx={styledDocfileThumbnail}
+            />
+          </Box>
+          <ThumbnailContent
+            extension={fileExtension(filename)}
+            filename={filename}
+            onFilenameChange={onFilenameChange}
+            onTitleChange={onTitleChange}
+            isEditable={isEditable}
+            backgroundColor="blue.100"
+            color="blue.600"
+          />
+        </Card>
+      );
+    case "css":
+      return (
+        <Card
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable={!isEditable}
+          onDragStart={(evt) => onDragStart(evt)}
+        >
+          <Box
+            sx={{
+              backgroundColor: "blue.50",
+              boxSizing: "border-box",
+              height: imageHeight || "160px",
+              overflow: "hidden",
+              display: "flex",
+              position: "relative",
+            }}
+          >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
+                },
+              }}
+            >
+              {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
+            </Box>
+            <CardMedia
+              component="img"
+              data-src={cssIcon}
+              image={cssIcon}
+              loading="lazy"
+              sx={{ ...styledDocfileThumbnail, height: "46px" }}
+            />
+          </Box>
+          <ThumbnailContent
+            extension={fileExtension(filename)}
+            filename={filename}
+            onFilenameChange={onFilenameChange}
+            onTitleChange={onTitleChange}
+            isEditable={isEditable}
+            backgroundColor="blue.100"
+            color="blue.600"
+          />
+        </Card>
+      );
+    case "html":
+      return (
+        <Card
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable={!isEditable}
+          onDragStart={(evt) => onDragStart(evt)}
+        >
+          <Box
+            sx={{
+              backgroundColor: "blue.50",
+              boxSizing: "border-box",
+              height: imageHeight || "160px",
+              overflow: "hidden",
+              display: "flex",
+              position: "relative",
+            }}
+          >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
+                },
+              }}
+            >
+              {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
+            </Box>
+            <CardMedia
+              component="img"
+              data-src={htmlIcon}
+              image={htmlIcon}
+              loading="lazy"
+              sx={{ ...styledDocfileThumbnail, height: "36px" }}
+            />
+          </Box>
+          <ThumbnailContent
+            extension={fileExtension(filename)}
+            filename={filename}
+            onFilenameChange={onFilenameChange}
+            onTitleChange={onTitleChange}
+            isEditable={isEditable}
+            backgroundColor="blue.100"
+            color="blue.600"
+          />
+        </Card>
+      );
+    case "otf":
+    case "ttf":
+    case "woff":
+    case "woff2":
+      return (
+        <Card
+          sx={styledCard}
+          elevation={0}
+          onClick={onClick}
+          draggable={!isEditable}
+          onDragStart={(evt) => onDragStart(evt)}
+        >
+          <Box
+            sx={{
+              backgroundColor: "grey.100",
+              boxSizing: "border-box",
+              height: imageHeight || "160px",
+              overflow: "hidden",
+              display: "flex",
+              position: "relative",
+            }}
+          >
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                "&:hover": {
+                  backgroundImage: `linear-gradient(to bottom,rgba(16,24,40,.26),transparent 56px,transparent)`,
+                  "& .MuiCheckbox-root": {
+                    display: "block",
+                  },
+                },
+              }}
+            >
+              {isSelectDialog && <Checkbox />}
+              <RemoveIcon />
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "column",
+                width: "100%",
+                my: "auto",
+              }}
+            >
+              <FontDownloadRoundedIcon
+                fontSize="large"
+                sx={{ color: "grey.600" }}
+              />
+            </Box>
+          </Box>
+          <ThumbnailContent
+            extension={fileExtension(filename)}
+            filename={filename}
+            onFilenameChange={onFilenameChange}
+            onTitleChange={onTitleChange}
+            isEditable={isEditable}
+            backgroundColor="grey.100"
+            color="grey.600"
           />
         </Card>
       );

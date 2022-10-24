@@ -38,6 +38,9 @@ export const fileTypeToColor = (extension: string) => {
     case "docx":
     case "doc":
     case "rtf":
+    case "html":
+    case "js":
+    case "css":
       return "blue";
     case "ots":
     case "xls":

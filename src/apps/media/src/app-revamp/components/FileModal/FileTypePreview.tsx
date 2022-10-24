@@ -2,6 +2,7 @@ import { FC, useState, useEffect } from "react";
 import { fileExtension } from "../../utils/fileUtils";
 import { Box, CardMedia, Typography, CircularProgress } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import FontDownloadRoundedIcon from "@mui/icons-material/FontDownloadRounded";
 
 import fileBroken from "../../../../../../../public/images/fileBroken.jpg";
 
@@ -15,6 +16,9 @@ import csvImg from "../../../../../../../public/images/csvImg.png";
 import zipImg from "../../../../../../../public/images/zipImg.png";
 import numberImg from "../../../../../../../public/images/numberImg.png";
 import defaultImg from "../../../../../../../public/images/defaultImg.png";
+import jsIcon from "../../../../../../../public/images/jsIcon.svg";
+import htmlIcon from "../../../../../../../public/images/htmlIcon.svg";
+import cssIcon from "../../../../../../../public/images/cssIcon.svg";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 
@@ -393,6 +397,84 @@ export const FileTypePreview: FC<Props> = ({
             loading="lazy"
             sx={styledDocfileThumbnail}
           />
+        </Box>
+      );
+    case "js":
+      return (
+        <Box
+          sx={{
+            backgroundColor: "blue.50",
+            ...styledBox,
+          }}
+        >
+          <CardMedia
+            component="img"
+            data-src={jsIcon}
+            image={jsIcon}
+            loading="lazy"
+            sx={styledDocfileThumbnail}
+          />
+        </Box>
+      );
+    case "css":
+      return (
+        <Box
+          sx={{
+            backgroundColor: "blue.50",
+            ...styledBox,
+          }}
+        >
+          <CardMedia
+            component="img"
+            data-src={cssIcon}
+            image={cssIcon}
+            loading="lazy"
+            sx={styledDocfileThumbnail}
+          />
+        </Box>
+      );
+    case "html":
+      return (
+        <Box
+          sx={{
+            backgroundColor: "blue.50",
+            ...styledBox,
+          }}
+        >
+          <CardMedia
+            component="img"
+            data-src={htmlIcon}
+            image={htmlIcon}
+            loading="lazy"
+            sx={styledDocfileThumbnail}
+          />
+        </Box>
+      );
+    case "otf":
+    case "ttf":
+    case "woff":
+    case "woff2":
+      return (
+        <Box
+          sx={{
+            backgroundColor: "grey.100",
+            ...styledBox,
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+              width: "100%",
+              my: "auto",
+            }}
+          >
+            <FontDownloadRoundedIcon
+              fontSize="large"
+              sx={{ color: "grey.500" }}
+            />
+          </Box>
         </Box>
       );
     case "No Extension":
