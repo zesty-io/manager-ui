@@ -543,7 +543,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         >
           <Box
             sx={{
-              backgroundColor: "grey.200",
+              backgroundColor: "blue.50",
               boxSizing: "border-box",
               height: imageHeight || "160px",
               overflow: "hidden",

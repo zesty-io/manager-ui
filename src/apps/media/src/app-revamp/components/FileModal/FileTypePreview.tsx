@@ -251,7 +251,7 @@ export const FileTypePreview: FC<Props> = ({
       return (
         <Box
           sx={{
-            backgroundColor: "grey.200",
+            backgroundColor: "blue.50",
             ...styledBox,
           }}
         >

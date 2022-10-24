@@ -16,7 +16,15 @@ export const mediaManagerApi = createApi({
     baseUrl: `${__CONFIG__.SERVICE_MEDIA_MANAGER}`,
     prepareHeaders,
   }),
-  tagTypes: ["Bin", "Bins", "BinGroups", "BinFiles", "File", "GroupData"],
+  tagTypes: [
+    "Bin",
+    "Bins",
+    "BinGroups",
+    "BinFiles",
+    "File",
+    "GroupData",
+    "Search",
+  ],
   endpoints: (builder) => ({
     getBin: builder.query<Bin[], string>({
       query: (binId) => `bin/${binId}`,
@@ -171,6 +179,7 @@ export const mediaManagerApi = createApi({
         { type: "File", id: arg?.id },
         { type: "GroupData", id: arg.body?.group_id },
         "BinFiles",
+        "Search",
         { type: "GroupData", id: arg?.previousGroupId },
       ],
     }),
@@ -191,7 +200,10 @@ export const mediaManagerApi = createApi({
         body,
       }),
       transformResponse: (res: any) => res,
-      invalidatesTags: (result, error, arg) => [{ type: "File", id: arg?.id }],
+      invalidatesTags: (result, error, arg) => [
+        { type: "File", id: arg?.id },
+        "Search",
+      ],
     }),
     deleteFile: builder.mutation<
       File,
@@ -210,6 +222,7 @@ export const mediaManagerApi = createApi({
       invalidatesTags: (result, error, arg) => [
         { type: "GroupData", id: arg.body?.group_id },
         "BinFiles",
+        "Search",
       ],
     }),
     updateGroup: builder.mutation<
@@ -273,6 +286,7 @@ export const mediaManagerApi = createApi({
             thumbnail: generateThumbnail(file),
           }))
           .reverse(),
+      providesTags: ["Search"],
     }),
   }),
 });
