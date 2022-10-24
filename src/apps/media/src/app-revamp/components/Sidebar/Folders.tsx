@@ -238,7 +238,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
               color="text.secondary"
               fontWeight={500}
               sx={{
-                wordBreak: "break-all",
+                wordBreak: "break-word",
               }}
             >
               {nodes.name}
