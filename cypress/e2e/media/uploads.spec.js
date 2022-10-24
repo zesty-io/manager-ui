@@ -24,13 +24,14 @@ describe("Media uploads", () => {
         force: true,
       }
     );
+    // Wait for upload to complete
+    cy.intercept(
+      "POST",
+      "https://media-storage.api.dev.zesty.io/upload/gcp/*"
+    ).as("upload");
+    cy.wait("@upload", { timeout: 20_000 });
     // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
-    // TODO why does this need to be done?
-    // Page needs to be refreshed after a second because
-    // Invalidation happens too early
-    cy.wait(1_000);
-    cy.reload();
     // Assert file exists
     cy.get(`div.MuiCardContent-root:contains("${fileName}")`).should("exist");
     // CLEANUP
@@ -73,13 +74,14 @@ describe("Media uploads", () => {
           force: true,
         }
       );
+    // Wait for upload to complete
+    cy.intercept(
+      "POST",
+      "https://media-storage.api.dev.zesty.io/upload/gcp/*"
+    ).as("upload");
+    cy.wait("@upload", { timeout: 20_000 });
     // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
-    // TODO why does this need to be done?
-    // Page needs to be refreshed after a second because
-    // Invalidation happens too early
-    cy.wait(1_000);
-    cy.reload();
     // Assert file exists
     cy.get(`div.MuiCardContent-root:contains("${fileName}")`).should("exist");
     // CLEANUP
@@ -106,7 +108,6 @@ describe("Media uploads", () => {
     const fileName = `cypress_upload_test_${Math.floor(
       Math.random() * 1_000_000
     )}.txt`;
-    //cy.wait(10_000)
     cy.get("input[type=file]")
       .first()
       .selectFile(
@@ -123,13 +124,14 @@ describe("Media uploads", () => {
           force: true,
         }
       );
+    // Wait for upload to complete
+    cy.intercept(
+      "POST",
+      "https://media-storage.api.dev.zesty.io/upload/gcp/*"
+    ).as("upload");
+    cy.wait("@upload", { timeout: 20_000 });
     // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
-    // TODO why does this need to be done?
-    // Page needs to be refreshed after a second because
-    // Invalidation happens too early
-    cy.wait(1_000);
-    cy.reload();
     // Assert file exists
     cy.get(`div.MuiCardContent-root:contains("${fileName}")`).should("exist");
     // CLEANUP
@@ -174,13 +176,14 @@ describe("Media uploads", () => {
           force: true,
         }
       );
+    // Wait for upload to complete
+    cy.intercept(
+      "POST",
+      "https://media-storage.api.dev.zesty.io/upload/gcp/*"
+    ).as("upload");
+    cy.wait("@upload", { timeout: 20_000 });
     // Click "Done" button to close upload modal
-    cy.get('button:enabled:contains("Done")').click();
-    // TODO why does this need to be done?
-    // Page needs to be refreshed after a second because
-    // Invalidation happens too early
-    cy.wait(1_000);
-    cy.reload();
+    cy.get('button:contains("Done")').click();
     // Assert file exists
     cy.get(`div.MuiCardContent-root:contains("${fileName}")`).should("exist");
     // CLEANUP
