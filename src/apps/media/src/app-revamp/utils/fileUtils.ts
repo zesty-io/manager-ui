@@ -3,7 +3,8 @@ export function fileExtension(url: string) {
   let extension = "No Extension";
   if (url.includes(".")) {
     extension =
-      url.substring(url.lastIndexOf(".") + 1, url.length) || "No Extension";
+      url.substring(url.lastIndexOf(".") + 1, url.length).toLowerCase() ||
+      "No Extension";
   }
   return extension;
 }
