@@ -88,8 +88,8 @@ export const mediaManagerApi = createApi({
               fetchWithBQ(`bin/${binId}/groups`)
             )
           )) as QueryReturnValue<any, FetchBaseQueryError>[];
-          const groups = groupResponses.map(
-            (groupResponse) => groupResponse.data.data
+          const groups = groupResponses.map((groupResponse) =>
+            groupResponse.data.data?.reverse()
           ) as Group[][];
           return { data: groups };
         } catch (error) {

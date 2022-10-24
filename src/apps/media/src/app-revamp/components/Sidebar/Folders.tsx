@@ -38,11 +38,12 @@ import { useLocalStorage } from "react-use";
 const nest = (items: any, id: string, link: string, sort: string) =>
   items
     .filter((item: any) => item[link] === id)
-    .sort((a: any, b: any) =>
+    .sort((a: any, b: any) => {
+      if (!sort) return;
       sort === "asc"
         ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name)
-    )
+        : b.name.localeCompare(a.name);
+    })
     .map((item: any) => ({
       ...item,
       children: nest(items, item.id, link, sort),
@@ -130,11 +131,12 @@ export const Folders = ({ lockedToGroupId }: Props) => {
             }
           })
           .flat()
-          .sort((a, b) =>
-            sort === "asc"
+          .sort((a, b) => {
+            if (!sort) return;
+            return sort === "asc"
               ? a.name.localeCompare(b.name)
-              : b.name.localeCompare(a.name)
-          );
+              : b.name.localeCompare(a.name);
+          });
       }
     } else {
       return [];
@@ -294,6 +296,14 @@ export const Folders = ({ lockedToGroupId }: Props) => {
               }}
             >
               Name (Z to A)
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                closeMenu();
+                setSort("");
+              }}
+            >
+              Last Created
             </MenuItem>
           </Menu>
         </Box>
