@@ -40,7 +40,7 @@ const nest = (items: any, id: string, link: string, sort: string) =>
     .filter((item: any) => item[link] === id)
     .sort((a: any, b: any) => {
       if (!sort) return;
-      sort === "asc"
+      return sort === "asc"
         ? a.name.localeCompare(b.name)
         : b.name.localeCompare(a.name);
     })
