@@ -73,7 +73,12 @@ export const mediaManagerApi = createApi({
             .map((file) => ({
               ...file,
               thumbnail: generateThumbnail(file),
-            })) as File[];
+            }))
+            .sort(
+              //@ts-ignore
+              (a, b) => new Date(a.created_at) - new Date(b.created_at)
+            ) as File[];
+
           return { data: files.reverse() };
         } catch (error) {
           return { error };
