@@ -351,7 +351,7 @@ export const OTFEditor = ({
           borderTop: (theme) => `1px solid ${theme.palette.border}`,
         }}
       >
-        <InputLabel sx={{ textAlign: "center" }}>
+        <InputLabel sx={{ textAlign: "center", color: "white" }}>
           ✨ Copy New URL with Applied Editsl
         </InputLabel>
         <TextField

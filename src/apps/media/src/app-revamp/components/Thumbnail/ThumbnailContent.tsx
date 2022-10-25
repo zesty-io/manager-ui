@@ -73,7 +73,8 @@ export const ThumbnailContent: FC<Props> = ({
                     borderRadius: 0,
                     "&.Mui-focused": {
                       fieldset: {
-                        borderWidth: "0 !important",
+                        borderRight: "0 !important",
+                        borderLeft: "0 !important",
                       },
                     },
                     fieldset: {
@@ -88,8 +89,8 @@ export const ThumbnailContent: FC<Props> = ({
               <TextField
                 placeholder={
                   isEditable
-                    ? "Add image description (for alt text)"
-                    : "Please wait to add image description"
+                    ? "Add image title (for alt text)"
+                    : "Please wait to add image title"
                 }
                 disabled={!isEditable}
                 size="small"
