@@ -51,7 +51,7 @@ export const ThumbnailContent: FC<Props> = ({
         {/* @ts-expect-error body 3 not type */}
         <Typography variant="body3">{extension}</Typography>
       </Box>
-      <CardContent sx={styledCardContent}>
+      <CardContent sx={styledCardContent} data-testid="media-thumbnail-content">
         {onFilenameChange ? (
           <Box>
             <Box>
