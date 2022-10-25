@@ -15,7 +15,7 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       return require("./cypress/plugins/index.js")(on, config);
     },
-    baseUrl: "http://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080/",
+    baseUrl: "https://8-f48cf3a682-7fthvk.manager.dev.zesty.io:8080/",
     specPattern: "cypress/e2e/**/*.{js,jsx,ts,tsx}",
   },
 });
