@@ -58,6 +58,7 @@ export const DeleteFileModal: FC<Props> = ({
         <Button
           variant="contained"
           color="error"
+          aria-label="Delete Button"
           onClick={() => {
             onDeleteFile();
             onClose();

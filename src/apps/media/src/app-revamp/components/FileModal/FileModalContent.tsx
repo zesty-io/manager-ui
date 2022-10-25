@@ -267,6 +267,7 @@ export const FileModalContent: FC<Props> = ({
             </IconButton>
             <IconButton
               size="small"
+              aria-label="Trash Button"
               onClick={() => setShowDeleteFileModal(true)}
             >
               <DeleteIcon fontSize="small" />
@@ -275,6 +276,7 @@ export const FileModalContent: FC<Props> = ({
               onClick={(evt) => setShowSettingsDropdown(evt.currentTarget)}
               aria-controls={openSettings ? "settingsMenu" : undefined}
               aria-haspopup="true"
+              aria-label="Open settings menu"
               aria-expanded={openSettings ? "true" : undefined}
               size="small"
             >
@@ -353,6 +355,7 @@ export const FileModalContent: FC<Props> = ({
           <InputLabel>Can be used for alt-text and captions</InputLabel>
           <TextField
             placeholder="Enter title"
+            aria-label="Title TextField"
             value={newTitle}
             onChange={(event) => setNewTitle(event.target.value)}
             multiline
@@ -365,6 +368,7 @@ export const FileModalContent: FC<Props> = ({
               size="small"
               sx={{ mt: 1 }}
               variant="contained"
+              aria-label="Save Title Button"
               onClick={() => handleUpdateMutation(newFilename, true)}
             >
               {isLoadingUpdateAltText ? (
