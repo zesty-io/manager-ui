@@ -62,6 +62,7 @@ export const UploadButton: FC<UploadButton> = ({
         onClick={handleUploadButtonClick}
         variant={variant}
         color="primary"
+        size="small"
         startIcon={<FileUpload />}
       >
         {text || "Upload"}

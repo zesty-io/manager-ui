@@ -82,6 +82,7 @@ export const UploadModal: FC = () => {
             justifyContent: "space-between",
             alignItems: "center",
             borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+            p: 2,
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -101,6 +102,8 @@ export const UploadModal: FC = () => {
             height: "489px",
             flexDirection: "column",
             gap: 2,
+            px: 2,
+            pb: 2,
           }}
         >
           <UploadErrors />
@@ -126,7 +129,7 @@ export const UploadModal: FC = () => {
         </DialogContent>
         <DialogActions
           sx={{
-            pt: 2.5,
+            p: 2,
             borderTop: (theme) => `1px solid ${theme.palette.border}`,
           }}
         >
