@@ -1,3 +1,12 @@
+const CIRCLE_SVG = `
+  <svg viewBox="0 0 2 2" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="1" cy="1" r="1" />
+  </svg>
+`;
+
+const getRandomFileName = () =>
+  `cypress_upload_test_${Math.floor(Math.random() * 1_000_000)}.svg`;
+
 describe("Media uploads", () => {
   before(() => {
     cy.waitOn("*groups*", () => {
@@ -7,16 +16,12 @@ describe("Media uploads", () => {
   });
 
   it("uploads a file to a All Media", () => {
-    const fileName = `cypress_upload_test_${Math.floor(
-      Math.random() * 1_000_000
-    )}.txt`;
+    const fileName = getRandomFileName();
     cy.get("input[type=file]").selectFile(
       {
-        contents: Cypress.Buffer.from(
-          "This is a dummy file for Cypress tests of media uploads"
-        ),
+        contents: Cypress.Buffer.from(CIRCLE_SVG),
         fileName,
-        mimeType: "text/plain",
+        mimeType: "image/svg+xml",
         lastModified: Date.now(),
       },
       {
@@ -55,16 +60,12 @@ describe("Media uploads", () => {
       .wait("@groupZuid")
       .wait("@binZuid")
       .wait("@instance");
-    const fileName = `cypress_upload_test_${Math.floor(
-      Math.random() * 1_000_000
-    )}.txt`;
+    const fileName = getRandomFileName();
     cy.get("input[type=file]")
       .first()
       .selectFile(
         {
-          contents: Cypress.Buffer.from(
-            "This is a dummy file for Cypress tests of media uploads"
-          ),
+          contents: Cypress.Buffer.from(CIRCLE_SVG),
           fileName,
           mimeType: "text/plain",
           lastModified: Date.now(),
@@ -105,16 +106,12 @@ describe("Media uploads", () => {
       .wait("@binZuid")
       .wait("@instance")
       .wait("@binFiles");
-    const fileName = `cypress_upload_test_${Math.floor(
-      Math.random() * 1_000_000
-    )}.txt`;
+    const fileName = getRandomFileName();
     cy.get("input[type=file]")
       .first()
       .selectFile(
         {
-          contents: Cypress.Buffer.from(
-            "This is a dummy file for Cypress tests of media uploads"
-          ),
+          contents: Cypress.Buffer.from(CIRCLE_SVG),
           fileName,
           mimeType: "text/plain",
           lastModified: Date.now(),
@@ -155,16 +152,12 @@ describe("Media uploads", () => {
       .wait("@groupZuid")
       .wait("@binZuid")
       .wait("@instance");
-    const fileName = `cypress_upload_test_${Math.floor(
-      Math.random() * 1_000_000
-    )}.txt`;
+    const fileName = getRandomFileName();
     cy.get("input[type=file]")
       .first()
       .selectFile(
         {
-          contents: Cypress.Buffer.from(
-            "This is a dummy file for Cypress tests of media uploads"
-          ),
+          contents: Cypress.Buffer.from(CIRCLE_SVG),
           fileName,
           mimeType: "text/plain",
           lastModified: Date.now(),
@@ -207,9 +200,7 @@ describe("Media uploads", () => {
       .wait("@groupZuid")
       .wait("@binZuid")
       .wait("@instance");
-    const fileName = `cypress_upload_test_${Math.floor(
-      Math.random() * 1_000_000
-    )}.txt`;
+    const fileName = getRandomFileName();
     cy.get('[data-testid="dnd-provider-box"]')
       .trigger("dragover")
       .contains("Upload files to");
