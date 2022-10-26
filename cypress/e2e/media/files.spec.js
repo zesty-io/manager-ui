@@ -64,4 +64,32 @@ describe("Media Files", () => {
       cy.get(".MuiTypography-h4").contains("File Not Found").should("exist");
     });
   });
+
+  it("Drag and drop files on sidebar", () => {
+    // visit all media first
+    cy.visit("/media");
+    cy.wait(3000);
+
+    // drag the thumbnail
+    cy.get(".3-eb3816c-56fxrg")
+      .should("be.visible")
+      .trigger("dragstart")
+      .trigger("dragleave");
+
+    // drop it to the folder
+    cy.get(".MuiTreeView-root").within(() => {
+      cy.get(".2-b599f72-aeswx")
+        .should("be.visible")
+        .trigger("dragenter")
+        .trigger("dragover")
+        .trigger("drop")
+        .trigger("dragend");
+    });
+
+    // check the folder if the thumbnail is there
+    cy.get(".2-b599f72-aeswx").click();
+    cy.get(".MuiBox-root").within(() => {
+      cy.get(".3-eb2502b-q0lknt").should("exist");
+    });
+  });
 });
