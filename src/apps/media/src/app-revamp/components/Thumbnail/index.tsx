@@ -224,6 +224,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           onClick={onClick}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
+          className={id}
         >
           <Box
             sx={{
@@ -299,6 +300,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           elevation={0}
           onClick={onClick}
           draggable={!isEditable}
+          className={id}
           onDragStart={(evt) => onDragStart(evt)}
         >
           <Box
@@ -725,6 +727,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         <Card
           sx={styledCard}
           elevation={0}
+          className={id}
           onClick={onClick}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
@@ -1033,6 +1036,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         <Card
           sx={styledCard}
           elevation={0}
+          className={id}
           onClick={onClick}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
@@ -1089,6 +1093,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         <Card
           sx={styledCard}
           elevation={0}
+          className={id}
           onClick={onClick}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}

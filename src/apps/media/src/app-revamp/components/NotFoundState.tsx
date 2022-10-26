@@ -23,6 +23,7 @@ export const NotFoundState: FC<Props> = ({ title, message }) => {
       alignItems="center"
       height="100%"
       textAlign={"center"}
+      className="NotFoundState"
     >
       <Box width="400px">
         <img src={notFound} height="320px" />
