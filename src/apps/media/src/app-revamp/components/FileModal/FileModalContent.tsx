@@ -384,6 +384,7 @@ export const FileModalContent: FC<Props> = ({
           <TextField
             fullWidth
             value={src}
+            className="FileUrlField"
             InputProps={{
               readOnly: true,
               disableUnderline: true,
@@ -392,7 +393,10 @@ export const FileModalContent: FC<Props> = ({
                   {isCopied ? (
                     <CheckIcon />
                   ) : (
-                    <IconButton onClick={() => handleCopyClick(src)}>
+                    <IconButton
+                      onClick={() => handleCopyClick(src)}
+                      className="CopyFileUrlBtn"
+                    >
                       <ContentCopyIcon />
                     </IconButton>
                   )}

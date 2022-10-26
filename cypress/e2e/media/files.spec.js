@@ -104,6 +104,18 @@ describe("Media Files", () => {
     });
   });
 
+  it("Copies File URL", () => {
+    let fileUrl = "";
+    cy.get(".FileUrlField").within(() => {
+      cy.get("input")
+        .invoke("val")
+        .then((val) => (fileUrl = val));
+    });
+
+    cy.get(".CopyFileUrlBtn").click();
+    cy.assertClipboardValue(fileUrl);
+  });
+
   it("Copies file ZUID", () => {
     cy.get(".CopyZuidBtn").click();
     cy.assertClipboardValue(currentFileId);
