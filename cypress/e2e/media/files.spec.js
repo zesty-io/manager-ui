@@ -1,3 +1,14 @@
+const CIRCLE_SVG = `
+  <svg viewBox="0 0 2 2" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="1" cy="1" r="1" />
+  </svg>
+`;
+
+const getRandomFileName = () =>
+  `cypress_upload_test_${Math.floor(Math.random() * 1_000_000)}.svg`;
+
+let currentFileId = "";
+
 describe("Media Files", () => {
   before(() => {
     cy.waitOn("*groups*", () => {
@@ -5,7 +16,45 @@ describe("Media Files", () => {
     });
   });
 
+  it("uploads a file to a All Media", () => {
+    const fileName = getRandomFileName();
+    cy.get("input[type=file]").selectFile(
+      {
+        contents: Cypress.Buffer.from(CIRCLE_SVG),
+        fileName,
+        mimeType: "image/svg+xml",
+        lastModified: Date.now(),
+      },
+      {
+        // force:true is valid because we use hidden file inputs to do uploads
+        force: true,
+      }
+    );
+    // Wait for upload to complete
+    cy.intercept("POST", "https://media-storage.api.dev.zesty.io/upload/gcp/*");
+    cy.wait(3000);
+    // // Click "Done" button to close upload modal
+    cy.get('button:enabled:contains("Done")').click();
+  });
+
+  it("Open file modal and get Zuid", () => {
+    cy.get(".ThumbnailContainer").first().click();
+    cy.get("[aria-label='Zuid TextField']").within(() => {
+      cy.get("input")
+        .invoke("val")
+        .then((sometext) => (currentFileId = sometext));
+    });
+  });
+
+  it("Displays file preview", () => {
+    cy.intercept("GET", `/file/${currentFileId}`);
+    cy.get(".img-box").within(() => {
+      cy.get("img").should("have.attr", "src");
+    });
+  });
+
   it("Renames filename", () => {
+    cy.log("RENAME", currentFileId);
     cy.get("[aria-label='Open settings menu']").click();
     cy.contains("Rename").click();
 
@@ -16,7 +65,7 @@ describe("Media Files", () => {
     });
 
     // call update endpoint
-    cy.intercept("PATCH", "/file/3-eafe696-c0j4kn");
+    cy.intercept("PATCH", `/file/${currentFileId}`);
 
     // check if the textfield has the updated value
     cy.get(".MuiTypography-body1")
@@ -37,7 +86,7 @@ describe("Media Files", () => {
         }
       });
 
-      cy.intercept("PATCH", "/file/3-eafe696-c0j4kn");
+      cy.intercept("PATCH", `/file/${currentFileId}`);
 
       cy.get("[aria-label='Title TextField']").within(() => {
         cy.get(".MuiInputBase-input").should(
@@ -48,30 +97,13 @@ describe("Media Files", () => {
     });
   });
 
-  it("Deletes file", () => {
-    // click trash and delete modal button
-    cy.get("[aria-label='Trash Button']").click();
-    cy.get("[aria-label='Delete Button']").click();
-
-    // call delete endpoint
-    cy.intercept("DELETE", "/file/3-eafe696-c0j4kn").as("deleteRequest");
-    // cy.wait("@deleteRequest");
-  });
-
-  it("Shows 404 Page", () => {
-    cy.visit("/media?fileId=3-eafe696-c0j4kn12");
-    cy.get(".NotFoundState").within(() => {
-      cy.get(".MuiTypography-h4").contains("File Not Found").should("exist");
-    });
-  });
-
   it("Drag and drop files on sidebar", () => {
     // visit all media first
     cy.visit("/media");
     cy.wait(3000);
 
     // drag the thumbnail
-    cy.get(".3-eb3816c-56fxrg")
+    cy.get(`.${currentFileId}`)
       .should("be.visible")
       .trigger("dragstart")
       .trigger("dragleave");
@@ -89,7 +121,25 @@ describe("Media Files", () => {
     // check the folder if the thumbnail is there
     cy.get(".2-b599f72-aeswx").click();
     cy.get(".MuiBox-root").within(() => {
-      cy.get(".3-eb2502b-q0lknt").should("exist");
+      cy.get(`.${currentFileId}`).should("exist");
+    });
+  });
+
+  it("Deletes file", () => {
+    // click trash and delete modal button
+    cy.visit(`/media?fileId=${currentFileId}`);
+    cy.get("[aria-label='Trash Button']").click();
+    cy.get("[aria-label='Delete Button']").click();
+
+    // call delete endpoint
+    cy.intercept("DELETE", `/file/${currentFileId}`).as("deleteRequest");
+    cy.wait("@deleteRequest", { timeout: 1000 });
+  });
+
+  it("Shows 404 Page", () => {
+    cy.visit(`/media?fileId=${currentFileId}`);
+    cy.get(".NotFoundState").within(() => {
+      cy.get(".MuiTypography-h4").contains("File Not Found").should("exist");
     });
   });
 });
