@@ -448,7 +448,10 @@ export const FileModalContent: FC<Props> = ({
                   {isCopiedZuid ? (
                     <CheckIcon />
                   ) : (
-                    <IconButton onClick={() => handleCopyClick(id, true)}>
+                    <IconButton
+                      onClick={() => handleCopyClick(id, true)}
+                      className="CopyZuidBtn"
+                    >
                       <ContentCopyIcon />
                     </IconButton>
                   )}
