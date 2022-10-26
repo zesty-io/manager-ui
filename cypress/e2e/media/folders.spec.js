@@ -5,7 +5,7 @@ describe("Media Folders", () => {
     });
   });
   it("Creates folder ", () => {
-    cy.get("[aria-label='Create new folder']").click();
+    cy.get("[aria-label='Create New Folder']").click();
 
     cy.get(".MuiDialog-container").within(() => {
       cy.contains("Folder Name").next().type("CYPRESS TEST NEW FOLDER");

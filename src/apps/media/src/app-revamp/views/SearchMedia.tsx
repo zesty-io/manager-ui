@@ -96,6 +96,7 @@ export const SearchMedia = ({ lockedToGroupId, addImagesCallback }: Props) => {
             hideUpload
             addImagesCallback={addImagesCallback}
             hideFolderCreate
+            showBackButton
           />
           <MediaGrid files={filteredFiles} groups={filteredGroups} />
         </Box>

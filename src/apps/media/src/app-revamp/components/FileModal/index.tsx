@@ -75,6 +75,7 @@ export const FileModal: FC<Props> = ({ fileId, onSetIsFileModalError }) => {
           <Box>
             <IconButton
               onClick={() => handleCloseModal()}
+              aria-label="Close Icon"
               sx={{
                 position: "fixed",
                 zIndex: 999,

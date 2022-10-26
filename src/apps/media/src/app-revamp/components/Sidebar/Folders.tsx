@@ -7,6 +7,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Tooltip,
 } from "@mui/material";
 import { TreeView, TreeItem } from "@mui/lab";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
@@ -37,11 +38,12 @@ import { useLocalStorage } from "react-use";
 const nest = (items: any, id: string, link: string, sort: string) =>
   items
     .filter((item: any) => item[link] === id)
-    .sort((a: any, b: any) =>
-      sort === "asc"
+    .sort((a: any, b: any) => {
+      if (!sort) return;
+      return sort === "asc"
         ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name)
-    )
+        : b.name.localeCompare(a.name);
+    })
     .map((item: any) => ({
       ...item,
       children: nest(items, item.id, link, sort),
@@ -129,11 +131,12 @@ export const Folders = ({ lockedToGroupId }: Props) => {
             }
           })
           .flat()
-          .sort((a, b) =>
-            sort === "asc"
+          .sort((a, b) => {
+            if (!sort) return;
+            return sort === "asc"
               ? a.name.localeCompare(b.name)
-              : b.name.localeCompare(a.name)
-          );
+              : b.name.localeCompare(a.name);
+          });
       }
     } else {
       return [];
@@ -238,7 +241,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
               color="text.secondary"
               fontWeight={500}
               sx={{
-                wordBreak: "break-all",
+                wordBreak: "break-word",
               }}
             >
               {nodes.name}
@@ -272,9 +275,11 @@ export const Folders = ({ lockedToGroupId }: Props) => {
           <Typography variant="overline" color="text.secondary">
             FOLDERS
           </Typography>
-          <IconButton size="small" onClick={openMenu}>
-            <ArrowDropDownRoundedIcon fontSize="small" />
-          </IconButton>
+          <Tooltip title="Sort Folders by">
+            <IconButton size="small" onClick={openMenu}>
+              <ArrowDropDownRoundedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
           <Menu anchorEl={anchorEl} open={open} onClose={closeMenu}>
             <MenuItem
               onClick={() => {
@@ -292,15 +297,25 @@ export const Folders = ({ lockedToGroupId }: Props) => {
             >
               Name (Z to A)
             </MenuItem>
+            <MenuItem
+              onClick={() => {
+                closeMenu();
+                setSort("");
+              }}
+            >
+              Last Created
+            </MenuItem>
           </Menu>
         </Box>
-        <IconButton
-          aria-label="Create new folder"
-          size="small"
-          onClick={() => setOpenNewFolderDialog(true)}
-        >
-          <AddIcon fontSize="small" />
-        </IconButton>
+        <Tooltip title="Add New Folder">
+          <IconButton
+            aria-label="Create New Folder"
+            size="small"
+            onClick={() => setOpenNewFolderDialog(true)}
+          >
+            <AddIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
       </Box>
       {!isLoading ? (
         <>

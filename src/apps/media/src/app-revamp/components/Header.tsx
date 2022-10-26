@@ -13,6 +13,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -30,6 +31,7 @@ import {
   State,
 } from "../../../../../shell/store/media-revamp";
 import { File } from "../../../../../shell/services/types";
+import { useHistory } from "react-router";
 
 interface Props {
   title: string;
@@ -39,6 +41,7 @@ interface Props {
   hideUpload?: boolean;
   hideFolderCreate?: boolean;
   addImagesCallback?: (selectedFiles: File[]) => void;
+  showBackButton?: boolean;
 }
 type Dialogs = "delete" | "rename" | "new" | null;
 
@@ -50,9 +53,11 @@ export const Header = ({
   hideUpload,
   hideFolderCreate,
   addImagesCallback,
+  showBackButton,
 }: Props) => {
   const [openDialog, setOpenDialog] = useState<Dialogs>(null);
   const [anchorEl, setAnchorEl] = useState(null);
+  const history = useHistory();
   const selectedFiles = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
   );
@@ -128,6 +133,21 @@ export const Header = ({
         ) : (
           <>
             <Box sx={{ display: "flex", gap: "2px", alignItems: "center" }}>
+              {showBackButton && (
+                <IconButton
+                  size="small"
+                  sx={{ height: "fit-content" }}
+                  onClick={() => {
+                    if (history.length > 2) {
+                      history.goBack();
+                    } else {
+                      history.push("/media");
+                    }
+                  }}
+                >
+                  <ArrowBackRoundedIcon fontSize="small" color="action" />
+                </IconButton>
+              )}
               <Typography variant="h4" fontWeight={600}>
                 {title}
               </Typography>
@@ -152,7 +172,7 @@ export const Header = ({
                   <ListItemIcon>
                     <CreateNewFolderIcon fontSize="small" />
                   </ListItemIcon>
-                  <ListItemText>New Folder</ListItemText>
+                  <ListItemText>Add Sub Folder</ListItemText>
                 </MenuItem>
                 <MenuItem
                   onClick={() => {

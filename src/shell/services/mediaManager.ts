@@ -7,6 +7,7 @@ import instanceZUID from "../../utility/instanceZUID";
 import { generateThumbnail, getResponseData, prepareHeaders } from "./util";
 import { Bin, File, Group, GroupData } from "./types";
 import { QueryReturnValue } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
+import { uniqBy } from "lodash";
 
 // Define a service using a base URL and expected endpoints
 export const mediaManagerApi = createApi({
@@ -51,7 +52,7 @@ export const mediaManagerApi = createApi({
                 response.data.data
             )
             .flat();
-          return { data: binResponses };
+          return { data: uniqBy(binResponses, "id") };
         } catch (error) {
           return { error };
         }
@@ -72,7 +73,12 @@ export const mediaManagerApi = createApi({
             .map((file) => ({
               ...file,
               thumbnail: generateThumbnail(file),
-            })) as File[];
+            }))
+            .sort(
+              //@ts-ignore
+              (a, b) => new Date(a.created_at) - new Date(b.created_at)
+            ) as File[];
+
           return { data: files.reverse() };
         } catch (error) {
           return { error };
@@ -88,8 +94,8 @@ export const mediaManagerApi = createApi({
               fetchWithBQ(`bin/${binId}/groups`)
             )
           )) as QueryReturnValue<any, FetchBaseQueryError>[];
-          const groups = groupResponses.map(
-            (groupResponse) => groupResponse.data.data
+          const groups = groupResponses.map((groupResponse) =>
+            groupResponse.data.data?.reverse()
           ) as Group[][];
           return { data: groups };
         } catch (error) {

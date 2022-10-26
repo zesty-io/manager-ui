@@ -3,7 +3,8 @@ export function fileExtension(url: string) {
   let extension = "No Extension";
   if (url.includes(".")) {
     extension =
-      url.substring(url.lastIndexOf(".") + 1, url.length) || "No Extension";
+      url.substring(url.lastIndexOf(".") + 1, url.length).toLowerCase() ||
+      "No Extension";
   }
   return extension;
 }
@@ -38,6 +39,9 @@ export const fileTypeToColor = (extension: string) => {
     case "docx":
     case "doc":
     case "rtf":
+    case "html":
+    case "js":
+    case "css":
       return "blue";
     case "ots":
     case "xls":

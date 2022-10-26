@@ -39,14 +39,17 @@ export const FileViewer = connect((state, props) => {
 
   const fileType = props.match.params.fileType;
   const pinnedTabs = state.ui.pinnedTabs;
-  const fileIsPinned = Boolean(
-    pinnedTabs.find((tab) =>
-      tabLocationEquality(tab, {
-        search: "",
-        pathname: `/code/file/${fileType}/${file.ZUID}`,
-      })
-    )
-  );
+  const fileIsPinned =
+    file &&
+    file.ZUID &&
+    Boolean(
+      pinnedTabs.find((tab) =>
+        tabLocationEquality(tab, {
+          search: "",
+          pathname: `/code/file/${fileType}/${file.ZUID}`,
+        })
+      )
+    );
   return {
     file: file ? file : {},
     fields,
