@@ -16,7 +16,7 @@ describe("Media Files", () => {
     });
   });
 
-  it("uploads a file to a All Media", () => {
+  it("Uploads a file to All Media", () => {
     const fileName = getRandomFileName();
     cy.get("input[type=file]").selectFile(
       {
@@ -31,8 +31,9 @@ describe("Media Files", () => {
       }
     );
     // Wait for upload to complete
+    cy.wait(1000);
     cy.intercept("POST", "https://media-storage.api.dev.zesty.io/upload/gcp/*");
-    cy.wait(3000);
+    cy.wait(6000);
     // // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
   });
