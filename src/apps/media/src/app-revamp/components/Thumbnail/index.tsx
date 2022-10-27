@@ -6,8 +6,9 @@ import {
   Box,
   Checkbox as MuiCheckbox,
   Skeleton,
+  Chip,
 } from "@mui/material";
-import { fileExtension } from "../../utils/fileUtils";
+import { fileExtension, fileTypeToColor } from "../../utils/fileUtils";
 import { ThumbnailContent } from "./ThumbnailContent";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
@@ -54,6 +55,7 @@ interface ThumbnailProps {
   bin_id?: string;
   file?: File;
   imageHeight?: string;
+  selectable?: boolean;
   onRemove?: () => void;
   onFilenameChange?: (value: string) => void;
   onTitleChange?: (value: string) => void;
@@ -74,6 +76,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   file,
   onTitleChange,
   imageHeight,
+  selectable,
 }) => {
   const theme = useTheme();
   const imageEl = useRef<HTMLImageElement>();
@@ -86,9 +89,6 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
   );
   const dispatch = useDispatch();
-  const isSelectDialog = useSelector(
-    (state: { mediaRevamp: State }) => state.mediaRevamp.isSelectDialog
-  );
 
   const onDragStart = (event: DragEvent) => {
     event.dataTransfer.setData(
@@ -256,7 +256,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -278,15 +278,26 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             {file && isImage(file) && lazyLoading ? (
               <div className={cx(styles.Load, styles.Loading)}></div>
             ) : null}
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.100`,
+                color: `${fileTypeToColor(fileExtension(filename))}.600`,
+              }}
+              size="small"
+            />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="blue.100"
-            color="blue.600"
           />
         </Card>
       );
@@ -332,7 +343,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -354,15 +365,26 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             {file && isImage(file) && lazyLoading ? (
               <div className={cx(styles.Load, styles.Loading)}></div>
             ) : null}
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.100`,
+                color: `${fileTypeToColor(fileExtension(filename))}.600`,
+              }}
+              size="small"
+            />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="blue.100"
-            color="blue.600"
           />
         </Card>
       );
@@ -402,7 +424,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -412,15 +434,26 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.50`,
+                color: `${fileTypeToColor(fileExtension(filename))}.600`,
+              }}
+              size="small"
+            />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="green.50"
-            color="green.600"
           />
         </Card>
       );
@@ -458,7 +491,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -468,15 +501,26 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.50`,
+                color: `${fileTypeToColor(fileExtension(filename))}.600`,
+              }}
+              size="small"
+            />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="green.50"
-            color="green.600"
           />
         </Card>
       );
@@ -517,7 +561,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -527,15 +571,27 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.100`,
+                color: `${fileTypeToColor(fileExtension(filename))}.600`,
+              }}
+              size="small"
+            />
           </Box>
+
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="blue.100"
-            color="blue.600"
           />
         </Card>
       );
@@ -574,7 +630,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -584,15 +640,26 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.100`,
+                color: `${fileTypeToColor(fileExtension(filename))}.600`,
+              }}
+              size="small"
+            />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="red.100"
-            color="red.600"
           />
         </Card>
       );
@@ -633,7 +700,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -643,15 +710,26 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.100`,
+                color: `${fileTypeToColor(fileExtension(filename))}.600`,
+              }}
+              size="small"
+            />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="red.100"
-            color="red.600"
           />
         </Card>
       );
@@ -694,7 +772,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -704,15 +782,26 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.50`,
+                color: `${fileTypeToColor(fileExtension(filename))}.900`,
+              }}
+              size="small"
+            />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="purple.50"
-            color="purple.900"
           />
         </Card>
       );
@@ -761,7 +850,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             {showVideo && (
@@ -791,15 +880,26 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 textAlign: "center",
               }}
             />
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.50`,
+                color: `${fileTypeToColor(fileExtension(filename))}.900`,
+              }}
+              size="small"
+            />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="purple.50"
-            color="purple.900"
           />
         </Card>
       );
@@ -841,7 +941,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -851,15 +951,26 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.50`,
+                color: `${fileTypeToColor(fileExtension(filename))}.900`,
+              }}
+              size="small"
+            />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="grey.50"
-            color="grey.900"
           />
         </Card>
       );
@@ -903,7 +1014,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -913,15 +1024,26 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.50`,
+                color: `${fileTypeToColor(fileExtension(filename))}.900`,
+              }}
+              size="small"
+            />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="grey.50"
-            color="grey.900"
           />
         </Card>
       );
@@ -960,7 +1082,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -970,15 +1092,26 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.50`,
+                color: `${fileTypeToColor(fileExtension(filename))}.600`,
+              }}
+              size="small"
+            />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="green.50"
-            color="green.600"
           />
         </Card>
       );
@@ -1017,7 +1150,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -1027,15 +1160,26 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={styledDocfileThumbnail}
             />
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.100`,
+                color: `${fileTypeToColor(fileExtension(filename))}.600`,
+              }}
+              size="small"
+            />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="blue.100"
-            color="blue.600"
           />
         </Card>
       );
@@ -1074,7 +1218,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -1084,15 +1228,26 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={{ ...styledDocfileThumbnail, height: "46px" }}
             />
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.100`,
+                color: `${fileTypeToColor(fileExtension(filename))}.600`,
+              }}
+              size="small"
+            />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="blue.100"
-            color="blue.600"
           />
         </Card>
       );
@@ -1131,7 +1286,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -1141,15 +1296,26 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               loading="lazy"
               sx={{ ...styledDocfileThumbnail, height: "36px" }}
             />
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.100`,
+                color: `${fileTypeToColor(fileExtension(filename))}.600`,
+              }}
+              size="small"
+            />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="blue.100"
-            color="blue.600"
           />
         </Card>
       );
@@ -1191,7 +1357,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <Box
@@ -1208,15 +1374,26 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 sx={{ color: "grey.600" }}
               />
             </Box>
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.50`,
+                color: `${fileTypeToColor(fileExtension(filename))}.900`,
+              }}
+              size="small"
+            />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="grey.50"
-            color="grey.900"
           />
         </Card>
       );
@@ -1255,7 +1432,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <Box
@@ -1272,15 +1449,26 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 sx={{ color: "red.600" }}
               />
             </Box>
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.100`,
+                color: `${fileTypeToColor(fileExtension(filename))}.600`,
+              }}
+              size="small"
+            />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="red.100"
-            color="red.600"
           />
         </Card>
       );
@@ -1319,7 +1507,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <Box
@@ -1342,15 +1530,26 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 File type not recognized
               </Typography>
             </Box>
+            <Chip
+              label={fileExtension(filename)}
+              sx={{
+                position: "absolute",
+                right: "8px",
+                bottom: "8px",
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(
+                  fileExtension(filename)
+                )}.200`,
+                color: `${fileTypeToColor(fileExtension(filename))}.600`,
+              }}
+              size="small"
+            />
           </Box>
           <ThumbnailContent
-            extension={fileExtension(filename)}
             filename={filename}
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
-            backgroundColor="grey.200"
-            color="black.600"
           />
         </Card>
       );

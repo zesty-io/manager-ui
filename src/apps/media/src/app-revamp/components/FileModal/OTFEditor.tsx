@@ -351,7 +351,7 @@ export const OTFEditor = ({
           borderTop: (theme) => `1px solid ${theme.palette.border}`,
         }}
       >
-        <InputLabel sx={{ textAlign: "center" }}>
+        <InputLabel sx={{ textAlign: "center", color: "white" }}>
           ✨ Copy New URL with Applied Editsl
         </InputLabel>
         <TextField
@@ -376,15 +376,7 @@ export const OTFEditor = ({
           }}
         />
         <Alert severity="info" sx={{ mt: 2 }}>
-          This New URL is{" "}
-          <Box component="strong" sx={{ color: "text.primary" }}>
-            temporary
-          </Box>{" "}
-          and will{" "}
-          <Box component="strong" sx={{ color: "text.primary" }}>
-            disappear
-          </Box>{" "}
-          after you go back.
+          These changes will not be saved to the original file or file URL
         </Alert>
       </Box>
     </Box>

@@ -53,10 +53,10 @@ export interface File {
   filename: string;
   title: string;
   url: string;
-  created_by?: Date;
-  created_at: Date;
-  updated_at: Date;
-  deleted_at?: Date;
-  deleted_from_storage_at?: Date;
+  created_by?: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string;
+  deleted_from_storage_at?: string;
   thumbnail: string;
 }

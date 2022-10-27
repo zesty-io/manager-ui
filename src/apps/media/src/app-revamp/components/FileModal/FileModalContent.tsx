@@ -56,7 +56,7 @@ interface Props {
     email?: string;
     role?: string;
   };
-  createdAt?: Date;
+  createdAt?: string;
   handleCloseModal: () => void;
   setShowEdit: (show: boolean) => void;
 }
