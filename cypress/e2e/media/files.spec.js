@@ -31,94 +31,98 @@ describe("Media Files", () => {
       }
     );
     // Wait for upload to complete
-    cy.wait(1000);
-    cy.intercept("POST", "https://media-storage.api.dev.zesty.io/upload/gcp/*");
-    cy.wait(6000);
+    cy.intercept(
+      "POST",
+      "https://media-storage.api.dev.zesty.io/upload/gcp/*"
+    ).as("upload");
+    cy.wait("@upload", { timeout: 10_000 });
     // // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
   });
 
-  it("Open file modal and get Zuid", () => {
+  it("Displays file preview", () => {
     cy.get(".ThumbnailContainer").first().click();
-    cy.get("[aria-label='Zuid TextField']").within(() => {
-      cy.get("input")
-        .invoke("val")
-        .then((sometext) => (currentFileId = sometext));
-    });
-  });
-
-  it("Displays file preview", () => {
-    cy.intercept("GET", `/file/${currentFileId}`);
-    cy.get(".img-box").within(() => {
-      cy.get("img").should("have.attr", "src");
-    });
-  });
-
-  it("Displays file preview", () => {
-    cy.intercept("GET", `/file/${currentFileId}`);
-    cy.get(".img-box").within(() => {
-      cy.get("img").should("have.attr", "src");
-    });
+    cy.get(".MuiInputLabel-root")
+      .contains("ZUID")
+      .next()
+      .within(() => {
+        cy.get("input")
+          .invoke("val")
+          .then((sometext) => (currentFileId = sometext));
+      });
+    cy.get('[data-cy="file-preview"]');
   });
 
   it("Renames filename", () => {
-    cy.log("RENAME", currentFileId);
     cy.get("[aria-label='Open settings menu']").click();
     cy.contains("Rename").click();
 
     // type inside "New File Name" textfield
-    cy.get(".MuiDialog-container").within(() => {
-      cy.contains("New File Name").next().clear().type("CYPRESS TEST NEW FILE");
-      cy.contains("Update").click();
-    });
+    cy.contains("New File Name").next().clear().type("CYPRESS TEST NEW FILE");
+    cy.contains("Update").click();
 
-    // call update endpoint
-    cy.intercept("PATCH", `/file/${currentFileId}`);
-
-    // check if the textfield has the updated value
-    cy.get(".MuiTypography-body1")
-      .contains("CYPRESS TEST NEW FILE")
-      .should("exist");
+    // update endpoint
+    cy.waitOn(
+      {
+        method: "PATCH",
+        pathname: `/file/${currentFileId}`,
+      },
+      () => {
+        // check if the textfield has the updated value
+        cy.get(".MuiTypography-body1")
+          .contains("CYPRESS TEST NEW FILE")
+          .should("exist");
+      }
+    );
   });
 
   it("Updates title", () => {
-    cy.get(".MuiDialog-container").within(() => {
-      cy.get("[aria-label='Title TextField']")
-        .clear()
-        .type("CYPRESS TEST NEW TITLE");
+    cy.get("[aria-label='Title TextField']")
+      .clear()
+      .type("CYPRESS TEST NEW TITLE");
 
-      // trigger save button
-      cy.get(".MuiBox-root").then(($body) => {
-        if ($body.find("[aria-label='Save Title Button']").length) {
-          cy.get("[aria-label='Save Title Button']").click();
-        }
-      });
+    // trigger save button
+    cy.get(".MuiBox-root").then(($body) => {
+      if ($body.find("[aria-label='Save Title Button']").length) {
+        cy.get("[aria-label='Save Title Button']").click();
 
-      cy.intercept("PATCH", `/file/${currentFileId}`);
-
-      cy.get("[aria-label='Title TextField']").within(() => {
-        cy.get(".MuiInputBase-input").should(
-          "have.value",
-          "CYPRESS TEST NEW TITLE"
+        // update endpoint
+        cy.log("currentFileId", currentFileId);
+        cy.waitOn(
+          {
+            method: "PATCH",
+            pathname: `/file/${currentFileId}`,
+          },
+          () => {
+            // check if Title textfield has the updated value
+            cy.get("[aria-label='Title TextField']").within(() => {
+              cy.get(".MuiInputBase-input").should(
+                "have.value",
+                "CYPRESS TEST NEW TITLE"
+              );
+            });
+          }
         );
-      });
+      }
     });
   });
 
   it("Copies File URL", () => {
     let fileUrl = "";
-    cy.get(".FileUrlField").within(() => {
-      cy.get("input")
-        .invoke("val")
-        .then((val) => (fileUrl = val));
-    });
+    cy.contains("File URL")
+      .next()
+      .within(() => {
+        cy.get("input")
+          .invoke("val")
+          .then((val) => (fileUrl = val));
+      });
 
-    cy.get(".CopyFileUrlBtn").click();
+    cy.get('[data-cy="copy-file-url-btn"]').click();
     cy.assertClipboardValue(fileUrl);
   });
 
   it("Copies file ZUID", () => {
-    cy.get(".CopyZuidBtn").click();
+    cy.get('[data-cy="copy-zuid-btn"]').click();
     cy.assertClipboardValue(currentFileId);
   });
 
@@ -157,8 +161,7 @@ describe("Media Files", () => {
     cy.get("[aria-label='Delete Button']").click();
 
     // call delete endpoint
-    cy.intercept("DELETE", `/file/${currentFileId}`).as("deleteRequest");
-    // cy.wait("@deleteRequest", { timeout: 1000 });
+    cy.intercept("DELETE", `/file/${currentFileId}`);
   });
 
   it("Shows 404 Page", () => {

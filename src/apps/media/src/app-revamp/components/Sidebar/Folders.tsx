@@ -200,7 +200,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
       <TreeItem
         key={nodes.id}
         nodeId={nodes.id}
-        className={nodes.id}
+        data-cy={nodes.id}
         ContentProps={{
           onDragOver: (event) => {
             event.preventDefault();

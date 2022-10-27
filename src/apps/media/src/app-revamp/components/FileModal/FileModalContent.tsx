@@ -384,7 +384,6 @@ export const FileModalContent: FC<Props> = ({
           <TextField
             fullWidth
             value={src}
-            className="FileUrlField"
             InputProps={{
               readOnly: true,
               disableUnderline: true,
@@ -395,7 +394,7 @@ export const FileModalContent: FC<Props> = ({
                   ) : (
                     <IconButton
                       onClick={() => handleCopyClick(src)}
-                      className="CopyFileUrlBtn"
+                      data-cy="copy-file-url-btn"
                     >
                       <ContentCopyIcon />
                     </IconButton>
@@ -443,7 +442,7 @@ export const FileModalContent: FC<Props> = ({
           <TextField
             fullWidth
             value={id}
-            aria-label="Zuid TextField"
+            data-cy="zuid-textfield"
             InputProps={{
               readOnly: true,
               disableUnderline: true,
@@ -454,7 +453,7 @@ export const FileModalContent: FC<Props> = ({
                   ) : (
                     <IconButton
                       onClick={() => handleCopyClick(id, true)}
-                      className="CopyZuidBtn"
+                      data-cy="copy-zuid-btn"
                     >
                       <ContentCopyIcon />
                     </IconButton>
