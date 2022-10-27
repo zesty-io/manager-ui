@@ -87,7 +87,6 @@ describe("Media Files", () => {
         cy.get("[aria-label='Save Title Button']").click();
 
         // update endpoint
-        cy.log("currentFileId", currentFileId);
         cy.waitOn(
           {
             method: "PATCH",
