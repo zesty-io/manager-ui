@@ -127,30 +127,28 @@ describe("Media Files", () => {
   });
 
   it("Drag and drop files on sidebar", () => {
+    const dataTransfer = new DataTransfer();
+
     // visit all media first
     cy.visit("/media");
     cy.wait(3000);
 
     // drag the thumbnail
-    cy.get(`.${currentFileId}`)
+    cy.get(`[data-cy="${currentFileId}"]`)
       .should("be.visible")
-      .trigger("dragstart")
-      .trigger("dragleave");
+      .trigger("dragstart", {
+        dataTransfer,
+      });
 
-    // drop it to the folder
-    cy.get(".MuiTreeView-root").within(() => {
-      cy.get(".2-b599f72-aeswx")
-        .should("be.visible")
-        .trigger("dragenter")
-        .trigger("dragover")
-        .trigger("drop")
-        .trigger("dragend");
+    // drop it to the first folder
+    cy.get(".MuiTreeItem-root").first().trigger("drop", {
+      dataTransfer,
     });
 
     // check the folder if the thumbnail is there
-    cy.get(".2-b599f72-aeswx").click();
+    cy.get(".MuiTreeItem-root").eq(1).click();
     cy.get(".MuiBox-root").within(() => {
-      cy.get(`.${currentFileId}`).should("exist");
+      cy.get(`[data-cy="${currentFileId}"]`).should("exist");
     });
   });
 
