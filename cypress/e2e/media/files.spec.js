@@ -162,7 +162,8 @@ describe("Media Files", () => {
   });
 
   it("Shows 404 Page", () => {
-    cy.visit(`/media?fileId=${currentFileId}`);
+    // test invalid fileId
+    cy.visit(`/media?fileId=${currentFileId}12`);
     cy.get(".NotFoundState").within(() => {
       cy.get(".MuiTypography-h4").contains("File Not Found").should("exist");
     });
