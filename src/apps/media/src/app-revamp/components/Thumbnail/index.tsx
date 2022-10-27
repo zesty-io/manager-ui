@@ -55,6 +55,7 @@ interface ThumbnailProps {
   bin_id?: string;
   file?: File;
   imageHeight?: string;
+  selectable?: boolean;
   onRemove?: () => void;
   onFilenameChange?: (value: string) => void;
   onTitleChange?: (value: string) => void;
@@ -75,6 +76,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   file,
   onTitleChange,
   imageHeight,
+  selectable,
 }) => {
   const theme = useTheme();
   const imageEl = useRef<HTMLImageElement>();
@@ -87,9 +89,6 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
   );
   const dispatch = useDispatch();
-  const isSelectDialog = useSelector(
-    (state: { mediaRevamp: State }) => state.mediaRevamp.isSelectDialog
-  );
 
   const onDragStart = (event: DragEvent) => {
     event.dataTransfer.setData(
@@ -256,7 +255,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -342,7 +341,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -423,7 +422,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -490,7 +489,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -559,7 +558,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -627,7 +626,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -696,7 +695,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -767,7 +766,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -844,7 +843,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             {showVideo && (
@@ -934,7 +933,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -1006,7 +1005,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -1073,7 +1072,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -1140,7 +1139,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -1207,7 +1206,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -1274,7 +1273,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <CardMedia
@@ -1344,7 +1343,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <Box
@@ -1418,7 +1417,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <Box
@@ -1492,7 +1491,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              {isSelectDialog && <Checkbox />}
+              {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
             <Box

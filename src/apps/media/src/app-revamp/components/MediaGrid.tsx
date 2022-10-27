@@ -6,6 +6,8 @@ import { File, Group } from "../../../../../shell/services/types";
 import { Thumbnail } from "./Thumbnail";
 import { useHistory, useLocation } from "react-router-dom";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
+import { useSelector } from "react-redux";
+import { State } from "../../../../../shell/store/media-revamp";
 
 const FILE_HEIGHT = 204;
 const FOLDER_HEIGHT = 44;
@@ -21,6 +23,9 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
   const history = useHistory();
   const [columns, setColumns] = useState(4);
   const listRef = useRef<VariableSizeGrid>();
+  const isSelectDialog = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.isSelectDialog
+  );
 
   const onResize = (size: Size) => {
     setColumns(Math.floor(size.width / (225 + 16)));
@@ -140,6 +145,7 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
                 group_id={files[gridItemIndex].group_id}
                 bin_id={files[gridItemIndex].bin_id}
                 file={files[gridItemIndex]}
+                selectable={isSelectDialog}
                 onClick={() => {
                   const params = new URLSearchParams(location.search);
                   params.set("fileId", files[gridItemIndex]?.id);
