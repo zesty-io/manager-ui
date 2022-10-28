@@ -3,11 +3,13 @@ import {
   CardMedia,
   Typography,
   Card,
+  Button,
   Box,
   Checkbox as MuiCheckbox,
   Skeleton,
   Chip,
 } from "@mui/material";
+import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import { fileExtension, fileTypeToColor } from "../../utils/fileUtils";
 import { ThumbnailContent } from "./ThumbnailContent";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -47,6 +49,7 @@ import {
 
 interface ThumbnailProps {
   src?: string;
+  origUrl?: string;
   filename?: string;
   isEditable?: boolean;
   showVideo?: boolean;
@@ -64,6 +67,7 @@ interface ThumbnailProps {
 
 export const Thumbnail: FC<ThumbnailProps> = ({
   src,
+  origUrl,
   filename,
   isEditable,
   showVideo,
@@ -80,6 +84,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
 }) => {
   const theme = useTheme();
   const imageEl = useRef<HTMLImageElement>();
+  const [isCopied, setIsCopied] = useState<boolean>(false);
   const [lazyLoading, setLazyLoading] = useState(true);
   const [imageOrientation, setImageOrientation] = useState<string>("");
   const thumbnailRef = useRef<HTMLDivElement>();
@@ -157,6 +162,24 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         }}
         onClick={(evt) => evt.stopPropagation()}
       />
+    );
+  };
+
+  const CopyUrlButton = () => {
+    return (
+      <Button
+        color="inherit"
+        variant="contained"
+        sx={{
+          display: "none",
+          backgroundColor: "common.white",
+          top: 8,
+          left: 8,
+        }}
+        startIcon={<LinkRoundedIcon sx={{ color: "grey.600" }} />}
+      >
+        Copy URL
+      </Button>
     );
   };
 
@@ -252,9 +275,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -338,9 +365,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -419,9 +450,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -486,9 +521,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -555,9 +594,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -623,9 +666,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -692,9 +739,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -763,9 +814,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -840,9 +895,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -930,9 +989,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -1002,9 +1065,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -1069,9 +1136,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -1136,9 +1207,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -1203,9 +1278,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -1270,9 +1349,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -1340,9 +1423,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -1414,9 +1501,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -1488,9 +1579,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                   "& .MuiCheckbox-root": {
                     display: "block",
                   },
+                  "& .MuiButton-root": {
+                    display: "flex",
+                  },
                 },
               }}
             >
+              <CopyUrlButton />
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
