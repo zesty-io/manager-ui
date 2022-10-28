@@ -97,7 +97,7 @@ export const FileTypePreview: FC<Props> = ({
     case "webp":
       return (
         <Box
-          className="img-box"
+          data-cy="file-preview"
           sx={{
             ...styledCheckerBoard,
             // py: imageOrientation === "horizontal" && 1,
@@ -143,7 +143,7 @@ export const FileTypePreview: FC<Props> = ({
     case "svg":
       return (
         <Box
-          className="img-box"
+          data-cy="file-preview"
           sx={{
             ...styledCheckerBoard,
             p: 1,
@@ -189,6 +189,7 @@ export const FileTypePreview: FC<Props> = ({
     case "xlsx":
       return (
         <Box
+          data-cy="file-preview"
           sx={{
             backgroundColor: "green.200",
             height: "100%",
@@ -212,6 +213,7 @@ export const FileTypePreview: FC<Props> = ({
     case "csv":
       return (
         <Box
+          data-cy="file-preview"
           sx={{
             backgroundColor: "green.200",
             height: "100%",
@@ -237,6 +239,7 @@ export const FileTypePreview: FC<Props> = ({
     case "rtf":
       return (
         <Box
+          data-cy="file-preview"
           sx={{
             backgroundColor: "blue.50",
             ...styledBox,
@@ -254,6 +257,7 @@ export const FileTypePreview: FC<Props> = ({
     case "pdf":
       return (
         <Box
+          data-cy="file-preview"
           sx={{
             backgroundColor: "blue.50",
             ...styledBox,
@@ -273,6 +277,7 @@ export const FileTypePreview: FC<Props> = ({
     case "pptm":
       return (
         <Box
+          data-cy="file-preview"
           sx={{
             backgroundColor: "red.50",
             ...styledBox,
@@ -294,6 +299,7 @@ export const FileTypePreview: FC<Props> = ({
     case "wav":
       return (
         <Box
+          data-cy="file-preview"
           sx={{
             backgroundColor: "purple.100",
             ...styledBox,
@@ -321,6 +327,7 @@ export const FileTypePreview: FC<Props> = ({
     case "html5":
       return (
         <Box
+          data-cy="file-preview"
           sx={{
             backgroundColor: "#000",
             ...styledBox,
@@ -346,6 +353,7 @@ export const FileTypePreview: FC<Props> = ({
     case "zip":
       return (
         <Box
+          data-cy="file-preview"
           sx={{
             backgroundColor: "grey.100",
             ...styledBox,
@@ -368,6 +376,7 @@ export const FileTypePreview: FC<Props> = ({
     case "tif":
       return (
         <Box
+          data-cy="file-preview"
           sx={{
             backgroundColor: "grey.100",
             ...styledBox,
@@ -385,6 +394,7 @@ export const FileTypePreview: FC<Props> = ({
     case "numbers":
       return (
         <Box
+          data-cy="file-preview"
           sx={{
             backgroundColor: "green.100",
             ...styledBox,
@@ -402,6 +412,7 @@ export const FileTypePreview: FC<Props> = ({
     case "js":
       return (
         <Box
+          data-cy="file-preview"
           sx={{
             backgroundColor: "blue.50",
             ...styledBox,
@@ -419,6 +430,7 @@ export const FileTypePreview: FC<Props> = ({
     case "css":
       return (
         <Box
+          data-cy="file-preview"
           sx={{
             backgroundColor: "blue.50",
             ...styledBox,
@@ -436,6 +448,7 @@ export const FileTypePreview: FC<Props> = ({
     case "html":
       return (
         <Box
+          data-cy="file-preview"
           sx={{
             backgroundColor: "blue.50",
             ...styledBox,
@@ -456,6 +469,7 @@ export const FileTypePreview: FC<Props> = ({
     case "woff2":
       return (
         <Box
+          data-cy="file-preview"
           sx={{
             backgroundColor: "grey.100",
             ...styledBox,
@@ -480,6 +494,7 @@ export const FileTypePreview: FC<Props> = ({
     case "No Extension":
       return (
         <Box
+          data-cy="file-preview"
           sx={{
             backgroundColor: "red.50",
             ...styledBox,
@@ -504,6 +519,7 @@ export const FileTypePreview: FC<Props> = ({
     default:
       return (
         <Box
+          data-cy="file-preview"
           sx={{
             backgroundColor: "grey.100",
             ...styledBox,

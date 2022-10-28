@@ -91,7 +91,7 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
       );
 
       return (
-        <div style={style}>
+        <div style={style} className="ThumbnailContainer">
           {gridItemType === "empty" && <div></div>}
           {gridItemType === "groups" && (
             <Typography
