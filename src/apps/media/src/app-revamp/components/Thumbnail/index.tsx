@@ -176,6 +176,10 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           top: 8,
           left: 8,
         }}
+        onClick={(evt) => {
+          evt.stopPropagation();
+          handleCopyClick(origUrl);
+        }}
         startIcon={<LinkRoundedIcon sx={{ color: "grey.600" }} />}
       >
         Copy URL
@@ -209,6 +213,20 @@ export const Thumbnail: FC<ThumbnailProps> = ({
       linear-gradient(135deg, ${theme.palette.grey[100]} 25%, transparent 25%),
       linear-gradient(45deg, transparent 75%, ${theme.palette.grey[100]} 75%),
       linear-gradient(135deg, transparent 75%, ${theme.palette.grey[100]} 75%)`,
+  };
+
+  const handleCopyClick = (data: string) => {
+    navigator?.clipboard
+      ?.writeText(data)
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => {
+          setIsCopied(false);
+        }, 1500);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
 
   /**
