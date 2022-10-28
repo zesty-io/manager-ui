@@ -140,7 +140,7 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
             >
               <Thumbnail
                 id={files[gridItemIndex].id}
-                origUrl={files[gridItemIndex].url}
+                url={files[gridItemIndex].url}
                 src={files[gridItemIndex].thumbnail}
                 filename={files[gridItemIndex].filename}
                 group_id={files[gridItemIndex].group_id}
