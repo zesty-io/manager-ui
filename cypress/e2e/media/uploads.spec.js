@@ -14,23 +14,29 @@ describe("Media uploads", () => {
     cy.waitOn("*groups*", () => {
       cy.visit("/media");
       //cy.visit("/media/2-eaaaca5-p1nggr")
+      //cy.get('[data-cy="media-loading-spinner"]').should("exist")
+      cy.get('[data-cy="media-loading-spinner"]').should("not.exist");
     });
   });
 
   it("uploads a file to a All Media", () => {
     const fileName = getRandomFileName();
-    cy.get("input[type=file]").selectFile(
-      {
-        contents: Cypress.Buffer.from(LARGE_TEXT),
-        fileName,
-        mimeType: "text/plain",
-        lastModified: Date.now(),
-      },
-      {
-        // force:true is valid because we use hidden file inputs to do uploads
-        force: true,
-      }
-    );
+
+    cy.get("input[type=file]")
+      .first()
+      .selectFile(
+        {
+          contents: Cypress.Buffer.from(LARGE_TEXT),
+          fileName,
+          mimeType: "text/plain",
+          lastModified: Date.now(),
+        },
+        {
+          // force:true is valid because we use hidden file inputs to do uploads
+          force: true,
+        }
+      );
+    //cy.wait(5_000)
     // Wait for upload to complete
     cy.intercept(
       "POST",
@@ -41,6 +47,7 @@ describe("Media uploads", () => {
     cy.get('[data-testid="dnd-provider-box"] textarea:enabled', {
       timeout: 120_000,
     });
+    cy.wait(120_000);
     // Click "Done" button to close upload modal
     //cy.get('button:enabled:contains("Done")').click();
     // Assert file exists

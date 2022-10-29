@@ -219,6 +219,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "webp":
       return (
         <Card
+          data-cy="upload-thumbnail"
           ref={thumbnailRef}
           sx={styledCard}
           elevation={0}
@@ -306,6 +307,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "svg":
       return (
         <Card
+          data-cy="upload-thumbnail"
           ref={thumbnailRef}
           sx={styledCard}
           elevation={0}
@@ -392,6 +394,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "xlsx":
       return (
         <Card
+          data-cy="upload-thumbnail"
           sx={styledCard}
           elevation={0}
           onClick={onClick}
@@ -459,6 +462,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "csv":
       return (
         <Card
+          data-cy="upload-thumbnail"
           sx={styledCard}
           elevation={0}
           onClick={onClick}
@@ -528,6 +532,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "rtf":
       return (
         <Card
+          data-cy="upload-thumbnail"
           sx={styledCard}
           elevation={0}
           onClick={onClick}
@@ -596,6 +601,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "pdf":
       return (
         <Card
+          data-cy="upload-thumbnail"
           sx={styledCard}
           elevation={0}
           onClick={onClick}
@@ -665,6 +671,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "pptm":
       return (
         <Card
+          data-cy="upload-thumbnail"
           sx={styledCard}
           elevation={0}
           onClick={onClick}
@@ -736,6 +743,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "wav":
       return (
         <Card
+          data-cy="upload-thumbnail"
           sx={styledCard}
           elevation={0}
           onClick={onClick}
@@ -813,6 +821,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "html5":
       return (
         <Card
+          data-cy="upload-thumbnail"
           sx={styledCard}
           elevation={0}
           onClick={onClick}
@@ -903,6 +912,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "zip":
       return (
         <Card
+          data-cy="upload-thumbnail"
           sx={styledCard}
           elevation={0}
           onClick={onClick}
@@ -975,6 +985,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "tif":
       return (
         <Card
+          data-cy="upload-thumbnail"
           sx={styledCard}
           elevation={0}
           onClick={onClick}
@@ -1042,6 +1053,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "numbers":
       return (
         <Card
+          data-cy="upload-thumbnail"
           sx={styledCard}
           elevation={0}
           onClick={onClick}
@@ -1109,6 +1121,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "js":
       return (
         <Card
+          data-cy="upload-thumbnail"
           sx={styledCard}
           elevation={0}
           onClick={onClick}
@@ -1176,6 +1189,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "css":
       return (
         <Card
+          data-cy="upload-thumbnail"
           sx={styledCard}
           elevation={0}
           onClick={onClick}
@@ -1243,6 +1257,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "html":
       return (
         <Card
+          data-cy="upload-thumbnail"
           sx={styledCard}
           elevation={0}
           onClick={onClick}
@@ -1313,6 +1328,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "woff2":
       return (
         <Card
+          data-cy="upload-thumbnail"
           sx={styledCard}
           elevation={0}
           onClick={onClick}
@@ -1387,6 +1403,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     case "No Extension":
       return (
         <Card
+          data-cy="upload-thumbnail"
           sx={styledCard}
           elevation={0}
           onClick={onClick}
@@ -1461,6 +1478,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
     default:
       return (
         <Card
+          data-cy="upload-thumbnail"
           sx={styledCard}
           elevation={0}
           onClick={onClick}
