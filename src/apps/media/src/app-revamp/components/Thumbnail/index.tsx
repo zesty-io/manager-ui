@@ -169,6 +169,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   const CopyUrlChip = () => {
     return (
       <Chip
+        // @ts-ignore
         label={<Typography variant="body3">Copy URL</Typography>}
         sx={{
           display: "none",

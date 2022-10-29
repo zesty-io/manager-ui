@@ -60,7 +60,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
             {!isFilesFetching && !isBinsFetching && !files?.length ? (
               <EmptyState currentBinId={defaultBin?.id} currentGroupId="" />
             ) : (
-              <MediaGrid files={files} hideHeaders />
+              <MediaGrid files={files} />
             )}
           </DnDProvider>
         </>

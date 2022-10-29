@@ -14,6 +14,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
+import DriveFolderUploadRoundedIcon from "@mui/icons-material/DriveFolderUploadRounded";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -26,10 +27,12 @@ import { DeleteFolderDialog } from "./DeleteFolderDialog";
 import { useLocalStorage } from "react-use";
 import { UploadButton } from "./UploadButton";
 import { useDispatch, useSelector } from "react-redux";
+import { MoveFileDialog } from "./FileModal/MoveFileDialog";
 import {
   clearSelectedFiles,
   State,
 } from "../../../../../shell/store/media-revamp";
+import { useUpdateFileMutation } from "../../../../../shell/services/mediaManager";
 import { File } from "../../../../../shell/services/types";
 import { useHistory } from "react-router";
 
@@ -58,6 +61,7 @@ export const Header = ({
   const [openDialog, setOpenDialog] = useState<Dialogs>(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const history = useHistory();
+  const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
   const selectedFiles = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
   );
@@ -69,6 +73,15 @@ export const Header = ({
     "zesty:navMedia:hidden",
     []
   );
+  const [
+    updateFile,
+    {
+      reset: resetUpdate,
+      isSuccess: isSuccessUpdate,
+      isLoading: isLoadingUpdate,
+    },
+  ] = useUpdateFileMutation();
+
   const open = Boolean(anchorEl);
   const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -77,8 +90,24 @@ export const Header = ({
     setAnchorEl(null);
   };
 
+  const handleUpdateMutation = (newGroupId: string) => {
+    return;
+  };
+
   return (
     <>
+      {showMoveFileDialog && (
+        <MoveFileDialog
+          handleGroupChange={(newGroupId: string) =>
+            handleUpdateMutation(newGroupId)
+          }
+          binId={binId}
+          onClose={() => {
+            setShowMoveFileDialog(false);
+          }}
+        />
+      )}
+
       <Box
         sx={{
           display: "flex",
@@ -118,6 +147,20 @@ export const Header = ({
                 startIcon={<CloseIcon color="action" fontSize="small" />}
               >
                 Deselect All
+              </Button>
+              <Button
+                variant="outlined"
+                size="small"
+                color="inherit"
+                onClick={() => setShowMoveFileDialog(true)}
+                startIcon={
+                  <DriveFolderUploadRoundedIcon
+                    color="action"
+                    fontSize="small"
+                  />
+                }
+              >
+                Move
               </Button>
               <Button
                 variant="contained"

@@ -27,7 +27,7 @@ interface Props {
 
 export const MediaApp = ({
   lockedToGroupId,
-  isSelectDialog = false,
+  isSelectDialog = true,
   addImagesCallback,
   limitSelected = null,
 }: Props) => {
@@ -46,7 +46,7 @@ export const MediaApp = ({
 
   useEffect(() => {
     return () => {
-      dispatch(setIsSelectDialog(false));
+      dispatch(setIsSelectDialog(true));
       dispatch(clearSelectedFiles());
       dispatch(setLimitSelected(null));
     };
