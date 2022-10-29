@@ -91,7 +91,20 @@ export const Header = ({
   };
 
   const handleUpdateMutation = (newGroupId: string) => {
-    return;
+    Promise.all(
+      selectedFiles.map(async (file) => {
+        await updateFile({
+          id: file.id,
+          previousGroupId: file.group_id,
+          body: {
+            group_id: newGroupId,
+            title: file.title,
+            filename: file.filename,
+          },
+        });
+      })
+    );
+    dispatch(clearSelectedFiles());
   };
 
   return (
