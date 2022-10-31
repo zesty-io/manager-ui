@@ -72,17 +72,18 @@ export const FileTypePreview: FC<Props> = ({
   };
 
   const genImageURL = () => {
-    if (imageSettings) {
-      const params = `${Object.keys(imageSettings)
-        .filter(
-          (key: any) => imageSettings[key] && imageSettings[key] !== "none"
-        )
-        .map((key: any) => `${key}=${imageSettings[key]}`)
-        .join("&")}`;
-      return `${src}?${params}`;
-    }
-
-    return src;
+    const defaultImageSettings = {
+      width: 880,
+    };
+    const imageSettingsToUse = { ...defaultImageSettings, ...imageSettings };
+    const params = `${Object.keys(imageSettingsToUse)
+      .filter(
+        (key: any) =>
+          imageSettingsToUse[key] && imageSettingsToUse[key] !== "none"
+      )
+      .map((key: any) => `${key}=${imageSettingsToUse[key]}`)
+      .join("&")}`;
+    return `${src}?${params}`;
   };
 
   const handleImageError = () => {
