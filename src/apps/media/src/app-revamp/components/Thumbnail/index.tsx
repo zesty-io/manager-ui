@@ -167,11 +167,12 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   };
 
   const CopyUrlChip = () => {
+    if (!url) return null;
     return (
       <Chip
         label={
           // @ts-ignore
-          <Typography variant="body3">
+          <Typography variant="body3" color="text.secondary">
             {isCopied ? "Copied" : "Copy URL"}
           </Typography>
         }
@@ -179,10 +180,8 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         sx={{
           width: "fit-content",
           display: "none",
-          backgroundColor: "common.white",
           top: 8,
           left: 8,
-          color: "grey.600",
         }}
         size="small"
         onClick={(evt: any) => {
