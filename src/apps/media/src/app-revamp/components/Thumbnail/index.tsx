@@ -178,7 +178,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         color="default"
         sx={{
           width: "fit-content",
-          display: "flex",
+          display: "none",
           backgroundColor: "common.white",
           top: 8,
           left: 8,
