@@ -43,6 +43,7 @@ export const Controls: FC = () => {
           size="small"
           color="inherit"
           sx={{
+            height: "28px",
             py: "1px",
           }}
         >
