@@ -1,9 +1,8 @@
 import { FC, useState } from "react";
-import { Button, Box, Select, InputLabel, MenuItem, Menu } from "@mui/material";
+import { Button, Box, MenuItem, Menu } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useSelector, useDispatch } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
-import { theme } from "@zesty-io/material";
 import {
   MediaSortOrder,
   setSortOrder,
@@ -30,33 +29,24 @@ export const Controls: FC = () => {
   return (
     <Box
       sx={{
-        height: "64px",
-        padding: "12px 24px 12px 24px",
+        px: 3,
+        mb: 1.5,
       }}
     >
       <Box
         sx={{
-          gap: "12px",
-          left: "24px",
+          gap: 1.5,
           display: "flex",
-          flexDirection: "row",
-          alignItems: "flex-start",
-          padding: "0px",
-          height: "28px",
-          flex: "none",
         }}
       >
         <Button
           endIcon={<ArrowDropDownIcon />}
           onClick={handleClick}
           variant="outlined"
-          disableTouchRipple
-          disableFocusRipple
-          disableRipple
+          size="small"
+          color="inherit"
           sx={{
-            color: "grey.600",
-            border: `1px solid ${theme.palette.grey[100]}`,
-            borderRadius: "4px",
+            py: "1px",
           }}
         >
           Sort By
