@@ -69,9 +69,9 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
         });
       // Default to API order
       default:
-        unsortedBinFiles;
+        return unsortedBinFiles;
     }
-  }, [unsortedBinFiles, sortOrder]);
+  }, [unsortedBinFiles, sortOrder, binData, unsortedBinGroups]);
 
   const binGroups = useMemo(() => {
     if (!unsortedBinGroups) return unsortedBinGroups;
@@ -93,7 +93,8 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
       default:
         return unsortedBinGroups;
     }
-  }, [unsortedBinGroups, sortOrder]);
+  }, [unsortedBinGroups, sortOrder, binData]);
+  console.log({ unsortedBinFiles, unsortedBinGroups, binFiles, binGroups });
 
   return (
     <Box
