@@ -56,7 +56,7 @@ export const MoveFileDialog = ({
                     group_id: binId,
                     id: binId,
                   },
-                  ...binGroups,
+                  [...binGroups].sort((a, b) => a.name.localeCompare(b.name)),
                 ]
               : []
           }

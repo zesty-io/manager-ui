@@ -85,8 +85,8 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
           return b.name.localeCompare(a.name);
         });
       /*
-        Bins do not have a created_at field so they cannot be sorted by
-        creation time
+        Bins do not have a created_at field so we rely on the API to sort them
+        by creation time
       */
       case "createdDesc":
       // Default to API order

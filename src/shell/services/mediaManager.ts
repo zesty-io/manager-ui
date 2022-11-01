@@ -118,7 +118,7 @@ export const mediaManagerApi = createApi({
         { type: "BinGroups", id: binId },
       ],
       transformResponse: (response: { data: Group[] }) =>
-        response.data.sort((a, b) => a.name.localeCompare(b.name)),
+        response.data.reverse(),
     }),
     getGroupData: builder.query<GroupData, string>({
       query: (groupId) => `group/${groupId}`,
