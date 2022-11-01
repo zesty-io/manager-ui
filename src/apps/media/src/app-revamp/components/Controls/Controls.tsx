@@ -3,7 +3,6 @@ import { Button, Box, Select, InputLabel, MenuItem, Menu } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useSelector, useDispatch } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
-import { theme } from "@zesty-io/material";
 import {
   MediaSortOrder,
   setSortOrder,
