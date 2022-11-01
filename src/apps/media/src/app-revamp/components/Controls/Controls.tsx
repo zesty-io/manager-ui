@@ -29,35 +29,40 @@ export const Controls: FC = () => {
   return (
     <Box
       sx={{
-        gap: 1.5,
-        display: "flex",
         px: 3,
         mb: 1.5,
       }}
     >
-      <Button
-        endIcon={<ArrowDropDownIcon />}
-        onClick={handleClick}
-        variant="outlined"
-        size="small"
-        color="inherit"
+      <Box
         sx={{
-          py: "1px",
+          gap: 1.5,
+          display: "flex",
         }}
       >
-        Sort By
-      </Button>
-      <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
-        <MenuItem onClick={() => handleChange("createdDesc")}>
-          Date Added
-        </MenuItem>
-        <MenuItem onClick={() => handleChange("alphaAsc")}>
-          Name (A to Z)
-        </MenuItem>
-        <MenuItem onClick={() => handleChange("alphaDesc")}>
-          Name (Z to A)
-        </MenuItem>
-      </Menu>
+        <Button
+          endIcon={<ArrowDropDownIcon />}
+          onClick={handleClick}
+          variant="outlined"
+          size="small"
+          color="inherit"
+          sx={{
+            py: "1px",
+          }}
+        >
+          Sort By
+        </Button>
+        <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
+          <MenuItem onClick={() => handleChange("createdDesc")}>
+            Date Added
+          </MenuItem>
+          <MenuItem onClick={() => handleChange("alphaAsc")}>
+            Name (A to Z)
+          </MenuItem>
+          <MenuItem onClick={() => handleChange("alphaDesc")}>
+            Name (Z to A)
+          </MenuItem>
+        </Menu>
+      </Box>
     </Box>
   );
 };
