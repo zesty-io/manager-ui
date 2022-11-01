@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { useLocation, Link as Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -20,6 +20,10 @@ import {
   tabLocationEquality,
 } from "../../../../shell/store/ui";
 import { AppState } from "../../../store/types";
+import {
+  useGetAllBinGroupsQuery,
+  useGetBinsQuery,
+} from "../../../services/mediaManager";
 
 /*
   we need a descending z-index to make the drop shadow render correctly
@@ -153,13 +157,31 @@ export type InactiveTab = {
 export const InactiveTab: FC<InactiveTab> = ({ tab, tabWidth, sx }) => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const instanceId = useSelector((state: any) => state.instance.ID);
+  const ecoId = useSelector((state: any) => state.instance.ecoID);
+  // RTK QUERY FOR HOOKING INTO ALL MEDIA BIN GROUPS
+  const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
+  const { data: binGroups } = useGetAllBinGroupsQuery(
+    bins?.map((bin) => bin.id),
+    {
+      skip: !bins?.length,
+    }
+  );
+  const queryData = useMemo(() => {
+    return {
+      mediaManager: {
+        bins,
+        binGroups: binGroups?.flat(),
+      },
+    };
+  }, [binGroups]);
   if (tabLocationEquality(location, tab)) return null;
   return (
     <BaseTab
       variant="fill"
       tab={tab}
       tabWidth={tabWidth}
-      onClick={() => dispatch(unpinTab(tab))}
+      onClick={() => dispatch(unpinTab(tab, false, queryData))}
       sx={{
         "&:hover": {
           backgroundColor: "grey.700",
@@ -175,10 +197,29 @@ export type ActiveTab = {
 };
 export const ActiveTab: FC<ActiveTab> = ({ tabWidth }) => {
   const dispatch = useDispatch();
+  const instanceId = useSelector((state: any) => state.instance.ID);
+  const ecoId = useSelector((state: any) => state.instance.ecoID);
   const pinnedTabs = useSelector((state: AppState) => state.ui.pinnedTabs);
   const state = useSelector((state: AppState) => state);
   const location = useLocation();
-  const activeTab = createTab(state, parsePath(location));
+  // RTK QUERY FOR HOOKING INTO ALL MEDIA BIN GROUPS
+  const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
+  const { data: binGroups } = useGetAllBinGroupsQuery(
+    bins?.map((bin) => bin.id),
+    {
+      skip: !bins?.length,
+    }
+  );
+  const queryData = useMemo(() => {
+    return {
+      mediaManager: {
+        bins,
+        binGroups: binGroups?.flat(),
+      },
+    };
+  }, [binGroups]);
+
+  const activeTab = createTab(state, parsePath(location), queryData);
 
   const isPinned =
     pinnedTabs.findIndex((t: Tab) => tabLocationEquality(t, activeTab)) >= 0;
@@ -190,9 +231,9 @@ export const ActiveTab: FC<ActiveTab> = ({ tabWidth }) => {
       onClick={() => {
         // force unpin because we don't want to show the modal on the active tab
         if (isPinned) {
-          dispatch(unpinTab(activeTab, true));
+          dispatch(unpinTab(activeTab, true, queryData));
         } else {
-          dispatch(pinTab(activeTab));
+          dispatch(pinTab(activeTab, queryData));
         }
       }}
       sx={{

@@ -163,7 +163,11 @@ export function parsePath({ pathname: path, search }: TabLocation) {
 
 export type ParsedPath = ReturnType<typeof parsePath>;
 
-export function createTab(state: AppState, parsedPath: ParsedPath) {
+export function createTab(
+  state: AppState,
+  parsedPath: ParsedPath,
+  queryData?: any
+) {
   const { path, parts, zuid, prefix, search } = parsedPath;
   const tab: Tab = { pathname: path, search };
 
@@ -177,7 +181,7 @@ export function createTab(state: AppState, parsedPath: ParsedPath) {
       icon: faEdit,
     },
     media: {
-      name: "Media",
+      name: "All Media",
       icon: faImage,
     },
     schema: {
@@ -257,8 +261,17 @@ export function createTab(state: AppState, parsedPath: ParsedPath) {
   // resolve ZUID from store to determine display information
   switch (prefix) {
     case "1":
+      const bin = queryData?.mediaManager?.bins?.find(
+        (bin: any) => bin.id === zuid
+      );
+      if (bin) {
+        tab.name = bin.name;
+      }
+      break;
     case "2":
-      const group = state.media.groups[zuid];
+      const group = queryData?.mediaManager?.binGroups?.find(
+        (group: any) => group.id === zuid
+      );
       if (group) {
         tab.name = group.name;
       }
@@ -317,6 +330,11 @@ export function createTab(state: AppState, parsedPath: ParsedPath) {
       tab.name = toCapitalCase(parts[1]) + " Settings";
     }
   }
+
+  if (parts[1] === "search" && parts[0] in appNameMap) {
+    const name = parts[0] as keyof typeof appNameMap;
+    tab.name = `${appNameMap[name].name} Search Results`;
+  }
   return tab;
 }
 
@@ -332,11 +350,11 @@ export function loadTabs(instanceZUID: string) {
   };
 }
 
-export function pinTab({ pathname, search }: TabLocation) {
+export function pinTab({ pathname, search }: TabLocation, queryData: any) {
   return async (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const parsedPath = parsePath({ pathname, search });
-    const tab = createTab(state, parsedPath);
+    const tab = createTab(state, parsedPath, queryData);
     let newTabs = state.ui.pinnedTabs;
     const tabIndex = state.ui.pinnedTabs.findIndex((t) =>
       tabLocationEquality(t, tab)
@@ -354,11 +372,15 @@ export function pinTab({ pathname, search }: TabLocation) {
   };
 }
 
-export function unpinTab({ pathname, search }: TabLocation, force = false) {
+export function unpinTab(
+  { pathname, search }: TabLocation,
+  force = false,
+  queryData?: any
+) {
   return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const parsedPath = parsePath({ pathname, search });
-    const tab = createTab(state, parsedPath);
+    const tab = createTab(state, parsedPath, queryData);
     const { parts } = parsedPath;
     if (parts[0] === "code") {
       const fileType = parts[2];
@@ -398,11 +420,11 @@ export function unpinManyTabs(tabs: TabLocation[]) {
   };
 }
 
-export function rebuildTabs() {
+export function rebuildTabs(queryData: any) {
   return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const newTabs = state.ui.pinnedTabs.map((tab: Tab) =>
-      createTab(state, parsePath(tab))
+      createTab(state, parsePath(tab), queryData)
     );
     /* 
       This function is called on every slice update so
@@ -416,14 +438,14 @@ export function rebuildTabs() {
   };
 }
 
-export function setDocumentTitle(location: TabLocation) {
+export function setDocumentTitle(location: TabLocation, queryData: any) {
   return (dispatch: Dispatch, getState: () => AppState) => {
     const state = getState();
     const instanceName = state.instance.name;
 
     const { pathname, search } = location;
     const parsedPath = parsePath({ pathname, search });
-    const t = createTab(state, parsedPath);
+    const t = createTab(state, parsedPath, queryData);
     const { app } = t;
     const item = t.name || t.pathname;
     const title = `${app} - ${item} - Zesty.io - ${instanceName} - Manager`;

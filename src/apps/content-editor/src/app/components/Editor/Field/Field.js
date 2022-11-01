@@ -20,9 +20,13 @@ import {
   Stack,
   Chip,
   TextField,
+  Dialog,
+  IconButton,
+  DialogTitle,
 } from "@mui/material";
 
 import InfoIcon from "@mui/icons-material/InfoOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -33,7 +37,7 @@ import {
 // instead of individually importing
 import { AppLink } from "@zesty-io/core/AppLink";
 import { Modal } from "@zesty-io/core/Modal";
-import MediaApp from "../../../../../../media/src/app/MediaApp";
+import { MediaApp } from "../../../../../../media/src/app-revamp";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
 import { FieldTypeCurrency } from "@zesty-io/core/FieldTypeCurrency";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
@@ -52,6 +56,7 @@ import {
 
 import styles from "./Field.less";
 import MediaStyles from "../../../../../../media/src/app/MediaAppModal.less";
+import { MemoryRouter } from "react-router";
 
 const FieldLabel = memo((props) => {
   return (
@@ -222,21 +227,33 @@ export default function Field({
 
   function renderMediaModal() {
     return ReactDOM.createPortal(
-      <Modal
-        open={true}
-        type="global"
-        onClose={() => setImageModal()}
-        className={MediaStyles.MediaAppModal}
-      >
-        <MediaApp
-          limitSelected={imageModal.limit}
-          modal={true}
-          addImages={(images) => {
-            imageModal.callback(images);
-            setImageModal();
-          }}
-        />
-      </Modal>,
+      <MemoryRouter>
+        <Dialog
+          open
+          fullScreen
+          sx={{ my: 2.5, mx: 10 }}
+          onClose={() => setImageModal()}
+        >
+          <IconButton
+            sx={{
+              position: "fixed",
+              right: 15,
+              top: 10,
+            }}
+            onClick={() => setImageModal()}
+          >
+            <CloseIcon sx={{ color: "common.white" }} />
+          </IconButton>
+          <MediaApp
+            limitSelected={imageModal.limit}
+            isSelectDialog={true}
+            addImagesCallback={(images) => {
+              imageModal.callback(images);
+              setImageModal();
+            }}
+          />
+        </Dialog>
+      </MemoryRouter>,
       document.getElementById("modalMount")
     );
   }
@@ -401,22 +418,34 @@ export default function Field({
             }}
           />
           {imageModal && (
-            <Modal
-              open={true}
-              type="global"
-              onClose={() => setImageModal()}
-              className={MediaStyles.MediaAppModal}
-            >
-              <MediaApp
-                {...mediaAppProps}
-                limitSelected={imageModal.limit - images.length}
-                modal={true}
-                addImages={(images) => {
-                  imageModal.callback(images);
-                  setImageModal();
-                }}
-              />
-            </Modal>
+            <MemoryRouter>
+              <Dialog
+                open
+                fullScreen
+                sx={{ my: 2.5, mx: 10 }}
+                onClose={() => setImageModal()}
+              >
+                <IconButton
+                  sx={{
+                    position: "fixed",
+                    right: 5,
+                    top: 0,
+                  }}
+                  onClick={() => setImageModal()}
+                >
+                  <CloseIcon sx={{ color: "common.white" }} />
+                </IconButton>
+                <MediaApp
+                  limitSelected={imageModal.limit - images.length}
+                  isSelectDialog={true}
+                  lockedToGroupId={settings.group_id}
+                  addImagesCallback={(images) => {
+                    imageModal.callback(images);
+                    setImageModal();
+                  }}
+                />
+              </Dialog>
+            </MemoryRouter>
           )}
         </>
       );
