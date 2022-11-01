@@ -130,7 +130,10 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
                   /*TODO fix this*/
                   <EmptyState currentBinId={id} currentGroupId="" />
                 ) : (
-                  <MediaGrid files={binFiles} groups={binGroups} />
+                  <MediaGrid
+                    files={binFiles}
+                    groups={binGroups?.filter((group) => group.group_id === id)}
+                  />
                 )}
               </DnDProvider>
             </>

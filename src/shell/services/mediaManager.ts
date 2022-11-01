@@ -40,12 +40,9 @@ export const mediaManagerApi = createApi({
         fetchWithBQ
       ) {
         try {
-          const binResponses = (
-            await Promise.all([
-              fetchWithBQ(`site/${instanceId}/bins`),
-              fetchWithBQ(`eco/${ecoId}/bins`),
-            ])
-          )
+          const apiRequests = [fetchWithBQ(`site/${instanceId}/bins`)];
+          if (ecoId) apiRequests.push(fetchWithBQ(`eco/${ecoId}/bins`));
+          const binResponses = (await Promise.all(apiRequests))
             .filter((response) => !response.error)
             .map(
               (response: QueryReturnValue<any, FetchBaseQueryError>) =>
