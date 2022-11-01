@@ -94,7 +94,6 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
         return unsortedBinGroups;
     }
   }, [unsortedBinGroups, sortOrder, binData]);
-  console.log({ unsortedBinFiles, unsortedBinGroups, binFiles, binGroups });
 
   return (
     <Box
