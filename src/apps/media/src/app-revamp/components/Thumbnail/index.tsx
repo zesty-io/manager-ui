@@ -167,24 +167,35 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   };
 
   const CopyUrlChip = () => {
+    if (!url) return null;
     return (
       <Chip
-        label={<Typography variant="body3">Copy URL</Typography>}
+        label={
+          // @ts-ignore
+          <Typography variant="body3" color="text.secondary">
+            {isCopied ? "Copied" : "Copy URL"}
+          </Typography>
+        }
+        color="default"
         sx={{
+          width: "fit-content",
           display: "none",
-          backgroundColor: "common.white",
-          width: "110px",
           top: 8,
           left: 8,
         }}
+        size="small"
         onClick={(evt: any) => {
           evt.stopPropagation();
           handleCopyClick(url);
         }}
         icon={
-          <Box sx={{ ml: 1, mt: 0.5 }}>
-            {isCopied ? <CheckIcon /> : <LinkRoundedIcon />}
-          </Box>
+          <>
+            {isCopied ? (
+              <CheckIcon sx={{ color: "grey.400" }} />
+            ) : (
+              <LinkRoundedIcon sx={{ color: "grey.400" }} />
+            )}
+          </>
         }
       />
     );

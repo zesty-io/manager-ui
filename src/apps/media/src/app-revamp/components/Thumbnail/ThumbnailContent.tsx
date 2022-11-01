@@ -65,8 +65,8 @@ export const ThumbnailContent: FC<Props> = ({
               <TextField
                 placeholder={
                   isEditable
-                    ? "Add image title (for alt text)"
-                    : "Please wait to add image title"
+                    ? "Add File Title (for alt-text)"
+                    : "Please wait to add File Title"
                 }
                 disabled={!isEditable}
                 size="small"
