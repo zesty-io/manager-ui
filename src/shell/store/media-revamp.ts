@@ -61,7 +61,7 @@ export type Upload =
   | InProgressUpload
   | FailedUpload
   | SuccessfulUpload;
-export type MediaSortOrder = "createdDesc" | "alphaAsc" | "alphaDesc";
+export type MediaSortOrder = "createdDesc" | "alphaAsc" | "alphaDesc" | null;
 export type State = {
   uploads: Upload[];
   lockedToGroupId: string;
@@ -76,7 +76,7 @@ const initialState: State = {
   isSelectDialog: false,
   selectedFiles: [],
   limitSelected: null,
-  sortOrder: "createdDesc",
+  sortOrder: null,
 };
 
 const mediaSlice = createSlice({
