@@ -43,6 +43,7 @@ export const Controls: FC = () => {
           size="small"
           color="inherit"
           sx={{
+            // Round default small button height to 28px to avoid fractional pixel issues with media grid
             height: "28px",
             py: "1px",
           }}
