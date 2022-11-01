@@ -10,9 +10,6 @@ import {
 
 export const Controls: FC = () => {
   const dispatch = useDispatch();
-  const sortOrder = useSelector(
-    (state: AppState) => state.mediaRevamp.sortOrder
-  );
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {

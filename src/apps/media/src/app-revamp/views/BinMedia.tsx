@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useParams } from "react-router";
 import { EmptyState } from "../components/EmptyState";
 import {
@@ -12,6 +13,8 @@ import { UploadModal } from "../components/UploadModal";
 import { Box, CircularProgress } from "@mui/material";
 import { NotFoundState } from "../components/NotFoundState";
 import { File } from "../../../../../shell/services/types";
+import { AppState } from "../../../../../shell/store/types";
+import Controls from "../components/Controls";
 
 type Params = { id: string };
 
@@ -20,8 +23,11 @@ interface Props {
 }
 
 export const BinMedia = ({ addImagesCallback }: Props) => {
-  const instanceId = useSelector((state: any) => state.instance.ID);
-  const ecoId = useSelector((state: any) => state.instance.ecoID);
+  const instanceId = useSelector((state: AppState) => state.instance.ID);
+  const ecoId = useSelector((state: AppState) => state.instance.ecoID);
+  const sortOrder = useSelector(
+    (state: AppState) => state.mediaRevamp.sortOrder
+  );
   const params = useParams<Params>();
   const { id } = params;
   const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
@@ -34,15 +40,60 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
     skip: !isValidId,
   });
 
-  const { data: binGroups, isFetching: isGroupsFetching } =
+  const { data: unsortedBinGroups, isFetching: isGroupsFetching } =
     mediaManagerApi.useGetBinGroupsQuery(id, {
       skip: !isValidId,
     });
 
-  const { data: binFiles, isFetching: isFilesFetching } =
+  const { data: unsortedBinFiles, isFetching: isFilesFetching } =
     mediaManagerApi.useGetBinFilesQuery(id, {
       skip: !isValidId,
     });
+
+  const binFiles = useMemo(() => {
+    if (!unsortedBinFiles) return unsortedBinFiles;
+    switch (sortOrder) {
+      case "alphaAsc":
+        return [...unsortedBinFiles].sort((a, b) => {
+          return a.filename.localeCompare(b.filename);
+        });
+      case "alphaDesc":
+        return [...unsortedBinFiles].sort((a, b) => {
+          return b.filename.localeCompare(a.filename);
+        });
+      case "createdDesc":
+        return [...unsortedBinFiles].sort((a, b) => {
+          return (
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
+        });
+      // Default to API order
+      default:
+        return unsortedBinFiles;
+    }
+  }, [unsortedBinFiles, sortOrder, binData, unsortedBinGroups]);
+
+  const binGroups = useMemo(() => {
+    if (!unsortedBinGroups) return unsortedBinGroups;
+    switch (sortOrder) {
+      case "alphaAsc":
+        return [...unsortedBinGroups].sort((a, b) => {
+          return a.name.localeCompare(b.name);
+        });
+      case "alphaDesc":
+        return [...unsortedBinGroups].sort((a, b) => {
+          return b.name.localeCompare(a.name);
+        });
+      /*
+        Bins do not have a created_at field so we rely on the API to sort them
+        by creation time
+      */
+      case "createdDesc":
+      // Default to API order
+      default:
+        return unsortedBinGroups;
+    }
+  }, [unsortedBinGroups, sortOrder, binData]);
 
   return (
     <Box
@@ -70,6 +121,7 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
             </Box>
           ) : (
             <>
+              <Controls />
               <UploadModal />
               {/* /* TODO FIX THIS */}
               <DnDProvider currentBinId={id} currentGroupId="">

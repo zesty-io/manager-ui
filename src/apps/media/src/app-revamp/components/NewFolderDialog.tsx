@@ -66,7 +66,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
                     group_id: binId,
                     id: binId,
                   },
-                  ...binGroups,
+                  [...binGroups].sort((a, b) => a.name.localeCompare(b.name)),
                 ]
               : []
           }
