@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { Button, Box, Select, InputLabel, MenuItem, Menu } from "@mui/material";
+import { Button, Box, MenuItem, Menu } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useSelector, useDispatch } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
