@@ -30,49 +30,35 @@ export const Controls: FC = () => {
   return (
     <Box
       sx={{
-        height: "64px",
-        padding: "12px 24px 12px 24px",
+        gap: 1.5,
+        display: "flex",
+        px: 3,
+        mb: 1.5,
       }}
     >
-      <Box
+      <Button
+        endIcon={<ArrowDropDownIcon />}
+        onClick={handleClick}
+        variant="outlined"
+        size="small"
+        color="inherit"
         sx={{
-          gap: "12px",
-          left: "24px",
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "flex-start",
-          padding: "0px",
-          height: "28px",
-          flex: "none",
+          py: "1px",
         }}
       >
-        <Button
-          endIcon={<ArrowDropDownIcon />}
-          onClick={handleClick}
-          variant="outlined"
-          disableTouchRipple
-          disableFocusRipple
-          disableRipple
-          sx={{
-            color: "grey.600",
-            border: `1px solid ${theme.palette.grey[100]}`,
-            borderRadius: "4px",
-          }}
-        >
-          Sort By
-        </Button>
-        <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
-          <MenuItem onClick={() => handleChange("createdDesc")}>
-            Date Added
-          </MenuItem>
-          <MenuItem onClick={() => handleChange("alphaAsc")}>
-            Name (A to Z)
-          </MenuItem>
-          <MenuItem onClick={() => handleChange("alphaDesc")}>
-            Name (Z to A)
-          </MenuItem>
-        </Menu>
-      </Box>
+        Sort By
+      </Button>
+      <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
+        <MenuItem onClick={() => handleChange("createdDesc")}>
+          Date Added
+        </MenuItem>
+        <MenuItem onClick={() => handleChange("alphaAsc")}>
+          Name (A to Z)
+        </MenuItem>
+        <MenuItem onClick={() => handleChange("alphaDesc")}>
+          Name (Z to A)
+        </MenuItem>
+      </Menu>
     </Box>
   );
 };
