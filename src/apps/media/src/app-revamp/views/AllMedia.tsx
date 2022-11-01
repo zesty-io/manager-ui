@@ -54,7 +54,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
         });
       // Default to API order
       default:
-        unsortedFiles;
+        return unsortedFiles;
     }
   }, [unsortedFiles, sortOrder]);
 
