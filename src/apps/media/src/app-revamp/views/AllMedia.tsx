@@ -11,23 +11,52 @@ import { Header } from "../components/Header";
 import { NotFoundState } from "../components/NotFoundState";
 import { File } from "../../../../../shell/services/types";
 import { UploadModal } from "../components/UploadModal";
+import Controls from "../components/Controls";
+import { useMemo } from "react";
+import { AppState } from "../../../../../shell/store/types";
 
 interface Props {
   addImagesCallback?: (selectedFiles: File[]) => void;
 }
 
 export const AllMedia = ({ addImagesCallback }: Props) => {
-  const instanceId = useSelector((state: any) => state.instance.ID);
-  const ecoId = useSelector((state: any) => state.instance.ecoID);
+  const instanceId = useSelector((state: AppState) => state.instance.ID);
+  const ecoId = useSelector((state: AppState) => state.instance.ecoID);
+  const sortOrder = useSelector(
+    (state: AppState) => state.mediaRevamp.sortOrder
+  );
   const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
     instanceId,
     ecoId,
   });
   const defaultBin = bins?.find((bin) => bin.default);
-  const { data: files, isFetching: isFilesFetching } = useGetAllBinFilesQuery(
-    bins?.map((bin) => bin.id),
-    { skip: !bins?.length }
-  );
+  const { data: unsortedFiles, isFetching: isFilesFetching } =
+    useGetAllBinFilesQuery(
+      bins?.map((bin) => bin.id),
+      { skip: !bins?.length }
+    );
+  const files = useMemo(() => {
+    if (!unsortedFiles) return unsortedFiles;
+    switch (sortOrder) {
+      case "alphaAsc":
+        return [...unsortedFiles].sort((a, b) => {
+          return a.filename.localeCompare(b.filename);
+        });
+      case "alphaDesc":
+        return [...unsortedFiles].sort((a, b) => {
+          return b.filename.localeCompare(a.filename);
+        });
+      case "createdDesc":
+        return [...unsortedFiles].sort((a, b) => {
+          return (
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
+        });
+      // Default to API order
+      default:
+        return unsortedFiles;
+    }
+  }, [unsortedFiles, sortOrder]);
 
   return (
     <Box
@@ -51,6 +80,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
         </Box>
       ) : (
         <>
+          <Controls />
           <UploadModal />
           <DnDProvider
             isDefaultBin

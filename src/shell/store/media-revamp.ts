@@ -61,12 +61,14 @@ export type Upload =
   | InProgressUpload
   | FailedUpload
   | SuccessfulUpload;
+export type MediaSortOrder = "createdDesc" | "alphaAsc" | "alphaDesc";
 export type State = {
   uploads: Upload[];
   lockedToGroupId: string;
   isSelectDialog: boolean;
   selectedFiles: FileBase[];
   limitSelected: number | null;
+  sortOrder: MediaSortOrder;
 };
 const initialState: State = {
   uploads: [],
@@ -74,6 +76,7 @@ const initialState: State = {
   isSelectDialog: false,
   selectedFiles: [],
   limitSelected: null,
+  sortOrder: "createdDesc",
 };
 
 const mediaSlice = createSlice({
@@ -223,6 +226,9 @@ const mediaSlice = createSlice({
     clearSelectedFiles(state) {
       state.selectedFiles = [];
     },
+    setSortOrder(state, action: { payload: MediaSortOrder }) {
+      state.sortOrder = action.payload;
+    },
   },
 });
 
@@ -242,6 +248,7 @@ export const {
   deselectFile,
   clearSelectedFiles,
   setLimitSelected,
+  setSortOrder,
 } = mediaSlice.actions;
 
 /*
