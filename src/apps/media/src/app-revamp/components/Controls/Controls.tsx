@@ -3,6 +3,7 @@ import { Button, Box, Select, InputLabel, MenuItem, Menu } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useSelector, useDispatch } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
+import { theme } from "@zesty-io/material";
 import {
   MediaSortOrder,
   setSortOrder,
@@ -30,23 +31,48 @@ export const Controls: FC = () => {
     <Box
       sx={{
         height: "64px",
-        padding: "12px, 24px, 12px, 24px",
+        padding: "12px 24px 12px 24px",
       }}
     >
-      <Button endIcon={<ArrowDropDownIcon />} onClick={handleClick}>
-        Sort by
-      </Button>
-      <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
-        <MenuItem onClick={() => handleChange("createdDesc")}>
-          Date Added
-        </MenuItem>
-        <MenuItem onClick={() => handleChange("alphaAsc")}>
-          Name (A to Z)
-        </MenuItem>
-        <MenuItem onClick={() => handleChange("alphaDesc")}>
-          Name (Z to A)
-        </MenuItem>
-      </Menu>
+      <Box
+        sx={{
+          gap: "12px",
+          left: "24px",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "flex-start",
+          padding: "0px",
+          height: "28px",
+          flex: "none",
+        }}
+      >
+        <Button
+          endIcon={<ArrowDropDownIcon />}
+          onClick={handleClick}
+          variant="outlined"
+          disableTouchRipple
+          disableFocusRipple
+          disableRipple
+          sx={{
+            color: "grey.600",
+            border: `1px solid ${theme.palette.grey[100]}`,
+            borderRadius: "4px",
+          }}
+        >
+          Sort By
+        </Button>
+        <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
+          <MenuItem onClick={() => handleChange("createdDesc")}>
+            Date Added
+          </MenuItem>
+          <MenuItem onClick={() => handleChange("alphaAsc")}>
+            Name (A to Z)
+          </MenuItem>
+          <MenuItem onClick={() => handleChange("alphaDesc")}>
+            Name (Z to A)
+          </MenuItem>
+        </Menu>
+      </Box>
     </Box>
   );
 };
