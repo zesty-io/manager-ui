@@ -27,10 +27,12 @@ import { DeleteFolderDialog } from "./DeleteFolderDialog";
 import { useLocalStorage } from "react-use";
 import { UploadButton } from "./UploadButton";
 import { useDispatch, useSelector } from "react-redux";
+import { MoveFileDialog } from "./FileModal/MoveFileDialog";
 import {
   clearSelectedFiles,
   State,
 } from "../../../../../shell/store/media-revamp";
+import { useUpdateFileMutation } from "../../../../../shell/services/mediaManager";
 import { File } from "../../../../../shell/services/types";
 import { useHistory } from "react-router";
 
@@ -74,6 +76,15 @@ export const Header = ({
     "zesty:navMedia:hidden",
     []
   );
+  const [
+    updateFile,
+    {
+      reset: resetUpdate,
+      isSuccess: isSuccessUpdate,
+      isLoading: isLoadingUpdate,
+    },
+  ] = useUpdateFileMutation();
+
   const open = Boolean(anchorEl);
   const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -82,8 +93,37 @@ export const Header = ({
     setAnchorEl(null);
   };
 
+  const handleUpdateMutation = (newGroupId: string) => {
+    Promise.all(
+      selectedFiles.map(async (file) => {
+        await updateFile({
+          id: file.id,
+          previousGroupId: file.group_id,
+          body: {
+            group_id: newGroupId,
+            title: file.title,
+            filename: file.filename,
+          },
+        });
+      })
+    );
+    dispatch(clearSelectedFiles());
+  };
+
   return (
     <>
+      {showMoveFileDialog && (
+        <MoveFileDialog
+          handleGroupChange={(newGroupId: string) =>
+            handleUpdateMutation(newGroupId)
+          }
+          binId={binId}
+          onClose={() => {
+            setShowMoveFileDialog(false);
+          }}
+        />
+      )}
+
       <Box
         sx={{
           display: "flex",
