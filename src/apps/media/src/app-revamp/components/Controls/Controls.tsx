@@ -28,6 +28,8 @@ export const Controls: FC = () => {
       sx={{
         px: 3,
         mb: 1.5,
+        // Set static height to avoid fractional pixel visual issues with media grid caused by default MUI small buttons
+        height: "28px",
       }}
     >
       <Box
