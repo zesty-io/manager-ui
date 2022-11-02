@@ -17,6 +17,7 @@ import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import DriveFolderUploadRoundedIcon from "@mui/icons-material/DriveFolderUploadRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckIcon from "@mui/icons-material/Check";
 import CreateNewFolderRoundedIcon from "@mui/icons-material/CreateNewFolderRounded";
@@ -58,8 +59,12 @@ export const Header = ({
   const [openDialog, setOpenDialog] = useState<Dialogs>(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const history = useHistory();
+  const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
   const selectedFiles = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
+  );
+  const showHeaderActions = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.showHeaderActions
   );
   const limitSelected = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.limitSelected
@@ -119,6 +124,22 @@ export const Header = ({
               >
                 Deselect All
               </Button>
+              {showHeaderActions && (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  color="inherit"
+                  onClick={() => setShowMoveFileDialog(true)}
+                  startIcon={
+                    <DriveFolderUploadRoundedIcon
+                      color="action"
+                      fontSize="small"
+                    />
+                  }
+                >
+                  Move
+                </Button>
+              )}
               <Button
                 variant="contained"
                 size="small"
