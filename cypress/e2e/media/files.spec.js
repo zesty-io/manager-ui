@@ -40,6 +40,15 @@ describe("Media Files", () => {
     cy.get('button:enabled:contains("Done")').click();
   });
 
+  it("Displays skeleton loading when fetching images", () => {
+    cy.wait(2000);
+    cy.get(".MuiBox-root").then(($body) => {
+      if ($body.get(".Load--0FE27")) {
+        cy.get(".Load--0FE27").should("exist");
+      }
+    });
+  });
+
   it("Displays file preview", () => {
     cy.get(".ThumbnailContainer").first().click();
     cy.get(".MuiInputLabel-root")
@@ -138,6 +147,7 @@ describe("Media Files", () => {
 
   it("Drag and drop files on sidebar folder", () => {
     const dataTransfer = new DataTransfer();
+    cy.wait(2000);
 
     // drag the thumbnail
     cy.get(`[data-cy="${currentFileId}"]`)
@@ -146,7 +156,7 @@ describe("Media Files", () => {
         dataTransfer,
       });
 
-    // drop it to the first folder
+    // drop it to the new folder
     cy.get(".MuiTreeView-root")
       .contains("CYPRESS TEST FILE DRAG FOLDER")
       .trigger("drop", {
