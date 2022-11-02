@@ -33,7 +33,7 @@ export default connect((state) => {
       leads = FilterService.filterByDate(leads, this.props.filter);
       leads = FilterService.filterByFuzzyText(leads, this.props.filter);
       const forms = leads
-        .map((lead) => ({ timestamp: lead.dateCreated, ...lead.formData }))
+        .map((lead) => ({ ...lead.formData, timestamp: lead.dateCreated }))
         .filter((lead) => lead);
 
       // Set the file name in this format: FORMGROUP_DATERANGE
