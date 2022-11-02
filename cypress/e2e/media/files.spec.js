@@ -117,6 +117,25 @@ describe("Media Files", () => {
     cy.assertClipboardValue(currentFileId);
   });
 
+  it("Creates new folder for dragging files", () => {
+    // visit all media first
+    cy.visit("/media");
+    cy.wait(3000);
+
+    cy.get("[aria-label='Create New Folder']").click();
+
+    cy.get(".MuiDialog-container").within(() => {
+      cy.contains("Folder Name").next().type("CYPRESS TEST FILE DRAG FOLDER");
+      cy.contains("Create").click();
+    });
+
+    cy.intercept("POST", "/groups");
+
+    cy.get(".MuiTreeView-root")
+      .contains("CYPRESS TEST FILE DRAG FOLDER")
+      .should("exist");
+  });
+
   it("Drag and drop files on sidebar folder", () => {
     const dataTransfer = new DataTransfer();
 
@@ -142,6 +161,24 @@ describe("Media Files", () => {
     cy.get(".MuiBox-root").within(() => {
       cy.get(`[data-cy="${currentFileId}"]`).should("exist");
     });
+  });
+
+  it("Deletes folder", () => {
+    cy.get(".MuiTreeView-root")
+      .contains("CYPRESS TEST FILE DRAG FOLDER")
+      .click();
+
+    cy.get("[aria-label='Open folder menu']").click();
+
+    cy.contains("Delete").click();
+
+    cy.get(".MuiButton-containedError").click();
+
+    cy.intercept("DELETE", "/groups");
+
+    cy.get(".MuiTreeView-root")
+      .contains("CYPRESS TEST FILE DRAG FOLDER")
+      .should("not.exist");
   });
 
   it("Deletes file", () => {
