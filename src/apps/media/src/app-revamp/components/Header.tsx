@@ -17,6 +17,7 @@ import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import DriveFolderUploadRoundedIcon from "@mui/icons-material/DriveFolderUploadRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckIcon from "@mui/icons-material/Check";
 import CreateNewFolderRoundedIcon from "@mui/icons-material/CreateNewFolderRounded";
@@ -26,10 +27,12 @@ import { DeleteFolderDialog } from "./DeleteFolderDialog";
 import { useLocalStorage } from "react-use";
 import { UploadButton } from "./UploadButton";
 import { useDispatch, useSelector } from "react-redux";
+import { MoveFileDialog } from "./FileModal/MoveFileDialog";
 import {
   clearSelectedFiles,
   State,
 } from "../../../../../shell/store/media-revamp";
+import { useUpdateFileMutation } from "../../../../../shell/services/mediaManager";
 import { File } from "../../../../../shell/services/types";
 import { useHistory } from "react-router";
 
@@ -58,8 +61,12 @@ export const Header = ({
   const [openDialog, setOpenDialog] = useState<Dialogs>(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const history = useHistory();
+  const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
   const selectedFiles = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
+  );
+  const showHeaderActions = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.showHeaderActions
   );
   const limitSelected = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.limitSelected
@@ -69,6 +76,15 @@ export const Header = ({
     "zesty:navMedia:hidden",
     []
   );
+  const [
+    updateFile,
+    {
+      reset: resetUpdate,
+      isSuccess: isSuccessUpdate,
+      isLoading: isLoadingUpdate,
+    },
+  ] = useUpdateFileMutation();
+
   const open = Boolean(anchorEl);
   const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -77,8 +93,38 @@ export const Header = ({
     setAnchorEl(null);
   };
 
+  const handleUpdateMutation = (newGroupId: string) => {
+    Promise.all(
+      selectedFiles.map(async (file) => {
+        await updateFile({
+          id: file.id,
+          previousGroupId: file.group_id,
+          body: {
+            group_id: newGroupId,
+            title: file.title,
+            filename: file.filename,
+          },
+        });
+      })
+    );
+    dispatch(clearSelectedFiles());
+  };
+
   return (
     <>
+      {showMoveFileDialog && (
+        <MoveFileDialog
+          handleGroupChange={(newGroupId: string) =>
+            handleUpdateMutation(newGroupId)
+          }
+          binId={binId}
+          onClose={() => {
+            setShowMoveFileDialog(false);
+          }}
+          fileCount={selectedFiles?.length}
+        />
+      )}
+
       <Box
         sx={{
           display: "flex",
@@ -119,15 +165,33 @@ export const Header = ({
               >
                 Deselect All
               </Button>
-              <Button
-                variant="contained"
-                size="small"
-                color="primary"
-                onClick={() => addImagesCallback(selectedFiles)}
-                startIcon={<CheckIcon fontSize="small" />}
-              >
-                Done
-              </Button>
+              {showHeaderActions && (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  color="inherit"
+                  onClick={() => setShowMoveFileDialog(true)}
+                  startIcon={
+                    <DriveFolderUploadRoundedIcon
+                      color="action"
+                      fontSize="small"
+                    />
+                  }
+                >
+                  Move
+                </Button>
+              )}
+              {addImagesCallback && (
+                <Button
+                  variant="contained"
+                  size="small"
+                  color="primary"
+                  onClick={() => addImagesCallback(selectedFiles)}
+                  startIcon={<CheckIcon fontSize="small" />}
+                >
+                  Done
+                </Button>
+              )}
             </Stack>
           </>
         ) : (

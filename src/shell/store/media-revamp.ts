@@ -65,6 +65,7 @@ export type MediaSortOrder = "createdDesc" | "alphaAsc" | "alphaDesc";
 export type State = {
   uploads: Upload[];
   lockedToGroupId: string;
+  showHeaderActions: boolean;
   isSelectDialog: boolean;
   selectedFiles: FileBase[];
   limitSelected: number | null;
@@ -73,6 +74,7 @@ export type State = {
 const initialState: State = {
   uploads: [],
   lockedToGroupId: "",
+  showHeaderActions: false,
   isSelectDialog: false,
   selectedFiles: [],
   limitSelected: null,
@@ -204,6 +206,9 @@ const mediaSlice = createSlice({
     setIsSelectDialog(state, action: { payload: boolean }) {
       state.isSelectDialog = action.payload;
     },
+    setShowHeaderActions(state, action: { payload: boolean }) {
+      state.showHeaderActions = action.payload;
+    },
     setLimitSelected(state, action: { payload: number }) {
       state.limitSelected = action.payload;
     },
@@ -244,6 +249,7 @@ export const {
   fileUploadSuccess,
   fileUploadError,
   setIsSelectDialog,
+  setShowHeaderActions,
   selectFile,
   deselectFile,
   clearSelectedFiles,

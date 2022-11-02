@@ -18,12 +18,14 @@ interface Props {
   handleGroupChange: (newGroupId: string) => void;
   onClose?: () => void;
   binId: string;
+  fileCount?: number;
 }
 
 export const MoveFileDialog = ({
   handleGroupChange,
   onClose,
   binId,
+  fileCount,
 }: Props) => {
   const { data: binGroups } = useGetBinGroupsQuery(binId);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>({
@@ -44,7 +46,7 @@ export const MoveFileDialog = ({
     <Dialog open={true} fullWidth maxWidth={"xs"}>
       <DialogTitle>
         <Typography fontWeight={600} variant="h5">
-          Move File
+          Move {fileCount > 1 ? `${fileCount} Files` : "files"}
         </Typography>
       </DialogTitle>
       <DialogContent>
