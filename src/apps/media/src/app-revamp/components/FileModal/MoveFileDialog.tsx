@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -33,6 +33,13 @@ export const MoveFileDialog = ({
     id: binId,
   });
 
+  // console.log('testing binGroups', binGroups, [...(binGroups ? binGroups : [])]?.sort((a, b) => a?.name?.localeCompare(b?.name)))
+
+  const sortedBinGroups = useMemo(() => {
+    if (!binGroups) return [];
+    return [...binGroups].sort((a, b) => a?.name?.localeCompare(b?.name));
+  }, [binGroups]);
+
   return (
     <Dialog open={true} fullWidth maxWidth={"xs"}>
       <DialogTitle>
@@ -56,7 +63,7 @@ export const MoveFileDialog = ({
                     group_id: binId,
                     id: binId,
                   },
-                  [...binGroups].sort((a, b) => a.name.localeCompare(b.name)),
+                  ...sortedBinGroups,
                 ]
               : []
           }
