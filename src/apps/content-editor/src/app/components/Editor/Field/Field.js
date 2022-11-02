@@ -438,6 +438,7 @@ export default function Field({
                 <MediaApp
                   limitSelected={imageModal.limit - images.length}
                   isSelectDialog={true}
+                  showHeaderActions={false}
                   lockedToGroupId={
                     settings?.group_id && settings?.group_id !== "0"
                       ? settings.group_id
