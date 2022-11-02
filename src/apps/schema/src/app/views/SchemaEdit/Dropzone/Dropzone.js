@@ -18,10 +18,14 @@ export function Dropzone(props) {
    * A props.onDrop is required. This forces the Dropzone consumer
    * to describe what happens when the children are sorted.
    */
+  const [forceRerender, setForceRerender] = useState(false);
   const children = useRef(Children.toArray(props.children));
 
   // Update state when props change
   useEffect(() => {
+    // Used to re-render the component everytime a prop updates
+    setForceRerender(!forceRerender);
+
     children.current = Children.toArray(props.children);
   }, [props.children]);
 
