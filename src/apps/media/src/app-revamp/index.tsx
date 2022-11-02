@@ -7,6 +7,7 @@ import {
   setLimitSelected,
   setIsSelectDialog,
   clearSelectedFiles,
+  setShowHeaderActions,
 } from "../../../../shell/store/media-revamp";
 
 import { AllMedia } from "./views/AllMedia";
@@ -21,12 +22,14 @@ import { NotFoundState } from "./components/NotFoundState";
 interface Props {
   limitSelected?: number;
   lockedToGroupId?: string;
+  showHeaderActions: boolean;
   isSelectDialog?: boolean;
   addImagesCallback?: (selectedFiles: File[]) => void;
 }
 
 export const MediaApp = ({
   lockedToGroupId,
+  showHeaderActions = true,
   isSelectDialog = false,
   addImagesCallback,
   limitSelected = null,
@@ -40,9 +43,10 @@ export const MediaApp = ({
     if (lockedToGroupId) {
       history.push(`/media/${lockedToGroupId}`);
     }
+    dispatch(setShowHeaderActions(showHeaderActions));
     dispatch(setIsSelectDialog(isSelectDialog));
     dispatch(setLimitSelected(limitSelected));
-  }, [lockedToGroupId, isSelectDialog]);
+  }, [lockedToGroupId, isSelectDialog, showHeaderActions]);
 
   useEffect(() => {
     return () => {
