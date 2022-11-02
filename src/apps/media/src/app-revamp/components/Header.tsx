@@ -121,6 +121,7 @@ export const Header = ({
           onClose={() => {
             setShowMoveFileDialog(false);
           }}
+          fileCount={selectedFiles?.length}
         />
       )}
 
@@ -180,15 +181,17 @@ export const Header = ({
                   Move
                 </Button>
               )}
-              <Button
-                variant="contained"
-                size="small"
-                color="primary"
-                onClick={() => addImagesCallback(selectedFiles)}
-                startIcon={<CheckIcon fontSize="small" />}
-              >
-                Done
-              </Button>
+              {addImagesCallback && (
+                <Button
+                  variant="contained"
+                  size="small"
+                  color="primary"
+                  onClick={() => addImagesCallback(selectedFiles)}
+                  startIcon={<CheckIcon fontSize="small" />}
+                >
+                  Done
+                </Button>
+              )}
             </Stack>
           </>
         ) : (
