@@ -65,6 +65,9 @@ export const Header = ({
   const selectedFiles = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
   );
+  const showHeaderActions = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.showHeaderActions
+  );
   const limitSelected = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.limitSelected
   );
@@ -161,20 +164,22 @@ export const Header = ({
               >
                 Deselect All
               </Button>
-              <Button
-                variant="outlined"
-                size="small"
-                color="inherit"
-                onClick={() => setShowMoveFileDialog(true)}
-                startIcon={
-                  <DriveFolderUploadRoundedIcon
-                    color="action"
-                    fontSize="small"
-                  />
-                }
-              >
-                Move
-              </Button>
+              {showHeaderActions && (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  color="inherit"
+                  onClick={() => setShowMoveFileDialog(true)}
+                  startIcon={
+                    <DriveFolderUploadRoundedIcon
+                      color="action"
+                      fontSize="small"
+                    />
+                  }
+                >
+                  Move
+                </Button>
+              )}
               <Button
                 variant="contained"
                 size="small"
