@@ -40,6 +40,15 @@ describe("Media Files", () => {
     cy.get('button:enabled:contains("Done")').click();
   });
 
+  it("Displays skeleton loading when fetching images", () => {
+    cy.wait(2000);
+    cy.get(".MuiBox-root").then(($body) => {
+      if ($body.get(".Load--0FE27")) {
+        cy.get(".Load--0FE27").should("exist");
+      }
+    });
+  });
+
   it("Displays file preview", () => {
     cy.get(".ThumbnailContainer").first().click();
     cy.get(".MuiInputLabel-root")
@@ -86,22 +95,14 @@ describe("Media Files", () => {
       if ($body.find("[aria-label='Save Title Button']").length) {
         cy.get("[aria-label='Save Title Button']").click();
 
-        // update endpoint
-        cy.waitOn(
-          {
-            method: "PATCH",
-            pathname: `/file/${currentFileId}`,
-          },
-          () => {
-            // check if Title textfield has the updated value
-            cy.get("[aria-label='Title TextField']").within(() => {
-              cy.get(".MuiInputBase-input").should(
-                "have.value",
-                "CYPRESS TEST NEW TITLE"
-              );
-            });
-          }
-        );
+        // NOTE: have to remove waitOn for now since it's causing an intermittent issue on this update
+        // check if Title textfield has the updated value
+        cy.get("[aria-label='Title TextField']").within(() => {
+          cy.get(".MuiInputBase-input").should(
+            "have.value",
+            "CYPRESS TEST NEW TITLE"
+          );
+        });
       }
     });
   });
@@ -125,12 +126,28 @@ describe("Media Files", () => {
     cy.assertClipboardValue(currentFileId);
   });
 
-  it("Drag and drop files on sidebar", () => {
-    const dataTransfer = new DataTransfer();
-
+  it("Creates new folder for dragging files", () => {
     // visit all media first
     cy.visit("/media");
     cy.wait(3000);
+
+    cy.get("[aria-label='Create New Folder']").click();
+
+    cy.get(".MuiDialog-container").within(() => {
+      cy.contains("Folder Name").next().type("CYPRESS TEST FILE DRAG FOLDER");
+      cy.contains("Create").click();
+    });
+
+    cy.intercept("POST", "/groups");
+
+    cy.get(".MuiTreeView-root")
+      .contains("CYPRESS TEST FILE DRAG FOLDER")
+      .should("exist");
+  });
+
+  it("Drag and drop files on sidebar folder", () => {
+    const dataTransfer = new DataTransfer();
+    cy.wait(2000);
 
     // drag the thumbnail
     cy.get(`[data-cy="${currentFileId}"]`)
@@ -139,16 +156,39 @@ describe("Media Files", () => {
         dataTransfer,
       });
 
-    // drop it to the first folder
-    cy.get(".MuiTreeItem-root").first().trigger("drop", {
-      dataTransfer,
-    });
+    // drop it to the new folder
+    cy.get(".MuiTreeView-root")
+      .contains("CYPRESS TEST FILE DRAG FOLDER")
+      .trigger("drop", {
+        dataTransfer,
+      });
 
-    // check the folder if the thumbnail is there
-    cy.get(".MuiTreeItem-root").eq(1).click();
+    // visit the folder and check if the thumbnail is there
+    cy.get(".MuiTreeView-root")
+      .contains("CYPRESS TEST FILE DRAG FOLDER")
+      .click();
+
     cy.get(".MuiBox-root").within(() => {
       cy.get(`[data-cy="${currentFileId}"]`).should("exist");
     });
+  });
+
+  it("Deletes folder", () => {
+    cy.get(".MuiTreeView-root")
+      .contains("CYPRESS TEST FILE DRAG FOLDER")
+      .click();
+
+    cy.get("[aria-label='Open folder menu']").click();
+
+    cy.contains("Delete").click();
+
+    cy.get(".MuiButton-containedError").click();
+
+    cy.intercept("DELETE", "/groups");
+
+    cy.get(".MuiTreeView-root")
+      .contains("CYPRESS TEST FILE DRAG FOLDER")
+      .should("not.exist");
   });
 
   it("Deletes file", () => {
