@@ -18,12 +18,14 @@ interface Props {
   onClose?: () => void;
   onDeleteFile?: () => any;
   filename?: string;
+  fileCount?: number;
 }
 
 export const DeleteFileModal: FC<Props> = ({
   onClose,
   onDeleteFile,
   filename,
+  fileCount,
 }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -45,11 +47,15 @@ export const DeleteFileModal: FC<Props> = ({
           <DeleteRoundedIcon sx={{ color: "red.600" }} />
         </Box>
         <Typography variant="h5" sx={{ mt: 2 }}>
-          Delete File
+          {fileCount > 1 ? `Delete ${fileCount} Files?` : "Delete File"}
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <Typography>{filename} will be deleted forever</Typography>
+        <Typography>
+          {fileCount > 1
+            ? "You will not be able to recover these files."
+            : `${filename} will be deleted forever`}
+        </Typography>
       </DialogContent>
       <DialogActions>
         <Button color="inherit" onClick={() => onClose()}>
@@ -64,7 +70,7 @@ export const DeleteFileModal: FC<Props> = ({
             onClose();
           }}
         >
-          Delete
+          {fileCount > 1 ? `Delete (${fileCount})` : "Delete"}
         </Button>
       </DialogActions>
     </Dialog>

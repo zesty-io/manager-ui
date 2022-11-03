@@ -28,11 +28,15 @@ import { useLocalStorage } from "react-use";
 import { UploadButton } from "./UploadButton";
 import { useDispatch, useSelector } from "react-redux";
 import { MoveFileDialog } from "./FileModal/MoveFileDialog";
+import { DeleteFileModal } from "./FileModal/DeleteFileModal";
 import {
   clearSelectedFiles,
   State,
 } from "../../../../../shell/store/media-revamp";
-import { useUpdateFileMutation } from "../../../../../shell/services/mediaManager";
+import {
+  useUpdateFileMutation,
+  useDeleteFileMutation,
+} from "../../../../../shell/services/mediaManager";
 import { File } from "../../../../../shell/services/types";
 import { useHistory } from "react-router";
 
@@ -61,7 +65,9 @@ export const Header = ({
   const [openDialog, setOpenDialog] = useState<Dialogs>(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const history = useHistory();
+  const [deleteFile] = useDeleteFileMutation();
   const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
+  const [showDeleteFileDialog, setShowDeleteFileDialog] = useState(false);
   const selectedFiles = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
   );
@@ -110,8 +116,13 @@ export const Header = ({
     dispatch(clearSelectedFiles());
   };
 
+  const handleDeleteMutation = () => {
+    return;
+  };
+
   return (
     <>
+      {/* Move File Dialog */}
       {showMoveFileDialog && (
         <MoveFileDialog
           handleGroupChange={(newGroupId: string) =>
@@ -166,20 +177,31 @@ export const Header = ({
                 Deselect All
               </Button>
               {showHeaderActions && (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  color="inherit"
-                  onClick={() => setShowMoveFileDialog(true)}
-                  startIcon={
-                    <DriveFolderUploadRoundedIcon
-                      color="action"
-                      fontSize="small"
-                    />
-                  }
-                >
-                  Move
-                </Button>
+                <>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    color="inherit"
+                    onClick={() => setShowMoveFileDialog(true)}
+                    startIcon={
+                      <DriveFolderUploadRoundedIcon
+                        color="action"
+                        fontSize="small"
+                      />
+                    }
+                  >
+                    Move
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    color="inherit"
+                    onClick={() => setShowDeleteFileDialog(true)}
+                    startIcon={<DeleteIcon color="action" fontSize="small" />}
+                  >
+                    Delete
+                  </Button>
+                </>
               )}
               {addImagesCallback && (
                 <Button
