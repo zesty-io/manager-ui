@@ -117,7 +117,17 @@ export const Header = ({
   };
 
   const handleDeleteMutation = () => {
-    return;
+    Promise.all(
+      selectedFiles.map(async (file) => {
+        await deleteFile({
+          id: file.id,
+          body: {
+            group_id: file.group_id,
+          },
+        });
+      })
+    );
+    dispatch(clearSelectedFiles());
   };
 
   return (
@@ -133,6 +143,16 @@ export const Header = ({
             setShowMoveFileDialog(false);
           }}
           fileCount={selectedFiles?.length}
+        />
+      )}
+
+      {/* Delete File Dialog */}
+      {showDeleteFileDialog && (
+        <DeleteFileModal
+          onDeleteFile={handleDeleteMutation}
+          fileCount={selectedFiles?.length}
+          onClose={() => setShowDeleteFileDialog(false)}
+          filename={selectedFiles?.length && selectedFiles[0].filename}
         />
       )}
 
