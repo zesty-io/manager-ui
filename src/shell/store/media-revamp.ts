@@ -81,7 +81,7 @@ export type State = {
   selectedFiles: FileBase[];
   limitSelected: number | null;
   sortOrder: MediaSortOrder;
-  fileTypeFilter: Filetype | null;
+  filetypeFilter: Filetype | null;
 };
 const initialState: State = {
   uploads: [],
@@ -91,7 +91,7 @@ const initialState: State = {
   selectedFiles: [],
   limitSelected: null,
   sortOrder: "createdDesc",
-  fileTypeFilter: null,
+  filetypeFilter: null,
 };
 
 const mediaSlice = createSlice({
@@ -248,7 +248,7 @@ const mediaSlice = createSlice({
       state.sortOrder = action.payload;
     },
     setFiletypeFilter(state, action: { payload: Filetype }) {
-      state.fileTypeFilter = action.payload;
+      state.filetypeFilter = action.payload;
     },
   },
 });
