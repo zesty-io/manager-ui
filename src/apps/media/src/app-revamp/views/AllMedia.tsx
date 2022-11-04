@@ -14,6 +14,8 @@ import { UploadModal } from "../components/UploadModal";
 import Controls from "../components/Controls";
 import { useMemo } from "react";
 import { AppState } from "../../../../../shell/store/types";
+import { getExtensions } from "../../../../../shell/store/media-revamp";
+import { fileExtension } from "../utils/fileUtils";
 
 interface Props {
   addImagesCallback?: (selectedFiles: File[]) => void;
@@ -25,6 +27,9 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
   const sortOrder = useSelector(
     (state: AppState) => state.mediaRevamp.sortOrder
   );
+  const filetypeFilter = useSelector(
+    (state: AppState) => state.mediaRevamp.filetypeFilter
+  );
   const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
     instanceId,
     ecoId,
@@ -35,7 +40,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
       bins?.map((bin) => bin.id),
       { skip: !bins?.length }
     );
-  const files = useMemo(() => {
+  const sortedFiles = useMemo(() => {
     if (!unsortedFiles) return unsortedFiles;
     switch (sortOrder) {
       case "alphaAsc":
@@ -57,6 +62,15 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
         return unsortedFiles;
     }
   }, [unsortedFiles, sortOrder]);
+
+  const files = useMemo(() => {
+    if (!sortedFiles) return sortedFiles;
+    if (!filetypeFilter) return sortedFiles;
+    const extensions = new Set<string>(getExtensions(filetypeFilter));
+    return sortedFiles.filter((file) =>
+      extensions.has(fileExtension(file.filename))
+    );
+  }, [sortedFiles, filetypeFilter]);
 
   return (
     <Box

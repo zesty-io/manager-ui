@@ -586,3 +586,29 @@ export function dismissFileUploads() {
 }
 
 export default mediaSlice.reducer;
+
+// Utility functions
+export function getExtensions(filetype: Filetype) {
+  switch (filetype) {
+    case "Images":
+      return ["jpg", "jpeg", "png", "gif", "svg", "webp"];
+    case "Videos":
+      return ["mp4", "webm", "mov", "avi", "wmv", "flv", "mpg", "mpeg"];
+    case "Audio":
+      return ["mp3", "wav", "ogg", "flac", "aac"];
+    case "Documents":
+      return ["doc", "docx", "txt", "rtf", "md", "odt"];
+    case "Spreadsheets":
+      return ["xls", "xlsx", "ppt", "pptx", "csv", "ods", "odp"];
+    case "PDFs":
+      return ["pdf"];
+    case "Archives":
+      return ["zip", "rar", "tar", "gz", "7z"];
+    case "Code":
+      return ["js", "css", "html", "php", "py", "rb", "java", "c", "cpp", "cs"];
+    case "Fonts":
+      return ["ttf", "otf", "woff", "woff2"];
+    default:
+      return null;
+  }
+}
