@@ -115,7 +115,12 @@ export const Header = ({
   };
 
   const handleSelectAllMutation = () => {
-    return;
+    dispatch(clearSelectedFiles());
+    files.map((file, i) => {
+      if (i < 50) {
+        dispatch(selectFile(file));
+      }
+    });
   };
 
   return (
