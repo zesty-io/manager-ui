@@ -63,16 +63,16 @@ export type Upload =
   | SuccessfulUpload;
 export type MediaSortOrder = "createdDesc" | "alphaAsc" | "alphaDesc";
 export type Filetype =
-  | "image"
-  | "video"
-  | "audio"
-  | "document"
-  | "presentation"
-  | "spreadsheet"
-  | "pdf"
-  | "archive"
-  | "code"
-  | "font";
+  | "Images"
+  | "Videos"
+  | "Audio"
+  | "PDFs"
+  | "Documents"
+  | "Presentations"
+  | "Spreadsheets"
+  | "Code"
+  | "Fonts"
+  | "Archives";
 export type State = {
   uploads: Upload[];
   lockedToGroupId: string;

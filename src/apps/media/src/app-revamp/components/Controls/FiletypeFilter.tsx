@@ -81,7 +81,7 @@ export const FiletypeFilter: FC = () => {
           py: "1px",
         }}
       >
-        <CloseRounded />
+        <CloseRounded fontSize="small" />
       </Button>
     </ButtonGroup>
   );
@@ -90,61 +90,61 @@ export const FiletypeFilter: FC = () => {
     <>
       {activeFilter ? activeButton : inactiveButton}
       <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
-        <MenuItem onClick={() => handleChange("image")}>
+        <MenuItem onClick={() => handleChange("Images")}>
           <ListItemIcon>
             <ImageRounded fontSize="small" />
           </ListItemIcon>
           <Typography variant="body1">Images</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("video")}>
+        <MenuItem onClick={() => handleChange("Videos")}>
           <ListItemIcon>
             <MovieCreationRounded fontSize="small" />
           </ListItemIcon>
           <Typography variant="body1">Videos</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("audio")}>
+        <MenuItem onClick={() => handleChange("Audio")}>
           <ListItemIcon>
             <AudiotrackRounded fontSize="small" />
           </ListItemIcon>
           <Typography variant="body1">Audio</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("pdf")}>
+        <MenuItem onClick={() => handleChange("PDFs")}>
           <ListItemIcon>
             <PicutreasPdfRounded fontSize="small" />
           </ListItemIcon>
           <Typography variant="body1">PDFs</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("document")}>
+        <MenuItem onClick={() => handleChange("Documents")}>
           <ListItemIcon>
             <DescriptionRounded fontSize="small" />
           </ListItemIcon>
           <Typography variant="body1">Documents</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("presentation")}>
+        <MenuItem onClick={() => handleChange("Presentations")}>
           <ListItemIcon>
             <SlideshowRounded fontSize="small" />
           </ListItemIcon>
           <Typography variant="body1">Presentations</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("spreadsheet")}>
+        <MenuItem onClick={() => handleChange("Spreadsheets")}>
           <ListItemIcon>
             <BorderAllRounded fontSize="small" />
           </ListItemIcon>
           <Typography variant="body1">Spreadsheets</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("code")}>
+        <MenuItem onClick={() => handleChange("Code")}>
           <ListItemIcon>
             <CodeRounded fontSize="small" />
           </ListItemIcon>
           <Typography variant="body1">Code</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("font")}>
+        <MenuItem onClick={() => handleChange("Fonts")}>
           <ListItemIcon>
             <FontDownloadRounded fontSize="small" />
           </ListItemIcon>
           <Typography variant="body1">Fonts</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("archive")}>
+        <MenuItem onClick={() => handleChange("Archives")}>
           <ListItemIcon>
             <FolderZipRounded fontSize="small" />
           </ListItemIcon>
