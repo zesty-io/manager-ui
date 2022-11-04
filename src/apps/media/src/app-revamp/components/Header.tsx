@@ -19,6 +19,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DriveFolderUploadRoundedIcon from "@mui/icons-material/DriveFolderUploadRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
+import DoneAllRoundedIcon from "@mui/icons-material/DoneAllRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import CreateNewFolderRoundedIcon from "@mui/icons-material/CreateNewFolderRounded";
 import { RenameFolderDialog } from "./RenameFolderDialog";
@@ -30,6 +31,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { MoveFileDialog } from "./FileModal/MoveFileDialog";
 import {
   clearSelectedFiles,
+  selectFile,
   State,
 } from "../../../../../shell/store/media-revamp";
 import { useUpdateFileMutation } from "../../../../../shell/services/mediaManager";
@@ -41,6 +43,7 @@ interface Props {
   id?: string;
   binId?: string;
   groupId?: string;
+  files?: Array<File>;
   hideUpload?: boolean;
   hideFolderCreate?: boolean;
   addImagesCallback?: (selectedFiles: File[]) => void;
@@ -52,6 +55,7 @@ export const Header = ({
   title,
   id,
   binId,
+  files,
   groupId,
   hideUpload,
   hideFolderCreate,
@@ -110,6 +114,10 @@ export const Header = ({
     dispatch(clearSelectedFiles());
   };
 
+  const handleSelectAllMutation = () => {
+    return;
+  };
+
   return (
     <>
       {showMoveFileDialog && (
@@ -164,6 +172,21 @@ export const Header = ({
                 startIcon={<CloseIcon color="action" fontSize="small" />}
               >
                 Deselect All
+              </Button>
+              <Button
+                variant="outlined"
+                size="small"
+                color="inherit"
+                onClick={() => handleSelectAllMutation()}
+                disabled={
+                  selectedFiles.length == files.length ||
+                  selectedFiles.length >= 50
+                }
+                startIcon={
+                  <DoneAllRoundedIcon color="action" fontSize="small" />
+                }
+              >
+                Select All
               </Button>
               {showHeaderActions && (
                 <Button

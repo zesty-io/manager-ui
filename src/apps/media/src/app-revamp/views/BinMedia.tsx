@@ -108,6 +108,7 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
             title={binData?.[0]?.name}
             id={binData?.[0]?.id}
             binId={binData?.[0]?.id}
+            files={binFiles}
             addImagesCallback={addImagesCallback}
           />
           {isGroupsFetching || isFilesFetching || isBinsFetching ? (

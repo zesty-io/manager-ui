@@ -110,6 +110,7 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
             title={currentGroup?.name || groupData?.name}
             id={currentGroup?.id || groupData?.id}
             binId={currentGroup?.bin_id || groupData?.bin_id}
+            files={groupFiles}
             groupId={currentGroup?.group_id || groupData?.group_id}
             addImagesCallback={addImagesCallback}
           />
