@@ -72,7 +72,13 @@ export type Filetype =
   | "Spreadsheets"
   | "Code"
   | "Fonts"
-  | "Archives";
+  | "Archives"
+  | "PNGs"
+  | "JPEGs"
+  | "SVGs"
+  | "WEBPs"
+  | "GIFs";
+
 export type State = {
   uploads: Upload[];
   lockedToGroupId: string;
@@ -588,8 +594,9 @@ export function dismissFileUploads() {
 export default mediaSlice.reducer;
 
 // Utility functions
-export function getExtensions(filetype: Filetype) {
+export function getExtensions(filetype: Filetype | null) {
   switch (filetype) {
+    // top level types
     case "Images":
       return ["jpg", "jpeg", "png", "gif", "svg", "webp"];
     case "Videos":
@@ -608,6 +615,18 @@ export function getExtensions(filetype: Filetype) {
       return ["js", "css", "html", "php", "py", "rb", "java", "c", "cpp", "cs"];
     case "Fonts":
       return ["ttf", "otf", "woff", "woff2"];
+    // image subtypes
+    case "JPEGs":
+      return ["jpg", "jpeg"];
+    case "PNGs":
+      return ["png"];
+    case "GIFs":
+      return ["gif"];
+    case "SVGs":
+      return ["svg"];
+    case "WEBPs":
+      return ["webp"];
+    // video subtypes
     default:
       return null;
   }
