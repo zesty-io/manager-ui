@@ -114,12 +114,21 @@ export const Header = ({
     dispatch(clearSelectedFiles());
   };
 
-  const handleSelectAllMutation = () => {
-    dispatch(clearSelectedFiles());
+  const handleSelectAll = () => {
+    // get the first 50 files
+    let limitedFiles: Array<File> = [];
     files.map((file, i) => {
-      if (i < 50) {
-        dispatch(selectFile(file));
+      if (i < 50 - selectedFiles.length) {
+        limitedFiles.push(file);
       }
+    });
+
+    // exclude duplicate files and dispatch to selectFile
+    const filteredFiles = limitedFiles.filter(
+      (file) => !selectedFiles.includes(file)
+    );
+    filteredFiles.map((file) => {
+      dispatch(selectFile(file));
     });
   };
 
@@ -182,7 +191,7 @@ export const Header = ({
                 variant="outlined"
                 size="small"
                 color="inherit"
-                onClick={() => handleSelectAllMutation()}
+                onClick={() => handleSelectAll()}
                 disabled={
                   selectedFiles.length == files.length ||
                   selectedFiles.length >= 50
