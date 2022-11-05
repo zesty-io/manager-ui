@@ -3,7 +3,10 @@ import { Box } from "@mui/material";
 import { Sort } from "./Sort";
 import { FiletypeFilter } from "./FiletypeFilter";
 
-export const Controls: FC = () => {
+// The final product will always show all controls in all views, but for now
+// we're only showing the filetype filter in the all media view
+export type Controls = { showFiletypeFilter?: boolean };
+export const Controls: FC<Controls> = ({ showFiletypeFilter = false }) => {
   return (
     <Box
       sx={{
@@ -20,7 +23,7 @@ export const Controls: FC = () => {
         }}
       >
         <Sort />
-        <FiletypeFilter />
+        {showFiletypeFilter && <FiletypeFilter />}
       </Box>
     </Box>
   );
