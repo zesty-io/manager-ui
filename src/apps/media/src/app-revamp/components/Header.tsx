@@ -118,7 +118,7 @@ export const Header = ({
     // get the first 50 files
     let limitedFiles: Array<File> = [];
     files.map((file, i) => {
-      if (i < 50 - selectedFiles.length) {
+      if (i < 50) {
         limitedFiles.push(file);
       }
     });
