@@ -7,17 +7,17 @@ import Typography from "@mui/material/Typography";
 import ListItemIcon from "@mui/material/ListItemIcon";
 
 import ChevronRightOutlined from "@mui/icons-material/ChevronRightOutlined";
-import ImageRounded from "@mui/icons-material/ImageRounded";
+import MovieCreationRounded from "@mui/icons-material/MovieCreationRounded";
 
 import {
   Filetype,
   setFiletypeFilter,
 } from "../../../../../../shell/store/media-revamp";
 
-type ImageFilterRow = {
+type VideoFilterRow = {
   onClose: () => void;
 };
-export const ImageFilterRow: FC<ImageFilterRow> = ({ onClose }) => {
+export const VideoFilterRow: FC<VideoFilterRow> = ({ onClose }) => {
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -38,9 +38,9 @@ export const ImageFilterRow: FC<ImageFilterRow> = ({ onClose }) => {
       {/*@ts-expect-error*/}
       <MenuItem onClick={handleClick}>
         <ListItemIcon>
-          <ImageRounded fontSize="small" />
+          <MovieCreationRounded fontSize="small" />
         </ListItemIcon>
-        <Typography variant="body1">Images</Typography>
+        <Typography variant="body1">Videos</Typography>
         <ListItemIcon>
           <ChevronRightOutlined fontSize="small" />
         </ListItemIcon>
@@ -49,34 +49,28 @@ export const ImageFilterRow: FC<ImageFilterRow> = ({ onClose }) => {
         open={open}
         onClose={handleClose}
         anchorEl={anchorEl}
-        anchorOrigin={{
-          /*
-            The list has a verticle padding of 8px
-            We need the submenu to be flush with the top of the main dropdown
-            menu, NOT flush with the first item in the menu. So we must cancel
-            out the padding of the list with vertical: -8px
-          */
-          vertical: -8,
-          horizontal: "right",
-        }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <MenuItem onClick={() => handleChange("Images")}>
-          <Typography variant="body1">All Image Types</Typography>
+        <MenuItem onClick={() => handleChange("Videos")}>
+          <Typography variant="body1">All Video Types</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("PNGs")}>
-          <Typography variant="body1">PNG</Typography>
+        <MenuItem onClick={() => handleChange("MPEGs")}>
+          <Typography variant="body1">MPEG</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("JPEGs")}>
-          <Typography variant="body1">JPEG</Typography>
+        <MenuItem onClick={() => handleChange("MP4s")}>
+          <Typography variant="body1">MP4</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("SVGs")}>
-          <Typography variant="body1">SVG</Typography>
+        <MenuItem onClick={() => handleChange("MOVs")}>
+          <Typography variant="body1">MOV</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("WEBPs")}>
-          <Typography variant="body1">WEBP</Typography>
+        <MenuItem onClick={() => handleChange("WMVs")}>
+          <Typography variant="body1">WMV</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("GIFs")}>
-          <Typography variant="body1">GIF</Typography>
+        <MenuItem onClick={() => handleChange("AVIs")}>
+          <Typography variant="body1">AVI</Typography>
+        </MenuItem>
+        <MenuItem onClick={() => handleChange("FLVs")}>
+          <Typography variant="body1">FLV</Typography>
         </MenuItem>
       </Menu>
     </>

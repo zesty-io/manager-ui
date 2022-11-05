@@ -77,7 +77,14 @@ export type Filetype =
   | "JPEGs"
   | "SVGs"
   | "WEBPs"
-  | "GIFs";
+  | "GIFs"
+  | "MP4s"
+  | "WEBMs"
+  | "MOVs"
+  | "AVIs"
+  | "WMVs"
+  | "FLVs"
+  | "MPEGs";
 
 export type State = {
   uploads: Upload[];
@@ -627,6 +634,20 @@ export function getExtensions(filetype: Filetype | null) {
     case "WEBPs":
       return ["webp"];
     // video subtypes
+    case "MP4s":
+      return ["mp4"];
+    case "WEBMs":
+      return ["webm"];
+    case "MOVs":
+      return ["mov"];
+    case "AVIs":
+      return ["avi"];
+    case "WMVs":
+      return ["wmv"];
+    case "FLVs":
+      return ["flv"];
+    case "MPEGs":
+      return ["mpg", "mpeg"];
     default:
       return null;
   }

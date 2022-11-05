@@ -10,7 +10,6 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CloseRounded from "@mui/icons-material/CloseRounded";
-import MovieCreationRounded from "@mui/icons-material/MovieCreationRounded";
 import AudiotrackRounded from "@mui/icons-material/AudiotrackRounded";
 import PicutreasPdfRounded from "@mui/icons-material/PictureAsPdfRounded";
 import DescriptionRounded from "@mui/icons-material/DescriptionRounded";
@@ -26,6 +25,7 @@ import {
   setFiletypeFilter,
 } from "../../../../../../shell/store/media-revamp";
 import { ImageFilterRow } from "./ImageFilterRow";
+import { VideoFilterRow } from "./VideoFilterRow";
 
 export const FiletypeFilter: FC = () => {
   const dispatch = useDispatch();
@@ -91,12 +91,7 @@ export const FiletypeFilter: FC = () => {
       {activeFilter ? activeButton : inactiveButton}
       <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
         <ImageFilterRow onClose={handleClose} />
-        <MenuItem onClick={() => handleChange("Videos")}>
-          <ListItemIcon>
-            <MovieCreationRounded fontSize="small" />
-          </ListItemIcon>
-          <Typography variant="body1">Videos</Typography>
-        </MenuItem>
+        <VideoFilterRow onClose={handleClose} />
         <MenuItem onClick={() => handleChange("Audio")}>
           <ListItemIcon>
             <AudiotrackRounded fontSize="small" />
