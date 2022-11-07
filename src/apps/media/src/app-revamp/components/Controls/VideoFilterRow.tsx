@@ -51,25 +51,25 @@ export const VideoFilterRow: FC<VideoFilterRow> = ({ onClose }) => {
         anchorEl={anchorEl}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <MenuItem onClick={() => handleChange("Videos")}>
+        <MenuItem onClick={() => handleChange("Video")}>
           <Typography variant="body1">All Video Types</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("MPEGs")}>
+        <MenuItem onClick={() => handleChange("MPEG")}>
           <Typography variant="body1">MPEG</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("MP4s")}>
+        <MenuItem onClick={() => handleChange("MP4")}>
           <Typography variant="body1">MP4</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("MOVs")}>
+        <MenuItem onClick={() => handleChange("MOV")}>
           <Typography variant="body1">MOV</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("WMVs")}>
+        <MenuItem onClick={() => handleChange("WMV")}>
           <Typography variant="body1">WMV</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("AVIs")}>
+        <MenuItem onClick={() => handleChange("AVI")}>
           <Typography variant="body1">AVI</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("FLVs")}>
+        <MenuItem onClick={() => handleChange("FLV")}>
           <Typography variant="body1">FLV</Typography>
         </MenuItem>
       </Menu>

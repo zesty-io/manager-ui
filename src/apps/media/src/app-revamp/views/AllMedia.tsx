@@ -14,8 +14,7 @@ import { UploadModal } from "../components/UploadModal";
 import Controls from "../components/Controls";
 import { useMemo } from "react";
 import { AppState } from "../../../../../shell/store/types";
-import { getExtensions } from "../../../../../shell/store/media-revamp";
-import { fileExtension } from "../utils/fileUtils";
+import { fileExtension, getExtensions } from "../utils/fileUtils";
 
 interface Props {
   addImagesCallback?: (selectedFiles: File[]) => void;

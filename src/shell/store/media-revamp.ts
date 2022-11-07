@@ -63,28 +63,28 @@ export type Upload =
   | SuccessfulUpload;
 export type MediaSortOrder = "createdDesc" | "alphaAsc" | "alphaDesc";
 export type Filetype =
-  | "Images"
-  | "Videos"
+  | "Image"
+  | "Video"
   | "Audio"
-  | "PDFs"
-  | "Documents"
-  | "Presentations"
-  | "Spreadsheets"
+  | "PDF"
+  | "Document"
+  | "Presentation"
+  | "Spreadsheet"
   | "Code"
-  | "Fonts"
-  | "Archives"
-  | "PNGs"
-  | "JPEGs"
-  | "SVGs"
-  | "WEBPs"
-  | "GIFs"
-  | "MP4s"
-  | "WEBMs"
-  | "MOVs"
-  | "AVIs"
-  | "WMVs"
-  | "FLVs"
-  | "MPEGs";
+  | "Font"
+  | "Archive"
+  | "PNG"
+  | "JPEG"
+  | "SVG"
+  | "WEBP"
+  | "GIF"
+  | "MP4"
+  | "WEBM"
+  | "MOV"
+  | "AVI"
+  | "WMV"
+  | "FLV"
+  | "MPEG";
 
 export type State = {
   uploads: Upload[];
@@ -599,56 +599,3 @@ export function dismissFileUploads() {
 }
 
 export default mediaSlice.reducer;
-
-// Utility functions
-export function getExtensions(filetype: Filetype | null) {
-  switch (filetype) {
-    // top level types
-    case "Images":
-      return ["jpg", "jpeg", "png", "gif", "svg", "webp"];
-    case "Videos":
-      return ["mp4", "webm", "mov", "avi", "wmv", "flv", "mpg", "mpeg"];
-    case "Audio":
-      return ["mp3", "wav", "ogg", "flac", "aac"];
-    case "Documents":
-      return ["doc", "docx", "txt", "rtf", "md", "odt"];
-    case "Spreadsheets":
-      return ["xls", "xlsx", "ppt", "pptx", "csv", "ods", "odp"];
-    case "PDFs":
-      return ["pdf"];
-    case "Archives":
-      return ["zip", "rar", "tar", "gz", "7z"];
-    case "Code":
-      return ["js", "css", "html", "php", "py", "rb", "java", "c", "cpp", "cs"];
-    case "Fonts":
-      return ["ttf", "otf", "woff", "woff2"];
-    // image subtypes
-    case "JPEGs":
-      return ["jpg", "jpeg"];
-    case "PNGs":
-      return ["png"];
-    case "GIFs":
-      return ["gif"];
-    case "SVGs":
-      return ["svg"];
-    case "WEBPs":
-      return ["webp"];
-    // video subtypes
-    case "MP4s":
-      return ["mp4"];
-    case "WEBMs":
-      return ["webm"];
-    case "MOVs":
-      return ["mov"];
-    case "AVIs":
-      return ["avi"];
-    case "WMVs":
-      return ["wmv"];
-    case "FLVs":
-      return ["flv"];
-    case "MPEGs":
-      return ["mpg", "mpeg"];
-    default:
-      return null;
-  }
-}

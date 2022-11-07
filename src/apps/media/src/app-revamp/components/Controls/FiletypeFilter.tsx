@@ -27,6 +27,15 @@ import {
 import { ImageFilterRow } from "./ImageFilterRow";
 import { VideoFilterRow } from "./VideoFilterRow";
 
+const pluralize = (filetype: Filetype) => {
+  // audio & code filetypes can't be pluralized
+  if (filetype !== "Audio" && filetype !== "Code") {
+    // all other filetypes can be pluralized, just add an "s"
+    return `${filetype}s`;
+  }
+  return filetype;
+};
+
 export const FiletypeFilter: FC = () => {
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -59,6 +68,7 @@ export const FiletypeFilter: FC = () => {
       File Type
     </Button>
   );
+
   const activeButton = (
     <ButtonGroup>
       <Button
@@ -70,7 +80,7 @@ export const FiletypeFilter: FC = () => {
         }}
       >
         <Typography variant="body2" sx={{ textTransform: "capitalize" }}>
-          {activeFilter}
+          {pluralize(activeFilter)}
         </Typography>
       </Button>
       <Button
@@ -98,25 +108,25 @@ export const FiletypeFilter: FC = () => {
           </ListItemIcon>
           <Typography variant="body1">Audio</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("PDFs")}>
+        <MenuItem onClick={() => handleChange("PDF")}>
           <ListItemIcon>
             <PicutreasPdfRounded fontSize="small" />
           </ListItemIcon>
           <Typography variant="body1">PDFs</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("Documents")}>
+        <MenuItem onClick={() => handleChange("Document")}>
           <ListItemIcon>
             <DescriptionRounded fontSize="small" />
           </ListItemIcon>
           <Typography variant="body1">Documents</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("Presentations")}>
+        <MenuItem onClick={() => handleChange("Presentation")}>
           <ListItemIcon>
             <SlideshowRounded fontSize="small" />
           </ListItemIcon>
           <Typography variant="body1">Presentations</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("Spreadsheets")}>
+        <MenuItem onClick={() => handleChange("Spreadsheet")}>
           <ListItemIcon>
             <BorderAllRounded fontSize="small" />
           </ListItemIcon>
@@ -128,13 +138,13 @@ export const FiletypeFilter: FC = () => {
           </ListItemIcon>
           <Typography variant="body1">Code</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("Fonts")}>
+        <MenuItem onClick={() => handleChange("Font")}>
           <ListItemIcon>
             <FontDownloadRounded fontSize="small" />
           </ListItemIcon>
           <Typography variant="body1">Fonts</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("Archives")}>
+        <MenuItem onClick={() => handleChange("Archive")}>
           <ListItemIcon>
             <FolderZipRounded fontSize="small" />
           </ListItemIcon>

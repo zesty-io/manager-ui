@@ -60,22 +60,22 @@ export const ImageFilterRow: FC<ImageFilterRow> = ({ onClose }) => {
           horizontal: "right",
         }}
       >
-        <MenuItem onClick={() => handleChange("Images")}>
+        <MenuItem onClick={() => handleChange("Image")}>
           <Typography variant="body1">All Image Types</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("PNGs")}>
+        <MenuItem onClick={() => handleChange("PNG")}>
           <Typography variant="body1">PNG</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("JPEGs")}>
+        <MenuItem onClick={() => handleChange("JPEG")}>
           <Typography variant="body1">JPEG</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("SVGs")}>
+        <MenuItem onClick={() => handleChange("SVG")}>
           <Typography variant="body1">SVG</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("WEBPs")}>
+        <MenuItem onClick={() => handleChange("WEBP")}>
           <Typography variant="body1">WEBP</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("GIFs")}>
+        <MenuItem onClick={() => handleChange("GIF")}>
           <Typography variant="body1">GIF</Typography>
         </MenuItem>
       </Menu>
