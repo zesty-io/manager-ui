@@ -94,7 +94,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
         </Box>
       ) : (
         <>
-          <Controls showFiletypeFilter={true} />
+          <Controls />
           <UploadModal />
           <DnDProvider
             isDefaultBin

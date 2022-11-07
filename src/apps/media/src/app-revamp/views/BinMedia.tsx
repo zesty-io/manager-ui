@@ -15,6 +15,8 @@ import { NotFoundState } from "../components/NotFoundState";
 import { File } from "../../../../../shell/services/types";
 import { AppState } from "../../../../../shell/store/types";
 import Controls from "../components/Controls";
+import { NoResultsState } from "../components/NoResultsState";
+import { fileExtension, getExtensions } from "../utils/fileUtils";
 
 type Params = { id: string };
 
@@ -27,6 +29,9 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
   const ecoId = useSelector((state: AppState) => state.instance.ecoID);
   const sortOrder = useSelector(
     (state: AppState) => state.mediaRevamp.sortOrder
+  );
+  const filetypeFilter = useSelector(
+    (state: AppState) => state.mediaRevamp.filetypeFilter
   );
   const params = useParams<Params>();
   const { id } = params;
@@ -50,7 +55,7 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
       skip: !isValidId,
     });
 
-  const binFiles = useMemo(() => {
+  const sortedBinFiles = useMemo(() => {
     if (!unsortedBinFiles) return unsortedBinFiles;
     switch (sortOrder) {
       case "alphaAsc":
@@ -73,8 +78,19 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
     }
   }, [unsortedBinFiles, sortOrder, binData, unsortedBinGroups]);
 
+  const binFiles = useMemo(() => {
+    if (!sortedBinFiles) return sortedBinFiles;
+    if (!filetypeFilter) return sortedBinFiles;
+    const extensions = new Set<string>(getExtensions(filetypeFilter));
+    return sortedBinFiles.filter((file) =>
+      extensions.has(fileExtension(file.filename))
+    );
+  }, [sortedBinFiles, filetypeFilter]);
+
   const binGroups = useMemo(() => {
     if (!unsortedBinGroups) return unsortedBinGroups;
+    // don't show groups when filtering by filetypes
+    if (filetypeFilter !== null) return [];
     switch (sortOrder) {
       case "alphaAsc":
         return [...unsortedBinGroups].sort((a, b) => {
@@ -93,7 +109,7 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
       default:
         return unsortedBinGroups;
     }
-  }, [unsortedBinGroups, sortOrder, binData]);
+  }, [unsortedBinGroups, sortOrder, binData, filetypeFilter]);
 
   return (
     <Box
@@ -123,11 +139,15 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
             <>
               <Controls />
               <UploadModal />
-              {/* /* TODO FIX THIS */}
               <DnDProvider currentBinId={id} currentGroupId="">
                 {!isFilesFetching && !binFiles?.length && !binGroups?.length ? (
-                  /*TODO fix this*/
-                  <EmptyState currentBinId={id} currentGroupId="" />
+                  <>
+                    {unsortedBinFiles.length ? (
+                      <NoResultsState filetype={filetypeFilter} />
+                    ) : (
+                      <EmptyState currentBinId={id} currentGroupId="" />
+                    )}
+                  </>
                 ) : (
                   <MediaGrid
                     files={binFiles}
