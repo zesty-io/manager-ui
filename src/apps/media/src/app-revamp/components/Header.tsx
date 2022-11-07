@@ -193,8 +193,8 @@ export const Header = ({
                 color="inherit"
                 onClick={() => handleSelectAll()}
                 disabled={
-                  selectedFiles.length == files.length ||
-                  selectedFiles.length >= 50
+                  selectedFiles?.length == files.length ||
+                  selectedFiles?.length >= 50
                 }
                 startIcon={
                   <DoneAllRoundedIcon color="action" fontSize="small" />
