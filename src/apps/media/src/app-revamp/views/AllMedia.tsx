@@ -9,6 +9,7 @@ import { EmptyState } from "../components/EmptyState";
 import { MediaGrid } from "../components/MediaGrid";
 import { Header } from "../components/Header";
 import { NotFoundState } from "../components/NotFoundState";
+import { NoResultsState } from "../components/NoResultsState";
 import { File } from "../../../../../shell/services/types";
 import { UploadModal } from "../components/UploadModal";
 import Controls from "../components/Controls";
@@ -101,7 +102,13 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
             currentGroupId=""
           >
             {!isFilesFetching && !isBinsFetching && !files?.length ? (
-              <EmptyState currentBinId={defaultBin?.id} currentGroupId="" />
+              <>
+                {unsortedFiles.length ? (
+                  <NoResultsState filetype={filetypeFilter} />
+                ) : (
+                  <EmptyState currentBinId={defaultBin?.id} currentGroupId="" />
+                )}
+              </>
             ) : (
               <MediaGrid files={files} hideHeaders />
             )}
