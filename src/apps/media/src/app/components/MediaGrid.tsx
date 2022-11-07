@@ -1,7 +1,7 @@
 import { useEffect, useRef, useMemo, useCallback, useState } from "react";
 import { VariableSizeGrid } from "react-window";
 import { Box, Typography } from "@mui/material";
-import { Folder } from "../components/Folder";
+import { Folder } from "./Folder";
 import { File, Group } from "../../../../../shell/services/types";
 import { Thumbnail } from "./Thumbnail";
 import { useHistory, useLocation } from "react-router-dom";
