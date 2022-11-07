@@ -18,6 +18,7 @@ import BorderAllRounded from "@mui/icons-material/BorderAllRounded";
 import CodeRounded from "@mui/icons-material/CodeRounded";
 import FontDownloadRounded from "@mui/icons-material/FontDownloadRounded";
 import FolderZipRounded from "@mui/icons-material/FolderZipRounded";
+import CheckIcon from "@mui/icons-material/Check";
 
 import { AppState } from "../../../../../../shell/store/types";
 import {
@@ -70,10 +71,10 @@ export const FiletypeFilter: FC = () => {
   );
 
   const activeButton = (
-    <ButtonGroup>
+    <ButtonGroup variant="contained">
       <Button
+        startIcon={<CheckIcon sx={{ width: "20px", height: "20px" }} />}
         onClick={handleClick}
-        variant="outlined"
         size="small"
         sx={{
           py: "1px",
@@ -86,7 +87,6 @@ export const FiletypeFilter: FC = () => {
       <Button
         onClick={() => handleChange(null)}
         size="small"
-        variant="outlined"
         sx={{
           py: "1px",
         }}
