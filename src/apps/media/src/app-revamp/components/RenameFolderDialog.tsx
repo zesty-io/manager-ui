@@ -47,6 +47,14 @@ export const RenameFolderDialog = ({
     if (isSuccess) onClose();
   }, [isSuccess]);
 
+  const handleUpdate = () => {
+    if (groupId) {
+      updateGroup({ id, body: { name: newName, group_id: groupId } });
+    } else {
+      updateBin({ id, body: { name: newName } });
+    }
+  };
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
       <DialogTitle>Rename Folder</DialogTitle>
@@ -60,23 +68,14 @@ export const RenameFolderDialog = ({
           size="small"
           fullWidth
           onChange={(evt) => setNewName(evt.target.value)}
+          onKeyPress={(event) => event.key === "Enter" && handleUpdate()}
         />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
           Cancel
         </Button>
-        <Button
-          disabled={isLoading}
-          variant="contained"
-          onClick={() => {
-            if (groupId) {
-              updateGroup({ id, body: { name: newName, group_id: groupId } });
-            } else {
-              updateBin({ id, body: { name: newName } });
-            }
-          }}
-        >
+        <Button disabled={isLoading} variant="contained" onClick={handleUpdate}>
           Update
         </Button>
       </DialogActions>

@@ -47,6 +47,12 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
     }
   }, [binGroups, id]);
 
+  const handleCreate = () => {
+    createGroup({
+      body: { name, group_id: selectedGroup?.id, bin_id: binId },
+    });
+  };
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
       <DialogTitle>New Folder</DialogTitle>
@@ -93,21 +99,14 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
           fullWidth
           onChange={(evt) => setName(evt.target.value)}
           onFocus={(evt) => evt.target.select()}
+          onKeyPress={(event) => event.key === "Enter" && handleCreate()}
         />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
           Cancel
         </Button>
-        <Button
-          disabled={isLoading}
-          variant="contained"
-          onClick={() => {
-            createGroup({
-              body: { name, group_id: selectedGroup?.id, bin_id: binId },
-            });
-          }}
-        >
+        <Button disabled={isLoading} variant="contained" onClick={handleCreate}>
           Create
         </Button>
       </DialogActions>
