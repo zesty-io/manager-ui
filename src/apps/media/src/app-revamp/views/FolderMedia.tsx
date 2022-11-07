@@ -15,6 +15,8 @@ import { NotFoundState } from "../components/NotFoundState";
 import { File } from "../../../../../shell/services/types";
 import { AppState } from "../../../../../shell/store/types";
 import Controls from "../components/Controls";
+import { NoResultsState } from "../components/NoResultsState";
+import { fileExtension, getExtensions } from "../utils/fileUtils";
 
 type Params = { id: string };
 
@@ -27,6 +29,9 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
   const { id } = params;
   const sortOrder = useSelector(
     (state: AppState) => state.mediaRevamp.sortOrder
+  );
+  const filetypeFilter = useSelector(
+    (state: AppState) => state.mediaRevamp.filetypeFilter
   );
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
@@ -51,7 +56,7 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
   });
 
   const unsortedGroupFiles = groupData?.files;
-  const groupFiles = useMemo(() => {
+  const sortedGroupFiles = useMemo(() => {
     if (!unsortedGroupFiles) return unsortedGroupFiles;
     switch (sortOrder) {
       case "alphaAsc":
@@ -74,9 +79,20 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
     }
   }, [groupData, unsortedGroupFiles, sortOrder]);
 
+  const groupFiles = useMemo(() => {
+    if (!sortedGroupFiles) return sortedGroupFiles;
+    if (!filetypeFilter) return sortedGroupFiles;
+    const extensions = new Set<string>(getExtensions(filetypeFilter));
+    return sortedGroupFiles.filter((file) =>
+      extensions.has(fileExtension(file.filename))
+    );
+  }, [sortedGroupFiles, filetypeFilter]);
+
   const unsortedSubGroups = groupData?.groups;
   const subgroups = useMemo(() => {
     if (!unsortedSubGroups) return unsortedSubGroups;
+    // don't show groups when filtering by filetypes
+    if (filetypeFilter !== null) return [];
     switch (sortOrder) {
       case "alphaAsc":
         return [...unsortedSubGroups].sort((a, b) => {
@@ -95,7 +111,7 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
       default:
         return unsortedSubGroups;
     }
-  }, [unsortedSubGroups, sortOrder]);
+  }, [unsortedSubGroups, sortOrder, filetypeFilter]);
 
   return (
     <Box
@@ -124,17 +140,23 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
             </Box>
           ) : (
             <>
-              <Controls />
+              <Controls showFiletypeFilter={true} />
               <UploadModal />
               <DnDProvider
                 currentBinId={groupData?.bin_id}
                 currentGroupId={groupData?.id}
               >
                 {!isFetching && !groupFiles?.length && !subgroups?.length ? (
-                  <EmptyState
-                    currentBinId={groupData?.bin_id}
-                    currentGroupId={groupData?.id}
-                  />
+                  <>
+                    {unsortedGroupFiles.length ? (
+                      <NoResultsState filetype={filetypeFilter} />
+                    ) : (
+                      <EmptyState
+                        currentBinId={groupData?.bin_id}
+                        currentGroupId={groupData?.id}
+                      />
+                    )}
+                  </>
                 ) : (
                   <MediaGrid files={groupFiles} groups={subgroups} />
                 )}
