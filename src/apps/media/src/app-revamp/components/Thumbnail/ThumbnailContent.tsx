@@ -31,7 +31,7 @@ export const ThumbnailContent: FC<Props> = ({
 
   return (
     <>
-      <CardContent sx={styledCardContent}>
+      <CardContent sx={styledCardContent} data-testid="media-thumbnail-content">
         {onFilenameChange ? (
           <Box>
             <Box>
