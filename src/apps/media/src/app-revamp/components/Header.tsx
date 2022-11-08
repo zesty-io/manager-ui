@@ -1,4 +1,4 @@
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -19,6 +19,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DriveFolderUploadRoundedIcon from "@mui/icons-material/DriveFolderUploadRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
+import DoneAllRoundedIcon from "@mui/icons-material/DoneAllRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import CreateNewFolderRoundedIcon from "@mui/icons-material/CreateNewFolderRounded";
 import { RenameFolderDialog } from "./RenameFolderDialog";
@@ -30,6 +31,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { MoveFileDialog } from "./FileModal/MoveFileDialog";
 import {
   clearSelectedFiles,
+  selectFile,
   State,
 } from "../../../../../shell/store/media-revamp";
 import { useUpdateFileMutation } from "../../../../../shell/services/mediaManager";
@@ -41,6 +43,7 @@ interface Props {
   id?: string;
   binId?: string;
   groupId?: string;
+  files?: Array<File>;
   hideUpload?: boolean;
   hideFolderCreate?: boolean;
   addImagesCallback?: (selectedFiles: File[]) => void;
@@ -52,6 +55,7 @@ export const Header = ({
   title,
   id,
   binId,
+  files,
   groupId,
   hideUpload,
   hideFolderCreate,
@@ -64,6 +68,9 @@ export const Header = ({
   const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
   const selectedFiles = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
+  );
+  const isSelectDialog = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.isSelectDialog
   );
   const showHeaderActions = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.showHeaderActions
@@ -95,7 +102,7 @@ export const Header = ({
 
   const handleUpdateMutation = (newGroupId: string) => {
     Promise.all(
-      selectedFiles.map(async (file) => {
+      selectedFiles?.map(async (file) => {
         await updateFile({
           id: file.id,
           previousGroupId: file.group_id,
@@ -108,6 +115,35 @@ export const Header = ({
       })
     );
     dispatch(clearSelectedFiles());
+  };
+
+  const handleSelectAll = () => {
+    // get the first 50 files
+    let limitedFiles: Array<File> = [];
+    files.map((file, i) => {
+      if (i < 50) {
+        limitedFiles.push(file);
+      }
+    });
+
+    // exclude duplicate files and dispatch to selectFile
+    const filteredFiles = limitedFiles.filter(
+      (file) => !selectedFiles?.includes(file)
+    );
+    filteredFiles.map((file) => {
+      dispatch(selectFile(file));
+    });
+  };
+
+  const disableSelectAll = () => {
+    if (
+      selectedFiles?.length == files?.length ||
+      selectedFiles?.length >= limitSelected
+    ) {
+      return true;
+    } else {
+      return false;
+    }
   };
 
   return (
@@ -140,7 +176,7 @@ export const Header = ({
           height: "64px",
         }}
       >
-        {selectedFiles.length > 0 ? (
+        {selectedFiles?.length > 0 ? (
           <>
             <Stack direction="row" spacing="2px" alignItems="center">
               <IconButton
@@ -151,8 +187,9 @@ export const Header = ({
                 <CloseIcon fontSize="small" />
               </IconButton>
               <Typography variant="h4" fontWeight={600}>
-                {selectedFiles.length}{" "}
-                {limitSelected ? `/${limitSelected}` : null} Selected
+                {selectedFiles?.length}{" "}
+                {isSelectDialog && limitSelected ? `/${limitSelected}` : null}
+                Selected
               </Typography>
             </Stack>
             <Stack direction="row" spacing={2}>
@@ -164,6 +201,21 @@ export const Header = ({
                 startIcon={<CloseIcon color="action" fontSize="small" />}
               >
                 Deselect All
+              </Button>
+              <Button
+                variant="outlined"
+                size="small"
+                color="inherit"
+                onClick={() => handleSelectAll()}
+                disabled={disableSelectAll()}
+                startIcon={
+                  <DoneAllRoundedIcon color="action" fontSize="small" />
+                }
+              >
+                Select All
+                {!isSelectDialog &&
+                  disableSelectAll() &&
+                  ` (Max ${limitSelected})`}
               </Button>
               {showHeaderActions && (
                 <Button
