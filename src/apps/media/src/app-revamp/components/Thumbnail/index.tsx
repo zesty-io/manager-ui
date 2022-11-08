@@ -38,6 +38,7 @@ import htmlIcon from "../../../../../../../public/images/htmlIcon.svg";
 import cssIcon from "../../../../../../../public/images/cssIcon.svg";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
+import RemoveRedEyeRoundedIcon from "@mui/icons-material/RemoveRedEyeRounded";
 import { isImage } from "../../utils/fileUtils";
 
 import { File } from "../../../../../../shell/services/types";
@@ -94,7 +95,11 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   const selectedFiles = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
   );
+  const isSelectDialog = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.isSelectDialog
+  );
   const dispatch = useDispatch();
+  const isSelecting = isSelectDialog || selectedFiles?.length;
 
   const onDragStart = (event: DragEvent) => {
     event.dataTransfer.setData(
@@ -102,6 +107,14 @@ export const Thumbnail: FC<ThumbnailProps> = ({
       JSON.stringify({ id, filename, group_id, bin_id })
     );
     event.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleSelect = () => {
+    if (selectedFiles.some((file) => file.id === id)) {
+      dispatch(deselectFile(file));
+    } else {
+      dispatch(selectFile(file));
+    }
   };
 
   const RemoveIcon = () => {
@@ -154,14 +167,11 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             color="primary"
           />
         }
-        onChange={(evt, checked) => {
-          if (checked) {
-            dispatch(selectFile(file));
-          } else {
-            dispatch(deselectFile(file));
-          }
+        // onChange={(evt, checked) => {}
+        onClick={(evt) => {
+          evt.stopPropagation();
+          handleSelect();
         }}
-        onClick={(evt) => evt.stopPropagation()}
       />
     );
   };
@@ -196,6 +206,37 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               <LinkRoundedIcon sx={{ color: "grey.400" }} />
             )}
           </>
+        }
+      />
+    );
+  };
+
+  const PreviewChip = () => {
+    if (!onClick) return null;
+    return (
+      <Chip
+        label={
+          // @ts-ignore
+          <Typography variant="body3" color="text.secondary">
+            Preview
+          </Typography>
+        }
+        color="default"
+        sx={{
+          width: "fit-content",
+          display: "none",
+          top: 8,
+          left: 8,
+        }}
+        size="small"
+        onClick={(event) => {
+          event.stopPropagation();
+          onClick();
+        }}
+        icon={
+          <RemoveRedEyeRoundedIcon
+            sx={{ color: (theme) => `${theme.palette.grey[400]} !important` }}
+          />
         }
       />
     );
@@ -276,7 +317,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           ref={thumbnailRef}
           sx={styledCard}
           elevation={0}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
           data-cy={id}
@@ -314,7 +355,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -357,6 +398,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
@@ -368,7 +410,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           ref={thumbnailRef}
           sx={styledCard}
           elevation={0}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           draggable={!isEditable}
           data-cy={id}
           onDragStart={(evt) => onDragStart(evt)}
@@ -405,7 +447,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -448,6 +490,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
@@ -458,7 +501,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         <Card
           sx={styledCard}
           elevation={0}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
@@ -490,7 +533,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -521,6 +564,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
@@ -529,7 +573,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         <Card
           sx={styledCard}
           elevation={0}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
@@ -561,7 +605,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -592,6 +636,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
@@ -602,7 +647,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         <Card
           sx={styledCard}
           elevation={0}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
@@ -635,7 +680,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -667,6 +712,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
@@ -675,7 +721,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         <Card
           sx={styledCard}
           elevation={0}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
@@ -708,7 +754,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -739,6 +785,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
@@ -749,7 +796,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         <Card
           sx={styledCard}
           elevation={0}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
@@ -782,7 +829,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -813,6 +860,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
@@ -825,7 +873,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         <Card
           sx={styledCard}
           elevation={0}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
@@ -858,7 +906,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -889,6 +937,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
@@ -908,7 +957,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           data-cy={id}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
@@ -940,7 +989,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -991,6 +1040,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
@@ -1003,7 +1053,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           data-cy={id}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
@@ -1035,7 +1085,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -1066,6 +1116,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
@@ -1079,7 +1130,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         <Card
           sx={styledCard}
           elevation={0}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
@@ -1112,7 +1163,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -1143,6 +1194,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
@@ -1151,7 +1203,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         <Card
           sx={styledCard}
           elevation={0}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
@@ -1184,7 +1236,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -1215,6 +1267,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
@@ -1223,7 +1276,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         <Card
           sx={styledCard}
           elevation={0}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
@@ -1256,7 +1309,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -1287,6 +1340,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
@@ -1296,7 +1350,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           data-cy={id}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
@@ -1328,7 +1382,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -1359,6 +1413,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
@@ -1368,7 +1423,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           data-cy={id}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
@@ -1400,7 +1455,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -1431,6 +1486,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
@@ -1443,7 +1499,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
           sx={styledCard}
           elevation={0}
           data-cy={id}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
         >
@@ -1475,7 +1531,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -1513,6 +1569,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
@@ -1521,7 +1578,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         <Card
           sx={styledCard}
           elevation={0}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
@@ -1554,7 +1611,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -1592,6 +1649,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
@@ -1600,7 +1658,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
         <Card
           sx={styledCard}
           elevation={0}
-          onClick={onClick}
+          onClick={isSelecting ? handleSelect : onClick}
           data-cy={id}
           draggable={!isEditable}
           onDragStart={(evt) => onDragStart(evt)}
@@ -1634,7 +1692,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 },
               }}
             >
-              <CopyUrlChip />
+              {isSelecting ? <PreviewChip /> : <CopyUrlChip />}
               {selectable && <Checkbox />}
               <RemoveIcon />
             </Box>
@@ -1678,6 +1736,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             onFilenameChange={onFilenameChange}
             onTitleChange={onTitleChange}
             isEditable={isEditable}
+            isSelected={selectedFiles.some((file) => file.id === id)}
           />
         </Card>
       );
