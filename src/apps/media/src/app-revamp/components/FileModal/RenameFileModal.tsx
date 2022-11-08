@@ -43,6 +43,11 @@ export const RenameFileModal: FC<Props> = ({
     }
   }, [isLoadingUpdate, isSuccessUpdate]);
 
+  const handleUpdate = () => {
+    onSetNewFilename(renamedFilename);
+    handleUpdateMutation(renamedFilename);
+  };
+
   return (
     <Dialog open={true} fullWidth maxWidth={"xs"}>
       <DialogTitle>
@@ -65,6 +70,7 @@ export const RenameFileModal: FC<Props> = ({
           onChange={(evt) => {
             setRenamedFilename(evt.target.value);
           }}
+          onKeyPress={(event) => event.key === "Enter" && handleUpdate()}
           InputProps={{
             disableUnderline: true,
             endAdornment: (
@@ -85,10 +91,7 @@ export const RenameFileModal: FC<Props> = ({
         </Button>
         <Button
           variant="contained"
-          onClick={() => {
-            onSetNewFilename(renamedFilename);
-            handleUpdateMutation(renamedFilename);
-          }}
+          onClick={handleUpdate}
           disabled={isLoadingUpdate}
         >
           {isLoadingUpdate ? (
