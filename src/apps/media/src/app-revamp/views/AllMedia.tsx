@@ -89,6 +89,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
           justifyContent="center"
           alignItems="center"
           height="100%"
+          data-cy="media-loading-spinner"
         >
           <CircularProgress />
         </Box>
