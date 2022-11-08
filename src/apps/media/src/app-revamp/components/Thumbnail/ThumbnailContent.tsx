@@ -33,7 +33,7 @@ export const ThumbnailContent: FC<Props> = ({
     <>
       <CardContent sx={styledCardContent} data-testid="media-thumbnail-content">
         {onFilenameChange ? (
-          <Box className="TESTTESTTEST">
+          <Box>
             <Box>
               <TextField
                 value={filename}
