@@ -1616,6 +1616,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
             }}
           >
             <Box
+              data-testid="hover-root"
               sx={{
                 position: "absolute",
                 left: 0,

@@ -82,6 +82,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
         addImagesCallback={addImagesCallback}
         binId={defaultBin?.id}
         hideFolderCreate
+        files={files}
       />
       {isFilesFetching || isBinsFetching ? (
         <Box
