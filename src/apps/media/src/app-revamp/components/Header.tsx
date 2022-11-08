@@ -62,6 +62,7 @@ export const Header = ({
   const [anchorEl, setAnchorEl] = useState(null);
   const history = useHistory();
   const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
+  const [isLoadingMultipleUpdate, setIsLoadingMultipleUpdate] = useState(false);
   const selectedFiles = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
   );
@@ -94,6 +95,7 @@ export const Header = ({
   };
 
   const handleUpdateMutation = (newGroupId: string) => {
+    setIsLoadingMultipleUpdate(true);
     Promise.all(
       selectedFiles.map(async (file) => {
         await updateFile({
@@ -106,7 +108,10 @@ export const Header = ({
           },
         });
       })
-    );
+    ).then(() => {
+      setIsLoadingMultipleUpdate(false);
+      setShowMoveFileDialog(false);
+    });
     dispatch(clearSelectedFiles());
   };
 
@@ -122,6 +127,7 @@ export const Header = ({
             setShowMoveFileDialog(false);
           }}
           fileCount={selectedFiles?.length}
+          isLoadingMultipleUpdate={isLoadingMultipleUpdate}
         />
       )}
 

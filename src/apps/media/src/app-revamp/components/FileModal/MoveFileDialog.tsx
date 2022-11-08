@@ -7,6 +7,7 @@ import {
   TextField,
   DialogActions,
   Button,
+  CircularProgress,
   InputLabel,
   Autocomplete,
   createFilterOptions,
@@ -19,6 +20,7 @@ interface Props {
   onClose?: () => void;
   binId: string;
   fileCount?: number;
+  isLoadingMultipleUpdate?: boolean;
 }
 
 export const MoveFileDialog = ({
@@ -26,6 +28,7 @@ export const MoveFileDialog = ({
   onClose,
   binId,
   fileCount,
+  isLoadingMultipleUpdate,
 }: Props) => {
   const { data: binGroups } = useGetBinGroupsQuery(binId);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>({
@@ -91,10 +94,13 @@ export const MoveFileDialog = ({
           variant="contained"
           onClick={() => {
             handleGroupChange(selectedGroup.id);
-            onClose();
           }}
         >
-          Move
+          {isLoadingMultipleUpdate ? (
+            <CircularProgress size="24px" color="inherit" />
+          ) : (
+            "Move"
+          )}
         </Button>
       </DialogActions>
     </Dialog>
