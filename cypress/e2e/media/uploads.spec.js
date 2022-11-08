@@ -35,7 +35,7 @@ describe("Media uploads", () => {
     // Wait for upload to complete. Close icon exists when upload is complete
     // This a large file upload so it could take quite some time, and thus has
     // a long timeout
-    cy.get('[data-testid="CloseRoundedIcon"]', { timeout: 120_000 });
+    cy.get('[data-testid="CloseRoundedIcon"]', { timeout: 1200_000 });
     // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
     // Assert file exists
@@ -81,7 +81,7 @@ describe("Media uploads", () => {
     // Wait for upload to complete. Close icon exists when upload is complete
     // This a large file upload so it could take quite some time, and thus has
     // a long timeout
-    cy.get('[data-testid="CloseRoundedIcon"]', { timeout: 120_000 });
+    cy.get('[data-testid="CloseRoundedIcon"]', { timeout: 1200_000 });
     // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
     // Assert file exists
@@ -125,7 +125,7 @@ describe("Media uploads", () => {
     // Wait for upload to complete. Close icon exists when upload is complete
     // This a large file upload so it could take quite some time, and thus has
     // a long timeout
-    cy.get('[data-testid="CloseRoundedIcon"]', { timeout: 120_000 });
+    cy.get('[data-testid="CloseRoundedIcon"]', { timeout: 1200_000 });
     // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
     // Assert file exists
@@ -171,7 +171,7 @@ describe("Media uploads", () => {
     // Wait for upload to complete. Close icon exists when upload is complete
     // This a large file upload so it could take quite some time, and thus has
     // a long timeout
-    cy.get('[data-testid="CloseRoundedIcon"]', { timeout: 120_000 });
+    cy.get('[data-testid="CloseRoundedIcon"]', { timeout: 1200_000 });
     // Click "Done" button to close upload modal
     cy.get('button:contains("Done")').click();
     // Assert file exists
