@@ -1,10 +1,5 @@
-const CIRCLE_SVG = `
-  <svg viewBox="0 0 2 2" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="1" cy="1" r="1" />
-  </svg>
-`;
 const dummyString = "Cypress large upload test file..\n"; // 32 bytes
-const LARGE_TEXT = new Array(1000001).join(dummyString);
+const LARGE_TEXT = new Array(1000001).join(dummyString); // just over 32MB
 
 const getRandomFileName = () =>
   `cypress_upload_test_${Math.floor(Math.random() * 1_000_000)}.txt`;
@@ -36,12 +31,6 @@ describe("Media uploads", () => {
           force: true,
         }
       );
-    //cy.wait(5_000)
-    // Wait for upload to complete
-    cy.intercept(
-      "POST",
-      "https://media-storage.api.dev.zesty.io/upload/gcp/*"
-    ).as("upload");
     cy.get('button:enabled:contains("Done")');
     // Wait for upload to complete. Close icon exists when upload is complete
     // This a large file upload so it could take quite some time, and thus has
@@ -62,7 +51,7 @@ describe("Media uploads", () => {
     cy.get('button:enabled:contains("Delete")').click();
   });
 
-  it.skip("uploads a file to a folder", () => {
+  it("uploads a file to a folder", () => {
     cy.visit("/media/2-eaaaca5-p1nggr");
     cy.intercept("*instance*").as("instance");
     cy.intercept("*groups*").as("groups");
@@ -79,7 +68,7 @@ describe("Media uploads", () => {
       .first()
       .selectFile(
         {
-          contents: Cypress.Buffer.from(CIRCLE_SVG),
+          contents: Cypress.Buffer.from(LARGE_TEXT),
           fileName,
           mimeType: "text/plain",
           lastModified: Date.now(),
@@ -89,12 +78,10 @@ describe("Media uploads", () => {
           force: true,
         }
       );
-    // Wait for upload to complete
-    cy.intercept(
-      "POST",
-      "https://media-storage.api.dev.zesty.io/upload/gcp/*"
-    ).as("upload");
-    cy.wait("@upload", { timeout: 20_000 });
+    // Wait for upload to complete. Close icon exists when upload is complete
+    // This a large file upload so it could take quite some time, and thus has
+    // a long timeout
+    cy.get('[data-testid="CloseRoundedIcon"]', { timeout: 120_000 });
     // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
     // Assert file exists
@@ -108,7 +95,7 @@ describe("Media uploads", () => {
     cy.get('button:enabled:contains("Delete")').click();
   });
 
-  it.skip("uploads a file to a bin", () => {
+  it("uploads a file to a bin", () => {
     cy.visit("/media/1-6c9618c-r26pt");
     cy.intercept("*instance*").as("instance");
     cy.intercept("*groups*").as("groups");
@@ -125,7 +112,7 @@ describe("Media uploads", () => {
       .first()
       .selectFile(
         {
-          contents: Cypress.Buffer.from(CIRCLE_SVG),
+          contents: Cypress.Buffer.from(LARGE_TEXT),
           fileName,
           mimeType: "text/plain",
           lastModified: Date.now(),
@@ -135,12 +122,10 @@ describe("Media uploads", () => {
           force: true,
         }
       );
-    // Wait for upload to complete
-    cy.intercept(
-      "POST",
-      "https://media-storage.api.dev.zesty.io/upload/gcp/*"
-    ).as("upload");
-    cy.wait("@upload", { timeout: 20_000 });
+    // Wait for upload to complete. Close icon exists when upload is complete
+    // This a large file upload so it could take quite some time, and thus has
+    // a long timeout
+    cy.get('[data-testid="CloseRoundedIcon"]', { timeout: 120_000 });
     // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
     // Assert file exists
@@ -154,7 +139,7 @@ describe("Media uploads", () => {
     cy.get('button:enabled:contains("Delete")').click();
   });
 
-  it.skip("uploads a file via drag 'n drop", () => {
+  it("uploads a file via drag 'n drop", () => {
     cy.visit("/media/2-eaaaca5-p1nggr");
     cy.intercept("*instance*").as("instance");
     cy.intercept("*groups*").as("groups");
@@ -171,7 +156,7 @@ describe("Media uploads", () => {
       .first()
       .selectFile(
         {
-          contents: Cypress.Buffer.from(CIRCLE_SVG),
+          contents: Cypress.Buffer.from(LARGE_TEXT),
           fileName,
           mimeType: "text/plain",
           lastModified: Date.now(),
@@ -183,12 +168,10 @@ describe("Media uploads", () => {
           force: true,
         }
       );
-    // Wait for upload to complete
-    cy.intercept(
-      "POST",
-      "https://media-storage.api.dev.zesty.io/upload/gcp/*"
-    ).as("upload");
-    cy.wait("@upload", { timeout: 20_000 });
+    // Wait for upload to complete. Close icon exists when upload is complete
+    // This a large file upload so it could take quite some time, and thus has
+    // a long timeout
+    cy.get('[data-testid="CloseRoundedIcon"]', { timeout: 120_000 });
     // Click "Done" button to close upload modal
     cy.get('button:contains("Done")').click();
     // Assert file exists
@@ -200,23 +183,5 @@ describe("Media uploads", () => {
     cy.get('[data-testid="DeleteIcon"]').click();
     // Click delete confirmation
     cy.get('button:enabled:contains("Delete")').click();
-  });
-
-  it.skip("displays upload message when dragging a file into the grid", () => {
-    cy.visit("/media/2-eaaaca5-p1nggr");
-    cy.intercept("*instance*").as("instance");
-    cy.intercept("*groups*").as("groups");
-    cy.intercept("*bins*").as("bins");
-    cy.intercept("*bin/1-6c9618c-r26pt").as("binZuid");
-    cy.intercept("*group/2-eaaaca5-p1nggr").as("groupZuid");
-    cy.wait("@groups")
-      .wait("@bins")
-      .wait("@groupZuid")
-      .wait("@binZuid")
-      .wait("@instance");
-    const fileName = getRandomFileName();
-    cy.get('[data-testid="dnd-provider-box"]')
-      .trigger("dragover")
-      .contains("Upload files to");
   });
 });
