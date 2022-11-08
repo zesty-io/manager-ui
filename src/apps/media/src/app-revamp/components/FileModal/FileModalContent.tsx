@@ -223,6 +223,7 @@ export const FileModalContent: FC<Props> = ({
             handleUpdateMutation(newFilename, false, newGroupId)
           }
           binId={binId}
+          isInFileModal={true}
           onClose={() => {
             setShowMoveFileDialog(false);
             handleCloseModal();

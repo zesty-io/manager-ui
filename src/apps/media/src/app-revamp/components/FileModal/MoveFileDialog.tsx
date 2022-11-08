@@ -20,6 +20,7 @@ interface Props {
   onClose?: () => void;
   binId: string;
   fileCount?: number;
+  isInFileModal?: boolean;
   isLoadingMultipleUpdate?: boolean;
 }
 
@@ -28,6 +29,7 @@ export const MoveFileDialog = ({
   onClose,
   binId,
   fileCount,
+  isInFileModal,
   isLoadingMultipleUpdate,
 }: Props) => {
   const { data: binGroups } = useGetBinGroupsQuery(binId);
@@ -94,6 +96,9 @@ export const MoveFileDialog = ({
           variant="contained"
           onClick={() => {
             handleGroupChange(selectedGroup.id);
+            {
+              isInFileModal && onClose();
+            }
           }}
         >
           {isLoadingMultipleUpdate ? (
