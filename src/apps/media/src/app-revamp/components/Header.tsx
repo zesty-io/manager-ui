@@ -131,8 +131,8 @@ export const Header = ({
     ).then(() => {
       setIsLoadingDelete(false);
       setShowDeleteFileDialog(false);
+      dispatch(clearSelectedFiles());
     });
-    dispatch(clearSelectedFiles());
   };
 
   return (
