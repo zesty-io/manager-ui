@@ -68,6 +68,7 @@ export const Header = ({
   const [deleteFile] = useDeleteFileMutation();
   const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
   const [showDeleteFileDialog, setShowDeleteFileDialog] = useState(false);
+  const [isLoadingDelete, setIsLoadingDelete] = useState(false);
   const selectedFiles = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
   );
@@ -117,6 +118,7 @@ export const Header = ({
   };
 
   const handleDeleteMutation = () => {
+    setIsLoadingDelete(true);
     Promise.all(
       selectedFiles.map(async (file) => {
         await deleteFile({
@@ -126,7 +128,10 @@ export const Header = ({
           },
         });
       })
-    );
+    ).then(() => {
+      setIsLoadingDelete(false);
+      setShowDeleteFileDialog(false);
+    });
     dispatch(clearSelectedFiles());
   };
 
@@ -153,6 +158,7 @@ export const Header = ({
           fileCount={selectedFiles?.length}
           onClose={() => setShowDeleteFileDialog(false)}
           filename={selectedFiles?.length && selectedFiles[0].filename}
+          isLoadingDelete={isLoadingDelete}
         />
       )}
 

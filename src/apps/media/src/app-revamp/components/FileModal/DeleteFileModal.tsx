@@ -6,6 +6,7 @@ import {
   Typography,
   TextField,
   DialogActions,
+  CircularProgress,
   IconButton,
   Button,
   Box,
@@ -19,6 +20,7 @@ interface Props {
   onDeleteFile?: () => any;
   filename?: string;
   fileCount?: number;
+  isLoadingDelete?: boolean;
 }
 
 export const DeleteFileModal: FC<Props> = ({
@@ -26,6 +28,7 @@ export const DeleteFileModal: FC<Props> = ({
   onDeleteFile,
   filename,
   fileCount,
+  isLoadingDelete,
 }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -65,12 +68,13 @@ export const DeleteFileModal: FC<Props> = ({
           variant="contained"
           color="error"
           aria-label="Delete Button"
-          onClick={() => {
-            onDeleteFile();
-            onClose();
-          }}
+          onClick={() => onDeleteFile()}
         >
-          {fileCount > 1 ? `Delete (${fileCount})` : "Delete"}
+          {isLoadingDelete ? (
+            <CircularProgress size="24px" color="inherit" />
+          ) : (
+            <>{fileCount > 1 ? `Delete (${fileCount})` : "Delete"}</>
+          )}
         </Button>
       </DialogActions>
     </Dialog>
