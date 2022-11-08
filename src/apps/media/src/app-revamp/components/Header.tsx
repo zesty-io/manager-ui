@@ -1,4 +1,4 @@
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -99,7 +99,7 @@ export const Header = ({
 
   const handleUpdateMutation = (newGroupId: string) => {
     Promise.all(
-      selectedFiles.map(async (file) => {
+      selectedFiles?.map(async (file) => {
         await updateFile({
           id: file.id,
           previousGroupId: file.group_id,
@@ -125,7 +125,7 @@ export const Header = ({
 
     // exclude duplicate files and dispatch to selectFile
     const filteredFiles = limitedFiles.filter(
-      (file) => !selectedFiles.includes(file)
+      (file) => !selectedFiles?.includes(file)
     );
     filteredFiles.map((file) => {
       dispatch(selectFile(file));
@@ -162,7 +162,7 @@ export const Header = ({
           height: "64px",
         }}
       >
-        {selectedFiles.length > 0 ? (
+        {selectedFiles?.length > 0 ? (
           <>
             <Stack direction="row" spacing="2px" alignItems="center">
               <IconButton
@@ -173,8 +173,9 @@ export const Header = ({
                 <CloseIcon fontSize="small" />
               </IconButton>
               <Typography variant="h4" fontWeight={600}>
-                {selectedFiles.length}{" "}
-                {limitSelected ? `/${limitSelected}` : null} Selected
+                {selectedFiles?.length}{" "}
+                {isSelectDialog && limitSelected ? `/${limitSelected}` : null}
+                Selected
               </Typography>
             </Stack>
             <Stack direction="row" spacing={2}>
@@ -193,7 +194,7 @@ export const Header = ({
                 color="inherit"
                 onClick={() => handleSelectAll()}
                 disabled={
-                  selectedFiles?.length == files.length ||
+                  selectedFiles?.length == files?.length ||
                   selectedFiles?.length >= 50
                 }
                 startIcon={
