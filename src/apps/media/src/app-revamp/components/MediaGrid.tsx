@@ -40,10 +40,6 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
   };
 
   useEffect(() => {
-    dispatch(clearSelectedFiles());
-  }, []);
-
-  useEffect(() => {
     if (listRef.current) {
       listRef.current.resetAfterIndices({ columnIndex: 0, rowIndex: 0 });
     }
@@ -155,7 +151,7 @@ export const MediaGrid = ({ groups, files, hideHeaders = false }: Props) => {
                 group_id={files[gridItemIndex].group_id}
                 bin_id={files[gridItemIndex].bin_id}
                 file={files[gridItemIndex]}
-                selectable={isSelectDialog}
+                selectable={true}
                 onClick={() => {
                   const params = new URLSearchParams(location.search);
                   params.set("fileId", files[gridItemIndex]?.id);

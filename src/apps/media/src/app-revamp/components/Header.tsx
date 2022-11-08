@@ -69,6 +69,9 @@ export const Header = ({
   const selectedFiles = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
   );
+  const isSelectDialog = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.isSelectDialog
+  );
   const showHeaderActions = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.showHeaderActions
   );
@@ -132,6 +135,17 @@ export const Header = ({
     });
   };
 
+  const disableSelectAll = () => {
+    if (
+      selectedFiles?.length == files?.length ||
+      selectedFiles?.length >= limitSelected
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   return (
     <>
       {showMoveFileDialog && (
@@ -193,15 +207,15 @@ export const Header = ({
                 size="small"
                 color="inherit"
                 onClick={() => handleSelectAll()}
-                disabled={
-                  selectedFiles?.length == files?.length ||
-                  selectedFiles?.length >= 50
-                }
+                disabled={disableSelectAll()}
                 startIcon={
                   <DoneAllRoundedIcon color="action" fontSize="small" />
                 }
               >
                 Select All
+                {!isSelectDialog &&
+                  disableSelectAll() &&
+                  ` (Max ${limitSelected})`}
               </Button>
               {showHeaderActions && (
                 <Button
