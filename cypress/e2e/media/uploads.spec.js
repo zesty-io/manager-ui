@@ -52,17 +52,17 @@ describe("Media uploads", () => {
   });
 
   it("uploads a file to a folder", () => {
-    cy.visit("/media/2-eaaaca5-p1nggr");
-    cy.intercept("*instance*").as("instance");
-    cy.intercept("*groups*").as("groups");
-    cy.intercept("*bins*").as("bins");
-    cy.intercept("*bin/1-6c9618c-r26pt").as("binZuid");
-    cy.intercept("*group/2-eaaaca5-p1nggr").as("groupZuid");
-    cy.wait("@groups")
-      .wait("@bins")
-      .wait("@groupZuid")
-      .wait("@binZuid")
-      .wait("@instance");
+    cy.waitOn("*instance*", () => {
+      cy.waitOn("*groups*", () => {
+        cy.waitOn("*bins*", () => {
+          cy.waitOn("*bin/1-6c9618c-r26pt", () => {
+            cy.waitOn("*group/2-eaaaca5-p1nggr", () => {
+              cy.visit("/media/2-eaaaca5-p1nggr");
+            });
+          });
+        });
+      });
+    });
     const fileName = getRandomFileName();
     cy.get("input[type=file]")
       .first()
@@ -96,17 +96,17 @@ describe("Media uploads", () => {
   });
 
   it("uploads a file to a bin", () => {
-    cy.visit("/media/1-6c9618c-r26pt");
-    cy.intercept("*instance*").as("instance");
-    cy.intercept("*groups*").as("groups");
-    cy.intercept("*bins*").as("bins");
-    cy.intercept("*bin/1-6c9618c-r26pt").as("binZuid");
-    cy.intercept("*bin/1-6c9618c-r26pt/files").as("binFiles");
-    cy.wait("@groups")
-      .wait("@bins")
-      .wait("@binZuid")
-      .wait("@instance")
-      .wait("@binFiles");
+    cy.waitOn("*instance*", () => {
+      cy.waitOn("*groups*", () => {
+        cy.waitOn("*bins*", () => {
+          cy.waitOn("*bin/1-6c9618c-r26pt", () => {
+            cy.waitOn("*bin/1-6c9618c-r26pt/files", () => {
+              cy.visit("/media/1-6c9618c-r26pt");
+            });
+          });
+        });
+      });
+    });
     const fileName = getRandomFileName();
     cy.get("input[type=file]")
       .first()
@@ -140,17 +140,17 @@ describe("Media uploads", () => {
   });
 
   it("uploads a file via drag 'n drop", () => {
-    cy.visit("/media/2-eaaaca5-p1nggr");
-    cy.intercept("*instance*").as("instance");
-    cy.intercept("*groups*").as("groups");
-    cy.intercept("*bins*").as("bins");
-    cy.intercept("*bin/1-6c9618c-r26pt").as("binZuid");
-    cy.intercept("*group/2-eaaaca5-p1nggr").as("groupZuid");
-    cy.wait("@groups")
-      .wait("@bins")
-      .wait("@groupZuid")
-      .wait("@binZuid")
-      .wait("@instance");
+    cy.waitOn("*instance*", () => {
+      cy.waitOn("*groups*", () => {
+        cy.waitOn("*bins*", () => {
+          cy.waitOn("*bin/1-6c9618c-r26pt", () => {
+            cy.waitOn("*group/2-eaaaca5-p1nggr", () => {
+              cy.visit("/media/2-eaaaca5-p1nggr");
+            });
+          });
+        });
+      });
+    });
     const fileName = getRandomFileName();
     cy.get("input[type=file]")
       .first()
