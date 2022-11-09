@@ -113,6 +113,7 @@ export const UploadModal: FC = () => {
               width: "100%",
               height: "calc(100% - 134px)",
               ml: -2,
+              mt: -2,
             }}
           >
             <UploadErrors />

@@ -22,7 +22,7 @@ export const DropArea = ({
         position: "absolute",
         zIndex: 1,
         backgroundColor: "rgba(16, 24, 40, 0.5)",
-        mt: -2,
+        mt: -7,
         width: "calc(100% - 220px)",
         height: "calc(100% - 64px)",
         //width: "100%",
