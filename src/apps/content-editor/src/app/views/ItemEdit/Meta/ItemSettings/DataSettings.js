@@ -26,7 +26,7 @@ export class DataSettings extends Component {
     return (
       <section className={styles.Meta}>
         <div className={cx(styles.Settings, styles.DataSettings)}>
-          <Stack spacing={1}>
+          <Stack spacing={2}>
             <MetaLinkText
               meta_link_text={web.metaLinkText}
               onChange={this.onChange}
