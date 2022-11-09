@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Button,
   Dialog,
@@ -53,6 +53,11 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
     });
   };
 
+  const sortedBinGroups = useMemo(() => {
+    if (!binGroups) return [];
+    return [...binGroups].sort((a, b) => a?.name?.localeCompare(b?.name));
+  }, [binGroups]);
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
       <DialogTitle>New Folder</DialogTitle>
@@ -72,7 +77,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
                     group_id: binId,
                     id: binId,
                   },
-                  [...binGroups].sort((a, b) => a.name.localeCompare(b.name)),
+                  ...sortedBinGroups,
                 ]
               : []
           }
