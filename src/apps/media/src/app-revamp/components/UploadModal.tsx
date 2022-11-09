@@ -106,8 +106,17 @@ export const UploadModal: FC = () => {
             pb: 2,
           }}
         >
-          <UploadErrors />
-          <DnDProvider {...ids} sx={{ flexWrap: "wrap" }}>
+          <DnDProvider
+            {...ids}
+            sx={{ flexWrap: "wrap" }}
+            dropAreaOverrides={{
+              width: "100%",
+              height: "calc(100% - 134px)",
+              ml: -2,
+              mt: -2,
+            }}
+          >
+            <UploadErrors />
             <Grid container spacing={3}>
               {filesToUpload.map((file) => {
                 return (
@@ -160,7 +169,13 @@ const UploadErrors = () => {
   const failedUploads = uploads.filter((upload) => upload.status === "failed");
   if (failedUploads.length === 0) return null;
   return (
-    <Alert severity="error">
+    <Alert
+      severity="error"
+      sx={{
+        width: "100%",
+        height: "fit-content",
+      }}
+    >
       <AlertTitle>
         Unfortunately, we had trouble uploading the {failedUploads.length}{" "}
         files:
