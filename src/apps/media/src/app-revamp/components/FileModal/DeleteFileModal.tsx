@@ -34,7 +34,7 @@ export const DeleteFileModal: FC<Props> = ({
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
-    <Dialog open={true} fullWidth maxWidth={"xs"}>
+    <Dialog open={true} fullWidth maxWidth={"xs"} onClose={onClose}>
       <DialogTitle>
         <Box
           sx={{

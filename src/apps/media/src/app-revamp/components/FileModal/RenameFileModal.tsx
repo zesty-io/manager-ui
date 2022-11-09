@@ -49,7 +49,7 @@ export const RenameFileModal: FC<Props> = ({
   };
 
   return (
-    <Dialog open={true} fullWidth maxWidth={"xs"}>
+    <Dialog open={true} fullWidth maxWidth={"xs"} onClose={onClose}>
       <DialogTitle>
         <Typography variant="h5">Rename File</Typography>
       </DialogTitle>
