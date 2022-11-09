@@ -1,14 +1,21 @@
 import { Box, Typography } from "@mui/material";
 import FileCopyRoundedIcon from "@mui/icons-material/FileCopyRounded";
 import { GroupData, Bin } from "../../../../../shell/services/types";
+import { SxProps } from "@mui/system";
 
 interface Props {
   currentGroup: GroupData;
   currentBin: Bin;
   isDefaultBin?: boolean;
+  sx?: SxProps;
 }
 
-export const DropArea = ({ currentGroup, currentBin, isDefaultBin }: Props) => {
+export const DropArea = ({
+  currentGroup,
+  currentBin,
+  isDefaultBin,
+  sx = {},
+}: Props) => {
   return (
     <Box
       sx={{
@@ -18,8 +25,12 @@ export const DropArea = ({ currentGroup, currentBin, isDefaultBin }: Props) => {
         mt: -2,
         width: "calc(100% - 220px)",
         height: "calc(100% - 64px)",
+        //width: "100%",
+        //height: "calc(100% - 134px)",
+        //ml: -2,
         display: "flex",
         flexDirection: "column",
+        ...sx,
       }}
     >
       <Box

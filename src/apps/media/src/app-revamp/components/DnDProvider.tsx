@@ -21,6 +21,7 @@ interface Props {
   currentGroupId: string;
   isDefaultBin?: boolean;
   sx?: SxProps;
+  dropAreaOverrides?: SxProps;
 }
 
 export const DnDProvider = ({
@@ -29,6 +30,7 @@ export const DnDProvider = ({
   currentBinId,
   isDefaultBin,
   sx,
+  dropAreaOverrides,
 }: Props) => {
   const dispatch = useDispatch();
   const { data: currentGroup, isFetching: groupIsFetching } =
@@ -77,6 +79,7 @@ export const DnDProvider = ({
             isDefaultBin={isDefaultBin}
             currentGroup={currentGroup}
             currentBin={currentBin}
+            sx={dropAreaOverrides}
           />
           {children}
         </>
