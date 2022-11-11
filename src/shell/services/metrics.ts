@@ -79,7 +79,7 @@ type ResponseCode = 200 | 301 | 403 | 404 | 500 | 406 | 503;
 type TopRequest = {
   ResponseCode: ResponseCode;
   Description: string;
-  TopPaths: TopPath[];
+  TopPaths: TopPath[] | null;
 };
 type ResponseCodeStats = {
   Code: ResponseCode;
