@@ -73,7 +73,7 @@ export const DnDProvider = ({
       {...getRootProps({ onClick: (evt) => evt.stopPropagation() })}
     >
       <input {...getInputProps()} />
-      {isDragActive ? (
+      {isDragActive || true ? (
         <>
           <DropArea
             isDefaultBin={isDefaultBin}
