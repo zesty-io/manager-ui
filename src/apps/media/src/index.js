@@ -1,4 +1,4 @@
-import { MediaApp } from "./app-revamp";
+import { MediaApp } from "./app";
 
 export default function DamApp(props) {
   return <MediaApp></MediaApp>;
