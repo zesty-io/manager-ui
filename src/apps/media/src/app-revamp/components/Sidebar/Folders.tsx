@@ -329,7 +329,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                 event.target.parentElement.getAttribute("data-testid") !==
                   "ArrowRightRoundedIcon"
               )
-                history.push(`/media/${nodeIds}`);
+                history.push(`/media/folder/${nodeIds}`);
             }}
             defaultCollapseIcon={
               <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />
@@ -378,7 +378,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                       event.target.parentElement.getAttribute("data-testid") !==
                         "ArrowRightRoundedIcon"
                     )
-                      history.push(`/media/${nodeIds}`);
+                      history.push(`/media/folder/${nodeIds}`);
                   }}
                   defaultCollapseIcon={
                     <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />

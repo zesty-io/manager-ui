@@ -164,7 +164,7 @@ export const MediaApp = ({
             }}
           />
           <Route
-            path="/media/:id"
+            path="/media/folder/:id"
             render={() => {
               if (isFileModalError) {
                 return (
