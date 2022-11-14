@@ -51,7 +51,10 @@ export const SearchBox = () => {
         e.key === "Enter" &&
         (e.target as HTMLInputElement).value &&
         history.push(
-          `/media/search?term=${(e.target as HTMLInputElement).value}`
+          `/media/search?term=${(e.target as HTMLInputElement).value.replaceAll(
+            " ",
+            "-"
+          )}`
         )
       }
     />
