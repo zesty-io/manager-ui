@@ -10,8 +10,8 @@ export const Header = () => {
         color: "common.white",
         px: 3,
         py: 2,
-        // @ts-ignore
         background: (theme) =>
+          // @ts-ignore
           `linear-gradient(91.57deg, ${theme.palette.deepOrange?.[500]} 0%, ${theme.palette.deepOrange?.[600]} 100%)`,
       }}
     >

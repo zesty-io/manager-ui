@@ -1,6 +1,7 @@
 import { Box, ThemeProvider } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { Header } from "./components/Header";
+import { MetricCards } from "./components/MetricCards";
 
 export const HomeApp = () => {
   return (
@@ -16,6 +17,7 @@ export const HomeApp = () => {
         }}
       >
         <Header />
+        <MetricCards />
       </Box>
     </ThemeProvider>
   );
