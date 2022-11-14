@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { MemoryRouter } from "react-router";
 import { connect } from "react-redux";
+import { Dialog, IconButton, Button } from "@mui/material";
 
-import Button from "@mui/material/Button";
+import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import CircularProgress from "@mui/material/CircularProgress";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
@@ -28,7 +30,7 @@ import { ButtonGroup } from "@zesty-io/core/ButtonGroup";
 import { FieldTypeImage } from "@zesty-io/core/FieldTypeImage";
 import { AppLink } from "@zesty-io/core/AppLink";
 
-import MediaApp from "../../../apps/media/src/app/MediaApp";
+import { MediaApp } from "../../../apps/media/src/app";
 
 import {
   fetchHeadTags,
@@ -38,7 +40,6 @@ import {
 import { notify } from "shell/store/notifications";
 
 import styles from "./favicon.less";
-import MediaStyles from "../../../apps/media/src/app/MediaAppModal.less";
 
 export default connect((state) => {
   return {
@@ -235,21 +236,34 @@ export default connect((state) => {
             }}
           />
           {imageModal && (
-            <Modal
-              open={true}
-              type="global"
-              onClose={() => setImageModal()}
-              className={MediaStyles.MediaAppModal}
-            >
-              <MediaApp
-                limitSelected={1}
-                modal={true}
-                addImages={(images) => {
-                  imageModal.callback(images);
-                  setImageModal();
-                }}
-              />
-            </Modal>
+            <MemoryRouter>
+              <Dialog
+                open
+                fullScreen
+                sx={{ my: 2.5, mx: 10 }}
+                onClose={() => setImageModal()}
+              >
+                <IconButton
+                  sx={{
+                    position: "fixed",
+                    right: 5,
+                    top: 0,
+                  }}
+                  onClick={() => setImageModal()}
+                >
+                  <CloseIcon sx={{ color: "common.white" }} />
+                </IconButton>
+                <MediaApp
+                  limitSelected={1}
+                  isSelectDialog={true}
+                  showHeaderActions={false}
+                  addImagesCallback={(images) => {
+                    imageModal.callback(images);
+                    setImageModal();
+                  }}
+                />
+              </Dialog>
+            </MemoryRouter>
           )}
 
           {faviconZUID && (
