@@ -16,6 +16,7 @@ import {
   faImage,
   faAddressCard,
   IconDefinition,
+  faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import { isEqual } from "lodash";
 
@@ -172,6 +173,10 @@ export function createTab(
   const tab: Tab = { pathname: path, search };
 
   const appNameMap = {
+    home: {
+      name: "Home",
+      icon: faHome,
+    },
     seo: {
       name: "SEO",
       icon: faBullseye,
