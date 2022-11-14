@@ -30,9 +30,9 @@ interface Props {
 export const MediaApp = ({
   lockedToGroupId,
   showHeaderActions = true,
-  isSelectDialog = true,
+  isSelectDialog = false,
   addImagesCallback,
-  limitSelected = null,
+  limitSelected = 50,
 }: Props) => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -50,7 +50,7 @@ export const MediaApp = ({
 
   useEffect(() => {
     return () => {
-      dispatch(setIsSelectDialog(true));
+      dispatch(setIsSelectDialog(false));
       dispatch(clearSelectedFiles());
       dispatch(setLimitSelected(null));
     };

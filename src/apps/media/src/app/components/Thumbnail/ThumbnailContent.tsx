@@ -7,11 +7,14 @@ import {
   Tooltip,
 } from "@mui/material";
 
+import { alpha } from "@mui/material/styles";
+
 interface Props {
   filename: string;
   onFilenameChange?: (value: string) => void;
   onTitleChange?: (value: string) => void;
   isEditable?: boolean;
+  isSelected?: boolean;
 }
 
 export const ThumbnailContent: FC<Props> = ({
@@ -19,6 +22,7 @@ export const ThumbnailContent: FC<Props> = ({
   onFilenameChange,
   onTitleChange,
   isEditable,
+  isSelected,
 }) => {
   const styledCardContent = {
     px: onFilenameChange ? 0 : 1,
@@ -27,11 +31,17 @@ export const ThumbnailContent: FC<Props> = ({
     overflow: "hidden",
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",
+    backgroundColor: (theme: any) =>
+      isSelected &&
+      `${alpha(
+        theme.palette.primary.main,
+        theme.palette.action.hoverOpacity
+      )} !important`,
   };
 
   return (
     <>
-      <CardContent sx={styledCardContent}>
+      <CardContent sx={styledCardContent} data-testid="media-thumbnail-content">
         {onFilenameChange ? (
           <Box>
             <Box>

@@ -230,6 +230,11 @@ export default function Field({
           open
           fullScreen
           sx={{ my: 2.5, mx: 10 }}
+          PaperProps={{
+            style: {
+              borderRadius: "4px",
+            },
+          }}
           onClose={() => setImageModal()}
         >
           <IconButton
@@ -421,6 +426,11 @@ export default function Field({
                 open
                 fullScreen
                 sx={{ my: 2.5, mx: 10 }}
+                PaperProps={{
+                  style: {
+                    borderRadius: "4px",
+                  },
+                }}
                 onClose={() => setImageModal()}
               >
                 <IconButton
