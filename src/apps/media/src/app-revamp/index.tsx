@@ -42,7 +42,7 @@ export const MediaApp = ({
 
   useEffect(() => {
     if (lockedToGroupId) {
-      history.push(`/media/${lockedToGroupId}`);
+      history.push(`/media/folder/${lockedToGroupId}`);
     }
     dispatch(setShowHeaderActions(showHeaderActions));
     dispatch(setIsSelectDialog(isSelectDialog));
