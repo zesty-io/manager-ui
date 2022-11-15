@@ -16,7 +16,7 @@ export const MetricCards = () => {
     <Box display="flex" gap={2} marginTop={-7.5} marginLeft={3}>
       <MetricCard
         title="Web Requests"
-        value={10000}
+        value={1250000}
         icon={
           <Box
             sx={{
@@ -30,6 +30,8 @@ export const MetricCards = () => {
             />
           </Box>
         }
+        delta={0.5}
+        deltaLabel={"VS PREV. 30 DAYS"}
       />
       <MetricCard
         title="Media Requests"
@@ -47,6 +49,8 @@ export const MetricCards = () => {
             />
           </Box>
         }
+        delta={-0.5}
+        deltaLabel={"VS PREV. 30 DAYS"}
       />
       <MetricCard
         title="Items Scheduled"
@@ -63,6 +67,7 @@ export const MetricCards = () => {
             />
           </Box>
         }
+        deltaLabel={"VS PREV. 30 DAYS"}
       />
       <MetricCard
         title="Items Published"
@@ -80,6 +85,7 @@ export const MetricCards = () => {
             />
           </Box>
         }
+        deltaLabel={"VS PREV. 30 DAYS"}
       />
     </Box>
   );

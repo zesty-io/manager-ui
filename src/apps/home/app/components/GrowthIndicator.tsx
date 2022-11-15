@@ -9,7 +9,7 @@ interface Props {
 }
 
 export const GrowthIndicator = ({ delta }: Props) => {
-  const isPositive = delta > 0;
+  const isPositive = delta >= 0;
   const icon = isPositive ? (
     <TrendingUpRoundedIcon
       color="success"
