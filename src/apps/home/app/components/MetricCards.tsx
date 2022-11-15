@@ -15,39 +15,41 @@ const iconStyles = {
   padding: 1,
 };
 
+const date = new Date();
+
 export const MetricCards = () => {
   const { data: priorRequests, isFetching: isPriorRequestsFetching } =
     metricsApi.useGetRequestsQuery([
-      moment().subtract(2, "months").format(),
-      moment().subtract(1, "months").format(),
+      moment(date).subtract(2, "months").format(),
+      moment(date).subtract(1, "months").format(),
     ]);
   const { data: requests, isFetching: isRequestsFetching } =
     metricsApi.useGetRequestsQuery([
-      moment().subtract(1, "months").format(),
-      moment().format(),
+      moment(date).subtract(1, "months").format(),
+      moment(date).format(),
     ]);
   const { data: priorUsage, isFetching: isPriorUsageFetching } =
     metricsApi.useGetUsageQuery([
-      moment().subtract(2, "months").format(),
-      moment().subtract(1, "months").format(),
+      moment(date).subtract(2, "months").format(),
+      moment(date).subtract(1, "months").format(),
     ]);
   const { data: usage, isFetching: isUsageFetching } =
     metricsApi.useGetUsageQuery([
-      moment().subtract(1, "months").format(),
-      moment().format(),
+      moment(date).subtract(1, "months").format(),
+      moment(date).format(),
     ]);
   const { data: priorAudit, isFetching: isPriorAuditFetching } =
     useGetAuditsQuery({
-      start_date: moment().subtract(2, "months").format("L"),
-      end_date: moment().subtract(1, "months").format("L"),
+      start_date: moment(date).subtract(2, "months").format("L"),
+      end_date: moment(date).subtract(1, "months").format("L"),
     });
   const { data: audit, isFetching: isAuditFetching } = useGetAuditsQuery({
-    start_date: moment().subtract(1, "months").format("L"),
-    end_date: moment().format("L"),
+    start_date: moment(date).subtract(1, "months").format("L"),
+    end_date: moment(date).format("L"),
   });
-  const requestsFetching = isPriorRequestsFetching || isRequestsFetching;
-  const usageFetching = isPriorUsageFetching || isUsageFetching;
-  const auditFetching = isPriorAuditFetching || isAuditFetching;
+  // const requestsFetching = isPriorRequestsFetching || isRequestsFetching;
+  // const usageFetching = isPriorUsageFetching || isUsageFetching;
+  // const auditFetching = isPriorAuditFetching || isAuditFetching;
 
   const getUniqueActions = (data: any, action: number) =>
     uniqBy(

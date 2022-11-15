@@ -107,6 +107,9 @@ export const ResourceTable = () => {
         disableSelectionOnClick
         disableColumnFilter
         loading={isAuditFetching}
+        sx={{
+          backgroundColor: "common.white",
+        }}
       />
     </Box>
   );

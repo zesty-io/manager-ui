@@ -10,7 +10,7 @@ export const HomeApp = () => {
       <Box
         sx={{
           color: "text.primary",
-          backgroundColor: "background.paper",
+          backgroundColor: "grey.50",
           height: "100%",
           "*": {
             boxSizing: "border-box",
