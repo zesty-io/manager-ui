@@ -144,12 +144,12 @@ export const Content: FC<any> = ({
             <Box
               sx={{
                 ...iconStyles,
-                backgroundColor: "deepOrange.50",
+                backgroundColor: "purple.50",
               }}
             >
-              <ImageRoundedIcon
+              <LanguageRoundedIcon
                 color="primary"
-                sx={{ width: "16px", height: "16px" }}
+                sx={{ width: "16px", height: "16px", color: "purple.500" }}
               />
             </Box>
           }
@@ -164,12 +164,12 @@ export const Content: FC<any> = ({
             <Box
               sx={{
                 ...iconStyles,
-                backgroundColor: "deepOrange.50",
+                backgroundColor: "blue.50",
               }}
             >
-              <ImageRoundedIcon
+              <CloudRoundedIcon
                 color="primary"
-                sx={{ width: "16px", height: "16px" }}
+                sx={{ width: "16px", height: "16px", color: "info.main" }}
               />
             </Box>
           }
