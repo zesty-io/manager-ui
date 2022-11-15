@@ -82,20 +82,19 @@ export const InsightsMedia: FC = () => {
             <Box
               sx={{
                 ...iconStyles,
-                backgroundColor: "purple.50",
+                backgroundColor: "blue.50",
               }}
             >
               <LanguageRoundedIcon
-                color="primary"
+                color="info"
                 sx={{
-                  width: "13.33px",
-                  height: "13.33px",
-                  color: "purple.500",
+                  width: "16px",
+                  height: "16px",
                 }}
               />
             </Box>
           }
-          deltaLabel={"from last 30 days"}
+          deltaLabel={"VS PRIOR 30 DAYS"}
         />
         <MetricCard
           title="Media Bandwidth"
@@ -105,16 +104,16 @@ export const InsightsMedia: FC = () => {
             <Box
               sx={{
                 ...iconStyles,
-                backgroundColor: "blue.50",
+                backgroundColor: "deepOrange.50",
               }}
             >
               <CloudRoundedIcon
                 color="primary"
-                sx={{ width: "13.33px", height: "13.33px", color: "info.main" }}
+                sx={{ width: "16px", height: "16px", color: "primary" }}
               />
             </Box>
           }
-          deltaLabel={"from last 30 days"}
+          deltaLabel={"VS PRIOR 30 DAYS"}
         />
       </Box>
     </Box>

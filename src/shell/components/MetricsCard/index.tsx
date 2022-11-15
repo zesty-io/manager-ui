@@ -35,7 +35,7 @@ export const MetricCard = ({
           <Typography fontWeight={600} color="text.secondary">
             {title}
           </Typography>
-          <Tooltip title={value.toLocaleString()}>
+          <Tooltip title={`${value?.toLocaleString()} ${title}`}>
             <Typography variant="h3" marginTop={0.5} fontWeight={600}>
               {numberFormatter.format(value)} {symbol}
             </Typography>
