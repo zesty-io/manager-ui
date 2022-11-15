@@ -94,19 +94,6 @@ export type DateRange =
   | "last 3 months"
   | "last 12 months";
 
-/*
-export type DateRange = PresetDateRange | CustomDateRange;
-export type PresetDateRange = {
-  type: "preset";
-  value: "today" | "yesterday" | "last 7 days" | "last 30 days" | "last 3 months" | "last 12 months";
-}
-export type CustomDateRange = {
-  type: "custom";
-  start: string;
-  end: string;
-}
-*/
-
 export type State = {
   uploads: Upload[];
   lockedToGroupId: string;
