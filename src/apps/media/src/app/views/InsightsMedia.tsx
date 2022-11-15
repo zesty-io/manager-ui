@@ -36,14 +36,12 @@ export const InsightsMedia: FC = () => {
     data: usageData,
     isLoading: usageLoading,
     error: usageError,
-    // @ts-ignore
-  } = useGetUsageQuery(dates);
+  } = useGetUsageQuery(dates as [string, string]);
   const {
     data: requestData,
     isLoading: requestsLoading,
     error: requestError,
-    // @ts-ignore
-  } = useGetRequestsQuery(dates);
+  } = useGetRequestsQuery(dates as [string, string]);
 
   const totalMediaThroughput = usageData?.MediaConsumption.TotalGBs;
   const totalMediaRequests = usageData?.MediaConsumption.TotalRequests;
