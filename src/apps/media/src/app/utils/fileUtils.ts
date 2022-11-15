@@ -1,5 +1,6 @@
 import { File } from "../../../../../shell/services/types";
-import { Filetype } from "../../../../../shell/store/media-revamp";
+import { Filetype, DateRange } from "../../../../../shell/store/media-revamp";
+import moment from "moment-timezone";
 export function fileExtension(url: string) {
   let extension = "No Extension";
   if (url.includes(".")) {
@@ -127,5 +128,30 @@ export function getExtensions(filetype: Filetype | null) {
       return ["mpg", "mpeg"];
     default:
       return null;
+  }
+}
+
+export function getDateFilterFn(dateRangeFilter: DateRange) {
+  switch (dateRangeFilter) {
+    case "today":
+      return (date: string) => moment(date).isSame(moment(), "day");
+    case "yesterday":
+      return (date: string) =>
+        moment(date).isSame(moment().subtract(1, "days"), "day");
+    case "last 7 days":
+      return (date: string) =>
+        moment(date).isSameOrAfter(moment().subtract(7, "days"), "day");
+    case "last 30 days":
+      return (date: string) =>
+        moment(date).isSameOrAfter(moment().subtract(30, "days"), "day");
+    case "last 3 months":
+      return (date: string) =>
+        moment(date).isSameOrAfter(moment().subtract(3, "months"), "day");
+    case "last 12 months":
+      return (date: string) =>
+        moment(date).isSameOrAfter(moment().subtract(12, "months"), "day");
+    // should never happen
+    default:
+      return (date: string) => true;
   }
 }
