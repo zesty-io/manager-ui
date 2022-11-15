@@ -86,6 +86,27 @@ export type Filetype =
   | "FLV"
   | "MPEG";
 
+export type DateRange =
+  | "today"
+  | "yesterday"
+  | "last 7 days"
+  | "last 30 days"
+  | "last 3 months"
+  | "last 12 months";
+
+/*
+export type DateRange = PresetDateRange | CustomDateRange;
+export type PresetDateRange = {
+  type: "preset";
+  value: "today" | "yesterday" | "last 7 days" | "last 30 days" | "last 3 months" | "last 12 months";
+}
+export type CustomDateRange = {
+  type: "custom";
+  start: string;
+  end: string;
+}
+*/
+
 export type State = {
   uploads: Upload[];
   lockedToGroupId: string;
@@ -95,6 +116,7 @@ export type State = {
   limitSelected: number | null;
   sortOrder: MediaSortOrder;
   filetypeFilter: Filetype | null;
+  dateRangeFilter: DateRange | null;
 };
 const initialState: State = {
   uploads: [],
@@ -105,6 +127,7 @@ const initialState: State = {
   limitSelected: null,
   sortOrder: "createdDesc",
   filetypeFilter: null,
+  dateRangeFilter: null,
 };
 
 const mediaSlice = createSlice({
@@ -263,6 +286,9 @@ const mediaSlice = createSlice({
     setFiletypeFilter(state, action: { payload: Filetype }) {
       state.filetypeFilter = action.payload;
     },
+    setDateRangeFilter(state, action: { payload: DateRange }) {
+      state.dateRangeFilter = action.payload;
+    },
   },
 });
 
@@ -285,6 +311,7 @@ export const {
   setLimitSelected,
   setSortOrder,
   setFiletypeFilter,
+  setDateRangeFilter,
 } = mediaSlice.actions;
 
 /*

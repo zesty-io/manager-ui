@@ -2,6 +2,7 @@ import { FC } from "react";
 import { Box } from "@mui/material";
 import { Sort } from "./Sort";
 import { FiletypeFilter } from "./FiletypeFilter";
+import { DateRangeFilter } from "./DateFilter";
 
 export const Controls: FC = () => {
   return (
@@ -21,6 +22,7 @@ export const Controls: FC = () => {
       >
         <Sort />
         <FiletypeFilter />
+        <DateRangeFilter />
       </Box>
     </Box>
   );
