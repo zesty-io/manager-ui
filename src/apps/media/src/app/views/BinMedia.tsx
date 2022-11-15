@@ -163,7 +163,7 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
             </Box>
           ) : (
             <>
-              <Controls showDateFilter={true} />
+              <Controls />
               <UploadModal />
               <DnDProvider currentBinId={id} currentGroupId="">
                 {!isFilesFetching && !binFiles?.length && !binGroups?.length ? (

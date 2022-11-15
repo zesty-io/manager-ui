@@ -166,7 +166,7 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
             </Box>
           ) : (
             <>
-              <Controls showDateFilter={true} />
+              <Controls />
               <UploadModal />
               <DnDProvider
                 currentBinId={groupData?.bin_id}
