@@ -1,5 +1,5 @@
 import { Box, Card, CardContent, Typography, Tooltip } from "@mui/material";
-import { isNil } from "lodash";
+import { isNaN, isNil } from "lodash";
 import { ReactNode } from "react";
 import { numberFormatter } from "../../../utility/numberFormatter";
 import { GrowthIndicator } from "./GrowthIndicator";
@@ -43,7 +43,7 @@ export const MetricCard = ({
         </Box>
         {icon}
       </Box>
-      {!isNil(delta) ? (
+      {!isNil(delta) && !isNaN(delta) ? (
         <Box marginTop={0.5} display="flex" gap={1}>
           <GrowthIndicator delta={delta} />
           <Typography
