@@ -35,9 +35,6 @@ export const InsightsMedia: FC<any> = ({}) => {
     return [start.toISOString(), end];
   }, [timePeriod]);
 
-  const StartDisplay = start.toString().split(" ").slice(0, 3).join(" ");
-  const EndDisplay = end.toString().split(" ").slice(0, 3).join(" ");
-
   const {
     data: usageData,
     isLoading: usageLoading,
