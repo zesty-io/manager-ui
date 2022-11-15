@@ -91,8 +91,7 @@ export const InsightsMedia: FC<any> = ({}) => {
               />
             </Box>
           }
-          delta={-0.5}
-          deltaLabel={"VS PREV. 30 DAYS"}
+          deltaLabel={"from last 30 days"}
         />
         <MetricCard
           title="Media Bandwidth"
@@ -111,8 +110,7 @@ export const InsightsMedia: FC<any> = ({}) => {
               />
             </Box>
           }
-          delta={-0.5}
-          deltaLabel={"VS PREV. 30 DAYS"}
+          deltaLabel={"from last 30 days"}
         />
       </Box>
     </Box>

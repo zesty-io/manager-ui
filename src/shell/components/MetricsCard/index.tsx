@@ -3,7 +3,6 @@ import { isNil } from "lodash";
 import { ReactNode } from "react";
 import { numberFormatter } from "../../../utility/numberFormatter";
 import { GrowthIndicator } from "./GrowthIndicator";
-import { numberWithCommas } from "../../../utility/numberWithCommas";
 interface Props {
   title: string;
   value: number;
@@ -36,7 +35,7 @@ export const MetricCard = ({
           <Typography fontWeight={600} color="text.secondary">
             {title}
           </Typography>
-          <Tooltip title={numberWithCommas(value)}>
+          <Tooltip title={value.toLocaleString()}>
             <Typography variant="h3" marginTop={0.5} fontWeight={600}>
               {numberFormatter.format(value)} {symbol}
             </Typography>
