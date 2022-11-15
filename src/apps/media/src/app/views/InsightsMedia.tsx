@@ -11,9 +11,12 @@ import CloudRoundedIcon from "@mui/icons-material/CloudRounded";
 import moment from "moment";
 
 const iconStyles = {
-  height: "32px",
-  borderRadius: "16px",
-  padding: 1,
+  height: "24px",
+  width: "24px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  borderRadius: "100%",
 };
 
 const getDates = (numDays: any) => {
@@ -87,7 +90,11 @@ export const InsightsMedia: FC<any> = ({}) => {
             >
               <LanguageRoundedIcon
                 color="primary"
-                sx={{ width: "16px", height: "16px", color: "purple.500" }}
+                sx={{
+                  width: "13.33px",
+                  height: "13.33px",
+                  color: "purple.500",
+                }}
               />
             </Box>
           }
@@ -106,7 +113,7 @@ export const InsightsMedia: FC<any> = ({}) => {
             >
               <CloudRoundedIcon
                 color="primary"
-                sx={{ width: "16px", height: "16px", color: "info.main" }}
+                sx={{ width: "13.33px", height: "13.33px", color: "info.main" }}
               />
             </Box>
           }
