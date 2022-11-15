@@ -110,6 +110,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
   };
 
   const handleSelect = () => {
+    if (!file?.id) return;
     if (selectedFiles.some((file) => file.id === id)) {
       dispatch(deselectFile(file));
     } else {

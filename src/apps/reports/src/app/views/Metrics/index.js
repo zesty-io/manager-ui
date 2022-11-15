@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import cx from "classnames";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,8 +13,6 @@ import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Link from "@mui/material/Link";
 
-import { request } from "utility/request";
-
 import styles from "./Metrics.less";
 
 import Card from "@mui/material/Card";
@@ -23,6 +21,11 @@ import CardContent from "@mui/material/CardContent";
 
 import { Pie, Bar } from "react-chartjs-2";
 import { Notice } from "@zesty-io/core";
+
+import {
+  useGetUsageQuery,
+  useGetRequestsQuery,
+} from "../../../../../../shell/services/metrics";
 
 /*
   Returns a date range representing the last N days
@@ -38,20 +41,6 @@ const getDates = (numDays) => {
   return { start, end: yesterday };
 };
 
-const getEndpointUrls = ({ zuid, start, end }) => {
-  const base = `${CONFIG.API_METRICS}/accounts`;
-  const dateStart = start.toISOString().split("T")[0];
-  const dateEnd = end.toISOString().split("T")[0];
-
-  const dateParams = `dateStart=${dateStart}&dateEnd=${dateEnd}`;
-  const usageEndPoint = `${base}/${zuid}/usage?${dateParams}`;
-  const requestsEndPoint = `${base}/${zuid}/requests?${dateParams}`;
-  return {
-    usageEndPoint,
-    requestsEndPoint,
-  };
-};
-
 const numberWithCommas = (x) => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
@@ -64,30 +53,25 @@ const floatWithCommas = (x) => {
 };
 
 export default function Metrics() {
-  const zuid = useSelector((state) => state.instance.ZUID);
   const [timePeriod, setTimePeriod] = useState(30);
   const { start, end } = getDates(timePeriod);
-  const { usageEndPoint, requestsEndPoint } = getEndpointUrls({
-    zuid,
-    start,
-    end,
-  });
-  const [usageData, setUsageData] = useState();
-  const [requestData, setRequestsData] = useState();
+  const dates = useMemo(() => {
+    return [start.toISOString(), end.toISOString()];
+  }, [timePeriod]);
 
   const StartDisplay = start.toString().split(" ").slice(0, 3).join(" ");
   const EndDisplay = end.toString().split(" ").slice(0, 3).join(" ");
 
-  useEffect(async () => {
-    setUsageData();
-    setRequestsData();
-    const usageReq = request(usageEndPoint);
-    const requestsReq = request(requestsEndPoint);
-    const usageData = await usageReq;
-    const requestData = await requestsReq;
-    setUsageData(usageData);
-    setRequestsData(requestData);
-  }, [timePeriod]);
+  const {
+    data: usageData,
+    isLoading: usageLoading,
+    error: usageError,
+  } = useGetUsageQuery(dates);
+  const {
+    data: requestData,
+    isLoading: requestsLoading,
+    error: requestError,
+  } = useGetRequestsQuery(dates);
 
   const bodyProps = {
     usageData,
@@ -95,7 +79,10 @@ export default function Metrics() {
     StartDisplay,
     EndDisplay,
     timePeriod,
+    requestError,
+    usageError,
   };
+
   return (
     <>
       <section className={styles.MetricsHeader}>
@@ -129,8 +116,8 @@ export default function Metrics() {
       <WithLoader
         width="100%"
         height="calc(100vh - 54px)"
-        condition={usageData && requestData}
-        message="Loading usage data"
+        condition={!usageLoading && !requestsLoading}
+        message="Loading metrics"
       >
         <Body {...bodyProps} />
       </WithLoader>
@@ -138,31 +125,25 @@ export default function Metrics() {
   );
 }
 
-const ErrorMessage = ({ status }) => {
-  const getMessage = (status) => {
-    switch (status) {
-      case 401:
-        return "You must log in to view this";
-      case 403:
-        return "You do not have permission to access metrics for this instance";
-      case 404:
-        return "This instance does not exist";
-      case 500:
-      case 502:
-      case 503:
-      case 504:
-        return "The metrics server has encountered an error and was not able to process your request";
-      default:
-        return "An unknown error has occured while trying to calculate the metrics for this instance";
-    }
-  };
-  return <Notice className={styles.ErrorMessage}>{getMessage(status)}</Notice>;
-};
-const Body = ({ requestData, usageData, ...rest }) => {
-  if (requestData && requestData.status != 200)
-    return <ErrorMessage status={requestData.status} />;
-  else if (usageData && usageData.status != 200)
-    return <ErrorMessage status={usageData.status} />;
+const Body = ({
+  requestData,
+  usageData,
+  requestError,
+  usageError,
+  ...rest
+}) => {
+  if (requestError)
+    return (
+      <Notice className={styles.ErrorMessage}>
+        An error occured while loading metrics: {requestError.message}
+      </Notice>
+    );
+  else if (usageError)
+    return (
+      <Notice className={styles.ErrorMessage}>
+        An error occured while loading metrics: {usageError.message}
+      </Notice>
+    );
   else
     return (
       <Content requestData={requestData} usageData={usageData} {...rest} />
@@ -461,10 +442,9 @@ const Content = ({
                         req={req}
                         key={i}
                         path={
-                          (req.Path =
-                            req.Path.length > 39
-                              ? req.Path.substring(0, 42) + "..."
-                              : req.Path)
+                          req.Path.length > 39
+                            ? req.Path.substring(0, 42) + "..."
+                            : req.Path
                         }
                       />
                     )
@@ -565,10 +545,9 @@ const Content = ({
                         req={req}
                         key={i}
                         path={
-                          (req.Path =
-                            req.Path.length > 30
-                              ? req.Path.substring(0, 30) + "..."
-                              : req.Path)
+                          req.Path.length > 30
+                            ? req.Path.substring(0, 30) + "..."
+                            : req.Path
                         }
                       />
                     )
@@ -603,10 +582,9 @@ const Content = ({
                         req={req}
                         key={i}
                         path={
-                          (req.Path =
-                            req.Path.length > 100
-                              ? req.Path.substring(0, 97) + "..."
-                              : req.Path)
+                          req.Path.length > 100
+                            ? req.Path.substring(0, 97) + "..."
+                            : req.Path
                         }
                       />
                     )
