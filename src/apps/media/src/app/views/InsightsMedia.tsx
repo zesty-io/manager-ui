@@ -8,6 +8,7 @@ import {
 import { MetricCard } from "../../../../../shell/components/MetricsCard";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import CloudRoundedIcon from "@mui/icons-material/CloudRounded";
+import moment from "moment";
 
 const iconStyles = {
   height: "32px",
@@ -16,20 +17,19 @@ const iconStyles = {
 };
 
 const getDates = (numDays: any) => {
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-
   const start = new Date();
   start.setDate(start.getDate() - numDays);
 
-  return { start, end: yesterday };
+  const end = moment().subtract(30, "days").toISOString();
+
+  return { start, end };
 };
 
 export const InsightsMedia: FC<any> = ({}) => {
   const [timePeriod, setTimePeriod] = useState(30);
   const { start, end } = getDates(timePeriod);
   const dates = useMemo(() => {
-    return [start.toISOString(), end.toISOString()];
+    return [start.toISOString(), end];
   }, [timePeriod]);
 
   const StartDisplay = start.toString().split(" ").slice(0, 3).join(" ");
