@@ -9,17 +9,9 @@ import { WithLoader } from "@zesty-io/core/WithLoader";
 // @ts-ignore
 import { Notice } from "@zesty-io/core";
 
+import { MetricCard } from "../../../../../shell/components/MetricsCard";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import CloudRoundedIcon from "@mui/icons-material/CloudRounded";
-
-const cardStyle = {
-  p: 2,
-  mr: 2,
-  width: "220px",
-  border: "1px solid",
-  borderColor: "grey.100",
-  borderRadius: "8px",
-};
 
 const iconStyles = {
   height: "32px",
@@ -143,6 +135,47 @@ export const Content: FC<any> = ({
         <Typography variant="h4" fontWeight={600}>
           Insights
         </Typography>
+      </Box>
+      <Box sx={{ display: "flex" }}>
+        <MetricCard
+          title="Media Requests"
+          value={totalRequests}
+          icon={
+            <Box
+              sx={{
+                ...iconStyles,
+                backgroundColor: "deepOrange.50",
+              }}
+            >
+              <ImageRoundedIcon
+                color="primary"
+                sx={{ width: "16px", height: "16px" }}
+              />
+            </Box>
+          }
+          delta={-0.5}
+          deltaLabel={"VS PREV. 30 DAYS"}
+        />
+        <MetricCard
+          title="Media Bandwidth"
+          value={totalThroughput}
+          symbol="GB"
+          icon={
+            <Box
+              sx={{
+                ...iconStyles,
+                backgroundColor: "deepOrange.50",
+              }}
+            >
+              <ImageRoundedIcon
+                color="primary"
+                sx={{ width: "16px", height: "16px" }}
+              />
+            </Box>
+          }
+          delta={-0.5}
+          deltaLabel={"VS PREV. 30 DAYS"}
+        />
       </Box>
     </Box>
   );
