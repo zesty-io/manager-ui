@@ -33,7 +33,7 @@ export const GrowthIndicator = ({ delta }: Props) => {
       {icon}
       {/* @ts-ignore */}
       <Typography variant="body3" fontWeight={600} marginLeft={0.5}>
-        {delta * 100}%
+        {Math.floor(delta * 100)}%
       </Typography>
     </Box>
   );

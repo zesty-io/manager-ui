@@ -40,11 +40,11 @@ export const MetricCard = ({
         </Box>
         {icon}
       </Box>
-      {!isNil(delta) ? (
+      {!isNil(delta) && !isNaN(delta) ? (
         <Box marginTop={0.5} display="flex" gap={1}>
           <GrowthIndicator delta={delta} />
-          {/* @ts-ignore */}
           <Typography
+            // @ts-ignore
             variant="body3"
             color="text.disabled"
             fontWeight={600}
