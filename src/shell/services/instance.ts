@@ -69,6 +69,10 @@ export const instanceApi = createApi({
         });
       },
     }),
+    getItem: builder.query<any, StringConstructor>({
+      query: (ZUID) => `search/items?q=${ZUID}&order=created&dir=DESC&limit=1`,
+      transformResponse: (response: { data: any[] }) => response?.data?.[0],
+    }),
   }),
 });
 
@@ -78,4 +82,5 @@ export const {
   useGetAuditsQuery,
   useGetItemPublishingsQuery,
   useDeleteItemPublishingMutation,
+  useGetItemQuery,
 } = instanceApi;

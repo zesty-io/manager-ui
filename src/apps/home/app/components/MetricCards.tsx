@@ -66,7 +66,7 @@ export const MetricCards = () => {
   console.log("testing", getDelta(priorScheduledPublishes, scheduledPublishes));
 
   return (
-    <Box display="flex" gap={2} marginTop={-7.5} marginLeft={3}>
+    <Box display="flex" gap={2}>
       <MetricCard
         title="Web Requests"
         value={requests?.TotalRequests}
