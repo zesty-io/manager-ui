@@ -28,7 +28,7 @@ const getDates = (numDays: any) => {
   return { start, end };
 };
 
-export const InsightsMedia: FC<any> = ({}) => {
+export const InsightsMedia: FC = ({}) => {
   const [timePeriod, setTimePeriod] = useState(30);
   const { start, end } = getDates(timePeriod);
   const dates = useMemo(() => {
