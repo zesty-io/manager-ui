@@ -1,9 +1,9 @@
-import { Box, Card, CardContent, Typography } from "@mui/material";
+import { Box, Card, CardContent, Typography, Tooltip } from "@mui/material";
 import { isNil } from "lodash";
 import { ReactNode } from "react";
 import { numberFormatter } from "../../../utility/numberFormatter";
 import { GrowthIndicator } from "./GrowthIndicator";
-
+import { numberWithCommas } from "../../../utility/numberWithCommas";
 interface Props {
   title: string;
   value: number;
@@ -36,9 +36,11 @@ export const MetricCard = ({
           <Typography fontWeight={600} color="text.secondary">
             {title}
           </Typography>
-          <Typography variant="h3" marginTop={0.5} fontWeight={600}>
-            {numberFormatter.format(value)} {symbol}
-          </Typography>
+          <Tooltip title={numberWithCommas(value)}>
+            <Typography variant="h3" marginTop={0.5} fontWeight={600}>
+              {numberFormatter.format(value)} {symbol}
+            </Typography>
+          </Tooltip>
         </Box>
         {icon}
       </Box>
