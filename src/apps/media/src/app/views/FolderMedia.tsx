@@ -16,7 +16,11 @@ import { File } from "../../../../../shell/services/types";
 import { AppState } from "../../../../../shell/store/types";
 import Controls from "../components/Controls";
 import { NoResultsState } from "../components/NoResultsState";
-import { fileExtension, getExtensions } from "../utils/fileUtils";
+import {
+  fileExtension,
+  getExtensions,
+  getDateFilterFn,
+} from "../utils/fileUtils";
 
 type Params = { id: string };
 
@@ -32,6 +36,9 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
   );
   const filetypeFilter = useSelector(
     (state: AppState) => state.mediaRevamp.filetypeFilter
+  );
+  const dateRangeFilter = useSelector(
+    (state: AppState) => state.mediaRevamp.dateRangeFilter
   );
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
@@ -81,18 +88,36 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
 
   const groupFiles = useMemo(() => {
     if (!sortedGroupFiles) return sortedGroupFiles;
-    if (!filetypeFilter) return sortedGroupFiles;
-    const extensions = new Set<string>(getExtensions(filetypeFilter));
-    return sortedGroupFiles.filter((file) =>
-      extensions.has(fileExtension(file.filename))
-    );
-  }, [sortedGroupFiles, filetypeFilter]);
+    if (filetypeFilter && dateRangeFilter) {
+      const extensions = new Set<string>(getExtensions(filetypeFilter));
+      const dateFilterFn = getDateFilterFn(dateRangeFilter);
+      return sortedGroupFiles.filter((file) => {
+        return (
+          extensions.has(fileExtension(file.filename)) &&
+          dateFilterFn(file.created_at)
+        );
+      });
+    } else if (filetypeFilter) {
+      const extensions = new Set<string>(getExtensions(filetypeFilter));
+      return sortedGroupFiles.filter((file) => {
+        return extensions.has(fileExtension(file.filename));
+      });
+    } else if (dateRangeFilter) {
+      const dateFilterFn = getDateFilterFn(dateRangeFilter);
+      return sortedGroupFiles.filter((file) => {
+        return dateFilterFn(file.created_at);
+      });
+    } else {
+      return sortedGroupFiles;
+    }
+  }, [sortedGroupFiles, filetypeFilter, dateRangeFilter]);
 
   const unsortedSubGroups = groupData?.groups;
   const subgroups = useMemo(() => {
     if (!unsortedSubGroups) return unsortedSubGroups;
-    // don't show groups when filtering by filetypes
+    // don't show groups when filtering by filetypes or dates
     if (filetypeFilter !== null) return [];
+    if (dateRangeFilter !== null) return [];
     switch (sortOrder) {
       case "alphaAsc":
         return [...unsortedSubGroups].sort((a, b) => {
@@ -111,7 +136,7 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
       default:
         return unsortedSubGroups;
     }
-  }, [unsortedSubGroups, sortOrder, filetypeFilter]);
+  }, [unsortedSubGroups, sortOrder, filetypeFilter, dateRangeFilter]);
 
   return (
     <Box
@@ -141,7 +166,7 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
             </Box>
           ) : (
             <>
-              <Controls />
+              <Controls showDateFilter={true} />
               <UploadModal />
               <DnDProvider
                 currentBinId={groupData?.bin_id}

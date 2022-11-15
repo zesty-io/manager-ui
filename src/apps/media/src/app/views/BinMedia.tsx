@@ -16,7 +16,11 @@ import { File } from "../../../../../shell/services/types";
 import { AppState } from "../../../../../shell/store/types";
 import Controls from "../components/Controls";
 import { NoResultsState } from "../components/NoResultsState";
-import { fileExtension, getExtensions } from "../utils/fileUtils";
+import {
+  fileExtension,
+  getExtensions,
+  getDateFilterFn,
+} from "../utils/fileUtils";
 
 type Params = { id: string };
 
@@ -32,6 +36,9 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
   );
   const filetypeFilter = useSelector(
     (state: AppState) => state.mediaRevamp.filetypeFilter
+  );
+  const dateRangeFilter = useSelector(
+    (state: AppState) => state.mediaRevamp.dateRangeFilter
   );
   const params = useParams<Params>();
   const { id } = params;
@@ -80,17 +87,35 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
 
   const binFiles = useMemo(() => {
     if (!sortedBinFiles) return sortedBinFiles;
-    if (!filetypeFilter) return sortedBinFiles;
-    const extensions = new Set<string>(getExtensions(filetypeFilter));
-    return sortedBinFiles.filter((file) =>
-      extensions.has(fileExtension(file.filename))
-    );
-  }, [sortedBinFiles, filetypeFilter]);
+    if (filetypeFilter && dateRangeFilter) {
+      const extensions = new Set<string>(getExtensions(filetypeFilter));
+      const dateFilterFn = getDateFilterFn(dateRangeFilter);
+      return sortedBinFiles.filter((file) => {
+        return (
+          extensions.has(fileExtension(file.filename)) &&
+          dateFilterFn(file.created_at)
+        );
+      });
+    } else if (filetypeFilter) {
+      const extensions = new Set<string>(getExtensions(filetypeFilter));
+      return sortedBinFiles.filter((file) => {
+        return extensions.has(fileExtension(file.filename));
+      });
+    } else if (dateRangeFilter) {
+      const dateFilterFn = getDateFilterFn(dateRangeFilter);
+      return sortedBinFiles.filter((file) => {
+        return dateFilterFn(file.created_at);
+      });
+    } else {
+      return sortedBinFiles;
+    }
+  }, [sortedBinFiles, filetypeFilter, dateRangeFilter]);
 
   const binGroups = useMemo(() => {
     if (!unsortedBinGroups) return unsortedBinGroups;
     // don't show groups when filtering by filetypes
     if (filetypeFilter !== null) return [];
+    if (dateRangeFilter !== null) return [];
     switch (sortOrder) {
       case "alphaAsc":
         return [...unsortedBinGroups].sort((a, b) => {
@@ -109,7 +134,7 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
       default:
         return unsortedBinGroups;
     }
-  }, [unsortedBinGroups, sortOrder, binData, filetypeFilter]);
+  }, [unsortedBinGroups, sortOrder, binData, filetypeFilter, dateRangeFilter]);
 
   return (
     <Box
@@ -138,7 +163,7 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
             </Box>
           ) : (
             <>
-              <Controls />
+              <Controls showDateFilter={true} />
               <UploadModal />
               <DnDProvider currentBinId={id} currentGroupId="">
                 {!isFilesFetching && !binFiles?.length && !binGroups?.length ? (
