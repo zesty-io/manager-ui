@@ -4,10 +4,6 @@ import {
   useGetUsageQuery,
   useGetRequestsQuery,
 } from "../../../../../shell/services/metrics";
-// @ts-ignore
-import { WithLoader } from "@zesty-io/core/WithLoader";
-// @ts-ignore
-import { Notice } from "@zesty-io/core";
 
 import { MetricCard } from "../../../../../shell/components/MetricsCard";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
@@ -17,10 +13,6 @@ const iconStyles = {
   height: "32px",
   borderRadius: "16px",
   padding: 1,
-};
-
-const numberWithCommas = (x: any) => {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
 const getDates = (numDays: any) => {
@@ -33,7 +25,7 @@ const getDates = (numDays: any) => {
   return { start, end: yesterday };
 };
 
-export const InsightsMedia = () => {
+export const InsightsMedia: FC<any> = ({}) => {
   const [timePeriod, setTimePeriod] = useState(30);
   const { start, end } = getDates(timePeriod);
   const dates = useMemo(() => {
@@ -56,65 +48,11 @@ export const InsightsMedia = () => {
     // @ts-ignore
   } = useGetRequestsQuery(dates);
 
-  const bodyProps = {
-    usageData,
-    requestData,
-    StartDisplay,
-    EndDisplay,
-    timePeriod,
-    requestError,
-    usageError,
-  };
+  const totalMediaThroughput = usageData?.MediaConsumption.TotalGBs;
+  const totalMediaRequests = usageData?.MediaConsumption.TotalRequests;
 
-  return (
-    <WithLoader
-      width="100%"
-      height="calc(100vh - 54px)"
-      condition={!usageLoading && !requestsLoading}
-      message="Loading metrics"
-    >
-      <Body {...bodyProps} />
-    </WithLoader>
-  );
-};
-
-const Body: FC<any> = ({
-  requestData,
-  usageData,
-  requestError,
-  usageError,
-  ...rest
-}) => {
-  if (requestError)
-    return (
-      <Notice>
-        An error occured while loading metrics: {requestError.message}
-      </Notice>
-    );
-  else if (usageError)
-    return (
-      <Notice>
-        An error occured while loading metrics: {usageError.message}
-      </Notice>
-    );
-  else
-    return (
-      <Content requestData={requestData} usageData={usageData} {...rest} />
-    );
-};
-
-export const Content: FC<any> = ({
-  usageData,
-  requestData,
-  StartDisplay,
-  EndDisplay,
-  timePeriod,
-}) => {
-  const totalMediaThroughput = usageData.MediaConsumption.TotalGBs;
-  const totalMediaRequests = usageData.MediaConsumption.TotalRequests;
-
-  const totalRequestThroughput = requestData.TotalThroughputGB;
-  const totalPageRequests = requestData.TotalRequests;
+  const totalRequestThroughput = requestData?.TotalThroughputGB;
+  const totalPageRequests = requestData?.TotalRequests;
 
   const totalRequests = totalPageRequests + totalMediaRequests;
   const totalThroughput = totalMediaThroughput + totalRequestThroughput;
