@@ -24,7 +24,7 @@ export const Folder: React.FC<FolderProps> = ({ name, id }) => {
         textTransform: "none",
       }}
       onClick={() => {
-        history.push("/media/" + id);
+        history.push("/media/folder/" + id);
       }}
     >
       <Typography

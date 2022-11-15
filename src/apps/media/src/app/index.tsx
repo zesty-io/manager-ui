@@ -13,6 +13,7 @@ import {
 import { AllMedia } from "./views/AllMedia";
 import { Media } from "./views/Media";
 import { SearchMedia } from "./views/SearchMedia";
+import { InsightsMedia } from "./views/InsightsMedia";
 
 import { Sidebar } from "./components/Sidebar";
 import { FileModal } from "./components/FileModal";
@@ -41,7 +42,7 @@ export const MediaApp = ({
 
   useEffect(() => {
     if (lockedToGroupId) {
-      history.push(`/media/${lockedToGroupId}`);
+      history.push(`/media/folder/${lockedToGroupId}`);
     }
     dispatch(setShowHeaderActions(showHeaderActions));
     dispatch(setIsSelectDialog(isSelectDialog));
@@ -163,7 +164,7 @@ export const MediaApp = ({
             }}
           />
           <Route
-            path="/media/:id"
+            path="/media/folder/:id"
             render={() => {
               if (isFileModalError) {
                 return (
@@ -187,6 +188,7 @@ export const MediaApp = ({
               }
             }}
           />
+          <Route path="/media/insights" render={() => <InsightsMedia />} />
           <Redirect to="/media" />
         </Switch>
       </Box>

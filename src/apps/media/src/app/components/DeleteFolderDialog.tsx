@@ -35,7 +35,7 @@ export const DeleteFolderDialog = ({ open, onClose, id, groupId }: Props) => {
       if (bins.length === 1) {
         history.push(`/media`);
       } else {
-        history.push(`/media/${groupId}`);
+        history.push(`/media/folder/${groupId}`);
       }
     }
   }, [isSuccess]);
