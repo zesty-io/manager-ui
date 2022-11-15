@@ -276,6 +276,10 @@ const mediaSlice = createSlice({
     setDateRangeFilter(state, action: { payload: DateRange }) {
       state.dateRangeFilter = action.payload;
     },
+    clearAllFilters(state) {
+      state.filetypeFilter = null;
+      state.dateRangeFilter = null;
+    },
   },
 });
 
@@ -299,6 +303,7 @@ export const {
   setSortOrder,
   setFiletypeFilter,
   setDateRangeFilter,
+  clearAllFilters,
 } = mediaSlice.actions;
 
 /*
