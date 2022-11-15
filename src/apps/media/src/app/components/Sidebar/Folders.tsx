@@ -67,7 +67,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const [updateFile] = useUpdateFileMutation();
-  const [sort, setSort] = useState("asc");
+  const [sort, setSort] = useLocalStorage("zesty:navMedia:sort", "asc");
   const [hiddenExpanded, setHiddenExpanded] = useState([]);
   const [expanded, setExpanded] = useLocalStorage("zesty:navMedia:open", []);
 
@@ -329,7 +329,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                 event.target.parentElement.getAttribute("data-testid") !==
                   "ArrowRightRoundedIcon"
               )
-                history.push(`/media/${nodeIds}`);
+                history.push(`/media/folder/${nodeIds}`);
             }}
             defaultCollapseIcon={
               <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />
@@ -378,7 +378,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                       event.target.parentElement.getAttribute("data-testid") !==
                         "ArrowRightRoundedIcon"
                     )
-                      history.push(`/media/${nodeIds}`);
+                      history.push(`/media/folder/${nodeIds}`);
                   }}
                   defaultCollapseIcon={
                     <ArrowDropDownRoundedIcon sx={{ color: "action.active" }} />

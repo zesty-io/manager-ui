@@ -4,7 +4,10 @@ import { Sort } from "./Sort";
 import { FiletypeFilter } from "./FiletypeFilter";
 import { DateRangeFilter } from "./DateFilter";
 
-export const Controls: FC = () => {
+export type ControlsProps = {
+  showDateFilter?: boolean;
+};
+export const Controls: FC<ControlsProps> = ({ showDateFilter = false }) => {
   return (
     <Box
       sx={{
