@@ -23,7 +23,7 @@ export const MetricCard = ({
   return (
     <Box
       sx={{
-        width: 200,
+        width: 220,
         backgroundColor: "common.white",
         border: (theme) => `1px solid ${theme.palette.border}`,
         borderRadius: "8px",
