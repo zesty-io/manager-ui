@@ -19,7 +19,7 @@ const iconStyles = {
   borderRadius: "100%",
 };
 
-const getDates = (numDays: any) => {
+const getDates = (numDays: number) => {
   const start = new Date();
   start.setDate(start.getDate() - numDays);
 
@@ -28,7 +28,7 @@ const getDates = (numDays: any) => {
   return { start, end };
 };
 
-export const InsightsMedia: FC = ({}) => {
+export const InsightsMedia: FC = () => {
   const [timePeriod, setTimePeriod] = useState(30);
   const { start, end } = getDates(timePeriod);
   const dates = useMemo(() => {
