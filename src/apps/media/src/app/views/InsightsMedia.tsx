@@ -80,7 +80,7 @@ export const InsightsMedia: FC<any> = ({}) => {
       <Box sx={{ display: "flex" }}>
         <MetricCard
           title="Media Requests"
-          value={totalRequests}
+          value={totalRequests || 0}
           icon={
             <Box
               sx={{
@@ -102,7 +102,7 @@ export const InsightsMedia: FC<any> = ({}) => {
         />
         <MetricCard
           title="Media Bandwidth"
-          value={totalThroughput}
+          value={totalThroughput || 0}
           symbol="GB"
           icon={
             <Box
