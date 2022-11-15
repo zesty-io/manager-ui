@@ -119,7 +119,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
         </Box>
       ) : (
         <>
-          <Controls />
+          <Controls showDateFilter={true} />
           <UploadModal />
           <DnDProvider
             isDefaultBin
