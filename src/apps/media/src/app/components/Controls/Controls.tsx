@@ -25,7 +25,7 @@ export const Controls: FC<ControlsProps> = ({ showDateFilter = false }) => {
       >
         <Sort />
         <FiletypeFilter />
-        {showDateFilter && <DateRangeFilter />}
+        <DateRangeFilter />
       </Box>
     </Box>
   );
