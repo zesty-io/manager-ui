@@ -36,8 +36,7 @@ import {
 // it would be nice to have a central import for all of these
 // instead of individually importing
 import { AppLink } from "@zesty-io/core/AppLink";
-import { Modal } from "@zesty-io/core/Modal";
-import { MediaApp } from "../../../../../../media/src/app-revamp";
+import { MediaApp } from "../../../../../../media/src/app";
 import { FieldTypeUUID } from "@zesty-io/core/FieldTypeUUID";
 import { FieldTypeCurrency } from "@zesty-io/core/FieldTypeCurrency";
 import { FieldTypeInternalLink } from "@zesty-io/core/FieldTypeInternalLink";
@@ -55,7 +54,6 @@ import {
 } from "@zesty-io/material";
 
 import styles from "./Field.less";
-import MediaStyles from "../../../../../../media/src/app/MediaAppModal.less";
 import { MemoryRouter } from "react-router";
 
 const FieldLabel = memo((props) => {
@@ -232,6 +230,11 @@ export default function Field({
           open
           fullScreen
           sx={{ my: 2.5, mx: 10 }}
+          PaperProps={{
+            style: {
+              borderRadius: "4px",
+            },
+          }}
           onClose={() => setImageModal()}
         >
           <IconButton
@@ -423,6 +426,11 @@ export default function Field({
                 open
                 fullScreen
                 sx={{ my: 2.5, mx: 10 }}
+                PaperProps={{
+                  style: {
+                    borderRadius: "4px",
+                  },
+                }}
                 onClose={() => setImageModal()}
               >
                 <IconButton

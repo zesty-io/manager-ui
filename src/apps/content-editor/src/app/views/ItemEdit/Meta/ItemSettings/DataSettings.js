@@ -5,6 +5,7 @@ import { MetaTitle } from "./settings/MetaTitle";
 import MetaDescription from "./settings/MetaDescription";
 import { MetaKeywords } from "./settings/MetaKeywords";
 import { MetaLinkText } from "./settings/MetaLinkText";
+import { Stack } from "@mui/material";
 
 import styles from "./ItemSettings.less";
 export class DataSettings extends Component {
@@ -25,19 +26,21 @@ export class DataSettings extends Component {
     return (
       <section className={styles.Meta}>
         <div className={cx(styles.Settings, styles.DataSettings)}>
-          <MetaLinkText
-            meta_link_text={web.metaLinkText}
-            onChange={this.onChange}
-          />
-          <MetaTitle meta_title={web.metaTitle} onChange={this.onChange} />
-          <MetaDescription
-            meta_description={web.metaDescription}
-            onChange={this.onChange}
-          />
-          <MetaKeywords
-            meta_keywords={web.metaKeywords}
-            onChange={this.onChange}
-          />
+          <Stack spacing={2}>
+            <MetaLinkText
+              meta_link_text={web.metaLinkText}
+              onChange={this.onChange}
+            />
+            <MetaTitle meta_title={web.metaTitle} onChange={this.onChange} />
+            <MetaDescription
+              meta_description={web.metaDescription}
+              onChange={this.onChange}
+            />
+            <MetaKeywords
+              meta_keywords={web.metaKeywords}
+              onChange={this.onChange}
+            />
+          </Stack>
         </div>
       </section>
     );
