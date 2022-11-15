@@ -23,7 +23,7 @@ export const MetricCard = ({
   return (
     <Box
       sx={{
-        width: 220,
+        width: 200,
         backgroundColor: "common.white",
         border: (theme) => `1px solid ${theme.palette.border}`,
         borderRadius: "8px",
@@ -32,7 +32,7 @@ export const MetricCard = ({
     >
       <Box display="flex" justifyContent="space-between">
         <Box>
-          <Typography fontWeight={600} color="text.secondary">
+          <Typography variant="body2" fontWeight={600} color="text.secondary">
             {title}
           </Typography>
           <Tooltip title={`${value?.toLocaleString()} ${title}`}>

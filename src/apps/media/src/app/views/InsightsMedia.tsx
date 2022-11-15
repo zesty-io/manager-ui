@@ -6,17 +6,14 @@ import {
 } from "../../../../../shell/services/metrics";
 
 import { MetricCard } from "../../../../../shell/components/MetricsCard";
-import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
+import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import CloudRoundedIcon from "@mui/icons-material/CloudRounded";
 import moment from "moment";
 
 const iconStyles = {
-  height: "24px",
-  width: "24px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: "100%",
+  height: "32px",
+  borderRadius: "16px",
+  padding: 1,
 };
 
 const getDates = (numDays: number) => {
@@ -74,7 +71,7 @@ export const InsightsMedia: FC = () => {
           Insights
         </Typography>
       </Box>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex", gap: 2 }}>
         <MetricCard
           title="Media Requests"
           value={totalRequests || 0}
@@ -85,7 +82,7 @@ export const InsightsMedia: FC = () => {
                 backgroundColor: "blue.50",
               }}
             >
-              <LanguageRoundedIcon
+              <SendRoundedIcon
                 color="info"
                 sx={{
                   width: "16px",
