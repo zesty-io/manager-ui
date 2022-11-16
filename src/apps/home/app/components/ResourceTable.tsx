@@ -6,13 +6,17 @@ import {
 } from "@mui/x-data-grid-pro";
 import {
   useGetAuditsQuery,
-  useGetItemQuery,
+  useGetContentItemQuery,
+  useGetContentModelQuery,
 } from "../../../../shell/services/instance";
 import { useSelector } from "react-redux";
 import { Box, Typography, Skeleton } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import CodeIcon from "@mui/icons-material/Code";
 import { Database } from "@zesty-io/material";
+import { useHistory } from "react-router";
+import { useMemo } from "react";
+import { uniqBy } from "lodash";
 
 const viewableResourceTypes = ["content", "schema", "code"];
 
@@ -23,15 +27,30 @@ const iconMap = {
 };
 
 const NameCell = ({ affectedZUID, resourceType }: any) => {
-  const { data, isLoading } = useGetItemQuery(affectedZUID, {
-    skip: resourceType === "code",
-  });
+  const { data: contentItem, isLoading: isItemLoading } =
+    useGetContentItemQuery(affectedZUID, {
+      skip: resourceType !== "content",
+    });
+  const { data: contentModel, isLoading: isModelLoading } =
+    useGetContentModelQuery(affectedZUID, {
+      skip: resourceType !== "schema",
+    });
   const fileData = useSelector((state: any) =>
     Object.values(state.files).find((item: any) => item.ZUID === affectedZUID)
   ) as any;
 
-  const name =
-    resourceType === "code" ? fileData?.fileName : data?.web?.metaTitle;
+  const isLoading = isItemLoading || isModelLoading;
+
+  const name = useMemo(() => {
+    switch (resourceType) {
+      case "content":
+        return contentItem?.web?.metaTitle;
+      case "schema":
+        return contentModel?.label;
+      case "code":
+        return fileData?.fileName;
+    }
+  }, [resourceType, contentItem, contentModel, fileData]);
 
   if (isLoading) {
     return <Skeleton variant="rectangular" width="100%" />;
@@ -41,15 +60,21 @@ const NameCell = ({ affectedZUID, resourceType }: any) => {
     <>
       {iconMap[resourceType as keyof typeof iconMap]}
       <Box component="span" sx={{ ml: 2 }}>
-        {name ? name : `${affectedZUID} (Missing Meta Title)`}
+        {name
+          ? name
+          : `${affectedZUID} (${
+              resourceType === "content" && contentItem
+                ? "Missing Meta Title"
+                : "Deleted"
+            })`}
       </Box>
     </>
   );
 };
 
 const VersionCell = ({ affectedZUID, resourceType }: any) => {
-  const { data, isLoading } = useGetItemQuery(affectedZUID, {
-    skip: resourceType === "code",
+  const { data, isLoading } = useGetContentItemQuery(affectedZUID, {
+    skip: resourceType !== "content",
   });
   const fileData = useSelector((state: any) =>
     Object.values(state.files).find((item: any) => item.ZUID === affectedZUID)
@@ -62,7 +87,11 @@ const VersionCell = ({ affectedZUID, resourceType }: any) => {
     return <Skeleton variant="rectangular" width="100%" />;
   }
 
-  return <Typography color="text.secondary">v{version}</Typography>;
+  return (
+    <Typography color="text.secondary">
+      {version ? `v${version}` : ""}
+    </Typography>
+  );
 };
 
 export const ResourceTable = () => {
@@ -70,6 +99,16 @@ export const ResourceTable = () => {
     start_date: moment().subtract(1, "months").format("L"),
     end_date: moment().format("L"),
   });
+
+  const history = useHistory();
+
+  const handleRowClick = ({ affectedZUID, resourceType, meta }: any) => {
+    if (resourceType === "code") {
+      history.push("/code/file/" + meta?.uri.split("/").slice(3).join("/"));
+    } else {
+      history.push(new URL(meta?.url)?.pathname);
+    }
+  };
 
   const columns = [
     { field: "id", headerName: "Id", hide: true },
@@ -95,17 +134,19 @@ export const ResourceTable = () => {
       // @ts-expect-error - missing types for headerAlign and align on DataGridPro
       columns={columns}
       rows={
-        audit
-          ?.filter((resource) =>
+        uniqBy(
+          audit?.filter((resource) =>
             viewableResourceTypes.includes(resource.resourceType)
-          )
-          ?.map((row: any) => ({ id: row.ZUID, ...row })) || []
+          ),
+          "affectedZUID"
+        )?.map((row: any) => ({ id: row.ZUID, ...row })) || []
       }
       rowHeight={52}
       hideFooter
       disableSelectionOnClick
       disableColumnFilter
       loading={isAuditFetching}
+      onRowClick={(params) => handleRowClick(params.row)}
       sx={{
         backgroundColor: "common.white",
       }}

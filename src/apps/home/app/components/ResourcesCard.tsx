@@ -34,8 +34,8 @@ export const ResourcesCard = () => {
         <Typography variant="h6" fontWeight={600}>
           Resources
         </Typography>
-        {/* @ts-ignore */}
         <Typography
+          // @ts-ignore
           variant="body3"
           color="text.secondary"
           fontWeight={600}
