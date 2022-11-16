@@ -156,8 +156,12 @@ export const ResourceTable = () => {
       disableColumnFilter
       loading={isAuditFetching}
       onRowClick={(params) => handleRowClick(params.row)}
+      onCellClick={() => {}}
       sx={{
         backgroundColor: "common.white",
+        ".MuiDataGrid-row": {
+          cursor: "pointer",
+        },
       }}
     />
   );
