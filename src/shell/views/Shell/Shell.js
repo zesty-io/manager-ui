@@ -106,7 +106,7 @@ export default memo(function Shell() {
                 }
               })}
 
-              <Redirect exact from="/" to="/content" />
+              <Redirect exact from="/" to="/home" />
               <Route path="*" component={Missing} />
             </Switch>
           </Sentry.ErrorBoundary>
