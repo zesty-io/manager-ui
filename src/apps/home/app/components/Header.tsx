@@ -11,7 +11,7 @@ export const Header = () => {
         px: 3,
         py: 2,
         background: (theme) =>
-          // @ts-ignore
+          // @ts-expect-error - missing module augmentations
           `linear-gradient(91.57deg, ${theme.palette.deepOrange?.[500]} 0%, ${theme.palette.deepOrange?.[600]} 100%)`,
       }}
     >
