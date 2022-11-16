@@ -3,11 +3,12 @@ import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import RemoveRedEyeRoundedIcon from "@mui/icons-material/RemoveRedEyeRounded";
-import { MetricCard } from "./MetricCard";
 import { metricsApi } from "../../../../shell/services/metrics";
 import moment from "moment";
 import { useGetAuditsQuery } from "../../../../shell/services/instance";
 import { uniqBy } from "lodash";
+import { MetricCard } from "../../../../shell/components/MetricsCard";
+import { useSelector } from "react-redux";
 
 const iconStyles = {
   height: "32px",
@@ -18,6 +19,10 @@ const iconStyles = {
 const date = new Date();
 
 export const MetricCards = () => {
+  const instanceCreatedAtDate = useSelector(
+    (state: any) => state.instance.createdAt
+  );
+  const is2MonthsOld = moment(date).diff(instanceCreatedAtDate, "months") >= 2;
   const { data: priorRequests, isFetching: isPriorRequestsFetching } =
     metricsApi.useGetRequestsQuery([
       moment(date).subtract(2, "months").format(),
@@ -47,9 +52,9 @@ export const MetricCards = () => {
     start_date: moment(date).subtract(1, "months").format("L"),
     end_date: moment(date).format("L"),
   });
-  // const requestsFetching = isPriorRequestsFetching || isRequestsFetching;
-  // const usageFetching = isPriorUsageFetching || isUsageFetching;
-  // const auditFetching = isPriorAuditFetching || isAuditFetching;
+  const requestsFetching = isPriorRequestsFetching || isRequestsFetching;
+  const usageFetching = isPriorUsageFetching || isUsageFetching;
+  const auditFetching = isPriorAuditFetching || isAuditFetching;
 
   const getUniqueActions = (data: any, action: number) =>
     uniqBy(
@@ -64,8 +69,6 @@ export const MetricCards = () => {
   const priorScheduledPublishes = getUniqueActions(priorAudit, 6);
   const publishes = getUniqueActions(audit, 4);
   const priorPublishes = getUniqueActions(priorAudit, 4);
-
-  console.log("testing", getDelta(priorScheduledPublishes, scheduledPublishes));
 
   return (
     <Box display="flex" gap={2}>
@@ -85,8 +88,13 @@ export const MetricCards = () => {
             />
           </Box>
         }
-        delta={getDelta(priorRequests?.TotalRequests, requests?.TotalRequests)}
+        delta={
+          is2MonthsOld
+            ? getDelta(priorRequests?.TotalRequests, requests?.TotalRequests)
+            : null
+        }
         deltaLabel={"VS PRIOR 30 DAYS"}
+        loading={requestsFetching}
       />
       <MetricCard
         title="Media Requests"
@@ -104,11 +112,16 @@ export const MetricCards = () => {
             />
           </Box>
         }
-        delta={getDelta(
-          priorUsage?.MediaConsumption?.TotalRequests,
-          usage?.MediaConsumption?.TotalRequests
-        )}
+        delta={
+          is2MonthsOld
+            ? getDelta(
+                priorUsage?.MediaConsumption?.TotalRequests,
+                usage?.MediaConsumption?.TotalRequests
+              )
+            : null
+        }
         deltaLabel={"VS PRIOR 30 DAYS"}
+        loading={usageFetching}
       />
       <MetricCard
         title="Items Scheduled"
@@ -125,8 +138,13 @@ export const MetricCards = () => {
             />
           </Box>
         }
-        delta={getDelta(priorScheduledPublishes, scheduledPublishes)}
+        delta={
+          is2MonthsOld
+            ? getDelta(priorScheduledPublishes, scheduledPublishes)
+            : null
+        }
         deltaLabel={"VS PRIOR 30 DAYS"}
+        loading={auditFetching}
       />
       <MetricCard
         title="Items Published"
@@ -144,8 +162,9 @@ export const MetricCards = () => {
             />
           </Box>
         }
-        delta={getDelta(priorPublishes, publishes)}
+        delta={is2MonthsOld ? getDelta(priorPublishes, publishes) : null}
         deltaLabel={"VS PRIOR 30 DAYS"}
+        loading={auditFetching}
       />
     </Box>
   );
