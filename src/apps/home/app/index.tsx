@@ -30,7 +30,7 @@ export const HomeApp = () => {
           <Box
             display="flex"
             gap={3}
-            sx={{ height: "calc(100vh - 289px)", mt: 2 }}
+            sx={{ height: "calc(100vh - 286px)", mt: 2 }}
           >
             <ResourceTable />
             <ResourcesCard />
