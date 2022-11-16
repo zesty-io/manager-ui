@@ -91,26 +91,24 @@ export const ResourceTable = () => {
   ];
 
   return (
-    <Box sx={{ height: "calc(100vh - 289px)", mt: 2 }}>
-      <DataGridPro
-        // @ts-expect-error - missing types for headerAlign and align on DataGridPro
-        columns={columns}
-        rows={
-          audit
-            ?.filter((resource) =>
-              viewableResourceTypes.includes(resource.resourceType)
-            )
-            ?.map((row: any) => ({ id: row.ZUID, ...row })) || []
-        }
-        rowHeight={52}
-        hideFooter
-        disableSelectionOnClick
-        disableColumnFilter
-        loading={isAuditFetching}
-        sx={{
-          backgroundColor: "common.white",
-        }}
-      />
-    </Box>
+    <DataGridPro
+      // @ts-expect-error - missing types for headerAlign and align on DataGridPro
+      columns={columns}
+      rows={
+        audit
+          ?.filter((resource) =>
+            viewableResourceTypes.includes(resource.resourceType)
+          )
+          ?.map((row: any) => ({ id: row.ZUID, ...row })) || []
+      }
+      rowHeight={52}
+      hideFooter
+      disableSelectionOnClick
+      disableColumnFilter
+      loading={isAuditFetching}
+      sx={{
+        backgroundColor: "common.white",
+      }}
+    />
   );
 };
