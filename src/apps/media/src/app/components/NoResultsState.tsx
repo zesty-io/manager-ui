@@ -10,8 +10,8 @@ import RestartAltRounded from "@mui/icons-material/RestartAltRounded";
 
 import noResults from "../../../../../../public/images/noSearchResults.svg";
 import {
+  clearAllFilters,
   Filetype,
-  setFiletypeFilter,
 } from "../../../../../shell/store/media-revamp";
 
 type Props = {
@@ -48,7 +48,7 @@ export const NoResultsState: FC<Props> = ({ filetype }) => {
           </Typography>
           <Button
             variant="contained"
-            onClick={() => dispatch(setFiletypeFilter(null))}
+            onClick={() => dispatch(clearAllFilters())}
             color="primary"
             size="small"
             startIcon={<RestartAltRounded />}

@@ -15,7 +15,11 @@ import { UploadModal } from "../components/UploadModal";
 import Controls from "../components/Controls";
 import { useMemo } from "react";
 import { AppState } from "../../../../../shell/store/types";
-import { fileExtension, getExtensions } from "../utils/fileUtils";
+import {
+  fileExtension,
+  getExtensions,
+  getDateFilterFn,
+} from "../utils/fileUtils";
 
 interface Props {
   addImagesCallback?: (selectedFiles: File[]) => void;
@@ -29,6 +33,9 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
   );
   const filetypeFilter = useSelector(
     (state: AppState) => state.mediaRevamp.filetypeFilter
+  );
+  const dateRangeFilter = useSelector(
+    (state: AppState) => state.mediaRevamp.dateRangeFilter
   );
   const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
     instanceId,
@@ -65,12 +72,29 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
 
   const files = useMemo(() => {
     if (!sortedFiles) return sortedFiles;
-    if (!filetypeFilter) return sortedFiles;
-    const extensions = new Set<string>(getExtensions(filetypeFilter));
-    return sortedFiles.filter((file) =>
-      extensions.has(fileExtension(file.filename))
-    );
-  }, [sortedFiles, filetypeFilter]);
+    if (filetypeFilter && dateRangeFilter) {
+      const extensions = new Set<string>(getExtensions(filetypeFilter));
+      const dateFilterFn = getDateFilterFn(dateRangeFilter);
+      return sortedFiles.filter((file) => {
+        return (
+          extensions.has(fileExtension(file.filename)) &&
+          dateFilterFn(file.created_at)
+        );
+      });
+    } else if (filetypeFilter) {
+      const extensions = new Set<string>(getExtensions(filetypeFilter));
+      return sortedFiles.filter((file) => {
+        return extensions.has(fileExtension(file.filename));
+      });
+    } else if (dateRangeFilter) {
+      const dateFilterFn = getDateFilterFn(dateRangeFilter);
+      return sortedFiles.filter((file) => {
+        return dateFilterFn(file.created_at);
+      });
+    } else {
+      return sortedFiles;
+    }
+  }, [sortedFiles, filetypeFilter, dateRangeFilter]);
 
   return (
     <Box
@@ -95,7 +119,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
         </Box>
       ) : (
         <>
-          <Controls />
+          <Controls showDateFilter={true} />
           <UploadModal />
           <DnDProvider
             isDefaultBin
