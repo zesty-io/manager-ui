@@ -10,7 +10,7 @@ import {
   useGetContentModelQuery,
 } from "../../../../shell/services/instance";
 import { useSelector } from "react-redux";
-import { Box, Typography, Skeleton } from "@mui/material";
+import { Typography, Skeleton, Tooltip } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import CodeIcon from "@mui/icons-material/Code";
 import { Database } from "@zesty-io/material";
@@ -27,6 +27,7 @@ const iconMap = {
 };
 
 const NameCell = ({ affectedZUID, resourceType }: any) => {
+  const languages = useSelector((state: any) => state.languages);
   const { data: contentItem, isLoading: isItemLoading } =
     useGetContentItemQuery(affectedZUID, {
       skip: resourceType !== "content",
@@ -38,6 +39,10 @@ const NameCell = ({ affectedZUID, resourceType }: any) => {
   const fileData = useSelector((state: any) =>
     Object.values(state.files).find((item: any) => item.ZUID === affectedZUID)
   ) as any;
+
+  const lang = languages.find(
+    (lang: any) => lang.ID === contentItem?.meta?.langID
+  );
 
   const isLoading = isItemLoading || isModelLoading;
 
@@ -59,14 +64,18 @@ const NameCell = ({ affectedZUID, resourceType }: any) => {
   return (
     <>
       {iconMap[resourceType as keyof typeof iconMap]}
-      <Typography variant="body2" component="span" sx={{ ml: 2 }}>
-        {name
-          ? name
-          : `${affectedZUID} (${
-              resourceType === "content" && contentItem
-                ? "Missing Meta Title"
-                : "Deleted"
-            })`}
+      <Typography variant="body2" component="span" sx={{ ml: 2 }} noWrap>
+        {name ? (
+          <>
+            {name} {lang?.code ? `(${lang?.code})` : ""}
+          </>
+        ) : (
+          `${affectedZUID} (${
+            resourceType === "content" && contentItem
+              ? "Missing Meta Title"
+              : "Deleted"
+          })`
+        )}
       </Typography>
     </>
   );
