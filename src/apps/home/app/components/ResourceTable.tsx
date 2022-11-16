@@ -59,7 +59,7 @@ const NameCell = ({ affectedZUID, resourceType }: any) => {
   return (
     <>
       {iconMap[resourceType as keyof typeof iconMap]}
-      <Box component="span" sx={{ ml: 2 }}>
+      <Typography variant="body2" component="span" sx={{ ml: 2 }}>
         {name
           ? name
           : `${affectedZUID} (${
@@ -67,7 +67,7 @@ const NameCell = ({ affectedZUID, resourceType }: any) => {
                 ? "Missing Meta Title"
                 : "Deleted"
             })`}
-      </Box>
+      </Typography>
     </>
   );
 };
@@ -88,7 +88,7 @@ const VersionCell = ({ affectedZUID, resourceType }: any) => {
   }
 
   return (
-    <Typography color="text.secondary">
+    <Typography variant="body2" color="text.secondary">
       {version ? `v${version}` : ""}
     </Typography>
   );
