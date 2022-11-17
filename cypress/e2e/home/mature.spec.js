@@ -2,6 +2,9 @@ describe("Mature Home", () => {
   before(() => {
     cy.visit("/");
   });
+  it("Displays user first name", () => {
+    cy.contains("Good Morning, FirstName");
+  });
   it("Opens Quick Start Guide in new tab", () => {
     cy.window().then((win) => {
       cy.stub(win, "open").as("open");
