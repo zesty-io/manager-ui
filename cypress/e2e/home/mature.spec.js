@@ -2,6 +2,9 @@ describe("Mature Home", () => {
   before(() => {
     cy.visit("/");
   });
+  it("Root gets redirected to home", () => {
+    cy.url().should("include", "/home");
+  });
   it("Displays user first name", () => {
     cy.contains("Good Morning, FirstName");
   });
