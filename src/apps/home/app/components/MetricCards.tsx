@@ -123,7 +123,7 @@ export const MetricCards = () => {
         deltaLabel={"VS PRIOR 30 DAYS"}
         loading={usageFetching}
       />
-      <MetricCard
+      {/* <MetricCard
         title="Items Scheduled"
         value={scheduledPublishes}
         icon={
@@ -145,7 +145,7 @@ export const MetricCards = () => {
         }
         deltaLabel={"VS PRIOR 30 DAYS"}
         loading={auditFetching}
-      />
+      /> */}
       <MetricCard
         title="Items Published"
         value={publishes}
