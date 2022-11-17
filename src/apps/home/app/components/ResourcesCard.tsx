@@ -107,7 +107,11 @@ export const ResourcesCard = () => {
         onClick={() => handleNavigation("https://parsley.zesty.io/")}
       >
         <ListItemIcon sx={{ minWidth: "36px" }}>
-          <img src={graphQLIcon} />
+          <img
+            width="24px"
+            height="24px"
+            src={"https://9skdl6.media.zestyio.com/favicon.png"}
+          />
         </ListItemIcon>
         <ListItemText
           primary="Parsley Docs"

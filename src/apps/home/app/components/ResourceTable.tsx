@@ -67,7 +67,10 @@ const NameCell = ({ affectedZUID, resourceType }: any) => {
       <Typography variant="body2" component="span" sx={{ ml: 2 }} noWrap>
         {name ? (
           <>
-            {name} {lang?.code ? `(${lang?.code})` : ""}
+            {name}{" "}
+            {lang?.code && Object.keys(contentItem?.siblings)?.length > 1
+              ? `(${lang?.code})`
+              : ""}
           </>
         ) : (
           `${affectedZUID} (${
