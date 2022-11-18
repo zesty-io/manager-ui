@@ -128,18 +128,62 @@ export const InsightsTable = () => {
       headerName: "Name",
       width: 800,
       sortable: false,
+      renderCell: (params: any) => {
+        return (
+          <Box sx={{ display: "flex" }}>
+            <CardMedia
+              component="img"
+              ref={imageEl}
+              onLoad={handleImageLoad}
+              onError={handleImageError}
+              data-src={params.row.thumbnail}
+              // image={isImageError ? fileBroken : params.row.thumbnail}
+              image={params.row.thumbnail}
+              loading="lazy"
+              sx={{
+                objectFit: "fill",
+                width: "52px",
+                height: "52px",
+              }}
+            />
+            <Box sx={{ display: "flex", alignItems: "center", ml: 3 }}>
+              <Typography variant="body2">{params.row.filename}</Typography>
+            </Box>
+          </Box>
+        );
+      },
     },
     {
       field: "type",
       headerName: "Type",
       width: 100,
       sortable: false,
+      renderCell: (params: any) => {
+        return (
+          <Chip
+            label={fileExtension(params.row.filename)}
+            sx={{
+              textTransform: "uppercase",
+              backgroundColor: `${fileTypeToColor(
+                fileExtension(params.row.filename)
+              )}.100`,
+              color: `${fileTypeToColor(
+                fileExtension(params.row.filename)
+              )}.600`,
+            }}
+            size="small"
+          />
+        );
+      },
     },
     {
       field: "action",
       width: 100,
       headerName: "",
       sortable: false,
+      renderCell: (params: any) => {
+        return <LinkRoundedIcon sx={{ color: "grey.400" }} />;
+      },
     },
   ];
 
