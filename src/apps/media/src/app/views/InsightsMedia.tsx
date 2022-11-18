@@ -9,6 +9,7 @@ import { MetricCard } from "../../../../../shell/components/MetricsCard";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import CloudRoundedIcon from "@mui/icons-material/CloudRounded";
 import moment from "moment";
+import { InsightsTable } from "../components/InsightsTable";
 
 const iconStyles = {
   height: "32px",
@@ -111,6 +112,7 @@ export const InsightsMedia: FC = () => {
           deltaLabel={"VS PRIOR 30 DAYS"}
         />
       </Box>
+      <InsightsTable />
     </Box>
   );
 };
