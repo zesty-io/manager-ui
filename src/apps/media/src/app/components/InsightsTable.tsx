@@ -102,5 +102,59 @@ export const InsightsTable = () => {
     }
   }, [sortedFiles, filetypeFilter, dateRangeFilter]);
 
-  return <></>;
+  /**
+   * @description Used to set vertical or horizontal image orientation
+   * @note imageOrientation will be placed as a condition in the Image's parent component
+   */
+  const handleImageLoad = () => {
+    setLazyLoading(false);
+    const naturalHeight = imageEl.current.naturalHeight;
+    const naturalWidth = imageEl.current.naturalWidth;
+    if (naturalHeight > naturalWidth) {
+      setImageOrientation("vertical");
+    } else {
+      setImageOrientation("horizontal");
+    }
+  };
+
+  const handleImageError = () => {
+    setLazyLoading(false);
+    setIsImageError(true);
+  };
+
+  const columns = [
+    {
+      field: "filename",
+      headerName: "Name",
+      width: 800,
+      sortable: false,
+    },
+    {
+      field: "type",
+      headerName: "Type",
+      width: 100,
+      sortable: false,
+    },
+    {
+      field: "action",
+      width: 100,
+      headerName: "",
+      sortable: false,
+    },
+  ];
+
+  const handleClick = (params: any) => {
+    const locationParams = new URLSearchParams(location.search);
+    locationParams.set("fileId", params.row.id);
+    history.replace({
+      pathname: location.pathname,
+      search: locationParams.toString(),
+    });
+  };
+
+  return (
+    <Box sx={{ height: "calc(100vh - 289px)", mt: 2 }}>
+      {files && <DataGridPro columns={columns} />}
+    </Box>
+  );
 };
