@@ -1,5 +1,12 @@
 import { useState, useMemo, useRef } from "react";
-import { Box, Typography, Card, Chip, CardMedia } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Card,
+  Chip,
+  CardMedia,
+  IconButton,
+} from "@mui/material";
 import { useSelector } from "react-redux";
 import {
   useGetUsageQuery,
@@ -32,6 +39,7 @@ export const InsightsTable = () => {
 
   const location = useLocation();
   const history = useHistory();
+  const [isCopied, setIsCopied] = useState(false);
   const instanceId = useSelector((state: AppState) => state.instance.ID);
   const ecoId = useSelector((state: AppState) => state.instance.ecoID);
   const sortOrder = useSelector(
@@ -122,6 +130,20 @@ export const InsightsTable = () => {
     setIsImageError(true);
   };
 
+  const handleCopyClick = (data: string) => {
+    navigator?.clipboard
+      ?.writeText(data)
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => {
+          setIsCopied(false);
+        }, 1500);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
   const columns = [
     {
       field: "filename",
@@ -182,7 +204,16 @@ export const InsightsTable = () => {
       headerName: "",
       sortable: false,
       renderCell: (params: any) => {
-        return <LinkRoundedIcon sx={{ color: "grey.400" }} />;
+        return (
+          <IconButton
+            onClick={(evt: any) => {
+              evt.stopPropagation();
+              handleCopyClick(params.row.thumbnail);
+            }}
+          >
+            <LinkRoundedIcon sx={{ color: "grey.400" }} />
+          </IconButton>
+        );
       },
     },
   ];
