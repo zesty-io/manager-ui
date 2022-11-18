@@ -24,6 +24,12 @@ import {
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 
 export const InsightsTable = () => {
+  // Thumbnail prerequisites
+  const imageEl = useRef<HTMLImageElement>();
+  const [imageOrientation, setImageOrientation] = useState<string>("");
+  const [lazyLoading, setLazyLoading] = useState(true);
+  const [isImageError, setIsImageError] = useState(false);
+
   const location = useLocation();
   const history = useHistory();
   const instanceId = useSelector((state: AppState) => state.instance.ID);
