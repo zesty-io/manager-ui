@@ -29,6 +29,7 @@ import {
   useGetBinsQuery,
 } from "../../../../../shell/services/mediaManager";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
+import CheckIcon from "@mui/icons-material/Check";
 
 export const InsightsTable = () => {
   // Thumbnail prerequisites
@@ -125,11 +126,6 @@ export const InsightsTable = () => {
     }
   };
 
-  const handleImageError = () => {
-    setLazyLoading(false);
-    setIsImageError(true);
-  };
-
   const handleCopyClick = (data: string) => {
     navigator?.clipboard
       ?.writeText(data)
@@ -151,16 +147,22 @@ export const InsightsTable = () => {
       width: 800,
       sortable: false,
       renderCell: (params: any) => {
+        const [isImageError, setIsImageError] = useState(false);
+
+        const handleImageError = () => {
+          setIsImageError(true);
+        };
+
         return (
           <Box sx={{ display: "flex" }}>
             <CardMedia
               component="img"
+              key={params.row.id}
               ref={imageEl}
               onLoad={handleImageLoad}
               onError={handleImageError}
               data-src={params.row.thumbnail}
-              // image={isImageError ? fileBroken : params.row.thumbnail}
-              image={params.row.thumbnail}
+              image={isImageError ? fileBroken : params.row.thumbnail}
               loading="lazy"
               sx={{
                 objectFit: "fill",
@@ -211,7 +213,11 @@ export const InsightsTable = () => {
               handleCopyClick(params.row.thumbnail);
             }}
           >
-            <LinkRoundedIcon sx={{ color: "grey.400" }} />
+            {isCopied ? (
+              <CheckIcon sx={{ color: "grey.400" }} />
+            ) : (
+              <LinkRoundedIcon sx={{ color: "grey.400" }} />
+            )}
           </IconButton>
         );
       },
