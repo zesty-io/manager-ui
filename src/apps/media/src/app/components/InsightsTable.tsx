@@ -40,7 +40,6 @@ export const InsightsTable = () => {
 
   const location = useLocation();
   const history = useHistory();
-  const [isCopied, setIsCopied] = useState(false);
   const instanceId = useSelector((state: AppState) => state.instance.ID);
   const ecoId = useSelector((state: AppState) => state.instance.ecoID);
   const sortOrder = useSelector(
@@ -126,20 +125,6 @@ export const InsightsTable = () => {
     }
   };
 
-  const handleCopyClick = (data: string) => {
-    navigator?.clipboard
-      ?.writeText(data)
-      .then(() => {
-        setIsCopied(true);
-        setTimeout(() => {
-          setIsCopied(false);
-        }, 1500);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  };
-
   const columns = [
     {
       field: "filename",
@@ -206,11 +191,27 @@ export const InsightsTable = () => {
       headerName: "",
       sortable: false,
       renderCell: (params: any) => {
+        const [isCopied, setIsCopied] = useState(false);
+
+        const handleCopyClick = (data: string) => {
+          navigator?.clipboard
+            ?.writeText(data)
+            .then(() => {
+              setIsCopied(true);
+              setTimeout(() => {
+                setIsCopied(false);
+              }, 1500);
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        };
+
         return (
           <IconButton
             onClick={(evt: any) => {
               evt.stopPropagation();
-              handleCopyClick(params.row.thumbnail);
+              handleCopyClick(params.row.url);
             }}
           >
             {isCopied ? (
