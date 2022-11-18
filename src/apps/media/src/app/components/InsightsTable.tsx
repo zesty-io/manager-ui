@@ -154,7 +154,17 @@ export const InsightsTable = () => {
 
   return (
     <Box sx={{ height: "calc(100vh - 289px)", mt: 2 }}>
-      {files && <DataGridPro columns={columns} />}
+      {files && (
+        <DataGridPro
+          columns={columns}
+          rows={files}
+          rowHeight={52}
+          hideFooter
+          disableColumnFilter
+          disableColumnMenu
+          onRowClick={handleClick}
+        />
+      )}
     </Box>
   );
 };
