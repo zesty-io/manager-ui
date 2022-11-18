@@ -21,6 +21,7 @@ export function fetchProducts() {
       case "31-71cfc74-0wn3r":
       case "31-71cfc74-4dm13":
         data = [
+          "home",
           "content",
           "media",
           "schema",
@@ -34,6 +35,7 @@ export function fetchProducts() {
         break;
       case "31-71cfc74-d3v3l0p3r":
         data = [
+          "home",
           "content",
           "media",
           "schema",
@@ -47,6 +49,7 @@ export function fetchProducts() {
         break;
       case "31-71cfc74-p0bl1shr":
         data = [
+          "home",
           "content",
           "media",
           "leads",
@@ -55,10 +58,10 @@ export function fetchProducts() {
         ];
         break;
       case "31-71cfc74-s30":
-        data = ["content", "media", "leads", "seo", "reports"];
+        data = ["home", "content", "media", "leads", "seo", "reports"];
         break;
       case "31-71cfc74-c0ntr1b0t0r":
-        data = ["content", "media"];
+        data = ["home", "content", "media"];
         break;
       case "31-71cfc74-m3d14":
         data = ["media"];
@@ -69,6 +72,7 @@ export function fetchProducts() {
 
     if (getState().user.staff) {
       data = [
+        "home",
         "content",
         "media",
         "schema",

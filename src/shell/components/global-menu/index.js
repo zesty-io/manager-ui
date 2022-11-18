@@ -15,6 +15,7 @@ import {
   faBullseye,
   faCode,
   faRocket,
+  faHome,
 } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./styles.less";
@@ -25,6 +26,7 @@ export default memo(function GlobalMenu() {
 
   const slug = location.pathname.split("/")[1];
   const icons = {
+    home: faHome,
     content: faEdit,
     media: faImage,
     schema: faDatabase,
