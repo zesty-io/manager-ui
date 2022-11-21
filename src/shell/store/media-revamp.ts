@@ -72,6 +72,7 @@ export type Filetype =
   | "Spreadsheet"
   | "Code"
   | "Font"
+  | "Folder"
   | "Archive"
   | "PNG"
   | "JPEG"
