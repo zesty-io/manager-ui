@@ -1,4 +1,4 @@
-import { Box, Skeleton, Typography, Tooltip } from "@mui/material";
+import { Box, Skeleton, Typography, Tooltip, Chip } from "@mui/material";
 import { isNaN, isNil } from "lodash";
 import { ReactNode } from "react";
 import { numberFormatter } from "../../../utility/numberFormatter";
@@ -11,6 +11,7 @@ interface Props {
   deltaLabel?: string;
   symbol?: string;
   loading?: boolean;
+  isInMedia?: boolean;
 }
 
 export const MetricCard = ({
@@ -21,6 +22,7 @@ export const MetricCard = ({
   deltaLabel,
   symbol,
   loading,
+  isInMedia,
 }: Props) => {
   return (
     <Box
@@ -61,13 +63,20 @@ export const MetricCard = ({
         <>
           {!isNil(delta) ? (
             <Box marginTop={0.5} display="flex" gap={1}>
-              <GrowthIndicator delta={isNaN(delta) ? 0 : delta} />
+              <GrowthIndicator
+                delta={isNaN(delta) ? 0 : delta}
+                isInMedia={isInMedia}
+              />
               <Typography
                 // @ts-ignore
                 variant="body3"
                 color="text.disabled"
                 fontWeight={600}
-                sx={{ fontSize: "10px" }}
+                sx={{
+                  fontSize: "10px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
               >
                 {deltaLabel}
               </Typography>

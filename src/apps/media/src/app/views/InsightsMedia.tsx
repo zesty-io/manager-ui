@@ -91,6 +91,7 @@ export const InsightsMedia: FC = () => {
           }
           deltaLabel={"from last 30 days"}
           loading={usageFetching}
+          isInMedia={true}
         />
         <MetricCard
           title="Media Bandwidth"
@@ -118,6 +119,7 @@ export const InsightsMedia: FC = () => {
               : null
           }
           deltaLabel={"from last 30 days"}
+          isInMedia={true}
           loading={usageFetching}
         />
       </Box>
