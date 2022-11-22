@@ -50,8 +50,8 @@ export const InsightsTable: FC<Props> = ({ files }) => {
     {
       field: "filename",
       headerName: "Name",
-      width: 800,
       sortable: false,
+      flex: 4,
       renderCell: (params: any) => {
         const [isImageError, setIsImageError] = useState(false);
 
@@ -85,13 +85,13 @@ export const InsightsTable: FC<Props> = ({ files }) => {
     {
       field: "Requests",
       headerName: "Requests",
-      width: 150,
+      flex: 1,
       sortable: false,
     },
     {
       field: "ThroughtputGB",
       headerName: "Bandwidth",
-      width: 150,
+      flex: 1,
       sortable: false,
       renderCell: (params: any) => {
         return (
@@ -104,7 +104,6 @@ export const InsightsTable: FC<Props> = ({ files }) => {
     {
       field: "type",
       headerName: "Type",
-      width: 100,
       sortable: false,
       renderCell: (params: any) => {
         return (
@@ -126,7 +125,6 @@ export const InsightsTable: FC<Props> = ({ files }) => {
     },
     {
       field: "action",
-      width: 100,
       headerName: "",
       sortable: false,
       renderCell: (params: any) => {
