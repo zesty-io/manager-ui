@@ -225,7 +225,6 @@ export const FileModalContent: FC<Props> = ({
             handleCloseModal();
           }}
           binId={binId}
-          isInFileModal={true}
           onClose={() => {
             setShowMoveFileDialog(false);
           }}

@@ -20,7 +20,6 @@ interface Props {
   onClose?: () => void;
   binId: string;
   fileCount?: number;
-  isInFileModal?: boolean;
   showSpinner?: boolean;
 }
 
@@ -29,7 +28,6 @@ export const MoveFileDialog = ({
   onClose,
   binId,
   fileCount,
-  isInFileModal,
   showSpinner,
 }: Props) => {
   const { data: binGroups } = useGetBinGroupsQuery(binId);
