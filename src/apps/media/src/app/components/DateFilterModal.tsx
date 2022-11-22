@@ -20,8 +20,7 @@ import { AppState } from "../../../../../shell/store/types";
 type DateFilterModal = {
   open: boolean;
   type: "on" | "before" | "after";
-  //onClose: DialogProps["onClose"];
-  onClose: (data?: any) => void;
+  onClose: () => void;
 };
 
 export const DateFilterModal: FC<DateFilterModal> = ({
@@ -46,10 +45,6 @@ export const DateFilterModal: FC<DateFilterModal> = ({
           direction="row"
           justifyContent="space-between"
           alignContent="center"
-          //padding="16px, 24px, 12px, 24px"
-          pt={2}
-          px={3}
-          pb={1.5}
         >
           <Typography variant="h5" sx={{ textTransform: "capitalize" }}>
             {type}
@@ -59,7 +54,7 @@ export const DateFilterModal: FC<DateFilterModal> = ({
           </IconButton>
         </Stack>
       </DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{ px: 0 }}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <CalendarPicker
             onChange={(date, state) => {
@@ -72,7 +67,6 @@ export const DateFilterModal: FC<DateFilterModal> = ({
               onClose();
             }}
             date={highlightedDate}
-            //renderInput={(props) => <TextField {...props} />}
           />
         </LocalizationProvider>
       </DialogContent>
