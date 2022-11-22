@@ -13,7 +13,6 @@ import { NoResultsState } from "../components/NoResultsState";
 import { File } from "../../../../../shell/services/types";
 import { UploadModal } from "../components/UploadModal";
 import Controls from "../components/Controls";
-import { DateFilterModal } from "../components/DateFilterModal";
 import { useMemo, useState } from "react";
 import { AppState } from "../../../../../shell/store/types";
 import {
@@ -38,7 +37,6 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
   const dateRangeFilter = useSelector(
     (state: AppState) => state.mediaRevamp.dateRangeFilter
   );
-  const [modalOpen, setModalOpen] = useState(true);
   const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
     instanceId,
     ecoId,
@@ -122,7 +120,6 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
       ) : (
         <>
           <Controls showDateFilter={true} />
-          <DateFilterModal open={modalOpen} />
           <UploadModal />
           <DnDProvider
             isDefaultBin
