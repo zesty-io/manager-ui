@@ -81,6 +81,16 @@ export const InsightsMedia: FC = () => {
               />
             </Box>
           }
+          delta={
+            is2MonthsOld
+              ? getDelta(
+                  priorUsage?.MediaConsumption?.TotalRequests,
+                  usage?.MediaConsumption?.TotalRequests
+                )
+              : null
+          }
+          deltaLabel={"from last 30 days"}
+          loading={usageFetching}
         />
         <MetricCard
           title="Media Bandwidth"
@@ -99,6 +109,16 @@ export const InsightsMedia: FC = () => {
               />
             </Box>
           }
+          delta={
+            is2MonthsOld
+              ? getDelta(
+                  priorUsage?.MediaConsumption?.TotalGBs,
+                  usage?.MediaConsumption?.TotalGBs
+                )
+              : null
+          }
+          deltaLabel={"from last 30 days"}
+          loading={usageFetching}
         />
       </Box>
       <InsightsTable
