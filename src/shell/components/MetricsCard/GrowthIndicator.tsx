@@ -88,8 +88,6 @@ export const GrowthIndicator = ({ delta, isInMedia }: Props) => {
     );
   };
 
-  const icon = isPositive ? <PositiveIcon /> : <NegativeIcon />;
-
   return (
     <Box
       sx={{
@@ -98,7 +96,7 @@ export const GrowthIndicator = ({ delta, isInMedia }: Props) => {
         alignItems: "center",
       }}
     >
-      {icon}
+      {isPositive ? <PositiveIcon /> : <NegativeIcon />}
     </Box>
   );
 };
