@@ -80,22 +80,40 @@ export const DateRangeFilter: FC = () => {
     <>
       {activeFilter ? activeButton : inactiveButton}
       <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
-        <MenuItem onClick={() => handleChange("today")}>
+        <MenuItem
+          onClick={() => handleChange({ type: "preset", value: "today" })}
+        >
           <Typography variant="body1">Today</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("yesterday")}>
+        <MenuItem
+          onClick={() => handleChange({ type: "preset", value: "yesterday" })}
+        >
           <Typography variant="body1">Yesterday</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("last 7 days")}>
+        <MenuItem
+          onClick={() => handleChange({ type: "preset", value: "last 7 days" })}
+        >
           <Typography variant="body1">Last 7 days</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("last 30 days")}>
+        <MenuItem
+          onClick={() =>
+            handleChange({ type: "preset", value: "last 30 days" })
+          }
+        >
           <Typography variant="body1">Last 30 days</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("last 3 months")}>
+        <MenuItem
+          onClick={() =>
+            handleChange({ type: "preset", value: "last 3 months" })
+          }
+        >
           <Typography variant="body1">Last 3 months</Typography>
         </MenuItem>
-        <MenuItem onClick={() => handleChange("last 12 months")}>
+        <MenuItem
+          onClick={() =>
+            handleChange({ type: "preset", value: "last 12 months" })
+          }
+        >
           <Typography variant="body1">Last 12 months</Typography>
         </MenuItem>
       </Menu>

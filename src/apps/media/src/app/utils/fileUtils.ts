@@ -132,24 +132,49 @@ export function getExtensions(filetype: Filetype | null) {
 }
 
 export function getDateFilterFn(dateRangeFilter: DateRange) {
-  switch (dateRangeFilter) {
-    case "today":
-      return (date: string) => moment(date).isSame(moment(), "day");
-    case "yesterday":
+  const { value, type } = dateRangeFilter;
+  switch (type) {
+    case "preset":
+      switch (value) {
+        case "today":
+          return (date: string) => moment(date).isSame(moment(), "day");
+        case "yesterday":
+          return (date: string) =>
+            moment(date).isSame(moment().subtract(1, "days"), "day");
+        case "last 7 days":
+          return (date: string) =>
+            moment(date).isSameOrAfter(moment().subtract(7, "days"), "day");
+        case "last 30 days":
+          return (date: string) =>
+            moment(date).isSameOrAfter(moment().subtract(30, "days"), "day");
+        case "last 3 months":
+          return (date: string) =>
+            moment(date).isSameOrAfter(moment().subtract(3, "months"), "day");
+        case "last 12 months":
+          return (date: string) =>
+            moment(date).isSameOrAfter(moment().subtract(12, "months"), "day");
+        // should never happen
+        default:
+          return (date: string) => true;
+      }
+    case "on":
+      return (date: string) => moment(date).isSame(moment(value), "day");
+    case "before":
       return (date: string) =>
-        moment(date).isSame(moment().subtract(1, "days"), "day");
-    case "last 7 days":
-      return (date: string) =>
-        moment(date).isSameOrAfter(moment().subtract(7, "days"), "day");
-    case "last 30 days":
-      return (date: string) =>
-        moment(date).isSameOrAfter(moment().subtract(30, "days"), "day");
-    case "last 3 months":
-      return (date: string) =>
-        moment(date).isSameOrAfter(moment().subtract(3, "months"), "day");
-    case "last 12 months":
-      return (date: string) =>
-        moment(date).isSameOrAfter(moment().subtract(12, "months"), "day");
+        moment(date).isSameOrBefore(moment(value), "day");
+    case "after":
+      return (date: string) => moment(date).isSameOrAfter(moment(value), "day");
+    /*
+    case "between":
+      return (date: string) => {
+        const [start, end] = value;
+        return (
+          moment(date).isSameOrAfter(moment(start), "day") &&
+          moment(date).isSameOrBefore(moment(end), "day")
+        );
+      };
+    */
+
     // should never happen
     default:
       return (date: string) => true;
