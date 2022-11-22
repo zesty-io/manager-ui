@@ -11,7 +11,6 @@ interface Props {
   deltaLabel?: string;
   symbol?: string;
   loading?: boolean;
-  isInMedia?: boolean;
 }
 
 export const MetricCard = ({
@@ -22,7 +21,6 @@ export const MetricCard = ({
   deltaLabel,
   symbol,
   loading,
-  isInMedia,
 }: Props) => {
   return (
     <Box
@@ -63,10 +61,7 @@ export const MetricCard = ({
         <>
           {!isNil(delta) ? (
             <Box marginTop={0.5} display="flex" gap={1}>
-              <GrowthIndicator
-                delta={isNaN(delta) ? 0 : delta}
-                isInMedia={isInMedia}
-              />
+              <GrowthIndicator delta={isNaN(delta) ? 0 : delta} />
               <Typography
                 // @ts-ignore
                 variant="body3"
