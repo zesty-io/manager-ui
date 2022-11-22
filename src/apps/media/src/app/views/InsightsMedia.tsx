@@ -1,5 +1,6 @@
 import { FC, useState, useMemo } from "react";
 import { Box, Typography, Card } from "@mui/material";
+import { useSelector } from "react-redux";
 import {
   useGetUsageQuery,
   useGetRequestsQuery,
@@ -9,6 +10,7 @@ import { MetricCard } from "../../../../../shell/components/MetricsCard";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import CloudRoundedIcon from "@mui/icons-material/CloudRounded";
 import moment from "moment";
+import { InsightsTable } from "../components/InsightsTable";
 
 const iconStyles = {
   height: "32px",
@@ -16,41 +18,31 @@ const iconStyles = {
   padding: 1,
 };
 
-const getDates = (numDays: number) => {
-  const start = new Date();
-  start.setDate(start.getDate() - numDays);
-
-  const end = moment().subtract(30, "days").toISOString();
-
-  return { start, end };
-};
+const date = new Date();
 
 export const InsightsMedia: FC = () => {
-  const [timePeriod, setTimePeriod] = useState(30);
-  const { start, end } = getDates(timePeriod);
-  const dates = useMemo(() => {
-    return [start.toISOString(), end];
-  }, [timePeriod]);
+  const instanceCreatedAtDate = useSelector(
+    (state: any) => state.instance.createdAt
+  );
+  const is2MonthsOld = moment(date).diff(instanceCreatedAtDate, "months") >= 2;
 
-  const {
-    data: usageData,
-    isLoading: usageLoading,
-    error: usageError,
-  } = useGetUsageQuery(dates as [string, string]);
-  const {
-    data: requestData,
-    isLoading: requestsLoading,
-    error: requestError,
-  } = useGetRequestsQuery(dates as [string, string]);
+  const { data: priorUsage, isFetching: isPriorUsageFetching } =
+    useGetUsageQuery([
+      moment(date).subtract(2, "months").format(),
+      moment(date).subtract(1, "months").format(),
+    ]);
+  const { data: usage, isFetching: isUsageFetching } = useGetUsageQuery([
+    moment(date).subtract(1, "months").format(),
+    moment(date).format(),
+  ]);
 
-  const totalMediaThroughput = usageData?.MediaConsumption.TotalGBs;
-  const totalMediaRequests = usageData?.MediaConsumption.TotalRequests;
+  const getDelta = (prior: number, current: number) =>
+    (current - prior) / ((current + prior) / 2);
 
-  const totalRequestThroughput = requestData?.TotalThroughputGB;
-  const totalPageRequests = requestData?.TotalRequests;
+  const usageFetching = isPriorUsageFetching || isUsageFetching;
 
-  const totalRequests = totalPageRequests + totalMediaRequests;
-  const totalThroughput = totalMediaThroughput + totalRequestThroughput;
+  const totalMediaThroughput = usage?.MediaConsumption.TotalGBs;
+  const totalMediaRequests = usage?.MediaConsumption.TotalRequests;
 
   return (
     <Box
@@ -72,7 +64,7 @@ export const InsightsMedia: FC = () => {
       <Box sx={{ display: "flex", gap: 2 }}>
         <MetricCard
           title="Media Requests"
-          value={totalRequests || 0}
+          value={totalMediaRequests || 0}
           icon={
             <Box
               sx={{
@@ -89,11 +81,10 @@ export const InsightsMedia: FC = () => {
               />
             </Box>
           }
-          deltaLabel={"VS PRIOR 30 DAYS"}
         />
         <MetricCard
           title="Media Bandwidth"
-          value={totalThroughput || 0}
+          value={totalMediaThroughput || 0}
           symbol="GB"
           icon={
             <Box
@@ -108,9 +99,14 @@ export const InsightsMedia: FC = () => {
               />
             </Box>
           }
-          deltaLabel={"VS PRIOR 30 DAYS"}
         />
       </Box>
+      <InsightsTable
+        files={usage?.TopMedia.map((file, key) => ({
+          id: key,
+          ...file,
+        }))}
+      />
     </Box>
   );
 };
