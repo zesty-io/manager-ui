@@ -54,10 +54,7 @@ export const DateFilterModal: FC<DateFilterModal> = ({
           <Typography variant="h5" sx={{ textTransform: "capitalize" }}>
             {type}
           </Typography>
-          <IconButton
-            //@ts-ignore
-            onClick={() => onClose()}
-          >
+          <IconButton onClick={() => onClose()}>
             <CloseIcon fontSize="small" />
           </IconButton>
         </Stack>
@@ -65,12 +62,11 @@ export const DateFilterModal: FC<DateFilterModal> = ({
       <DialogContent>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <CalendarPicker
-            onChange={(...args) => {
-              console.log(args);
+            onChange={(date, state) => {
               dispatch(
                 setDateRangeFilter({
                   type,
-                  value: args[0].toISOString(),
+                  value: date.toISOString(),
                 })
               );
               onClose();

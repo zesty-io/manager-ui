@@ -104,8 +104,7 @@ export const DateRangeFilter: FC = () => {
       <DateFilterModal
         open={Boolean(modal)}
         type={modal}
-        onClose={(data) => {
-          console.log(data);
+        onClose={() => {
           setModal(null);
           handleClose();
         }}
