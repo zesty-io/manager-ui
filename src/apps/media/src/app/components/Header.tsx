@@ -71,7 +71,7 @@ export const Header = ({
   const history = useHistory();
   const [deleteFile] = useDeleteFileMutation();
   const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
-  const [isLoadingMultipleUpdate, setIsLoadingMultipleUpdate] = useState(false);
+  const [showSpinner, setShowSpinner] = useState(false);
   const [showDeleteFileDialog, setShowDeleteFileDialog] = useState(false);
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
   const selectedFiles = useSelector(
@@ -109,7 +109,7 @@ export const Header = ({
   };
 
   const handleUpdateMutation = (newGroupId: string) => {
-    setIsLoadingMultipleUpdate(true);
+    setShowSpinner(true);
     Promise.all(
       selectedFiles?.map(async (file) => {
         await updateFile({
@@ -123,7 +123,7 @@ export const Header = ({
         });
       })
     ).then(() => {
-      setIsLoadingMultipleUpdate(false);
+      setShowSpinner(false);
       setShowMoveFileDialog(false);
     });
     dispatch(clearSelectedFiles());
@@ -181,15 +181,15 @@ export const Header = ({
       {/* Move File Dialog */}
       {showMoveFileDialog && (
         <MoveFileDialog
-          handleGroupChange={(newGroupId: string) =>
-            handleUpdateMutation(newGroupId)
-          }
+          handleGroupChange={(newGroupId: string) => {
+            handleUpdateMutation(newGroupId);
+          }}
           binId={binId}
           onClose={() => {
             setShowMoveFileDialog(false);
           }}
           fileCount={selectedFiles?.length}
-          isLoadingMultipleUpdate={isLoadingMultipleUpdate}
+          showSpinner={showSpinner}
         />
       )}
 

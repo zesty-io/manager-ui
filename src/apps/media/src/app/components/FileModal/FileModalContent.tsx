@@ -219,14 +219,15 @@ export const FileModalContent: FC<Props> = ({
 
       {showMoveFileDialog && (
         <MoveFileDialog
-          handleGroupChange={(newGroupId: string) =>
-            handleUpdateMutation(newFilename, false, newGroupId)
-          }
+          handleGroupChange={(newGroupId: string) => {
+            handleUpdateMutation(newFilename, false, newGroupId);
+            setShowMoveFileDialog(false);
+            handleCloseModal();
+          }}
           binId={binId}
           isInFileModal={true}
           onClose={() => {
             setShowMoveFileDialog(false);
-            handleCloseModal();
           }}
         />
       )}

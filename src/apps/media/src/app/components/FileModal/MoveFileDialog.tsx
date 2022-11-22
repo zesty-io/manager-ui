@@ -21,7 +21,7 @@ interface Props {
   binId: string;
   fileCount?: number;
   isInFileModal?: boolean;
-  isLoadingMultipleUpdate?: boolean;
+  showSpinner?: boolean;
 }
 
 export const MoveFileDialog = ({
@@ -30,7 +30,7 @@ export const MoveFileDialog = ({
   binId,
   fileCount,
   isInFileModal,
-  isLoadingMultipleUpdate,
+  showSpinner,
 }: Props) => {
   const { data: binGroups } = useGetBinGroupsQuery(binId);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>({
@@ -96,12 +96,9 @@ export const MoveFileDialog = ({
           variant="contained"
           onClick={() => {
             handleGroupChange(selectedGroup.id);
-            {
-              isInFileModal && onClose();
-            }
           }}
         >
-          {isLoadingMultipleUpdate ? (
+          {showSpinner ? (
             <CircularProgress size="24px" color="inherit" />
           ) : (
             "Move"
