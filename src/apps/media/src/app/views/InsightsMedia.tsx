@@ -44,6 +44,8 @@ export const InsightsMedia: FC = () => {
     error: requestError,
   } = useGetRequestsQuery(dates as [string, string]);
 
+  console.log("usageDatat", usageData?.TopMedia);
+
   const totalMediaThroughput = usageData?.MediaConsumption.TotalGBs;
   const totalMediaRequests = usageData?.MediaConsumption.TotalRequests;
 
@@ -112,7 +114,12 @@ export const InsightsMedia: FC = () => {
           deltaLabel={"VS PRIOR 30 DAYS"}
         />
       </Box>
-      <InsightsTable />
+      <InsightsTable
+        files={usageData?.TopMedia.map((file, key) => ({
+          id: key,
+          ...file,
+        }))}
+      />
     </Box>
   );
 };

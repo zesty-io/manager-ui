@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { FC, useState, useMemo, useRef } from "react";
 import {
   Box,
   Typography,
@@ -16,6 +16,7 @@ import { DataGridPro, GridValueGetterParams } from "@mui/x-data-grid-pro";
 import { File, Bin } from "../../../../../shell/services/types";
 import fileBroken from "../../../../../../public/images/fileBroken.jpg";
 import { useHistory, useLocation } from "react-router-dom";
+import { numberFormatter } from "../../../../../utility/numberFormatter";
 
 import {
   fileExtension,
@@ -31,7 +32,11 @@ import {
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import CheckIcon from "@mui/icons-material/Check";
 
-export const InsightsTable = () => {
+interface Props {
+  files?: any;
+}
+
+export const InsightsTable: FC<Props> = ({ files }) => {
   // Thumbnail prerequisites
   const imageEl = useRef<HTMLImageElement>();
   const [imageOrientation, setImageOrientation] = useState<string>("");
@@ -40,90 +45,6 @@ export const InsightsTable = () => {
 
   const location = useLocation();
   const history = useHistory();
-  const instanceId = useSelector((state: AppState) => state.instance.ID);
-  const ecoId = useSelector((state: AppState) => state.instance.ecoID);
-  const sortOrder = useSelector(
-    (state: AppState) => state.mediaRevamp.sortOrder
-  );
-  const filetypeFilter = useSelector(
-    (state: AppState) => state.mediaRevamp.filetypeFilter
-  );
-  const dateRangeFilter = useSelector(
-    (state: AppState) => state.mediaRevamp.dateRangeFilter
-  );
-  const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
-    instanceId,
-    ecoId,
-  });
-  const defaultBin = bins?.find((bin: Bin) => bin.default);
-  const { data: unsortedFiles, isFetching: isFilesFetching } =
-    useGetAllBinFilesQuery(
-      bins?.map((bin: Bin) => bin.id),
-      { skip: !bins?.length }
-    );
-  const sortedFiles = useMemo(() => {
-    if (!unsortedFiles) return unsortedFiles;
-    switch (sortOrder) {
-      case "alphaAsc":
-        return [...unsortedFiles].sort((a, b) => {
-          return a.filename.localeCompare(b.filename);
-        });
-      case "alphaDesc":
-        return [...unsortedFiles].sort((a, b) => {
-          return b.filename.localeCompare(a.filename);
-        });
-      case "createdDesc":
-        return [...unsortedFiles].sort((a, b) => {
-          return (
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-          );
-        });
-      // Default to API order
-      default:
-        return unsortedFiles;
-    }
-  }, [unsortedFiles, sortOrder]);
-
-  const files = useMemo(() => {
-    if (!sortedFiles) return sortedFiles;
-    if (filetypeFilter && dateRangeFilter) {
-      const extensions = new Set<string>(getExtensions(filetypeFilter));
-      const dateFilterFn = getDateFilterFn(dateRangeFilter);
-      return sortedFiles.filter((file: File) => {
-        return (
-          extensions.has(fileExtension(file.filename)) &&
-          dateFilterFn(file.created_at)
-        );
-      });
-    } else if (filetypeFilter) {
-      const extensions = new Set<string>(getExtensions(filetypeFilter));
-      return sortedFiles.filter((file: File) => {
-        return extensions.has(fileExtension(file.filename));
-      });
-    } else if (dateRangeFilter) {
-      const dateFilterFn = getDateFilterFn(dateRangeFilter);
-      return sortedFiles.filter((file: File) => {
-        return dateFilterFn(file.created_at);
-      });
-    } else {
-      return sortedFiles;
-    }
-  }, [sortedFiles, filetypeFilter, dateRangeFilter]);
-
-  /**
-   * @description Used to set vertical or horizontal image orientation
-   * @note imageOrientation will be placed as a condition in the Image's parent component
-   */
-  const handleImageLoad = () => {
-    setLazyLoading(false);
-    const naturalHeight = imageEl.current.naturalHeight;
-    const naturalWidth = imageEl.current.naturalWidth;
-    if (naturalHeight > naturalWidth) {
-      setImageOrientation("vertical");
-    } else {
-      setImageOrientation("horizontal");
-    }
-  };
 
   const columns = [
     {
@@ -142,12 +63,11 @@ export const InsightsTable = () => {
           <Box sx={{ display: "flex" }}>
             <CardMedia
               component="img"
-              key={params.row.id}
-              ref={imageEl}
-              onLoad={handleImageLoad}
+              // Note: Remove for now since id is not yet defined in the files
+              // key={params.row.id}
               onError={handleImageError}
-              data-src={params.row.thumbnail}
-              image={isImageError ? fileBroken : params.row.thumbnail}
+              data-src={params.row.FullPath}
+              image={isImageError ? fileBroken : params.row.FullPath}
               loading="lazy"
               sx={{
                 objectFit: "fill",
@@ -156,9 +76,28 @@ export const InsightsTable = () => {
               }}
             />
             <Box sx={{ display: "flex", alignItems: "center", ml: 3 }}>
-              <Typography variant="body2">{params.row.filename}</Typography>
+              <Typography variant="body2">{params.row.FileName}</Typography>
             </Box>
           </Box>
+        );
+      },
+    },
+    {
+      field: "Requests",
+      headerName: "Requests",
+      width: 150,
+      sortable: false,
+    },
+    {
+      field: "ThroughtputGB",
+      headerName: "Bandwidth",
+      width: 150,
+      sortable: false,
+      renderCell: (params: any) => {
+        return (
+          <Typography>
+            {numberFormatter.format(params.row.ThroughtputGB)} GB
+          </Typography>
         );
       },
     },
@@ -170,14 +109,14 @@ export const InsightsTable = () => {
       renderCell: (params: any) => {
         return (
           <Chip
-            label={fileExtension(params.row.filename)}
+            label={fileExtension(params.row.FileName)}
             sx={{
               textTransform: "uppercase",
               backgroundColor: `${fileTypeToColor(
-                fileExtension(params.row.filename)
+                fileExtension(params.row.FileName)
               )}.100`,
               color: `${fileTypeToColor(
-                fileExtension(params.row.filename)
+                fileExtension(params.row.FileName)
               )}.600`,
             }}
             size="small"
@@ -211,7 +150,7 @@ export const InsightsTable = () => {
           <IconButton
             onClick={(evt: any) => {
               evt.stopPropagation();
-              handleCopyClick(params.row.url);
+              handleCopyClick(params.row.FullPath);
             }}
           >
             {isCopied ? (
@@ -227,11 +166,12 @@ export const InsightsTable = () => {
 
   const handleClick = (params: any) => {
     const locationParams = new URLSearchParams(location.search);
-    locationParams.set("fileId", params.row.id);
-    history.replace({
-      pathname: location.pathname,
-      search: locationParams.toString(),
-    });
+    // Note: Remove for now since id is not yet defined in the files data
+    // locationParams.set("fileId", params.row.id);
+    // history.replace({
+    //   pathname: location.pathname,
+    //   search: locationParams.toString(),
+    // });
   };
 
   return (
