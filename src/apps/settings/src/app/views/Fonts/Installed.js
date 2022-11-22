@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
-
-import Button from "@mui/material/Button";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
@@ -13,6 +19,7 @@ import { notify } from "shell/store/notifications";
 import { updateSiteFont, deleteSiteFont } from "shell/store/settings";
 
 import styles from "./Fonts.less";
+
 export default connect((state) => {
   return {
     fontsInstalled: state.settings.fontsInstalled,
@@ -21,6 +28,10 @@ export default connect((state) => {
   const [defaultFonts, setDefaultFonts] = useState([]);
   const [fonts, setFonts] = useState([]);
   const [search, setSearch] = useState("");
+  const [showOpenRemoveFontDialog, setShowOpenRemoveFontDialog] =
+    useState(false);
+  const [activeFont, setActiveFont] = useState(null);
+  const [activeVariant, setActiveVariant] = useState(null);
 
   useEffect(() => {
     const arrFonts = props.fontsInstalled.map((tag) => {
@@ -140,25 +151,23 @@ export default connect((state) => {
   }
 
   function toggleEnableFont(variant, value, font) {
-    if (window.confirm("Do you really want to uninstall this font?")) {
-      const copyFonts = fonts
-        .map((f) => {
-          if (f.font === font) {
-            const pos = f.variants.map((v) => v.label).indexOf(variant);
-            // handle broken installed fonts with no variants
-            if (pos !== -1) {
-              f.variants[pos].value = value.toString();
-            }
-            f.variants = f.variants.filter((variant) => variant.value === "1");
+    const copyFonts = fonts
+      .map((f) => {
+        if (f.font === font) {
+          const pos = f.variants.map((v) => v.label).indexOf(variant);
+          // handle broken installed fonts with no variants
+          if (pos !== -1) {
+            f.variants[pos].value = value.toString();
           }
-          return f;
-        })
-        .filter(
-          (f) => f.variants.filter((variant) => variant.value === "1").length
-        );
-      setFonts(copyFonts);
-      uninstallFont(font);
-    }
+          f.variants = f.variants.filter((variant) => variant.value === "1");
+        }
+        return f;
+      })
+      .filter(
+        (f) => f.variants.filter((variant) => variant.value === "1").length
+      );
+    setFonts(copyFonts);
+    uninstallFont(font);
   }
 
   function renderFontsList() {
@@ -184,7 +193,11 @@ export default connect((state) => {
                 <Button
                   variant="contained"
                   color="error"
-                  onClick={() => toggleEnableFont(null, "0", font.font)}
+                  onClick={() => {
+                    setShowOpenRemoveFontDialog(true);
+                    setActiveFont(font);
+                    setActiveVariant(null);
+                  }}
                   startIcon={<DeleteIcon />}
                   sx={{
                     alignSelf: "flex-start",
@@ -213,9 +226,11 @@ export default connect((state) => {
                   variant="contained"
                   color="error"
                   id="RemoveFont"
-                  onClick={() =>
-                    toggleEnableFont(variant.label, "0", font.font)
-                  }
+                  onClick={() => {
+                    setShowOpenRemoveFontDialog(true);
+                    setActiveFont(font);
+                    setActiveVariant(variant);
+                  }}
                   startIcon={<DeleteIcon />}
                   sx={{
                     alignSelf: "flex-start",
@@ -241,30 +256,75 @@ export default connect((state) => {
   }
 
   return (
-    <div className={styles.PageContainer}>
-      <header
-        className={styles.SearchContainer}
-        style={{ justifyContent: "space-between" }}
+    <>
+      <div className={styles.PageContainer}>
+        <header
+          className={styles.SearchContainer}
+          style={{ justifyContent: "space-between" }}
+        >
+          <TextField
+            placeholder="Search font"
+            type="search"
+            variant="outlined"
+            size="small"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            }}
+            onChange={(evt) => {
+              const term = evt.target.value;
+              onSearch(term);
+            }}
+          />
+        </header>
+        {renderFontsList()}
+      </div>
+      <Dialog
+        open={showOpenRemoveFontDialog}
+        onClose={() => setShowOpenRemoveFontDialog(false)}
+        fullWidth
+        maxWidth={"xs"}
       >
-        <TextField
-          placeholder="Search font"
-          type="search"
-          variant="outlined"
-          size="small"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon fontSize="small" />
-              </InputAdornment>
-            ),
-          }}
-          onChange={(evt) => {
-            const term = evt.target.value;
-            onSearch(term);
-          }}
-        />
-      </header>
-      {renderFontsList()}
-    </div>
+        <DialogTitle>
+          <DeleteIcon
+            color="error"
+            sx={{
+              padding: "8px",
+              borderRadius: "20px",
+              backgroundColor: "red.100",
+              display: "block",
+              mb: 2,
+            }}
+          />
+          Remove Font
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Do you really want to uninstall this font?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setShowOpenRemoveFontDialog(false)}
+            color="inherit"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              toggleEnableFont(activeVariant?.label, "0", activeFont?.font);
+              setShowOpenRemoveFontDialog(false);
+            }}
+          >
+            Remove
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 });
