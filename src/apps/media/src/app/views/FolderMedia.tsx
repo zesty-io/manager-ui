@@ -168,7 +168,11 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
             <>
               <Controls />
               {(filetypeFilter || dateRangeFilter) && groupFiles.length > 0 && (
-                <Typography variant="h6" sx={{ pl: 3, pt: 2, pb: 1.5 }}>
+                <Typography
+                  color="text.secondary"
+                  variant="h6"
+                  sx={{ pl: 3, pt: 2, pb: 1.5 }}
+                >
                   {groupFiles?.length} matches found
                 </Typography>
               )}

@@ -121,7 +121,11 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
         <>
           <Controls showDateFilter={true} />
           {(filetypeFilter || dateRangeFilter) && files.length > 0 && (
-            <Typography variant="h6" sx={{ pl: 3, pt: 2, pb: 1.5 }}>
+            <Typography
+              color="text.secondary"
+              variant="h6"
+              sx={{ pl: 3, pt: 2, pb: 1.5 }}
+            >
               {files?.length} matches found
             </Typography>
           )}
