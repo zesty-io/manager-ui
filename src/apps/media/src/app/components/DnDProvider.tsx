@@ -68,6 +68,7 @@ export const DnDProvider = ({
       sx={{
         display: "flex",
         flex: 1,
+        outline: "none",
         ...sx,
       }}
       {...getRootProps({ onClick: (evt) => evt.stopPropagation() })}
