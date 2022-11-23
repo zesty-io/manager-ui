@@ -1,4 +1,4 @@
-import { Box, Skeleton, Typography, Tooltip, Chip } from "@mui/material";
+import { Box, Skeleton, Typography, Tooltip } from "@mui/material";
 import { isNaN, isNil } from "lodash";
 import { ReactNode } from "react";
 import { numberFormatter } from "../../../utility/numberFormatter";
@@ -68,7 +68,6 @@ export const MetricCard = ({
                 color="text.disabled"
                 fontWeight={600}
                 sx={{
-                  fontSize: "10px",
                   display: "flex",
                   alignItems: "center",
                 }}
