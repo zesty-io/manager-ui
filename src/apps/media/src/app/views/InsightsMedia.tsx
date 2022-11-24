@@ -44,8 +44,6 @@ export const InsightsMedia: FC = () => {
     error: requestError,
   } = useGetRequestsQuery(dates as [string, string]);
 
-  console.log("usageDatat", usageData?.TopMedia);
-
   const totalMediaThroughput = usageData?.MediaConsumption.TotalGBs;
   const totalMediaRequests = usageData?.MediaConsumption.TotalRequests;
 

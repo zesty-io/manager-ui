@@ -63,8 +63,6 @@ export const InsightsTable: FC<Props> = ({ files }) => {
           <Box sx={{ display: "flex" }}>
             <CardMedia
               component="img"
-              // Note: Remove for now since id is not yet defined in the files
-              // key={params.row.id}
               onError={handleImageError}
               data-src={params.row.FullPath}
               image={isImageError ? fileBroken : params.row.FullPath}
@@ -162,16 +160,6 @@ export const InsightsTable: FC<Props> = ({ files }) => {
     },
   ];
 
-  const handleClick = (params: any) => {
-    const locationParams = new URLSearchParams(location.search);
-    // Note: Remove for now since id is not yet defined in the files data
-    // locationParams.set("fileId", params.row.id);
-    // history.replace({
-    //   pathname: location.pathname,
-    //   search: locationParams.toString(),
-    // });
-  };
-
   return (
     <Box sx={{ height: "calc(100vh - 289px)", mt: 2 }}>
       {files && (
@@ -182,7 +170,6 @@ export const InsightsTable: FC<Props> = ({ files }) => {
           hideFooter
           disableColumnFilter
           disableColumnMenu
-          onRowClick={handleClick}
         />
       )}
     </Box>
