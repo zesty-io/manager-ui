@@ -51,7 +51,7 @@ export const InsightsTable: FC<Props> = ({ files }) => {
       field: "filename",
       headerName: "Name",
       sortable: false,
-      flex: 4,
+      flex: 1,
       renderCell: (params: any) => {
         const [isImageError, setIsImageError] = useState(false);
 
@@ -83,13 +83,13 @@ export const InsightsTable: FC<Props> = ({ files }) => {
     {
       field: "Requests",
       headerName: "Requests",
-      flex: 1,
+      width: 140,
       sortable: false,
     },
     {
       field: "ThroughtputGB",
       headerName: "Bandwidth",
-      flex: 1,
+      width: 140,
       sortable: false,
       renderCell: (params: any) => {
         return (
@@ -102,6 +102,7 @@ export const InsightsTable: FC<Props> = ({ files }) => {
     {
       field: "type",
       headerName: "Type",
+      width: 88,
       sortable: false,
       renderCell: (params: any) => {
         return (
@@ -124,6 +125,7 @@ export const InsightsTable: FC<Props> = ({ files }) => {
     {
       field: "action",
       headerName: "",
+      width: 64,
       sortable: false,
       renderCell: (params: any) => {
         const [isCopied, setIsCopied] = useState(false);
@@ -161,9 +163,10 @@ export const InsightsTable: FC<Props> = ({ files }) => {
   ];
 
   return (
-    <Box sx={{ height: "calc(100vh - 289px)", mt: 2 }}>
+    <Box sx={{ height: "calc(100vh - 242px)" }}>
       {files && (
         <DataGridPro
+          sx={{ border: "none" }}
           columns={columns}
           rows={files}
           rowHeight={52}

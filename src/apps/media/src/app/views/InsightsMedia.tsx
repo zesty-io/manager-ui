@@ -61,16 +61,14 @@ export const InsightsMedia: FC = () => {
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        py: 2,
-        px: 3,
       }}
     >
-      <Box sx={{ height: "64px" }}>
+      <Box sx={{ height: "64px", py: 2, px: 3 }}>
         <Typography variant="h4" fontWeight={600}>
           Insights
         </Typography>
       </Box>
-      <Box sx={{ display: "flex", gap: 2 }}>
+      <Box sx={{ display: "flex", gap: 2, py: 2, px: 3 }}>
         <MetricCard
           title="Media Requests"
           value={totalRequests || 0}
