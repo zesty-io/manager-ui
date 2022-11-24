@@ -104,6 +104,7 @@ export type State = {
   sortOrder: MediaSortOrder;
   filetypeFilter: Filetype | null;
   dateRangeFilter: DateRange | null;
+  currentMediaView: string;
 };
 const initialState: State = {
   uploads: [],
@@ -115,6 +116,7 @@ const initialState: State = {
   sortOrder: "createdDesc",
   filetypeFilter: null,
   dateRangeFilter: null,
+  currentMediaView: "",
 };
 
 const mediaSlice = createSlice({
@@ -280,6 +282,9 @@ const mediaSlice = createSlice({
       state.filetypeFilter = null;
       state.dateRangeFilter = null;
     },
+    setCurrentMediaView(state, action: { payload: string }) {
+      state.currentMediaView = action.payload;
+    },
   },
 });
 
@@ -304,6 +309,7 @@ export const {
   setFiletypeFilter,
   setDateRangeFilter,
   clearAllFilters,
+  setCurrentMediaView,
 } = mediaSlice.actions;
 
 /*
