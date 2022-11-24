@@ -37,7 +37,6 @@ interface Props {
 }
 
 export const MediaList: FC<Props> = ({ files }) => {
-  // Thumbnail prerequisites
   const imageEl = useRef<HTMLImageElement>();
   const [imageOrientation, setImageOrientation] = useState<string>("");
   const [lazyLoading, setLazyLoading] = useState(true);
@@ -167,6 +166,14 @@ export const MediaList: FC<Props> = ({ files }) => {
           hideFooter
           disableColumnFilter
           disableColumnMenu
+          onRowClick={(params: any) => {
+            const locationParams = new URLSearchParams(location.search);
+            locationParams.set("fileId", params.row.id);
+            history.replace({
+              pathname: location.pathname,
+              search: locationParams.toString(),
+            });
+          }}
         />
       )}
     </Box>
