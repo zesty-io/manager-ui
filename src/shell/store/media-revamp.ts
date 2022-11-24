@@ -116,7 +116,7 @@ const initialState: State = {
   sortOrder: "createdDesc",
   filetypeFilter: null,
   dateRangeFilter: null,
-  currentMediaView: "",
+  currentMediaView: "grid",
 };
 
 const mediaSlice = createSlice({
