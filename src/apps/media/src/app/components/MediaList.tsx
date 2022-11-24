@@ -17,6 +17,7 @@ import { File, Bin } from "../../../../../shell/services/types";
 import fileBroken from "../../../../../../public/images/fileBroken.jpg";
 import { useHistory, useLocation } from "react-router-dom";
 import { numberFormatter } from "../../../../../utility/numberFormatter";
+import moment from "moment";
 import {
   fileExtension,
   fileTypeToColor,
@@ -44,10 +45,6 @@ export const MediaList: FC<Props> = ({ files }) => {
 
   const location = useLocation();
   const history = useHistory();
-
-  useEffect(() => {
-    console.log("files", files);
-  }, [files]);
 
   const columns = [
     {
@@ -84,10 +81,17 @@ export const MediaList: FC<Props> = ({ files }) => {
       },
     },
     {
-      field: "created_by",
+      field: "created_at",
       headerName: "Added On",
-      width: 88,
+      width: 200,
       sortable: false,
+      renderCell: (params: any) => {
+        return (
+          <Typography>
+            {moment(params.row.created_at).format("MMMM Do YYYY")}
+          </Typography>
+        );
+      },
     },
     {
       field: "type",
