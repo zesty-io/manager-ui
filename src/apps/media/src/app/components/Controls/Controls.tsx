@@ -7,8 +7,12 @@ import { ToggleViews } from "./ToggleViews";
 
 export type ControlsProps = {
   showDateFilter?: boolean;
+  showFilters?: boolean;
 };
-export const Controls: FC<ControlsProps> = ({ showDateFilter = false }) => {
+export const Controls: FC<ControlsProps> = ({
+  showDateFilter = false,
+  showFilters = true,
+}) => {
   return (
     <Box
       sx={{
@@ -25,9 +29,13 @@ export const Controls: FC<ControlsProps> = ({ showDateFilter = false }) => {
             display: "flex",
           }}
         >
-          <Sort />
-          <FiletypeFilter />
-          <DateRangeFilter />
+          {showFilters && (
+            <>
+              <Sort />
+              <FiletypeFilter />
+              <DateRangeFilter />
+            </>
+          )}
         </Box>
         <ToggleViews />
       </Box>
