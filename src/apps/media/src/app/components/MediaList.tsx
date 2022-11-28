@@ -156,7 +156,7 @@ export const MediaList: FC<Props> = ({ files }) => {
   ];
 
   return (
-    <Box component="main" sx={{ height: "calc(100vh - 242px)", width: "100%" }}>
+    <Box component="main" sx={{ height: "100%", width: "100%" }}>
       {files && (
         <DataGridPro
           sx={{ border: "none" }}

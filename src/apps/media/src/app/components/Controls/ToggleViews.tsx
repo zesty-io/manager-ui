@@ -20,6 +20,7 @@ export const ToggleViews = () => {
       size="small"
       exclusive
       onChange={(e, val) => dispatch(setCurrentMediaView(val))}
+      color="primary"
     >
       <ToggleButton value="grid">
         <GridViewIcon />
