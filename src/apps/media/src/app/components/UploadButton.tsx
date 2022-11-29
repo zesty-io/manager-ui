@@ -1,15 +1,15 @@
-import { FC, useRef } from "react";
+import { FC, useEffect, useRef } from "react";
 import Button from "@mui/material/Button";
 import FileUpload from "@mui/icons-material/FileUpload";
-import { Typography } from "@mui/material";
 import { fileUploadStage } from "../../../../../shell/store/media-revamp";
 import { useDispatch } from "react-redux";
 import { ChangeEventHandler } from "react";
-import { Bin, Group } from "../../../../../shell/services/types";
 import {
   useGetBinQuery,
   useGetGroupDataQuery,
 } from "../../../../../shell/services/mediaManager";
+import { useParams } from "../../../../../shell/hooks/useParams";
+import { useHistory } from "react-router";
 
 export type UploadButton = {
   currentGroupId?: string;
@@ -26,6 +26,9 @@ export const UploadButton: FC<UploadButton> = ({
 }) => {
   const dispatch = useDispatch();
   const hiddenFileInput = useRef(null);
+  const history = useHistory();
+  const [params] = useParams();
+  const triggerUpload = (params as URLSearchParams).get("triggerUpload");
   const { data: currentGroup, isFetching: groupIsFetching } =
     useGetGroupDataQuery(currentGroupId, { skip: !currentGroupId });
   const { data: binData, isFetching: binIsFetching } = useGetBinQuery(
@@ -33,6 +36,14 @@ export const UploadButton: FC<UploadButton> = ({
     { skip: !currentBinId }
   );
   const loading = binIsFetching || groupIsFetching;
+
+  useEffect(() => {
+    if (triggerUpload) {
+      handleUploadButtonClick();
+      history.replace("/media");
+    }
+  }, [triggerUpload]);
+
   const handleFileInputChange: ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {

@@ -60,3 +60,24 @@ export interface File {
   deleted_from_storage_at?: string;
   thumbnail: string;
 }
+
+export interface ContentModel {
+  ZUID: string;
+  masterZUID: string;
+  parentZUID: string;
+  description: string;
+  label: string;
+  metaTitle?: any;
+  metaDescription?: any;
+  metaKeywords?: any;
+  type: string;
+  name: string;
+  sort: number;
+  listed: boolean;
+  createdByUserZUID: string;
+  updatedByUserZUID: string;
+  createdAt: string;
+  updatedAt: string;
+  module?: number;
+  plugin?: number;
+}
