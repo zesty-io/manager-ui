@@ -86,8 +86,7 @@ export type Filetype =
   | "FLV"
   | "MPEG";
 
-export type DateRange = PresetDateRange | SingleDateRange;
-//| CustomDateRange
+export type DateRange = PresetDateRange | SingleDateRange | CustomDateRange;
 export type PresetDateRange = {
   type: "preset";
   value:
@@ -102,6 +101,10 @@ export type PresetDateRange = {
 export type SingleDateRange = {
   type: "on" | "before" | "after";
   value: string;
+};
+export type CustomDateRange = {
+  type: "range";
+  value: [string, string];
 };
 
 export type State = {

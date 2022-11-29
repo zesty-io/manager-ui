@@ -17,7 +17,10 @@ import {
   DateRange,
   setDateRangeFilter,
 } from "../../../../../../shell/store/media-revamp";
+import { getDateFilter } from "../../utils/fileUtils";
+import moment from "moment-timezone";
 import { DateFilterModal } from "../DateFilterModal";
+import { useParams } from "../../../../../../shell/hooks/useParams";
 
 type Modal = "on" | "before" | "after" | null;
 export const DateRangeFilter: FC = () => {
@@ -25,22 +28,53 @@ export const DateRangeFilter: FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [modal, setModal] = useState<Modal>(null);
+  const [params, setParams] = useParams();
+  const activeFilter = getDateFilter(params);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const handleChange = (dateRange: DateRange) => {
-    dispatch(setDateRangeFilter(dateRange));
+  const handleChange = (dateRange: DateRange | null) => {
     handleClose();
+    if (dateRange === null) {
+      setParams(null, "to");
+      setParams(null, "from");
+      setParams(null, "dateFilter");
+      return;
+    }
+    const format = (date: string) => {
+      const s = moment(date).format("YYYY-MM-DD");
+      console.log(s);
+      return s;
+    };
+    switch (dateRange.type) {
+      case "on": {
+        setParams(format(dateRange.value), "to");
+        setParams(format(dateRange.value), "from");
+        return;
+      }
+      case "before": {
+        setParams(format(dateRange.value), "to");
+        return;
+      }
+      case "after": {
+        setParams(format(dateRange.value), "from");
+        return;
+      }
+      case "preset": {
+        setParams(dateRange.value.replace(/\s/g, ""), "dateFilter");
+        return;
+      }
+    }
   };
-  const activeFilter = useSelector(
-    (state: AppState) => state.mediaRevamp.dateRangeFilter
-  );
   const formatDisplay = (filter: DateRange) => {
     if (!filter) return "";
     const { type, value } = filter;
+    if (type === "range") {
+      return "Custom Range";
+    }
     const dateDisplay = new Date(value).toLocaleDateString(undefined, {
       month: "short",
       year: "numeric",
