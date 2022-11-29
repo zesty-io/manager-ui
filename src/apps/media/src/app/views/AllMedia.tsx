@@ -77,6 +77,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
 
   const files = useMemo(() => {
     if (!sortedFiles) return sortedFiles;
+    if (filetypeFilter === "Folder") return [];
     if (filetypeFilter && dateRangeFilter) {
       const extensions = new Set<string>(getExtensions(filetypeFilter));
       const dateFilterFn = getDateFilterFn(dateRangeFilter);
