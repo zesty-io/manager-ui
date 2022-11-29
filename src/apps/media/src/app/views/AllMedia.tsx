@@ -14,7 +14,7 @@ import { NoResultsState } from "../components/NoResultsState";
 import { File } from "../../../../../shell/services/types";
 import { UploadModal } from "../components/UploadModal";
 import Controls from "../components/Controls";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { AppState } from "../../../../../shell/store/types";
 import {
   fileExtension,
