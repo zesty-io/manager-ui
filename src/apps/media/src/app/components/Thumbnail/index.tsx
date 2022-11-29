@@ -406,6 +406,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
 
     case "png":
     case "svg":
+    case "ico":
       return (
         <Card
           ref={thumbnailRef}
