@@ -33,8 +33,8 @@ export const SearchEmptyState = ({ searchTerm }: Props) => {
           variant="body2"
           color="text.secondary"
         >
-          Try adjusting tour search. We suggest check all words are spelled
-          correctly or try using different keywords.
+          Try adjusting your search. We suggest checking all words are spelled
+          correctly or try using different keywords
         </Typography>
         <Stack direction="row" spacing={2} justifyContent="center">
           {!isSelectDialog && (
