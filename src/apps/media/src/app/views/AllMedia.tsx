@@ -7,6 +7,7 @@ import {
 import { DnDProvider } from "../components/DnDProvider";
 import { EmptyState } from "../components/EmptyState";
 import { MediaGrid } from "../components/MediaGrid";
+import { MediaList } from "../components/MediaList";
 import { Header } from "../components/Header";
 import { NotFoundState } from "../components/NotFoundState";
 import { NoResultsState } from "../components/NoResultsState";
@@ -20,6 +21,7 @@ import {
   getExtensions,
   getDateFilterFn,
 } from "../utils/fileUtils";
+import { State } from "../../../../../shell/store/media-revamp";
 
 interface Props {
   addImagesCallback?: (selectedFiles: File[]) => void;
@@ -41,6 +43,9 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
     instanceId,
     ecoId,
   });
+  const currentMediaView = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.currentMediaView
+  );
   const defaultBin = bins?.find((bin) => bin.default);
   const { data: unsortedFiles, isFetching: isFilesFetching } =
     useGetAllBinFilesQuery(
@@ -96,6 +101,18 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
     }
   }, [sortedFiles, filetypeFilter, dateRangeFilter]);
 
+  const MediaView = () => {
+    return (
+      <>
+        {currentMediaView === "grid" ? (
+          <MediaGrid files={files} hideHeaders />
+        ) : (
+          <MediaList files={files} />
+        )}
+      </>
+    );
+  };
+
   return (
     <Box
       component="main"
@@ -135,7 +152,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
                 )}
               </>
             ) : (
-              <MediaGrid files={files} hideHeaders />
+              <MediaView />
             )}
           </DnDProvider>
         </>

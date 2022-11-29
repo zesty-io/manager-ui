@@ -6,6 +6,7 @@ import {
   useGetBinsQuery,
 } from "../../../../../shell/services/mediaManager";
 import { MediaGrid } from "../components/MediaGrid";
+import { MediaList } from "../components/MediaList";
 import { useSelector } from "react-redux";
 import { DnDProvider } from "../components/DnDProvider";
 import { Header } from "../components/Header";
@@ -15,6 +16,7 @@ import { NotFoundState } from "../components/NotFoundState";
 import { File } from "../../../../../shell/services/types";
 import { AppState } from "../../../../../shell/store/types";
 import Controls from "../components/Controls";
+import { State } from "../../../../../shell/store/media-revamp";
 import { NoResultsState } from "../components/NoResultsState";
 import {
   fileExtension,
@@ -39,6 +41,9 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
   );
   const dateRangeFilter = useSelector(
     (state: AppState) => state.mediaRevamp.dateRangeFilter
+  );
+  const currentMediaView = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.currentMediaView
   );
   const params = useParams<Params>();
   const { id } = params;
@@ -136,6 +141,21 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
     }
   }, [unsortedBinGroups, sortOrder, binData, filetypeFilter, dateRangeFilter]);
 
+  const MediaView = () => {
+    return (
+      <>
+        {currentMediaView === "grid" ? (
+          <MediaGrid
+            files={binFiles}
+            groups={binGroups?.filter((group) => group.group_id === id)}
+          />
+        ) : (
+          <MediaList files={binFiles} />
+        )}
+      </>
+    );
+  };
+
   return (
     <Box
       component="main"
@@ -175,10 +195,7 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
                     )}
                   </>
                 ) : (
-                  <MediaGrid
-                    files={binFiles}
-                    groups={binGroups?.filter((group) => group.group_id === id)}
-                  />
+                  <MediaView />
                 )}
               </DnDProvider>
             </>

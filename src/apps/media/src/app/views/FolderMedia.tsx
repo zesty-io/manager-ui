@@ -6,6 +6,7 @@ import {
   useGetBinsQuery,
 } from "../../../../../shell/services/mediaManager";
 import { MediaGrid } from "../components/MediaGrid";
+import { MediaList } from "../components/MediaList";
 import { useSelector } from "react-redux";
 import { DnDProvider } from "../components/DnDProvider";
 import { Header } from "../components/Header";
@@ -21,6 +22,7 @@ import {
   getExtensions,
   getDateFilterFn,
 } from "../utils/fileUtils";
+import { State } from "../../../../../shell/store/media-revamp";
 
 type Params = { id: string };
 
@@ -53,6 +55,9 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
         skip: !bins?.length,
       }
     );
+  const currentMediaView = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.currentMediaView
+  );
   const currentGroup = binGroups?.flat()?.find((group) => group.id === id);
   const {
     data: groupData,
@@ -138,6 +143,18 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
     }
   }, [unsortedSubGroups, sortOrder, filetypeFilter, dateRangeFilter]);
 
+  const MediaView = () => {
+    return (
+      <>
+        {currentMediaView === "grid" ? (
+          <MediaGrid files={groupFiles} groups={subgroups} />
+        ) : (
+          <MediaList files={groupFiles} />
+        )}
+      </>
+    );
+  };
+
   return (
     <Box
       component="main"
@@ -184,7 +201,7 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
                     )}
                   </>
                 ) : (
-                  <MediaGrid files={groupFiles} groups={subgroups} />
+                  <MediaView />
                 )}
               </DnDProvider>
             </>
