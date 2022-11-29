@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { DnDProvider } from "../components/DnDProvider";
 import { Header } from "../components/Header";
 import { UploadModal } from "../components/UploadModal";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import { NotFoundState } from "../components/NotFoundState";
 import { File } from "../../../../../shell/services/types";
 import { AppState } from "../../../../../shell/store/types";
@@ -184,6 +184,15 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
           ) : (
             <>
               <Controls />
+              {(filetypeFilter || dateRangeFilter) && groupFiles.length > 0 && (
+                <Typography
+                  color="text.secondary"
+                  variant="h6"
+                  sx={{ pl: 3, pt: 2, pb: 1.5 }}
+                >
+                  {groupFiles?.length} matches found
+                </Typography>
+              )}
               <UploadModal />
               <DnDProvider
                 currentBinId={groupData?.bin_id}

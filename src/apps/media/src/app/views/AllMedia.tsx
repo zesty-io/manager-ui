@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import {
   useGetAllBinFilesQuery,
   useGetBinsQuery,
@@ -137,6 +137,15 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
       ) : (
         <>
           <Controls showDateFilter={true} />
+          {(filetypeFilter || dateRangeFilter) && files.length > 0 && (
+            <Typography
+              color="text.secondary"
+              variant="h6"
+              sx={{ pl: 3, pt: 2, pb: 1.5 }}
+            >
+              {files?.length} matches found
+            </Typography>
+          )}
           <UploadModal />
           <DnDProvider
             isDefaultBin
