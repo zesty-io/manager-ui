@@ -260,24 +260,20 @@ export const Header = ({
                     variant="outlined"
                     size="small"
                     color="inherit"
-                    onClick={() => setShowMoveFileDialog(true)}
-                    startIcon={
-                      <DriveFolderUploadRoundedIcon
-                        color="action"
-                        fontSize="small"
-                      />
-                    }
-                  >
-                    Move
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    color="inherit"
                     onClick={() => setShowDeleteFileDialog(true)}
                     startIcon={<DeleteIcon color="action" fontSize="small" />}
                   >
                     Delete
+                  </Button>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={() => setShowMoveFileDialog(true)}
+                    startIcon={
+                      <DriveFolderUploadRoundedIcon fontSize="small" />
+                    }
+                  >
+                    Move
                   </Button>
                 </>
               )}
