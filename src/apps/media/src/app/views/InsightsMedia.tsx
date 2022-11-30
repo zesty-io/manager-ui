@@ -11,6 +11,12 @@ import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import CloudRoundedIcon from "@mui/icons-material/CloudRounded";
 import moment from "moment";
 import { InsightsTable } from "../components/InsightsTable";
+import {
+  useGetAllBinFilesQuery,
+  useGetBinsQuery,
+} from "../../../../../shell/services/mediaManager";
+import { AppState } from "../../../../../shell/store/types";
+import { uniqBy } from "lodash";
 
 const iconStyles = {
   height: "32px",
@@ -21,11 +27,20 @@ const iconStyles = {
 const date = new Date();
 
 export const InsightsMedia: FC = () => {
+  const instanceId = useSelector((state: AppState) => state.instance.ID);
+  const ecoId = useSelector((state: AppState) => state.instance.ecoID);
   const instanceCreatedAtDate = useSelector(
     (state: any) => state.instance.createdAt
   );
   const is2MonthsOld = moment(date).diff(instanceCreatedAtDate, "months") >= 2;
-
+  const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
+    instanceId,
+    ecoId,
+  });
+  const { data: files, isFetching: isFilesFetching } = useGetAllBinFilesQuery(
+    bins?.map((bin) => bin.id),
+    { skip: !bins?.length }
+  );
   const { data: priorUsage, isFetching: isPriorUsageFetching } =
     useGetUsageQuery([
       moment(date).subtract(2, "months").format(),
@@ -52,16 +67,14 @@ export const InsightsMedia: FC = () => {
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        py: 2,
-        px: 3,
       }}
     >
-      <Box sx={{ height: "64px" }}>
+      <Box sx={{ height: "64px", py: 2, px: 3 }}>
         <Typography variant="h4" fontWeight={600}>
           Insights
         </Typography>
       </Box>
-      <Box sx={{ display: "flex", gap: 2 }}>
+      <Box sx={{ display: "flex", gap: 2, py: 2, px: 3 }}>
         <MetricCard
           title="Media Requests"
           value={totalMediaRequests || 0}
@@ -122,11 +135,19 @@ export const InsightsMedia: FC = () => {
         />
       </Box>
       <InsightsTable
-        files={usage?.TopMedia.map((file, key) => ({
-          id: key,
-          ...file,
-        }))}
+        files={uniqBy(
+          usage?.TopMedia.map((file: any, key: number) => ({
+            id: key,
+            ...file,
+            ...(files.find((f) => f.url === file.FullPath?.split("?")?.[0]) ||
+              {}),
+          })),
+          "id"
+        )}
+        loading={isFilesFetching || usageFetching || isBinsFetching}
       />
     </Box>
   );
 };
+
+//url.split("?")[0]
