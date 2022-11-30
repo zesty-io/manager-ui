@@ -142,21 +142,6 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
     }
   }, [unsortedBinGroups, sortOrder, binData, filetypeFilter, dateRangeFilter]);
 
-  const MediaView = () => {
-    return (
-      <>
-        {currentMediaView === "grid" ? (
-          <MediaGrid
-            files={binFiles}
-            groups={binGroups?.filter((group) => group.group_id === id)}
-          />
-        ) : (
-          <MediaList files={binFiles} />
-        )}
-      </>
-    );
-  };
-
   return (
     <Box
       component="main"
@@ -204,8 +189,13 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
                       <EmptyState currentBinId={id} currentGroupId="" />
                     )}
                   </>
+                ) : currentMediaView === "grid" ? (
+                  <MediaGrid
+                    files={binFiles}
+                    groups={binGroups?.filter((group) => group.group_id === id)}
+                  />
                 ) : (
-                  <MediaView />
+                  <MediaList files={binFiles} />
                 )}
               </DnDProvider>
             </>

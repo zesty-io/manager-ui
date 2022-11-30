@@ -144,18 +144,6 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
     }
   }, [unsortedSubGroups, sortOrder, filetypeFilter, dateRangeFilter]);
 
-  const MediaView = () => {
-    return (
-      <>
-        {currentMediaView === "grid" ? (
-          <MediaGrid files={groupFiles} groups={subgroups} />
-        ) : (
-          <MediaList files={groupFiles} />
-        )}
-      </>
-    );
-  };
-
   return (
     <Box
       component="main"
@@ -210,8 +198,10 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
                       />
                     )}
                   </>
+                ) : currentMediaView === "grid" ? (
+                  <MediaGrid files={groupFiles} groups={subgroups} />
                 ) : (
-                  <MediaView />
+                  <MediaList files={groupFiles} />
                 )}
               </DnDProvider>
             </>

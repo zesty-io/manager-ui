@@ -102,18 +102,6 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
     }
   }, [sortedFiles, filetypeFilter, dateRangeFilter]);
 
-  const MediaView = () => {
-    return (
-      <>
-        {currentMediaView === "grid" ? (
-          <MediaGrid files={files} hideHeaders />
-        ) : (
-          <MediaList files={files} />
-        )}
-      </>
-    );
-  };
-
   return (
     <Box
       component="main"
@@ -161,8 +149,10 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
                   <EmptyState currentBinId={defaultBin?.id} currentGroupId="" />
                 )}
               </>
+            ) : currentMediaView === "grid" ? (
+              <MediaGrid files={files} hideHeaders />
             ) : (
-              <MediaView />
+              <MediaList files={files} />
             )}
           </DnDProvider>
         </>
