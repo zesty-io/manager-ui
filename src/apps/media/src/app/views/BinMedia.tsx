@@ -6,15 +6,17 @@ import {
   useGetBinsQuery,
 } from "../../../../../shell/services/mediaManager";
 import { MediaGrid } from "../components/MediaGrid";
+import { MediaList } from "../components/MediaList";
 import { useSelector } from "react-redux";
 import { DnDProvider } from "../components/DnDProvider";
 import { Header } from "../components/Header";
 import { UploadModal } from "../components/UploadModal";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import { NotFoundState } from "../components/NotFoundState";
 import { File } from "../../../../../shell/services/types";
 import { AppState } from "../../../../../shell/store/types";
 import Controls from "../components/Controls";
+import { State } from "../../../../../shell/store/media-revamp";
 import { NoResultsState } from "../components/NoResultsState";
 import {
   fileExtension,
@@ -39,6 +41,9 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
   );
   const dateRangeFilter = useSelector(
     (state: AppState) => state.mediaRevamp.dateRangeFilter
+  );
+  const currentMediaView = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.currentMediaView
   );
   const params = useParams<Params>();
   const { id } = params;
@@ -87,6 +92,7 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
 
   const binFiles = useMemo(() => {
     if (!sortedBinFiles) return sortedBinFiles;
+    if (filetypeFilter === "Folder") return [];
     if (filetypeFilter && dateRangeFilter) {
       const extensions = new Set<string>(getExtensions(filetypeFilter));
       const dateFilterFn = getDateFilterFn(dateRangeFilter);
@@ -114,7 +120,7 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
   const binGroups = useMemo(() => {
     if (!unsortedBinGroups) return unsortedBinGroups;
     // don't show groups when filtering by filetypes
-    if (filetypeFilter !== null) return [];
+    if (filetypeFilter !== null && filetypeFilter !== "Folder") return [];
     if (dateRangeFilter !== null) return [];
     switch (sortOrder) {
       case "alphaAsc":
@@ -135,6 +141,21 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
         return unsortedBinGroups;
     }
   }, [unsortedBinGroups, sortOrder, binData, filetypeFilter, dateRangeFilter]);
+
+  const MediaView = () => {
+    return (
+      <>
+        {currentMediaView === "grid" ? (
+          <MediaGrid
+            files={binFiles}
+            groups={binGroups?.filter((group) => group.group_id === id)}
+          />
+        ) : (
+          <MediaList files={binFiles} />
+        )}
+      </>
+    );
+  };
 
   return (
     <Box
@@ -164,6 +185,15 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
           ) : (
             <>
               <Controls />
+              {(filetypeFilter || dateRangeFilter) && binFiles.length > 0 && (
+                <Typography
+                  color="text.secondary"
+                  variant="h6"
+                  sx={{ pl: 3, pt: 2, pb: 1.5 }}
+                >
+                  {binFiles?.length} matches found
+                </Typography>
+              )}
               <UploadModal />
               <DnDProvider currentBinId={id} currentGroupId="">
                 {!isFilesFetching && !binFiles?.length && !binGroups?.length ? (
@@ -175,10 +205,7 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
                     )}
                   </>
                 ) : (
-                  <MediaGrid
-                    files={binFiles}
-                    groups={binGroups?.filter((group) => group.group_id === id)}
-                  />
+                  <MediaView />
                 )}
               </DnDProvider>
             </>

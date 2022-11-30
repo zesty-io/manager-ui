@@ -71,6 +71,7 @@ export const Header = ({
   const history = useHistory();
   const [deleteFile] = useDeleteFileMutation();
   const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
+  const [showSpinner, setShowSpinner] = useState(false);
   const [showDeleteFileDialog, setShowDeleteFileDialog] = useState(false);
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
   const selectedFiles = useSelector(
@@ -108,6 +109,7 @@ export const Header = ({
   };
 
   const handleUpdateMutation = (newGroupId: string) => {
+    setShowSpinner(true);
     Promise.all(
       selectedFiles?.map(async (file) => {
         await updateFile({
@@ -120,7 +122,10 @@ export const Header = ({
           },
         });
       })
-    );
+    ).then(() => {
+      setShowSpinner(false);
+      setShowMoveFileDialog(false);
+    });
     dispatch(clearSelectedFiles());
   };
 
@@ -176,14 +181,15 @@ export const Header = ({
       {/* Move File Dialog */}
       {showMoveFileDialog && (
         <MoveFileDialog
-          handleGroupChange={(newGroupId: string) =>
-            handleUpdateMutation(newGroupId)
-          }
+          handleGroupChange={(newGroupId: string) => {
+            handleUpdateMutation(newGroupId);
+          }}
           binId={binId}
           onClose={() => {
             setShowMoveFileDialog(false);
           }}
           fileCount={selectedFiles?.length}
+          showSpinner={showSpinner}
         />
       )}
 
@@ -260,24 +266,20 @@ export const Header = ({
                     variant="outlined"
                     size="small"
                     color="inherit"
-                    onClick={() => setShowMoveFileDialog(true)}
-                    startIcon={
-                      <DriveFolderUploadRoundedIcon
-                        color="action"
-                        fontSize="small"
-                      />
-                    }
-                  >
-                    Move
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    color="inherit"
                     onClick={() => setShowDeleteFileDialog(true)}
                     startIcon={<DeleteIcon color="action" fontSize="small" />}
                   >
                     Delete
+                  </Button>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={() => setShowMoveFileDialog(true)}
+                    startIcon={
+                      <DriveFolderUploadRoundedIcon fontSize="small" />
+                    }
+                  >
+                    Move
                   </Button>
                 </>
               )}

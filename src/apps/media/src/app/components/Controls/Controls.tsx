@@ -3,29 +3,41 @@ import { Box } from "@mui/material";
 import { Sort } from "./Sort";
 import { FiletypeFilter } from "./FiletypeFilter";
 import { DateRangeFilter } from "./DateFilter";
+import { ToggleViews } from "./ToggleViews";
 
 export type ControlsProps = {
   showDateFilter?: boolean;
+  showFilters?: boolean;
 };
-export const Controls: FC<ControlsProps> = ({ showDateFilter = false }) => {
+export const Controls: FC<ControlsProps> = ({
+  showDateFilter = false,
+  showFilters = true,
+}) => {
   return (
     <Box
       sx={{
         px: 3,
-        mb: 1.5,
+        mb: 3,
         // Set static height to avoid fractional pixel visual issues with media grid caused by default MUI small buttons
         height: "28px",
       }}
     >
-      <Box
-        sx={{
-          gap: 1.5,
-          display: "flex",
-        }}
-      >
-        <Sort />
-        <FiletypeFilter />
-        <DateRangeFilter />
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Box
+          sx={{
+            gap: 1.5,
+            display: "flex",
+          }}
+        >
+          {showFilters && (
+            <>
+              <Sort />
+              <FiletypeFilter />
+              <DateRangeFilter />
+            </>
+          )}
+        </Box>
+        <ToggleViews />
       </Box>
     </Box>
   );

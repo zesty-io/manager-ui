@@ -72,6 +72,7 @@ export type Filetype =
   | "Spreadsheet"
   | "Code"
   | "Font"
+  | "Folder"
   | "Archive"
   | "PNG"
   | "JPEG"
@@ -86,13 +87,23 @@ export type Filetype =
   | "FLV"
   | "MPEG";
 
-export type DateRange =
-  | "today"
-  | "yesterday"
-  | "last 7 days"
-  | "last 30 days"
-  | "last 3 months"
-  | "last 12 months";
+export type DateRange = PresetDateRange | SingleDateRange;
+//| CustomDateRange
+export type PresetDateRange = {
+  type: "preset";
+  value:
+    | "today"
+    | "yesterday"
+    | "last 7 days"
+    | "last 30 days"
+    | "last 3 months"
+    | "last 12 months";
+};
+
+export type SingleDateRange = {
+  type: "on" | "before" | "after";
+  value: string;
+};
 
 export type State = {
   uploads: Upload[];
@@ -104,6 +115,7 @@ export type State = {
   sortOrder: MediaSortOrder;
   filetypeFilter: Filetype | null;
   dateRangeFilter: DateRange | null;
+  currentMediaView: string;
 };
 const initialState: State = {
   uploads: [],
@@ -115,6 +127,7 @@ const initialState: State = {
   sortOrder: "createdDesc",
   filetypeFilter: null,
   dateRangeFilter: null,
+  currentMediaView: "grid",
 };
 
 const mediaSlice = createSlice({
@@ -280,6 +293,9 @@ const mediaSlice = createSlice({
       state.filetypeFilter = null;
       state.dateRangeFilter = null;
     },
+    setCurrentMediaView(state, action: { payload: string }) {
+      state.currentMediaView = action.payload;
+    },
   },
 });
 
@@ -304,6 +320,7 @@ export const {
   setFiletypeFilter,
   setDateRangeFilter,
   clearAllFilters,
+  setCurrentMediaView,
 } = mediaSlice.actions;
 
 /*
