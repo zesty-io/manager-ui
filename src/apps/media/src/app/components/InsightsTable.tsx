@@ -34,18 +34,11 @@ import CheckIcon from "@mui/icons-material/Check";
 
 interface Props {
   files?: any;
+  loading?: boolean;
 }
 
-export const InsightsTable: FC<Props> = ({ files }) => {
-  // Thumbnail prerequisites
-  const imageEl = useRef<HTMLImageElement>();
-  const [imageOrientation, setImageOrientation] = useState<string>("");
-  const [lazyLoading, setLazyLoading] = useState(true);
-  const [isImageError, setIsImageError] = useState(false);
-
-  const location = useLocation();
+export const InsightsTable: FC<Props> = ({ files, loading }) => {
   const history = useHistory();
-
   const columns = [
     {
       field: "filename",
@@ -64,8 +57,12 @@ export const InsightsTable: FC<Props> = ({ files }) => {
             <CardMedia
               component="img"
               onError={handleImageError}
-              data-src={params.row.FullPath}
-              image={isImageError ? fileBroken : params.row.FullPath}
+              data-src={params.row.thumbnail || params.row.FullPath}
+              image={
+                isImageError
+                  ? fileBroken
+                  : params.row.thumbnail || params.row.FullPath
+              }
               loading="lazy"
               sx={{
                 objectFit: "fill",
@@ -74,7 +71,9 @@ export const InsightsTable: FC<Props> = ({ files }) => {
               }}
             />
             <Box sx={{ display: "flex", alignItems: "center", ml: 3 }}>
-              <Typography variant="body2">{params.row.FileName}</Typography>
+              <Typography variant="body2">
+                {params.row.filename || params.row.FileName.slice(1)}
+              </Typography>
             </Box>
           </Box>
         );
@@ -107,14 +106,14 @@ export const InsightsTable: FC<Props> = ({ files }) => {
       renderCell: (params: any) => {
         return (
           <Chip
-            label={fileExtension(params.row.FileName)}
+            label={fileExtension(params.row.filename || params.row.FileName)}
             sx={{
               textTransform: "uppercase",
               backgroundColor: `${fileTypeToColor(
-                fileExtension(params.row.FileName)
+                fileExtension(params.row.filename || params.row.FileName)
               )}.100`,
               color: `${fileTypeToColor(
-                fileExtension(params.row.FileName)
+                fileExtension(params.row.filename || params.row.FileName)
               )}.600`,
             }}
             size="small"
@@ -173,6 +172,15 @@ export const InsightsTable: FC<Props> = ({ files }) => {
           hideFooter
           disableColumnFilter
           disableColumnMenu
+          loading={loading}
+          onRowClick={(params: any) => {
+            const locationParams = new URLSearchParams(location.search);
+            locationParams.set("fileId", params.row.id);
+            history.replace({
+              pathname: location.pathname,
+              search: locationParams.toString(),
+            });
+          }}
         />
       )}
     </Box>
