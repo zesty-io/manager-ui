@@ -34,24 +34,17 @@ import CheckIcon from "@mui/icons-material/Check";
 
 interface Props {
   files?: any;
+  loading?: boolean;
 }
 
-export const InsightsTable: FC<Props> = ({ files }) => {
-  // Thumbnail prerequisites
-  const imageEl = useRef<HTMLImageElement>();
-  const [imageOrientation, setImageOrientation] = useState<string>("");
-  const [lazyLoading, setLazyLoading] = useState(true);
-  const [isImageError, setIsImageError] = useState(false);
-
-  const location = useLocation();
+export const InsightsTable: FC<Props> = ({ files, loading }) => {
   const history = useHistory();
-
   const columns = [
     {
       field: "filename",
       headerName: "Name",
       sortable: false,
-      flex: 4,
+      flex: 1,
       renderCell: (params: any) => {
         const [isImageError, setIsImageError] = useState(false);
 
@@ -63,11 +56,13 @@ export const InsightsTable: FC<Props> = ({ files }) => {
           <Box sx={{ display: "flex" }}>
             <CardMedia
               component="img"
-              // Note: Remove for now since id is not yet defined in the files
-              // key={params.row.id}
               onError={handleImageError}
-              data-src={params.row.FullPath}
-              image={isImageError ? fileBroken : params.row.FullPath}
+              data-src={params.row.thumbnail || params.row.FullPath}
+              image={
+                isImageError
+                  ? fileBroken
+                  : params.row.thumbnail || params.row.FullPath
+              }
               loading="lazy"
               sx={{
                 objectFit: "fill",
@@ -76,7 +71,9 @@ export const InsightsTable: FC<Props> = ({ files }) => {
               }}
             />
             <Box sx={{ display: "flex", alignItems: "center", ml: 3 }}>
-              <Typography variant="body2">{params.row.FileName}</Typography>
+              <Typography variant="body2">
+                {params.row.filename || params.row.FileName.slice(1)}
+              </Typography>
             </Box>
           </Box>
         );
@@ -85,13 +82,13 @@ export const InsightsTable: FC<Props> = ({ files }) => {
     {
       field: "Requests",
       headerName: "Requests",
-      flex: 1,
+      width: 140,
       sortable: false,
     },
     {
       field: "ThroughtputGB",
       headerName: "Bandwidth",
-      flex: 1,
+      width: 140,
       sortable: false,
       renderCell: (params: any) => {
         return (
@@ -104,18 +101,19 @@ export const InsightsTable: FC<Props> = ({ files }) => {
     {
       field: "type",
       headerName: "Type",
+      width: 88,
       sortable: false,
       renderCell: (params: any) => {
         return (
           <Chip
-            label={fileExtension(params.row.FileName)}
+            label={fileExtension(params.row.filename || params.row.FileName)}
             sx={{
               textTransform: "uppercase",
               backgroundColor: `${fileTypeToColor(
-                fileExtension(params.row.FileName)
+                fileExtension(params.row.filename || params.row.FileName)
               )}.100`,
               color: `${fileTypeToColor(
-                fileExtension(params.row.FileName)
+                fileExtension(params.row.filename || params.row.FileName)
               )}.600`,
             }}
             size="small"
@@ -126,6 +124,7 @@ export const InsightsTable: FC<Props> = ({ files }) => {
     {
       field: "action",
       headerName: "",
+      width: 64,
       sortable: false,
       renderCell: (params: any) => {
         const [isCopied, setIsCopied] = useState(false);
@@ -162,27 +161,26 @@ export const InsightsTable: FC<Props> = ({ files }) => {
     },
   ];
 
-  const handleClick = (params: any) => {
-    const locationParams = new URLSearchParams(location.search);
-    // Note: Remove for now since id is not yet defined in the files data
-    // locationParams.set("fileId", params.row.id);
-    // history.replace({
-    //   pathname: location.pathname,
-    //   search: locationParams.toString(),
-    // });
-  };
-
   return (
-    <Box sx={{ height: "calc(100vh - 289px)", mt: 2 }}>
+    <Box sx={{ height: "calc(100vh - 242px)" }}>
       {files && (
         <DataGridPro
+          sx={{ border: "none" }}
           columns={columns}
           rows={files}
           rowHeight={52}
           hideFooter
           disableColumnFilter
           disableColumnMenu
-          onRowClick={handleClick}
+          loading={loading}
+          onRowClick={(params: any) => {
+            const locationParams = new URLSearchParams(location.search);
+            locationParams.set("fileId", params.row.id);
+            history.replace({
+              pathname: location.pathname,
+              search: locationParams.toString(),
+            });
+          }}
         />
       )}
     </Box>
