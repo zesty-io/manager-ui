@@ -173,7 +173,13 @@ export const MediaList: FC<Props> = ({ files }) => {
     <Box component="main" sx={{ height: "100%", width: "100%" }}>
       {files && (
         <DataGridPro
-          sx={{ border: "none" }}
+          sx={{
+            backgroundColor: "common.white",
+            ".MuiDataGrid-row": {
+              cursor: "pointer",
+            },
+            border: "none",
+          }}
           columns={columns}
           rows={files}
           rowHeight={52}

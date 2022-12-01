@@ -185,6 +185,7 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
             ".MuiDataGrid-row": {
               cursor: "pointer",
             },
+            border: "none",
           }}
           columns={columns}
           rows={files}
