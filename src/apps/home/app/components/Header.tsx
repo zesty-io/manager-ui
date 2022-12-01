@@ -61,6 +61,7 @@ export const Header = () => {
         Here is your instance summary of the last 30 days
       </Typography>
       <Backdrop
+        onClick={() => setOpen(false)}
         open={open}
         sx={{ zIndex: (theme) => theme.zIndex.speedDial - 1 }}
       />
@@ -68,8 +69,8 @@ export const Header = () => {
         ariaLabel="Instance speed dial"
         sx={{ position: "absolute", top: 16, right: 24 }}
         icon={<SpeedDialIcon />}
-        onOpen={() => setOpen(true)}
-        onClose={() => setOpen(false)}
+        open={open}
+        onClick={() => setOpen(!open)}
         direction="down"
         FabProps={{
           size: "small",
