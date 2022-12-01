@@ -73,18 +73,6 @@ export const SearchMedia = ({ lockedToGroupId, addImagesCallback }: Props) => {
     }
   }, [files, term]);
 
-  const MediaView = () => {
-    return (
-      <>
-        {currentMediaView === "grid" ? (
-          <MediaGrid files={filteredFiles} groups={filteredGroups} />
-        ) : (
-          <MediaList files={filteredFiles} />
-        )}
-      </>
-    );
-  };
-
   return (
     <Box
       component="main"
@@ -118,7 +106,11 @@ export const SearchMedia = ({ lockedToGroupId, addImagesCallback }: Props) => {
             showBackButton
           />
           <Controls showFilters={false} />
-          <MediaView />
+          {currentMediaView === "grid" ? (
+            <MediaGrid files={filteredFiles} groups={filteredGroups} />
+          ) : (
+            <MediaList files={filteredFiles} />
+          )}
         </Box>
       ) : (
         <SearchEmptyState searchTerm={term} />

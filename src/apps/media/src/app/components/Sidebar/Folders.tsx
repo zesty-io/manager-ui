@@ -353,7 +353,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
             }}
             expanded={expanded}
             sx={{ height: "100%", width: "100%", overflowY: "auto", px: 1 }}
-            selected={[location.pathname.split("/")[2]]}
+            selected={[location.pathname.split("/")[3]]}
           >
             {trees.map((tree: any) => renderTree(tree))}
           </TreeView>
@@ -398,7 +398,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                   }}
                   expanded={hiddenExpanded}
                   sx={{ height: "100%", width: "100%", overflowY: "auto" }}
-                  selected={[location.pathname.split("/")[2]]}
+                  selected={[location.pathname.split("/")[3]]}
                 >
                   {hiddenTrees.map((tree: any) => renderTree(tree, true))}
                 </TreeView>
