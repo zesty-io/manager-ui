@@ -101,7 +101,7 @@ export const MediaList: FC<Props> = ({ files }) => {
       renderCell: (params: any) => {
         return (
           <Typography>
-            {moment(params.row.created_at).format("MMMM Do YYYY")}
+            {moment(params.row.created_at).format("MMM Do YYYY")}
           </Typography>
         );
       },
