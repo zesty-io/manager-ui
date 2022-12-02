@@ -60,18 +60,32 @@ export const MediaList: FC<Props> = ({ files }) => {
 
         return (
           <Box sx={{ display: "flex" }}>
-            <CardMedia
-              component="img"
-              onError={handleImageError}
-              data-src={params.row.thumbnail}
-              image={isImageError ? fileBroken : params.row.thumbnail}
-              loading="lazy"
+            <Box
               sx={{
-                objectFit: "fill",
-                width: "52px",
                 height: "52px",
+                width: "52px",
+                overflow: "hidden",
+                backgroundColor: "grey.100",
+                position: "relative",
+                backgroundSize: `25px 25px`,
+                backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
+                boxSizing: "border-box",
               }}
-            />
+            >
+              <CardMedia
+                component="img"
+                onError={handleImageError}
+                data-src={params.row.thumbnail}
+                image={isImageError ? fileBroken : params.row.thumbnail}
+                loading="lazy"
+                sx={{
+                  objectFit: "contain",
+                  overflow: "hidden",
+                  height: "100%",
+                  verticalAlign: "bottom",
+                }}
+              />
+            </Box>
             <Box sx={{ display: "flex", alignItems: "center", ml: 3 }}>
               <Typography variant="body2">{params.row.filename}</Typography>
             </Box>
@@ -159,7 +173,13 @@ export const MediaList: FC<Props> = ({ files }) => {
     <Box component="main" sx={{ height: "100%", width: "100%" }}>
       {files && (
         <DataGridPro
-          sx={{ border: "none" }}
+          sx={{
+            backgroundColor: "common.white",
+            ".MuiDataGrid-row": {
+              cursor: "pointer",
+            },
+            border: "none",
+          }}
           columns={columns}
           rows={files}
           rowHeight={52}

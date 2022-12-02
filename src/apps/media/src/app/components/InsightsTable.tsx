@@ -39,6 +39,7 @@ interface Props {
 
 export const InsightsTable: FC<Props> = ({ files, loading }) => {
   const history = useHistory();
+
   const columns = [
     {
       field: "filename",
@@ -54,22 +55,36 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
 
         return (
           <Box sx={{ display: "flex" }}>
-            <CardMedia
-              component="img"
-              onError={handleImageError}
-              data-src={params.row.thumbnail || params.row.FullPath}
-              image={
-                isImageError
-                  ? fileBroken
-                  : params.row.thumbnail || params.row.FullPath
-              }
-              loading="lazy"
+            <Box
               sx={{
-                objectFit: "fill",
-                width: "52px",
                 height: "52px",
+                width: "52px",
+                overflow: "hidden",
+                backgroundColor: "grey.100",
+                position: "relative",
+                backgroundSize: `25px 25px`,
+                backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
+                boxSizing: "border-box",
               }}
-            />
+            >
+              <CardMedia
+                component="img"
+                onError={handleImageError}
+                data-src={`${params.row.FullPath}?width=52&height=52`}
+                image={
+                  isImageError
+                    ? fileBroken
+                    : `${params.row.FullPath}?width=52&height=52`
+                }
+                loading="lazy"
+                sx={{
+                  objectFit: "contain",
+                  overflow: "hidden",
+                  height: "100%",
+                  verticalAlign: "bottom",
+                }}
+              />
+            </Box>
             <Box sx={{ display: "flex", alignItems: "center", ml: 3 }}>
               <Typography variant="body2">
                 {params.row.filename || params.row.FileName.slice(1)}
@@ -162,10 +177,16 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
   ];
 
   return (
-    <Box sx={{ height: "calc(100vh - 242px)" }}>
+    <Box component="main" sx={{ height: "100%", width: "100%" }}>
       {files && (
         <DataGridPro
-          sx={{ border: "none" }}
+          sx={{
+            backgroundColor: "common.white",
+            ".MuiDataGrid-row": {
+              cursor: "pointer",
+            },
+            border: "none",
+          }}
           columns={columns}
           rows={files}
           rowHeight={52}

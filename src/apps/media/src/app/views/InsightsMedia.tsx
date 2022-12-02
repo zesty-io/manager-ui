@@ -143,11 +143,11 @@ export const InsightsMedia: FC = () => {
               {}),
           })),
           "id"
+        ).filter((file: any) =>
+          files?.find((f) => f.url === file.FullPath?.split("?")?.[0])
         )}
         loading={isFilesFetching || usageFetching || isBinsFetching}
       />
     </Box>
   );
 };
-
-//url.split("?")[0]
