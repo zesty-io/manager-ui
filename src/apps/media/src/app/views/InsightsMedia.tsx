@@ -136,7 +136,7 @@ export const InsightsMedia: FC = () => {
       </Box>
       <InsightsTable
         files={uniqBy(
-          usage?.TopMedia.map((file: any, key: number) => ({
+          usage?.TopMedia?.map((file: any, key: number) => ({
             id: key,
             ...file,
             ...(files?.find((f) => f.url === file.FullPath?.split("?")?.[0]) ||
