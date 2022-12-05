@@ -280,19 +280,6 @@ const mediaSlice = createSlice({
     clearSelectedFiles(state) {
       state.selectedFiles = [];
     },
-    setSortOrder(state, action: { payload: MediaSortOrder }) {
-      state.sortOrder = action.payload;
-    },
-    setFiletypeFilter(state, action: { payload: Filetype }) {
-      state.filetypeFilter = action.payload;
-    },
-    setDateRangeFilter(state, action: { payload: DateRange }) {
-      state.dateRangeFilter = action.payload;
-    },
-    clearAllFilters(state) {
-      state.filetypeFilter = null;
-      state.dateRangeFilter = null;
-    },
   },
 });
 
@@ -313,10 +300,6 @@ export const {
   deselectFile,
   clearSelectedFiles,
   setLimitSelected,
-  setSortOrder,
-  setFiletypeFilter,
-  setDateRangeFilter,
-  clearAllFilters,
 } = mediaSlice.actions;
 
 /*

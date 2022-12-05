@@ -13,10 +13,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import Divider from "@mui/material/Divider";
 
 import { AppState } from "../../../../../../shell/store/types";
-import {
-  DateRange,
-  setDateRangeFilter,
-} from "../../../../../../shell/store/media-revamp";
+import { DateRange } from "../../../../../../shell/store/media-revamp";
 import { getDateFilter } from "../../utils/fileUtils";
 import moment from "moment-timezone";
 import { DateFilterModal } from "../DateFilterModal";

@@ -5,16 +5,11 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { DesktopDatePicker } from "@mui/x-date-pickers-pro";
 import { CalendarPicker } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers-pro";
 import { DialogContent, DialogTitle, DialogProps } from "@mui/material";
-import {
-  DateRange,
-  setDateRangeFilter,
-} from "../../../../../shell/store/media-revamp";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { AppState } from "../../../../../shell/store/types";
 
 type DateFilterModal = {
@@ -30,7 +25,6 @@ export const DateFilterModal: FC<DateFilterModal> = ({
   type,
   setDateCallback,
 }) => {
-  const dispatch = useDispatch();
   const activeFilter = useSelector(
     (state: AppState) => state.mediaRevamp.dateRangeFilter
   );
