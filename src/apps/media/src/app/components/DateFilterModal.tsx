@@ -21,12 +21,14 @@ type DateFilterModal = {
   open: boolean;
   type: "on" | "before" | "after";
   onClose: () => void;
+  setDateCallback: (date: Date) => void;
 };
 
 export const DateFilterModal: FC<DateFilterModal> = ({
   open,
   onClose,
   type,
+  setDateCallback,
 }) => {
   const dispatch = useDispatch();
   const activeFilter = useSelector(
@@ -58,12 +60,7 @@ export const DateFilterModal: FC<DateFilterModal> = ({
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <CalendarPicker
             onChange={(date, state) => {
-              dispatch(
-                setDateRangeFilter({
-                  type,
-                  value: date.toISOString(),
-                })
-              );
+              setDateCallback(date);
               onClose();
             }}
             date={highlightedDate}

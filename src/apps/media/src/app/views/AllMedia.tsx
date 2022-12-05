@@ -19,24 +19,22 @@ import {
   fileExtension,
   getExtensions,
   getDateFilterFn,
+  getDateFilter,
 } from "../utils/fileUtils";
+import { Filetype } from "../../../../../shell/store/media-revamp";
+import { useParams as useSearchParams } from "../../../../../shell/hooks/useParams";
 
 interface Props {
   addImagesCallback?: (selectedFiles: File[]) => void;
 }
 
 export const AllMedia = ({ addImagesCallback }: Props) => {
+  const [params, setParams] = useSearchParams();
+  const sortOrder = params.get("sort");
+  const filetypeFilter = params.get("filetype") as Filetype;
+  const dateRangeFilter = getDateFilter(params);
   const instanceId = useSelector((state: AppState) => state.instance.ID);
   const ecoId = useSelector((state: AppState) => state.instance.ecoID);
-  const sortOrder = useSelector(
-    (state: AppState) => state.mediaRevamp.sortOrder
-  );
-  const filetypeFilter = useSelector(
-    (state: AppState) => state.mediaRevamp.filetypeFilter
-  );
-  const dateRangeFilter = useSelector(
-    (state: AppState) => state.mediaRevamp.dateRangeFilter
-  );
   const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
     instanceId,
     ecoId,
@@ -50,15 +48,15 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
   const sortedFiles = useMemo(() => {
     if (!unsortedFiles) return unsortedFiles;
     switch (sortOrder) {
-      case "alphaAsc":
+      case "AtoZ":
         return [...unsortedFiles].sort((a, b) => {
           return a.filename.localeCompare(b.filename);
         });
-      case "alphaDesc":
+      case "ZtoA":
         return [...unsortedFiles].sort((a, b) => {
           return b.filename.localeCompare(a.filename);
         });
-      case "createdDesc":
+      case "dateadded":
         return [...unsortedFiles].sort((a, b) => {
           return (
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()

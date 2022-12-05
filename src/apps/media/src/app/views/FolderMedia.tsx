@@ -20,6 +20,7 @@ import { NoResultsState } from "../components/NoResultsState";
 import {
   MediaSortOrder,
   DateRange,
+  Filetype,
 } from "../../../../../shell/store/media-revamp";
 import {
   fileExtension,
@@ -37,13 +38,8 @@ interface Props {
 export const FolderMedia = ({ addImagesCallback }: Props) => {
   const { id } = useParams<Params>();
   const [params, setParams] = useSearchParams();
-  console.log(params);
-  //@ts-ignore
-  window.thing = params;
   const sortOrder = params.get("sort");
-  const filetypeFilter = useSelector(
-    (state: AppState) => state.mediaRevamp.filetypeFilter
-  );
+  const filetypeFilter = params.get("filetype") as Filetype;
   const dateRangeFilter = getDateFilter(params);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);

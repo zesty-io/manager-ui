@@ -46,7 +46,6 @@ export const DateRangeFilter: FC = () => {
     }
     const format = (date: string) => {
       const s = moment(date).format("YYYY-MM-DD");
-      console.log(s);
       return s;
     };
     switch (dateRange.type) {
@@ -57,14 +56,18 @@ export const DateRangeFilter: FC = () => {
       }
       case "before": {
         setParams(format(dateRange.value), "to");
+        setParams(null, "from");
         return;
       }
       case "after": {
         setParams(format(dateRange.value), "from");
+        setParams(null, "to");
         return;
       }
       case "preset": {
         setParams(dateRange.value.replace(/\s/g, ""), "dateFilter");
+        setParams(null, "to");
+        setParams(null, "from");
         return;
       }
     }
@@ -79,6 +82,7 @@ export const DateRangeFilter: FC = () => {
       month: "short",
       year: "numeric",
       day: "numeric",
+      timeZone: "UTC",
     });
     switch (type) {
       case "preset":
@@ -142,6 +146,11 @@ export const DateRangeFilter: FC = () => {
           setModal(null);
           handleClose();
         }}
+        setDateCallback={
+          modal
+            ? (date) => handleChange({ type: modal, value: date.toISOString() })
+            : null
+        }
       />
       {activeFilter ? activeButton : inactiveButton}
       <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
