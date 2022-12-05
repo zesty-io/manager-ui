@@ -20,16 +20,19 @@ const ItemsFilter = (props) => {
         ),
       }}
       onChange={(evt) => {
-        const term = evt.target.value.trim().toLowerCase();
+        const term = evt.target.value;
+
         props.setSearchTerm(term);
         if (term) {
+          const filterTerm = term.trim().toLowerCase();
+
           props.setFilteredItems(
             props.nav.raw.filter((f) => {
               return (
-                f.label.toLowerCase().includes(term) ||
-                f.path.toLowerCase().includes(term) ||
-                f.contentModelZUID === term ||
-                f.ZUID === term
+                f.label.toLowerCase().includes(filterTerm) ||
+                f.path.toLowerCase().includes(filterTerm) ||
+                f.contentModelZUID === filterTerm ||
+                f.ZUID === filterTerm
               );
             })
           );

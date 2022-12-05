@@ -7,10 +7,13 @@ import {
   useSearchBinFilesQuery,
 } from "../../../../../shell/services/mediaManager";
 import { MediaGrid } from "../components/MediaGrid";
+import { MediaList } from "../components/MediaList";
 import { Header } from "../components/Header";
 import { useParams } from "../../../../../shell/hooks/useParams";
 import { SearchEmptyState } from "../components/SearchEmptyState";
 import { File } from "../../../../../shell/services/types";
+import { State } from "../../../../../shell/store/media-revamp";
+import Controls from "../components/Controls";
 
 interface Props {
   lockedToGroupId?: string;
@@ -32,6 +35,9 @@ export const SearchMedia = ({ lockedToGroupId, addImagesCallback }: Props) => {
     {
       skip: !bins?.length,
     }
+  );
+  const currentMediaView = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.currentMediaView
   );
   const {
     data: files,
@@ -99,7 +105,12 @@ export const SearchMedia = ({ lockedToGroupId, addImagesCallback }: Props) => {
             files={filteredFiles}
             showBackButton
           />
-          <MediaGrid files={filteredFiles} groups={filteredGroups} />
+          <Controls showFilters={false} />
+          {currentMediaView === "grid" ? (
+            <MediaGrid files={filteredFiles} groups={filteredGroups} />
+          ) : (
+            <MediaList files={filteredFiles} />
+          )}
         </Box>
       ) : (
         <SearchEmptyState searchTerm={term} />

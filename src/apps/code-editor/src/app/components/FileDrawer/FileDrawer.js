@@ -21,6 +21,7 @@ import { fetchItems } from "shell/store/content";
 import { fetchFields } from "shell/store/fields";
 
 import styles from "./FileDrawer.less";
+import { notify } from "../../../../../../shell/store/notifications";
 export const FileDrawer = memo(function FileDrawer(props) {
   const dispatch = useDispatch();
 
@@ -54,7 +55,16 @@ export const FileDrawer = memo(function FileDrawer(props) {
       .then((res) => {
         const [logs, fields, items] = res;
 
-        if (logs.status !== 200) throw new Error(`${logs.status}`);
+        if (logs?.status !== 200) {
+          dispatch(
+            notify({
+              message: "Unable to load Code file logs",
+              kind: "warn",
+            })
+          );
+          setLogs(null);
+          return;
+        }
 
         // Logs should always exist
         setLogs(

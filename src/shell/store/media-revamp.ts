@@ -72,6 +72,7 @@ export type Filetype =
   | "Spreadsheet"
   | "Code"
   | "Font"
+  | "Folder"
   | "Archive"
   | "PNG"
   | "JPEG"
@@ -117,6 +118,7 @@ export type State = {
   sortOrder: MediaSortOrder;
   filetypeFilter: Filetype | null;
   dateRangeFilter: DateRange | null;
+  currentMediaView: string;
 };
 const initialState: State = {
   uploads: [],
@@ -128,6 +130,7 @@ const initialState: State = {
   sortOrder: "createdDesc",
   filetypeFilter: null,
   dateRangeFilter: null,
+  currentMediaView: "grid",
 };
 
 const mediaSlice = createSlice({
@@ -280,6 +283,9 @@ const mediaSlice = createSlice({
     clearSelectedFiles(state) {
       state.selectedFiles = [];
     },
+    setCurrentMediaView(state, action: { payload: string }) {
+      state.currentMediaView = action.payload;
+    },
   },
 });
 
@@ -300,6 +306,7 @@ export const {
   deselectFile,
   clearSelectedFiles,
   setLimitSelected,
+  setCurrentMediaView,
 } = mediaSlice.actions;
 
 /*

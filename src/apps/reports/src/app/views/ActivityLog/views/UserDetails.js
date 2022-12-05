@@ -35,7 +35,7 @@ export const UserDetails = () => {
         (userRole) => userRole.ZUID === zuid
       )?.createdAt;
       setParams(moment(userCreatedDate).format("YYYY-MM-DD"), "from");
-      setParams(moment().add(1, "days").format("YYYY-MM-DD"), "to");
+      setParams(moment().format("YYYY-MM-DD"), "to");
     }
     /*
       Initialized get sets to true after setting date params to then be utilized to determine 

@@ -7,11 +7,12 @@ import {
   useGetBinsQuery,
 } from "../../../../../shell/services/mediaManager";
 import { MediaGrid } from "../components/MediaGrid";
+import { MediaList } from "../components/MediaList";
 import { useSelector } from "react-redux";
 import { DnDProvider } from "../components/DnDProvider";
 import { Header } from "../components/Header";
 import { UploadModal } from "../components/UploadModal";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import { NotFoundState } from "../components/NotFoundState";
 import { File } from "../../../../../shell/services/types";
 import { AppState } from "../../../../../shell/store/types";
@@ -28,6 +29,7 @@ import {
   getDateFilterFn,
   getDateFilter,
 } from "../utils/fileUtils";
+import { State } from "../../../../../shell/store/media-revamp";
 
 type Params = { id: string };
 
@@ -54,6 +56,9 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
         skip: !bins?.length,
       }
     );
+  const currentMediaView = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.currentMediaView
+  );
   const currentGroup = binGroups?.flat()?.find((group) => group.id === id);
   const {
     data: groupData,
@@ -89,6 +94,7 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
 
   const groupFiles = useMemo(() => {
     if (!sortedGroupFiles) return sortedGroupFiles;
+    if (filetypeFilter === "Folder") return [];
     if (filetypeFilter && dateRangeFilter) {
       const extensions = new Set<string>(getExtensions(filetypeFilter));
       const dateFilterFn = getDateFilterFn(dateRangeFilter);
@@ -117,7 +123,7 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
   const subgroups = useMemo(() => {
     if (!unsortedSubGroups) return unsortedSubGroups;
     // don't show groups when filtering by filetypes or dates
-    if (filetypeFilter !== null) return [];
+    if (filetypeFilter !== null && filetypeFilter !== "Folder") return [];
     if (dateRangeFilter !== null) return [];
     switch (sortOrder) {
       case "alphaAsc":
@@ -168,6 +174,15 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
           ) : (
             <>
               <Controls />
+              {(filetypeFilter || dateRangeFilter) && groupFiles.length > 0 && (
+                <Typography
+                  color="text.secondary"
+                  variant="h6"
+                  sx={{ pl: 3, pt: 2, pb: 1.5 }}
+                >
+                  {groupFiles?.length} matches found
+                </Typography>
+              )}
               <UploadModal />
               <DnDProvider
                 currentBinId={groupData?.bin_id}
@@ -184,8 +199,10 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
                       />
                     )}
                   </>
-                ) : (
+                ) : currentMediaView === "grid" ? (
                   <MediaGrid files={groupFiles} groups={subgroups} />
+                ) : (
+                  <MediaList files={groupFiles} />
                 )}
               </DnDProvider>
             </>

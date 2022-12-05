@@ -24,6 +24,7 @@ export function isImage(file: File) {
     case "gif":
     case "svg":
     case "webp":
+    case "ico":
       return true;
   }
 
@@ -44,6 +45,7 @@ export const fileTypeToColor = (extension: string) => {
     case "html":
     case "js":
     case "css":
+    case "ico":
       return "blue";
     case "ots":
     case "xls":

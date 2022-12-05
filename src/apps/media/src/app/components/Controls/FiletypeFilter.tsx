@@ -17,6 +17,7 @@ import SlideshowRounded from "@mui/icons-material/SlideshowRounded";
 import BorderAllRounded from "@mui/icons-material/BorderAllRounded";
 import CodeRounded from "@mui/icons-material/CodeRounded";
 import FontDownloadRounded from "@mui/icons-material/FontDownloadRounded";
+import FolderRounded from "@mui/icons-material/FolderRounded";
 import FolderZipRounded from "@mui/icons-material/FolderZipRounded";
 import CheckIcon from "@mui/icons-material/Check";
 
@@ -138,6 +139,12 @@ export const FiletypeFilter: FC = () => {
             <FontDownloadRounded fontSize="small" />
           </ListItemIcon>
           <Typography variant="body1">Fonts</Typography>
+        </MenuItem>
+        <MenuItem onClick={() => handleChange("Folder")}>
+          <ListItemIcon>
+            <FolderRounded fontSize="small" />
+          </ListItemIcon>
+          <Typography variant="body1">Folders</Typography>
         </MenuItem>
         <MenuItem onClick={() => handleChange("Archive")}>
           <ListItemIcon>
