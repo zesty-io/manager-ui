@@ -37,6 +37,87 @@ interface Props {
   loading?: boolean;
 }
 
+const ActionColumn = ({ params }: any) => {
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopyClick = (data: string) => {
+    navigator?.clipboard
+      ?.writeText(data)
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => {
+          setIsCopied(false);
+        }, 1500);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
+  return (
+    <IconButton
+      onClick={(evt: any) => {
+        evt.stopPropagation();
+        handleCopyClick(params.row.FullPath);
+      }}
+    >
+      {isCopied ? (
+        <CheckIcon sx={{ color: "grey.400" }} />
+      ) : (
+        <LinkRoundedIcon sx={{ color: "grey.400" }} />
+      )}
+    </IconButton>
+  );
+};
+
+const FilenameColumn = ({ params }: any) => {
+  const [isImageError, setIsImageError] = useState(false);
+
+  const handleImageError = () => {
+    setIsImageError(true);
+  };
+
+  return (
+    <Box sx={{ display: "flex" }}>
+      <Box
+        sx={{
+          height: "52px",
+          width: "52px",
+          overflow: "hidden",
+          backgroundColor: "grey.100",
+          position: "relative",
+          backgroundSize: `25px 25px`,
+          backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
+          boxSizing: "border-box",
+        }}
+      >
+        <CardMedia
+          component="img"
+          onError={handleImageError}
+          data-src={`${params.row.FullPath}?width=52&height=52`}
+          image={
+            isImageError
+              ? fileBroken
+              : `${params.row.FullPath}?width=52&height=52`
+          }
+          loading="lazy"
+          sx={{
+            objectFit: "contain",
+            overflow: "hidden",
+            height: "100%",
+            verticalAlign: "bottom",
+          }}
+        />
+      </Box>
+      <Box sx={{ display: "flex", alignItems: "center", ml: 3 }}>
+        <Typography variant="body2">
+          {params.row.filename || params.row.FileName.slice(1)}
+        </Typography>
+      </Box>
+    </Box>
+  );
+};
+
 export const InsightsTable: FC<Props> = ({ files, loading }) => {
   const history = useHistory();
 
@@ -46,53 +127,7 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
       headerName: "Name",
       sortable: false,
       flex: 1,
-      renderCell: (params: any) => {
-        const [isImageError, setIsImageError] = useState(false);
-
-        const handleImageError = () => {
-          setIsImageError(true);
-        };
-
-        return (
-          <Box sx={{ display: "flex" }}>
-            <Box
-              sx={{
-                height: "52px",
-                width: "52px",
-                overflow: "hidden",
-                backgroundColor: "grey.100",
-                position: "relative",
-                backgroundSize: `25px 25px`,
-                backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
-                boxSizing: "border-box",
-              }}
-            >
-              <CardMedia
-                component="img"
-                onError={handleImageError}
-                data-src={`${params.row.FullPath}?width=52&height=52`}
-                image={
-                  isImageError
-                    ? fileBroken
-                    : `${params.row.FullPath}?width=52&height=52`
-                }
-                loading="lazy"
-                sx={{
-                  objectFit: "contain",
-                  overflow: "hidden",
-                  height: "100%",
-                  verticalAlign: "bottom",
-                }}
-              />
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", ml: 3 }}>
-              <Typography variant="body2">
-                {params.row.filename || params.row.FileName.slice(1)}
-              </Typography>
-            </Box>
-          </Box>
-        );
-      },
+      renderCell: (params: any) => <FilenameColumn params={params} />,
     },
     {
       field: "Requests",
@@ -141,38 +176,7 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
       headerName: "",
       width: 64,
       sortable: false,
-      renderCell: (params: any) => {
-        const [isCopied, setIsCopied] = useState(false);
-
-        const handleCopyClick = (data: string) => {
-          navigator?.clipboard
-            ?.writeText(data)
-            .then(() => {
-              setIsCopied(true);
-              setTimeout(() => {
-                setIsCopied(false);
-              }, 1500);
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-        };
-
-        return (
-          <IconButton
-            onClick={(evt: any) => {
-              evt.stopPropagation();
-              handleCopyClick(params.row.FullPath);
-            }}
-          >
-            {isCopied ? (
-              <CheckIcon sx={{ color: "grey.400" }} />
-            ) : (
-              <LinkRoundedIcon sx={{ color: "grey.400" }} />
-            )}
-          </IconButton>
-        );
-      },
+      renderCell: (params: any) => <ActionColumn params={params} />,
     },
   ];
 

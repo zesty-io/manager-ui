@@ -36,6 +36,81 @@ interface Props {
   files?: File[];
 }
 
+const FilenameColumn = ({ params }: any) => {
+  const [isImageError, setIsImageError] = useState(false);
+
+  const handleImageError = () => {
+    setIsImageError(true);
+  };
+
+  return (
+    <Box sx={{ display: "flex" }}>
+      <Box
+        sx={{
+          height: "52px",
+          width: "52px",
+          overflow: "hidden",
+          backgroundColor: "grey.100",
+          position: "relative",
+          backgroundSize: `25px 25px`,
+          backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
+          boxSizing: "border-box",
+        }}
+      >
+        <CardMedia
+          component="img"
+          onError={handleImageError}
+          data-src={params.row.thumbnail}
+          image={isImageError ? fileBroken : params.row.thumbnail}
+          loading="lazy"
+          sx={{
+            objectFit: "contain",
+            overflow: "hidden",
+            height: "100%",
+            verticalAlign: "bottom",
+          }}
+        />
+      </Box>
+      <Box sx={{ display: "flex", alignItems: "center", ml: 3 }}>
+        <Typography variant="body2">{params.row.filename}</Typography>
+      </Box>
+    </Box>
+  );
+};
+
+const ActionColumn = ({ params }: any) => {
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopyClick = (data: string) => {
+    navigator?.clipboard
+      ?.writeText(data)
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => {
+          setIsCopied(false);
+        }, 1500);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
+  return (
+    <IconButton
+      onClick={(evt: any) => {
+        evt.stopPropagation();
+        handleCopyClick(params.row.thumbnail);
+      }}
+    >
+      {isCopied ? (
+        <CheckIcon sx={{ color: "grey.400" }} />
+      ) : (
+        <LinkRoundedIcon sx={{ color: "grey.400" }} />
+      )}
+    </IconButton>
+  );
+};
+
 export const MediaList: FC<Props> = ({ files }) => {
   const imageEl = useRef<HTMLImageElement>();
   const [imageOrientation, setImageOrientation] = useState<string>("");
@@ -51,47 +126,7 @@ export const MediaList: FC<Props> = ({ files }) => {
       headerName: "Name",
       sortable: false,
       flex: 1,
-      renderCell: (params: any) => {
-        const [isImageError, setIsImageError] = useState(false);
-
-        const handleImageError = () => {
-          setIsImageError(true);
-        };
-
-        return (
-          <Box sx={{ display: "flex" }}>
-            <Box
-              sx={{
-                height: "52px",
-                width: "52px",
-                overflow: "hidden",
-                backgroundColor: "grey.100",
-                position: "relative",
-                backgroundSize: `25px 25px`,
-                backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
-                boxSizing: "border-box",
-              }}
-            >
-              <CardMedia
-                component="img"
-                onError={handleImageError}
-                data-src={params.row.thumbnail}
-                image={isImageError ? fileBroken : params.row.thumbnail}
-                loading="lazy"
-                sx={{
-                  objectFit: "contain",
-                  overflow: "hidden",
-                  height: "100%",
-                  verticalAlign: "bottom",
-                }}
-              />
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", ml: 3 }}>
-              <Typography variant="body2">{params.row.filename}</Typography>
-            </Box>
-          </Box>
-        );
-      },
+      renderCell: (params: any) => <FilenameColumn params={params} />,
     },
     {
       field: "created_at",
@@ -134,38 +169,7 @@ export const MediaList: FC<Props> = ({ files }) => {
       headerName: "",
       width: 64,
       sortable: false,
-      renderCell: (params: any) => {
-        const [isCopied, setIsCopied] = useState(false);
-
-        const handleCopyClick = (data: string) => {
-          navigator?.clipboard
-            ?.writeText(data)
-            .then(() => {
-              setIsCopied(true);
-              setTimeout(() => {
-                setIsCopied(false);
-              }, 1500);
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-        };
-
-        return (
-          <IconButton
-            onClick={(evt: any) => {
-              evt.stopPropagation();
-              handleCopyClick(params.row.thumbnail);
-            }}
-          >
-            {isCopied ? (
-              <CheckIcon sx={{ color: "grey.400" }} />
-            ) : (
-              <LinkRoundedIcon sx={{ color: "grey.400" }} />
-            )}
-          </IconButton>
-        );
-      },
+      renderCell: (params: any) => <ActionColumn params={params} />,
     },
   ];
 
