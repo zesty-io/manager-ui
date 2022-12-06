@@ -6,6 +6,7 @@ import {
   Chip,
   CardMedia,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import {
@@ -74,7 +75,9 @@ const FilenameColumn = ({ params }: any) => {
         />
       </Box>
       <Box sx={{ display: "flex", alignItems: "center", ml: 3 }}>
-        <Typography variant="body2">{params.row.name}</Typography>
+        <Tooltip title={params.row.name}>
+          <Typography variant="body2">{params.row.name}</Typography>
+        </Tooltip>
       </Box>
     </Box>
   );
@@ -159,9 +162,11 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
                 <Box sx={{ width: "52px" }}>
                   <FolderIcon sx={{ color: "action.active" }} />
                 </Box>
-                <Typography variant="body2" sx={{ ml: 3 }}>
-                  {params.row.name}
-                </Typography>
+                <Tooltip title={params.row.name}>
+                  <Typography variant="body2" sx={{ ml: 3 }}>
+                    {params.row.name}
+                  </Typography>
+                </Tooltip>
               </Box>
             )}
           </>
