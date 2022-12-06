@@ -33,54 +33,180 @@ import {
 } from "../../../../../shell/services/mediaManager";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import CheckIcon from "@mui/icons-material/Check";
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
+import FontDownloadRoundedIcon from "@mui/icons-material/FontDownloadRounded";
+
+// file icons import
+import wordImg from "../../../../../../public/images/wordImg.png";
+import excelImg from "../../../../../../public/images/excelImg.png";
+import pdfImg from "../../../../../../public/images/pdfImg.png";
+import pptImg from "../../../../../../public/images/pptImg.png";
+import mpImg from "../../../../../../public/images/mpImg.png";
+import csvImg from "../../../../../../public/images/csvImg.png";
+import zipImg from "../../../../../../public/images/zipImg.png";
+import numberImg from "../../../../../../public/images/numberImg.png";
+import defaultImg from "../../../../../../public/images/defaultImg.png";
+import jsIcon from "../../../../../../public/images/jsIcon.svg";
+import htmlIcon from "../../../../../../public/images/htmlIcon.svg";
+import cssIcon from "../../../../../../public/images/cssIcon.svg";
 
 interface Props {
   files?: File[];
   groups?: Group[];
 }
 
-const FilenameColumn = ({ params }: any) => {
+const NameColumn = ({ params }: any) => {
   const [isImageError, setIsImageError] = useState(false);
 
   const handleImageError = () => {
     setIsImageError(true);
   };
 
-  return (
-    <Box sx={{ display: "flex" }}>
-      <Box
-        sx={{
-          height: "52px",
-          width: "52px",
-          overflow: "hidden",
-          backgroundColor: "grey.100",
-          position: "relative",
-          backgroundSize: `25px 25px`,
-          backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
-          boxSizing: "border-box",
-        }}
-      >
-        <CardMedia
-          component="img"
-          onError={handleImageError}
-          data-src={params.row.thumbnail}
-          image={isImageError ? fileBroken : params.row.thumbnail}
-          loading="lazy"
-          sx={{
-            objectFit: "contain",
-            overflow: "hidden",
-            height: "100%",
-            verticalAlign: "bottom",
-          }}
-        />
-      </Box>
+  const NameTooltip = () => {
+    return (
       <Box sx={{ display: "flex", alignItems: "center", ml: 3 }}>
         <Tooltip title={params.row.name}>
           <Typography variant="body2">{params.row.name}</Typography>
         </Tooltip>
       </Box>
-    </Box>
-  );
+    );
+  };
+
+  switch (fileExtension(params.row.name)) {
+    case "jpg":
+    case "jpeg":
+    case "gif":
+    case "webp":
+    case "png":
+    case "svg":
+    case "ico":
+      return (
+        <Box sx={{ display: "flex" }}>
+          <Box
+            sx={{
+              height: "52px",
+              width: "52px",
+              overflow: "hidden",
+              backgroundColor: "grey.100",
+              position: "relative",
+              backgroundSize: `25px 25px`,
+              backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
+              boxSizing: "border-box",
+            }}
+          >
+            <CardMedia
+              component="img"
+              onError={handleImageError}
+              data-src={params.row.thumbnail}
+              image={isImageError ? fileBroken : params.row.thumbnail}
+              loading="lazy"
+              sx={{
+                objectFit: "contain",
+                overflow: "hidden",
+                height: "100%",
+                verticalAlign: "bottom",
+              }}
+            />
+          </Box>
+          <NameTooltip />
+        </Box>
+      );
+    case "ots":
+    case "xls":
+    case "xlsx":
+      return (
+        <Box sx={{ display: "flex" }}>
+          <Box
+            sx={{
+              height: "52px",
+              width: "52px",
+              backgroundColor: "green.100",
+              position: "relative",
+              boxSizing: "border-box",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <CardMedia
+              component="img"
+              data-src={excelImg}
+              image={excelImg}
+              loading="lazy"
+              sx={{
+                m: "auto",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+              }}
+            />
+          </Box>
+          <NameTooltip />
+        </Box>
+      );
+    case "pdf":
+      return (
+        <Box sx={{ display: "flex" }}>
+          <Box
+            sx={{
+              height: "52px",
+              width: "52px",
+              backgroundColor: "blue.50",
+              position: "relative",
+              boxSizing: "border-box",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <CardMedia
+              component="img"
+              data-src={pdfImg}
+              image={pdfImg}
+              loading="lazy"
+              sx={{
+                m: "auto",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+              }}
+            />
+          </Box>
+          <NameTooltip />
+        </Box>
+      );
+    default:
+      return (
+        <Box sx={{ display: "flex" }}>
+          <Box
+            sx={{
+              height: "52px",
+              width: "52px",
+              overflow: "hidden",
+              backgroundColor: "grey.100",
+              position: "relative",
+              backgroundSize: `25px 25px`,
+              backgroundPosition: `0 0, 12.5px 0, 12.5px -12.5px, 0px 12.5px`,
+              boxSizing: "border-box",
+            }}
+          >
+            <CardMedia
+              component="img"
+              onError={handleImageError}
+              data-src={params.row.thumbnail}
+              image={isImageError ? fileBroken : params.row.thumbnail}
+              loading="lazy"
+              sx={{
+                objectFit: "contain",
+                overflow: "hidden",
+                height: "100%",
+                verticalAlign: "bottom",
+              }}
+            />
+          </Box>
+          <NameTooltip />
+        </Box>
+      );
+  }
 };
 
 const ActionColumn = ({ params }: any) => {
@@ -156,7 +282,7 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
         return (
           <>
             {params.row.filename ? (
-              <FilenameColumn params={params} />
+              <NameColumn params={params} />
             ) : (
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Box sx={{ width: "52px" }}>
