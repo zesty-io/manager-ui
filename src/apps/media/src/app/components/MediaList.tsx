@@ -1,3 +1,5 @@
+MediaList;
+
 import { FC, useState, useMemo, useRef, useEffect } from "react";
 import {
   Box,
@@ -14,6 +16,7 @@ import {
 } from "../../../../../shell/services/metrics";
 import { DataGridPro, GridValueGetterParams } from "@mui/x-data-grid-pro";
 import { File, Bin, Group } from "../../../../../shell/services/types";
+import FolderIcon from "@mui/icons-material/Folder";
 import fileBroken from "../../../../../../public/images/fileBroken.jpg";
 import { useHistory, useLocation } from "react-router-dom";
 import { numberFormatter } from "../../../../../utility/numberFormatter";
@@ -73,7 +76,7 @@ const FilenameColumn = ({ params }: any) => {
         />
       </Box>
       <Box sx={{ display: "flex", alignItems: "center", ml: 3 }}>
-        <Typography variant="body2">{params.row.filename}</Typography>
+        <Typography variant="body2">{params.row.name}</Typography>
       </Box>
     </Box>
   );
@@ -117,17 +120,51 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
   const [imageOrientation, setImageOrientation] = useState<string>("");
   const [lazyLoading, setLazyLoading] = useState(true);
   const [isImageError, setIsImageError] = useState(false);
+  const [items, setItems] = useState([]);
 
   const location = useLocation();
   const history = useHistory();
 
+  useEffect(() => {
+    const newGroups =
+      groups?.map((group) => ({
+        ...group,
+        name: group.name,
+        type: "folder",
+      })) || [];
+    const newFiles =
+      files?.map((file) => ({
+        ...file,
+        name: file.filename,
+        type: fileExtension(file.filename),
+      })) || [];
+    setItems([...newGroups, ...newFiles]);
+  }, [files, groups]);
+
   const columns = [
     {
-      field: "filename",
+      field: "name",
       headerName: "Name",
       sortable: false,
       flex: 1,
-      renderCell: (params: any) => <FilenameColumn params={params} />,
+      renderCell: (params: any) => {
+        return (
+          <>
+            {params.row.filename ? (
+              <FilenameColumn params={params} />
+            ) : (
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Box sx={{ width: "52px" }}>
+                  <FolderIcon sx={{ color: "action.active" }} />
+                </Box>
+                <Typography variant="body2" sx={{ ml: 3 }}>
+                  {params.row.name}
+                </Typography>
+              </Box>
+            )}
+          </>
+        );
+      },
     },
     {
       field: "created_at",
@@ -137,7 +174,8 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
       renderCell: (params: any) => {
         return (
           <Typography>
-            {moment(params.row.created_at).format("MMM Do YYYY")}
+            {params.row.created_at &&
+              moment(params.row.created_at).format("MMMM Do YYYY")}
           </Typography>
         );
       },
@@ -149,19 +187,17 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
       sortable: false,
       renderCell: (params: any) => {
         return (
-          <Chip
-            label={fileExtension(params.row.filename)}
-            sx={{
-              textTransform: "uppercase",
-              backgroundColor: `${fileTypeToColor(
-                fileExtension(params.row.filename)
-              )}.100`,
-              color: `${fileTypeToColor(
-                fileExtension(params.row.filename)
-              )}.600`,
-            }}
-            size="small"
-          />
+          <>
+            <Chip
+              label={params.row.type}
+              sx={{
+                textTransform: "uppercase",
+                backgroundColor: `${fileTypeToColor(params.row.type)}.100`,
+                color: `${fileTypeToColor(params.row.type)}.600`,
+              }}
+              size="small"
+            />
+          </>
         );
       },
     },
@@ -186,7 +222,7 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
             border: "none",
           }}
           columns={columns}
-          rows={files}
+          rows={items}
           rowHeight={52}
           hideFooter
           disableColumnFilter
