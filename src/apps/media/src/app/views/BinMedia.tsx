@@ -117,8 +117,8 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
   const binGroups = useMemo(() => {
     if (!unsortedBinGroups) return unsortedBinGroups;
     // don't show groups when filtering by filetypes
-    if (filetypeFilter !== null && filetypeFilter !== "Folder") return [];
-    if (dateRangeFilter !== null) return [];
+    if (Boolean(filetypeFilter) && filetypeFilter !== "Folder") return [];
+    if (Boolean(dateRangeFilter)) return [];
     switch (sortOrder) {
       case "alphaAsc":
         return [...unsortedBinGroups].sort((a, b) => {
