@@ -123,8 +123,8 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
   const subgroups = useMemo(() => {
     if (!unsortedSubGroups) return unsortedSubGroups;
     // don't show groups when filtering by filetypes or dates
-    if (filetypeFilter !== null && filetypeFilter !== "Folder") return [];
-    if (dateRangeFilter !== null) return [];
+    if (Boolean(filetypeFilter) && filetypeFilter !== "Folder") return [];
+    if (Boolean(dateRangeFilter)) return [];
     switch (sortOrder) {
       case "alphaAsc":
         return [...unsortedSubGroups].sort((a, b) => {
