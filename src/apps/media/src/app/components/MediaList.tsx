@@ -174,6 +174,68 @@ const NameColumn = ({ params }: any) => {
           <NameTooltip />
         </Box>
       );
+    case "csv":
+      return (
+        <Box sx={{ display: "flex" }}>
+          <Box
+            sx={{
+              height: "52px",
+              width: "52px",
+              backgroundColor: "green.100",
+              position: "relative",
+              boxSizing: "border-box",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <CardMedia
+              component="img"
+              data-src={csvImg}
+              image={csvImg}
+              loading="lazy"
+              sx={{
+                m: "auto",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+              }}
+            />
+          </Box>
+          <NameTooltip />
+        </Box>
+      );
+    case "docx":
+    case "doc":
+    case "rtf":
+      return (
+        <Box sx={{ display: "flex" }}>
+          <Box
+            sx={{
+              height: "52px",
+              width: "52px",
+              backgroundColor: "blue.50",
+              position: "relative",
+              boxSizing: "border-box",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <CardMedia
+              component="img"
+              data-src={wordImg}
+              image={wordImg}
+              loading="lazy"
+              sx={{
+                m: "auto",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+              }}
+            />
+          </Box>
+          <NameTooltip />
+        </Box>
+      );
     default:
       return (
         <Box sx={{ display: "flex" }}>
