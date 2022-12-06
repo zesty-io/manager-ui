@@ -137,7 +137,6 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
         type: fileExtension(file.filename),
       })) || [];
     const test = [...newGroups, ...newFiles];
-    console.log("tableItems", test);
     setItems([...newGroups, ...newFiles]);
   }, [files, groups]);
 
