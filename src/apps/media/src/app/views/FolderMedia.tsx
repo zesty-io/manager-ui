@@ -201,7 +201,7 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
                 ) : currentMediaView === "grid" ? (
                   <MediaGrid files={groupFiles} groups={subgroups} />
                 ) : (
-                  <MediaList files={groupFiles} />
+                  <MediaList files={groupFiles} groups={subgroups} />
                 )}
               </DnDProvider>
             </>

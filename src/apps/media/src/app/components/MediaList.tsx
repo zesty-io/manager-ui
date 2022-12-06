@@ -13,7 +13,7 @@ import {
   useGetRequestsQuery,
 } from "../../../../../shell/services/metrics";
 import { DataGridPro, GridValueGetterParams } from "@mui/x-data-grid-pro";
-import { File, Bin } from "../../../../../shell/services/types";
+import { File, Bin, Group } from "../../../../../shell/services/types";
 import fileBroken from "../../../../../../public/images/fileBroken.jpg";
 import { useHistory, useLocation } from "react-router-dom";
 import { numberFormatter } from "../../../../../utility/numberFormatter";
@@ -34,6 +34,7 @@ import CheckIcon from "@mui/icons-material/Check";
 
 interface Props {
   files?: File[];
+  groups?: Group[];
 }
 
 const FilenameColumn = ({ params }: any) => {
@@ -111,7 +112,7 @@ const ActionColumn = ({ params }: any) => {
   );
 };
 
-export const MediaList: FC<Props> = ({ files }) => {
+export const MediaList: FC<Props> = ({ files, groups }) => {
   const imageEl = useRef<HTMLImageElement>();
   const [imageOrientation, setImageOrientation] = useState<string>("");
   const [lazyLoading, setLazyLoading] = useState(true);
