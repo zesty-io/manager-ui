@@ -15,7 +15,11 @@ import { Database } from "@zesty-io/material";
 import { useHistory } from "react-router";
 import { CreateContentItemDialog } from "./CreateContentItemDialog";
 
-export const Header = () => {
+interface Props {
+  hideSubtitle?: boolean;
+}
+
+export const Header = ({ hideSubtitle }: Props) => {
   const userFirstName = useSelector((state: any) => state.user.firstName);
   const [open, setOpen] = useState(false);
   const [openCreateContentDialog, setOpenCreateContentDialog] = useState(false);
@@ -57,7 +61,11 @@ export const Header = () => {
       <Typography variant="h4" fontWeight={600}>
         Good Morning, {userFirstName}
       </Typography>
-      <Typography variant="subtitle1" marginTop={0.5}>
+      <Typography
+        variant="subtitle1"
+        marginTop={0.5}
+        sx={{ visibility: hideSubtitle && "hidden" }}
+      >
         Here is your instance summary of the last 30 days
       </Typography>
       <Backdrop

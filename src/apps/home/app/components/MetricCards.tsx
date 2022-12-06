@@ -93,7 +93,7 @@ export const MetricCards = () => {
             ? getDelta(priorRequests?.TotalRequests, requests?.TotalRequests)
             : null
         }
-        deltaLabel={"VS PRIOR 30 DAYS"}
+        deltaLabel={"VS Prior 30 Days"}
         loading={requestsFetching}
       />
       <MetricCard
@@ -120,7 +120,7 @@ export const MetricCards = () => {
               )
             : null
         }
-        deltaLabel={"VS PRIOR 30 DAYS"}
+        deltaLabel={"VS Prior 30 Days"}
         loading={usageFetching}
       />
       {/* <MetricCard
@@ -143,7 +143,7 @@ export const MetricCards = () => {
             ? getDelta(priorScheduledPublishes, scheduledPublishes)
             : null
         }
-        deltaLabel={"VS PRIOR 30 DAYS"}
+        deltaLabel={"VS Prior 30 Days"}
         loading={auditFetching}
       /> */}
       <MetricCard
@@ -163,7 +163,7 @@ export const MetricCards = () => {
           </Box>
         }
         delta={is2MonthsOld ? getDelta(priorPublishes, publishes) : null}
-        deltaLabel={"VS PRIOR 30 DAYS"}
+        deltaLabel={"VS Prior 30 Days"}
         loading={auditFetching}
       />
     </Box>
