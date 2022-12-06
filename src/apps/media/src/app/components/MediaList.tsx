@@ -236,6 +236,360 @@ const NameColumn = ({ params }: any) => {
           <NameTooltip />
         </Box>
       );
+    case "ppt":
+    case "pptx":
+    case "pptm":
+      return (
+        <Box sx={{ display: "flex" }}>
+          <Box
+            sx={{
+              height: "52px",
+              width: "52px",
+              backgroundColor: "red.50",
+              position: "relative",
+              boxSizing: "border-box",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <CardMedia
+              component="img"
+              data-src={pptImg}
+              image={pptImg}
+              loading="lazy"
+              sx={{
+                m: "auto",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+              }}
+            />
+          </Box>
+          <NameTooltip />
+        </Box>
+      );
+    case "aac":
+    case "aiff":
+    case "mid":
+    case "mp3":
+    case "wav":
+      return (
+        <Box sx={{ display: "flex" }}>
+          <Box
+            sx={{
+              height: "52px",
+              width: "52px",
+              backgroundColor: "purple.100",
+              position: "relative",
+              boxSizing: "border-box",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <CardMedia
+              component="img"
+              data-src={mpImg}
+              image={mpImg}
+              loading="lazy"
+              sx={{
+                m: "auto",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+              }}
+            />
+          </Box>
+          <NameTooltip />
+        </Box>
+      );
+    case "mp4":
+    case "mov":
+    case "avi":
+    case "wmv":
+    case "mkv":
+    case "webm":
+    case "flv":
+    case "f4v":
+    case "swf":
+    case "avchd":
+    case "html5":
+      return (
+        <Box sx={{ display: "flex" }}>
+          <Box
+            sx={{
+              height: "52px",
+              width: "52px",
+              backgroundColor: "#000",
+              position: "relative",
+              boxSizing: "border-box",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <CardMedia
+              component="video"
+              controls={false}
+              src={params.row.thumbnail}
+              sx={{
+                backgroundColor: "#000",
+                display: "flex",
+                alignItems: "center",
+                flexWrap: "wrap",
+                py: 1,
+              }}
+            />
+            <PlayCircleIcon
+              fontSize="small"
+              sx={{
+                top: 0,
+                bottom: 0,
+                right: 0,
+                left: 0,
+                m: "auto",
+                color: "#FFF",
+                position: "absolute",
+                textAlign: "center",
+              }}
+            />
+          </Box>
+          <NameTooltip />
+        </Box>
+      );
+    case "iso":
+    case "rar":
+    case "tgz":
+    case "zip":
+      return (
+        <Box sx={{ display: "flex" }}>
+          <Box
+            sx={{
+              height: "52px",
+              width: "52px",
+              backgroundColor: "grey.100",
+              position: "relative",
+              boxSizing: "border-box",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <CardMedia
+              component="img"
+              data-src={zipImg}
+              image={zipImg}
+              loading="lazy"
+              sx={{
+                m: "auto",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+              }}
+            />
+          </Box>
+          <NameTooltip />
+        </Box>
+      );
+    case "ai":
+    case "bmp":
+    case "eps":
+    case "psd":
+    case "tiff":
+    case "tif":
+      return (
+        <Box sx={{ display: "flex" }}>
+          <Box
+            sx={{
+              height: "52px",
+              width: "52px",
+              backgroundColor: "grey.100",
+              position: "relative",
+              boxSizing: "border-box",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <CardMedia
+              component="img"
+              data-src={defaultImg}
+              image={defaultImg}
+              loading="lazy"
+              sx={{
+                m: "auto",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+              }}
+            />
+          </Box>
+          <NameTooltip />
+        </Box>
+      );
+    case "numbers":
+      return (
+        <Box sx={{ display: "flex" }}>
+          <Box
+            sx={{
+              height: "52px",
+              width: "52px",
+              backgroundColor: "green.100",
+              position: "relative",
+              boxSizing: "border-box",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <CardMedia
+              component="img"
+              data-src={numberImg}
+              image={numberImg}
+              loading="lazy"
+              sx={{
+                m: "auto",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+              }}
+            />
+          </Box>
+          <NameTooltip />
+        </Box>
+      );
+    case "js":
+      return (
+        <Box sx={{ display: "flex" }}>
+          <Box
+            sx={{
+              height: "52px",
+              width: "52px",
+              backgroundColor: "blue.50",
+              position: "relative",
+              boxSizing: "border-box",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <CardMedia
+              component="img"
+              data-src={jsIcon}
+              image={jsIcon}
+              loading="lazy"
+              sx={{
+                m: "auto",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+              }}
+            />
+          </Box>
+          <NameTooltip />
+        </Box>
+      );
+    case "css":
+      return (
+        <Box sx={{ display: "flex" }}>
+          <Box
+            sx={{
+              height: "52px",
+              width: "52px",
+              backgroundColor: "blue.50",
+              position: "relative",
+              boxSizing: "border-box",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <CardMedia
+              component="img"
+              data-src={cssIcon}
+              image={cssIcon}
+              loading="lazy"
+              sx={{
+                m: "auto",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+              }}
+            />
+          </Box>
+          <NameTooltip />
+        </Box>
+      );
+    case "html":
+      return (
+        <Box sx={{ display: "flex" }}>
+          <Box
+            sx={{
+              height: "52px",
+              width: "52px",
+              backgroundColor: "blue.50",
+              position: "relative",
+              boxSizing: "border-box",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <CardMedia
+              component="img"
+              data-src={htmlIcon}
+              image={htmlIcon}
+              loading="lazy"
+              sx={{
+                m: "auto",
+                justifyContent: "center",
+                width: "24px",
+                height: "24px",
+              }}
+            />
+          </Box>
+          <NameTooltip />
+        </Box>
+      );
+    case "otf":
+    case "ttf":
+    case "woff":
+    case "woff2":
+      return (
+        <Box sx={{ display: "flex" }}>
+          <Box
+            sx={{
+              height: "52px",
+              width: "52px",
+              backgroundColor: "blue.50",
+              position: "relative",
+              boxSizing: "border-box",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <FontDownloadRoundedIcon
+              fontSize="small"
+              sx={{ color: "grey.600", m: "auto" }}
+            />
+          </Box>
+          <NameTooltip />
+        </Box>
+      );
+    case "No Extension":
+      return (
+        <Box sx={{ display: "flex" }}>
+          <Box
+            sx={{
+              height: "52px",
+              width: "52px",
+              backgroundColor: "blue.50",
+              position: "relative",
+              boxSizing: "border-box",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <ReportGmailerrorredIcon
+              fontSize="small"
+              sx={{ color: "red.600", m: "auto" }}
+            />
+          </Box>
+          <NameTooltip />
+        </Box>
+      );
     default:
       return (
         <Box sx={{ display: "flex" }}>
