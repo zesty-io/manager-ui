@@ -43,7 +43,7 @@ export const HomeApp = () => {
   const hasPublishedHomepage = !!contentItemPublishings?.length;
   const hasCreatedNewModel = models?.some(
     (model) =>
-      moment(model.createdAt).diff(instanceCreatedAtDate, "minutes") >= 15
+      moment(model.createdAt).diff(instanceCreatedAtDate, "minutes") >= 10
   );
   const isFetching =
     isModelsFetching ||
