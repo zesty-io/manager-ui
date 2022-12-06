@@ -1,5 +1,3 @@
-MediaList;
-
 import { FC, useState, useMemo, useRef, useEffect } from "react";
 import {
   Box,

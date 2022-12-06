@@ -76,6 +76,8 @@ export const fileTypeToColor = (extension: string) => {
     case "avchd":
     case "html5":
       return "purple";
+    case "folder":
+      return "deepPurple";
     default:
       return "grey";
   }
