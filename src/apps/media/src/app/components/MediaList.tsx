@@ -101,7 +101,7 @@ const ActionColumn = ({ params }: any) => {
     <IconButton
       onClick={(evt: any) => {
         evt.stopPropagation();
-        handleCopyClick(params.row.thumbnail);
+        handleCopyClick(params.row.thumbnail || params.row.id);
       }}
     >
       {isCopied ? (
