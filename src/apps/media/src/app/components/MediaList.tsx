@@ -6,6 +6,7 @@ import {
   Chip,
   CardMedia,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import {
@@ -72,7 +73,9 @@ const FilenameColumn = ({ params }: any) => {
         />
       </Box>
       <Box sx={{ display: "flex", alignItems: "center", ml: 3 }}>
-        <Typography variant="body2">{params.row.filename}</Typography>
+        <Tooltip title={params.row.filename}>
+          <Typography variant="body2">{params.row.filename}</Typography>
+        </Tooltip>
       </Box>
     </Box>
   );
