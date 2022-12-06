@@ -88,8 +88,8 @@ export const SearchMedia = ({ lockedToGroupId, addImagesCallback }: Props) => {
   const sortedGroups = useMemo(() => {
     if (!filteredGroups) return filteredGroups;
     // don't show groups when filtering by filetypes or dates
-    if (!Boolean(filetypeFilter) && filetypeFilter !== "Folder") return [];
-    if (!Boolean(dateRangeFilter)) return [];
+    if (Boolean(filetypeFilter) && filetypeFilter !== "Folder") return [];
+    if (Boolean(dateRangeFilter)) return [];
     switch (sortOrder) {
       case "alphaAsc":
         return [...filteredGroups].sort((a, b) => {
