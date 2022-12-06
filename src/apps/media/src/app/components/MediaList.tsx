@@ -138,6 +138,8 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
         name: file.filename,
         type: fileExtension(file.filename),
       })) || [];
+    const test = [...newGroups, ...newFiles];
+    console.log("tableItems", test);
     setItems([...newGroups, ...newFiles]);
   }, [files, groups]);
 
@@ -228,12 +230,16 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
           disableColumnFilter
           disableColumnMenu
           onRowClick={(params: any) => {
-            const locationParams = new URLSearchParams(location.search);
-            locationParams.set("fileId", params.row.id);
-            history.replace({
-              pathname: location.pathname,
-              search: locationParams.toString(),
-            });
+            if (params.row.type === "folder") {
+              history.replace(`/media/folder/${params.row.id}`);
+            } else {
+              const locationParams = new URLSearchParams(location.search);
+              locationParams.set("fileId", params.row.id);
+              history.replace({
+                pathname: location.pathname,
+                search: locationParams.toString(),
+              });
+            }
           }}
         />
       )}
