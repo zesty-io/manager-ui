@@ -39,6 +39,7 @@ export const MediaApp = ({
   const dispatch = useDispatch();
   const [isFileModalError, setIsFileModalError] = useState<boolean>(false);
   const fileId = new URLSearchParams(location.search).get("fileId");
+  const [files, setFiles] = useState([]);
 
   useEffect(() => {
     if (lockedToGroupId) {
@@ -98,6 +99,7 @@ export const MediaApp = ({
                 <FileModal
                   fileId={fileId}
                   onSetIsFileModalError={setIsFileModalError}
+                  files={files}
                 />
               );
             } else {
@@ -129,7 +131,12 @@ export const MediaApp = ({
                   </Box>
                 );
               } else {
-                return <AllMedia addImagesCallback={addImagesCallback} />;
+                return (
+                  <AllMedia
+                    addImagesCallback={addImagesCallback}
+                    setFilesCallback={(files) => setFiles(files)}
+                  />
+                );
               }
             }}
           />

@@ -25,9 +25,10 @@ import { State } from "../../../../../shell/store/media-revamp";
 
 interface Props {
   addImagesCallback?: (selectedFiles: File[]) => void;
+  setFilesCallback?: (files: File[]) => void;
 }
 
-export const AllMedia = ({ addImagesCallback }: Props) => {
+export const AllMedia = ({ addImagesCallback, setFilesCallback }: Props) => {
   const instanceId = useSelector((state: AppState) => state.instance.ID);
   const ecoId = useSelector((state: AppState) => state.instance.ecoID);
   const sortOrder = useSelector(
@@ -101,6 +102,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
       return sortedFiles;
     }
   }, [sortedFiles, filetypeFilter, dateRangeFilter]);
+  if (setFilesCallback) setFilesCallback(files);
 
   return (
     <Box
