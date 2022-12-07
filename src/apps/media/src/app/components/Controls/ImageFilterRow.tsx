@@ -5,6 +5,8 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import Typography from "@mui/material/Typography";
 import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import IconButton from "@mui/material/IconButton";
 
 import ChevronRightOutlined from "@mui/icons-material/ChevronRightOutlined";
 import ImageRounded from "@mui/icons-material/ImageRounded";
@@ -40,10 +42,10 @@ export const ImageFilterRow: FC<ImageFilterRow> = ({ onClose }) => {
         <ListItemIcon>
           <ImageRounded fontSize="small" />
         </ListItemIcon>
-        <Typography variant="body1">Images</Typography>
-        <ListItemIcon>
+        <ListItemText>Images</ListItemText>
+        <IconButton sx={{ p: 0 }}>
           <ChevronRightOutlined fontSize="small" />
-        </ListItemIcon>
+        </IconButton>
       </MenuItem>
       <Menu
         open={open}
