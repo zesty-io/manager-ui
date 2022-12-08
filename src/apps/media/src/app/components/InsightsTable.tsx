@@ -125,7 +125,6 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
     {
       field: "filename",
       headerName: "Name",
-      sortable: false,
       flex: 1,
       renderCell: (params: any) => <FilenameColumn params={params} />,
     },
@@ -133,13 +132,11 @@ export const InsightsTable: FC<Props> = ({ files, loading }) => {
       field: "Requests",
       headerName: "Requests",
       width: 140,
-      sortable: false,
     },
     {
       field: "ThroughtputGB",
       headerName: "Bandwidth",
       width: 140,
-      sortable: false,
       renderCell: (params: any) => {
         return (
           <Typography>
