@@ -15,7 +15,7 @@ export function GlobalTopbar() {
       alignItems="center"
       sx={{
         backgroundColor: theme.palette.grey[100],
-        height: 40,
+        height: "40px",
       }}
     >
       <Box
