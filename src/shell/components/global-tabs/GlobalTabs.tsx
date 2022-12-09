@@ -139,8 +139,6 @@ export default memo(function GlobalTabs() {
         component="nav"
         direction="row"
         sx={{
-          height: "46px",
-          padding: "8px 0 0 0",
           display: "grid",
           gridTemplateColumns: "1fr 80px",
         }}

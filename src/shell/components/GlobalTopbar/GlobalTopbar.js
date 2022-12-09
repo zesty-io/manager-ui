@@ -9,10 +9,9 @@ import Box from "@mui/material/Box";
 export function GlobalTopbar() {
   return (
     <Stack
-      container
       direction="row"
       justifyContent="flex-start"
-      alignItems="center"
+      alignItems="flex-end"
       sx={{
         backgroundColor: theme.palette.grey[100],
         height: "40px",
@@ -33,7 +32,11 @@ export function GlobalTopbar() {
       >
         <GlobalTabs />
       </Box>
-      <Box mr={1} ml={1}>
+      <Box
+        sx={{
+          margin: "11px 8px 5px 8px",
+        }}
+      >
         <GlobalNotifications />
       </Box>
     </Stack>
