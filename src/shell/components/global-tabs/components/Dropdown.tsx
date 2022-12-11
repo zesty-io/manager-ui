@@ -1,7 +1,7 @@
 import { useState, FC } from "react";
 import { Link as Link } from "react-router-dom";
 
-import { ConfirmDialog } from "@zesty-io/material";
+import { ConfirmDialog, theme } from "@zesty-io/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PinIcon from "@mui/icons-material/PushPin";
 import SearchIcon from "@mui/icons-material/Search";
@@ -72,11 +72,11 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
             flexDirection: "row",
             width: "100%",
             textTransform: "none",
-            padding: "12px 12px 12px",
             gap: "8px",
-            borderRadius: "12px 12px 0px 0px",
+            borderRadius: "8px 8px 0px 0px",
+            backgroundColor: theme.palette.grey[100],
             "&:hover": {
-              backgroundColor: "grey.800",
+              backgroundColor: theme.palette.grey[50],
             },
             /*
              Needed to prevent button from outgrowing parent
@@ -84,12 +84,23 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
              creating an unsightly gap
             */
             lineHeight: "inherit",
+            marginTop: "2px",
           }}
         >
-          <Box component="span" sx={{ color: "white" }}>
-            <Typography variant="caption">More</Typography>
+          <Box
+            component="span"
+            sx={{
+              color: theme.palette.text.secondary,
+            }}
+          >
+            <Typography variant="caption" sx={{ fontWeight: 600 }}>
+              More
+            </Typography>
           </Box>
-          <ArrowDropDownIcon sx={{ color: "grey.400" }} fontSize="small" />
+          <ArrowDropDownIcon
+            sx={{ color: theme.palette.action.active }}
+            fontSize="small"
+          />
         </Button>
         <Menu
           id="basic-menu"

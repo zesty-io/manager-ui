@@ -59,7 +59,7 @@ const BaseTab: FC<BaseTab> = ({
   const [styles, setStyles] = useState({
     backgroundColor: theme.palette.grey[100],
     fontColor: theme.palette.text.secondary,
-    iconColor: "#10182866",
+    iconColor: theme.palette.action.active,
     activeBorderColor: "",
   });
 
@@ -76,7 +76,7 @@ const BaseTab: FC<BaseTab> = ({
         setStyles({
           backgroundColor: "white",
           fontColor: theme.palette.text.primary,
-          iconColor: "#10182866",
+          iconColor: theme.palette.action.active,
           activeBorderColor: "white",
         });
       }
