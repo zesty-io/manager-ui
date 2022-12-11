@@ -60,7 +60,6 @@ const BaseTab: FC<BaseTab> = ({
     backgroundColor: theme.palette.grey[100],
     fontColor: theme.palette.text.secondary,
     iconColor: theme.palette.action.active,
-    activeBorderColor: "",
   });
 
   useEffect(() => {
@@ -70,14 +69,12 @@ const BaseTab: FC<BaseTab> = ({
           backgroundColor: "#1E1E1E",
           fontColor: "white",
           iconColor: theme.palette.grey[500],
-          activeBorderColor: "#1E1E1E",
         });
       } else {
         setStyles({
           backgroundColor: "white",
           fontColor: theme.palette.text.primary,
           iconColor: theme.palette.action.active,
-          activeBorderColor: "white",
         });
       }
     }
@@ -113,10 +110,10 @@ const BaseTab: FC<BaseTab> = ({
         sx={{
           height: "24px",
           boxSizing: "border-box",
-          borderRight: isActive ? "none" : "1px solid",
-          borderColor: isBorderHidden ? "white" : theme.palette.grey[300],
+          borderRight: "1px solid",
+          borderColor: isBorderHidden ? "transparent" : theme.palette.grey[300],
           "&:hover": {
-            borderColor: "white",
+            borderColor: theme.palette.grey[50],
           },
         }}
       >
