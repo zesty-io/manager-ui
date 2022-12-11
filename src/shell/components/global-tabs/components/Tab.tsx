@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState, useLayoutEffect } from "react";
 import { useLocation, Link as Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -38,7 +38,6 @@ type BaseTab = {
   variant: "outline" | "fill";
   onClick: () => void;
   sx?: SxProps;
-  linkProps?: SxProps;
   isDarkMode?: boolean;
   isActive?: boolean;
   isAdjacentTabHovered?: boolean;
@@ -51,15 +50,43 @@ const BaseTab: FC<BaseTab> = ({
   variant,
   onClick,
   sx,
-  linkProps,
   isDarkMode = false,
   isActive = false,
   isAdjacentTabHovered = false,
   onMouseEnter,
   onMouseLeave,
 }) => {
+  const [styles, setStyles] = useState({
+    backgroundColor: theme.palette.grey[100],
+    fontColor: theme.palette.text.secondary,
+    iconColor: "#10182866",
+    activeBorderColor: "",
+  });
+
+  useEffect(() => {
+    if (isActive) {
+      if (isDarkMode) {
+        setStyles({
+          backgroundColor: "#1E1E1E",
+          fontColor: "white",
+          iconColor: theme.palette.grey[500],
+          activeBorderColor: "#1E1E1E",
+        });
+      } else {
+        setStyles({
+          backgroundColor: "white",
+          fontColor: theme.palette.text.primary,
+          iconColor: "#10182866",
+          activeBorderColor: "white",
+        });
+      }
+    }
+  }, [isDarkMode, isActive]);
+
   const Pin = variant === "outline" ? OutlinedPinIcon : PinIcon;
-  const noBorder = isActive || isAdjacentTabHovered;
+  // This removes the right border if the tab is to the left of a hovered tab
+  // or is an active tab
+  const isBorderHidden = isActive || isAdjacentTabHovered;
 
   return (
     <Box
@@ -68,7 +95,7 @@ const BaseTab: FC<BaseTab> = ({
       sx={{
         overflow: "hidden",
         width: `${tabWidth}px`,
-        backgroundColor: theme.palette.grey[100],
+        backgroundColor: styles.backgroundColor,
         boxSizing: "border-box",
         alignItems: "center",
         height: "34px",
@@ -86,8 +113,8 @@ const BaseTab: FC<BaseTab> = ({
         sx={{
           height: "24px",
           boxSizing: "border-box",
-          borderRight: "1px solid",
-          borderColor: noBorder ? "white" : theme.palette.grey[300],
+          borderRight: isActive ? "none" : "1px solid",
+          borderColor: isBorderHidden ? "white" : theme.palette.grey[300],
           "&:hover": {
             borderColor: "white",
           },
@@ -95,7 +122,6 @@ const BaseTab: FC<BaseTab> = ({
       >
         <Box
           component="span"
-          color="#10182866"
           sx={{
             display: "flex",
             alignItems: "center",
@@ -103,6 +129,7 @@ const BaseTab: FC<BaseTab> = ({
             width: "12px",
             height: "12px",
             marginRight: "10px",
+            color: styles.iconColor,
           }}
         >
           {tab.icon && (
@@ -114,14 +141,13 @@ const BaseTab: FC<BaseTab> = ({
           to={tab.pathname + tab.search}
           variant={theme.typography.body3}
           sx={{
-            color: theme.palette.text.primary,
+            color: styles.fontColor,
             textDecoration: "none",
             flex: "1",
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
             fontWeight: 600,
-            ...linkProps,
           }}
         >
           {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
@@ -143,7 +169,7 @@ const BaseTab: FC<BaseTab> = ({
               width: "16px",
               height: "16px",
               transform: "rotate(45deg)",
-              color: "grey.400",
+              color: styles.iconColor,
             }}
           />
         </Box>
@@ -232,9 +258,6 @@ export const InactiveTab: FC<InactiveTab> = ({
         },
         ...sx,
       }}
-      linkProps={{
-        color: theme.palette.text.secondary,
-      }}
     />
   );
 };
@@ -270,12 +293,14 @@ export const ActiveTab: FC<ActiveTab> = ({ tabWidth }) => {
 
   const isPinned =
     pinnedTabs.findIndex((t: Tab) => tabLocationEquality(t, activeTab)) >= 0;
+
   return (
     <BaseTab
       isActive
       variant={isPinned ? "fill" : "outline"}
       tabWidth={tabWidth}
       tab={activeTab}
+      isDarkMode={activeTab.app === "Code"}
       onClick={() => {
         // force unpin because we don't want to show the modal on the active tab
         if (isPinned) {
@@ -286,7 +311,6 @@ export const ActiveTab: FC<ActiveTab> = ({ tabWidth }) => {
       }}
       sx={{
         borderRadius: "8px 8px 0px 0px",
-        backgroundColor: "white",
         border: "none",
         zIndex,
       }}
