@@ -47,7 +47,7 @@ describe("Media uploads", () => {
     cy.get('button:enabled:contains("Delete")').click();
   });
 
-  it.only("uploads a file to a folder", () => {
+  it("uploads a file to a folder", () => {
     cy.visit("/media/folder/2-eaaaca5-p1nggr");
     cy.intercept("*instance*").as("instance");
     cy.intercept("**/groups").as("groups");
@@ -76,7 +76,7 @@ describe("Media uploads", () => {
       );
     // Wait for upload to complete
     cy.intercept("POST", "/file*").as("upload");
-    cy.wait("@upload", { timeout: 30_000 });
+    cy.wait("@upload", { timeout: 40_000 });
     // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
     // Assert file exists
