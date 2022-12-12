@@ -6,13 +6,9 @@ import { DateRangeFilter } from "./DateFilter";
 import { ToggleViews } from "./ToggleViews";
 
 export type ControlsProps = {
-  showDateFilter?: boolean;
   showFilters?: boolean;
 };
-export const Controls: FC<ControlsProps> = ({
-  showDateFilter = false,
-  showFilters = true,
-}) => {
+export const Controls: FC<ControlsProps> = ({ showFilters = true }) => {
   return (
     <Box
       sx={{

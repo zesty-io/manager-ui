@@ -123,7 +123,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
         </Box>
       ) : (
         <>
-          <Controls showDateFilter={true} />
+          <Controls />
           {(filetypeFilter || dateRangeFilter) && files.length > 0 && (
             <Typography
               color="text.secondary"
