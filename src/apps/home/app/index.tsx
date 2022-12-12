@@ -111,7 +111,7 @@ export const HomeApp = () => {
                   height: "fit-content",
                 }}
               >
-                <ResourcesCard isMature={false} />
+                <ResourcesCard isMature={showMature} />
               </Box>
             </Box>
           </Box>
