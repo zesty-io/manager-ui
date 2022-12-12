@@ -278,7 +278,10 @@ describe("Content Specs", () => {
       // cy.get("#12-269a28-1bkm34 input").clear();
 
       // Adds new relationship
-      cy.get("#12-269a28-1bkm34 .MuiAutocomplete-popupIndicator").click();
+      cy.waitOn("/v1/content/models/6-e3d0e0-965qp6/items*", () => {
+        cy.get("#12-269a28-1bkm34 .MuiAutocomplete-popupIndicator").click();
+      });
+
       cy.get("[role=listbox] [data-option-index=1]").click({ force: true });
 
       // Removes new relationship

@@ -644,6 +644,7 @@ export default function Field({
         return dispatch(
           fetchItems(relatedModelZUID, {
             lang: getSelectedLang(allLanguages, langID),
+            limit: 1500,
           })
         );
       }, [allLanguages.length, relatedModelZUID, langID]);
@@ -769,6 +770,7 @@ export default function Field({
           dispatch(
             fetchItems(relatedModelZUID, {
               lang: getSelectedLang(allLanguages, langID),
+              limit: 1500,
             })
           ),
         ]);

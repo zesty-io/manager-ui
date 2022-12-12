@@ -30,10 +30,7 @@ describe("Media uploads", () => {
       }
     );
     // Wait for upload to complete
-    cy.intercept(
-      "POST",
-      "https://media-storage.api.dev.zesty.io/upload/gcp/*"
-    ).as("upload");
+    cy.intercept("POST", "/file*").as("upload");
     cy.wait("@upload", { timeout: 20_000 });
     // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
@@ -49,7 +46,7 @@ describe("Media uploads", () => {
   });
 
   it("uploads a file to a folder", () => {
-    cy.visit("/media/2-eaaaca5-p1nggr");
+    cy.visit("/media/folder/2-eaaaca5-p1nggr");
     cy.intercept("*instance*").as("instance");
     cy.intercept("*groups*").as("groups");
     cy.intercept("*bins*").as("bins");
@@ -67,7 +64,7 @@ describe("Media uploads", () => {
         {
           contents: Cypress.Buffer.from(CIRCLE_SVG),
           fileName,
-          mimeType: "text/plain",
+          mimeType: "image/svg+xml",
           lastModified: Date.now(),
         },
         {
@@ -76,10 +73,7 @@ describe("Media uploads", () => {
         }
       );
     // Wait for upload to complete
-    cy.intercept(
-      "POST",
-      "https://media-storage.api.dev.zesty.io/upload/gcp/*"
-    ).as("upload");
+    cy.intercept("POST", "/file*").as("upload");
     cy.wait("@upload", { timeout: 20_000 });
     // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
@@ -95,7 +89,7 @@ describe("Media uploads", () => {
   });
 
   it("uploads a file to a bin", () => {
-    cy.visit("/media/1-6c9618c-r26pt");
+    cy.visit("/media/folder/1-6c9618c-r26pt");
     cy.intercept("*instance*").as("instance");
     cy.intercept("*groups*").as("groups");
     cy.intercept("*bins*").as("bins");
@@ -113,7 +107,7 @@ describe("Media uploads", () => {
         {
           contents: Cypress.Buffer.from(CIRCLE_SVG),
           fileName,
-          mimeType: "text/plain",
+          mimeType: "image/svg+xml",
           lastModified: Date.now(),
         },
         {
@@ -122,10 +116,7 @@ describe("Media uploads", () => {
         }
       );
     // Wait for upload to complete
-    cy.intercept(
-      "POST",
-      "https://media-storage.api.dev.zesty.io/upload/gcp/*"
-    ).as("upload");
+    cy.intercept("POST", "/file*").as("upload");
     cy.wait("@upload", { timeout: 20_000 });
     // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
@@ -141,7 +132,7 @@ describe("Media uploads", () => {
   });
 
   it("uploads a file via drag 'n drop", () => {
-    cy.visit("/media/2-eaaaca5-p1nggr");
+    cy.visit("/media/folder/2-eaaaca5-p1nggr");
     cy.intercept("*instance*").as("instance");
     cy.intercept("*groups*").as("groups");
     cy.intercept("*bins*").as("bins");
@@ -159,7 +150,7 @@ describe("Media uploads", () => {
         {
           contents: Cypress.Buffer.from(CIRCLE_SVG),
           fileName,
-          mimeType: "text/plain",
+          mimeType: "image/svg+xml",
           lastModified: Date.now(),
         },
         {
@@ -170,10 +161,7 @@ describe("Media uploads", () => {
         }
       );
     // Wait for upload to complete
-    cy.intercept(
-      "POST",
-      "https://media-storage.api.dev.zesty.io/upload/gcp/*"
-    ).as("upload");
+    cy.intercept("POST", "/file*").as("upload");
     cy.wait("@upload", { timeout: 20_000 });
     // Click "Done" button to close upload modal
     cy.get('button:contains("Done")').click();
@@ -189,7 +177,7 @@ describe("Media uploads", () => {
   });
 
   it.skip("displays upload message when dragging a file into the grid", () => {
-    cy.visit("/media/2-eaaaca5-p1nggr");
+    cy.visit("/media/folder/2-eaaaca5-p1nggr");
     cy.intercept("*instance*").as("instance");
     cy.intercept("*groups*").as("groups");
     cy.intercept("*bins*").as("bins");
