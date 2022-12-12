@@ -47,7 +47,7 @@ describe("Media uploads", () => {
     cy.get('button:enabled:contains("Delete")').click();
   });
 
-  it("uploads a file to a folder", () => {
+  it.skip("uploads a file to a folder", () => {
     cy.visit("/media/folder/2-eaaaca5-p1nggr");
     cy.intercept("*instance*").as("instance");
     cy.intercept("**/groups").as("groups");
@@ -133,7 +133,7 @@ describe("Media uploads", () => {
     cy.get('button:enabled:contains("Delete")').click();
   });
 
-  it("uploads a file via drag 'n drop", () => {
+  it.skip("uploads a file via drag 'n drop", () => {
     cy.visit("/media/folder/2-eaaaca5-p1nggr");
     cy.intercept("*instance*").as("instance");
     cy.intercept("**/groups").as("groups");
