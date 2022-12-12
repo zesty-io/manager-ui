@@ -14,9 +14,10 @@ describe("Favicon upload image", () => {
     cy.wait(1000);
     //figure remove button
     cy.get("figure button").click();
-    cy.wait(1000);
     //figure add button
-    cy.get("figure button").click({ force: true });
+    cy.waitOn("*files*", () => {
+      cy.get("figure button").click({ force: true });
+    });
     cy.get(".MuiTreeView-root").first().contains("favicon").click();
     cy.get("[data-cy=3-adda244-g1a3j]").click();
     cy.contains("Done").click();

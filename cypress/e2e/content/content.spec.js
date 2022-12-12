@@ -292,7 +292,7 @@ describe("Content Specs", () => {
     it("One to one Field", () => {
       // allow relationships to load
       cy.intercept(
-        "/v1/content/models/6-675028-84dq4s/items?lang=en-US&limit=100&page=1"
+        "/v1/content/models/6-675028-84dq4s/items?lang=en-US&limit=1500&page=1"
       ).as("loadRelatedItems");
       cy.get("#12-edee00-6zb866 input").clear();
       cy.wait("@loadRelatedItems");

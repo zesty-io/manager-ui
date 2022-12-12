@@ -31,10 +31,7 @@ describe("Media Files", () => {
       }
     );
     // Wait for upload to complete
-    cy.intercept(
-      "POST",
-      "https://media-storage.api.dev.zesty.io/upload/gcp/*"
-    ).as("upload");
+    cy.intercept("POST", "/file*").as("upload");
     cy.wait("@upload", { timeout: 10_000 });
     // // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
