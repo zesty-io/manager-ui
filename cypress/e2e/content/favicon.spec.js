@@ -6,17 +6,9 @@ describe("Favicon upload image", () => {
 
   it("update favicon image", () => {
     cy.get("[data-cy=Favicon]").click();
-    cy.get("figure").then((figure) => {
-      if (figure.find("img").length > 0) {
-        cy.get("figure img").siblings("button").click();
-      }
-    });
-    cy.wait(1000);
-    //figure remove button
-    cy.get("figure button").click();
-    //figure add button
-    cy.waitOn("**/files", () => {
-      cy.get("figure button").click({ force: true });
+
+    cy.waitOn("**/groups", () => {
+      cy.get("figure button").click();
     });
     cy.waitOn("**/group/**", () => {
       cy.get(".MuiTreeView-root").first().contains("favicon").click();
