@@ -11,7 +11,7 @@ let currentFileId = "";
 
 describe("Media Files", () => {
   before(() => {
-    cy.waitOn("*files*", () => {
+    cy.waitOn("**files**", () => {
       cy.visit("/media");
     });
   });

@@ -15,10 +15,12 @@ describe("Favicon upload image", () => {
     //figure remove button
     cy.get("figure button").click();
     //figure add button
-    cy.waitOn("*files*", () => {
+    cy.waitOn("**files**", () => {
       cy.get("figure button").click({ force: true });
     });
-    cy.get(".MuiTreeView-root").first().contains("favicon").click();
+    cy.waitOn("**/group/**", () => {
+      cy.get(".MuiTreeView-root").first().contains("favicon").click();
+    });
     cy.get("[data-cy=3-adda244-g1a3j]").click();
     cy.contains("Done").click();
     cy.get("[data-cy=faviconSave]").click();
