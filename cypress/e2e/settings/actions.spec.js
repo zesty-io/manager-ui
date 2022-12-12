@@ -15,7 +15,7 @@ describe("Settings Actions", () => {
     cy.contains(SAVED_MESSAGE).should("exist");
   });
 
-  it("Typography", () => {
+  it.only("Typography", () => {
     cy.get("[data-cy=SettingsNav]").contains("Typography").click();
     cy.get("[data-cy=SubApp] .MuiSelect-select").first().click();
     cy.get(".MuiList-root li[aria-selected=false]").last().click();

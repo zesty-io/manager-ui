@@ -11,25 +11,27 @@ let currentFileId = "";
 
 describe("Media Files", () => {
   before(() => {
-    cy.waitOn("*groups*", () => {
+    cy.waitOn("*files*", () => {
       cy.visit("/media");
     });
   });
 
   it("Uploads a file to All Media", () => {
     const fileName = getRandomFileName();
-    cy.get("input[type=file]").selectFile(
-      {
-        contents: Cypress.Buffer.from(CIRCLE_SVG),
-        fileName,
-        mimeType: "image/svg+xml",
-        lastModified: Date.now(),
-      },
-      {
-        // force:true is valid because we use hidden file inputs to do uploads
-        force: true,
-      }
-    );
+    cy.get("input[type=file]")
+      .first()
+      .selectFile(
+        {
+          contents: Cypress.Buffer.from(CIRCLE_SVG),
+          fileName,
+          mimeType: "image/svg+xml",
+          lastModified: Date.now(),
+        },
+        {
+          // force:true is valid because we use hidden file inputs to do uploads
+          force: true,
+        }
+      );
     // Wait for upload to complete
     cy.intercept("POST", "/file*").as("upload");
     cy.wait("@upload", { timeout: 10_000 });
