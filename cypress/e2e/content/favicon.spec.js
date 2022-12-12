@@ -15,7 +15,7 @@ describe("Favicon upload image", () => {
     //figure remove button
     cy.get("figure button").click();
     //figure add button
-    cy.waitOn("**files**", () => {
+    cy.waitOn("**/files", () => {
       cy.get("figure button").click({ force: true });
     });
     cy.waitOn("**/group/**", () => {

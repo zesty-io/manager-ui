@@ -33,7 +33,7 @@ describe("Media uploads", () => {
       );
     // Wait for upload to complete
     cy.intercept("POST", "/file*").as("upload");
-    cy.wait("@upload", { timeout: 20_000 });
+    cy.wait("@upload", { timeout: 30_000 });
     // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
     // Assert file exists
@@ -76,7 +76,7 @@ describe("Media uploads", () => {
       );
     // Wait for upload to complete
     cy.intercept("POST", "/file*").as("upload");
-    cy.wait("@upload", { timeout: 20_000 });
+    cy.wait("@upload", { timeout: 30_000 });
     // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
     // Assert file exists
@@ -119,7 +119,7 @@ describe("Media uploads", () => {
       );
     // Wait for upload to complete
     cy.intercept("POST", "/file*").as("upload");
-    cy.wait("@upload", { timeout: 20_000 });
+    cy.wait("@upload", { timeout: 30_000 });
     // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
     // Assert file exists
@@ -164,7 +164,7 @@ describe("Media uploads", () => {
       );
     // Wait for upload to complete
     cy.intercept("POST", "/file*").as("upload");
-    cy.wait("@upload", { timeout: 20_000 });
+    cy.wait("@upload", { timeout: 30_000 });
     // Click "Done" button to close upload modal
     cy.get('button:contains("Done")').click();
     // Assert file exists

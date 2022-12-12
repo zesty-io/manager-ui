@@ -11,7 +11,7 @@ let currentFileId = "";
 
 describe("Media Files", () => {
   before(() => {
-    cy.waitOn("**files**", () => {
+    cy.waitOn("**/files", () => {
       cy.visit("/media");
     });
   });
@@ -67,21 +67,15 @@ describe("Media Files", () => {
 
     // type inside "New File Name" textfield
     cy.contains("New File Name").next().clear().type("CYPRESS TEST NEW FILE");
-    cy.contains("Update").click();
 
     // update endpoint
-    cy.waitOn(
-      {
-        method: "PATCH",
-        pathname: `/file/${currentFileId}`,
-      },
-      () => {
-        // check if the textfield has the updated value
-        cy.get(".MuiTypography-body1")
-          .contains("CYPRESS TEST NEW FILE")
-          .should("exist");
-      }
-    );
+    cy.waitOn(`**/file/${currentFileId}`, () => {
+      // check if the textfield has the updated value
+      cy.contains("Update").click();
+    });
+    cy.get(".MuiTypography-body1")
+      .contains("CYPRESS TEST NEW FILE")
+      .should("exist");
   });
 
   it("Updates title", () => {
