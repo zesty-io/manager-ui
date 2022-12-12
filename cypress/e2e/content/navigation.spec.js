@@ -1,7 +1,7 @@
 describe("Navigation through content editor", () => {
   before(() => {
     cy.waitOn("/v1/env/nav", () => {
-      cy.visit("/");
+      cy.visit("/content");
     });
   });
 
