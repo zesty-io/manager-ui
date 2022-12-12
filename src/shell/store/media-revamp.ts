@@ -87,8 +87,7 @@ export type Filetype =
   | "FLV"
   | "MPEG";
 
-export type DateRange = PresetDateRange | SingleDateRange;
-//| CustomDateRange
+export type DateRange = PresetDateRange | SingleDateRange | CustomDateRange;
 export type PresetDateRange = {
   type: "preset";
   value:
@@ -103,6 +102,10 @@ export type PresetDateRange = {
 export type SingleDateRange = {
   type: "on" | "before" | "after";
   value: string;
+};
+export type CustomDateRange = {
+  type: "range";
+  value: [string, string];
 };
 
 export type State = {
@@ -280,19 +283,6 @@ const mediaSlice = createSlice({
     clearSelectedFiles(state) {
       state.selectedFiles = [];
     },
-    setSortOrder(state, action: { payload: MediaSortOrder }) {
-      state.sortOrder = action.payload;
-    },
-    setFiletypeFilter(state, action: { payload: Filetype }) {
-      state.filetypeFilter = action.payload;
-    },
-    setDateRangeFilter(state, action: { payload: DateRange }) {
-      state.dateRangeFilter = action.payload;
-    },
-    clearAllFilters(state) {
-      state.filetypeFilter = null;
-      state.dateRangeFilter = null;
-    },
     setCurrentMediaView(state, action: { payload: string }) {
       state.currentMediaView = action.payload;
     },
@@ -316,10 +306,6 @@ export const {
   deselectFile,
   clearSelectedFiles,
   setLimitSelected,
-  setSortOrder,
-  setFiletypeFilter,
-  setDateRangeFilter,
-  clearAllFilters,
   setCurrentMediaView,
 } = mediaSlice.actions;
 

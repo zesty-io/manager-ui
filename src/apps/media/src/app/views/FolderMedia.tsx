@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useParams } from "react-router";
+import { useParams as useSearchParams } from "../../../../../shell/hooks/useParams";
 import { EmptyState } from "../components/EmptyState";
 import {
   mediaManagerApi,
@@ -18,9 +19,15 @@ import { AppState } from "../../../../../shell/store/types";
 import Controls from "../components/Controls";
 import { NoResultsState } from "../components/NoResultsState";
 import {
+  MediaSortOrder,
+  DateRange,
+  Filetype,
+} from "../../../../../shell/store/media-revamp";
+import {
   fileExtension,
   getExtensions,
   getDateFilterFn,
+  getDateFilter,
 } from "../utils/fileUtils";
 import { State } from "../../../../../shell/store/media-revamp";
 
@@ -31,17 +38,11 @@ interface Props {
 }
 
 export const FolderMedia = ({ addImagesCallback }: Props) => {
-  const params = useParams<Params>();
-  const { id } = params;
-  const sortOrder = useSelector(
-    (state: AppState) => state.mediaRevamp.sortOrder
-  );
-  const filetypeFilter = useSelector(
-    (state: AppState) => state.mediaRevamp.filetypeFilter
-  );
-  const dateRangeFilter = useSelector(
-    (state: AppState) => state.mediaRevamp.dateRangeFilter
-  );
+  const { id } = useParams<Params>();
+  const [params, setParams] = useSearchParams();
+  const sortOrder = params.get("sort");
+  const filetypeFilter = params.get("filetype") as Filetype;
+  const dateRangeFilter = getDateFilter(params);
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
@@ -71,15 +72,15 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
   const sortedGroupFiles = useMemo(() => {
     if (!unsortedGroupFiles) return unsortedGroupFiles;
     switch (sortOrder) {
-      case "alphaAsc":
+      case "AtoZ":
         return [...unsortedGroupFiles].sort((a, b) => {
           return a.filename.localeCompare(b.filename);
         });
-      case "alphaDesc":
+      case "ZtoA":
         return [...unsortedGroupFiles].sort((a, b) => {
           return b.filename.localeCompare(a.filename);
         });
-      case "createdDesc":
+      case "dateadded":
         return [...unsortedGroupFiles].sort((a, b) => {
           return (
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -122,8 +123,8 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
   const subgroups = useMemo(() => {
     if (!unsortedSubGroups) return unsortedSubGroups;
     // don't show groups when filtering by filetypes or dates
-    if (filetypeFilter !== null && filetypeFilter !== "Folder") return [];
-    if (dateRangeFilter !== null) return [];
+    if (Boolean(filetypeFilter) && filetypeFilter !== "Folder") return [];
+    if (Boolean(dateRangeFilter)) return [];
     switch (sortOrder) {
       case "alphaAsc":
         return [...unsortedSubGroups].sort((a, b) => {
