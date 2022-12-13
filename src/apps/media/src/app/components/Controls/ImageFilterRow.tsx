@@ -1,5 +1,4 @@
 import { FC, useState } from "react";
-import { useDispatch } from "react-redux";
 
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
@@ -9,18 +8,16 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ChevronRightOutlined from "@mui/icons-material/ChevronRightOutlined";
 import ImageRounded from "@mui/icons-material/ImageRounded";
 
-import {
-  Filetype,
-  setFiletypeFilter,
-} from "../../../../../../shell/store/media-revamp";
+import { Filetype } from "../../../../../../shell/store/media-revamp";
+import { useParams } from "../../../../../../shell/hooks/useParams";
 
 type ImageFilterRow = {
   onClose: () => void;
 };
 export const ImageFilterRow: FC<ImageFilterRow> = ({ onClose }) => {
-  const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const [params, setParams] = useParams();
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -29,7 +26,7 @@ export const ImageFilterRow: FC<ImageFilterRow> = ({ onClose }) => {
     onClose();
   };
   const handleChange = (filetype: Filetype) => {
-    dispatch(setFiletypeFilter(filetype));
+    setParams(filetype, "filetype");
     handleClose();
     onClose();
   };

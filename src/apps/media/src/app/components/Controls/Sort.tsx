@@ -3,10 +3,8 @@ import { Button, Box, MenuItem, Menu } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useSelector, useDispatch } from "react-redux";
 import { AppState } from "../../../../../../shell/store/types";
-import {
-  MediaSortOrder,
-  setSortOrder,
-} from "../../../../../../shell/store/media-revamp";
+import { MediaSortOrder } from "../../../../../../shell/store/media-revamp";
+import { useParams } from "../../../../../../shell/hooks/useParams";
 
 export const Sort: FC = () => {
   const dispatch = useDispatch();
@@ -15,11 +13,14 @@ export const Sort: FC = () => {
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
+  const [params, setParams] = useParams();
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const handleChange = (sortOrder: MediaSortOrder) => {
-    dispatch(setSortOrder(sortOrder));
+  type SortOrder = "AtoZ" | "ZtoA" | "dateadded";
+  const handleChange = (sortOrder: SortOrder) => {
+    //dispatch(setSortOrder(sortOrder));
+    setParams(sortOrder, "sort");
     handleClose();
   };
   return (
@@ -37,15 +38,11 @@ export const Sort: FC = () => {
         Sort By
       </Button>
       <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
-        <MenuItem onClick={() => handleChange("createdDesc")}>
+        <MenuItem onClick={() => handleChange("dateadded")}>
           Date Added
         </MenuItem>
-        <MenuItem onClick={() => handleChange("alphaAsc")}>
-          Name (A to Z)
-        </MenuItem>
-        <MenuItem onClick={() => handleChange("alphaDesc")}>
-          Name (Z to A)
-        </MenuItem>
+        <MenuItem onClick={() => handleChange("AtoZ")}>Name (A to Z)</MenuItem>
+        <MenuItem onClick={() => handleChange("ZtoA")}>Name (Z to A)</MenuItem>
       </Menu>
     </>
   );

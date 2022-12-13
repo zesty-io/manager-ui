@@ -1,11 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import instanceZUID from "utility/instanceZUID";
+import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
 
 // Define a service using a base URL and expected endpoints
 export const accountsApi = createApi({
   reducerPath: "accountsApi",
   baseQuery: fetchBaseQuery({
+    // @ts-ignore
     baseUrl: `${__CONFIG__.API_ACCOUNTS}/`,
     prepareHeaders,
   }),
@@ -13,9 +14,9 @@ export const accountsApi = createApi({
   endpoints: (builder) => ({
     getDomains: builder.query({
       query: () => `instances/${instanceZUID}/domains`,
-      transformResponse: (response) =>
+      transformResponse: (response: any) =>
         response.data.sort(
-          (a, b) => +new Date(a.createdAt) - +new Date(b.createdAt)
+          (a: any, b: any) => +new Date(a.createdAt) - +new Date(b.createdAt)
         ),
     }),
     getInstance: builder.query({
@@ -34,6 +35,20 @@ export const accountsApi = createApi({
       query: () => `instances/${instanceZUID}/users/roles`,
       transformResponse: getResponseData,
     }),
+    createUserInvite: builder.mutation<
+      any,
+      { inviteeEmail: string; accessLevel: number }
+    >({
+      query: ({ inviteeEmail, accessLevel }) => ({
+        url: `/invites`,
+        method: "POST",
+        body: {
+          inviteeEmail,
+          accessLevel,
+          entityZUID: instanceZUID,
+        },
+      }),
+    }),
   }),
 });
 
@@ -45,4 +60,5 @@ export const {
   useGetInstancesQuery,
   useGetUsersQuery,
   useGetUsersRolesQuery,
+  useCreateUserInviteMutation,
 } = accountsApi;

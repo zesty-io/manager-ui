@@ -68,7 +68,15 @@ class CSVImport extends Component {
 
   handleFile = (evt) => {
     evt.preventDefault();
+
+    // Do nothing if no file was selected because onChange gets triggered even if
+    // cancel button was clicked
+    if (!evt.target.files.length) {
+      return;
+    }
+
     const csvToParse = evt.target.files[0];
+
     // make sure we have a csv and throw an error if we dont
     if (csvToParse.name.slice(-3).toLowerCase() !== "csv") {
       return this.setState({

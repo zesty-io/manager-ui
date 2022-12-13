@@ -9,17 +9,15 @@ import Button from "@mui/material/Button";
 import RestartAltRounded from "@mui/icons-material/RestartAltRounded";
 
 import noResults from "../../../../../../public/images/noSearchResults.svg";
-import {
-  clearAllFilters,
-  Filetype,
-} from "../../../../../shell/store/media-revamp";
+import { Filetype } from "../../../../../shell/store/media-revamp";
+import { useParams } from "../../../../../shell/hooks/useParams";
 
 type Props = {
   filetype: Filetype;
 };
 
 export const NoResultsState: FC<Props> = ({ filetype }) => {
-  const dispatch = useDispatch();
+  const [params, setParams] = useParams();
   return (
     <Box
       component="main"
@@ -50,7 +48,13 @@ export const NoResultsState: FC<Props> = ({ filetype }) => {
           </Typography>
           <Button
             variant="contained"
-            onClick={() => dispatch(clearAllFilters())}
+            onClick={() => {
+              setParams(null, "to");
+              setParams(null, "from");
+              setParams(null, "filetype");
+              setParams(null, "sort");
+              setParams(null, "dateFilter");
+            }}
             color="primary"
             size="small"
             startIcon={<RestartAltRounded />}
