@@ -14,6 +14,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import IconButton from "@mui/material/IconButton";
 
 import { Tab } from "../../../../shell/store/ui";
 import { Typography } from "@mui/material";
@@ -66,14 +67,8 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
           disableElevation
           disableTouchRipple
           data-cy="TabsDropdownButton"
+          endIcon={<ArrowDropDownIcon color="action" />}
           sx={{
-            alignItems: "center",
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            textTransform: "none",
-            gap: "8px",
-            borderRadius: "8px 8px 0px 0px",
             backgroundColor: "grey.100",
             "&:hover": {
               backgroundColor: "grey.50",
@@ -84,20 +79,11 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
              creating an unsightly gap
             */
             lineHeight: "inherit",
-            marginTop: "1px",
           }}
         >
-          <Box
-            component="span"
-            sx={{
-              color: "text.secondary",
-            }}
-          >
-            <Typography fontWeight={600} variant="caption">
-              More
-            </Typography>
-          </Box>
-          <ArrowDropDownIcon sx={{ color: "action" }} fontSize="small" />
+          <Typography color="text.secondary" fontWeight={600} variant="caption">
+            More
+          </Typography>
         </Button>
         <Menu
           id="basic-menu"
@@ -117,14 +103,18 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
             },
           }}
         >
-          <Box
+          <MenuItem
             onKeyDown={(e) => e.stopPropagation()}
+            disableRipple
             sx={{
               cursor: "auto",
               height: "60px",
               backgroundColor: "grey.200",
               padding: 1.5,
               boxSizing: "border-box",
+              "&:hover": {
+                backgroundColor: "grey.200",
+              },
             }}
           >
             <TextField
@@ -151,12 +141,12 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
               value={filter}
               onChange={(evt) => setFilter(evt.target.value)}
             />
-          </Box>
+          </MenuItem>
           <MenuItem
             disableRipple
             sx={{
               cursor: "auto",
-              padding: "17px 12px",
+              padding: 1.5,
               height: "56px",
             }}
           >
@@ -254,7 +244,7 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
         justifyContent: "space-between",
         alignItems: "center",
         height: `${ITEM_HEIGHT}px`,
-        padding: "16px 12px",
+        padding: 1.5,
         gap: "8px",
         cursor: "auto",
         boxSizing: "border-box",
@@ -284,26 +274,14 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
           {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
         </Typography>
       </MuiLink>
-      <Box
-        component="span"
-        onClick={remove}
-        sx={{
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "action.active",
-        }}
-      >
+      <IconButton size="small" onClick={remove}>
         <PinIcon
-          fontSize="small"
+          fontSize="inherit"
           sx={{
-            width: "16px",
-            height: "16px",
             transform: "rotate(45deg)",
           }}
         />
-      </Box>
+      </IconButton>
     </MenuItem>
   );
 };
