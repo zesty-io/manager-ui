@@ -21,9 +21,11 @@ import discordIcon from "../../../../../public/images/discordIcon.svg";
 import salesAvatar from "../../../../../public/images/salesAvatar.png";
 import NewspaperRoundedIcon from "@mui/icons-material/NewspaperRounded";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import GroupAddRoundedIcon from "@mui/icons-material/GroupAddRounded";
 import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
 import CollectionsBookmarkRoundedIcon from "@mui/icons-material/CollectionsBookmarkRounded";
 import { useState } from "react";
+import InviteMembersModal from "../../../../shell/components/InviteMembersModal";
 
 interface Props {
   isMature: boolean;
@@ -33,6 +35,7 @@ interface Props {
 
 export const ResourcesCard = ({ isMature, hideHeader, hideFooter }: Props) => {
   const [showMeetModal, setShowMeetModal] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
 
   const handleNavigation = (url: string) => {
     window.open(url, "_blank");
@@ -179,6 +182,18 @@ export const ResourcesCard = ({ isMature, hideHeader, hideFooter }: Props) => {
             }}
           />
         </ListItemButton>
+        <ListItemButton divider onClick={() => setShowInviteModal(true)}>
+          <ListItemIcon sx={{ minWidth: "36px" }}>
+            <GroupAddRoundedIcon color="primary" />
+          </ListItemIcon>
+          <ListItemText
+            primary="Invite your Team"
+            secondary="Have your team give Zesty a try as well"
+            primaryTypographyProps={{
+              variant: "body2",
+            }}
+          />
+        </ListItemButton>
         <Accordion sx={{ boxShadow: "none" }} disableGutters>
           <AccordionSummary expandIcon={<KeyboardArrowUpIcon />}>
             <Box display="flex" alignItems="center" gap={2}>
@@ -312,6 +327,9 @@ export const ResourcesCard = ({ isMature, hideHeader, hideFooter }: Props) => {
           src="https://www.zesty.io/meet/"
         ></iframe>
       </Dialog>
+      {showInviteModal && (
+        <InviteMembersModal onClose={() => setShowInviteModal(false)} />
+      )}
     </>
   );
 };
