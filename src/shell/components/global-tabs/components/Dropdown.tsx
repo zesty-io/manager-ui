@@ -1,7 +1,7 @@
 import { useState, FC } from "react";
 import { Link as Link } from "react-router-dom";
 
-import { ConfirmDialog, theme } from "@zesty-io/material";
+import { ConfirmDialog } from "@zesty-io/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PinIcon from "@mui/icons-material/PushPin";
 import SearchIcon from "@mui/icons-material/Search";
@@ -74,9 +74,9 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
             textTransform: "none",
             gap: "8px",
             borderRadius: "8px 8px 0px 0px",
-            backgroundColor: theme.palette.grey[100],
+            backgroundColor: "grey.100",
             "&:hover": {
-              backgroundColor: theme.palette.grey[50],
+              backgroundColor: "grey.50",
             },
             /*
              Needed to prevent button from outgrowing parent
@@ -90,17 +90,14 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
           <Box
             component="span"
             sx={{
-              color: theme.palette.text.secondary,
+              color: "text.secondary",
             }}
           >
-            <Typography variant="caption" sx={{ fontWeight: 600 }}>
+            <Typography fontWeight={600} variant="caption">
               More
             </Typography>
           </Box>
-          <ArrowDropDownIcon
-            sx={{ color: theme.palette.action.active }}
-            fontSize="small"
-          />
+          <ArrowDropDownIcon sx={{ color: "action" }} fontSize="small" />
         </Button>
         <Menu
           id="basic-menu"
@@ -113,7 +110,7 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
           MenuListProps={{
             "aria-labelledby": "basic-button",
             sx: {
-              backgroundColor: "white",
+              backgroundColor: "common.white",
               boxSizing: "border-box",
               padding: "0px",
               width: "274px",
@@ -125,8 +122,8 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
             sx={{
               cursor: "auto",
               height: "60px",
-              backgroundColor: theme.palette.grey[200],
-              padding: "12px",
+              backgroundColor: "grey.200",
+              padding: 1.5,
               boxSizing: "border-box",
             }}
           >
@@ -138,18 +135,15 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
               sx={{ height: "36px" }}
               InputProps={{
                 startAdornment: (
-                  <SearchIcon
-                    fontSize="small"
-                    sx={{ color: theme.palette.action.active }}
-                  />
+                  <SearchIcon fontSize="small" sx={{ color: "action" }} />
                 ),
                 sx: {
                   "&.Mui-focused": {
                     backgroundColor: "white",
-                    color: theme.palette.text.secondary,
+                    color: "text.secondary",
                   },
-                  backgroundColor: "white",
-                  color: theme.palette.text.disabled,
+                  backgroundColor: "common.white",
+                  color: "text.disabled",
                   padding: "0px 8px",
                   gap: "8px",
                 },
@@ -172,11 +166,12 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
               alignItems="center"
               flex="1"
             >
-              <Box
-                component="span"
-                sx={{ color: theme.palette.text.secondary, lineHeight: "266%" }}
-              >
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              <Box component="span">
+                <Typography
+                  variant="h6"
+                  fontWeight={600}
+                  sx={{ color: "text.secondary" }}
+                >
                   {Boolean(filterTerm)
                     ? `${filteredTabs.length} Results`
                     : "Pinned Tabs"}
@@ -190,8 +185,7 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
                   onClick={() => setConfirmOpen(true)}
                   size="small"
                   sx={{
-                    color: theme.palette.text.secondary,
-                    lineHeight: "24px",
+                    color: "text.secondary",
                     "&:hover": {
                       color: "warning.main",
                       backgroundColor: "transparent",
@@ -254,22 +248,21 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
     <MenuItem
       disableRipple
       sx={{
-        color: theme.palette.text.primary,
         width: "100%",
         display: "grid",
         gridTemplateColumns: "20px 1fr 20px",
         justifyContent: "space-between",
         alignItems: "center",
         height: `${ITEM_HEIGHT}px`,
-        padding: "17px 12px",
+        padding: "16px 12px",
         gap: "8px",
         cursor: "auto",
         boxSizing: "border-box",
         borderBottom: "1px solid",
-        borderColor: theme.palette.border,
+        borderColor: "border",
       }}
     >
-      <Box component="span" sx={{ color: theme.palette.action.active }}>
+      <Box component="span" sx={{ color: "action.active" }}>
         {tab.icon && (
           <FontAwesomeIcon icon={tab.icon} style={{ fontSize: "18px" }} />
         )}
@@ -279,7 +272,6 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
         to={tab.pathname + tab.search}
         underline="none"
         sx={{
-          color: theme.palette.text.primary,
           textDecoration: "none",
           flex: "1",
           whiteSpace: "nowrap",
@@ -288,7 +280,7 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
           alignContent: "center",
         }}
       >
-        <Typography variant="body2">
+        <Typography variant="body2" color="text.primary">
           {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
         </Typography>
       </MuiLink>
@@ -300,7 +292,7 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: theme.palette.action.active,
+          color: "action.active",
         }}
       >
         <PinIcon
