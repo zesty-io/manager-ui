@@ -13,7 +13,7 @@ export function GlobalTopbar() {
       justifyContent="flex-start"
       alignItems="flex-end"
       sx={{
-        backgroundColor: theme.palette.grey[100],
+        backgroundColor: "grey.100",
         height: "40px",
       }}
     >

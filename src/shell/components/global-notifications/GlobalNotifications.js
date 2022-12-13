@@ -10,6 +10,9 @@ import {
   faExclamationTriangle,
   faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import IconButton from "@mui/material/IconButton";
+import Button from "@mui/material/Button";
 
 import { Drawer, DrawerContent } from "@zesty-io/core/Drawer";
 import { AppLink } from "@zesty-io/core/AppLink";
@@ -69,17 +72,19 @@ export default connect((state) => {
 
     return (
       <aside ref={ref} className={cx(styles.Notifications)}>
-        <span
-          className={cx(styles.Bell, showToast ? styles.Flash : null)}
-          title="See All Notifications"
-          onClick={() => setDrawerOpen(!drawerOpen)}
-        >
-          {props.notifications.length ? (
-            <span className={styles.Count}>{props.notifications.length}</span>
-          ) : (
-            <FontAwesomeIcon style={{ fontSize: "13px" }} icon={faBell} />
-          )}
-        </span>
+        {props.notifications.length ? (
+          <Button
+            title="See All Notifications"
+            onClick={() => setDrawerOpen(!drawerOpen)}
+            size="small"
+          >
+            {props.notifications.length}
+          </Button>
+        ) : (
+          <IconButton size="small" onClick={() => setDrawerOpen(!drawerOpen)}>
+            <NotificationsIcon color="action" fontSize="inherit" />
+          </IconButton>
+        )}
 
         {props.notifications[0] && (
           <div
