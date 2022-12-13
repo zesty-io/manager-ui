@@ -74,14 +74,18 @@ export default connect((state) => {
       <aside ref={ref} className={cx(styles.Notifications)}>
         {props.notifications.length ? (
           <Button
-            title="See All Notifications"
+            aria-title="See All Notifications"
             onClick={() => setDrawerOpen(!drawerOpen)}
             size="small"
           >
             {props.notifications.length}
           </Button>
         ) : (
-          <IconButton size="small" onClick={() => setDrawerOpen(!drawerOpen)}>
+          <IconButton
+            aria-title="See All Notifications"
+            size="small"
+            onClick={() => setDrawerOpen(!drawerOpen)}
+          >
             <NotificationsIcon color="action" fontSize="inherit" />
           </IconButton>
         )}
