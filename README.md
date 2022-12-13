@@ -123,4 +123,5 @@ OnChange value: of the selected buttons. When exclusive is true this is a single
 In some case when sending null this will break the togglebutton UI, thus the reasoning for adding toggleHandlers that checks `null` through the codebase.
 
 ## Uploading Assets
+
 To upload assets for your projects put them on the CDN, do not put them in the repository. Assets can be uploaded at https://console.cloud.google.com/storage/browser/assets.zesty.io?project=zesty-prod , upload to the respective folder that match your project name, for example, the SVGs and PNG that are being commited to manager-ui should be moved into this storage bucket under the `manager` folder, once they are uploaded they accessible from https://assets.zesty.io e.g. https://assets.zesty.io/website/assets/images/dxp_bottom_bg.svg

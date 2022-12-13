@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import instanceZUID from "../../utility/instanceZUID";
 import { getResponseData, prepareHeaders } from "./util";
 import { resolveResourceType } from "../../utility/resolveResourceType";
-import { Publishing } from "./types";
+import { ContentItem, ContentModel, Publishing } from "./types";
 
 // Define a service using a base URL and expected endpoints
 export const instanceApi = createApi({
@@ -69,13 +69,35 @@ export const instanceApi = createApi({
         });
       },
     }),
-    getContentItem: builder.query<any, string>({
+    getContentItem: builder.query<ContentItem, string>({
       query: (ZUID) => `search/items?q=${ZUID}&order=created&dir=DESC&limit=1`,
       transformResponse: (response: { data: any[] }) => response?.data?.[0],
     }),
-    getContentModel: builder.query<any, string>({
+    getContentModel: builder.query<ContentModel, string>({
       query: (modelZUID) => `content/models/${modelZUID}`,
       transformResponse: getResponseData,
+    }),
+    getContentModels: builder.query<ContentModel[], void>({
+      query: () => `content/models`,
+      transformResponse: getResponseData,
+      // Restore cache content/schema uses rtk query for mutations and can invalidate this
+      keepUnusedDataFor: 0.0001,
+    }),
+    getContentModelItems: builder.query<ContentItem[], string>({
+      query: (ZUID) => `content/models/${ZUID}/items`,
+      transformResponse: getResponseData,
+      // Restore cache content/schema uses rtk query for mutations and can invalidate this
+      keepUnusedDataFor: 0.0001,
+    }),
+    getContentItemPublishings: builder.query<
+      ContentModel[],
+      { modelZUID: string; itemZUID: string }
+    >({
+      query: ({ modelZUID, itemZUID }) =>
+        `content/models/${modelZUID}/items/${itemZUID}/publishings`,
+      transformResponse: getResponseData,
+      // Restore cache once content/schema uses rtk query for mutations and can invalidate this
+      keepUnusedDataFor: 0.0001,
     }),
   }),
 });
@@ -88,4 +110,7 @@ export const {
   useDeleteItemPublishingMutation,
   useGetContentItemQuery,
   useGetContentModelQuery,
+  useGetContentModelsQuery,
+  useGetContentModelItemsQuery,
+  useGetContentItemPublishingsQuery,
 } = instanceApi;

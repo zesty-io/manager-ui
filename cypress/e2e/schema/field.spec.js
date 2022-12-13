@@ -65,7 +65,7 @@ describe("Fields", () => {
     cy.get("[data-cy=deactivated]").eq(0).click();
   });
 
-  it.only("Create:textarea", () => {
+  it("Create:textarea", () => {
     const fieldLabel = `TextArea Field: ${timestamp}`;
     const fieldName = `textarea_field_${timestamp}`;
 

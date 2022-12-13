@@ -67,7 +67,10 @@ export const MetricCard = ({
                 variant="body3"
                 color="text.disabled"
                 fontWeight={600}
-                sx={{ fontSize: "10px" }}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
               >
                 {deltaLabel}
               </Typography>

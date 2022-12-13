@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import {
   useGetAllBinFilesQuery,
   useGetBinsQuery,
@@ -7,40 +7,43 @@ import {
 import { DnDProvider } from "../components/DnDProvider";
 import { EmptyState } from "../components/EmptyState";
 import { MediaGrid } from "../components/MediaGrid";
+import { MediaList } from "../components/MediaList";
 import { Header } from "../components/Header";
 import { NotFoundState } from "../components/NotFoundState";
 import { NoResultsState } from "../components/NoResultsState";
 import { File } from "../../../../../shell/services/types";
 import { UploadModal } from "../components/UploadModal";
 import Controls from "../components/Controls";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { AppState } from "../../../../../shell/store/types";
 import {
   fileExtension,
   getExtensions,
   getDateFilterFn,
+  getDateFilter,
 } from "../utils/fileUtils";
+import { Filetype } from "../../../../../shell/store/media-revamp";
+import { useParams as useSearchParams } from "../../../../../shell/hooks/useParams";
+import { State } from "../../../../../shell/store/media-revamp";
 
 interface Props {
   addImagesCallback?: (selectedFiles: File[]) => void;
 }
 
 export const AllMedia = ({ addImagesCallback }: Props) => {
+  const [params, setParams] = useSearchParams();
+  const sortOrder = params.get("sort");
+  const filetypeFilter = params.get("filetype") as Filetype;
+  const dateRangeFilter = getDateFilter(params);
   const instanceId = useSelector((state: AppState) => state.instance.ID);
   const ecoId = useSelector((state: AppState) => state.instance.ecoID);
-  const sortOrder = useSelector(
-    (state: AppState) => state.mediaRevamp.sortOrder
-  );
-  const filetypeFilter = useSelector(
-    (state: AppState) => state.mediaRevamp.filetypeFilter
-  );
-  const dateRangeFilter = useSelector(
-    (state: AppState) => state.mediaRevamp.dateRangeFilter
-  );
   const { data: bins, isFetching: isBinsFetching } = useGetBinsQuery({
     instanceId,
     ecoId,
   });
+  const currentMediaView = useSelector(
+    (state: { mediaRevamp: State }) => state.mediaRevamp.currentMediaView
+  );
   const defaultBin = bins?.find((bin) => bin.default);
   const { data: unsortedFiles, isFetching: isFilesFetching } =
     useGetAllBinFilesQuery(
@@ -50,15 +53,15 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
   const sortedFiles = useMemo(() => {
     if (!unsortedFiles) return unsortedFiles;
     switch (sortOrder) {
-      case "alphaAsc":
+      case "AtoZ":
         return [...unsortedFiles].sort((a, b) => {
           return a.filename.localeCompare(b.filename);
         });
-      case "alphaDesc":
+      case "ZtoA":
         return [...unsortedFiles].sort((a, b) => {
           return b.filename.localeCompare(a.filename);
         });
-      case "createdDesc":
+      case "dateadded":
         return [...unsortedFiles].sort((a, b) => {
           return (
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -72,6 +75,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
 
   const files = useMemo(() => {
     if (!sortedFiles) return sortedFiles;
+    if (filetypeFilter === "Folder") return [];
     if (filetypeFilter && dateRangeFilter) {
       const extensions = new Set<string>(getExtensions(filetypeFilter));
       const dateFilterFn = getDateFilterFn(dateRangeFilter);
@@ -119,7 +123,16 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
         </Box>
       ) : (
         <>
-          <Controls showDateFilter={true} />
+          <Controls />
+          {(filetypeFilter || dateRangeFilter) && files.length > 0 && (
+            <Typography
+              color="text.secondary"
+              variant="h6"
+              sx={{ pl: 3, pt: 2, pb: 1.5 }}
+            >
+              {files?.length} matches found
+            </Typography>
+          )}
           <UploadModal />
           <DnDProvider
             isDefaultBin
@@ -134,8 +147,10 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
                   <EmptyState currentBinId={defaultBin?.id} currentGroupId="" />
                 )}
               </>
-            ) : (
+            ) : currentMediaView === "grid" ? (
               <MediaGrid files={files} hideHeaders />
+            ) : (
+              <MediaList files={files} />
             )}
           </DnDProvider>
         </>

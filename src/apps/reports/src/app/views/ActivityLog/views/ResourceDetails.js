@@ -69,7 +69,7 @@ export const ResourceDetails = () => {
       fromDate = moment().add(-3, "months");
     }
     setParams(fromDate.format("YYYY-MM-DD"), "from");
-    setParams(moment().add(1, "days").format("YYYY-MM-DD"), "to");
+    setParams(moment().format("YYYY-MM-DD"), "to");
   };
 
   const {

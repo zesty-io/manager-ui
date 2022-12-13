@@ -142,6 +142,7 @@ export const FileTypePreview: FC<Props> = ({
       );
     case "png":
     case "svg":
+    case "ico":
       return (
         <Box
           data-cy="file-preview"

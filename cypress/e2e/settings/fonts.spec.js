@@ -15,6 +15,7 @@ describe("Fonts", () => {
   it("Removes a font", () => {
     cy.get("[data-cy=SettingsNav]").contains("Installed fonts").click();
     cy.get("#RemoveFont").first().click();
+    cy.get(".MuiDialog-root button").last().click();
 
     cy.contains("Font has been removed").should("exist");
   });

@@ -98,7 +98,7 @@ export const MetricCards = ({ dateRange }: Props) => {
             ? getDelta(priorRequests?.TotalRequests, requests?.TotalRequests)
             : null
         }
-        deltaLabel={`VS PRIOR ${dateRange} DAYS`}
+        deltaLabel={`VS Prior ${dateRange} Days`}
         loading={requestsFetching}
       />
       <MetricCard
@@ -125,7 +125,7 @@ export const MetricCards = ({ dateRange }: Props) => {
               )
             : null
         }
-        deltaLabel={`VS PRIOR ${dateRange} DAYS`}
+        deltaLabel={`VS Prior ${dateRange} Days`}
         loading={usageFetching}
       />
       {/* <MetricCard
@@ -148,7 +148,7 @@ export const MetricCards = ({ dateRange }: Props) => {
             ? getDelta(priorScheduledPublishes, scheduledPublishes)
             : null
         }
-        deltaLabel={`VS PRIOR ${dateRange} DAYS`}
+        deltaLabel={`VS Prior ${dateRange} Days`}
         loading={auditFetching}
       /> */}
       <MetricCard
@@ -168,7 +168,7 @@ export const MetricCards = ({ dateRange }: Props) => {
           </Box>
         }
         delta={hasPriorData ? getDelta(priorPublishes, publishes) : null}
-        deltaLabel={`VS PRIOR ${dateRange} DAYS`}
+        deltaLabel={`VS Prior ${dateRange} Days`}
         loading={auditFetching}
       />
     </Box>

@@ -1,4 +1,4 @@
-import { memo, Fragment, useState } from "react";
+import { memo, Fragment, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
 import Button from "@mui/material/Button";
@@ -14,11 +14,13 @@ import { FormControl, FormLabel, Select, MenuItem } from "@mui/material";
 
 import { notify } from "shell/store/notifications";
 import { createFile } from "../../../../../store/files";
+import { useParams } from "shell/hooks/useParams";
 
 import styles from "./CreateFile.less";
 export const CreateFile = memo(function CreateFile(props) {
   const history = useHistory();
-
+  const [params] = useParams();
+  const triggerCreate = params.get("triggerCreate");
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [type, setType] = useState("");
@@ -71,6 +73,13 @@ export const CreateFile = memo(function CreateFile(props) {
         setLoading(false);
       });
   };
+
+  useEffect(() => {
+    if (triggerCreate) {
+      setOpen(true);
+      history.replace("/code");
+    }
+  }, [triggerCreate]);
 
   return (
     <Fragment>

@@ -72,6 +72,7 @@ export type Filetype =
   | "Spreadsheet"
   | "Code"
   | "Font"
+  | "Folder"
   | "Archive"
   | "PNG"
   | "JPEG"
@@ -86,13 +87,26 @@ export type Filetype =
   | "FLV"
   | "MPEG";
 
-export type DateRange =
-  | "today"
-  | "yesterday"
-  | "last 7 days"
-  | "last 30 days"
-  | "last 3 months"
-  | "last 12 months";
+export type DateRange = PresetDateRange | SingleDateRange | CustomDateRange;
+export type PresetDateRange = {
+  type: "preset";
+  value:
+    | "today"
+    | "yesterday"
+    | "last 7 days"
+    | "last 30 days"
+    | "last 3 months"
+    | "last 12 months";
+};
+
+export type SingleDateRange = {
+  type: "on" | "before" | "after";
+  value: string;
+};
+export type CustomDateRange = {
+  type: "range";
+  value: [string, string];
+};
 
 export type State = {
   uploads: Upload[];
@@ -104,6 +118,7 @@ export type State = {
   sortOrder: MediaSortOrder;
   filetypeFilter: Filetype | null;
   dateRangeFilter: DateRange | null;
+  currentMediaView: string;
 };
 const initialState: State = {
   uploads: [],
@@ -115,6 +130,7 @@ const initialState: State = {
   sortOrder: "createdDesc",
   filetypeFilter: null,
   dateRangeFilter: null,
+  currentMediaView: "grid",
 };
 
 const mediaSlice = createSlice({
@@ -267,18 +283,8 @@ const mediaSlice = createSlice({
     clearSelectedFiles(state) {
       state.selectedFiles = [];
     },
-    setSortOrder(state, action: { payload: MediaSortOrder }) {
-      state.sortOrder = action.payload;
-    },
-    setFiletypeFilter(state, action: { payload: Filetype }) {
-      state.filetypeFilter = action.payload;
-    },
-    setDateRangeFilter(state, action: { payload: DateRange }) {
-      state.dateRangeFilter = action.payload;
-    },
-    clearAllFilters(state) {
-      state.filetypeFilter = null;
-      state.dateRangeFilter = null;
+    setCurrentMediaView(state, action: { payload: string }) {
+      state.currentMediaView = action.payload;
     },
   },
 });
@@ -300,10 +306,7 @@ export const {
   deselectFile,
   clearSelectedFiles,
   setLimitSelected,
-  setSortOrder,
-  setFiletypeFilter,
-  setDateRangeFilter,
-  clearAllFilters,
+  setCurrentMediaView,
 } = mediaSlice.actions;
 
 /*
@@ -401,7 +404,9 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
       }
     });
 
-    if (file.file.size > 32000000) {
+    // Use signed url flow for all files
+    // if (file.file.size > 32000000)
+    if (true) {
       /**
        * GAE has an inherent 32mb limit at their global nginx load balancer
        * We use a signed url for large file uploads directly to the assocaited bucket

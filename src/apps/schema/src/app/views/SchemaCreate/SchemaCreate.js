@@ -18,6 +18,7 @@ import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
+import { useParams } from "shell/hooks/useParams";
 
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
@@ -68,6 +69,7 @@ const SCHEMA_TYPES = [
 ];
 
 import styles from "./SchemaCreate.less";
+import { CongratulationsDialog } from "../../../../../home/app/components/CongratulationsDialog";
 export default connect((state) => {
   return {
     user: state.user,
@@ -88,6 +90,10 @@ export default connect((state) => {
   const [listed, setListed] = useState(true);
   const [parent, setParent] = useState(null);
   const [errors, setErrors] = useState({});
+  const [showCongratulationsDialog, setShowCongratulationsDialog] =
+    useState(false);
+  const [params] = useParams();
+  const triggerCongratulationsModal = params.get("from") === "guide";
 
   useEffect(() => {
     props.dispatch(fetchParents());
@@ -151,8 +157,9 @@ export default connect((state) => {
   };
 
   return (
-    <Box className={styles.SchemaCreate} sx={{ m: 2 }}>
-      {/* {props.user.first_time && (
+    <>
+      <Box className={styles.SchemaCreate} sx={{ m: 2 }}>
+        {/* {props.user.first_time && (
         <Card className={styles.Card}>
           <CardHeader>
             <h1 className={styles.display}>
@@ -172,390 +179,403 @@ export default connect((state) => {
         </Card>
       )} */}
 
-      <Card className={styles.Card}>
-        <CardHeader title="You are creating a new content model"></CardHeader>
-        <CardContent sx={{ display: "flex", flexWrap: "wrap" }}>
-          <section className={cx(styles.Step, styles.SchemaType)}>
-            <h2 className={styles.StepTitle}>1. Model Type</h2>
-            <p className={styles.StepDesc}>
-              There are three different types of models. The type you choose
-              affects how the admin interface displays, content items render and
-              urls are routed.
-            </p>
+        <Card className={styles.Card}>
+          <CardHeader title="You are creating a new content model"></CardHeader>
+          <CardContent sx={{ display: "flex", flexWrap: "wrap" }}>
+            <section className={cx(styles.Step, styles.SchemaType)}>
+              <h2 className={styles.StepTitle}>1. Model Type</h2>
+              <p className={styles.StepDesc}>
+                There are three different types of models. The type you choose
+                affects how the admin interface displays, content items render
+                and urls are routed.
+              </p>
 
-            <div className={styles.questionnaire}>
-              <FormLabel>
-                <Stack
-                  spacing={1}
-                  direction="row"
-                  alignItems="center"
-                  sx={{
-                    my: 1,
-                  }}
-                >
-                  <p>Will this content be a public webpage and need a url?</p>
-                </Stack>
-              </FormLabel>
-              <ToggleButtonGroup
-                color="secondary"
-                size="small"
-                value={url}
-                exclusive
-                onChange={(evt, val) => handleToggle("url", val)}
-              >
-                <ToggleButton value={0}>No </ToggleButton>
-                <ToggleButton value={1}>Yes </ToggleButton>
-              </ToggleButtonGroup>
-            </div>
-
-            <div className={styles.questionnaire}>
-              <FormLabel>
-                <Stack
-                  spacing={1}
-                  direction="row"
-                  alignItems="center"
-                  sx={{
-                    my: 1,
-                  }}
-                >
-                  <p>Will this content have multiple entries?</p>
-                </Stack>
-              </FormLabel>
-              <ToggleButtonGroup
-                color="secondary"
-                size="small"
-                value={multiple}
-                exclusive
-                onChange={(evt, val) => handleToggle("multiple", val)}
-              >
-                <ToggleButton value={0}>No </ToggleButton>
-                <ToggleButton value={1}>Yes </ToggleButton>
-              </ToggleButtonGroup>
-            </div>
-
-            <FormControl fullWidth size="small">
-              <FormLabel sx={{ mb: "0 !important" }}>
-                Selected Model Type
-              </FormLabel>
-              <Select
-                name="type"
-                variant="outlined"
-                displayEmpty
-                value={type}
-                onChange={(evt) => {
-                  setType({
-                    type: "type",
-                    payload: evt.target.value,
-                  });
-                }}
-              >
-                <MenuItem value="">- None -</MenuItem>
-                {SCHEMA_TYPES.map((schemaType, idx) => (
-                  <MenuItem key={idx} value={schemaType.value}>
-                    {schemaType.component}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <main className={cx(styles.Types)}>
-              <div
-                className={cx(
-                  "Type",
-                  styles.Type,
-                  type === "templateset" ? styles.selected : styles.hidden
-                )}
-              >
-                <h3>Pages are individually routed</h3>
-                <p>
-                  <em>e.g. Homepages, Landing Pages, Unique Page Designs</em>
-                </p>
-                <p>
-                  The Single Page Model represents a set of single pages of
-                  content. Each page created in this model can live in separate
-                  places on a website. Which means they can also have different
-                  page parents.
-                </p>
-
-                <p>
-                  A template file will be created which is shared by all pages
-                  created in this model.
-                </p>
-              </div>
-
-              <div
-                className={cx(
-                  "Type",
-                  styles.Type,
-                  type === "pageset" ? styles.selected : styles.hidden
-                )}
-              >
-                <h3>Pages are routed as a group</h3>
-                <p>
-                  <em>e.g. Blog Posts, Team Members, or Services.</em>
-                </p>
-
-                <p>
-                  All content created in this model is routed to a single page
-                  parent. For example articles to a category page or team
-                  members to a team page.
-                </p>
-
-                <p>
-                  A template file will be created which is shared by all pages
-                  created in this model.
-                </p>
-              </div>
-
-              <div
-                className={cx(
-                  "Type",
-                  styles.Type,
-                  type === "dataset" ? styles.selected : styles.hidden
-                )}
-              >
-                <h3>No routing</h3>
-                <p>
-                  <em>e.g. Tags, Categories, API data</em>
-                </p>
-                <p>
-                  Headless Data Models typically represent data that can be
-                  referenced in other content items inside of your instance or
-                  will be used as headless API data consumed by external
-                  clients. They are useful for relational or miscellaneous
-                  grouping of data.
-                </p>
-
-                <p>
-                  Headless models do not have views therefore no template file
-                  is created.
-                </p>
-              </div>
-            </main>
-
-            {errors["type"] && <p className={styles.error}>{errors["type"]}</p>}
-          </section>
-
-          <section className={cx(styles.Step, styles.SchemaMeta)}>
-            <h2 className={styles.StepTitle}>2. Model Description</h2>
-            <p className={styles.StepDesc}>
-              Name and describe your model. This will be displayed to content
-              editors providing them insight into the purpose of this model.
-            </p>
-
-            <FieldTypeText
-              name="label"
-              label="Display Name"
-              helperText="This is what is shown to content editors"
-              placeholder=""
-              value={label}
-              maxLength="100"
-              onChange={(evt) => {
-                const value = evt.target.value;
-                setLabel(value);
-                // When changing the label update the reference name as well
-                setName(formatName(value));
-                setPathPart(formatPathPart(value));
-              }}
-              error={errors["label"]}
-              sx={{ mb: 4 }}
-            />
-
-            <FieldTypeText
-              name="name"
-              label="Reference Name"
-              helperText="This is what is used to reference this model in Parsley"
-              placeholder=""
-              value={name}
-              maxLength="100"
-              onChange={(evt) => setName(formatName(evt.target.value))}
-              error={errors["name"]}
-              sx={{ mb: 4 }}
-            />
-
-            <FieldTypeText
-              className={styles.FieldTypeTextarea}
-              name="description"
-              label="Description"
-              helperText="A description of this model is shown to content editors. It can be helpful to provide context and explain what this model is used for."
-              value={description}
-              maxLength={500}
-              onChange={(evt) => setDescription(evt.target.value)}
-              multiline
-              rows={6}
-            />
-          </section>
-
-          <section className={cx(styles.Step, styles.SchemaMeta)}>
-            <h2 className={styles.StepTitle}>3. Model Parent</h2>
-            <p className={styles.StepDesc}>
-              Parenting a model will affect how it displays in the admin
-              navigation and default routing for this model's items.
-            </p>
-
-            <FormControl fullWidth>
-              <FormLabel sx={{ mb: "0 !important" }}>
-                Select this model's parent
-              </FormLabel>
-
-              <VirtualizedAutocomplete
-                name="parent"
-                displayEmpty
-                value={parent}
-                onChange={(_, option) => {
-                  setParent(option);
-                }}
-                placeholder="Select this model's parent..."
-                options={props.parents.map((parent) => {
-                  return {
-                    inputLabel: parent.text,
-                    value: parent.value,
-                    component: parent.text,
-                  };
-                })}
-              />
-            </FormControl>
-
-            <div className={styles.questionnaire}>
-              <FormLabel>
-                <Stack
-                  spacing={1}
-                  direction="row"
-                  alignItems="center"
-                  sx={{
-                    my: 1,
-                  }}
-                >
-                  <Tooltip
-                    placement="top-start"
-                    arrow
-                    title={`Listed models have their content items available to programmatic
-                navigation calls.`}
+              <div className={styles.questionnaire}>
+                <FormLabel>
+                  <Stack
+                    spacing={1}
+                    direction="row"
+                    alignItems="center"
+                    sx={{
+                      my: 1,
+                    }}
                   >
-                    <InfoIcon fontSize="small" />
-                  </Tooltip>
-                  <p>Should this model be listed?</p>
-                </Stack>
-              </FormLabel>
-              <ToggleButtonGroup
-                color="secondary"
-                size="small"
-                value={listed}
-                exclusive
-                onChange={(evt, value) => handleListedToggle(value)}
-              >
-                <ToggleButton value={false}>Off </ToggleButton>
-                <ToggleButton value={true}>On </ToggleButton>
-              </ToggleButtonGroup>
-            </div>
-          </section>
-        </CardContent>
+                    <p>Will this content be a public webpage and need a url?</p>
+                  </Stack>
+                </FormLabel>
+                <ToggleButtonGroup
+                  color="secondary"
+                  size="small"
+                  value={url}
+                  exclusive
+                  onChange={(evt, val) => handleToggle("url", val)}
+                >
+                  <ToggleButton value={0}>No </ToggleButton>
+                  <ToggleButton value={1}>Yes </ToggleButton>
+                </ToggleButtonGroup>
+              </div>
 
-        <CardActions>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={() => {
-              const errors = [];
+              <div className={styles.questionnaire}>
+                <FormLabel>
+                  <Stack
+                    spacing={1}
+                    direction="row"
+                    alignItems="center"
+                    sx={{
+                      my: 1,
+                    }}
+                  >
+                    <p>Will this content have multiple entries?</p>
+                  </Stack>
+                </FormLabel>
+                <ToggleButtonGroup
+                  color="secondary"
+                  size="small"
+                  value={multiple}
+                  exclusive
+                  onChange={(evt, val) => handleToggle("multiple", val)}
+                >
+                  <ToggleButton value={0}>No </ToggleButton>
+                  <ToggleButton value={1}>Yes </ToggleButton>
+                </ToggleButtonGroup>
+              </div>
 
-              if (!type || type == 0) {
-                errors["type"] =
-                  "Select which type of model you would like to create.";
-              }
-              if (!label) {
-                errors["label"] =
-                  "Provide a label for this model to display to content editors.";
-              }
-              if (!name) {
-                errors["name"] =
-                  "Provide a reference name for using in your templates.";
-              }
+              <FormControl fullWidth size="small">
+                <FormLabel sx={{ mb: "0 !important" }}>
+                  Selected Model Type
+                </FormLabel>
+                <Select
+                  name="type"
+                  variant="outlined"
+                  displayEmpty
+                  value={type}
+                  onChange={(evt) => {
+                    setType({
+                      type: "type",
+                      payload: evt.target.value,
+                    });
+                  }}
+                >
+                  <MenuItem value="">- None -</MenuItem>
+                  {SCHEMA_TYPES.map((schemaType, idx) => (
+                    <MenuItem key={idx} value={schemaType.value}>
+                      {schemaType.component}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
-              if (Object.keys(errors).length) {
-                setErrors(errors);
-                return;
-              }
+              <main className={cx(styles.Types)}>
+                <div
+                  className={cx(
+                    "Type",
+                    styles.Type,
+                    type === "templateset" ? styles.selected : styles.hidden
+                  )}
+                >
+                  <h3>Pages are individually routed</h3>
+                  <p>
+                    <em>e.g. Homepages, Landing Pages, Unique Page Designs</em>
+                  </p>
+                  <p>
+                    The Single Page Model represents a set of single pages of
+                    content. Each page created in this model can live in
+                    separate places on a website. Which means they can also have
+                    different page parents.
+                  </p>
 
-              props
-                .dispatch(
-                  createModel({
-                    parentZUID: parent?.value || "",
-                    name,
-                    label,
-                    description,
-                    listed,
-                    type,
-                  })
-                )
-                .then((res) => {
-                  if (res.status === 200) {
-                    props.dispatch(
-                      notify({
-                        kind: "save",
-                        message: `Created ${label} model`,
-                      })
-                    );
+                  <p>
+                    A template file will be created which is shared by all pages
+                    created in this model.
+                  </p>
+                </div>
 
-                    if (res.data.ZUID) {
-                      if (type === "templateset") {
-                        // Create initial item
-                        request(
-                          `${CONFIG.API_INSTANCE}/content/models/${res.data.ZUID}/items`,
-                          {
-                            method: "POST",
-                            json: true,
-                            body: {
-                              data: {},
-                              web: {
-                                canonicalTagMode: 1,
-                                metaLinkText: label,
-                                metaTitle: label,
-                                pathPart: pathPart,
-                                parentZUID: parent?.value || "",
+                <div
+                  className={cx(
+                    "Type",
+                    styles.Type,
+                    type === "pageset" ? styles.selected : styles.hidden
+                  )}
+                >
+                  <h3>Pages are routed as a group</h3>
+                  <p>
+                    <em>e.g. Blog Posts, Team Members, or Services.</em>
+                  </p>
+
+                  <p>
+                    All content created in this model is routed to a single page
+                    parent. For example articles to a category page or team
+                    members to a team page.
+                  </p>
+
+                  <p>
+                    A template file will be created which is shared by all pages
+                    created in this model.
+                  </p>
+                </div>
+
+                <div
+                  className={cx(
+                    "Type",
+                    styles.Type,
+                    type === "dataset" ? styles.selected : styles.hidden
+                  )}
+                >
+                  <h3>No routing</h3>
+                  <p>
+                    <em>e.g. Tags, Categories, API data</em>
+                  </p>
+                  <p>
+                    Headless Data Models typically represent data that can be
+                    referenced in other content items inside of your instance or
+                    will be used as headless API data consumed by external
+                    clients. They are useful for relational or miscellaneous
+                    grouping of data.
+                  </p>
+
+                  <p>
+                    Headless models do not have views therefore no template file
+                    is created.
+                  </p>
+                </div>
+              </main>
+
+              {errors["type"] && (
+                <p className={styles.error}>{errors["type"]}</p>
+              )}
+            </section>
+
+            <section className={cx(styles.Step, styles.SchemaMeta)}>
+              <h2 className={styles.StepTitle}>2. Model Description</h2>
+              <p className={styles.StepDesc}>
+                Name and describe your model. This will be displayed to content
+                editors providing them insight into the purpose of this model.
+              </p>
+
+              <FieldTypeText
+                name="label"
+                label="Display Name"
+                helperText="This is what is shown to content editors"
+                placeholder=""
+                value={label}
+                maxLength="100"
+                onChange={(evt) => {
+                  const value = evt.target.value;
+                  setLabel(value);
+                  // When changing the label update the reference name as well
+                  setName(formatName(value));
+                  setPathPart(formatPathPart(value));
+                }}
+                error={errors["label"]}
+                sx={{ mb: 4 }}
+              />
+
+              <FieldTypeText
+                name="name"
+                label="Reference Name"
+                helperText="This is what is used to reference this model in Parsley"
+                placeholder=""
+                value={name}
+                maxLength="100"
+                onChange={(evt) => setName(formatName(evt.target.value))}
+                error={errors["name"]}
+                sx={{ mb: 4 }}
+              />
+
+              <FieldTypeText
+                className={styles.FieldTypeTextarea}
+                name="description"
+                label="Description"
+                helperText="A description of this model is shown to content editors. It can be helpful to provide context and explain what this model is used for."
+                value={description}
+                maxLength={500}
+                onChange={(evt) => setDescription(evt.target.value)}
+                multiline
+                rows={6}
+              />
+            </section>
+
+            <section className={cx(styles.Step, styles.SchemaMeta)}>
+              <h2 className={styles.StepTitle}>3. Model Parent</h2>
+              <p className={styles.StepDesc}>
+                Parenting a model will affect how it displays in the admin
+                navigation and default routing for this model's items.
+              </p>
+
+              <FormControl fullWidth>
+                <FormLabel sx={{ mb: "0 !important" }}>
+                  Select this model's parent
+                </FormLabel>
+
+                <VirtualizedAutocomplete
+                  name="parent"
+                  displayEmpty
+                  value={parent}
+                  onChange={(_, option) => {
+                    setParent(option);
+                  }}
+                  placeholder="Select this model's parent..."
+                  options={props.parents.map((parent) => {
+                    return {
+                      inputLabel: parent.text,
+                      value: parent.value,
+                      component: parent.text,
+                    };
+                  })}
+                />
+              </FormControl>
+
+              <div className={styles.questionnaire}>
+                <FormLabel>
+                  <Stack
+                    spacing={1}
+                    direction="row"
+                    alignItems="center"
+                    sx={{
+                      my: 1,
+                    }}
+                  >
+                    <Tooltip
+                      placement="top-start"
+                      arrow
+                      title={`Listed models have their content items available to programmatic
+                navigation calls.`}
+                    >
+                      <InfoIcon fontSize="small" />
+                    </Tooltip>
+                    <p>Should this model be listed?</p>
+                  </Stack>
+                </FormLabel>
+                <ToggleButtonGroup
+                  color="secondary"
+                  size="small"
+                  value={listed}
+                  exclusive
+                  onChange={(evt, value) => handleListedToggle(value)}
+                >
+                  <ToggleButton value={false}>Off </ToggleButton>
+                  <ToggleButton value={true}>On </ToggleButton>
+                </ToggleButtonGroup>
+              </div>
+            </section>
+          </CardContent>
+
+          <CardActions>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => {
+                const errors = [];
+
+                if (!type || type == 0) {
+                  errors["type"] =
+                    "Select which type of model you would like to create.";
+                }
+                if (!label) {
+                  errors["label"] =
+                    "Provide a label for this model to display to content editors.";
+                }
+                if (!name) {
+                  errors["name"] =
+                    "Provide a reference name for using in your templates.";
+                }
+
+                if (Object.keys(errors).length) {
+                  setErrors(errors);
+                  return;
+                }
+
+                props
+                  .dispatch(
+                    createModel({
+                      parentZUID: parent?.value || "",
+                      name,
+                      label,
+                      description,
+                      listed,
+                      type,
+                    })
+                  )
+                  .then((res) => {
+                    console.log("im in here", triggerCongratulationsModal);
+                    if (res.status === 200) {
+                      if (triggerCongratulationsModal) {
+                        setShowCongratulationsDialog(true);
+                      }
+                      props.dispatch(
+                        notify({
+                          kind: "save",
+                          message: `Created ${label} model`,
+                        })
+                      );
+
+                      if (res.data.ZUID) {
+                        if (type === "templateset") {
+                          // Create initial item
+                          request(
+                            `${CONFIG.API_INSTANCE}/content/models/${res.data.ZUID}/items`,
+                            {
+                              method: "POST",
+                              json: true,
+                              body: {
+                                data: {},
+                                web: {
+                                  canonicalTagMode: 1,
+                                  metaLinkText: label,
+                                  metaTitle: label,
+                                  pathPart: pathPart,
+                                  parentZUID: parent?.value || "",
+                                },
+                                meta: {
+                                  contentModelZUID: res.data.ZUID,
+                                  createdByUserZUID: props.user.user_zuid,
+                                },
                               },
-                              meta: {
-                                contentModelZUID: res.data.ZUID,
-                                createdByUserZUID: props.user.user_zuid,
-                              },
-                            },
-                          }
+                            }
+                          );
+                        }
+                        if (!triggerCongratulationsModal) {
+                          history.push(`/schema/${res.data.ZUID}`);
+                        }
+                      } else {
+                        props.dispatch(
+                          notify({
+                            kind: "error",
+                            message: `Model ${label} is missing ZUID.`,
+                          })
                         );
                       }
-
-                      history.push(`/schema/${res.data.ZUID}`);
                     } else {
                       props.dispatch(
                         notify({
                           kind: "error",
-                          message: `Model ${label} is missing ZUID.`,
+                          message: `Failed creating ${label} model. ${res.error}`,
                         })
                       );
                     }
-                  } else {
+                  })
+                  .catch((err) => {
+                    console.error(err);
                     props.dispatch(
                       notify({
                         kind: "error",
-                        message: `Failed creating ${label} model. ${res.error}`,
+                        message: `Network error occured. Failed to create ${label} model.`,
                       })
                     );
-                  }
-                })
-                .catch((err) => {
-                  console.error(err);
-                  props.dispatch(
-                    notify({
-                      kind: "error",
-                      message: `Network error occured. Failed to create ${label} model.`,
-                    })
-                  );
-                });
-            }}
-            startIcon={<AddIcon />}
-          >
-            Create Model
-          </Button>
-        </CardActions>
-      </Card>
-    </Box>
+                  });
+              }}
+              startIcon={<AddIcon />}
+            >
+              Create Model
+            </Button>
+          </CardActions>
+        </Card>
+      </Box>
+      {showCongratulationsDialog && (
+        <CongratulationsDialog
+          onClose={() => setShowCongratulationsDialog(false)}
+        />
+      )}
+    </>
   );
 });

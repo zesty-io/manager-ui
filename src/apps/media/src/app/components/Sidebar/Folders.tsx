@@ -37,14 +37,14 @@ import { useLocalStorage } from "react-use";
  */
 const nest = (items: any, id: string, link: string, sort: string) =>
   items
-    .filter((item: any) => item[link] === id)
-    .sort((a: any, b: any) => {
+    ?.filter((item: any) => item[link] === id)
+    ?.sort((a: any, b: any) => {
       if (!sort) return;
       return sort === "asc"
         ? a.name.localeCompare(b.name)
         : b.name.localeCompare(a.name);
     })
-    .map((item: any) => ({
+    ?.map((item: any) => ({
       ...item,
       children: nest(items, item.id, link, sort),
     }));
@@ -353,7 +353,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
             }}
             expanded={expanded}
             sx={{ height: "100%", width: "100%", overflowY: "auto", px: 1 }}
-            selected={[location.pathname.split("/")[2]]}
+            selected={[location.pathname.split("/")[3]]}
           >
             {trees.map((tree: any) => renderTree(tree))}
           </TreeView>
@@ -398,7 +398,7 @@ export const Folders = ({ lockedToGroupId }: Props) => {
                   }}
                   expanded={hiddenExpanded}
                   sx={{ height: "100%", width: "100%", overflowY: "auto" }}
-                  selected={[location.pathname.split("/")[2]]}
+                  selected={[location.pathname.split("/")[3]]}
                 >
                   {hiddenTrees.map((tree: any) => renderTree(tree, true))}
                 </TreeView>
