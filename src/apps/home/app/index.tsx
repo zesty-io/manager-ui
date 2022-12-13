@@ -1,5 +1,6 @@
 import { Box, ThemeProvider, CircularProgress } from "@mui/material";
 import { theme } from "@zesty-io/material";
+import { useState } from "react";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import {
@@ -54,6 +55,7 @@ export const HomeApp = () => {
     (hasEditedHomepage && hasPublishedHomepage && hasCreatedNewModel) ||
     isAMonthOld;
 
+  const [dateRange, setDateRange] = useState(30);
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -72,7 +74,11 @@ export const HomeApp = () => {
           },
         }}
       >
-        <Header hideSubtitle={!showMature} />
+        <Header
+          hideSubtitle={!showMature}
+          dateRange={dateRange}
+          onDateRangeChange={setDateRange}
+        />
         {isFetching ? (
           <Box
             display="flex"
@@ -86,12 +92,12 @@ export const HomeApp = () => {
           <Box sx={{ mx: 3, mt: -7.5 }}>
             {showMature && (
               <Box sx={{ mb: 2 }}>
-                <MetricCards />
+                <MetricCards dateRange={dateRange} />
               </Box>
             )}
             <Box display="flex" gap={3} sx={{ height: "calc(100vh - 286px)" }}>
               {showMature ? (
-                <ResourceTable />
+                <ResourceTable dateRange={dateRange} />
               ) : (
                 <Guide
                   hasEditedHomepage={hasEditedHomepage}
