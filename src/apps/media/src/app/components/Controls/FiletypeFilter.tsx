@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useParams } from "../../../../../../shell/hooks/useParams";
 
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
@@ -22,10 +22,7 @@ import FolderZipRounded from "@mui/icons-material/FolderZipRounded";
 import CheckIcon from "@mui/icons-material/Check";
 
 import { AppState } from "../../../../../../shell/store/types";
-import {
-  Filetype,
-  setFiletypeFilter,
-} from "../../../../../../shell/store/media-revamp";
+import { Filetype } from "../../../../../../shell/store/media-revamp";
 import { ImageFilterRow } from "./ImageFilterRow";
 import { VideoFilterRow } from "./VideoFilterRow";
 
@@ -39,8 +36,8 @@ const pluralize = (filetype: Filetype) => {
 };
 
 export const FiletypeFilter: FC = () => {
-  const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [params, setParams] = useParams();
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -48,13 +45,11 @@ export const FiletypeFilter: FC = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const activeFilter = params.get("filetype") as Filetype | null;
   const handleChange = (filetype: Filetype) => {
-    dispatch(setFiletypeFilter(filetype));
+    setParams(filetype, "filetype");
     handleClose();
   };
-  const activeFilter = useSelector(
-    (state: AppState) => state.mediaRevamp.filetypeFilter
-  );
 
   const inactiveButton = (
     <Button

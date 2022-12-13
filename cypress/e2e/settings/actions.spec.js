@@ -2,7 +2,9 @@ describe("Settings Actions", () => {
   const SAVED_MESSAGE = "Settings Saved";
 
   before(() => {
-    cy.visit("/settings");
+    cy.waitOn("**/settings", () => {
+      cy.visit("/settings");
+    });
   });
 
   it("Body Colors & Spacing", () => {

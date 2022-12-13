@@ -48,9 +48,9 @@ describe("Reports > Activity Log > Home", () => {
       cy.visit("/reports/activity-log/resources");
       cy.location("search").should(
         "eq",
-        `?from=${moment().add(-3, "months").format("YYYY-MM-DD")}&to=${moment()
-          .add(1, "days")
-          .format("YYYY-MM-DD")}`
+        `?from=${moment()
+          .add(-3, "months")
+          .format("YYYY-MM-DD")}&to=${moment().format("YYYY-MM-DD")}`
       );
     });
 
@@ -58,9 +58,9 @@ describe("Reports > Activity Log > Home", () => {
       cy.visit("/reports/activity-log/resources?from=2020-07-14&to=2020-07-16");
       cy.location("search").should(
         "not.eq",
-        `?from=${moment().add(-3, "months").format("YYYY-MM-DD")}&to=${moment()
-          .add(1, "days")
-          .format("YYYY-MM-DD")}`
+        `?from=${moment()
+          .add(-3, "months")
+          .format("YYYY-MM-DD")}&to=${moment().format("YYYY-MM-DD")}`
       );
     });
 
@@ -116,7 +116,7 @@ describe("Reports > Activity Log > Home", () => {
       });
     });
     it("Navigates to Resource Detail on Resource Item click", () => {
-      cy.contains("new all fields").click();
+      cy.get(".MuiListItem-root").last().click();
       cy.location("pathname").should(
         "eq",
         "/reports/activity-log/resources/7-f28fd4d4a9-qtjb66"
@@ -195,9 +195,9 @@ describe("Reports > Activity Log > Home", () => {
       cy.contains("RESET FILTERS").click();
       cy.location("search").should(
         "eq",
-        `?from=${moment().add(-3, "months").format("YYYY-MM-DD")}&to=${moment()
-          .add(1, "days")
-          .format("YYYY-MM-DD")}`
+        `?from=${moment()
+          .add(-3, "months")
+          .format("YYYY-MM-DD")}&to=${moment().format("YYYY-MM-DD")}`
       );
     });
   });

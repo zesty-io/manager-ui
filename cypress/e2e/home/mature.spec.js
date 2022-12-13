@@ -10,7 +10,7 @@ describe("Mature Home", () => {
   });
   it("Displays delta percentage on metric card if instance is over 2 months old", () => {
     // Test instance is over 2 months old
-    cy.contains("VS PRIOR 30 DAYS");
+    cy.contains("VS Prior 30 Days");
   });
   it("Opens Quick Start Guide in new tab", () => {
     cy.window().then((win) => {

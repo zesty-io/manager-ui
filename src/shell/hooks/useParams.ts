@@ -5,7 +5,8 @@ import { useLocation, useHistory } from "react-router-dom";
   params: provides the current URLSearchParams object
   setParams: takes in a val and name parameter to set a new parameter (passing null as a value will remove the parameter)
 */
-export const useParams = () => {
+type UseParams = [URLSearchParams, (val: string | null, name: string) => void];
+export const useParams: () => UseParams = () => {
   const history = useHistory();
   const location = useLocation();
   const params = useMemo(

@@ -53,9 +53,13 @@ export default memo(function Shell() {
 
               {products.map((product) => {
                 switch (product) {
-                  case "home":
+                  case "launchpad":
                     return (
-                      <Route key={product} path="/home" component={HomeApp} />
+                      <Route
+                        key={product}
+                        path="/launchpad"
+                        component={HomeApp}
+                      />
                     );
                   case "content":
                     return (
@@ -106,7 +110,7 @@ export default memo(function Shell() {
                 }
               })}
 
-              <Redirect exact from="/" to="/home" />
+              <Redirect exact from="/" to="/launchpad" />
               <Route path="*" component={Missing} />
             </Switch>
           </Sentry.ErrorBoundary>

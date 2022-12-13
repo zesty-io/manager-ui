@@ -27,7 +27,7 @@ describe("Content media selection modal", () => {
       .get("input[type=checkbox]")
       .first()
       .click({ force: true });
-    cy.get("h4").contains("1 Selected");
+    cy.contains("Done");
   });
 
   // Dependent on state of previous test
@@ -50,7 +50,7 @@ describe("Content media selection modal", () => {
       .first()
       .click({ force: true })
       .should("be.not.checked");
-    cy.get("h4").contains("1 Selected");
+    cy.contains("Done");
   });
 
   it("allows selection in wysiwyg", () => {
@@ -63,14 +63,12 @@ describe("Content media selection modal", () => {
 
   it("locks nav to locked media group", () => {
     cy.waitOn({ method: "GET", pathname: "*groups*" }, () => {
-      cy.visit("/content/6-c6baf8cb95-nw4t0k/new");
+      cy.visit("/content/6-852490-2mhz4v/new");
     });
-    cy.contains("locked-image-test");
-    cy.get(".FieldTypeImageContent--EDuUS button")
-      .last()
-      .click({ force: true });
+    cy.contains("2x Images");
+    cy.get("figure button").last().click({ force: true });
     cy.get("h4").contains("Insert from Media");
-    cy.get(".MuiTreeItem-root>ul").should("have.length", 1);
+    cy.get(".MuiTreeView-root li").should("have.length", 1);
   });
 
   // Dependent on state of previous test
@@ -80,9 +78,10 @@ describe("Content media selection modal", () => {
 
   // Dependent on state of previous test
   it("only searches the locked group", () => {
-    cy.get("input[type='text'][placeholder='Search Media']").type("a");
-    // there is only 1 item in this group, so if there are more results, then
-    // we are searching all media
-    cy.get("[data-testid='media-thumbnail-content']").should("have.length", 1);
+    cy.get("[data-testid='media-thumbnail-content']").should("have.length", 4);
+    cy.get("input[type='text'][placeholder='Search Media']").type(
+      "zesty{enter}"
+    );
+    cy.get("[data-testid='media-thumbnail-content']").should("have.length", 3);
   });
 });
