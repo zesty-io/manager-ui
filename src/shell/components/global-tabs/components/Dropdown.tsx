@@ -25,7 +25,7 @@ export type Dropdown = {
   removeMany: (tabs: Tab[]) => void;
 };
 
-const ITEM_HEIGHT = 48;
+const ITEM_HEIGHT = 56;
 
 export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -84,7 +84,7 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
              creating an unsightly gap
             */
             lineHeight: "inherit",
-            marginTop: "2px",
+            marginTop: "1px",
           }}
         >
           <Box
@@ -113,44 +113,43 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
           MenuListProps={{
             "aria-labelledby": "basic-button",
             sx: {
-              backgroundColor: "grey.900",
+              backgroundColor: "white",
               boxSizing: "border-box",
               padding: "0px",
-              width: "240px",
+              width: "274px",
             },
           }}
         >
-          <MenuItem
-            onKeyDown={(e) => e.stopPropagation()}
-            disableRipple
+          <Box
             sx={{
               cursor: "auto",
-              padding: "12px 12px 12px 12px",
-              height: "56px",
+              height: "60px",
+              backgroundColor: theme.palette.grey[200],
+              padding: "12px",
+              boxSizing: "border-box",
             }}
           >
             <TextField
               variant="outlined"
               placeholder="Search Tabs"
               size="small"
-              sx={{ height: "32px" }}
+              fullWidth
+              sx={{ height: "36px" }}
               InputProps={{
                 startAdornment: (
-                  <SearchIcon fontSize="small" sx={{ color: "grey.300" }} />
+                  <SearchIcon
+                    fontSize="small"
+                    sx={{ color: theme.palette.action.active }}
+                  />
                 ),
                 sx: {
                   "&.Mui-focused": {
                     backgroundColor: "white",
-                    color: "grey.900",
+                    color: theme.palette.text.secondary,
                   },
-                  "&.Mui-focused fieldset": {
-                    border: "none",
-                  },
-                  "&.Mui-focused svg": {
-                    color: "grey.400",
-                  },
-                  backgroundColor: "grey.800",
-                  color: "grey.50",
+
+                  backgroundColor: "white",
+                  color: theme.palette.text.disabled,
                   padding: "0px 8px",
                   gap: "8px",
                 },
@@ -158,13 +157,13 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
               value={filter}
               onChange={(evt) => setFilter(evt.target.value)}
             />
-          </MenuItem>
+          </Box>
           <MenuItem
             disableRipple
             sx={{
               cursor: "auto",
-              padding: "6px 12px",
-              height: "32px",
+              padding: "17px 12px",
+              height: "56px",
             }}
           >
             <Stack
@@ -173,11 +172,14 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
               alignItems="center"
               flex="1"
             >
-              <Box component="span" sx={{ color: "white", lineHeight: "266%" }}>
-                <Typography variant="overline">
+              <Box
+                component="span"
+                sx={{ color: theme.palette.text.secondary, lineHeight: "266%" }}
+              >
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   {Boolean(filterTerm)
-                    ? `${filteredTabs.length} RESULTS`
-                    : "PINNED TABS"}
+                    ? `${filteredTabs.length} Results`
+                    : "Pinned Tabs"}
                 </Typography>
               </Box>
               {Boolean(filterTerm) || (
@@ -188,10 +190,8 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
                   onClick={() => setConfirmOpen(true)}
                   size="small"
                   sx={{
-                    mr: 0,
-                    pr: 0,
-                    color: "grey.400",
-                    lineHeight: "266%",
+                    color: theme.palette.text.secondary,
+                    lineHeight: "24px",
                     "&:hover": {
                       color: "warning.main",
                       backgroundColor: "transparent",
@@ -254,25 +254,24 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
     <MenuItem
       disableRipple
       sx={{
-        color: "grey.400",
+        color: theme.palette.text.primary,
         width: "100%",
         display: "grid",
         gridTemplateColumns: "20px 1fr 20px",
         justifyContent: "space-between",
         alignItems: "center",
         height: `${ITEM_HEIGHT}px`,
-        padding: "12px 12px 12px 12px",
+        padding: "17px 12px",
         gap: "8px",
         cursor: "auto",
-
         boxSizing: "border-box",
         borderBottom: "1px solid",
-        borderColor: "grey.800",
+        borderColor: theme.palette.border,
       }}
     >
-      <Box component="span" color="grey.400">
+      <Box component="span" sx={{ color: theme.palette.action.active }}>
         {tab.icon && (
-          <FontAwesomeIcon icon={tab.icon} style={{ fontSize: 16 }} />
+          <FontAwesomeIcon icon={tab.icon} style={{ fontSize: "18px" }} />
         )}
       </Box>
       <MuiLink
@@ -280,17 +279,16 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
         to={tab.pathname + tab.search}
         underline="none"
         sx={{
-          color: "grey.400",
+          color: theme.palette.text.primary,
           textDecoration: "none",
           flex: "1",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
-
           alignContent: "center",
         }}
       >
-        <Typography variant="caption">
+        <Typography variant="body2">
           {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
         </Typography>
       </MuiLink>
@@ -302,6 +300,7 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          color: theme.palette.action.active,
         }}
       >
         <PinIcon
