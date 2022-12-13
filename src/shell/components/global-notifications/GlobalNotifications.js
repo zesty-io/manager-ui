@@ -77,7 +77,7 @@ export default connect((state) => {
           {props.notifications.length ? (
             <span className={styles.Count}>{props.notifications.length}</span>
           ) : (
-            <FontAwesomeIcon icon={faBell} />
+            <FontAwesomeIcon style={{ fontSize: "13px" }} icon={faBell} />
           )}
         </span>
 
