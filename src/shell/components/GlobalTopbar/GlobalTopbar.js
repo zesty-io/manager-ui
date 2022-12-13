@@ -32,11 +32,7 @@ export function GlobalTopbar() {
       >
         <GlobalTabs />
       </Box>
-      <Box
-        sx={{
-          margin: "11px 8px 5px 8px",
-        }}
-      >
+      <Box>
         <GlobalNotifications />
       </Box>
     </Stack>
