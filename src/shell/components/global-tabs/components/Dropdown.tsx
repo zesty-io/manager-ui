@@ -147,7 +147,6 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
                     backgroundColor: "white",
                     color: theme.palette.text.secondary,
                   },
-
                   backgroundColor: "white",
                   color: theme.palette.text.disabled,
                   padding: "0px 8px",
