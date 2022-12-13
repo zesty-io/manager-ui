@@ -263,7 +263,7 @@ export function createTab(
     tab.icon = appNameMap[name].icon;
     tab.app = appNameMap[name].name;
     if (parts[0] === "content" && parts[2] === "new" && zuidIsValid(parts[1])) {
-      tab.name = `New ${state?.models[parts[1]]?.label} Item`;
+      tab.name = `New ${state?.models?.[parts[1]]?.label} Item`;
     }
   }
   // resolve ZUID from store to determine display information
