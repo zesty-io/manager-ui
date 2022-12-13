@@ -121,6 +121,7 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
           }}
         >
           <Box
+            onKeyDown={(e) => e.stopPropagation()}
             sx={{
               cursor: "auto",
               height: "60px",
