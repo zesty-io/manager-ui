@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState, useLayoutEffect } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { useLocation, Link as Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -7,7 +7,6 @@ import PinIcon from "@mui/icons-material/PushPin";
 import OutlinedPinIcon from "@mui/icons-material/PushPinOutlined";
 import { SxProps } from "@mui/system";
 
-import { theme } from "@zesty-io/material";
 import MuiLink from "@mui/material/Link";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -57,24 +56,24 @@ const BaseTab: FC<BaseTab> = ({
   onMouseLeave,
 }) => {
   const [styles, setStyles] = useState({
-    backgroundColor: theme.palette.grey[100],
-    fontColor: theme.palette.text.secondary,
-    iconColor: theme.palette.action.active,
+    backgroundColor: "grey.100",
+    fontColor: "text.secondary",
+    iconColor: "action.active",
   });
 
   useEffect(() => {
     if (isActive) {
       if (isDarkMode) {
         setStyles({
-          backgroundColor: "#1E1E1E",
-          fontColor: "white",
-          iconColor: theme.palette.grey[500],
+          backgroundColor: "#1e1e1e",
+          fontColor: "common.white",
+          iconColor: "grey.500",
         });
       } else {
         setStyles({
-          backgroundColor: "white",
-          fontColor: theme.palette.text.primary,
-          iconColor: theme.palette.action.active,
+          backgroundColor: "common.white",
+          fontColor: "text.primary",
+          iconColor: "action.active",
         });
       }
     }
@@ -89,75 +88,65 @@ const BaseTab: FC<BaseTab> = ({
     <Box
       component="li"
       data-cy="ActiveTab"
-      sx={{
-        overflow: "hidden",
-        width: `${tabWidth}px`,
-        backgroundColor: styles.backgroundColor,
-        boxSizing: "border-box",
-        alignItems: "center",
-        height: "34px",
-        padding: "5px 0px 5px 14px",
-        ...sx,
-      }}
+      sx={sx}
+      width={`${tabWidth}px`}
+      py={0.5}
+      height={34}
+      bgcolor={styles.backgroundColor}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
       <Stack
         component="div"
         direction="row"
-        justifyContent="space-between"
+        height={24}
         alignItems="center"
+        justifyContent="space-between"
+        borderRight={1}
+        borderColor={isBorderHidden ? "transparent" : "grey.300"}
         sx={{
-          height: "24px",
-          boxSizing: "border-box",
-          borderRight: "1px solid",
-          borderColor: isBorderHidden ? "transparent" : theme.palette.grey[300],
           "&:hover": {
-            borderColor: theme.palette.grey[50],
+            borderColor: "transparent",
           },
         }}
       >
         <Box
-          component="span"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "12px",
-            height: "12px",
-            marginRight: "10px",
-            color: styles.iconColor,
-          }}
+          component="div"
+          whiteSpace="nowrap"
+          overflow="hidden"
+          textOverflow="ellipsis"
+          pl={1.5}
         >
-          {tab.icon && (
-            <FontAwesomeIcon icon={tab.icon} style={{ fontSize: 16 }} />
-          )}
+          <Box display="inline-block" mr={1.25} color={styles.iconColor}>
+            {tab.icon && (
+              <FontAwesomeIcon icon={tab.icon} style={{ fontSize: 16 }} />
+            )}
+          </Box>
+          <MuiLink
+            component={Link}
+            to={tab.pathname + tab.search}
+            // @ts-expect-error missing body3 module augmentation
+            variant="body3"
+            color={styles.fontColor}
+            fontWeight={600}
+            underline="none"
+          >
+            {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
+          </MuiLink>
         </Box>
-        <MuiLink
-          component={Link}
-          to={tab.pathname + tab.search}
-          variant={theme.typography.body3}
-          sx={{
-            color: styles.fontColor,
-            textDecoration: "none",
-            flex: "1",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            fontWeight: 600,
-          }}
-        >
-          {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
-        </MuiLink>
         <Box
-          component="span"
+          component="div"
           onClick={onClick}
+          width={24}
+          height={24}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          pr={1}
+          pl={0.5}
+          color="action.active"
           sx={{
             cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            margin: "0px 8px 0px 4px",
           }}
         >
           <Pin
@@ -249,9 +238,9 @@ export const InactiveTab: FC<InactiveTab> = ({
       isAdjacentTabHovered={isAdjacentTabHovered}
       sx={{
         "&:hover": {
-          backgroundColor: theme.palette.grey[50],
+          backgroundColor: "grey.50",
           borderRadius: "8px 8px 0px 0px",
-          borderColor: "white",
+          borderColor: "common.white",
         },
         ...sx,
       }}

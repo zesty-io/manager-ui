@@ -6,6 +6,16 @@ import { AppState } from "./types";
 import { isValid as zuidIsValid } from "zuid";
 
 import {
+  RocketLaunch,
+  ImageRounded,
+  CodeRounded,
+  Edit,
+  // TODO: Verify with Zosh about these 2
+  Settings,
+  ContactsRounded,
+} from "@mui/icons-material";
+import { Database } from "@zesty-io/material";
+import {
   faCode,
   faCog,
   faChartLine,
@@ -172,6 +182,7 @@ export function createTab(
   const { path, parts, zuid, prefix, search } = parsedPath;
   const tab: Tab = { pathname: path, search };
 
+  // TODO: Change to MUI icons
   const appNameMap = {
     launchpad: {
       name: "Launchpad",
@@ -208,12 +219,14 @@ export function createTab(
   };
 
   if (parts[0] === "app") {
+    // TODO: Verify with Zosh for the correct icon
     tab.icon = faPlug;
     const app = state.apps.installed.find(
       (app: { ZUID: string }) => app.ZUID === zuid
     );
     tab.name = app?.label || app?.name || "Custom App";
   } else if (parts[0] === "reports") {
+    // TODO: Verify with Zosh for the correct icon
     tab.icon = faChartLine;
     switch (parts[1]) {
       case "activity-log":
