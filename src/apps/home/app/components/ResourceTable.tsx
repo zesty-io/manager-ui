@@ -17,6 +17,7 @@ import { Database } from "@zesty-io/material";
 import { useHistory } from "react-router";
 import { useMemo } from "react";
 import { uniqBy } from "lodash";
+import { EmptyState } from "./EmptyState";
 
 interface Props {
   dateRange: number;
@@ -144,6 +145,18 @@ export const ResourceTable = ({ dateRange }: Props) => {
       renderCell: ({ row }: GridRenderCellParams) => <VersionCell {...row} />,
     },
   ];
+
+  if (
+    !isAuditFetching &&
+    !uniqBy(
+      audit?.filter((resource) =>
+        viewableResourceTypes.includes(resource.resourceType)
+      ),
+      "affectedZUID"
+    )?.length
+  ) {
+    return <EmptyState />;
+  }
 
   return (
     <DataGridPro
