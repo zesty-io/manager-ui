@@ -20,6 +20,10 @@ import fileBroken from "../../../../../../public/images/fileBroken.jpg";
 import { useHistory, useLocation } from "react-router-dom";
 import { numberFormatter } from "../../../../../utility/numberFormatter";
 
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
+import FontDownloadRoundedIcon from "@mui/icons-material/FontDownloadRounded";
+
 import {
   fileExtension,
   fileTypeToColor,
@@ -33,6 +37,20 @@ import {
 } from "../../../../../shell/services/mediaManager";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import CheckIcon from "@mui/icons-material/Check";
+
+// file icons import
+import wordImg from "../../../../../../public/images/wordImg.png";
+import excelImg from "../../../../../../public/images/excelImg.png";
+import pdfImg from "../../../../../../public/images/pdfImg.png";
+import pptImg from "../../../../../../public/images/pptImg.png";
+import mpImg from "../../../../../../public/images/mpImg.png";
+import csvImg from "../../../../../../public/images/csvImg.png";
+import zipImg from "../../../../../../public/images/zipImg.png";
+import numberImg from "../../../../../../public/images/numberImg.png";
+import defaultImg from "../../../../../../public/images/defaultImg.png";
+import jsIcon from "../../../../../../public/images/jsIcon.svg";
+import htmlIcon from "../../../../../../public/images/htmlIcon.svg";
+import cssIcon from "../../../../../../public/images/cssIcon.svg";
 
 interface Props {
   files?: any;
@@ -77,6 +95,18 @@ const FilenameColumn = ({ params }: any) => {
 
   const handleImageError = () => {
     setIsImageError(true);
+  };
+
+  const FilenameTooltip = () => {
+    return (
+      <Box sx={{ display: "flex", alignItems: "center", ml: 3 }}>
+        <Tooltip title={params.row.filename || params.row.FileName.slice(1)}>
+          <Typography variant="body2">
+            {params.row.filename || params.row.FileName.slice(1)}
+          </Typography>
+        </Tooltip>
+      </Box>
+    );
   };
 
   return (
