@@ -1,4 +1,5 @@
 //Assume new favicon image has been loaded ye
+//
 describe("Favicon upload image", () => {
   before(() => {
     cy.visit("/settings/head");
