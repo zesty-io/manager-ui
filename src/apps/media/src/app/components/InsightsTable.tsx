@@ -97,7 +97,7 @@ const FilenameColumn = ({ params }: any) => {
     setIsImageError(true);
   };
 
-  const NameTooltip = () => {
+  const FilenameTooltip = () => {
     return (
       <Box sx={{ display: "flex", alignItems: "center", ml: 3 }}>
         <Tooltip title={params.row.filename || params.row.FileName.slice(1)}>
@@ -145,7 +145,7 @@ const FilenameColumn = ({ params }: any) => {
               }}
             />
           </Box>
-          <NameTooltip />
+          <FilenameTooltip />
         </Box>
       );
     case "ots":
@@ -177,7 +177,7 @@ const FilenameColumn = ({ params }: any) => {
               }}
             />
           </Box>
-          <NameTooltip />
+          <FilenameTooltip />
         </Box>
       );
     case "pdf":
@@ -207,7 +207,7 @@ const FilenameColumn = ({ params }: any) => {
               }}
             />
           </Box>
-          <NameTooltip />
+          <FilenameTooltip />
         </Box>
       );
     case "csv":
@@ -237,7 +237,7 @@ const FilenameColumn = ({ params }: any) => {
               }}
             />
           </Box>
-          <NameTooltip />
+          <FilenameTooltip />
         </Box>
       );
     case "docx":
@@ -269,7 +269,7 @@ const FilenameColumn = ({ params }: any) => {
               }}
             />
           </Box>
-          <NameTooltip />
+          <FilenameTooltip />
         </Box>
       );
     case "ppt":
@@ -301,7 +301,7 @@ const FilenameColumn = ({ params }: any) => {
               }}
             />
           </Box>
-          <NameTooltip />
+          <FilenameTooltip />
         </Box>
       );
     case "aac":
@@ -335,7 +335,7 @@ const FilenameColumn = ({ params }: any) => {
               }}
             />
           </Box>
-          <NameTooltip />
+          <FilenameTooltip />
         </Box>
       );
     case "mp4":
@@ -388,7 +388,7 @@ const FilenameColumn = ({ params }: any) => {
               }}
             />
           </Box>
-          <NameTooltip />
+          <FilenameTooltip />
         </Box>
       );
     case "iso":
@@ -421,7 +421,7 @@ const FilenameColumn = ({ params }: any) => {
               }}
             />
           </Box>
-          <NameTooltip />
+          <FilenameTooltip />
         </Box>
       );
     case "ai":
@@ -456,7 +456,7 @@ const FilenameColumn = ({ params }: any) => {
               }}
             />
           </Box>
-          <NameTooltip />
+          <FilenameTooltip />
         </Box>
       );
     case "numbers":
@@ -486,7 +486,7 @@ const FilenameColumn = ({ params }: any) => {
               }}
             />
           </Box>
-          <NameTooltip />
+          <FilenameTooltip />
         </Box>
       );
     case "js":
@@ -516,7 +516,7 @@ const FilenameColumn = ({ params }: any) => {
               }}
             />
           </Box>
-          <NameTooltip />
+          <FilenameTooltip />
         </Box>
       );
     case "css":
@@ -546,7 +546,7 @@ const FilenameColumn = ({ params }: any) => {
               }}
             />
           </Box>
-          <NameTooltip />
+          <FilenameTooltip />
         </Box>
       );
     case "html":
@@ -576,7 +576,7 @@ const FilenameColumn = ({ params }: any) => {
               }}
             />
           </Box>
-          <NameTooltip />
+          <FilenameTooltip />
         </Box>
       );
     case "otf":
@@ -601,7 +601,7 @@ const FilenameColumn = ({ params }: any) => {
               sx={{ color: "grey.600", m: "auto" }}
             />
           </Box>
-          <NameTooltip />
+          <FilenameTooltip />
         </Box>
       );
     case "No Extension":
@@ -623,7 +623,7 @@ const FilenameColumn = ({ params }: any) => {
               sx={{ color: "red.600", m: "auto" }}
             />
           </Box>
-          <NameTooltip />
+          <FilenameTooltip />
         </Box>
       );
     default:
@@ -655,7 +655,7 @@ const FilenameColumn = ({ params }: any) => {
               }}
             />
           </Box>
-          <NameTooltip />
+          <FilenameTooltip />
         </Box>
       );
   }
