@@ -130,9 +130,8 @@ export default memo(function GlobalTabs() {
 
   const topBarTabs = inactiveTabs.filter((t, i) => i < numTabs);
   const dropDownTabs = inactiveTabs.filter((t, i) => i >= numTabs);
-
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <GlobalDirtyCodeModal />
       <Stack
         ref={tabContainerRef}
@@ -141,6 +140,9 @@ export default memo(function GlobalTabs() {
         sx={{
           display: "grid",
           gridTemplateColumns: "1fr 80px",
+          "*": {
+            boxSizing: "border-box",
+          },
         }}
       >
         <Stack
@@ -165,6 +167,6 @@ export default memo(function GlobalTabs() {
           }}
         />
       </Stack>
-    </ThemeProvider>
+    </>
   );
 });
