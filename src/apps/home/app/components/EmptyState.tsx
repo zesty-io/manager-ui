@@ -12,7 +12,13 @@ export const EmptyState = () => {
 
   return (
     <>
-      <Box width="100%" display="flex" alignItems="center" gap={4}>
+      <Box
+        width="100%"
+        display="flex"
+        alignItems="center"
+        gap={4}
+        sx={{ px: 2 }}
+      >
         <Box width="386px">
           <Typography variant="h4" fontWeight={600}>
             Start Growing your Instance Today
