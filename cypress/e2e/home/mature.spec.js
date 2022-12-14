@@ -2,8 +2,8 @@ describe("Mature Home", () => {
   before(() => {
     cy.visit("/");
   });
-  it("Root gets redirected to home", () => {
-    cy.url().should("include", "/home");
+  it("Root gets redirected to launchpad", () => {
+    cy.url().should("include", "/launchpad");
   });
   it("Displays user first name", () => {
     cy.contains("Good Morning, FirstName");

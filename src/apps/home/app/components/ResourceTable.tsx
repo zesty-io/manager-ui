@@ -18,6 +18,10 @@ import { useHistory } from "react-router";
 import { useMemo } from "react";
 import { uniqBy } from "lodash";
 
+interface Props {
+  dateRange: number;
+}
+
 const viewableResourceTypes = ["content", "schema", "code"];
 
 const iconMap = {
@@ -106,9 +110,9 @@ const VersionCell = ({ affectedZUID, resourceType }: any) => {
   );
 };
 
-export const ResourceTable = () => {
+export const ResourceTable = ({ dateRange }: Props) => {
   const { data: audit, isFetching: isAuditFetching } = useGetAuditsQuery({
-    start_date: moment().subtract(1, "months").format("L"),
+    start_date: moment().subtract(dateRange, "days").format("L"),
     end_date: moment().format("L"),
   });
 
