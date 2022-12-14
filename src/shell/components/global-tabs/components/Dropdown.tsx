@@ -54,10 +54,28 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
       tab.pathname.toLocaleLowerCase().includes(filterTerm) ||
       (tab.name && tab.name.toLocaleLowerCase().includes(filterTerm))
   );
+  const getDropdownHeader = () => {
+    if (Boolean(filterTerm)) {
+      if (filteredTabs.length) {
+        return `${filteredTabs.length} Results`;
+      } else {
+        return "No results found";
+      }
+    } else {
+      return "Pinned Tabs";
+    }
+  };
 
   return (
     <>
-      <Box>
+      <Box
+        sx={{
+          "&:hover": {
+            borderBottom: 2,
+            borderColor: "grey.50",
+          },
+        }}
+      >
         <Button
           id="basic-button"
           aria-controls={open ? "basic-menu" : undefined}
@@ -189,9 +207,7 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
                   fontWeight={600}
                   sx={{ color: "text.secondary" }}
                 >
-                  {Boolean(filterTerm)
-                    ? `${filteredTabs.length} Results`
-                    : "Pinned Tabs"}
+                  {getDropdownHeader()}
                 </Typography>
               </Box>
               {Boolean(filterTerm) || (
@@ -273,7 +289,8 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
         borderColor: "border",
       }}
     >
-      <Box component="span" sx={{ color: "action.active" }}>
+      {/* TODO: Change to MUI icons once Zosh provides list */}
+      <Box component="span" pr={0.5} sx={{ color: "action.active" }}>
         {tab.icon && (
           <FontAwesomeIcon icon={tab.icon} style={{ fontSize: "18px" }} />
         )}
