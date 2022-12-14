@@ -12,9 +12,10 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import TextField from "@mui/material/TextField";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import IconButton from "@mui/material/IconButton";
+import InputBase from "@mui/material/InputBase";
 
 import { Tab } from "../../../../shell/store/ui";
 import { Typography } from "@mui/material";
@@ -97,9 +98,13 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
             "aria-labelledby": "basic-button",
             sx: {
               backgroundColor: "common.white",
-              boxSizing: "border-box",
               padding: "0px",
               width: "274px",
+            },
+          }}
+          sx={{
+            "*": {
+              boxSizing: "border-box",
             },
           }}
         >
@@ -109,38 +114,54 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
             sx={{
               cursor: "auto",
               height: "60px",
-              backgroundColor: "grey.200",
               padding: 1.5,
-              boxSizing: "border-box",
               "&:hover": {
-                backgroundColor: "grey.200",
+                backgroundColor: "common.white",
+              },
+              "&.Mui-focusVisible": {
+                backgroundColor: "common.white",
               },
             }}
           >
-            <TextField
-              variant="outlined"
-              placeholder="Search Tabs"
-              size="small"
-              fullWidth
-              sx={{ height: "36px" }}
-              InputProps={{
-                startAdornment: (
-                  <SearchIcon fontSize="small" sx={{ color: "action" }} />
-                ),
-                sx: {
+            <Box
+              display="flex"
+              bgcolor="grey.50"
+              border={1}
+              borderColor="grey.50"
+              borderRadius={1}
+              height={36}
+              width="100%"
+            >
+              <InputBase
+                fullWidth
+                placeholder="Search Tabs"
+                value={filter}
+                onChange={(evt) => setFilter(evt.target.value)}
+                startAdornment={
+                  <IconButton disableRipple disableTouchRipple size="small">
+                    <SearchIcon />
+                  </IconButton>
+                }
+                endAdornment={
+                  filter.length ? (
+                    <IconButton
+                      disableRipple
+                      disableTouchRipple
+                      size="small"
+                      onClick={() => setFilter("")}
+                    >
+                      <CloseRoundedIcon />
+                    </IconButton>
+                  ) : null
+                }
+                sx={{
                   "&.Mui-focused": {
-                    backgroundColor: "white",
-                    color: "text.secondary",
+                    borderColor: "border",
+                    backgroundColor: "common.white",
                   },
-                  backgroundColor: "common.white",
-                  color: "text.disabled",
-                  padding: "0px 8px",
-                  gap: "8px",
-                },
-              }}
-              value={filter}
-              onChange={(evt) => setFilter(evt.target.value)}
-            />
+                }}
+              />
+            </Box>
           </MenuItem>
           <MenuItem
             disableRipple
@@ -148,6 +169,12 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
               cursor: "auto",
               padding: 1.5,
               height: "56px",
+              "&:hover": {
+                backgroundColor: "common.white",
+              },
+              "&.Mui-focusVisible": {
+                backgroundColor: "common.white",
+              },
             }}
           >
             <Stack
@@ -169,17 +196,12 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
               </Box>
               {Boolean(filterTerm) || (
                 <Button
-                  disableRipple
-                  disableFocusRipple
-                  disableTouchRipple
+                  variant="outlined"
                   onClick={() => setConfirmOpen(true)}
                   size="small"
                   sx={{
                     color: "text.secondary",
-                    "&:hover": {
-                      color: "warning.main",
-                      backgroundColor: "transparent",
-                    },
+                    borderColor: "border",
                   }}
                 >
                   <Typography variant="overline">Unpin All</Typography>
@@ -239,8 +261,7 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
       disableRipple
       sx={{
         width: "100%",
-        display: "grid",
-        gridTemplateColumns: "20px 1fr 20px",
+        display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         height: `${ITEM_HEIGHT}px`,
@@ -270,13 +291,13 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
           alignContent: "center",
         }}
       >
-        <Typography variant="body2" color="text.primary">
+        <Typography noWrap variant="body2" color="text.primary">
           {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
         </Typography>
       </MuiLink>
       <IconButton size="small" onClick={remove}>
         <PinIcon
-          fontSize="inherit"
+          fontSize="small"
           sx={{
             transform: "rotate(45deg)",
           }}
