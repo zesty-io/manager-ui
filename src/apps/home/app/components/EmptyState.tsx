@@ -17,7 +17,7 @@ export const EmptyState = () => {
         display="flex"
         alignItems="center"
         gap={4}
-        sx={{ px: 2 }}
+        sx={{ px: 2, mb: 2 }}
       >
         <Box width="386px">
           <Typography variant="h4" fontWeight={600}>
