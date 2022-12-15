@@ -147,14 +147,27 @@ export default memo(function GlobalTabs() {
           },
         }}
       >
+        {/* TODO: Remove border color on tab adjacent to active */}
         <Stack
-          component="ol"
+          component="div"
           overflow="hidden"
           display="grid"
           gridTemplateColumns={`repeat(${numTabs + 1}, ${tabWidth}px)`}
+          sx={{
+            "& .tab-item:first-child > div": {
+              borderColor: "transparent",
+            },
+            "& .tab-item:hover + .tab-item > div": {
+              borderColor: "transparent",
+            },
+            "& .tab-item[data-active=true] + .tab-item > div": {
+              borderColor: "transparent",
+            },
+          }}
         >
           <ActiveTab tabWidth={tabWidth} />
           <InactiveTabGroup tabs={topBarTabs} tabWidth={tabWidth} />
+          {/* TODO: Add border left to dropdown */}
           <Dropdown
             tabs={dropDownTabs}
             tabWidth={tabWidth}

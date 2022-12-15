@@ -76,6 +76,13 @@ const BaseTab: FC<BaseTab> = ({
           iconColor: "action.active",
         });
       }
+    } else {
+      // Revert to default style once unselected as active
+      setStyles({
+        backgroundColor: "grey.100",
+        fontColor: "text.secondary",
+        iconColor: "action.active",
+      });
     }
   }, [isDarkMode, isActive]);
 
@@ -86,9 +93,10 @@ const BaseTab: FC<BaseTab> = ({
 
   return (
     <Box
-      component="li"
+      component="div"
+      className="tab-item"
       data-cy="ActiveTab"
-      sx={sx}
+      data-active={isActive}
       width={`${tabWidth}px`}
       py={0.5}
       height={34}
@@ -96,6 +104,12 @@ const BaseTab: FC<BaseTab> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       flex="1 0 0"
+      borderRadius="8px 8px 0px 0px"
+      sx={{
+        "&:hover": {
+          backgroundColor: isActive ? styles.backgroundColor : "grey.50",
+        },
+      }}
     >
       <Stack
         component="div"
@@ -103,8 +117,8 @@ const BaseTab: FC<BaseTab> = ({
         height={24}
         alignItems="center"
         justifyContent="space-between"
-        borderRight={1}
-        borderColor={isBorderHidden ? "transparent" : "grey.300"}
+        borderLeft={1}
+        borderColor={isActive ? "transparent" : "grey.300"}
         sx={{
           "&:hover": {
             borderColor: "transparent",
