@@ -8,7 +8,7 @@ import cx from "classnames";
 
 import styles from "./GlobalSidebar.less";
 
-import { Box, ThemeProvider } from "@mui/material";
+import { Box, ThemeProvider, IconButton } from "@mui/material";
 import GlobalMenu from "shell/components/global-menu";
 import GlobalCustomApps from "shell/components/global-custom-apps";
 import GlobalActions from "shell/components/global-actions";
@@ -16,6 +16,7 @@ import fullZestyLogo from "../../../../public/images/fullZestyLogo.svg";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
 
 import { theme } from "@zesty-io/material";
+import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 
 const globalSideBarThemeStyles = {
   backgroundColor: theme.palette.grey[900],
@@ -31,7 +32,7 @@ export default connect((state) => {
     <ThemeProvider theme={theme}>
       <aside className={styles.GlobalSidebar} style={globalSideBarThemeStyles}>
         <div>
-          <Box sx={{ p: 2 }}>
+          <Box sx={{ px: 2, pb: 1, pt: 2 }}>
             {props.openNav ? (
               <Box
                 component="img"
@@ -54,6 +55,24 @@ export default connect((state) => {
               />
             )}
           </Box>
+          <IconButton
+            sx={{
+              borderColor: "grey.600",
+              borderStyle: "solid",
+              borderWidth: "1px",
+              backgroundColor: "grey.900",
+              float: "right",
+              mr: -2,
+              zIndex: 50,
+              width: "24px",
+              height: "24px",
+            }}
+          >
+            <KeyboardDoubleArrowLeftIcon
+              fontSize="small"
+              sx={{ color: "grey.600" }}
+            />
+          </IconButton>
           <GlobalMenu openNav={props.ui.openNav} />
           <GlobalCustomApps openNav={props.ui.openNav} />
           <GlobalActions hash={props.instance.randomHashID} />
