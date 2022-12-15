@@ -4,20 +4,7 @@ import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 
-import { Typography, ListItem, ListItemIcon } from "@mui/material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEdit,
-  faImage,
-  faAddressCard,
-  faDatabase,
-  faChartLine,
-  faCog,
-  faBullseye,
-  faCode,
-  faRocket,
-  faHome,
-} from "@fortawesome/free-solid-svg-icons";
+import { Box, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import EditIcon from "@mui/icons-material/Edit";
 import ImageIcon from "@mui/icons-material/Image";
@@ -52,8 +39,12 @@ export default memo(function GlobalMenu() {
   const MenuItemIcon = ({ product }) => {
     const SpecificIcon = icons[product];
     return (
-      <ListItemIcon>
-        <SpecificIcon sx={{ color: "grey.500" }} />
+      <ListItemIcon sx={{ minWidth: "36px" }}>
+        <SpecificIcon
+          sx={{
+            color: slug === product ? "primary.main" : "grey.500",
+          }}
+        />
       </ListItemIcon>
     );
   };
@@ -73,25 +64,36 @@ export default memo(function GlobalMenu() {
         }
 
         return (
-          <ListItem sx={{ p: 0 }}>
-            <Link
-              key={product}
-              className={cx(
-                styles.SubAppLink,
-                slug === product ? styles.current : null
-              )}
-              to={`/${product}`}
-              title={`${name} App`}
+          <Link
+            key={product}
+            style={{
+              textDecoration: "none",
+            }}
+            to={`/${product}`}
+            title={`${name} App`}
+          >
+            <ListItem
+              sx={{
+                px: "12px",
+                py: "12px",
+                height: "36px",
+                borderRadius: "4px",
+                backgroundColor: slug === product ? "grey.800" : "transparent",
+              }}
             >
               <MenuItemIcon product={product} />
 
               {openNav && (
-                <Typography variant="body3" sx={{ color: "grey.500" }}>
+                <ListItemText
+                  sx={{
+                    color: slug === product ? "common.white" : "grey.500",
+                  }}
+                >
                   {name}
-                </Typography>
+                </ListItemText>
               )}
-            </Link>
-          </ListItem>
+            </ListItem>
+          </Link>
         );
       })}
     </menu>
