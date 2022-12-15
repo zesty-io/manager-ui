@@ -95,6 +95,7 @@ const BaseTab: FC<BaseTab> = ({
       bgcolor={styles.backgroundColor}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      flex="1 0 0"
     >
       <Stack
         component="div"

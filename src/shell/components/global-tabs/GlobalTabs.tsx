@@ -128,9 +128,9 @@ export default memo(function GlobalTabs() {
 
   const numTabs = Math.floor(tabBarWidth / tabWidth);
 
-  // Active tab is always on the top bar so we deduct 1 here
-  const topBarTabs = inactiveTabs.filter((_, i) => i < numTabs - 1);
-  const dropDownTabs = inactiveTabs.filter((_, i) => i >= numTabs - 1);
+  // Adjust by 2 to accommodate the active tab and more tabs menu
+  const topBarTabs = inactiveTabs.filter((_, i) => i < numTabs - 2);
+  const dropDownTabs = inactiveTabs.filter((_, i) => i >= numTabs - 2);
 
   return (
     <>
@@ -147,20 +147,25 @@ export default memo(function GlobalTabs() {
           },
         }}
       >
-        <Stack component="ol" direction="row" overflow="hidden">
+        <Stack
+          component="ol"
+          overflow="hidden"
+          display="grid"
+          gridTemplateColumns={`repeat(${numTabs + 1}, ${tabWidth}px)`}
+        >
           <ActiveTab tabWidth={tabWidth} />
           <InactiveTabGroup tabs={topBarTabs} tabWidth={tabWidth} />
+          <Dropdown
+            tabs={dropDownTabs}
+            tabWidth={tabWidth}
+            removeOne={(tab) => {
+              dispatch(unpinTab(tab, false, queryData));
+            }}
+            removeMany={(tabs) => {
+              dispatch(unpinManyTabs(tabs));
+            }}
+          />
         </Stack>
-        <Dropdown
-          tabs={dropDownTabs}
-          tabWidth={tabWidth}
-          removeOne={(tab) => {
-            dispatch(unpinTab(tab, false, queryData));
-          }}
-          removeMany={(tabs) => {
-            dispatch(unpinManyTabs(tabs));
-          }}
-        />
       </Stack>
     </>
   );

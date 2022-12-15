@@ -36,7 +36,7 @@ export function GlobalTopbar() {
         >
           <GlobalTabs />
         </Box>
-        <Box width={50}>
+        <Box display="flex" flexBasis={60}>
           <GlobalNotifications />
         </Box>
       </Stack>

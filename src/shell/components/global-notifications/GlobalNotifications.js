@@ -80,7 +80,7 @@ export default connect((state) => {
         >
           <Badge
             invisible={!props.notifications.length}
-            max="999"
+            max={999}
             badgeContent={props.notifications.length}
             sx={{
               "& .MuiBadge-badge": {
