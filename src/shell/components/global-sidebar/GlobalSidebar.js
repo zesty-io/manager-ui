@@ -8,7 +8,7 @@ import cx from "classnames";
 
 import styles from "./GlobalSidebar.less";
 
-import { Box, CardMedia } from "@mui/material";
+import { Box } from "@mui/material";
 import GlobalMenu from "shell/components/global-menu";
 import GlobalCustomApps from "shell/components/global-custom-apps";
 import GlobalActions from "shell/components/global-actions";
@@ -32,20 +32,20 @@ export default connect((state) => {
       <div>
         <Box sx={{ p: 2 }}>
           {props.openNav ? (
-            <CardMedia
+            <Box
               component="img"
               data-src={fullZestyLogo}
-              image={fullZestyLogo}
+              src={fullZestyLogo}
               sx={{
                 width: "84.17px",
                 height: "24px",
               }}
             />
           ) : (
-            <CardMedia
+            <Box
               component="img"
               data-src={zestyLogo}
-              image={zestyLogo}
+              src={zestyLogo}
               sx={{
                 width: "24px",
                 height: "24px",
