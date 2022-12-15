@@ -32,8 +32,8 @@ import {
   useGetBinsQuery,
 } from "../../services/mediaManager";
 
-const MIN_TAB_WIDTH = 250;
-const MAX_TAB_WIDTH = 300;
+const MIN_TAB_WIDTH = 180;
+const MAX_TAB_WIDTH = 180;
 const TAB_PADDING = 16;
 const TAB_BORDER = 1;
 
@@ -128,31 +128,26 @@ export default memo(function GlobalTabs() {
 
   const numTabs = Math.floor(tabBarWidth / tabWidth);
 
-  const topBarTabs = inactiveTabs.filter((t, i) => i < numTabs);
-  const dropDownTabs = inactiveTabs.filter((t, i) => i >= numTabs);
+  // Active tab is always on the top bar so we deduct 1 here
+  const topBarTabs = inactiveTabs.filter((_, i) => i < numTabs - 1);
+  const dropDownTabs = inactiveTabs.filter((_, i) => i >= numTabs - 1);
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <GlobalDirtyCodeModal />
       <Stack
         ref={tabContainerRef}
         component="nav"
         direction="row"
         sx={{
-          height: "46px",
-          padding: "8px 0 0 0",
           display: "grid",
           gridTemplateColumns: "1fr 80px",
+          "*": {
+            boxSizing: "border-box",
+          },
         }}
       >
-        <Stack
-          component="ol"
-          direction="row"
-          sx={{
-            display: "flex",
-            overflow: "hidden",
-          }}
-        >
+        <Stack component="ol" direction="row" overflow="hidden">
           <ActiveTab tabWidth={tabWidth} />
           <InactiveTabGroup tabs={topBarTabs} tabWidth={tabWidth} />
         </Stack>
@@ -167,6 +162,6 @@ export default memo(function GlobalTabs() {
           }}
         />
       </Stack>
-    </ThemeProvider>
+    </>
   );
 });

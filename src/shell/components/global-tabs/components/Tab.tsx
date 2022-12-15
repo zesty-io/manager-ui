@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { useLocation, Link as Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -10,6 +10,7 @@ import { SxProps } from "@mui/system";
 import MuiLink from "@mui/material/Link";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import Stack from "@mui/material/Stack";
 
 import {
   pinTab,
@@ -36,7 +37,11 @@ type BaseTab = {
   variant: "outline" | "fill";
   onClick: () => void;
   sx?: SxProps;
-  linkProps?: SxProps;
+  isDarkMode?: boolean;
+  isActive?: boolean;
+  isAdjacentTabHovered?: boolean;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 };
 const BaseTab: FC<BaseTab> = ({
   tab,
@@ -44,86 +49,117 @@ const BaseTab: FC<BaseTab> = ({
   variant,
   onClick,
   sx,
-  linkProps,
+  isDarkMode = false,
+  isActive = false,
+  isAdjacentTabHovered = false,
+  onMouseEnter,
+  onMouseLeave,
 }) => {
+  const [styles, setStyles] = useState({
+    backgroundColor: "grey.100",
+    fontColor: "text.secondary",
+    iconColor: "action.active",
+  });
+
+  useEffect(() => {
+    if (isActive) {
+      if (isDarkMode) {
+        setStyles({
+          backgroundColor: "#1e1e1e",
+          fontColor: "common.white",
+          iconColor: "grey.500",
+        });
+      } else {
+        setStyles({
+          backgroundColor: "common.white",
+          fontColor: "text.primary",
+          iconColor: "action.active",
+        });
+      }
+    }
+  }, [isDarkMode, isActive]);
+
   const Pin = variant === "outline" ? OutlinedPinIcon : PinIcon;
+  // This removes the right border if the tab is to the left of a hovered tab
+  // or is an active tab
+  const isBorderHidden = isActive || isAdjacentTabHovered;
 
   return (
     <Box
       component="li"
       data-cy="ActiveTab"
-      sx={{
-        overflow: "hidden",
-        width: `${tabWidth}px`,
-        display: "grid",
-        gridTemplateColumns: "16px 1fr 16px",
-        gap: "4px",
-        backgroundColor: "grey.800",
-        borderRadius: "12px 12px 0px 0px",
-        borderWidth: "2px 2px 0px 0px",
-        borderColor: "grey.700",
-        borderStyle: "solid",
-        boxSizing: "border-box",
-        padding: "0 12px 0 12px",
-        alignItems: "center",
-        filter: "drop-shadow(0px 4px 4px #000000)",
-        "&hover": {
-          border: "none",
-        },
-        ...sx,
-      }}
+      sx={sx}
+      width={`${tabWidth}px`}
+      py={0.5}
+      height={34}
+      bgcolor={styles.backgroundColor}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
-      <Box
-        component="span"
-        color="grey.400"
+      <Stack
+        component="div"
+        direction="row"
+        height={24}
+        alignItems="center"
+        justifyContent="space-between"
+        borderRight={1}
+        borderColor={isBorderHidden ? "transparent" : "grey.300"}
         sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "16px",
-          height: "auto",
+          "&:hover": {
+            borderColor: "transparent",
+          },
         }}
       >
-        {tab.icon && (
-          <FontAwesomeIcon icon={tab.icon} style={{ fontSize: 16 }} />
-        )}
-      </Box>
-      <MuiLink
-        component={Link}
-        to={tab.pathname + tab.search}
-        variant="caption"
-        sx={{
-          color: "white",
-          textDecoration: "none",
-          flex: "1",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          ...linkProps,
-        }}
-      >
-        {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
-      </MuiLink>
-      <Box
-        component="span"
-        onClick={onClick}
-        sx={{
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Pin
-          fontSize="small"
+        <Box
+          component="div"
+          whiteSpace="nowrap"
+          overflow="hidden"
+          textOverflow="ellipsis"
+          pl={1.5}
+        >
+          <Box display="inline-block" mr={1.25} color={styles.iconColor}>
+            {tab.icon && (
+              <FontAwesomeIcon icon={tab.icon} style={{ fontSize: 16 }} />
+            )}
+          </Box>
+          <MuiLink
+            component={Link}
+            to={tab.pathname + tab.search}
+            // @ts-expect-error missing body3 module augmentation
+            variant="body3"
+            color={styles.fontColor}
+            fontWeight={600}
+            underline="none"
+          >
+            {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
+          </MuiLink>
+        </Box>
+        <Box
+          component="div"
+          onClick={onClick}
+          width={24}
+          height={24}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          pr={1}
+          pl={0.5}
+          color="action.active"
           sx={{
-            width: "16px",
-            height: "16px",
-            transform: "rotate(45deg)",
-            color: "grey.400",
+            cursor: "pointer",
           }}
-        />
-      </Box>
+        >
+          <Pin
+            fontSize="small"
+            sx={{
+              width: "16px",
+              height: "16px",
+              transform: "rotate(45deg)",
+              color: styles.iconColor,
+            }}
+          />
+        </Box>
+      </Stack>
     </Box>
   );
 };
@@ -134,13 +170,18 @@ export type InactiveTabGroup = {
 };
 
 export const InactiveTabGroup: FC<InactiveTabGroup> = ({ tabs, tabWidth }) => {
+  const [hoveredTabIdx, setHoveredTabIdx] = useState(null);
+
   return (
     <>
       {tabs.map((tab, i) => (
         <InactiveTab
+          isAdjacentTabHovered={hoveredTabIdx - 1 === i}
           tab={tab}
           key={tab.pathname + tab.search}
           tabWidth={tabWidth}
+          onMouseEnter={() => setHoveredTabIdx(i)}
+          onMouseLeave={() => setHoveredTabIdx(null)}
           sx={{ zIndex: zIndex - i - 1 }}
         />
       ))}
@@ -152,9 +193,19 @@ export type InactiveTab = {
   tab: Tab;
   tabWidth: number;
   sx?: SxProps;
+  isAdjacentTabHovered: boolean;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 };
 
-export const InactiveTab: FC<InactiveTab> = ({ tab, tabWidth, sx }) => {
+export const InactiveTab: FC<InactiveTab> = ({
+  tab,
+  tabWidth,
+  sx,
+  isAdjacentTabHovered,
+  onMouseEnter,
+  onMouseLeave,
+}) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const instanceId = useSelector((state: any) => state.instance.ID);
@@ -182,9 +233,14 @@ export const InactiveTab: FC<InactiveTab> = ({ tab, tabWidth, sx }) => {
       tab={tab}
       tabWidth={tabWidth}
       onClick={() => dispatch(unpinTab(tab, false, queryData))}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      isAdjacentTabHovered={isAdjacentTabHovered}
       sx={{
         "&:hover": {
-          backgroundColor: "grey.700",
+          backgroundColor: "grey.50",
+          borderRadius: "8px 8px 0px 0px",
+          borderColor: "common.white",
         },
         ...sx,
       }}
@@ -223,11 +279,14 @@ export const ActiveTab: FC<ActiveTab> = ({ tabWidth }) => {
 
   const isPinned =
     pinnedTabs.findIndex((t: Tab) => tabLocationEquality(t, activeTab)) >= 0;
+
   return (
     <BaseTab
+      isActive
       variant={isPinned ? "fill" : "outline"}
       tabWidth={tabWidth}
       tab={activeTab}
+      isDarkMode={activeTab.app === "Code"}
       onClick={() => {
         // force unpin because we don't want to show the modal on the active tab
         if (isPinned) {
@@ -237,12 +296,9 @@ export const ActiveTab: FC<ActiveTab> = ({ tabWidth }) => {
         }
       }}
       sx={{
-        backgroundColor: "white",
+        borderRadius: "8px 8px 0px 0px",
         border: "none",
         zIndex,
-      }}
-      linkProps={{
-        color: "grey.800",
       }}
     />
   );

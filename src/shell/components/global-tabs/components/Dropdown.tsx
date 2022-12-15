@@ -12,8 +12,10 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import TextField from "@mui/material/TextField";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import IconButton from "@mui/material/IconButton";
+import InputBase from "@mui/material/InputBase";
 
 import { Tab } from "../../../../shell/store/ui";
 import { Typography } from "@mui/material";
@@ -25,7 +27,7 @@ export type Dropdown = {
   removeMany: (tabs: Tab[]) => void;
 };
 
-const ITEM_HEIGHT = 48;
+const ITEM_HEIGHT = 56;
 
 export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -52,10 +54,28 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
       tab.pathname.toLocaleLowerCase().includes(filterTerm) ||
       (tab.name && tab.name.toLocaleLowerCase().includes(filterTerm))
   );
+  const getDropdownHeader = () => {
+    if (Boolean(filterTerm)) {
+      if (filteredTabs.length) {
+        return `${filteredTabs.length} Results`;
+      } else {
+        return "No results found";
+      }
+    } else {
+      return "Pinned Tabs";
+    }
+  };
 
   return (
     <>
-      <Box>
+      <Box
+        sx={{
+          "&:hover": {
+            borderBottom: 2,
+            borderColor: "grey.50",
+          },
+        }}
+      >
         <Button
           id="basic-button"
           aria-controls={open ? "basic-menu" : undefined}
@@ -66,17 +86,11 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
           disableElevation
           disableTouchRipple
           data-cy="TabsDropdownButton"
+          endIcon={<ArrowDropDownIcon color="action" />}
           sx={{
-            alignItems: "center",
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            textTransform: "none",
-            padding: "12px 12px 12px",
-            gap: "8px",
-            borderRadius: "12px 12px 0px 0px",
+            backgroundColor: "grey.100",
             "&:hover": {
-              backgroundColor: "grey.800",
+              backgroundColor: "grey.50",
             },
             /*
              Needed to prevent button from outgrowing parent
@@ -86,10 +100,9 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
             lineHeight: "inherit",
           }}
         >
-          <Box component="span" sx={{ color: "white" }}>
-            <Typography variant="caption">More</Typography>
-          </Box>
-          <ArrowDropDownIcon sx={{ color: "grey.400" }} fontSize="small" />
+          <Typography color="text.secondary" fontWeight={600} variant="caption">
+            More
+          </Typography>
         </Button>
         <Menu
           id="basic-menu"
@@ -102,10 +115,14 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
           MenuListProps={{
             "aria-labelledby": "basic-button",
             sx: {
-              backgroundColor: "grey.900",
-              boxSizing: "border-box",
+              backgroundColor: "common.white",
               padding: "0px",
-              width: "240px",
+              width: "274px",
+            },
+          }}
+          sx={{
+            "*": {
+              boxSizing: "border-box",
             },
           }}
         >
@@ -114,46 +131,68 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
             disableRipple
             sx={{
               cursor: "auto",
-              padding: "12px 12px 12px 12px",
-              height: "56px",
+              height: "60px",
+              padding: 1.5,
+              "&:hover": {
+                backgroundColor: "common.white",
+              },
+              "&.Mui-focusVisible": {
+                backgroundColor: "common.white",
+              },
             }}
           >
-            <TextField
-              variant="outlined"
-              placeholder="Search Tabs"
-              size="small"
-              sx={{ height: "32px" }}
-              InputProps={{
-                startAdornment: (
-                  <SearchIcon fontSize="small" sx={{ color: "grey.300" }} />
-                ),
-                sx: {
+            <Box
+              display="flex"
+              bgcolor="grey.50"
+              border={1}
+              borderColor="grey.50"
+              borderRadius={1}
+              height={36}
+              width="100%"
+            >
+              <InputBase
+                fullWidth
+                placeholder="Search Tabs"
+                value={filter}
+                onChange={(evt) => setFilter(evt.target.value)}
+                startAdornment={
+                  <IconButton disableRipple disableTouchRipple size="small">
+                    <SearchIcon />
+                  </IconButton>
+                }
+                endAdornment={
+                  filter.length ? (
+                    <IconButton
+                      disableRipple
+                      disableTouchRipple
+                      size="small"
+                      onClick={() => setFilter("")}
+                    >
+                      <CloseRoundedIcon />
+                    </IconButton>
+                  ) : null
+                }
+                sx={{
                   "&.Mui-focused": {
-                    backgroundColor: "white",
-                    color: "grey.900",
+                    borderColor: "border",
+                    backgroundColor: "common.white",
                   },
-                  "&.Mui-focused fieldset": {
-                    border: "none",
-                  },
-                  "&.Mui-focused svg": {
-                    color: "grey.400",
-                  },
-                  backgroundColor: "grey.800",
-                  color: "grey.50",
-                  padding: "0px 8px",
-                  gap: "8px",
-                },
-              }}
-              value={filter}
-              onChange={(evt) => setFilter(evt.target.value)}
-            />
+                }}
+              />
+            </Box>
           </MenuItem>
           <MenuItem
             disableRipple
             sx={{
               cursor: "auto",
-              padding: "6px 12px",
-              height: "32px",
+              padding: 1.5,
+              height: "56px",
+              "&:hover": {
+                backgroundColor: "common.white",
+              },
+              "&.Mui-focusVisible": {
+                backgroundColor: "common.white",
+              },
             }}
           >
             <Stack
@@ -162,29 +201,23 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
               alignItems="center"
               flex="1"
             >
-              <Box component="span" sx={{ color: "white", lineHeight: "266%" }}>
-                <Typography variant="overline">
-                  {Boolean(filterTerm)
-                    ? `${filteredTabs.length} RESULTS`
-                    : "PINNED TABS"}
+              <Box component="span">
+                <Typography
+                  variant="h6"
+                  fontWeight={600}
+                  sx={{ color: "text.secondary" }}
+                >
+                  {getDropdownHeader()}
                 </Typography>
               </Box>
               {Boolean(filterTerm) || (
                 <Button
-                  disableRipple
-                  disableFocusRipple
-                  disableTouchRipple
+                  variant="outlined"
                   onClick={() => setConfirmOpen(true)}
                   size="small"
                   sx={{
-                    mr: 0,
-                    pr: 0,
-                    color: "grey.400",
-                    lineHeight: "266%",
-                    "&:hover": {
-                      color: "warning.main",
-                      backgroundColor: "transparent",
-                    },
+                    color: "text.secondary",
+                    borderColor: "border",
                   }}
                 >
                   <Typography variant="overline">Unpin All</Typography>
@@ -243,25 +276,23 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
     <MenuItem
       disableRipple
       sx={{
-        color: "grey.400",
         width: "100%",
-        display: "grid",
-        gridTemplateColumns: "20px 1fr 20px",
+        display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         height: `${ITEM_HEIGHT}px`,
-        padding: "12px 12px 12px 12px",
+        padding: 1.5,
         gap: "8px",
         cursor: "auto",
-
         boxSizing: "border-box",
         borderBottom: "1px solid",
-        borderColor: "grey.800",
+        borderColor: "border",
       }}
     >
-      <Box component="span" color="grey.400">
+      {/* TODO: Change to MUI icons once Zosh provides list */}
+      <Box component="span" pr={0.5} sx={{ color: "action.active" }}>
         {tab.icon && (
-          <FontAwesomeIcon icon={tab.icon} style={{ fontSize: 16 }} />
+          <FontAwesomeIcon icon={tab.icon} style={{ fontSize: "18px" }} />
         )}
       </Box>
       <MuiLink
@@ -269,39 +300,26 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
         to={tab.pathname + tab.search}
         underline="none"
         sx={{
-          color: "grey.400",
           textDecoration: "none",
           flex: "1",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
-
           alignContent: "center",
         }}
       >
-        <Typography variant="caption">
+        <Typography noWrap variant="body2" color="text.primary">
           {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
         </Typography>
       </MuiLink>
-      <Box
-        component="span"
-        onClick={remove}
-        sx={{
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      <IconButton size="small" onClick={remove}>
         <PinIcon
           fontSize="small"
           sx={{
-            width: "16px",
-            height: "16px",
             transform: "rotate(45deg)",
           }}
         />
-      </Box>
+      </IconButton>
     </MenuItem>
   );
 };
