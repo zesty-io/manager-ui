@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 
+import { Typography } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,
@@ -63,7 +64,11 @@ export default memo(function GlobalMenu() {
             title={`${name} App`}
           >
             <FontAwesomeIcon icon={icons[product]} />
-            {openNav && <span className={styles.title}>{name}</span>}
+            {openNav && (
+              <Typography variant="body3" sx={{ color: "grey.500" }}>
+                {name}
+              </Typography>
+            )}
           </Link>
         );
       })}
