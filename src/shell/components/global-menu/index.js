@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 
-import { Box, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import { ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import EditIcon from "@mui/icons-material/Edit";
 import ImageIcon from "@mui/icons-material/Image";
@@ -12,7 +12,6 @@ import CodeIcon from "@mui/icons-material/Code";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import RecommendIcon from "@mui/icons-material/Recommend";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import ExtensionIcon from "@mui/icons-material/Extension";
 import SettingsIcon from "@mui/icons-material/Settings";
 import StorageIcon from "@mui/icons-material/Storage";
 

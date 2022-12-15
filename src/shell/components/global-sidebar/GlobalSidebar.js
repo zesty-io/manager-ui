@@ -7,12 +7,13 @@ import {
 import cx from "classnames";
 
 import styles from "./GlobalSidebar.less";
-import { ThemeProvider } from "@mui/material";
 
-import Favicon from "shell/components/favicon";
+import { Box, ThemeProvider } from "@mui/material";
 import GlobalMenu from "shell/components/global-menu";
 import GlobalCustomApps from "shell/components/global-custom-apps";
 import GlobalActions from "shell/components/global-actions";
+import fullZestyLogo from "../../../../public/images/fullZestyLogo.svg";
+import zestyLogo from "../../../../public/images/zestyLogo.svg";
 
 import { theme } from "@zesty-io/material";
 
@@ -29,13 +30,30 @@ export default connect((state) => {
   return (
     <ThemeProvider theme={theme}>
       <aside className={styles.GlobalSidebar} style={globalSideBarThemeStyles}>
-        <div
-          className={cx(
-            styles.topMenu,
-            props.ui.openNav ? styles.OpenTopMenu : null
-          )}
-        >
-          <Favicon />
+        <div>
+          <Box sx={{ p: 2 }}>
+            {props.openNav ? (
+              <Box
+                component="img"
+                data-src={fullZestyLogo}
+                src={fullZestyLogo}
+                sx={{
+                  width: "84.17px",
+                  height: "24px",
+                }}
+              />
+            ) : (
+              <Box
+                component="img"
+                data-src={zestyLogo}
+                src={zestyLogo}
+                sx={{
+                  width: "24px",
+                  height: "24px",
+                }}
+              />
+            )}
+          </Box>
           <GlobalMenu openNav={props.ui.openNav} />
           <GlobalCustomApps openNav={props.ui.openNav} />
           <GlobalActions hash={props.instance.randomHashID} />
