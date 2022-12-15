@@ -8,7 +8,7 @@ describe("Favicon upload image", () => {
   it("update favicon image", () => {
     cy.get("[data-cy=Favicon]").click();
 
-    cy.waitOn("**/groups", () => {
+    cy.waitOn("**/bin/**", () => {
       cy.get("figure button").click();
     });
     cy.waitOn("**/group/**", () => {
