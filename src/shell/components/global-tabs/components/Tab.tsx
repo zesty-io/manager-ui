@@ -126,6 +126,8 @@ const BaseTab: FC<BaseTab> = ({
         }}
       >
         <Box
+          display="flex"
+          flex="1 0 0"
           component="div"
           whiteSpace="nowrap"
           overflow="hidden"
@@ -145,6 +147,8 @@ const BaseTab: FC<BaseTab> = ({
             color={styles.fontColor}
             fontWeight={600}
             underline="none"
+            flex="1 0 0"
+            noWrap
           >
             {tab.name ? tab.name : `${tab.pathname.slice(1)}`}
           </MuiLink>
