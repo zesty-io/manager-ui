@@ -167,7 +167,7 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
           ) : (
             <>
               <Controls />
-              {(filetypeFilter || dateRangeFilter) && binFiles.length > 0 && (
+              {(filetypeFilter || dateRangeFilter) && binFiles?.length > 0 && (
                 <Typography
                   color="text.secondary"
                   variant="h6"
@@ -180,7 +180,7 @@ export const BinMedia = ({ addImagesCallback }: Props) => {
               <DnDProvider currentBinId={id} currentGroupId="">
                 {!isFilesFetching && !binFiles?.length && !binGroups?.length ? (
                   <>
-                    {unsortedBinFiles.length ? (
+                    {unsortedBinFiles?.length ? (
                       <NoResultsState filetype={filetypeFilter} />
                     ) : (
                       <EmptyState currentBinId={id} currentGroupId="" />

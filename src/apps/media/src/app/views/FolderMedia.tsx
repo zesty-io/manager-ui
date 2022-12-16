@@ -174,7 +174,7 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
           ) : (
             <>
               <Controls />
-              {(filetypeFilter || dateRangeFilter) && groupFiles.length > 0 && (
+              {(filetypeFilter || dateRangeFilter) && groupFiles?.length > 0 && (
                 <Typography
                   color="text.secondary"
                   variant="h6"
@@ -190,7 +190,7 @@ export const FolderMedia = ({ addImagesCallback }: Props) => {
               >
                 {!isFetching && !groupFiles?.length && !subgroups?.length ? (
                   <>
-                    {unsortedGroupFiles.length ? (
+                    {unsortedGroupFiles?.length ? (
                       <NoResultsState filetype={filetypeFilter} />
                     ) : (
                       <EmptyState

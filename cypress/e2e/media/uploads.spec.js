@@ -7,7 +7,8 @@ const CIRCLE_SVG = `
 const getRandomFileName = () =>
   `cypress_upload_test_${Math.floor(Math.random() * 1_000_000)}.svg`;
 
-describe("Media uploads", () => {
+// Skipping since upload non-signed url flow cannot be performed in http environment
+describe.skip("Media uploads", () => {
   before(() => {
     cy.waitOn("**/groups", () => {
       cy.visit("/media");

@@ -404,9 +404,8 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
       }
     });
 
-    // Use signed url flow for all files
-    // if (file.file.size > 32000000)
-    if (true) {
+    // Use signed url flow for large files
+    if (file.file.size > 32000000) {
       /**
        * GAE has an inherent 32mb limit at their global nginx load balancer
        * We use a signed url for large file uploads directly to the assocaited bucket

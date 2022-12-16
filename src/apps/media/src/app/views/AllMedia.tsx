@@ -124,7 +124,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
       ) : (
         <>
           <Controls />
-          {(filetypeFilter || dateRangeFilter) && files.length > 0 && (
+          {(filetypeFilter || dateRangeFilter) && files?.length > 0 && (
             <Typography
               color="text.secondary"
               variant="h6"
@@ -141,7 +141,7 @@ export const AllMedia = ({ addImagesCallback }: Props) => {
           >
             {!isFilesFetching && !isBinsFetching && !files?.length ? (
               <>
-                {unsortedFiles.length ? (
+                {unsortedFiles?.length ? (
                   <NoResultsState filetype={filetypeFilter} />
                 ) : (
                   <EmptyState currentBinId={defaultBin?.id} currentGroupId="" />
