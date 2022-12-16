@@ -8,6 +8,7 @@ import {
   useMemo,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useWindowSize } from "react-use";
 import { useLocation } from "react-router-dom";
 import { debounce } from "lodash";
 
@@ -34,8 +35,10 @@ const MIN_TAB_WIDTH = 180;
 const MAX_TAB_WIDTH = 180;
 const TAB_PADDING = 16;
 const TAB_BORDER = 1;
+const MORE_MENU_WIDTH = 85;
 
 export default memo(function GlobalTabs() {
+  const windowWidth = useWindowSize();
   const location = useLocation();
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
@@ -44,7 +47,6 @@ export default memo(function GlobalTabs() {
 
   const instanceZUID = useSelector((state: AppState) => state.instance.ZUID);
   const loadedTabs = useSelector((state: AppState) => state.ui.loadedTabs);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const models = useSelector((state: AppState) => state.models);
   const apps = useSelector((state: AppState) => state.apps.installed);
 
@@ -70,16 +72,6 @@ export default memo(function GlobalTabs() {
     };
   }, [binGroups]);
 
-  // update state if window is resized (debounced)
-  useEffect(() => {
-    const debouncedResize = debounce(function handleResize() {
-      setWindowWidth(window.innerWidth);
-    }, 300);
-
-    window.addEventListener("resize", debouncedResize);
-    return () => window.removeEventListener("resize", debouncedResize);
-  }, []);
-
   // load tabs from Indexeddb
   useEffect(() => {
     dispatch(loadTabs(instanceZUID));
@@ -104,7 +96,7 @@ export default memo(function GlobalTabs() {
   useLayoutEffect(() => {
     if (tabContainerRef.current) {
       setTabBarWidth(
-        Math.floor(tabContainerRef.current.getBoundingClientRect().width)
+        Math.floor(tabContainerRef.current.clientWidth) - MORE_MENU_WIDTH
       );
     }
   }, [windowWidth]);
@@ -126,9 +118,9 @@ export default memo(function GlobalTabs() {
 
   const numTabs = Math.floor(tabBarWidth / tabWidth);
 
-  // Adjust by 2 to accommodate the active tab and more tabs menu
-  const topBarTabs = inactiveTabs.filter((_, i) => i < numTabs - 2);
-  const dropDownTabs = inactiveTabs.filter((_, i) => i >= numTabs - 2);
+  // Adjust by 1 to accommodate the active tab
+  const topBarTabs = inactiveTabs.filter((_, i) => i < numTabs - 1);
+  const dropDownTabs = inactiveTabs.filter((_, i) => i >= numTabs - 1);
 
   return (
     <>
@@ -139,7 +131,6 @@ export default memo(function GlobalTabs() {
         direction="row"
         sx={{
           display: "grid",
-          gridTemplateColumns: "1fr 80px",
           "*": {
             boxSizing: "border-box",
           },
@@ -149,10 +140,12 @@ export default memo(function GlobalTabs() {
           component="div"
           overflow="hidden"
           display="grid"
-          gridTemplateColumns={`repeat(${numTabs + 1}, ${tabWidth}px)`}
+          gridTemplateColumns={`repeat(${numTabs}, ${tabWidth}px) ${MORE_MENU_WIDTH}px`}
           sx={{
-            // TODO: change to :first-of-type
-            "& .tab-item:first-child > div": {
+            "& .tab-item:nth-of-type(1) > div": {
+              borderColor: "transparent",
+            },
+            "& .tab-item:nth-last-of-type(2):hover + .more-menu-tab > span": {
               borderColor: "transparent",
             },
             "& .tab-item:hover + .tab-item > div": {
@@ -167,7 +160,7 @@ export default memo(function GlobalTabs() {
           <InactiveTabGroup tabs={topBarTabs} tabWidth={tabWidth} />
           <Dropdown
             tabs={dropDownTabs}
-            tabWidth={tabWidth}
+            tabWidth={MORE_MENU_WIDTH}
             removeOne={(tab) => {
               dispatch(unpinTab(tab, false, queryData));
             }}
