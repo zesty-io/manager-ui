@@ -9,7 +9,8 @@ const getRandomFileName = () =>
 
 let currentFileId = "";
 
-describe("Media Files", () => {
+// Skipping since upload non-signed url flow cannot be performed in http environment
+describe.skip("Media Files", () => {
   before(() => {
     cy.waitOn("**/files", () => {
       cy.visit("/media");
