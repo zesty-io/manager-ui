@@ -44,7 +44,6 @@ const BaseTab: FC<BaseTab> = ({
   tabWidth,
   variant,
   onClick,
-  sx,
   isDarkMode = false,
   isActive = false,
 }) => {
@@ -228,14 +227,6 @@ export const InactiveTab: FC<InactiveTab> = ({ tab, tabWidth, sx }) => {
       tab={tab}
       tabWidth={tabWidth}
       onClick={() => dispatch(unpinTab(tab, false, queryData))}
-      sx={{
-        "&:hover": {
-          backgroundColor: "grey.50",
-          borderRadius: "8px 8px 0px 0px",
-          borderColor: "common.white",
-        },
-        ...sx,
-      }}
     />
   );
 };
@@ -286,11 +277,6 @@ export const ActiveTab: FC<ActiveTab> = ({ tabWidth }) => {
         } else {
           dispatch(pinTab(activeTab, queryData));
         }
-      }}
-      sx={{
-        borderRadius: "8px 8px 0px 0px",
-        border: "none",
-        zIndex,
       }}
     />
   );
