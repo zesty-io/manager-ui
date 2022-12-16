@@ -14,6 +14,7 @@ import RecommendIcon from "@mui/icons-material/Recommend";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import SettingsIcon from "@mui/icons-material/Settings";
 import StorageIcon from "@mui/icons-material/Storage";
+import { Database } from "@zesty-io/material";
 
 import styles from "./styles.less";
 export default memo(function GlobalMenu() {
@@ -26,7 +27,7 @@ export default memo(function GlobalMenu() {
     home: RocketLaunchIcon,
     content: EditIcon,
     media: ImageIcon,
-    schema: StorageIcon,
+    schema: Database,
     code: CodeIcon,
     leads: RecentActorsIcon,
     reports: BarChartIcon,
