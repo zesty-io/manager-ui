@@ -2,14 +2,13 @@ import { FC, useEffect, useMemo, useState } from "react";
 import { useLocation, Link as Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PinIcon from "@mui/icons-material/PushPin";
 import OutlinedPinIcon from "@mui/icons-material/PushPinOutlined";
 import { SxProps } from "@mui/system";
 
 import MuiLink from "@mui/material/Link";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import SvgIcon from "@mui/material/SvgIcon";
 import Stack from "@mui/material/Stack";
 
 import {
@@ -39,9 +38,6 @@ type BaseTab = {
   sx?: SxProps;
   isDarkMode?: boolean;
   isActive?: boolean;
-  isAdjacentTabHovered?: boolean;
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
 };
 const BaseTab: FC<BaseTab> = ({
   tab,
@@ -51,9 +47,6 @@ const BaseTab: FC<BaseTab> = ({
   sx,
   isDarkMode = false,
   isActive = false,
-  isAdjacentTabHovered = false,
-  onMouseEnter,
-  onMouseLeave,
 }) => {
   const [styles, setStyles] = useState({
     backgroundColor: "grey.100",
@@ -87,9 +80,6 @@ const BaseTab: FC<BaseTab> = ({
   }, [isDarkMode, isActive]);
 
   const Pin = variant === "outline" ? OutlinedPinIcon : PinIcon;
-  // This removes the right border if the tab is to the left of a hovered tab
-  // or is an active tab
-  const isBorderHidden = isActive || isAdjacentTabHovered;
 
   return (
     <Box
@@ -101,8 +91,6 @@ const BaseTab: FC<BaseTab> = ({
       py={0.5}
       height={34}
       bgcolor={styles.backgroundColor}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
       flex="1 0 0"
       borderRadius="8px 8px 0px 0px"
       sx={{
@@ -134,10 +122,13 @@ const BaseTab: FC<BaseTab> = ({
           textOverflow="ellipsis"
           pl={1.5}
         >
-          <Box display="inline-block" mr={1.25} color={styles.iconColor}>
-            {tab.icon && (
-              <FontAwesomeIcon icon={tab.icon} style={{ fontSize: 16 }} />
-            )}
+          <Box
+            display="inline-block"
+            mr={1.25}
+            color={styles.iconColor}
+            fontSize={16}
+          >
+            {tab.icon && <SvgIcon component={tab.icon} fontSize="inherit" />}
           </Box>
           <MuiLink
             component={Link}
@@ -189,18 +180,13 @@ export type InactiveTabGroup = {
 };
 
 export const InactiveTabGroup: FC<InactiveTabGroup> = ({ tabs, tabWidth }) => {
-  const [hoveredTabIdx, setHoveredTabIdx] = useState(null);
-
   return (
     <>
       {tabs.map((tab, i) => (
         <InactiveTab
-          isAdjacentTabHovered={hoveredTabIdx - 1 === i}
           tab={tab}
           key={tab.pathname + tab.search}
           tabWidth={tabWidth}
-          onMouseEnter={() => setHoveredTabIdx(i)}
-          onMouseLeave={() => setHoveredTabIdx(null)}
           sx={{ zIndex: zIndex - i - 1 }}
         />
       ))}
@@ -212,19 +198,9 @@ export type InactiveTab = {
   tab: Tab;
   tabWidth: number;
   sx?: SxProps;
-  isAdjacentTabHovered: boolean;
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
 };
 
-export const InactiveTab: FC<InactiveTab> = ({
-  tab,
-  tabWidth,
-  sx,
-  isAdjacentTabHovered,
-  onMouseEnter,
-  onMouseLeave,
-}) => {
+export const InactiveTab: FC<InactiveTab> = ({ tab, tabWidth, sx }) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const instanceId = useSelector((state: any) => state.instance.ID);
@@ -252,9 +228,6 @@ export const InactiveTab: FC<InactiveTab> = ({
       tab={tab}
       tabWidth={tabWidth}
       onClick={() => dispatch(unpinTab(tab, false, queryData))}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      isAdjacentTabHovered={isAdjacentTabHovered}
       sx={{
         "&:hover": {
           backgroundColor: "grey.50",

@@ -7,15 +7,13 @@ import {
   FC,
   useMemo,
 } from "react";
-import { createDispatchHook, useDispatch, useSelector } from "react-redux";
-import { useLocation, Link as Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import { debounce } from "lodash";
 
 import { Dropdown } from "./components/Dropdown";
 import { GlobalDirtyCodeModal } from "./components/GlobalDirtyCodeModal";
 import { ActiveTab, InactiveTabGroup } from "./components/Tab";
-import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "@zesty-io/material";
 import Stack from "@mui/material/Stack";
 
 import {
@@ -147,13 +145,13 @@ export default memo(function GlobalTabs() {
           },
         }}
       >
-        {/* TODO: Remove border color on tab adjacent to active */}
         <Stack
           component="div"
           overflow="hidden"
           display="grid"
           gridTemplateColumns={`repeat(${numTabs + 1}, ${tabWidth}px)`}
           sx={{
+            // TODO: change to :first-of-type
             "& .tab-item:first-child > div": {
               borderColor: "transparent",
             },
@@ -167,7 +165,6 @@ export default memo(function GlobalTabs() {
         >
           <ActiveTab tabWidth={tabWidth} />
           <InactiveTabGroup tabs={topBarTabs} tabWidth={tabWidth} />
-          {/* TODO: Add border left to dropdown */}
           <Dropdown
             tabs={dropDownTabs}
             tabWidth={tabWidth}

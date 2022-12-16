@@ -2,7 +2,6 @@ import { useState, FC } from "react";
 import { Link as Link } from "react-router-dom";
 
 import { ConfirmDialog } from "@zesty-io/material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PinIcon from "@mui/icons-material/PushPin";
 import SearchIcon from "@mui/icons-material/Search";
 
@@ -16,6 +15,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import IconButton from "@mui/material/IconButton";
 import InputBase from "@mui/material/InputBase";
+import SvgIcon from "@mui/material/SvgIcon";
 
 import { Tab } from "../../../../shell/store/ui";
 import { Typography } from "@mui/material";
@@ -289,10 +289,20 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
         borderColor: "border",
       }}
     >
-      {/* TODO: Change to MUI icons once Zosh provides list */}
-      <Box component="span" pr={0.5} sx={{ color: "action.active" }}>
+      <Box
+        component="span"
+        pr={0.5}
+        sx={{ color: "action.active" }}
+        fontSize={18}
+      >
         {tab.icon && (
-          <FontAwesomeIcon icon={tab.icon} style={{ fontSize: "18px" }} />
+          <SvgIcon
+            component={tab.icon}
+            fontSize="inherit"
+            sx={{
+              verticalAlign: "middle",
+            }}
+          />
         )}
       </Box>
       <MuiLink
