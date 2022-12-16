@@ -7,6 +7,9 @@ describe("Favicon upload image", () => {
 
   it("update favicon image", () => {
     cy.get("[data-cy=Favicon]").click();
+    // Allows image to load before clicking
+    cy.wait(1000);
+    cy.get("figure button").click();
 
     cy.waitOn("**/bin/**", () => {
       cy.get("figure button").click();
