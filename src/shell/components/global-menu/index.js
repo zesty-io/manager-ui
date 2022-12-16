@@ -4,19 +4,16 @@ import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEdit,
-  faImage,
-  faAddressCard,
-  faDatabase,
-  faChartLine,
-  faCog,
-  faBullseye,
-  faCode,
-  faRocket,
-  faHome,
-} from "@fortawesome/free-solid-svg-icons";
+import { ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import EditIcon from "@mui/icons-material/Edit";
+import ImageIcon from "@mui/icons-material/Image";
+import CodeIcon from "@mui/icons-material/Code";
+import RecentActorsIcon from "@mui/icons-material/RecentActors";
+import RecommendIcon from "@mui/icons-material/Recommend";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import SettingsIcon from "@mui/icons-material/Settings";
+import StorageIcon from "@mui/icons-material/Storage";
 
 import styles from "./styles.less";
 export default memo(function GlobalMenu() {
@@ -26,16 +23,29 @@ export default memo(function GlobalMenu() {
 
   const slug = location.pathname.split("/")[1];
   const icons = {
-    home: faHome,
-    content: faEdit,
-    media: faImage,
-    schema: faDatabase,
-    code: faCode,
-    leads: faAddressCard,
-    reports: faChartLine,
-    seo: faBullseye,
-    settings: faCog,
-    release: faRocket,
+    home: RocketLaunchIcon,
+    content: EditIcon,
+    media: ImageIcon,
+    schema: StorageIcon,
+    code: CodeIcon,
+    leads: RecentActorsIcon,
+    reports: BarChartIcon,
+    seo: RecommendIcon,
+    settings: SettingsIcon,
+    release: RocketLaunchIcon,
+  };
+
+  const MenuItemIcon = ({ product }) => {
+    const SpecificIcon = icons[product];
+    return (
+      <ListItemIcon sx={{ minWidth: "36px" }}>
+        <SpecificIcon
+          sx={{
+            color: slug === product ? "primary.main" : "grey.500",
+          }}
+        />
+      </ListItemIcon>
+    );
   };
 
   return (
@@ -55,15 +65,33 @@ export default memo(function GlobalMenu() {
         return (
           <Link
             key={product}
-            className={cx(
-              styles.SubAppLink,
-              slug === product ? styles.current : null
-            )}
+            style={{
+              textDecoration: "none",
+            }}
             to={`/${product}`}
             title={`${name} App`}
           >
-            <FontAwesomeIcon icon={icons[product]} />
-            {openNav && <span className={styles.title}>{name}</span>}
+            <ListItem
+              sx={{
+                px: "12px",
+                py: "12px",
+                height: "36px",
+                borderRadius: "4px",
+                backgroundColor: slug === product ? "grey.800" : "transparent",
+              }}
+            >
+              <MenuItemIcon product={product} />
+
+              {openNav && (
+                <ListItemText
+                  sx={{
+                    color: slug === product ? "common.white" : "grey.500",
+                  }}
+                >
+                  {name}
+                </ListItemText>
+              )}
+            </ListItem>
           </Link>
         );
       })}
