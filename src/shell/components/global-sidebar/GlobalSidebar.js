@@ -61,7 +61,7 @@ export default connect((state) => {
               borderWidth: "1px",
               backgroundColor: "grey.900",
               float: "right",
-              mr: -2,
+              mr: -1.5,
               zIndex: 50,
               width: "24px",
               height: "24px",
