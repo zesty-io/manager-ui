@@ -1,11 +1,4 @@
 import { connect } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
-import cx from "classnames";
-
 import styles from "./GlobalSidebar.less";
 
 import { Box, ThemeProvider, IconButton } from "@mui/material";
@@ -95,19 +88,6 @@ export default connect((state) => {
           <GlobalMenu openNav={props.ui.openNav} />
           <GlobalCustomApps openNav={props.ui.openNav} />
           <GlobalActions hash={props.instance.randomHashID} />
-          {props.openNav ? (
-            <p
-              className={cx(styles.Collapse, styles.Open)}
-              onClick={props.onClick}
-            >
-              <FontAwesomeIcon icon={faChevronLeft} />
-              <span>Collapse</span>
-            </p>
-          ) : (
-            <p className={styles.Collapse} onClick={props.onClick}>
-              <FontAwesomeIcon icon={faChevronRight} />
-            </p>
-          )}
         </div>
       </aside>
     </ThemeProvider>
