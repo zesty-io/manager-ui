@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { connect } from "react-redux";
 import styles from "./GlobalSidebar.less";
 
@@ -11,6 +12,7 @@ import zestyLogo from "../../../../public/images/zestyLogo.svg";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import { theme } from "@zesty-io/material";
+import InviteMembersModal from "../InviteMembersModal";
 
 const globalSideBarThemeStyles = {
   backgroundColor: theme.palette.grey[900],
@@ -22,6 +24,8 @@ export default connect((state) => {
     instance: state.instance,
   };
 })(function GlobalSidebar(props) {
+  const [showInviteModal, setShowInviteModal] = useState(false);
+
   return (
     <ThemeProvider theme={theme}>
       <aside className={styles.GlobalSidebar} style={globalSideBarThemeStyles}>
@@ -91,12 +95,20 @@ export default connect((state) => {
           {/* <GlobalActions hash={props.instance.randomHashID} /> */}
           <Box
             sx={{
+              position: "absolute",
+              bottom: 0,
               display: "flex",
-              alignItems: "flex-end",
-              minHeight: "200px",
+              width: "100%",
+              overflow: "hidden",
+              borderTopColor: "grey.800",
+              borderTopWidth: "1px",
+              borderTopStyle: "solid",
+              p: 2,
             }}
           >
+            <Box></Box>
             <IconButton
+              onClick={() => setShowInviteModal(true)}
               sx={{
                 backgroundColor: "grey.800",
                 borderRadius: "4px",
@@ -108,6 +120,9 @@ export default connect((state) => {
             </IconButton>
           </Box>
         </div>
+        {showInviteModal && (
+          <InviteMembersModal onClose={() => setShowInviteModal(false)} />
+        )}
       </aside>
     </ThemeProvider>
   );
