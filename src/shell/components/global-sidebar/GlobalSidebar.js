@@ -24,6 +24,7 @@ import { theme } from "@zesty-io/material";
 
 import InstanceFlyoutMenuModal from "../InstanceFlyoutMenuModal";
 import InviteMembersModal from "../InviteMembersModal";
+import { instance } from "../../store/instance";
 
 const globalSideBarThemeStyles = {
   backgroundColor: theme.palette.grey[900],
@@ -48,6 +49,7 @@ export default connect((state) => {
 
   // @Note: Need to refactor this to rtk query
   useEffect(() => {
+    // console.log("QWE", props.headTags)
     const tag = Object.values(props?.headTags).find((tag) =>
       tag?.attributes.find(
         (attr) => attr?.key === "sizes" && attr?.value === "196x196"
@@ -158,7 +160,7 @@ export default connect((state) => {
                 <Avatar
                   sx={{ ml: -5 }}
                   alt={`${user.firstName} ${user.lastName} Avatar`}
-                  src={`https://www.gravatar.com/avatar/${user.emailHash}?d=mm&s=40`}
+                  src={`https://www.gravatar.com/avatar/${user.faviconURL}?d=mm&s=40`}
                 />
               </AvatarGroup>
               <ArrowDropDownIcon
@@ -184,6 +186,9 @@ export default connect((state) => {
         )}
         {showInstanceFlyoutMenu && (
           <InstanceFlyoutMenuModal
+            instanceFaviconUrl={faviconURL}
+            instanceName={props.instance?.name}
+            instanceZUID={props.instance?.ZUID}
             onClose={() => setShowInstanceFlyoutMenu(false)}
           />
         )}
