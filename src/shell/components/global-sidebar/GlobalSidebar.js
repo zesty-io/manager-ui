@@ -22,6 +22,7 @@ import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArro
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { theme } from "@zesty-io/material";
 
+import InstanceFlyoutMenuModal from "../InstanceFlyoutMenuModal";
 import InviteMembersModal from "../InviteMembersModal";
 
 const globalSideBarThemeStyles = {
@@ -39,12 +40,13 @@ export default connect((state) => {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const user = useSelector((state) => state.user);
   const [faviconURL, setFaviconURL] = useState("");
+  const [showInstanceFlyoutMenu, setShowInstanceFlyoutMenu] = useState(false);
 
   useEffect(() => {
     dispatch(fetchHeadTags());
   }, []);
 
-  // @Note: will refactor this to rtk query
+  // @Note: Need to refactor this to rtk query
   useEffect(() => {
     const tag = Object.values(props?.headTags).find((tag) =>
       tag?.attributes.find(
@@ -138,7 +140,10 @@ export default connect((state) => {
               p: 2,
             }}
           >
-            <Box sx={{ display: "flex", flex: 1 }}>
+            <Box
+              sx={{ display: "flex", flex: 1, cursor: "pointer" }}
+              onClick={() => setShowInstanceFlyoutMenu(true)}
+            >
               <AvatarGroup
                 total={2}
                 sx={{
@@ -176,6 +181,11 @@ export default connect((state) => {
         </div>
         {showInviteModal && (
           <InviteMembersModal onClose={() => setShowInviteModal(false)} />
+        )}
+        {showInstanceFlyoutMenu && (
+          <InstanceFlyoutMenuModal
+            onClose={() => setShowInstanceFlyoutMenu(false)}
+          />
         )}
       </aside>
     </ThemeProvider>
