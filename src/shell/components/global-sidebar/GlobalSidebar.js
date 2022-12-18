@@ -44,6 +44,19 @@ export default connect((state) => {
     dispatch(fetchHeadTags());
   }, []);
 
+  // @Note: will refactor this to rtk query
+  useEffect(() => {
+    const tag = Object.values(props?.headTags).find((tag) =>
+      tag?.attributes.find(
+        (attr) => attr?.key === "sizes" && attr?.value === "196x196"
+      )
+    );
+    if (tag) {
+      const attr = tag.attributes.find((attr) => attr.key === "href");
+      setFaviconURL(attr.value);
+    }
+  }, [props.headTags]);
+
   return (
     <ThemeProvider theme={theme}>
       <aside className={styles.GlobalSidebar} style={globalSideBarThemeStyles}>
