@@ -10,6 +10,7 @@ import AppError from "shell/components/AppError";
 import GlobalSidebar from "shell/components/global-sidebar";
 import GlobalTopbar from "shell/components/GlobalTopbar";
 import Missing from "shell/components/missing";
+import { SearchPage } from "shell/views/SearchPage";
 
 import ContentApp from "apps/content-editor/src";
 import DamApp from "apps/media/src";
@@ -50,6 +51,8 @@ export default memo(function Shell() {
               <Route path="/media" component={DamApp} />
 
               <Route path="/app*" component={CustomApp} />
+
+              <Route path="/search" component={SearchPage} />
 
               {products.map((product) => {
                 switch (product) {
