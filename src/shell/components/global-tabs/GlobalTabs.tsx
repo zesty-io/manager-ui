@@ -9,6 +9,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useWindowSize } from "react-use";
 import { useLocation } from "react-router-dom";
+import debounce from "lodash/debounce";
 
 import { Dropdown } from "./components/Dropdown";
 import { GlobalDirtyCodeModal } from "./components/GlobalDirtyCodeModal";
@@ -22,6 +23,7 @@ import {
   rebuildTabs,
   tabLocationEquality,
   setDocumentTitle,
+  updatePinnedTabs,
 } from "../../../shell/store/ui";
 import { AppState } from "../../store/types";
 import {
@@ -111,14 +113,26 @@ export default memo(function GlobalTabs() {
    * Determines which tabs will be placed on the topbar and dropdown menu.
    */
   const getTabs = (numTabs: number) => {
-    // TODO: Determine if curr loc is on dropdown tab
-    const isCurrLocPinned = tabs.filter(
-      (tab) =>
-        tab.pathname === location.pathname && tab.search === location.search
-    ).length;
+    const isCurrLocPinned = Boolean(
+      tabs.find((tab) => tabLocationEquality(location, tab))
+    );
     const tabCount = isCurrLocPinned ? numTabs : numTabs - 1;
     const topbar = tabs.filter((_, i) => i < tabCount);
     const dropdown = tabs.filter((_, i) => i >= tabCount);
+
+    // If the current active tab gets pushed to the dropdown menu
+    // on tab resize, move it as the first tab.
+    const currLocInDropdown = dropdown.find((tab) =>
+      tabLocationEquality(location, tab)
+    );
+    const debouncedUpdate = debounce(
+      () => dispatch(updatePinnedTabs(currLocInDropdown)),
+      250
+    );
+
+    if (currLocInDropdown) {
+      debouncedUpdate();
+    }
 
     return { topbar, dropdown };
   };
@@ -139,16 +153,8 @@ export default memo(function GlobalTabs() {
   ).length;
   const numTabs = Math.floor(tabBarWidth / tabWidth);
   const { topbar, dropdown } = getTabs(numTabs);
-  // console.table({
-  //   'curr loc pinned': isCurrLocPinned,
-  //   // 'pinnedTabs': pinnedTabs.length,
-  //   'topbarTabs': newTopBarTabs.length,
-  //   'dropdownTabs': newDropdownTabs.length
-  // });
-  // console.log(isCurrLocPinned, numTabs);
 
   // TODO: Fix pin/unpin on topbar tabs
-  // TODO: Handle setting a tab from dropdown menu on topbar on page load
   return (
     <>
       <GlobalDirtyCodeModal />
