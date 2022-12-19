@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { connect } from "react-redux";
 import styles from "./GlobalSidebar.less";
 
@@ -5,11 +6,13 @@ import { Box, ThemeProvider, IconButton } from "@mui/material";
 import GlobalMenu from "shell/components/global-menu";
 import GlobalCustomApps from "shell/components/global-custom-apps";
 import GlobalActions from "shell/components/global-actions";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import fullZestyLogo from "../../../../public/images/fullZestyLogo.svg";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import { theme } from "@zesty-io/material";
+import InviteMembersModal from "../InviteMembersModal";
 
 const globalSideBarThemeStyles = {
   backgroundColor: theme.palette.grey[900],
@@ -21,6 +24,8 @@ export default connect((state) => {
     instance: state.instance,
   };
 })(function GlobalSidebar(props) {
+  const [showInviteModal, setShowInviteModal] = useState(false);
+
   return (
     <ThemeProvider theme={theme}>
       <aside className={styles.GlobalSidebar} style={globalSideBarThemeStyles}>
@@ -56,7 +61,7 @@ export default connect((state) => {
               borderWidth: "1px",
               backgroundColor: "grey.900",
               float: "right",
-              mr: -2,
+              mr: -1.5,
               zIndex: 50,
               width: "24px",
               height: "24px",
@@ -87,8 +92,37 @@ export default connect((state) => {
           </IconButton>
           <GlobalMenu openNav={props.ui.openNav} />
           <GlobalCustomApps openNav={props.ui.openNav} />
-          <GlobalActions hash={props.instance.randomHashID} />
+          {/* <GlobalActions hash={props.instance.randomHashID} /> */}
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 0,
+              display: "flex",
+              width: "100%",
+              overflow: "hidden",
+              borderTopColor: "grey.800",
+              borderTopWidth: "1px",
+              borderTopStyle: "solid",
+              p: 2,
+            }}
+          >
+            <Box></Box>
+            <IconButton
+              onClick={() => setShowInviteModal(true)}
+              sx={{
+                backgroundColor: "grey.800",
+                borderRadius: "4px",
+                height: "26px",
+                width: "32px",
+              }}
+            >
+              <GroupAddIcon fontSize="small" sx={{ color: "grey.500" }} />
+            </IconButton>
+          </Box>
         </div>
+        {showInviteModal && (
+          <InviteMembersModal onClose={() => setShowInviteModal(false)} />
+        )}
       </aside>
     </ThemeProvider>
   );
