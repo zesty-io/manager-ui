@@ -1,6 +1,6 @@
 //Assume new favicon image has been loaded ye
 //
-describe("Favicon upload image", () => {
+describe.skip("Favicon upload image", () => {
   before(() => {
     cy.visit("/settings/head");
   });
