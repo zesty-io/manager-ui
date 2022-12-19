@@ -12,6 +12,8 @@ import { IconButton } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 
+import { NoSearchResults } from "../../components/NoSearchResults";
+
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
   const query = params.get("q");
@@ -33,13 +35,13 @@ export const SearchPage: FC = () => {
         }}
       >
         <Typography variant="h6" color="text.primary">
-          {" "}
           {results.length} results for "{query}"
         </Typography>
         <IconButton onClick={() => console.log("TODO: clear search results")}>
           <CloseIcon />
         </IconButton>
       </Box>
+      {!results.length && <NoSearchResults query={query} />}
     </ThemeProvider>
   );
 };
