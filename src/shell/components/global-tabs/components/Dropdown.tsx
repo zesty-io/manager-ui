@@ -2,7 +2,6 @@ import { useState, FC } from "react";
 import { Link as Link } from "react-router-dom";
 
 import { ConfirmDialog } from "@zesty-io/material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PinIcon from "@mui/icons-material/PushPin";
 import SearchIcon from "@mui/icons-material/Search";
 
@@ -16,9 +15,10 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import IconButton from "@mui/material/IconButton";
 import InputBase from "@mui/material/InputBase";
+import SvgIcon from "@mui/material/SvgIcon";
+import Typography from "@mui/material/Typography";
 
 import { Tab } from "../../../../shell/store/ui";
-import { Typography } from "@mui/material";
 
 export type Dropdown = {
   tabs: Tab[];
@@ -29,7 +29,12 @@ export type Dropdown = {
 
 const ITEM_HEIGHT = 56;
 
-export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
+export const Dropdown: FC<Dropdown> = ({
+  tabs,
+  removeOne,
+  removeMany,
+  tabWidth,
+}) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [filter, setFilter] = useState("");
@@ -69,41 +74,49 @@ export const Dropdown: FC<Dropdown> = ({ tabs, removeOne, removeMany }) => {
   return (
     <>
       <Box
+        height={34}
+        width={tabWidth}
+        py={0.5}
+        borderRadius="8px 8px 0px 0px"
+        className="more-menu-tab"
         sx={{
           "&:hover": {
-            borderBottom: 2,
-            borderColor: "grey.50",
+            backgroundColor: "grey.50",
+            cursor: "pointer",
           },
         }}
       >
-        <Button
-          id="basic-button"
+        <Stack
+          direction="row"
+          component="span"
+          height={24}
+          alignItems="center"
+          justifyContent="flex-start"
+          borderLeft={1}
+          borderColor="grey.300"
+          sx={{
+            "&:hover": {
+              borderColor: "transparent",
+            },
+          }}
+          data-cy="TabsDropdownButton"
+          onClick={handleClick}
           aria-controls={open ? "basic-menu" : undefined}
           aria-haspopup="true"
           aria-expanded={open ? "true" : undefined}
-          onClick={handleClick}
-          disableRipple
-          disableElevation
-          disableTouchRipple
-          data-cy="TabsDropdownButton"
-          endIcon={<ArrowDropDownIcon color="action" />}
-          sx={{
-            backgroundColor: "grey.100",
-            "&:hover": {
-              backgroundColor: "grey.50",
-            },
-            /*
-             Needed to prevent button from outgrowing parent
-             which will push the dropdown below the nav bar,
-             creating an unsightly gap
-            */
-            lineHeight: "inherit",
-          }}
         >
-          <Typography color="text.secondary" fontWeight={600} variant="caption">
+          <Typography
+            // @ts-expect-error missing body3 module augmentation
+            variant="body3"
+            fontWeight={600}
+            pl={1.5}
+          >
             More
           </Typography>
-        </Button>
+          <IconButton disableTouchRipple disableRipple size="small">
+            <ArrowDropDownIcon />
+          </IconButton>
+        </Stack>
         <Menu
           id="basic-menu"
           anchorEl={anchorEl}
@@ -289,10 +302,20 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
         borderColor: "border",
       }}
     >
-      {/* TODO: Change to MUI icons once Zosh provides list */}
-      <Box component="span" pr={0.5} sx={{ color: "action.active" }}>
+      <Box
+        component="span"
+        pr={0.5}
+        sx={{ color: "action.active" }}
+        fontSize={18}
+      >
         {tab.icon && (
-          <FontAwesomeIcon icon={tab.icon} style={{ fontSize: "18px" }} />
+          <SvgIcon
+            component={tab.icon}
+            fontSize="inherit"
+            sx={{
+              verticalAlign: "middle",
+            }}
+          />
         )}
       </Box>
       <MuiLink
