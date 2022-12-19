@@ -133,3 +133,18 @@ export interface ContentItem {
   data: Data;
   publishAt?: any;
 }
+
+export interface ContentModelField {
+  ZUID: string;
+  label: string;
+  name: string;
+  // Type out fields
+  dataType: any;
+  // Type out field settings dependnding on dataType
+  settings: any;
+  required: boolean;
+  description?: string;
+  sort?: number;
+  relatedModelZUID?: string;
+  relatedFieldZUID?: string;
+}
