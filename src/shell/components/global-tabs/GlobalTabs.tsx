@@ -42,6 +42,7 @@ export default memo(function GlobalTabs() {
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const dispatch = useDispatch();
   const pinnedTabs = useSelector((state: AppState) => state.ui.pinnedTabs);
+  const [tabs, setTabs] = useState([]);
 
   const instanceZUID = useSelector((state: AppState) => state.instance.ZUID);
   const loadedTabs = useSelector((state: AppState) => state.ui.loadedTabs);
@@ -90,6 +91,10 @@ export default memo(function GlobalTabs() {
     }
   }, [loadedTabs, models, content, files, queryData, apps, users]);
 
+  useEffect(() => {
+    setTabs(pinnedTabs);
+  }, [pinnedTabs]);
+
   // measure the tab bar width and set state
   // to trigger a synchronous re-render before paint
   // recalculate tab bar width if window is resized
@@ -102,14 +107,18 @@ export default memo(function GlobalTabs() {
     }
   }, [windowWidth]);
 
+  /**
+   * Determines which tabs will be placed on the topbar and dropdown menu.
+   */
   const getTabs = (numTabs: number) => {
-    const isCurrLocPinned = pinnedTabs.filter(
+    // TODO: Determine if curr loc is on dropdown tab
+    const isCurrLocPinned = tabs.filter(
       (tab) =>
         tab.pathname === location.pathname && tab.search === location.search
     ).length;
     const tabCount = isCurrLocPinned ? numTabs : numTabs - 1;
-    const topbar = pinnedTabs.filter((_, i) => i < tabCount);
-    const dropdown = pinnedTabs.filter((_, i) => i >= tabCount);
+    const topbar = tabs.filter((_, i) => i < tabCount);
+    const dropdown = tabs.filter((_, i) => i >= tabCount);
 
     return { topbar, dropdown };
   };
@@ -117,14 +126,15 @@ export default memo(function GlobalTabs() {
   const tabWidth =
     Math.floor(
       Math.min(
-        Math.max(tabBarWidth / pinnedTabs.length, MIN_TAB_WIDTH),
+        Math.max(tabBarWidth / tabs.length, MIN_TAB_WIDTH),
         MAX_TAB_WIDTH
       )
     ) -
     TAB_PADDING -
     TAB_BORDER;
 
-  const isCurrLocPinned = pinnedTabs.filter((tab) =>
+  // Determines if the opened url is a pinned tab or not. Used to show/hide the unpinned tab component.
+  const isCurrLocPinned = tabs.filter((tab) =>
     tabLocationEquality(tab, location)
   ).length;
   const numTabs = Math.floor(tabBarWidth / tabWidth);
@@ -137,7 +147,8 @@ export default memo(function GlobalTabs() {
   // });
   // console.log(isCurrLocPinned, numTabs);
 
-  // TODO: Find a way to adjust the tabs when a tab from dropdown is clicked
+  // TODO: Fix pin/unpin on topbar tabs
+  // TODO: Handle setting a tab from dropdown menu on topbar on page load
   return (
     <>
       <GlobalDirtyCodeModal />
