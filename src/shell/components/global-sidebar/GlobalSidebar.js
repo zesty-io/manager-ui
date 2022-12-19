@@ -1,11 +1,4 @@
 import { connect } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
-import cx from "classnames";
-
 import styles from "./GlobalSidebar.less";
 
 import { Box, ThemeProvider, IconButton } from "@mui/material";
