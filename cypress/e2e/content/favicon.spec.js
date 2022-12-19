@@ -9,10 +9,10 @@ describe("Favicon upload image", () => {
     cy.get("[data-cy=Favicon]").click();
     // Allows image to load before clicking
     cy.wait(1000);
-    cy.get("figure button").click();
+    cy.get("figure button").click({ force: true });
 
     cy.waitOn("**/bin/**", () => {
-      cy.get("figure button").click();
+      cy.get("figure button").click({ force: true });
     });
     cy.waitOn("**/group/**", () => {
       cy.get(".MuiTreeView-root").first().contains("favicon").click();
