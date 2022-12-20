@@ -236,17 +236,6 @@ export default connect((state) => {
               >
                 <GroupAddIcon fontSize="small" sx={{ color: "grey.500" }} />
               </IconButton>
-              <IconButton
-                onClick={() => setShowInviteModal(true)}
-                sx={{
-                  backgroundColor: "grey.800",
-                  height: "26px",
-                  ml: 1,
-                  borderRadius: "4px",
-                }}
-              >
-                <GroupAddIcon fontSize="small" sx={{ color: "grey.500" }} />
-              </IconButton>
             </Box>
           </Box>
         </div>

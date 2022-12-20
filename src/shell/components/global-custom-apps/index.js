@@ -43,8 +43,8 @@ export default memo(function GlobalCustomApps(props) {
       >
         <ListItem
           sx={{
-            px: "12px",
-            mb: "12px",
+            px: "10px",
+            mb: "10px",
             height: "36px",
             borderRadius: "4px",
           }}

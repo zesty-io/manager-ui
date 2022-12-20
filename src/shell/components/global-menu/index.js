@@ -74,8 +74,7 @@ export default memo(function GlobalMenu() {
           >
             <ListItem
               sx={{
-                px: "12px",
-                py: "8px",
+                px: "10px",
                 mb: "10px",
                 height: "36px",
                 borderRadius: "4px",
