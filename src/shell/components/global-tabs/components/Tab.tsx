@@ -24,14 +24,14 @@ import {
   useGetBinsQuery,
 } from "../../../services/mediaManager";
 
-export type PinnedTopBarTab = {
+export type TopBarTab = {
   tab: Tab;
   tabWidth: number;
   isDarkMode?: boolean;
   isActive?: boolean;
   isPinned?: boolean;
 };
-export const PinnedTopBarTab: FC<PinnedTopBarTab> = ({
+export const TopBarTab: FC<TopBarTab> = ({
   tab,
   tabWidth,
   isDarkMode = false,
@@ -227,7 +227,7 @@ export const UnpinnedTopBarTab: FC<UnpinnedTopBarTab> = ({ tabWidth }) => {
     pinnedTabs.findIndex((t: Tab) => tabLocationEquality(t, activeTab)) >= 0;
 
   return (
-    <PinnedTopBarTab
+    <TopBarTab
       isActive
       isPinned={false}
       tabWidth={tabWidth}

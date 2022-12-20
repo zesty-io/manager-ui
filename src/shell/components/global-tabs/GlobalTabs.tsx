@@ -14,7 +14,7 @@ import isEqual from "lodash/isEqual";
 
 import { Dropdown } from "./components/Dropdown";
 import { GlobalDirtyCodeModal } from "./components/GlobalDirtyCodeModal";
-import { PinnedTopBarTab, UnpinnedTopBarTab } from "./components/Tab";
+import { TopBarTab, UnpinnedTopBarTab } from "./components/Tab";
 import Stack from "@mui/material/Stack";
 
 import {
@@ -186,11 +186,14 @@ export default memo(function GlobalTabs() {
             "& .tab-item[data-active=true] + .tab-item > div": {
               borderColor: "transparent",
             },
+            "& .tab-item[data-active=true] + .more-menu-tab > span": {
+              borderColor: "transparent",
+            },
           }}
         >
           {!isCurrLocPinned && <UnpinnedTopBarTab tabWidth={tabWidth} />}
           {topbar.map((tab) => (
-            <PinnedTopBarTab
+            <TopBarTab
               key={tab.pathname + tab.search}
               tab={tab}
               tabWidth={tabWidth}
