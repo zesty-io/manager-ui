@@ -3,6 +3,7 @@ import { useDispatch, connect } from "react-redux";
 import styles from "./GlobalSidebar.less";
 import { useSelector } from "react-redux";
 import { fetchHeadTags } from "shell/store/headTags";
+import moment from "moment";
 
 import {
   Box,
@@ -33,12 +34,12 @@ const globalSideBarThemeStyles = {
   backgroundColor: theme.palette.grey[900],
 };
 
-const OnboardingCallSection = ({ openNav }) => {
+const OnboardingCallSection = ({ openNav, createdAt }) => {
   const [showMeetModal, setShowMeetModal] = useState(false);
 
   return (
     <>
-      {openNav && (
+      {moment().diff(moment(createdAt), "days") > 15 && openNav && (
         <>
           <Box sx={{ px: 2.3, py: 1.7 }}>
             <Avatar
@@ -88,6 +89,7 @@ export default connect((state) => {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const user = useSelector((state) => state.user);
   const [faviconURL, setFaviconURL] = useState("");
+  const [instanceCreationDate, setInstanceCreationDate] = useState("");
   const [showInstanceFlyoutMenu, setShowInstanceFlyoutMenu] = useState(false);
 
   useEffect(() => {
@@ -104,6 +106,7 @@ export default connect((state) => {
     if (tag) {
       const attr = tag.attributes.find((attr) => attr.key === "href");
       setFaviconURL(attr.value);
+      setInstanceCreationDate(tag.createdAt);
     }
   }, [props.headTags]);
 
@@ -172,7 +175,10 @@ export default connect((state) => {
         </IconButton>
         <GlobalMenu openNav={props.ui.openNav} />
         <GlobalCustomApps openNav={props.ui.openNav} />
-        <OnboardingCallSection openNav={props.ui.openNav} />
+        <OnboardingCallSection
+          openNav={props.ui.openNav}
+          createdAt={instanceCreationDate}
+        />
         {/* <GlobalActions hash={props.instance.randomHashID} /> */}
         <Box
           sx={{
