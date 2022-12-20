@@ -1,8 +1,5 @@
 import { FC } from "react";
 
-import TextField from "@mui/material/TextField";
-import SearchIcon from "@mui/icons-material/Search";
-import TuneIcon from "@mui/icons-material/Tune";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { useParams } from "../../../shell/hooks/useParams";
