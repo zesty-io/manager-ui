@@ -39,7 +39,7 @@ const OnboardingCallSection = ({ openNav, createdAt }) => {
 
   return (
     <>
-      {moment().diff(moment(createdAt), "days") > 15 && openNav && (
+      {moment().diff(moment(createdAt), "days") <= 15 && openNav && (
         <>
           <Box sx={{ px: 2.3, py: 1.7 }}>
             <Avatar
