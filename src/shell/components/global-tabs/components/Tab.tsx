@@ -198,10 +198,8 @@ export type UnpinnedTopBarTab = {
   tabWidth: number;
 };
 export const UnpinnedTopBarTab: FC<UnpinnedTopBarTab> = ({ tabWidth }) => {
-  const dispatch = useDispatch();
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
-  const pinnedTabs = useSelector((state: AppState) => state.ui.pinnedTabs);
   const state = useSelector((state: AppState) => state);
   const location = useLocation();
   // RTK QUERY FOR HOOKING INTO ALL MEDIA BIN GROUPS
@@ -221,18 +219,15 @@ export const UnpinnedTopBarTab: FC<UnpinnedTopBarTab> = ({ tabWidth }) => {
     };
   }, [binGroups]);
 
-  const activeTab = createTab(state, parsePath(location), queryData);
-
-  const isPinned =
-    pinnedTabs.findIndex((t: Tab) => tabLocationEquality(t, activeTab)) >= 0;
+  const tab = createTab(state, parsePath(location), queryData);
 
   return (
     <TopBarTab
       isActive
       isPinned={false}
       tabWidth={tabWidth}
-      tab={activeTab}
-      isDarkMode={activeTab.app === "Code"}
+      tab={tab}
+      isDarkMode={tab.app === "Code"}
     />
   );
 };
