@@ -49,7 +49,6 @@ export default connect((state) => {
 
   // @Note: Need to refactor this to rtk query
   useEffect(() => {
-    // console.log("QWE", props.headTags)
     const tag = Object.values(props?.headTags).find((tag) =>
       tag?.attributes.find(
         (attr) => attr?.key === "sizes" && attr?.value === "196x196"
@@ -139,16 +138,23 @@ export default connect((state) => {
               borderTopColor: "grey.800",
               borderTopWidth: "1px",
               borderTopStyle: "solid",
+              flexDirection: props.openNav ? "row" : "column-reverse",
               p: 2,
             }}
           >
             <Box
-              sx={{ display: "flex", flex: 1, cursor: "pointer" }}
+              sx={{
+                display: "flex",
+                cursor: "pointer",
+                flex: 1,
+                mt: !props.openNav && 1.3,
+              }}
               onClick={() => setShowInstanceFlyoutMenu(true)}
             >
               <AvatarGroup
                 total={2}
                 sx={{
+                  flexDirection: props.openNav ? "row-reverse" : "column",
                   "& .MuiAvatar-root": {
                     width: "32px",
                     height: "32px",
@@ -156,23 +162,42 @@ export default connect((state) => {
                   },
                 }}
               >
-                <Avatar size={20} src={faviconURL} />
                 <Avatar
-                  sx={{ ml: -5 }}
+                  size={20}
+                  src={faviconURL}
+                  style={{
+                    marginTop: props.openNav ? "0" : "-8px",
+                  }}
+                />
+                <Avatar
+                  style={{
+                    marginLeft: props.openNav ? "-8px" : "0px",
+                  }}
                   alt={`${user.firstName} ${user.lastName} Avatar`}
                   src={`https://www.gravatar.com/avatar/${user.faviconURL}?d=mm&s=40`}
                 />
               </AvatarGroup>
               <ArrowDropDownIcon
                 fontSize="small"
-                sx={{ color: "grey.500", mt: 0.5 }}
+                sx={{
+                  color: "grey.500",
+                  mt: 0.5,
+                  display: props.openNav ? "block" : "none",
+                }}
               />
             </Box>
-            <Box sx={{ display: "flex", flex: 1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                flex: 1,
+                mt: 0.3,
+              }}
+            >
               <IconButton
                 onClick={() => setShowInviteModal(true)}
                 sx={{
                   backgroundColor: "grey.800",
+                  height: "26px",
                   borderRadius: "4px",
                 }}
               >
