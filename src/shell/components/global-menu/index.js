@@ -76,6 +76,7 @@ export default memo(function GlobalMenu() {
               sx={{
                 px: "12px",
                 py: "12px",
+                mb: "12px",
                 height: "36px",
                 borderRadius: "4px",
                 backgroundColor: slug === product ? "grey.800" : "transparent",

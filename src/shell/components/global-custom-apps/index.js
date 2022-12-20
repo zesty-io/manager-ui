@@ -7,9 +7,12 @@ import { fetchInstalledApps } from "shell/store/apps";
 import cx from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlug, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlug } from "@fortawesome/free-solid-svg-icons";
+import ExtensionIcon from "@mui/icons-material/Extension";
+import { ListItemIcon, ListItem, ListItemText } from "@mui/material";
 
 import styles from "./styles.less";
+
 export default memo(function GlobalCustomApps(props) {
   const installedApps = useSelector((state) => state.apps.installed);
   const instanceZUID = useSelector((state) => state.instance.ZUID);
@@ -36,10 +39,31 @@ export default memo(function GlobalCustomApps(props) {
         key="marketplace"
         rel="noopener noreferrer"
         target="_blank"
-        className={cx(styles.control)}
+        // className={cx(styles.control)}
       >
-        <FontAwesomeIcon icon={faPlus} />
-        <span className={styles.title}>Marketplace</span>
+        <ListItem
+          sx={{
+            px: "12px",
+            mb: "12px",
+            height: "36px",
+            borderRadius: "4px",
+          }}
+        >
+          <ListItemIcon sx={{ minWidth: "36px" }}>
+            <ExtensionIcon
+              sx={{
+                color: slug === "Marketplace" ? "primary.main" : "grey.500",
+              }}
+            />
+          </ListItemIcon>
+          <ListItemText
+            sx={{
+              color: slug === "Marketplace" ? "common.white" : "grey.500",
+            }}
+          >
+            Marketplace
+          </ListItemText>
+        </ListItem>
       </ExternalLink>
 
       {installedApps.map((app) => {
