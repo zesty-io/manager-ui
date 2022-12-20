@@ -138,7 +138,7 @@ export default connect((state) => {
               borderTopColor: "grey.800",
               borderTopWidth: "1px",
               borderTopStyle: "solid",
-              flexDirection: props.openNav ? "row" : "column",
+              flexDirection: props.openNav ? "row" : "column-reverse",
               p: 2,
             }}
           >
@@ -147,7 +147,6 @@ export default connect((state) => {
                 display: "flex",
                 cursor: "pointer",
                 flex: 1,
-                order: props.openNav ? 1 : 2,
                 mt: !props.openNav && 1.3,
               }}
               onClick={() => setShowInstanceFlyoutMenu(true)}
@@ -191,7 +190,6 @@ export default connect((state) => {
               sx={{
                 display: "flex",
                 flex: 1,
-                order: props.openNav ? 2 : 1,
                 mt: 0.3,
               }}
             >
