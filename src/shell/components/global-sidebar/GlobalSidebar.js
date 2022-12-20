@@ -49,7 +49,6 @@ export default connect((state) => {
 
   // @Note: Need to refactor this to rtk query
   useEffect(() => {
-    // console.log("QWE", props.headTags)
     const tag = Object.values(props?.headTags).find((tag) =>
       tag?.attributes.find(
         (attr) => attr?.key === "sizes" && attr?.value === "196x196"
