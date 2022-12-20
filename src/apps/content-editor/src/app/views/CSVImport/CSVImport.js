@@ -103,6 +103,15 @@ class CSVImport extends Component {
       skip_lines_with_empty_values: true,
     });
 
+    // Handle empty csv imports
+    if (!records.length) {
+      return this.setState({
+        warn: "You have imported an empty CSV file",
+        cols: [],
+        records: [],
+      });
+    }
+
     // build an array of object to reference data across columns
     const columnsWithValues = records.slice(1).reduce((acc, item, i) => {
       const rec = item.reduce((ac, it, i) => {
