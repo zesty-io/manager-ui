@@ -75,8 +75,8 @@ export default memo(function GlobalMenu() {
             <ListItem
               sx={{
                 px: "12px",
-                py: "12px",
-                mb: "12px",
+                py: "8px",
+                mb: "10px",
                 height: "36px",
                 borderRadius: "4px",
                 backgroundColor: slug === product ? "grey.800" : "transparent",
