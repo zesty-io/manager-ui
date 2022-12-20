@@ -10,10 +10,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useWindowSize } from "react-use";
 import { useLocation } from "react-router-dom";
 import debounce from "lodash/debounce";
+import isEqual from "lodash/isEqual";
 
 import { Dropdown } from "./components/Dropdown";
 import { GlobalDirtyCodeModal } from "./components/GlobalDirtyCodeModal";
-import { TopBarTab, UnpinnedTopBarTab } from "./components/Tab";
+import { PinnedTopBarTab, UnpinnedTopBarTab } from "./components/Tab";
 import Stack from "@mui/material/Stack";
 
 import {
@@ -81,7 +82,6 @@ export default memo(function GlobalTabs() {
   useEffect(() => {
     dispatch(setDocumentTitle(location, queryData));
 
-    console.log("loc data", location);
     // If current location is not in topbartabs array, add it
   }, [location.pathname, location.search]);
 
@@ -154,7 +154,6 @@ export default memo(function GlobalTabs() {
   const numTabs = Math.floor(tabBarWidth / tabWidth);
   const { topbar, dropdown } = getTabs(numTabs);
 
-  // TODO: Fix pin/unpin on topbar tabs
   return (
     <>
       <GlobalDirtyCodeModal />
@@ -191,13 +190,13 @@ export default memo(function GlobalTabs() {
         >
           {!isCurrLocPinned && <UnpinnedTopBarTab tabWidth={tabWidth} />}
           {topbar.map((tab) => (
-            <TopBarTab
+            <PinnedTopBarTab
+              key={tab.pathname + tab.search}
               tab={tab}
               tabWidth={tabWidth}
-              variant="fill"
               isDarkMode={tab.app === "Code"}
               isActive={tabLocationEquality(tab, location)}
-              onPinClick={() => {}}
+              isPinned={pinnedTabs.some((t) => isEqual(t, tab))}
             />
           ))}
           <Dropdown
