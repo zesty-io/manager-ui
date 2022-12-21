@@ -130,6 +130,12 @@ export default function ItemEdit() {
     try {
       const itemResponse = await dispatch(fetchItem(modelZUID, itemZUID));
 
+      // Likely due to a duplicate request which causes middleware to return undefined
+      // Return early will show loading screen until the request is resolved
+      if (!itemResponse) {
+        return;
+      }
+
       if (itemResponse.status === 404 || itemResponse.status === 400) {
         setNotFound(itemResponse.message || itemResponse.error);
       }
@@ -154,13 +160,15 @@ export default function ItemEdit() {
           dispatch(fetchItemPublishing(modelZUID, itemZUID)),
         ]);
       }
-    } catch (err) {
-      console.error("ItemEdit:load:error", err);
-      throw err;
-    } finally {
       if (isMounted.current) {
         setLoading(false);
       }
+    } catch (err) {
+      console.error("ItemEdit:load:error", err);
+      if (isMounted.current) {
+        setLoading(false);
+      }
+      throw err;
     }
   }
 
