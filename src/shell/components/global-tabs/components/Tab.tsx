@@ -105,7 +105,7 @@ export const TopBarTab: FC<TopBarTab> = ({
     <Box
       component="div"
       className="tab-item"
-      data-cy="ActiveTab"
+      data-cy={isActive ? "ActiveTab" : ""}
       data-active={isActive}
       width={`${tabWidth}px`}
       py={0.5}

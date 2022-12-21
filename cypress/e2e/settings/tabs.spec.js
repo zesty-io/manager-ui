@@ -84,8 +84,8 @@ describe("Tabs actions", () => {
   });
 
   // Broken test needs to be revisited on new tabs design
-  it.skip("creates a dropdown when many tabs are pinned", () => {
-    cy.viewport(1280, 720);
+  it("creates a dropdown when many tabs are pinned", () => {
+    cy.viewport(1024, 720);
     /*
       Should create dropdown after ~3 tabs, but we'll pin 5 just to make sure:
       incase any CSS updates cause a change in behavior
@@ -102,36 +102,64 @@ describe("Tabs actions", () => {
       .find('[data-testid="PushPinOutlinedIcon"]')
       .should("not.exist");
 
+    cy.wait(250);
+
     // Pin tab #2 and ensure it is pinned
-    cy.visit("/code/file/views/11-bc386c-gj560c");
-    cy.get('[data-testid="PushPinOutlinedIcon"]').parent().click();
-    //cy.get('[data-cy="ActiveTab"]').find('[data-testid="PushPinIcon"]').should('not.exist')
+    cy.waitOn("/code/file/views/11-bc386c-gj560c", () => {
+      cy.visit("/code/file/views/11-bc386c-gj560c");
+    });
+    cy.get('[data-testid="PushPinOutlinedIcon"]')
+      .should("exist")
+      .parent()
+      .trigger("mouseover")
+      .click();
     cy.get('[data-cy="ActiveTab"]')
-      .find('[data-testid="PushPinOutlinedIcon"]')
+      .find('[data-testid="PushPinIcon"]')
       .should("exist");
+
+    cy.wait(250);
 
     // Pin tab #3 and ensure it is pinned
-    cy.visit("/code/file/views/11-d10260-6t3jg6");
-    cy.get('[data-testid="PushPinOutlinedIcon"]').parent().click();
-    //cy.get('[data-cy="ActiveTab"]').find('[data-testid="PushPinIcon"]').should('not.exist')
+    cy.waitOn("/code/file/views/11-d10260-6t3jg6", () => {
+      cy.visit("/code/file/views/11-d10260-6t3jg6");
+    });
+    cy.get('[data-testid="PushPinOutlinedIcon"]')
+      .should("exist")
+      .parent()
+      .trigger("mouseover")
+      .click();
     cy.get('[data-cy="ActiveTab"]')
-      .find('[data-testid="PushPinOutlinedIcon"]')
+      .find('[data-testid="PushPinIcon"]')
       .should("exist");
+
+    cy.wait(250);
 
     // Pin tab #4 and ensure it is pinned
-    cy.visit("/code/file/views/11-77b344-rflphh");
-    cy.get('[data-testid="PushPinOutlinedIcon"]').parent().click();
-    //cy.get('[data-cy="ActiveTab"]').find('[data-testid="PushPinIcon"]').should('not.exist')
+    cy.waitOn("/code/file/views/11-77b344-rflphh", () => {
+      cy.visit("/code/file/views/11-77b344-rflphh");
+    });
+    cy.get('[data-testid="PushPinOutlinedIcon"]')
+      .should("exist")
+      .parent()
+      .trigger("mouseover")
+      .click();
     cy.get('[data-cy="ActiveTab"]')
-      .find('[data-testid="PushPinOutlinedIcon"]')
+      .find('[data-testid="PushPinIcon"]')
       .should("exist");
 
+    cy.wait(250);
+
     // Pin tab #5 and ensure it is pinned
-    cy.visit("/code/file/views/11-6bb028-b65lkz");
-    cy.get('[data-testid="PushPinOutlinedIcon"]').parent().click();
-    //cy.get('[data-cy="ActiveTab"]').find('[data-testid="PushPinIcon"]').should('not.exist')
+    cy.waitOn("/code/file/views/11-6bb028-b65lkz", () => {
+      cy.visit("/code/file/views/11-6bb028-b65lkz");
+    });
+    cy.get('[data-testid="PushPinOutlinedIcon"]')
+      .should("exist")
+      .parent()
+      .trigger("mouseover")
+      .click();
     cy.get('[data-cy="ActiveTab"]')
-      .find('[data-testid="PushPinOutlinedIcon"]')
+      .find('[data-testid="PushPinIcon"]')
       .should("exist");
 
     // Ensure dropdown menu exists
@@ -140,10 +168,12 @@ describe("Tabs actions", () => {
     cy.get('[data-cy="TabsDropdownMenu"').should("exist");
 
     // Search pins
-    cy.get('[data-cy="TabsDropdownMenu"').find("input[type=text]").type("css");
+    cy.get('[data-cy="TabsDropdownMenu"')
+      .find("input[type=text]")
+      .type("custom");
 
-    // Close the menu
-    cy.get('[data-cy="TabsDropdownButton"').click();
+    // Force click outside the dropdown menu to close it
+    cy.get('[data-cy="ActiveTab"').click({ force: true });
 
     // Resize the viewport and assert that the dropdown is gone
     cy.viewport(3440, 720);
