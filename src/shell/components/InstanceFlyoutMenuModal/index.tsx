@@ -11,6 +11,8 @@ import {
 import slackIcon from "../../../../public/images/slackIcon.svg";
 import youtubeIcon from "../../../../public/images/youtubeIcon.svg";
 import discordIcon from "../../../../public/images/discordIcon.svg";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import RefreshIcon from "@mui/icons-material/Refresh";
 interface Props {
   instanceFaviconUrl?: string;
   instanceName?: string;
@@ -37,6 +39,33 @@ const InstanceFlyoutMenuModal = ({
             {instanceName}
           </Typography>
         </ListItem>
+        <Box sx={{ p: 1 }}>
+          <Button
+            variant="outlined"
+            color="inherit"
+            // onClick={() => {
+            //   return request(
+            //     `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${instanceZUID}&instance=${instanceZUID}`
+            //   ).catch((err: any) => {
+            //   })
+            //   .finally(() => {
+            //     // setPurge(false);
+            //   });
+            // }}
+            startIcon={<RefreshIcon fontSize="small" />}
+          >
+            Refresh Cache
+          </Button>
+        </Box>
+        <Box sx={{ p: 1 }}>
+          <Button
+            variant="outlined"
+            color="inherit"
+            startIcon={<ContentCopyIcon fontSize="small" />}
+          >
+            Get Instance ZUID
+          </Button>
+        </Box>
       </Box>
       <Box
         display="flex"
