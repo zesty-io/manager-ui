@@ -456,7 +456,10 @@ export function setDocumentTitle(location: TabLocation, queryData: any) {
     const t = createTab(state, parsedPath, queryData);
     const { app } = t;
     const item = t.name || t.pathname;
-    const title = `${app} - ${item} - Zesty.io - ${instanceName} - Manager`;
+    const titleElements = [app, item, "Zesty.io", instanceName, "Manager"]
+      .filter((elem) => Boolean(elem) && Boolean(elem.toString))
+      .map((elem) => elem.toString());
+    const title = titleElements.join(" - ");
     // set the title
     document.title = title;
   };
