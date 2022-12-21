@@ -1,5 +1,6 @@
 import { useState, FC } from "react";
 import { Link as Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 import { ConfirmDialog } from "@zesty-io/material";
 import PinIcon from "@mui/icons-material/PushPin";
@@ -18,7 +19,7 @@ import InputBase from "@mui/material/InputBase";
 import SvgIcon from "@mui/material/SvgIcon";
 import Typography from "@mui/material/Typography";
 
-import { Tab } from "../../../../shell/store/ui";
+import { Tab, updatePinnedTabs } from "../../../../shell/store/ui";
 
 export type Dropdown = {
   tabs: Tab[];
@@ -285,6 +286,8 @@ type DropdownItem = {
   remove: () => void;
 };
 const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
+  const dispatch = useDispatch();
+
   return (
     <MenuItem
       disableRipple
@@ -321,6 +324,7 @@ const DropdownItem: FC<DropdownItem> = ({ tab, remove }) => {
       <MuiLink
         component={Link}
         to={tab.pathname + tab.search}
+        onClick={() => dispatch(updatePinnedTabs(tab))}
         underline="none"
         sx={{
           textDecoration: "none",

@@ -4,17 +4,17 @@ import {
   useLayoutEffect,
   useRef,
   useState,
-  FC,
   useMemo,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useWindowSize } from "react-use";
 import { useLocation } from "react-router-dom";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
+import isEqual from "lodash/isEqual";
 
 import { Dropdown } from "./components/Dropdown";
 import { GlobalDirtyCodeModal } from "./components/GlobalDirtyCodeModal";
-import { ActiveTab, InactiveTabGroup } from "./components/Tab";
+import { TopBarTab, UnpinnedTopBarTab } from "./components/Tab";
 import Stack from "@mui/material/Stack";
 
 import {
@@ -24,6 +24,7 @@ import {
   rebuildTabs,
   tabLocationEquality,
   setDocumentTitle,
+  updatePinnedTabs,
 } from "../../../shell/store/ui";
 import { AppState } from "../../store/types";
 import {
@@ -44,6 +45,7 @@ export default memo(function GlobalTabs() {
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const dispatch = useDispatch();
   const pinnedTabs = useSelector((state: AppState) => state.ui.pinnedTabs);
+  const [tabs, setTabs] = useState([]);
 
   const instanceZUID = useSelector((state: AppState) => state.instance.ZUID);
   const loadedTabs = useSelector((state: AppState) => state.ui.loadedTabs);
@@ -79,6 +81,8 @@ export default memo(function GlobalTabs() {
 
   useEffect(() => {
     dispatch(setDocumentTitle(location, queryData));
+
+    // If current location is not in topbartabs array, add it
   }, [location.pathname, location.search]);
 
   // rebuild tabs if any of the store slices changes
@@ -88,6 +92,10 @@ export default memo(function GlobalTabs() {
       dispatch(rebuildTabs(queryData));
     }
   }, [loadedTabs, models, content, files, queryData, apps, users]);
+
+  useEffect(() => {
+    setTabs(pinnedTabs);
+  }, [pinnedTabs]);
 
   // measure the tab bar width and set state
   // to trigger a synchronous re-render before paint
@@ -101,26 +109,50 @@ export default memo(function GlobalTabs() {
     }
   }, [windowWidth]);
 
+  /**
+   * Determines which tabs will be placed on the topbar and dropdown menu.
+   */
+  const getTabs = (numTabs: number) => {
+    const isCurrLocPinned = Boolean(
+      tabs.find((tab) => tabLocationEquality(location, tab))
+    );
+    const tabCount = isCurrLocPinned ? numTabs : numTabs - 1;
+    const topbar = tabs.filter((_, i) => i < tabCount);
+    const dropdown = tabs.filter((_, i) => i >= tabCount);
+
+    // If the current active tab gets pushed to the dropdown menu
+    // on tab resize, move it as the first tab.
+    const currLocInDropdown = dropdown.find((tab) =>
+      tabLocationEquality(location, tab)
+    );
+    const debouncedUpdate = debounce(
+      () => dispatch(updatePinnedTabs(currLocInDropdown)),
+      250
+    );
+
+    if (currLocInDropdown) {
+      debouncedUpdate();
+    }
+
+    return { topbar, dropdown };
+  };
+
   const tabWidth =
     Math.floor(
       Math.min(
-        Math.max(tabBarWidth / pinnedTabs.length, MIN_TAB_WIDTH),
+        Math.max(tabBarWidth / tabs.length, MIN_TAB_WIDTH),
         MAX_TAB_WIDTH
       )
     ) -
     TAB_PADDING -
     TAB_BORDER;
 
-  //const inactiveTabs = [] //tabs.filter(tab => tab.pathname !== location.pathname)
-  const inactiveTabs = pinnedTabs.filter(
-    (tab) => !tabLocationEquality(tab, location)
-  );
-
+  // Determines if the opened url is a pinned tab or not. Used to show/hide the unpinned tab component.
+  const isCurrLocPinned = tabs.filter((tab) =>
+    tabLocationEquality(tab, location)
+  ).length;
   const numTabs = Math.floor(tabBarWidth / tabWidth);
-
-  // Adjust by 1 to accommodate the active tab
-  const topBarTabs = inactiveTabs.filter((_, i) => i < numTabs - 1);
-  const dropDownTabs = inactiveTabs.filter((_, i) => i >= numTabs - 1);
+  const { topbar, dropdown } = getTabs(numTabs);
 
   return (
     <>
@@ -154,12 +186,24 @@ export default memo(function GlobalTabs() {
             "& .tab-item[data-active=true] + .tab-item > div": {
               borderColor: "transparent",
             },
+            "& .tab-item[data-active=true] + .more-menu-tab > span": {
+              borderColor: "transparent",
+            },
           }}
         >
-          <ActiveTab tabWidth={tabWidth} />
-          <InactiveTabGroup tabs={topBarTabs} tabWidth={tabWidth} />
+          {!isCurrLocPinned && <UnpinnedTopBarTab tabWidth={tabWidth} />}
+          {topbar.map((tab) => (
+            <TopBarTab
+              key={tab.pathname + tab.search}
+              tab={tab}
+              tabWidth={tabWidth}
+              isDarkMode={tab.app === "Code"}
+              isActive={tabLocationEquality(tab, location)}
+              isPinned={pinnedTabs.some((t) => isEqual(t, tab))}
+            />
+          ))}
           <Dropdown
-            tabs={dropDownTabs}
+            tabs={dropdown}
             tabWidth={MORE_MENU_WIDTH}
             removeOne={(tab) => {
               dispatch(unpinTab(tab, false, queryData));

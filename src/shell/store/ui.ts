@@ -437,6 +437,19 @@ export function pinTab({ pathname, search }: TabLocation, queryData: any) {
   };
 }
 
+export function updatePinnedTabs(tab: Tab) {
+  return async (dispatch: Dispatch, getState: () => AppState) => {
+    const state = getState();
+    const { pinnedTabs } = state.ui;
+    const newTabs = pinnedTabs.filter((t) => t !== tab);
+
+    newTabs.unshift(tab);
+
+    dispatch(actions.setPinnedTabs(newTabs));
+    await idb.set(`${state.instance.ZUID}:pinned`, newTabs);
+  };
+}
+
 export function unpinTab(
   { pathname, search }: TabLocation,
   force = false,
