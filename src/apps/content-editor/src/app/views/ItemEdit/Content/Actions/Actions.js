@@ -28,7 +28,7 @@ export function Actions(props) {
   const canUpdate = usePermission("UPDATE");
   const domain = useDomain();
 
-  const { type } = props.model;
+  const { type = "" } = props.model || {};
   const { publishing, scheduling, siblings } = props.item;
   const { listed, sort, updatedAt, version } = props.item.meta;
   const { path, metaTitle, metaLinkText } = props.item.web;
