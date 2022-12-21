@@ -1,5 +1,4 @@
 import { FC, useState } from "react";
-import { useDispatch } from "react-redux";
 
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
@@ -11,18 +10,16 @@ import IconButton from "@mui/material/IconButton";
 import ChevronRightOutlined from "@mui/icons-material/ChevronRightOutlined";
 import MovieCreationRounded from "@mui/icons-material/MovieCreationRounded";
 
-import {
-  Filetype,
-  setFiletypeFilter,
-} from "../../../../../../shell/store/media-revamp";
+import { useParams } from "../../../../../../shell/hooks/useParams";
+import { Filetype } from "../../../../../../shell/store/media-revamp";
 
 type VideoFilterRow = {
   onClose: () => void;
 };
 export const VideoFilterRow: FC<VideoFilterRow> = ({ onClose }) => {
-  const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const [params, setParams] = useParams();
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -31,7 +28,7 @@ export const VideoFilterRow: FC<VideoFilterRow> = ({ onClose }) => {
     onClose();
   };
   const handleChange = (filetype: Filetype) => {
-    dispatch(setFiletypeFilter(filetype));
+    setParams(filetype, "filetype");
     handleClose();
     onClose();
   };
@@ -43,9 +40,9 @@ export const VideoFilterRow: FC<VideoFilterRow> = ({ onClose }) => {
           <MovieCreationRounded fontSize="small" />
         </ListItemIcon>
         <ListItemText>Videos</ListItemText>
-        <IconButton sx={{ p: 0 }}>
+        <ListItemIcon style={{ minWidth: "0px" }}>
           <ChevronRightOutlined fontSize="small" />
-        </IconButton>
+        </ListItemIcon>
       </MenuItem>
       <Menu
         open={open}

@@ -9,32 +9,32 @@ const getRandomFileName = () =>
 
 let currentFileId = "";
 
-describe("Media Files", () => {
+// Skipping since upload non-signed url flow cannot be performed in http environment
+describe.skip("Media Files", () => {
   before(() => {
-    cy.waitOn("*groups*", () => {
+    cy.waitOn("**/files", () => {
       cy.visit("/media");
     });
   });
 
   it("Uploads a file to All Media", () => {
     const fileName = getRandomFileName();
-    cy.get("input[type=file]").selectFile(
-      {
-        contents: Cypress.Buffer.from(CIRCLE_SVG),
-        fileName,
-        mimeType: "image/svg+xml",
-        lastModified: Date.now(),
-      },
-      {
-        // force:true is valid because we use hidden file inputs to do uploads
-        force: true,
-      }
-    );
+    cy.get("input[type=file]")
+      .first()
+      .selectFile(
+        {
+          contents: Cypress.Buffer.from(CIRCLE_SVG),
+          fileName,
+          mimeType: "image/svg+xml",
+          lastModified: Date.now(),
+        },
+        {
+          // force:true is valid because we use hidden file inputs to do uploads
+          force: true,
+        }
+      );
     // Wait for upload to complete
-    cy.intercept(
-      "POST",
-      "https://media-storage.api.dev.zesty.io/upload/gcp/*"
-    ).as("upload");
+    cy.intercept("POST", "/file*").as("upload");
     cy.wait("@upload", { timeout: 10_000 });
     // // Click "Done" button to close upload modal
     cy.get('button:enabled:contains("Done")').click();
@@ -68,21 +68,15 @@ describe("Media Files", () => {
 
     // type inside "New File Name" textfield
     cy.contains("New File Name").next().clear().type("CYPRESS TEST NEW FILE");
-    cy.contains("Update").click();
 
     // update endpoint
-    cy.waitOn(
-      {
-        method: "PATCH",
-        pathname: `/file/${currentFileId}`,
-      },
-      () => {
-        // check if the textfield has the updated value
-        cy.get(".MuiTypography-body1")
-          .contains("CYPRESS TEST NEW FILE")
-          .should("exist");
-      }
-    );
+    cy.waitOn(`**/file/${currentFileId}`, () => {
+      // check if the textfield has the updated value
+      cy.contains("Update").click();
+    });
+    cy.get(".MuiTypography-body1")
+      .contains("CYPRESS TEST NEW FILE")
+      .should("exist");
   });
 
   it("Updates title", () => {

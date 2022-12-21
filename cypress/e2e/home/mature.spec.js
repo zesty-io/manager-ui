@@ -2,15 +2,15 @@ describe("Mature Home", () => {
   before(() => {
     cy.visit("/");
   });
-  it("Root gets redirected to home", () => {
-    cy.url().should("include", "/home");
+  it("Root gets redirected to launchpad", () => {
+    cy.url().should("include", "/launchpad");
   });
   it("Displays user first name", () => {
     cy.contains("Good Morning, FirstName");
   });
   it("Displays delta percentage on metric card if instance is over 2 months old", () => {
     // Test instance is over 2 months old
-    cy.contains("VS PRIOR 30 DAYS");
+    cy.contains("VS Prior 30 Days");
   });
   it("Opens Quick Start Guide in new tab", () => {
     cy.window().then((win) => {

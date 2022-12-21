@@ -16,7 +16,7 @@ import {
   faImage,
   faAddressCard,
   IconDefinition,
-  faHome,
+  faRocket,
 } from "@fortawesome/free-solid-svg-icons";
 import { isEqual } from "lodash";
 
@@ -173,9 +173,9 @@ export function createTab(
   const tab: Tab = { pathname: path, search };
 
   const appNameMap = {
-    home: {
-      name: "Home",
-      icon: faHome,
+    launchpad: {
+      name: "Launchpad",
+      icon: faRocket,
     },
     seo: {
       name: "SEO",
@@ -262,6 +262,9 @@ export function createTab(
     tab.name = appNameMap[name].name;
     tab.icon = appNameMap[name].icon;
     tab.app = appNameMap[name].name;
+    if (parts[0] === "content" && parts[2] === "new" && zuidIsValid(parts[1])) {
+      tab.name = `New ${state?.models?.[parts[1]]?.label} Item`;
+    }
   }
   // resolve ZUID from store to determine display information
   switch (prefix) {
