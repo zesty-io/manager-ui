@@ -15,6 +15,7 @@ import youtubeIcon from "../../../../public/images/youtubeIcon.svg";
 import discordIcon from "../../../../public/images/discordIcon.svg";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import CheckIcon from "@mui/icons-material/Check";
 interface Props {
   instanceFaviconUrl?: string;
   instanceName?: string;
@@ -28,6 +29,15 @@ const InstanceFlyoutMenuModal = ({
   instanceZUID,
   onClose,
 }: Props) => {
+  const [
+    refreshCache,
+    {
+      data = {},
+      isSuccess: isSuccessRefreshCache,
+      isLoading: isLoadingRefreshCache,
+    },
+  ] = useRefreshCacheMutation();
+
   const handleNavigation = (url: string) => {
     window.open(url, "_blank");
   };
@@ -41,6 +51,35 @@ const InstanceFlyoutMenuModal = ({
             {instanceName}
           </Typography>
         </ListItem>
+        <Box sx={{ p: 1 }}>
+          <Button
+            variant="outlined"
+            color="inherit"
+            onClick={() => refreshCache()}
+            startIcon={
+              <>
+                {isLoadingRefreshCache ? (
+                  <CircularProgress size="18px" color="inherit" />
+                ) : !isLoadingRefreshCache && isSuccessRefreshCache ? (
+                  <CheckIcon fontSize="small" />
+                ) : (
+                  <RefreshIcon fontSize="small" />
+                )}
+              </>
+            }
+          >
+            Refresh Cache
+          </Button>
+        </Box>
+        <Box sx={{ p: 1 }}>
+          <Button
+            variant="outlined"
+            color="inherit"
+            startIcon={<ContentCopyIcon fontSize="small" />}
+          >
+            Get Instance ZUID
+          </Button>
+        </Box>
       </Box>
       <Box
         display="flex"
