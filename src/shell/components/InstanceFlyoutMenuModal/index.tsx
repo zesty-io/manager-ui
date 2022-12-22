@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +17,7 @@ import discordIcon from "../../../../public/images/discordIcon.svg";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import CheckIcon from "@mui/icons-material/Check";
+
 interface Props {
   instanceFaviconUrl?: string;
   instanceName?: string;
@@ -37,9 +39,24 @@ const InstanceFlyoutMenuModal = ({
       isLoading: isLoadingRefreshCache,
     },
   ] = useRefreshCacheMutation();
+  const [isCopiedZuid, setIsCopiedZuid] = useState(false);
 
   const handleNavigation = (url: string) => {
     window.open(url, "_blank");
+  };
+
+  const handleCopyInstanceZUID = () => {
+    navigator?.clipboard
+      ?.writeText(instanceZUID)
+      .then(() => {
+        setIsCopiedZuid(true);
+        setTimeout(() => {
+          setIsCopiedZuid(false);
+        }, 1500);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
 
   return (
@@ -75,7 +92,16 @@ const InstanceFlyoutMenuModal = ({
           <Button
             variant="outlined"
             color="inherit"
-            startIcon={<ContentCopyIcon fontSize="small" />}
+            onClick={() => handleCopyInstanceZUID()}
+            startIcon={
+              <>
+                {isCopiedZuid ? (
+                  <CheckIcon fontSize="small" />
+                ) : (
+                  <ContentCopyIcon fontSize="small" />
+                )}
+              </>
+            }
           >
             Get Instance ZUID
           </Button>
