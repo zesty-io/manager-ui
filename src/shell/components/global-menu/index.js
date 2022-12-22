@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 
-import { ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import { ListItem, ListItemIcon, Typography } from "@mui/material";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import EditIcon from "@mui/icons-material/Edit";
 import ImageIcon from "@mui/icons-material/Image";
@@ -13,7 +13,6 @@ import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import RecommendIcon from "@mui/icons-material/Recommend";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import SettingsIcon from "@mui/icons-material/Settings";
-import StorageIcon from "@mui/icons-material/Storage";
 import { Database } from "@zesty-io/material";
 
 import styles from "./styles.less";
@@ -74,9 +73,8 @@ export default memo(function GlobalMenu() {
           >
             <ListItem
               sx={{
-                px: "12px",
-                py: "12px",
-                mb: "12px",
+                px: "10px",
+                mb: "10px",
                 height: "36px",
                 borderRadius: "4px",
                 backgroundColor: slug === product ? "grey.800" : "transparent",
@@ -85,13 +83,14 @@ export default memo(function GlobalMenu() {
               <MenuItemIcon product={product} />
 
               {openNav && (
-                <ListItemText
+                <Typography
+                  variant="body2"
                   sx={{
                     color: slug === product ? "common.white" : "grey.500",
                   }}
                 >
                   {name}
-                </ListItemText>
+                </Typography>
               )}
             </ListItem>
           </Link>

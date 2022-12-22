@@ -9,7 +9,7 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlug } from "@fortawesome/free-solid-svg-icons";
 import ExtensionIcon from "@mui/icons-material/Extension";
-import { ListItemIcon, ListItem, ListItemText } from "@mui/material";
+import { ListItemIcon, ListItem, Typography } from "@mui/material";
 
 import styles from "./styles.less";
 
@@ -43,8 +43,8 @@ export default memo(function GlobalCustomApps(props) {
       >
         <ListItem
           sx={{
-            px: "12px",
-            mb: "12px",
+            px: "10px",
+            mb: "10px",
             height: "36px",
             borderRadius: "4px",
           }}
@@ -56,13 +56,16 @@ export default memo(function GlobalCustomApps(props) {
               }}
             />
           </ListItemIcon>
-          <ListItemText
-            sx={{
-              color: slug === "Marketplace" ? "common.white" : "grey.500",
-            }}
-          >
-            Marketplace
-          </ListItemText>
+          {props.openNav && (
+            <Typography
+              variant="body2"
+              sx={{
+                color: slug === "Marketplace" ? "common.white" : "grey.500",
+              }}
+            >
+              Marketplace
+            </Typography>
+          )}
         </ListItem>
       </ExternalLink>
 
