@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -60,7 +60,19 @@ const InstanceFlyoutMenuModal = ({
   };
 
   return (
-    <Dialog open={true} fullWidth maxWidth={"xs"} onClose={onClose}>
+    <Dialog
+      PaperProps={{
+        style: {
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+        },
+      }}
+      open={true}
+      fullWidth
+      maxWidth={"xs"}
+      onClose={onClose}
+    >
       <Box sx={{ py: 1 }}>
         <ListItem>
           <Avatar src={instanceFaviconUrl} />
