@@ -134,17 +134,35 @@ export interface ContentItem {
   publishAt?: any;
 }
 
+export interface FieldSettingsOptions {
+  0: "No";
+  1: "Yes";
+}
+
+export interface FieldSettings {
+  options: FieldSettingsOptions;
+  group_id: string;
+  limit?: number;
+  list?: boolean;
+  tooltip?: string;
+}
+
 export interface ContentModelField {
   ZUID: string;
-  label: string;
+  contentModelZUID: string;
   name: string;
-  // Type out fields
-  dataType: any;
-  // Type out field settings dependnding on dataType
-  settings: any;
-  required: boolean;
-  description?: string;
-  sort?: number;
-  relatedModelZUID?: string;
-  relatedFieldZUID?: string;
+  label: string;
+  description: string;
+  datatype: string;
+  sort: number;
+  required?: boolean;
+  relationship?: any;
+  options?: any;
+  fieldOptions?: any;
+  datatypeOptions: string;
+  settings: FieldSettings;
+  relatedModelZUID?: any;
+  relatedFieldZUID?: any;
+  createdAt: string;
+  updatedAt: string;
 }

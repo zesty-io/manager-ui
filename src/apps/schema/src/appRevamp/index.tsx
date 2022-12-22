@@ -3,6 +3,7 @@ import { theme } from "@zesty-io/material";
 import { Sidebar } from "./components/Sidebar";
 import { Header } from "./components/Header";
 import { Route, Switch } from "react-router";
+import { Fields } from "./components/Fields";
 
 export const SchemaApp = () => {
   return (
@@ -29,11 +30,8 @@ export const SchemaApp = () => {
         <Box flex="1">
           <Header />
           <Switch>
-            <Route
-              exact
-              path="/schema"
-              render={() => <div>ROUTER BASED CONTENT</div>}
-            />
+            <Route exact path="/schema" render={() => <div>All Models</div>} />
+            <Route exact path="/schema/:id" render={() => <Fields />} />
           </Switch>
         </Box>
       </Box>

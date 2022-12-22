@@ -147,7 +147,7 @@ export const instanceApi = createApi({
       }),
       invalidatesTags: ["ContentModels"],
     }),
-    getContentModelFields: builder.query<any, string>({
+    getContentModelFields: builder.query<ContentModelField, string>({
       query: (modelZUID) => `content/models/${modelZUID}/fields`,
       transformResponse: getResponseData,
       providesTags: (result, error, modelZUID) => [
@@ -208,4 +208,5 @@ export const {
   useGetContentModelsQuery,
   useGetContentModelItemsQuery,
   useGetContentItemPublishingsQuery,
+  useGetContentModelFieldsQuery,
 } = instanceApi;
