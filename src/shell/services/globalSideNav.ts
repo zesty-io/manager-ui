@@ -11,13 +11,16 @@ export const globalSideNavApi = createApi({
     prepareHeaders,
   }),
   endpoints: (builder) => ({
-    refreshCache: builder.query<>({
-      query: () => `fastlyPurge?zuid=${instanceZUID}`,
-      transformResponse: getResponseData,
+    refreshCache: builder.mutation<void, void>({
+      query: () => ({
+        url: `fastlyPurge?zuid=${instanceZUID}`,
+        method: "GET",
+      }),
+      transformResponse: (res: any) => res,
     }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useRefreshCacheQuery } = instanceApi;
+export const { useRefreshCacheMutation } = globalSideNavApi;

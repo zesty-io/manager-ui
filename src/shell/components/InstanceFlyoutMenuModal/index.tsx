@@ -7,7 +7,9 @@ import {
   MenuItem,
   Button,
   ListItem,
+  CircularProgress,
 } from "@mui/material";
+import { useRefreshCacheMutation } from "../../services/globalSideNav";
 import slackIcon from "../../../../public/images/slackIcon.svg";
 import youtubeIcon from "../../../../public/images/youtubeIcon.svg";
 import discordIcon from "../../../../public/images/discordIcon.svg";
@@ -39,33 +41,6 @@ const InstanceFlyoutMenuModal = ({
             {instanceName}
           </Typography>
         </ListItem>
-        <Box sx={{ p: 1 }}>
-          <Button
-            variant="outlined"
-            color="inherit"
-            // onClick={() => {
-            //   return request(
-            //     `${CONFIG.CLOUD_FUNCTIONS_DOMAIN}/fastlyPurge?zuid=${instanceZUID}&instance=${instanceZUID}`
-            //   ).catch((err: any) => {
-            //   })
-            //   .finally(() => {
-            //     // setPurge(false);
-            //   });
-            // }}
-            startIcon={<RefreshIcon fontSize="small" />}
-          >
-            Refresh Cache
-          </Button>
-        </Box>
-        <Box sx={{ p: 1 }}>
-          <Button
-            variant="outlined"
-            color="inherit"
-            startIcon={<ContentCopyIcon fontSize="small" />}
-          >
-            Get Instance ZUID
-          </Button>
-        </Box>
       </Box>
       <Box
         display="flex"

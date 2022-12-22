@@ -36,6 +36,7 @@ import apps from "./apps";
 import { instanceApi } from "../services/instance";
 import { accountsApi } from "../services/accounts";
 import { mediaManagerApi } from "../services/mediaManager";
+import { globalSideNavApi } from "../services/globalSideNav";
 import { metricsApi } from "../services/metrics";
 
 // Middleware is applied in order of array
@@ -49,6 +50,7 @@ const middlewares = [
   thunkMiddleware,
   instanceApi.middleware,
   accountsApi.middleware,
+  globalSideNavApi.middleware,
   mediaManagerApi.middleware,
   metricsApi.middleware,
 ];
@@ -112,6 +114,7 @@ function createReducer(asyncReducers) {
     ui: ui.reducer,
     [instanceApi.reducerPath]: instanceApi.reducer,
     [accountsApi.reducerPath]: accountsApi.reducer,
+    [globalSideNavApi.reducerPath]: globalSideNavApi.reducer,
     [mediaManagerApi.reducerPath]: mediaManagerApi.reducer,
     [metricsApi.reducerPath]: metricsApi.reducer,
   };
