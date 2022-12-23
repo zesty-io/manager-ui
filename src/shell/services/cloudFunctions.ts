@@ -12,11 +12,7 @@ export const cloudFunctionsApi = createApi({
   }),
   endpoints: (builder) => ({
     refreshCache: builder.mutation<void, void>({
-      query: () => ({
-        url: `fastlyPurge?zuid=${instanceZUID}`,
-        method: "GET",
-      }),
-      transformResponse: (res: any) => res,
+      query: () => `fastlyPurge?zuid=${instanceZUID}`,
     }),
   }),
 });
