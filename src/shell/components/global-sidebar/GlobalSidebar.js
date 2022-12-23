@@ -67,7 +67,7 @@ const OnboardingCallSection = () => {
         <iframe
           width="364"
           height="800"
-          src="https://www.zesty.io/meet/"
+          src="https://zesty.zohobookings.com/portal-embed#/customer/3973976000000039370"
         ></iframe>
       </Dialog>
     </>
