@@ -10,7 +10,7 @@ import {
   ListItem,
   CircularProgress,
 } from "@mui/material";
-import { useRefreshCacheMutation } from "../../services/globalSideNav";
+import { useRefreshCacheMutation } from "../../services/cloudFunctions";
 import slackIcon from "../../../../public/images/slackIcon.svg";
 import youtubeIcon from "../../../../public/images/youtubeIcon.svg";
 import discordIcon from "../../../../public/images/discordIcon.svg";

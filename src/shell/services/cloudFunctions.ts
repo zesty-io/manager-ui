@@ -3,8 +3,8 @@ import { getResponseData, prepareHeaders } from "./util";
 import instanceZUID from "../../utility/instanceZUID";
 
 // Define a service using a base URL and expected endpoints
-export const globalSideNavApi = createApi({
-  reducerPath: "globalSideNavApi",
+export const cloudFunctionsApi = createApi({
+  reducerPath: "cloudFunctionsApi",
   baseQuery: fetchBaseQuery({
     // @ts-ignore
     baseUrl: `${__CONFIG__.CLOUD_FUNCTIONS_DOMAIN}`,
@@ -23,4 +23,4 @@ export const globalSideNavApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useRefreshCacheMutation } = globalSideNavApi;
+export const { useRefreshCacheMutation } = cloudFunctionsApi;

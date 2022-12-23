@@ -40,6 +40,7 @@ export default memo(function GlobalMenu() {
     return (
       <ListItemIcon sx={{ minWidth: "36px" }}>
         <SpecificIcon
+          fontSize="small"
           sx={{
             color: slug === product ? "primary.main" : "grey.500",
           }}
@@ -84,7 +85,7 @@ export default memo(function GlobalMenu() {
 
               {openNav && (
                 <Typography
-                  variant="body2"
+                  variant="body3"
                   sx={{
                     color: slug === product ? "common.white" : "grey.500",
                   }}
