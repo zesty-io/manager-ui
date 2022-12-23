@@ -30,6 +30,7 @@ export type TopBarTab = {
   isDarkMode?: boolean;
   isActive?: boolean;
   isPinned?: boolean;
+  tabIndex?: number;
 };
 export const TopBarTab: FC<TopBarTab> = ({
   tab,
@@ -37,6 +38,7 @@ export const TopBarTab: FC<TopBarTab> = ({
   isDarkMode = false,
   isActive = false,
   isPinned = false,
+  tabIndex,
 }) => {
   const dispatch = useDispatch();
   const instanceId = useSelector((state: any) => state.instance.ID);
@@ -105,7 +107,7 @@ export const TopBarTab: FC<TopBarTab> = ({
     <Box
       component="div"
       className="tab-item"
-      data-cy="ActiveTab"
+      data-cy={isPinned ? `PinnedTab-${tabIndex}` : "UnpinnedTab"}
       data-active={isActive}
       width={`${tabWidth}px`}
       py={0.5}

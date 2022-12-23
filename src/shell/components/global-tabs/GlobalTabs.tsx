@@ -192,8 +192,9 @@ export default memo(function GlobalTabs() {
           }}
         >
           {!isCurrLocPinned && <UnpinnedTopBarTab tabWidth={tabWidth} />}
-          {topbar.map((tab) => (
+          {topbar.map((tab, i) => (
             <TopBarTab
+              tabIndex={i}
               key={tab.pathname + tab.search}
               tab={tab}
               tabWidth={tabWidth}
