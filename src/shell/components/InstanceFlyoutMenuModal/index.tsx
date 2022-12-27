@@ -17,7 +17,7 @@ import discordIcon from "../../../../public/images/discordIcon.svg";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import CheckIcon from "@mui/icons-material/Check";
-
+import DomainsMenu from "./DomainsMenu";
 interface Props {
   instanceFaviconUrl?: string;
   instanceName?: string;
@@ -40,6 +40,7 @@ const InstanceFlyoutMenuModal = ({
     },
   ] = useRefreshCacheMutation();
   const [isCopiedZuid, setIsCopiedZuid] = useState(false);
+  const [showDomainsMenu, setShowDomainsMenu] = useState(false);
 
   const handleNavigation = (url: string) => {
     window.open(url, "_blank");
@@ -80,6 +81,12 @@ const InstanceFlyoutMenuModal = ({
             {instanceName}
           </Typography>
         </ListItem>
+        <MenuItem onClick={() => setShowDomainsMenu(true)}>
+          <Typography variant="body2">Domains</Typography>
+        </MenuItem>
+        {showDomainsMenu && (
+          <DomainsMenu onClose={() => setShowDomainsMenu(false)} />
+        )}
         <Box sx={{ p: 1 }}>
           <Button
             variant="outlined"
