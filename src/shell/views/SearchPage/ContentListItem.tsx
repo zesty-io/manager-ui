@@ -14,9 +14,10 @@ import moment from "moment-timezone";
 import PencilIcon from "@mui/icons-material/Create";
 type ContentListItem = {
   result: ContentItem;
+  style: any;
 };
 
-export const ContentListItem: FC<ContentListItem> = ({ result }) => {
+export const ContentListItem: FC<ContentListItem> = ({ result, style }) => {
   const affectedZUID = result?.meta?.ZUID;
   const auditRes = useGetAuditsQuery(
     { affectedZUID, limit: 1, dir: "desc", order: "created" },
@@ -27,7 +28,7 @@ export const ContentListItem: FC<ContentListItem> = ({ result }) => {
   });
   const modelRes = useGetContentModelQuery(
     contentRes.data?.meta.contentModelZUID,
-    { skip: !contentRes.data?.meta.contentModelZUID }
+    { skip: !contentRes.data?.meta?.contentModelZUID }
   );
   console.log({ affectedZUID, auditRes, contentRes, modelRes });
 
@@ -49,6 +50,7 @@ export const ContentListItem: FC<ContentListItem> = ({ result }) => {
   // Search Result List Item
   return (
     <Box
+      style={style}
       sx={{
         boxSizing: "border-box",
         alignItems: "flex-start",
@@ -58,6 +60,7 @@ export const ContentListItem: FC<ContentListItem> = ({ result }) => {
         gap: "17px",
         backgroundColor: "background.paper",
         border: `1px solid ${theme.palette.grey[100]}`,
+        height: 9,
       }}
     >
       {/* Left Container */}
