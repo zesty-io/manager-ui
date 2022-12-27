@@ -103,9 +103,9 @@ export const instanceApi = createApi({
       query: ({ query, limit, ...restOpts }) => {
         const params = new URLSearchParams({
           q: query,
-          limit: limit.toString(),
           ...restOpts,
         });
+        if (limit) params.set("limit", limit.toString());
         return `search/items?${params.toString()}`;
       },
       transformResponse: getResponseData,
