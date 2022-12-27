@@ -67,6 +67,8 @@ const InstanceFlyoutMenuModal = ({
           position: "absolute",
           bottom: 0,
           left: 0,
+          width: "448px",
+          height: "392px",
         },
       }}
       open={true}
@@ -135,6 +137,10 @@ const InstanceFlyoutMenuModal = ({
         padding={2}
         sx={{
           backgroundColor: "grey.100",
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
         }}
       >
         {/* @ts-ignore */}
