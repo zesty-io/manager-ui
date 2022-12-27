@@ -4,6 +4,12 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { theme } from "@zesty-io/material";
+import {
+  useGetAuditsQuery,
+  useGetContentModelQuery,
+  useGetContentItemQuery,
+} from "../../services/instance";
+import moment from "moment-timezone";
 
 import PencilIcon from "@mui/icons-material/Create";
 type ContentListItem = {
@@ -11,6 +17,35 @@ type ContentListItem = {
 };
 
 export const ContentListItem: FC<ContentListItem> = ({ result }) => {
+  const affectedZUID = result?.meta?.ZUID;
+  const auditRes = useGetAuditsQuery(
+    { affectedZUID, limit: 1, dir: "desc", order: "created" },
+    { skip: !affectedZUID }
+  );
+  const contentRes = useGetContentItemQuery(auditRes.data?.[0]?.affectedZUID, {
+    skip: !auditRes.data?.[0]?.affectedZUID,
+  });
+  const modelRes = useGetContentModelQuery(
+    contentRes.data?.meta.contentModelZUID,
+    { skip: !contentRes.data?.meta.contentModelZUID }
+  );
+  console.log({ affectedZUID, auditRes, contentRes, modelRes });
+
+  // Chips
+  const titleChip = contentRes?.data?.web?.metaTitle || "Unknown Content Type";
+  const appChip = "Content";
+  const actionDate = auditRes?.data?.[0]?.happenedAt;
+  const dateInfo = moment(actionDate).isSame(new Date(), "year")
+    ? moment(actionDate).format("MMM D, h:mm A")
+    : moment(actionDate).format("ll, h:mm A");
+  const firstName = auditRes?.data?.[0]?.firstName;
+  const lastName = auditRes?.data?.[0]?.lastName;
+  const userInfo =
+    firstName || lastName ? `${firstName} ${lastName}` : "Unknown User";
+  const userDateChip = `${dateInfo} by ${userInfo}`;
+  const chips = auditRes?.data?.[0]
+    ? [titleChip, appChip, userDateChip].join(" • ")
+    : "No actions found";
   // Search Result List Item
   return (
     <Box
@@ -48,8 +83,7 @@ export const ContentListItem: FC<ContentListItem> = ({ result }) => {
             {result.web.metaTitle /* TODO is this correct? */}
           </Typography>
           <Typography variant="body2" lineHeight="18px" color="text.secondary">
-            {result.meta.contentModelName || "unknown"} • Content • 5 secs ago
-            by Andres Galindo
+            {chips}
           </Typography>
         </Stack>
       </Stack>

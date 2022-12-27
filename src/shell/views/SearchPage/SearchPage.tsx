@@ -19,7 +19,7 @@ export const SearchPage: FC = () => {
   const query = params.get("q");
   console.log("query", query);
   //return <Typography variant="h1">Search for {query}</Typography>;
-  const res = useSearchContentQuery({ query });
+  const res = useSearchContentQuery({ query }, { skip: !query });
   const results = res.data;
   return (
     <ThemeProvider theme={theme}>

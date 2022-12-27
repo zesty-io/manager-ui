@@ -42,7 +42,7 @@ const ContentSearch: FC = () => {
     "Suggestion 4",
   ] as const; //TODO RTK query
   */
-  const res = useSearchContentQuery({ query: value });
+  const res = useSearchContentQuery({ query: value }, { skip: !value });
   console.log(res);
 
   const suggestions = res.data || [];
