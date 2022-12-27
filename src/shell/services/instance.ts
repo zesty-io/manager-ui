@@ -100,17 +100,12 @@ export const instanceApi = createApi({
       keepUnusedDataFor: 0.0001,
     }),
     searchContent: builder.query<ContentItem[], SearchQuery>({
-      query: (options) => {
-        const params = new URLSearchParams();
-        params.append("q", options.query);
-        // UnorderedQuery
-        if (options.limit) params.append("limit", options.limit.toString());
-        if (options.startDate) params.append("startDate", options.startDate);
-        if (options.endDate) params.append("endDate", options.endDate);
-        // OrderedQuery
-        if ("order" in options) params.append("order", options.order);
-        if ("dir" in options) params.append("dir", options.dir);
-
+      query: ({ query, limit, ...restOpts }) => {
+        const params = new URLSearchParams({
+          q: query,
+          limit: limit.toString(),
+          ...restOpts,
+        });
         return `search/items?${params.toString()}`;
       },
       transformResponse: getResponseData,
