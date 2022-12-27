@@ -11,6 +11,8 @@ import { theme } from "@zesty-io/material";
 
 import { NoSearchResults } from "../../components/NoSearchResults";
 import { useSearchContentQuery } from "../../services/instance";
+import { ContentListItem } from "./ContentListItem";
+import { ContentList } from "./ContentList";
 
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
@@ -40,7 +42,20 @@ export const SearchPage: FC = () => {
           <CloseIcon />
         </IconButton>
       </Box>
-      {!results?.length && <NoSearchResults query={query} />}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          padding: "16px 24px 0px",
+          gap: "16px",
+          backgroundColor: "grey.50",
+          height: "100%",
+        }}
+      >
+        {!results?.length && <NoSearchResults query={query} />}
+        {results?.length && <ContentList results={results} />}
+      </Box>
     </ThemeProvider>
   );
 };
