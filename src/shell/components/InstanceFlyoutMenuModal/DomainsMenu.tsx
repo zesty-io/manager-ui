@@ -44,15 +44,17 @@ const DomainsMenu = ({ onClose, instanceZUID }: Props) => {
     >
       <Box sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
         <ListItem sx={{ p: 0, width: 0 }}>
-          <IconButton sx={{ pl: 0 }}>
-            <ArrowBackIcon fontSize="small" />
-          </IconButton>
+          <ListItemIcon sx={{ minWidth: "30px" }} onClick={() => onClose()}>
+            <IconButton sx={{ p: 0 }}>
+              <ArrowBackIcon fontSize="small" />
+            </IconButton>
+          </ListItemIcon>
           <Typography variant="h5">Domains</Typography>
         </ListItem>
         <Button
           variant="outlined"
           color="inherit"
-          sx={{ height: "32px", mt: 0.5 }}
+          sx={{ height: "32px" }}
           onClick={() =>
             window.open(
               `https://www.zesty.io/instances/${instanceZUID}/domains/`,
@@ -64,11 +66,11 @@ const DomainsMenu = ({ onClose, instanceZUID }: Props) => {
           Manage Domains
         </Button>
       </Box>
-      <DialogContent>
-        <ListItem sx={{ p: 0 }}>
+      <Box>
+        <ListItem>
           <Button
             variant="outlined"
-            sx={{ height: "32px", mt: 0.5 }}
+            sx={{ height: "32px" }}
             onClick={() =>
               window.open(
                 // @ts-ignore
@@ -85,20 +87,19 @@ const DomainsMenu = ({ onClose, instanceZUID }: Props) => {
           <ListItem
             sx={{
               cursor: "pointer",
-              // borderStyle: "solid",
-              // borderWidth: "1px",
-              // borderColor: "grey.100",
-              px: 0,
+              borderBottomStyle: "solid",
+              borderBottomWidth: "1px",
+              borderBottomColor: "grey.100",
             }}
             onClick={() => window.open(`http://${domain.domain}`, "_blank")}
           >
-            <ListItemIcon>
+            <ListItemIcon sx={{ minWidth: "35px" }}>
               <OpenInNewIcon />
             </ListItemIcon>
             <ListItemText>{domain.domain}</ListItemText>
           </ListItem>
         ))}
-      </DialogContent>
+      </Box>
     </Dialog>
   );
 };
