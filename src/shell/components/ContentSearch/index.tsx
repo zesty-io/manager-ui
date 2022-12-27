@@ -6,6 +6,7 @@ import Popper from "@mui/material/Popper";
 import Paper from "@mui/material/Paper";
 import { MenuItem, MenuList } from "@mui/material";
 import { useMetaKey } from "../../../shell/hooks/useMetaKey";
+import { useSearchContentQuery } from "../../services/instance";
 
 // input with a search icon and "search instance" placeholder text
 
@@ -33,12 +34,18 @@ const ContentSearch: FC = () => {
 
   const id = "search-popover";
 
+  /*
   const suggestions = [
     "Suggestion 1",
     "Suggestion 2",
     "Suggestion 3",
     "Suggestion 4",
   ] as const; //TODO RTK query
+  */
+  const res = useSearchContentQuery({ query: value });
+  console.log(res);
+
+  const suggestions = res.data || [];
 
   //@ts-ignore TODO fix typing for useMetaKey
   const thing = useMetaKey("k", () => {
@@ -83,10 +90,10 @@ const ContentSearch: FC = () => {
           <MenuList>
             {suggestions.map((suggestion) => (
               <Suggestion
-                key={suggestion}
+                key={suggestion.meta.ZUID}
                 onClick={selected}
                 onFocus={focused}
-                suggestion={suggestion}
+                suggestion={suggestion.web.metaTitle}
               />
             ))}
           </MenuList>
