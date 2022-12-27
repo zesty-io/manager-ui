@@ -10,13 +10,15 @@ import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@zesty-io/material";
 
 import { NoSearchResults } from "../../components/NoSearchResults";
+import { useSearchContentQuery } from "../../services/instance";
 
 export const SearchPage: FC = () => {
   const [params, setParams] = useParams();
   const query = params.get("q");
   console.log("query", query);
   //return <Typography variant="h1">Search for {query}</Typography>;
-  const results = []; // TODO RTK Query
+  const res = useSearchContentQuery({ query });
+  const results = res.data;
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -32,13 +34,13 @@ export const SearchPage: FC = () => {
         }}
       >
         <Typography variant="h6" color="text.primary">
-          {results.length} results for "{query}"
+          {results?.length} results for "{query}"
         </Typography>
         <IconButton onClick={() => console.log("TODO: clear search results")}>
           <CloseIcon />
         </IconButton>
       </Box>
-      {!results.length && <NoSearchResults query={query} />}
+      {!results?.length && <NoSearchResults query={query} />}
     </ThemeProvider>
   );
 };
