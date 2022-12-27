@@ -85,7 +85,10 @@ const InstanceFlyoutMenuModal = ({
           <Typography variant="body2">Domains</Typography>
         </MenuItem>
         {showDomainsMenu && (
-          <DomainsMenu onClose={() => setShowDomainsMenu(false)} />
+          <DomainsMenu
+            onClose={() => setShowDomainsMenu(false)}
+            instanceZUID={instanceZUID}
+          />
         )}
         <Box sx={{ p: 1 }}>
           <Button

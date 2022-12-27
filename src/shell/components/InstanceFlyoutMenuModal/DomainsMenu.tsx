@@ -11,11 +11,14 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LanguageIcon from "@mui/icons-material/Language";
+import { useEffect } from "react";
+
 interface Props {
   onClose?: () => void;
+  instanceZUID?: string;
 }
 
-const DomainsMenu = ({ onClose }: Props) => {
+const DomainsMenu = ({ onClose, instanceZUID }: Props) => {
   return (
     <Dialog
       PaperProps={{
@@ -43,7 +46,12 @@ const DomainsMenu = ({ onClose }: Props) => {
           variant="outlined"
           color="inherit"
           sx={{ height: "32px", mt: 0.5 }}
-          onClick={() => console.log(false)}
+          onClick={() =>
+            window.open(
+              `https://www.zesty.io/instances/${instanceZUID}/domains/`,
+              "_blank"
+            )
+          }
           startIcon={<LanguageIcon fontSize="small" />}
         >
           Manage Domains
