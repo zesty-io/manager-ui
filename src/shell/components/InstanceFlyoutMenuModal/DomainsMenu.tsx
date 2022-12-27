@@ -8,11 +8,14 @@ import {
   IconButton,
   Typography,
   ListItemButton,
+  ListItemIcon,
+  ListItemText,
   ListItem,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LanguageIcon from "@mui/icons-material/Language";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 interface Props {
   onClose?: () => void;
   instanceZUID?: string;
@@ -78,6 +81,23 @@ const DomainsMenu = ({ onClose, instanceZUID }: Props) => {
             View Web Engine Preview
           </Button>
         </ListItem>
+        {instance.domains.map((domain: any) => (
+          <ListItem
+            sx={{
+              cursor: "pointer",
+              // borderStyle: "solid",
+              // borderWidth: "1px",
+              // borderColor: "grey.100",
+              px: 0,
+            }}
+            onClick={() => window.open(`http://${domain.domain}`, "_blank")}
+          >
+            <ListItemIcon>
+              <OpenInNewIcon />
+            </ListItemIcon>
+            <ListItemText>{domain.domain}</ListItemText>
+          </ListItem>
+        ))}
       </DialogContent>
     </Dialog>
   );
