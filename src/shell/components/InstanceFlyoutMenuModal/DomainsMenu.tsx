@@ -1,5 +1,16 @@
-import { Dialog, DialogContent, DialogTitle } from "@mui/material";
-
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Typography,
+  ListItemButton,
+  ListItem,
+} from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import LanguageIcon from "@mui/icons-material/Language";
 interface Props {
   onClose?: () => void;
 }
@@ -21,7 +32,23 @@ const DomainsMenu = ({ onClose }: Props) => {
       fullWidth
       maxWidth={"xs"}
     >
-      <DialogTitle>Domains</DialogTitle>
+      <Box sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
+        <ListItem sx={{ p: 0, width: 0 }}>
+          <IconButton sx={{ pl: 0 }}>
+            <ArrowBackIcon fontSize="small" />
+          </IconButton>
+          <Typography variant="h5">Domains</Typography>
+        </ListItem>
+        <Button
+          variant="outlined"
+          color="inherit"
+          sx={{ height: "32px", mt: 0.5 }}
+          onClick={() => console.log(false)}
+          startIcon={<LanguageIcon fontSize="small" />}
+        >
+          Manage Domains
+        </Button>
+      </Box>
     </Dialog>
   );
 };
