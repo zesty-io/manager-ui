@@ -114,17 +114,22 @@ export interface Meta {
   updatedAt: string;
 }
 export interface Data {
-  content: string;
-  david_uuid: string;
-  habibi: string;
-  image: string;
-  image_1: string;
-  image_2?: any;
-  image_3?: any;
-  image_4?: any;
-  image_5?: any;
-  title: string;
+  [key: string]: number | string | null | undefined;
 }
+
+type UnorderedQuery = {
+  limit?: number;
+  startDate?: string;
+  endDate?: string;
+  query: string;
+};
+
+type OrderedQuery = UnorderedQuery & {
+  order?: "created" | "modified" | "name";
+  dir: "asc" | "desc";
+};
+
+export type SearchQuery = UnorderedQuery | OrderedQuery;
 
 export interface ContentItem {
   web: Web;
