@@ -36,8 +36,8 @@ import {
   State,
 } from "../../../../../shell/store/media-revamp";
 import {
-  useUpdateFileMutation,
-  useDeleteFileMutation,
+  useUpdateFilesMutation,
+  useDeleteFilesMutation,
 } from "../../../../../shell/services/mediaManager";
 import { File } from "../../../../../shell/services/types";
 import { useHistory } from "react-router";
@@ -69,11 +69,10 @@ export const Header = ({
   const [openDialog, setOpenDialog] = useState<Dialogs>(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const history = useHistory();
-  const [deleteFile] = useDeleteFileMutation();
+  const [deleteFiles, { isLoading: isLoadingDelete }] =
+    useDeleteFilesMutation();
   const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
-  const [showSpinner, setShowSpinner] = useState(false);
   const [showDeleteFileDialog, setShowDeleteFileDialog] = useState(false);
-  const [isLoadingDelete, setIsLoadingDelete] = useState(false);
   const selectedFiles = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.selectedFiles
   );
@@ -91,14 +90,9 @@ export const Header = ({
     "zesty:navMedia:hidden",
     []
   );
-  const [
-    updateFile,
-    {
-      reset: resetUpdate,
-      isSuccess: isSuccessUpdate,
-      isLoading: isLoadingUpdate,
-    },
-  ] = useUpdateFileMutation();
+
+  const [updateFiles, { isLoading: isUpdatingFiles }] =
+    useUpdateFilesMutation();
 
   const open = Boolean(anchorEl);
   const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
@@ -109,58 +103,42 @@ export const Header = ({
   };
 
   const handleUpdateMutation = (newGroupId: string) => {
-    setShowSpinner(true);
-    Promise.all(
-      selectedFiles?.map(async (file) => {
-        await updateFile({
-          id: file.id,
-          previousGroupId: file.group_id,
-          body: {
-            group_id: newGroupId,
-            title: file.title,
-            filename: file.filename,
-          },
-        });
-      })
+    updateFiles(
+      selectedFiles.map((file) => ({
+        id: file.id,
+        previousGroupId: file.group_id,
+        body: {
+          group_id: newGroupId,
+          title: file.title,
+          filename: file.filename,
+        },
+      }))
     ).then(() => {
-      setShowSpinner(false);
       setShowMoveFileDialog(false);
+      dispatch(clearSelectedFiles());
     });
-    dispatch(clearSelectedFiles());
   };
 
   const handleDeleteMutation = () => {
-    setIsLoadingDelete(true);
-    Promise.all(
-      selectedFiles.map(async (file) => {
-        await deleteFile({
-          id: file.id,
-          body: {
-            group_id: file.group_id,
-          },
-        });
-      })
+    deleteFiles(
+      selectedFiles.map((file) => ({
+        id: file.id,
+        body: {
+          group_id: file.group_id,
+        },
+      }))
     ).then(() => {
-      setIsLoadingDelete(false);
       setShowDeleteFileDialog(false);
       dispatch(clearSelectedFiles());
     });
   };
 
   const handleSelectAll = () => {
-    // get the first 50 files
-    let limitedFiles: Array<File> = [];
-    files.map((file, i) => {
-      if (i < 50) {
-        limitedFiles.push(file);
-      }
-    });
-
     // exclude duplicate files and dispatch to selectFile
-    const filteredFiles = limitedFiles.filter(
+    const filteredFiles = files.filter(
       (file) => !selectedFiles?.includes(file)
     );
-    filteredFiles.map((file) => {
+    filteredFiles.forEach((file) => {
       dispatch(selectFile(file));
     });
   };
@@ -189,7 +167,7 @@ export const Header = ({
             setShowMoveFileDialog(false);
           }}
           fileCount={selectedFiles?.length}
-          showSpinner={showSpinner}
+          showSpinner={isUpdatingFiles}
         />
       )}
 
@@ -258,7 +236,8 @@ export const Header = ({
                 Select All
                 {!isSelectDialog &&
                   disableSelectAll() &&
-                  ` (Max ${limitSelected})`}
+                  limitSelected &&
+                  `(Max ${limitSelected})`}
               </Button>
               {showHeaderActions && (
                 <>
