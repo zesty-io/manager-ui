@@ -164,7 +164,7 @@ export const Header = ({
           }}
           binId={binId}
           onClose={() => {
-            setShowMoveFileDialog(false);
+            if (!isUpdatingFiles) setShowMoveFileDialog(false);
           }}
           fileCount={selectedFiles?.length}
           showSpinner={isUpdatingFiles}
@@ -176,7 +176,9 @@ export const Header = ({
         <DeleteFileModal
           onDeleteFile={handleDeleteMutation}
           fileCount={selectedFiles?.length}
-          onClose={() => setShowDeleteFileDialog(false)}
+          onClose={() => {
+            if (!isLoadingDelete) setShowDeleteFileDialog(false);
+          }}
           filename={selectedFiles?.length && selectedFiles[0].filename}
           isLoadingDelete={isLoadingDelete}
         />
