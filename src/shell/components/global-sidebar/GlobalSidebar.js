@@ -21,7 +21,7 @@ import GlobalActions from "shell/components/global-actions";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import fullZestyLogo from "../../../../public/images/fullZestyLogo.svg";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
-import onboardingIcon from "../../../../public/images/onboardingIcon.svg";
+import salesAvatar from "../../../../public/images/salesAvatar.png";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -41,7 +41,7 @@ const OnboardingCallSection = () => {
     <>
       <Box sx={{ p: 2 }}>
         <Avatar
-          src={onboardingIcon}
+          src={salesAvatar}
           sx={{
             width: "32px",
             height: "32px",
