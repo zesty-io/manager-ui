@@ -43,7 +43,7 @@ export const MetricCard = ({
                 <Skeleton />
               ) : (
                 <>
-                  {numberFormatter.format(value)} {symbol}
+                  {numberFormatter.format(value || 0)} {symbol}
                 </>
               )}
             </Typography>
