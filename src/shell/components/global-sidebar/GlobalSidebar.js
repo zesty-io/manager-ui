@@ -239,7 +239,6 @@ export default connect((state) => {
             sx={{
               display: "flex",
               px: 2,
-              mt: 0.3,
             }}
           >
             <IconButton
