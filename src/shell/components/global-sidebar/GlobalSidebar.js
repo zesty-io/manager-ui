@@ -17,7 +17,6 @@ import {
 } from "@mui/material";
 import GlobalMenu from "shell/components/global-menu";
 import GlobalCustomApps from "shell/components/global-custom-apps";
-import GlobalActions from "shell/components/global-actions";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import fullZestyLogo from "../../../../public/images/fullZestyLogo.svg";
 import zestyLogo from "../../../../public/images/zestyLogo.svg";
@@ -173,7 +172,6 @@ export default connect((state) => {
         <GlobalCustomApps openNav={props.ui.openNav} />
         {moment().diff(moment(instanceCreationDate), "days") <= 15 &&
           props.ui.openNav && <OnboardingCallSection />}
-        {/* <GlobalActions hash={props.instance.randomHashID} /> */}
         <Box
           sx={{
             position: "absolute",
