@@ -236,10 +236,6 @@ export const Header = ({
                 }
               >
                 Select All
-                {!isSelectDialog &&
-                  disableSelectAll() &&
-                  limitSelected &&
-                  `(Max ${limitSelected})`}
               </Button>
               {showHeaderActions && (
                 <>
