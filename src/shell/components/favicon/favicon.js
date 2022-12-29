@@ -88,8 +88,6 @@ export default connect((state) => {
     });
   };
 
-  const handleClose = () => setOpen(false);
-
   const handleImage = (zuid) => {
     if (!zuid) {
       setFaviconZUID("");
@@ -261,7 +259,9 @@ export default connect((state) => {
           <AppLink
             className={styles.SettingsLink}
             to="/settings/head"
-            onClick={handleClose}
+            onClick={() => {
+              props.onCloseFaviconModal();
+            }}
           >
             <FontAwesomeIcon icon={faCog} />
             Manage Instance Head Tags
@@ -270,7 +270,9 @@ export default connect((state) => {
         <ModalFooter className={styles.Actions}>
           <Button
             variant="contained"
-            onClick={handleClose}
+            onClick={() => {
+              props.onCloseFaviconModal();
+            }}
             startIcon={<DoDisturbAltIcon />}
           >
             Cancel (ESC)
