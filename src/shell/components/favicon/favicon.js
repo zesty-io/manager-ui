@@ -48,7 +48,7 @@ export default connect((state) => {
   };
 })(function favicon(props) {
   const [hover, setHover] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const [faviconZUID, setFaviconZUID] = useState("");
@@ -185,13 +185,8 @@ export default connect((state) => {
   const images = faviconZUID ? [faviconZUID] : faviconURL ? [faviconURL] : [];
 
   return (
-    <div
-      data-cy="Favicon"
-      className={styles.Favicon}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      <div className={styles.display}>
+    <>
+      {/* <div className={styles.display}>
         {hover ? (
           <FontAwesomeIcon
             title="Select Instance Favicon"
@@ -208,7 +203,7 @@ export default connect((state) => {
         ) : (
           <FontAwesomeIcon icon={faGlobe} />
         )}
-      </div>
+      </div> */}
 
       <Modal open={open} className={styles.Modal}>
         <ModalHeader>
@@ -308,6 +303,6 @@ export default connect((state) => {
           </Button>
         </ModalFooter>
       </Modal>
-    </div>
+    </>
   );
 });

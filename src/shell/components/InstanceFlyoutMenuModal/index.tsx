@@ -22,6 +22,7 @@ interface Props {
   instanceFaviconUrl?: string;
   instanceName?: string;
   instanceZUID?: string;
+  onSetShowFaviconModal?: any;
   onClose?: () => void;
 }
 
@@ -29,6 +30,7 @@ const InstanceFlyoutMenuModal = ({
   instanceFaviconUrl,
   instanceName,
   instanceZUID,
+  onSetShowFaviconModal,
   onClose,
 }: Props) => {
   const [
@@ -80,6 +82,7 @@ const InstanceFlyoutMenuModal = ({
             {instanceName}
           </Typography>
         </ListItem>
+        <MenuItem onClick={onSetShowFaviconModal}>Update Favicon</MenuItem>
         <Box sx={{ p: 1 }}>
           <Button
             variant="outlined"
