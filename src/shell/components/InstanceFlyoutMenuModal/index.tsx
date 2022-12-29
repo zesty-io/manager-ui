@@ -82,7 +82,9 @@ const InstanceFlyoutMenuModal = ({
             {instanceName}
           </Typography>
         </ListItem>
-        <MenuItem onClick={onSetShowFaviconModal}>Update Favicon</MenuItem>
+        <MenuItem onClick={onSetShowFaviconModal}>
+          <Typography variant="body2">Update Favicon</Typography>
+        </MenuItem>
         <Box sx={{ p: 1 }}>
           <Button
             variant="outlined"
